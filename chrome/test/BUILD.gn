@@ -8425,6 +8425,10 @@ test("unit_tests") {
     # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
+    }
+
     if (is_chrome_branded) {
       sources += [
         "../browser/ui/webui/password_manager/promo_card_unittest.cc",

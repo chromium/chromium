@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -741,7 +744,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
 class SyncPromoIdentityPillManagerTest
     : public testing::Test,
-      public testing::WithParamInterface<ProfileMenuAvatarButtonPromoType> {
+      public testing::WithParamInterface<
+          ProfileMenuAvatarButtonPromoInfo::Type> {
  public:
   SyncPromoIdentityPillManagerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -835,10 +839,12 @@ TEST_P(SyncPromoIdentityPillManagerTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncPromoIdentityPillManagerTest,
-    testing::ValuesIn({ProfileMenuAvatarButtonPromoType::kHistorySyncPromo,
-                       ProfileMenuAvatarButtonPromoType::kSyncPromo}));
+    testing::ValuesIn(
+        {ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo}));
 
-class ComputeProfileMenuAvatarButtonPromoTypeBaseTest : public testing::Test {
+class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder builder;
@@ -846,11 +852,27 @@ class ComputeProfileMenuAvatarButtonPromoTypeBaseTest : public testing::Test {
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
                 {TestingProfile::TestingFactory{
-                    SyncServiceFactory::GetInstance(),
-                    base::BindRepeating([](content::BrowserContext* context) {
-                      return static_cast<std::unique_ptr<KeyedService>>(
-                          std::make_unique<syncer::TestSyncService>());
-                    })}}));
+                     SyncServiceFactory::GetInstance(),
+                     base::BindRepeating([](content::BrowserContext* context) {
+                       return static_cast<std::unique_ptr<KeyedService>>(
+                           std::make_unique<syncer::TestSyncService>());
+                     })},
+                 TestingProfile::TestingFactory{
+                     BatchUploadServiceFactory::GetInstance(),
+                     base::BindRepeating(
+                         [](BatchUploadServiceTestHelper*
+                                batch_upload_test_helper,
+                            content::BrowserContext* context) {
+                           return static_cast<std::unique_ptr<KeyedService>>(
+                               batch_upload_test_helper
+                                   ->CreateBatchUploadService(
+                                       IdentityManagerFactory::GetForProfile(
+                                           Profile::FromBrowserContext(
+                                               context)),
+                                       std::make_unique<
+                                           BatchUploadUIDelegate>()));
+                         },
+                         &batch_upload_test_helper_)}}));
     profile_ = builder.Build();
   }
 
@@ -895,19 +917,50 @@ class ComputeProfileMenuAvatarButtonPromoTypeBaseTest : public testing::Test {
         syncer::UserSelectableType::kSavedTabGroups, is_type_on);
   }
 
+  size_t GetLocalDataCount(ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+    switch (promo_type) {
+      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+        return 0u;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+        return 5u;
+    }
+  }
+
+  void SetRequirementsForInputPromo(
+      ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+    switch (promo_type) {
+      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+        SetHistorySyncPreferenceState(/*is_type_on=*/false);
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+        batch_upload_test_helper_.SetReturnDescriptions(
+            syncer::BOOKMARKS, GetLocalDataCount(promo_type));
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+        ASSERT_FALSE(
+            IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+                ConsentLevel::kSync));
+        break;
+    }
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
+  BatchUploadServiceTestHelper batch_upload_test_helper_;
 };
 
-class ComputeProfileMenuAvatarButtonPromoTypeTest
-    : public ComputeProfileMenuAvatarButtonPromoTypeBaseTest,
-      public testing::WithParamInterface<ProfileMenuAvatarButtonPromoType> {
+class ComputeProfileMenuAvatarButtonPromoInfoTest
+    : public ComputeProfileMenuAvatarButtonPromoInfoBaseTest,
+      public testing::WithParamInterface<
+          ProfileMenuAvatarButtonPromoInfo::Type> {
  public:
-  ComputeProfileMenuAvatarButtonPromoTypeTest() {
+  ComputeProfileMenuAvatarButtonPromoInfoTest() {
     switch (GetParam()) {
-      case ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
         scoped_feature_list_.InitWithFeatures(
             // Enabling both features to ensure that
             // `syncer::kReplaceSyncPromosWithSignInPromos` takes over.
@@ -915,12 +968,13 @@ class ComputeProfileMenuAvatarButtonPromoTypeTest
                                   switches::kAvatarButtonSyncPromoForTesting},
             /*disabled_features=*/{});
         break;
-      case ProfileMenuAvatarButtonPromoType::kSyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         scoped_feature_list_.InitWithFeatures(
             // For the Sync promo to be shown
             // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
             /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting},
             /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+        break;
     }
   }
 
@@ -928,51 +982,50 @@ class ComputeProfileMenuAvatarButtonPromoTypeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(ComputeProfileMenuAvatarButtonPromoTypeTest, NoPromoNotSignedIn) {
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<ProfileMenuAvatarButtonPromoType>)>>
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest, NoPromoNotSignedIn) {
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
-  // nullopt.
-  EXPECT_CALL(result_callback,
-              Run(std::optional<ProfileMenuAvatarButtonPromoType>()));
-  ComputeProfileMenuAvatarButtonPromoType(*profile(), result_callback.Get());
+  // Default value.
+  EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
 }
 
-TEST_P(ComputeProfileMenuAvatarButtonPromoTypeTest,
-       PromoShownWhenSignedInWithoutHistorySyncPreference) {
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest,
+       PromoShownWhenSignedInAndRequirementsForPromoSet) {
   Signin();
-  SetHistorySyncPreferenceState(/*is_type_on=*/false);
+  SetRequirementsForInputPromo(GetParam());
 
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<ProfileMenuAvatarButtonPromoType>)>>
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
-  EXPECT_CALL(result_callback, Run(std::optional(GetParam())));
-  ComputeProfileMenuAvatarButtonPromoType(*profile(), result_callback.Get());
+  EXPECT_CALL(result_callback,
+              Run(ProfileMenuAvatarButtonPromoInfo{
+                  .type = GetParam(),
+                  .local_data_count = GetLocalDataCount(GetParam())}));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
 }
 
-TEST_P(ComputeProfileMenuAvatarButtonPromoTypeTest,
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest,
        PromoNotShownWhenSignedInWithHistorySyncPreference) {
   ConsentLevel consent_level;
   switch (GetParam()) {
-    case ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       consent_level = ConsentLevel::kSignin;
       break;
-    case ProfileMenuAvatarButtonPromoType::kSyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       consent_level = ConsentLevel::kSync;
       break;
   }
   Signin(consent_level);
   SetHistorySyncPreferenceState(/*is_type_on=*/true);
 
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<ProfileMenuAvatarButtonPromoType>)>>
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
-  EXPECT_CALL(result_callback,
-              Run(std::optional<ProfileMenuAvatarButtonPromoType>()));
-  ComputeProfileMenuAvatarButtonPromoType(*profile(), result_callback.Get());
+  EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
 }
 
-TEST_P(ComputeProfileMenuAvatarButtonPromoTypeTest,
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest,
        PromoNotShownWhenSignedInPending) {
   IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
@@ -980,19 +1033,19 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoTypeTest,
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
   SetHistorySyncPreferenceState(/*is_type_on=*/false);
 
-  base::MockCallback<
-      base::OnceCallback<void(std::optional<ProfileMenuAvatarButtonPromoType>)>>
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
-  EXPECT_CALL(result_callback,
-              Run(std::optional<ProfileMenuAvatarButtonPromoType>()));
-  ComputeProfileMenuAvatarButtonPromoType(*profile(), result_callback.Get());
+  EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    ComputeProfileMenuAvatarButtonPromoTypeTest,
-    testing::ValuesIn({ProfileMenuAvatarButtonPromoType::kHistorySyncPromo,
-                       ProfileMenuAvatarButtonPromoType::kSyncPromo}));
+    ComputeProfileMenuAvatarButtonPromoInfoTest,
+    testing::ValuesIn(
+        {ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo}));
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

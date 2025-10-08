@@ -57,6 +57,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // `browser` must not be nullptr.
   ProfileMenuView(ui::TrackedElement* anchor_element,
                   Browser* browser,
+                  signin::ProfileMenuAvatarButtonPromoInfo promo_info,
                   std::optional<signin_metrics::AccessPoint>
                       explicit_signin_access_point = std::nullopt);
   ~ProfileMenuView() override;
@@ -104,7 +105,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnManageProfilesButtonClicked();
   void OnEditProfileButtonClicked();
   void OnAutofillSettingsButtonClicked();
-  void OnBuildBatchUploadButtonClicked();
+  void OnBatchUploadButtonClicked(ActionableItem button_type);
 
   // We normally close the bubble any time it becomes inactive but this can lead
   // to flaky tests where unexpected UI events are triggering this behavior.
@@ -129,17 +130,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void MaybeBuildCloseBrowsersButton();
   void MaybeBuildSignoutButton();
   void BuildFeatureButtons();
-  // Returns `std::nullopt` if the params cannot be deduced directly, the
-  // currently computed params are moved to the callback that will get the
-  // results when ready.
-  std::optional<IdentitySectionParams> GetIdentitySectionParams(
+  IdentitySectionParams GetIdentitySectionParams(
       const ProfileAttributesEntry& entry);
-  // Callback used to complete the `params` when depending on the `promo_Type`
-  // result.
-  void OnPromoTypeReadyWithParams(
-      IdentitySectionParams params,
-      signin_metrics::AccessPoint access_point,
-      std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type);
   void BuildIdentityWithCallToAction();
 
   // Gets the profiles to be displayed in the "Other profiles" section. Does not
@@ -151,10 +143,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   void BuildProfileManagementFeatureButtons();
 
-  void OnBatchUploadDataReceived(
-      std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map);
-
   const raw_ref<Browser> browser_;
+  signin::ProfileMenuAvatarButtonPromoInfo promo_info_;
+  std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
 
   std::u16string menu_title_;
   std::u16string menu_subtitle_;
@@ -162,10 +153,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // A profile switcher object needed if the user triggers opening other
   // profile in a web app.
   std::optional<WebAppProfileSwitcher> app_profile_switcher_;
-
-  std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
-
-  base::WeakPtrFactory<ProfileMenuView> weak_pointer_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_
