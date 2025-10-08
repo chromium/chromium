@@ -571,7 +571,15 @@ void IndexedDBContextImpl::GetFilePathForTesting(
     const BucketLocator& bucket_locator,
     GetFilePathForTestingCallback callback) {
   std::move(callback).Run(
-      GetLevelDBPath(GetDataPath(bucket_locator), bucket_locator));
+      GetFilePathForTesting(bucket_locator, /*sqlite=*/false));  // IN-TEST
+}
+
+base::FilePath IndexedDBContextImpl::GetFilePathForTesting(
+    const BucketLocator& bucket_locator,
+    bool sqlite) {
+  const base::FilePath& data_path = GetDataPath(bucket_locator);
+  return sqlite ? GetSqlitePath(data_path, bucket_locator)
+                : GetLevelDBPath(data_path, bucket_locator);
 }
 
 void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {

@@ -106,6 +106,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void AddObserver(
       mojo::PendingRemote<storage::mojom::IndexedDBObserver> observer) override;
 
+  base::FilePath GetFilePathForTesting(
+      const storage::BucketLocator& bucket_locator,
+      bool sqlite);
+
   // mojom::IndexedDBControlTest implementation:
   void GetBaseDataPathForTesting(
       GetBaseDataPathForTestingCallback callback) override;

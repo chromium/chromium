@@ -150,13 +150,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
 
   void AddFakeIndexedDBForBucket(const storage::BucketLocator& bucket,
                                  int size) {
-    base::FilePath file_path_storage_key;
-    {
-      base::test::TestFuture<base::FilePath> future;
-      idb_context()->GetFilePathForTesting(
-          bucket, future.GetCallback<const base::FilePath&>());
-      file_path_storage_key = future.Take();
-    }
+    base::FilePath file_path_storage_key =
+        idb_context()->GetFilePathForTesting(bucket, /*sqlite=*/false);
     if (!base::CreateDirectory(file_path_storage_key)) {
       LOG(ERROR) << "failed to base::CreateDirectory "
                  << file_path_storage_key.value();
