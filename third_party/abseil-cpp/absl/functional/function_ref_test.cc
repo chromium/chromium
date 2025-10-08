@@ -407,7 +407,7 @@ TEST(FunctionRefTest, NonConstToConstConversion) {
   // producing a copy rather than another indirection.
   absl::FunctionRef<int()> a = +[]() { return 1; };
   absl::FunctionRef<int() const> b = a;
-  a = []() { return 2; };
+  a = +[]() { return 2; };
   EXPECT_EQ(b(), 2);
 }
 

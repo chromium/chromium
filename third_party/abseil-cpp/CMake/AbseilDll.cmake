@@ -373,6 +373,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/str_split_internal.h"
   "strings/internal/utf8.cc"
   "strings/internal/utf8.h"
+  "strings/resize_and_overwrite.h"
   "synchronization/barrier.cc"
   "synchronization/barrier.h"
   "synchronization/blocking_counter.cc"

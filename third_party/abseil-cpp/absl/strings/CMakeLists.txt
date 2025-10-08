@@ -141,6 +141,32 @@ absl_cc_library(
     absl::type_traits
 )
 
+absl_cc_library(
+  NAME
+    strings_resize_and_overwrite
+  HDRS
+    "resize_and_overwrite.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+    absl::throw_delegate
+)
+
+absl_cc_test(
+  NAME
+    strings_resize_and_overwrite_test
+  SRCS
+    "resize_and_overwrite_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::strings_resize_and_overwrite
+    absl::absl_check
+    GTest::gmock_main
+)
+
 absl_cc_test(
   NAME
     match_test
@@ -337,11 +363,11 @@ absl_cc_test(
   NAME
     resize_uninitialized_test
   SRCS
-    "internal/resize_uninitialized.h"
     "internal/resize_uninitialized_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::strings_internal
     absl::base
     absl::core_headers
     absl::type_traits

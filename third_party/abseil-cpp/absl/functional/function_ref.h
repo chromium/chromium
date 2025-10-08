@@ -85,7 +85,7 @@ class FunctionRef;
 //   bool Visitor(absl::FunctionRef<void(my_proto&, absl::string_view)>
 //                  callback);
 template <typename R, typename... Args>
-class FunctionRef<R(Args...)> {
+class ABSL_ATTRIBUTE_VIEW FunctionRef<R(Args...)> {
  protected:
   // Used to disable constructors for objects that are not compatible with the
   // signature of this FunctionRef.
@@ -158,6 +158,8 @@ class FunctionRef<R(Args...)> {
   }
 #endif
 
+  using absl_internal_is_view = std::true_type;
+
   // Call the underlying object.
   R operator()(Args... args) const {
     return invoker_(ptr_, std::forward<Args>(args)...);
@@ -171,7 +173,8 @@ class FunctionRef<R(Args...)> {
 // Allow const qualified function signatures. Since FunctionRef requires
 // constness anyway we can just make this a no-op.
 template <typename R, typename... Args>
-class FunctionRef<R(Args...) const> : private FunctionRef<R(Args...)> {
+class ABSL_ATTRIBUTE_VIEW
+    FunctionRef<R(Args...) const> : private FunctionRef<R(Args...)> {
   using Base = FunctionRef<R(Args...)>;
 
   template <typename F, typename... U>
@@ -214,6 +217,8 @@ class FunctionRef<R(Args...) const> : private FunctionRef<R(Args...)> {
               const Obj* obj ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
       : Base(arg, obj) {}
 #endif
+
+  using absl_internal_is_view = std::true_type;
 
   using Base::operator();
 };

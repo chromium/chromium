@@ -142,6 +142,31 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "resize_and_overwrite",
+    hdrs = ["resize_and_overwrite.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:throw_delegate",
+    ],
+)
+
+cc_test(
+    name = "resize_and_overwrite_test",
+    srcs = ["resize_and_overwrite_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":resize_and_overwrite",
+        "//absl/log:absl_check",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
 cc_test(
     name = "match_test",
     size = "small",
@@ -1095,12 +1120,12 @@ cc_test(
     name = "resize_uninitialized_test",
     size = "small",
     srcs = [
-        "internal/resize_uninitialized.h",
         "internal/resize_uninitialized_test.cc",
     ],
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
+        ":internal",
         "//absl/base:core_headers",
         "//absl/meta:type_traits",
         "@googletest//:gtest",
