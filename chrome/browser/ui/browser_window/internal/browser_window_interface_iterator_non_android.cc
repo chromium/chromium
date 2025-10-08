@@ -27,7 +27,15 @@ void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
           BrowserList::GetInstance()->end_browsers_ordered_by_activation()),
       kEnumerateNewBrowser);
   while (!browser_list_copy.empty()) {
-    if (!on_browser(browser_list_copy.Next())) {
+    Browser* browser = browser_list_copy.Next();
+
+    // Skip browsers that are already scheduled for deletion to prevent
+    // dangling pointer issues during browser destruction.
+    if (browser->is_delete_scheduled()) {
+      continue;  // Skip this browser and continue with the next one
+    }
+
+    if (!on_browser(browser)) {
       break;
     }
   }
@@ -44,7 +52,15 @@ void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
           BrowserList::GetInstance()->end_browsers_ordered_by_activation()),
       kEnumerateNewBrowser);
   while (!browser_list_copy.empty()) {
-    if (!on_browser(browser_list_copy.Next())) {
+    Browser* browser = browser_list_copy.Next();
+
+    // Skip browsers that are already scheduled for deletion to prevent
+    // dangling pointer issues during browser destruction.
+    if (browser->is_delete_scheduled()) {
+      continue;  // Skip this browser and continue with the next one
+    }
+
+    if (!on_browser(browser)) {
       break;
     }
   }
