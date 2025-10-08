@@ -11,4 +11,5 @@ found in the LICENSE file.
     </declare-styleable>
 
     <attr name="iconRowButtonSizeOverlay" format="reference" />
+    <attr name="colorButtonSizeOverlay" format="reference" />
 </resources>

@@ -172,6 +172,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton</item>
+        <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton</item>
 
         <!-- Toolbar button dimensions. -->
         <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
@@ -356,6 +357,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
         <!-- Button attributes -->
         <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton.DesktopDensity</item>
+        <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton.DesktopDensity</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DesktopDensity.TabStrip" parent="">

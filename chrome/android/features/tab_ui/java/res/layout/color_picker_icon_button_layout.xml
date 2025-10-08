@@ -11,7 +11,7 @@ found in the LICENSE file.
     <com.google.android.material.button.MaterialButton
         android:id="@+id/color_picker_icon"
         style="@style/ColorPickerButtonStyle"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="?attr/minInteractTargetSize"
         android:checkable="true" />
 </FrameLayout>

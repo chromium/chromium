@@ -166,6 +166,17 @@ found in the LICENSE file.
         <item name="containerInsetRight">0dp</item>
     </style>
 
+    <style name="SizeOverlay.BrowserUI.ColorButton" parent="SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
+
+    <style name="SizeOverlay.BrowserUI.ColorButton.DesktopDensity">
+        <item name="containerInsetTop">6dp</item>
+        <item name="containerInsetBottom">6dp</item>
+        <item name="containerInsetLeft">6dp</item>
+        <item name="containerInsetRight">6dp</item>
+        <item name="containerShapeChecked">?attr/shapeAppearanceCornerSmall</item>
+        <item name="containerShapePressed">?attr/shapeAppearanceCornerExtraSmall</item>
+    </style>
+
     <!-- Checkbox styles. -->
     <style name="DefaultCheckboxStyle" parent="TextAppearance.TextMedium.Secondary">
         <!-- The space between the checkbox and text. -->

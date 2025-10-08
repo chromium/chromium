@@ -99,9 +99,8 @@ found in the LICENSE file.
     <dimen name="tab_group_color_icon_item_radius">9dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
-    <dimen name="color_picker_button_stroke_inset">11dp</dimen>
     <dimen name="color_picker_button_stroke_width">2dp</dimen>
-    <dimen name="color_picker_button_stroke_radius">9dp</dimen>
+    <dimen name="color_picker_button_stroke_outer_width">1dp</dimen>
 
     <!-- Dimens for tab card label -->
     <dimen name="tab_card_label_icon_size">16dp</dimen>
