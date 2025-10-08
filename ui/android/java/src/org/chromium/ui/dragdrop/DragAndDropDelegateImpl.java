@@ -437,8 +437,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
             assert mDragStartSystemElapsedTime > 0;
-            long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
-            recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);
         }
         // Allow drop into ContentView when files are supported by clank.
@@ -485,11 +483,5 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private void recordDragTargetType(@DragTargetType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DragDrop.FromWebContent.TargetType", type, DragTargetType.NUM_ENTRIES);
-    }
-
-    private void recordDragDurationAndResult(long duration, boolean result) {
-        String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
-        String suffix = result ? "Success" : "Canceled";
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
 }

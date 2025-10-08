@@ -700,11 +700,6 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     private void assertDragOutsideWebContentHistogramsRecorded(boolean dropResult) {
-        // Verify drop outside metrics recorded.
-        final String histogram =
-                "Android.DragDrop.FromWebContent.Duration." + (dropResult ? "Success" : "Canceled");
-        assertHistogramRecorded(histogram, true, "Drop outside of web content.");
-
         // Verify drop inside metrics not recorded.
         assertHistogramRecorded(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
@@ -718,16 +713,6 @@ public class DragAndDropDelegateImplUnitTest {
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
                 true,
                 "Drop inside web content.");
-
-        // Verify drop outside metrics not recorded.
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.Duration.Success",
-                false,
-                "Should not recorded when drop inside web content.");
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.Duration.Canceled",
-                false,
-                "Should not recorded when drop inside web content.");
     }
 
     private void assertHistogramRecorded(String histogram, boolean recorded, String reason) {
