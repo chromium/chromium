@@ -130,6 +130,19 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
             *entry.parent_computed_style)) {
       continue;
     }
+
+    // If explicit inheritance is used, even normally non-inherited properties
+    // from the parent would influence the child's style. We don't track which
+    // properties are set to “inherit”, but we can still use the MPC entry
+    // if _all_ non-inherited properties from the two parents are the same
+    // (for instance because they are the very same parent).
+    if (entry.computed_style->HasExplicitInheritance() &&
+        style_resolver_state.ParentStyle() != entry.parent_computed_style &&
+        !style_resolver_state.ParentStyle()->NonInheritedEqual(
+            *entry.parent_computed_style)) {
+      continue;
+    }
+
     if (style_resolver_state.IsForHighlight()) {
       // For highlight pseudos, inherited _and_ non-inherited data
       // comes from the parent, so non-inherited properties also
@@ -322,25 +335,6 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   const ComputedStyle& parent_style = *state.ParentStyle();
 
   if (!IsStyleCacheable(state.StyleBuilder())) {
-    return false;
-  }
-
-  // If we allowed styles with explicit inheritance in, we would have to mark
-  // them as partial hits (different parents could mean that _non-inherited_
-  // properties would need to be reapplied, similar to the situation with
-  // ForcedColors). We don't bother tracking this, and instead just never
-  // insert them.
-  //
-  // The “explicit inheritance” flag is stored on the parent, not the style
-  // itself, since that's where we need it 90%+ of the time. This means that
-  // if we do not know the flat-tree parent, StyleBuilder::ApplyProperty() will
-  // not SetChildHasExplicitInheritance() on the parent style, and we do not
-  // know whether this flag is true or false. However, the only two cases where
-  // this can happen (root element, and unused slots in shadow trees),
-  // it doesn't actually matter whether we have explicit inheritance or not,
-  // since the parent style is the initial style. So even if the test returns
-  // a false positive, that's fine.
-  if (parent_style.ChildHasExplicitInheritance()) {
     return false;
   }
 
