@@ -236,8 +236,6 @@ cc_component("cc") {
     "metrics/scroll_jank_ukm_reporter.cc",
     "metrics/scroll_jank_ukm_reporter.h",
     "metrics/shared_metrics_buffer.h",
-    "metrics/stub_compositor_frame_reporting_controller.cc",
-    "metrics/stub_compositor_frame_reporting_controller.h",
     "metrics/submit_info.cc",
     "metrics/submit_info.h",
     "metrics/ukm_dropped_frames_data.cc",

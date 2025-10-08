@@ -68,7 +68,6 @@
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
-#include "cc/metrics/stub_compositor_frame_reporting_controller.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/paint/display_item_list.h"
@@ -479,6 +478,14 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       image_animation_controller_(GetTaskRunner(),
                                   this,
                                   settings_.enable_image_animation_resync),
+      compositor_frame_reporting_controller_(
+          std::make_unique<CompositorFrameReportingController>(
+              /*should_report_histograms=*/!settings
+                  .single_thread_proxy_scheduler,
+              /*should_report_ukm=*/!settings.single_thread_proxy_scheduler,
+              id,
+              /*is_trees_in_viz_client=*/
+              settings_.TreesInVizInClientProcess())),
       frame_trackers_(settings.single_thread_proxy_scheduler),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       has_input_resetter_(
@@ -494,20 +501,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       << "or "
       << "scrollbar_flash_after_any_scroll_update "
       << "can be enabled";
-
-  if (base::FeatureList::IsEnabled(features::kTreesInViz) &&
-      !settings_.TreesInVizInClientProcess()) {
-    compositor_frame_reporting_controller_ =
-        std::make_unique<StubCompositorFrameReportingController>();
-  } else {
-    compositor_frame_reporting_controller_ =
-        std::make_unique<CompositorFrameReportingController>(
-            /*should_report_histograms=*/!settings
-                .single_thread_proxy_scheduler,
-            /*should_report_ukm=*/!settings.single_thread_proxy_scheduler, id,
-            /*is_trees_in_viz_client=*/
-            settings_.TreesInVizInClientProcess());
-  }
 
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>(
       task_runner_provider_->MainThreadTaskRunner(),
@@ -614,8 +607,8 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   // first, we need to clar the pointer that
   // `compositor_frame_reporting_controller_` holds.
   compositor_frame_reporting_controller_->set_event_latency_tracker(nullptr);
-  // CFRC needs to unregister the frame trackers from the frame_sorter
-  // observer set before being cleaned up.
+  // CFRC needs to unregister the frame trackers from the frame_sorter observer
+  // set before being cleaned up.
   compositor_frame_reporting_controller_->ClearFrameSequenceTrackerCollection();
 }
 

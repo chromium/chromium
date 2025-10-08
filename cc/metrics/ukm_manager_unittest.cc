@@ -398,7 +398,8 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
                                        frame_timing_details);
   manager_->RecordCompositorLatencyUKM(
       report_types(), stage_history, active_trackers, processed_blink_breakdown,
-      processed_viz_breakdown, processed_trees_in_viz_breakdown);
+      processed_viz_breakdown,
+      trees_in_viz_mode ? &processed_trees_in_viz_breakdown : nullptr);
 
   const auto& entries = recorder()->GetEntriesByName(kCompositorLatency);
   EXPECT_EQ(1u, entries.size());
@@ -610,7 +611,7 @@ TEST_F(UkmManagerTest, PassEmptyTimestamps) {
   // Should not crash!
   manager_->RecordCompositorLatencyUKM(
       report_types_, stage_history, active_trackers, processed_blink_breakdown,
-      processed_viz_breakdown, *processed_trees_in_viz_breakdown);
+      processed_viz_breakdown, processed_trees_in_viz_breakdown);
 }
 
 // TODO(crbug.com/443785891): EventLatency metrics support TreesInViz stages.

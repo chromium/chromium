@@ -314,7 +314,6 @@ class CC_EXPORT CompositorFrameReporter {
 
      private:
       bool HasValue() const;
-      void SkipBreakdownsIfNecessary();
 
       // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
       // stacks.

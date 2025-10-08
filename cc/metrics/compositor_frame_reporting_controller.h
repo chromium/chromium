@@ -89,9 +89,7 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::FrameTimingDetails& details);
   void OnStoppedRequestingBeginFrames();
 
-  // Virtual to stub out CFRC in Viz for TreesInViz.
-  virtual void NotifyReadyToCommit(
-      std::unique_ptr<BeginMainFrameMetrics> details);
+  void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
 
   void InitializeUkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
   void SetSourceId(ukm::SourceId source_id);

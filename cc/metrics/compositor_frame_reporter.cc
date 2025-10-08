@@ -527,10 +527,7 @@ CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
 
 CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::Iterator(
     const ProcessedTreesInVizBreakdown* owner)
-    : owner_(owner) {
-  DCHECK(owner_);
-  SkipBreakdownsIfNecessary();
-}
+    : owner_(owner) {}
 
 CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::~Iterator() =
     default;
@@ -544,7 +541,6 @@ void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
     Advance() {
   DCHECK(IsValid());
   index_++;
-  SkipBreakdownsIfNecessary();
 }
 
 TreesInVizBreakdown
@@ -581,13 +577,6 @@ bool CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::HasValue()
   return owner_->list_[index_].has_value();
 }
 
-void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
-    SkipBreakdownsIfNecessary() {
-  while (IsValid() && (!HasValue())) {
-    index_++;
-  }
-}
-
 // CompositorFrameReporter::ProcessedBlinkBreakdown ============================
 
 CompositorFrameReporter::ProcessedTreesInVizBreakdown::
@@ -595,12 +584,6 @@ CompositorFrameReporter::ProcessedTreesInVizBreakdown::
                                  base::TimeTicks trees_in_viz_branch_time,
                                  base::TimeTicks trees_in_viz_viz_time,
                                  const viz::FrameTimingDetails& viz_breakdown) {
-  // Check if `viz_breakdown` is set, avoid reporting negative times.
-  // See VizBreakdown().
-  if (viz_breakdown.received_compositor_frame_timestamp.is_null()) {
-    return;
-  }
-
   // New stages introduced by CC.
   list_[static_cast<int>(TreesInVizBreakdown::kEndActivateToDrawLayers)] =
       std::make_pair(activate_time,              // end activate to
@@ -1149,16 +1132,16 @@ void CompositorFrameReporter::TerminateReporter() {
         viz_start_time_, viz_breakdown_);
 
   if (base::FeatureList::IsEnabled(features::kTreesInViz) &&
-      !processed_trees_in_viz_breakdown_) {
+      !processed_trees_in_viz_breakdown_ &&
+      trees_in_viz_timestamps_.has_value()) {
     // TODO(crbug.com/445500514): Should be possible to report breakdowns for
     // partial updates.
-    TreesInVizTimestamps cc_timestamps =
-        trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
     processed_trees_in_viz_breakdown_ =
         std::make_unique<ProcessedTreesInVizBreakdown>(
-            cc_timestamps.trees_in_viz_activate_time_,
-            cc_timestamps.trees_in_viz_branch_time_,
-            cc_timestamps.trees_in_viz_viz_start_time_, viz_breakdown_);
+            trees_in_viz_timestamps_->trees_in_viz_activate_time_,
+            trees_in_viz_timestamps_->trees_in_viz_branch_time_,
+            trees_in_viz_timestamps_->trees_in_viz_viz_start_time_,
+            viz_breakdown_);
   }
 
   DCHECK_EQ(current_stage_.start_time, base::TimeTicks());
@@ -1245,7 +1228,7 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
     global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
         report_types_, stage_history_, active_trackers_,
         *processed_blink_breakdown_, *processed_viz_breakdown_,
-        *processed_trees_in_viz_breakdown_);
+        processed_trees_in_viz_breakdown_.get());
   }
 
   if (!should_report_histograms_)
