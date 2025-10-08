@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
@@ -647,6 +648,12 @@ class ProfileMenuViewPixelTest
     if (local_data_count != 0) {
       batch_upload_test_helper_.SetReturnDescriptions(data_type,
                                                       local_data_count);
+    }
+
+    if (GetParam().with_local_data == WithLocalData::kWithBookmarksLocalData) {
+      browser()->profile()->GetPrefs()->SetString(
+          prefs::kGoogleServicesLastSyncingGaiaId,
+          account_info.gaia.ToString());
     }
   }
 

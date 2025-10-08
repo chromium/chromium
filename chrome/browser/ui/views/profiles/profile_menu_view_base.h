@@ -121,12 +121,14 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     // Must not be empty.
     std::u16string title;
 
-    // If `subtitle` is empty, no subtitle is shown (see disclaimer below).
+    // Only shown if not empty (see disclaimer below).
+    std::u16string email_subtitle;
     std::u16string subtitle;
 
     // If `button_text` is empty, no button is shown.
     // Disclaimer: This function does not support showing a button with no
-    // subtitle. If the `subtitle` is empty then `button_text` must be empty.
+    // subtitle. If the `subtitle` or `email_subtitle` are empty then
+    // `button_text` must be empty.
     std::u16string button_text;
 
     // If `button_image` is empty, the button has no image.

@@ -23,6 +23,8 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/features.h"
 #include "components/sync_bookmarks/switches.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/network_change_notifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -119,6 +121,24 @@ const char* GetAvatarButtonPromoUsedKey(
   }
 }
 
+bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
+  const GaiaId last_syncing_gaia_id(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
+  if (last_syncing_gaia_id.empty()) {
+    return false;
+  }
+
+  const GaiaId primary_account_gaia_id =
+      IdentityManagerFactory::GetForProfile(profile)
+          ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
+          .gaia;
+  if (primary_account_gaia_id.empty()) {
+    return false;
+  }
+
+  return last_syncing_gaia_id == primary_account_gaia_id;
+}
+
 void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
     Profile* profile,
     base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
@@ -145,10 +165,10 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
     return;
   }
 
-  // Batch Upload Bookmarks promo: for users that have local bookmarks.
-  // TODO(crbug.com/447048341): Confirm whether additional requirements are
-  // needed for this promo (e.g. previously syncing).
-  if (local_map_result.contains(syncer::BOOKMARKS) &&
+  // Batch Upload Bookmarks promo: for users that have local bookmarks and were
+  // previously syncing with the current primary account.
+  if (WasPreviouslySyncingWithPrimaryAccount(profile) &&
+      local_map_result.contains(syncer::BOOKMARKS) &&
       !local_map_result[syncer::BOOKMARKS].local_data_models.empty()) {
     std::move(result_callback)
         .Run(ProfileMenuAvatarButtonPromoInfo{
