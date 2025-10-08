@@ -108,6 +108,12 @@ Siso will stop building if it detects step failure.
 If you want to run steps as much as possible to see
 all error messages at once, use `-k=0` as Ninja.
 
+If build failed, Siso remembers what targets failed
+and tried to rebuild the failed targets first to
+focus on fixing the failure targets with quick iterations.
+To disable this feature, use `-batch` or
+`-fast_last_failure=false` (available since siso v1.4.11).
+
 ## Check step's error messages.
 
 Siso records steps output in `siso_output` files,
