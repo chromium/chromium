@@ -13,6 +13,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
+#import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -129,6 +130,9 @@ CreateInputDataFromAnnotatedPageContent(
   PageContextWrapper* _pageContextWrapper;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
+  // Check that the different methods are called from the correct sequence, as
+  // this class defers work via PostTask APIs.
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (instancetype)
@@ -151,6 +155,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)disconnect {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _composeboxQueryController->NotifySessionAbandoned();
   _faviconLoader = nullptr;
   _composeboxObserverBridge.reset();
@@ -158,6 +163,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (![itemProvider canLoadObjectOfClass:[UIImage class]]) {
     return;
   }
@@ -191,6 +197,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)setConsumer:(id<AIMPrototypeComposeboxConsumer>)consumer {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _consumer = consumer;
 
   if (!_webStateList) {
@@ -207,6 +214,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeFile];
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
@@ -229,6 +237,7 @@ CreateInputDataFromAnnotatedPageContent(
 #pragma mark - AIMPrototypeComposeboxMutator
 
 - (void)removeItem:(AIMInputItem*)item {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [_items removeObject:item];
 
   if (_composeboxQueryController) {
@@ -244,6 +253,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)sendText:(NSString*)text {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
@@ -259,6 +269,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)setAIModeEnabled:(BOOL)enabled {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _AIModeEnabled = enabled;
   if (!_AIModeEnabled) {
     if (_composeboxQueryController) {
@@ -270,6 +281,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)attachCurrentTabContent {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   web::WebState* webState = _webStateList->GetActiveWebState();
   if (!webState) {
     return;
@@ -296,6 +308,7 @@ CreateInputDataFromAnnotatedPageContent(
                  fileUploadStatus:(FileUploadStatus)fileUploadStatus
                         errorType:(const std::optional<FileUploadErrorType>&)
                                       errorType {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:fileToken];
   if (!item) {
     return;
@@ -323,6 +336,7 @@ CreateInputDataFromAnnotatedPageContent(
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self sendText:query];
 }
 
@@ -331,6 +345,7 @@ CreateInputDataFromAnnotatedPageContent(
 // Handles the loaded preview `image` for the item with the given `token`.
 - (void)didLoadPreviewImage:(UIImage*)previewImage
            forItemWithToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -346,6 +361,7 @@ CreateInputDataFromAnnotatedPageContent(
 // Handles the loaded favicon `image` for the item with the given `token`.
 - (void)didLoadFaviconIcon:(UIImage*)faviconImage
           forItemWithToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -361,6 +377,7 @@ CreateInputDataFromAnnotatedPageContent(
 // Handles the loaded full `image` for the item with the given `token`.
 - (void)didLoadFullImage:(UIImage*)image
         forItemWithToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -384,6 +401,7 @@ CreateInputDataFromAnnotatedPageContent(
 // `token`. This simulates a network delay for development purposes.
 - (void)didFinishSimulatedLoadForImage:(UIImage*)image
                              itemToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -418,6 +436,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Uploads the `image` for the item with the given `token`.
 - (void)uploadImage:(UIImage*)image itemToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -446,6 +465,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Returns the item with the given `token` or nil if not found.
 - (AIMInputItem*)itemForToken:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   for (AIMInputItem* item in _items) {
     if (item.token == token) {
       return item;
@@ -458,6 +478,7 @@ CreateInputDataFromAnnotatedPageContent(
 // snapshot is generated.
 - (void)didGetPageContext:
     (PageContextWrapperCallbackResponse)pageContextResponse {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   web::WebState* webState = _webStateList->GetActiveWebState();
 
   if (!pageContextResponse.has_value() || !webState) {
@@ -506,6 +527,7 @@ CreateInputDataFromAnnotatedPageContent(
                        inputData:(std::unique_ptr<lens::ContextualInputData>)
                                      input_data
                            token:(base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (image) {
     NSData* data = UIImagePNGRepresentation(image);
     std::vector<uint8_t> image_vector_data([data length]);
@@ -528,6 +550,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)onDataReadForItemWithToken:(base::UnguessableToken)token
                            fromURL:(GURL)url
                           withData:(NSData*)data {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -572,6 +595,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
                 isSearchType:(BOOL)isSearchType {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (isSearchType) {
     if (IsAimURL(destinationURL)) {
       [self.consumer setAIModeEnabled:YES];
@@ -585,6 +609,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)omniboxDidChangeText:(const std::u16string&)text
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // Update mic button visibility.
   [self.consumer hideMicButton:text.length()];
 }
@@ -593,6 +618,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items];
   if (_items.count > 0) {
     [self.consumer setAIModeEnabled:YES];
