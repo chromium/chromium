@@ -69,7 +69,6 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
-  views::ViewTracker glic_view_tracker_;
 
   base::WeakPtrFactory<GlicSidePanelUi> weak_ptr_factory_{this};
 };

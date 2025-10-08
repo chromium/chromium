@@ -45,7 +45,6 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
       profile, GlicWidget::GetInitialSize(), nullptr);
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
-  glic_view_tracker_.SetView(glic_view.get());
   return glic_view;
 }
 
@@ -97,19 +96,16 @@ bool GlicSidePanelUi::IsShowing() const {
 }
 
 void GlicSidePanelUi::Focus() {
-  if (glic_view_tracker_.view()) {
-    static_cast<GlicView*>(glic_view_tracker_.view())
-        ->GetWebContents()
-        ->Focus();
+  auto* web_contents = delegate_->host().webui_contents();
+  if (web_contents) {
+    web_contents->Focus();
   }
 }
 
 void GlicSidePanelUi::VisibilityChanged(bool visible) {
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
-  if (visible) {
-    Focus();
-  } else if (tab_) {
+  if (!visible && tab_) {
     delegate_->WillCloseFor(tab_.get());
   }
 }
@@ -130,6 +126,7 @@ void GlicSidePanelUi::Show() {
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+  Focus();
 }
 
 void GlicSidePanelUi::Close() {
