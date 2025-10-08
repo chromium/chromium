@@ -30,7 +30,6 @@ class SessionRestoreInfobarModel {
   };
 
   explicit SessionRestoreInfobarModel(Profile& profile,
-                                      bool was_restarted,
                                       bool is_post_crash_launch);
   ~SessionRestoreInfobarModel();
 
@@ -46,9 +45,6 @@ class SessionRestoreInfobarModel {
   // Checks if the infobar should be shown on startup.
   bool ShouldShowOnStartup() const;
 
-  // Checks if the browser is restarting.
-  bool IsBrowserRestarting() const;
-
   // Returns true if the session restore preference is currently using its
   // default value, and has not been set.
   bool IsDefaultSessionRestorePref() const;
@@ -59,7 +55,6 @@ class SessionRestoreInfobarModel {
 
  private:
   const raw_ref<Profile> profile_;
-  const bool was_restarted_;
   const bool is_post_crash_launch_;
   const int initial_restore_on_startup_value_;
 };
