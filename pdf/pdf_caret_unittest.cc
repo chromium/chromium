@@ -28,6 +28,8 @@ namespace {
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::InSequence;
+using ::testing::Mock;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -44,6 +46,8 @@ constexpr PageCharacterIndex kTestChar4{0, 4};
 constexpr PageCharacterIndex kTestChar5{0, 5};
 constexpr PageCharacterIndex kTestPage1Char0{1, 0};
 constexpr PageCharacterIndex kTestPage1Char1{1, 1};
+constexpr PageCharacterIndex kTestPage2Char0{2, 0};
+constexpr PageCharacterIndex kTestPage3Char0{3, 0};
 
 constexpr gfx::Rect kDefaultCaret{10, 10, 1, 12};
 constexpr gfx::Rect kTestChar0ScreenRect{10, 10, 12, 14};
@@ -102,6 +106,11 @@ class MockTestClient : public PdfCaretClient {
   MOCK_METHOD(bool, PageIndexInBounds, (int index), (const override));
 
   MOCK_METHOD(void,
+              ScrollToChar,
+              (const PageCharacterIndex& index),
+              (override));
+
+  MOCK_METHOD(void,
               StartSelection,
               (const PageCharacterIndex& index),
               (override));
@@ -124,6 +133,7 @@ class PdfCaretTest : public testing::Test {
   void SetUp() override {
     ResetBitmap();
     EXPECT_CALL(client(), IsSelecting()).WillRepeatedly(Return(false));
+    EXPECT_CALL(client(), ScrollToChar(_)).Times(AnyNumber());
   }
 
   void InitializeCaretAtChar(const PageCharacterIndex& index) {
@@ -252,8 +262,8 @@ class PdfCaretTest : public testing::Test {
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
     SetUpChar(kTestPage1Char0, 'b', {kTestMultiPage1Char0ScreenRect});
     SetUpChar(kTestPage1Char1, 'c', {kTestMultiPage1Char1ScreenRect});
-    SetUpChar({2, 0}, '\0', {kTestMultiPage2NonTextScreenRect});
-    SetUpChar({3, 0}, 'd', {kTestMultiPage3Char0ScreenRect});
+    SetUpChar(kTestPage2Char0, '\0', {kTestMultiPage2NonTextScreenRect});
+    SetUpChar(kTestPage3Char0, 'd', {kTestMultiPage3Char0ScreenRect});
   }
 
   blink::WebKeyboardEvent GenerateKeyboardEvent(ui::KeyboardCode key) {
@@ -620,7 +630,7 @@ TEST_F(PdfCaretTest, SetCharAndDrawMultiPage) {
   caret().SetCharAndDraw(kTestChar0);
   TestDrawCaret(kTestChar0Caret);
 
-  caret().SetCharAndDraw({3, 0});
+  caret().SetCharAndDraw(kTestPage3Char0);
   TestDrawCaret(kTestMultiPage3Char0Caret);
 
   caret().SetCharAndDraw({3, 1});
@@ -1151,6 +1161,38 @@ TEST_F(PdfCaretMoveTest, MoveCharUpDownLongerSecondLine) {
   TestDrawCaret(gfx::Rect(22, 22, 1, 14));
 }
 
+TEST_F(PdfCaretMoveTest, MoveCharScroll) {
+  SetUpMultiPageTest();
+  InitializeVisibleCaretAtChar(kTestPage1Char1);
+
+  InSequence sequence;
+
+  EXPECT_CALL(client(), ScrollToChar(kTestPage1Char0));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
+
+  EXPECT_CALL(client(), ScrollToChar(kTestPage1Char1));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+
+  // No-text page.
+  EXPECT_CALL(client(), ScrollToChar(kTestPage2Char0));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  EXPECT_CALL(client(), ScrollToChar(kTestPage1Char1));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  caret().SetCharAndDraw(kTestPage3Char0);
+
+  // Page 3 char 1 does not have a screen rect, so scroll to the previous char
+  // with one.
+  EXPECT_CALL(client(), ScrollToChar(kTestPage3Char0));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+}
+
 class PdfCaretSelectionTest : public PdfCaretMoveTest {
  public:
   blink::WebKeyboardEvent GenerateShiftKeyboardEvent(ui::KeyboardCode key) {
@@ -1289,7 +1331,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartOnTextPageMoveToNonTextPages) {
   SetUpPagesWithCharCounts({1, 0, 0});
   SetUpChar(kTestChar0, '\0', {kTestChar0ScreenRect});
   SetUpChar(kTestPage1Char0, '\0', {gfx::Rect(10, 50, 1, 12)});
-  SetUpChar({2, 0}, '\0', {gfx::Rect(10, 100, 1, 12)});
+  SetUpChar(kTestPage2Char0, '\0', {gfx::Rect(10, 100, 1, 12)});
 
   InitializeVisibleCaretAtChar(kTestChar0);
 
@@ -1334,7 +1376,7 @@ TEST_F(PdfCaretSelectionTest, SelectStartingOnNonTextPage) {
   SetUpMultiPageTest();
 
   // Start on the no-text page.
-  InitializeVisibleCaretAtChar({2, 0});
+  InitializeVisibleCaretAtChar(kTestPage2Char0);
 
   // `StartSelection()` should be called on the nearest caret position in the
   // direction of movement. In this case, it would be right of page 1, char 1.

@@ -75,6 +75,7 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Return;
@@ -153,6 +154,8 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
@@ -3234,6 +3237,29 @@ TEST_P(PDFiumEngineCaretTest, FormFieldLoseFocusGainFocus) {
   // Form still has focus, so caret should not be visible.
   DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
                           kAnnotationFormFieldsVisiblePageSize);
+}
+
+TEST_P(PDFiumEngineCaretTest, ScrollToChar) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Already visible.
+  EXPECT_CALL(client(), ScrollToX(_, _)).Times(0);
+  EXPECT_CALL(client(), ScrollToY(_, _)).Times(0);
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT));
+  Mock::VerifyAndClearExpectations(&client());
+
+  // Shrink the plugin size so only a portion of the page is visible.
+  engine->PluginSizeUpdated({35, 300});
+
+  EXPECT_CALL(client(), ScrollToX(37, /*force_smooth_scroll=*/false));
+  EXPECT_CALL(client(), ScrollToY(0, /*force_smooth_scroll=*/false));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
+  Mock::VerifyAndClearExpectations(&client());
+
+  EXPECT_CALL(client(), ScrollToX(36, /*force_smooth_scroll=*/false));
+  EXPECT_CALL(client(), ScrollToY(327, /*force_smooth_scroll=*/false));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());

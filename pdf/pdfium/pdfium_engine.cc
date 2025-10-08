@@ -1034,6 +1034,21 @@ bool PDFiumEngine::PageIndexInBounds(int index) const {
   return index >= 0 && index < static_cast<int>(pages_.size());
 }
 
+void PDFiumEngine::ScrollToChar(const PageCharacterIndex& index) {
+  CHECK(PageIndexInBounds(index.page_index));
+  PDFiumPage* page = pages_[index.page_index].get();
+
+  if (page->GetCharCount() == 0 && index.char_index == 0) {
+    ScrollToPage(index.page_index);
+    return;
+  }
+
+  CHECK(page->IsCharIndexInBounds(index.char_index));
+
+  PDFiumRange range(page, index.char_index, 1);
+  ScrollToBoundingRects(range, /*force_smooth_scroll=*/false);
+}
+
 void PDFiumEngine::StartSelection(const PageCharacterIndex& index) {
   CHECK(PageIndexInBounds(index.page_index));
   CHECK_GT(GetCharCount(index.page_index), 0u);

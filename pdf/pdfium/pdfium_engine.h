@@ -516,6 +516,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   bool IsSelecting() const override;
   bool IsSynthesizedNewline(const PageCharacterIndex& index) const override;
   bool PageIndexInBounds(int index) const override;
+  void ScrollToChar(const PageCharacterIndex& index) override;
   void StartSelection(const PageCharacterIndex& index) override;
 
   // `PdfAnnotationAgent::Container`:

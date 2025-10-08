@@ -52,6 +52,11 @@ class PdfCaretClient {
   // Returns whether `index` is a valid 0-based page index.
   virtual bool PageIndexInBounds(int index) const = 0;
 
+  // Scrolls to `index` so it is visible. `index` must be a valid char on a
+  // page, otherwise crashes. If the page does not have any text, and
+  // `index.char_index` is 0, scrolls to the page instead.
+  virtual void ScrollToChar(const PageCharacterIndex& index) {}
+
   // Starts a new text selection at `index` without selecting it. Does nothing
   // if already selecting text.
   virtual void StartSelection(const PageCharacterIndex& index) {}

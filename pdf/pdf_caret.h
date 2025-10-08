@@ -90,6 +90,12 @@ class PdfCaret {
   bool OnKeyDown(const blink::WebKeyboardEvent& event);
 
  private:
+  // Return result of `GetScreenRectForCaret()`.
+  struct CaretScreenRectData {
+    gfx::Rect screen_rect;
+    PageCharacterIndex actual_index;
+  };
+
   // Returns whether the caret should be drawn. It should only be drawn when the
   // caret is enabled and set as visible.
   bool ShouldDrawCaret() const;
@@ -102,10 +108,15 @@ class PdfCaret {
   // Called by `blink_timer_` to toggle caret visibility.
   void OnBlinkTimerFired();
 
-  // Returns the screen rect for the current caret if it were placed at `index`.
-  // For chars without a defined rect (like synthetic newlines), it calculates a
-  // position based on the preceding char.
-  gfx::Rect GetScreenRectForCaret(const PageCharacterIndex& index) const;
+  // Calculates and sets `caret_screen_rect_` and `cached_screen_rect_index_`
+  // using the current `index_`.
+  void SetScreenRectForCurrentCaret();
+
+  // Returns the screen rect and index for the current caret if it were placed
+  // at `index`. For chars without a defined rect (like synthetic newlines), it
+  // calculates a position based on the preceding char.
+  CaretScreenRectData GetScreenRectForCaret(
+      const PageCharacterIndex& index) const;
 
   // Returns the screen rect for a char, which may be empty.
   gfx::Rect GetScreenRectForChar(const PageCharacterIndex& index) const;
@@ -188,6 +199,10 @@ class PdfCaret {
   // The char index can be max char count on the page, since the cursor can be
   // to the right of the last char.
   PageCharacterIndex index_;
+
+  // The actual char index used to determine the caret's screen rect. This can
+  // differ from `index_` if `index_` points to a char without a screen rect.
+  PageCharacterIndex cached_screen_rect_index_;
 
   // Whether the caret is enabled.
   bool enabled_ = false;
