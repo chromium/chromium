@@ -513,7 +513,8 @@ class SharedStorageManagerTest : public testing::Test {
             {TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
                 memory_pressure_level)}),
         base::BindLambdaForTesting([&]() { memory_trimmed_ = true; }));
-    GetManager()->OnMemoryPressure(std::move(callback), memory_pressure_level);
+    GetManager()->HandleMemoryPressure(std::move(callback),
+                                       memory_pressure_level);
   }
 
   void Get(url::Origin context_origin,

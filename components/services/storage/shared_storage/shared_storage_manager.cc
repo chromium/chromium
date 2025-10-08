@@ -46,8 +46,7 @@ SharedStorageManager::SharedStorageManager(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedStorageManager,
           base::BindRepeating(&SharedStorageManager::OnMemoryPressure,
-                              base::Unretained(this),
-                              base::DoNothing()))) {
+                              base::Unretained(this)))) {
   timer_.Start(FROM_HERE, options_->stale_purge_initial_interval,
                base::BindOnce(&SharedStorageManager::PurgeStale,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -57,7 +56,7 @@ SharedStorageManager::~SharedStorageManager() {
   RecordShutdownMetrics();
 }
 
-void SharedStorageManager::OnMemoryPressure(
+void SharedStorageManager::HandleMemoryPressure(
     base::OnceCallback<void()> callback,
     base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(callback);
@@ -70,6 +69,11 @@ void SharedStorageManager::OnMemoryPressure(
   }
 
   database_->TrimMemory(std::move(callback));
+}
+
+void SharedStorageManager::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  HandleMemoryPressure(base::DoNothing(), memory_pressure_level);
 }
 
 void SharedStorageManager::OnOperationResult(OperationResult result) {
