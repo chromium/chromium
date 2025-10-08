@@ -77,7 +77,7 @@ class TestPageContentAnnotationsObserver
     : public PageContentAnnotationsService::PageContentAnnotationsObserver {
  public:
   void OnPageContentAnnotated(
-      const GURL& url,
+      const HistoryVisit& visit,
       const PageContentAnnotationsResult& result) override {
     last_page_content_annotations_result_ = result;
   }

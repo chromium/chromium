@@ -36,7 +36,7 @@ class TabSensitivityCache final
   //     ::PageContentAnnotationsService
   //     ::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
 

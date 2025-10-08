@@ -135,7 +135,7 @@ class PageContentAnnotationsService
   class PageContentAnnotationsObserver : public base::CheckedObserver {
    public:
     virtual void OnPageContentAnnotated(
-        const GURL& url,
+        const HistoryVisit& visit,
         const PageContentAnnotationsResult& result) = 0;
   };
 
@@ -333,7 +333,7 @@ class PageContentAnnotationsService
   // |annotation_type|.
   void NotifyPageContentAnnotatedObservers(
       AnnotationType annotation_type,
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const PageContentAnnotationsResult& page_content_annotations_result);
 
   // Callback invoked when a response for |optimization_type| has been received

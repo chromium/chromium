@@ -12,7 +12,6 @@
 namespace page_content_annotations {
 class PageContentAnnotationsResult;
 }
-class GURL;
 
 // AuxiliarySearchDonationService manages donation of Chrome data to AppSearch.
 // Currently only donates browsing history data.
@@ -30,7 +29,7 @@ class AuxiliarySearchDonationService
   //     ::PageContentAnnotationsService
   //     ::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
 

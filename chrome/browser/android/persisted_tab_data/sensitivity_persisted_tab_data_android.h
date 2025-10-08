@@ -43,7 +43,7 @@ class SensitivityPersistedTabDataAndroid
 
   // page_content_annotations::PageContentAnnotationsService::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
 

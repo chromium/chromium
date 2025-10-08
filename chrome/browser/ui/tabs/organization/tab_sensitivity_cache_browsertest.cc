@@ -11,6 +11,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
+using page_content_annotations::HistoryVisit;
+
 class TabSensitivityCacheBrowserTest : public InProcessBrowserTest {
  public:
   TabSensitivityCacheBrowserTest() = default;
@@ -57,8 +59,9 @@ IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest, RemembersScore) {
   const GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
   AddTab(url1);
   cache()->OnPageContentAnnotated(
-      url1, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url1),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
 
   EXPECT_EQ(cache()->GetScore(url1), 0.0f);
 }
@@ -75,29 +78,34 @@ IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest,
   content::WebContents* const tab2 = AddTab(url2);
   AddTab(url3);
   cache()->OnPageContentAnnotated(
-      url1, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url1),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
   cache()->OnPageContentAnnotated(
-      url2, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url2),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
   cache()->OnPageContentAnnotated(
-      url3, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url3),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
   RemoveTab(initial_tab);
   ASSERT_EQ(cache()->GetScore(url1), 0.0f);
 
   // Remove one tab. The cache does not trim yet as it would not shrink by 1/2.
   RemoveTab(tab1);
   cache()->OnPageContentAnnotated(
-      url3, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url3),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
   EXPECT_EQ(cache()->GetScore(url1), 0.0f);
 
   // Remove one more tab. The cache trims now as it can shrink by at least 1/2.
   RemoveTab(tab2);
   cache()->OnPageContentAnnotated(
-      url3, page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(1.0f));
+      HistoryVisit({}, url3),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(1.0f));
   EXPECT_EQ(cache()->GetScore(url1), std::nullopt);
 }
 

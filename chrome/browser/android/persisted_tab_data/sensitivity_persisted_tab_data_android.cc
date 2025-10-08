@@ -71,9 +71,9 @@ void SensitivityPersistedTabDataAndroid::Deserialize(
 }
 
 void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
-    const GURL& url,
+    const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
-  if (tab_->GetURL() != url) {
+  if (tab_->GetURL() != visit.url) {
     return;
   }
   set_sensitivity_score(result.GetContentVisibilityScore());

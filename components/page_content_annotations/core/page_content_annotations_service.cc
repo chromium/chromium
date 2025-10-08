@@ -519,7 +519,7 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
 
   MaybeRecordVisibilityUKM(visit, content_annotations);
   NotifyPageContentAnnotatedObservers(
-      AnnotationType::kContentVisibility, visit.url,
+      AnnotationType::kContentVisibility, visit,
       PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
           content_annotations->visibility_score));
 
@@ -887,14 +887,14 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
 
 void PageContentAnnotationsService::NotifyPageContentAnnotatedObservers(
     AnnotationType annotation_type,
-    const GURL& url,
+    const HistoryVisit& visit,
     const PageContentAnnotationsResult& page_content_annotations_result) {
   if (page_content_annotations_observers_.find(annotation_type) ==
       page_content_annotations_observers_.end()) {
     return;
   }
   for (auto& observer : page_content_annotations_observers_[annotation_type]) {
-    observer.OnPageContentAnnotated(url, page_content_annotations_result);
+    observer.OnPageContentAnnotated(visit, page_content_annotations_result);
   }
 }
 

@@ -24,8 +24,15 @@ AuxiliarySearchDonationService::~AuxiliarySearchDonationService() {
 }
 
 void AuxiliarySearchDonationService::OnPageContentAnnotated(
-    const GURL& url,
+    const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
+  // Ignore annotations from remote visits (navigation ID is 0).
+  if (result.GetType() !=
+          page_content_annotations::AnnotationType::kContentVisibility ||
+      visit.navigation_id == 0) {
+    return;
+  }
+
   // TODO: b/432359106 - Implement this using FetchAndRankHelper and
   // AuxiliarySearchDonor
 }

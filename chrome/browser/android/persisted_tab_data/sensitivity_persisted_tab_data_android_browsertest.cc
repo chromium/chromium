@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 namespace {
+using page_content_annotations::HistoryVisit;
 const char kSensitiveRelUrl[] = "/android/sensitive.html";
 const char kNonSensitiveRelUrl[] = "/android/hello.html";
 const char kNonSensitiveRelUrl2[] = "/android/second.html";
@@ -166,7 +167,8 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
 
   EXPECT_EQ(tab_android->GetURL().spec(), sensitive_url.spec());
 
-  sptda->OnPageContentAnnotated(sensitive_url, kSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, sensitive_url),
+                                kSensitiveResult);
   EXPECT_TRUE(sptda->is_sensitive());
   EXPECT_FLOAT_EQ(0.1, sptda->sensitivity_score());
 }
@@ -183,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
       new SensitivityPersistedTabDataAndroid(tab_android);
   EXPECT_EQ(tab_android->GetURL().spec(), non_sensitive_url.spec());
 
-  sptda->OnPageContentAnnotated(non_sensitive_url, kNonSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url),
+                                kNonSensitiveResult);
   EXPECT_FALSE(sptda->is_sensitive());
   EXPECT_FLOAT_EQ(0.7, sptda->sensitivity_score());
 }
@@ -207,9 +210,12 @@ IN_PROC_BROWSER_TEST_F(SensitivityPersistedTabDataAndroidBrowserTest,
   EXPECT_EQ(tab_android->GetURL().spec(), sensitive_url.spec());
 
   // Annotate both sensitive and non-sensitive tabs
-  sptda->OnPageContentAnnotated(non_sensitive_url, kNonSensitiveResult);
-  sptda->OnPageContentAnnotated(sensitive_url, kSensitiveResult);
-  sptda->OnPageContentAnnotated(non_sensitive_url2, kNonSensitiveResult2);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url),
+                                kNonSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, sensitive_url),
+                                kSensitiveResult);
+  sptda->OnPageContentAnnotated(HistoryVisit({}, non_sensitive_url2),
+                                kNonSensitiveResult2);
   tab_android->SetUserData(SensitivityPersistedTabDataAndroid::UserDataKey(),
                            nullptr);
 
