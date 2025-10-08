@@ -90,15 +90,15 @@ class PolicyTestContentBrowserClient
     allowlisted_origins_.insert(origin);
   }
 
-  void SetBlockInsteadOfWarn() { block_instead_of_warn_ = true; }
+  void SetWarnInsteadOfBlock() { warn_instead_of_block_ = true; }
 
   ContentBrowserClient::PrivateNetworkRequestPolicyOverride
   ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override {
-    if (block_instead_of_warn_) {
+    if (warn_instead_of_block_) {
       return ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-          kBlockInsteadOfWarn;
+          kWarnInsteadOfBlock;
     }
     return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
                ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
@@ -108,7 +108,7 @@ class PolicyTestContentBrowserClient
   }
 
  private:
-  bool block_instead_of_warn_ = false;
+  bool warn_instead_of_block_ = false;
   std::set<url::Origin> allowlisted_origins_;
 };
 
@@ -502,6 +502,18 @@ class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class LocalNetworkAccessBrowserTestDisableWebSecurity
+    : public LocalNetworkAccessBrowserTest {
+ public:
+  LocalNetworkAccessBrowserTestDisableWebSecurity() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LocalNetworkAccessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+  }
 };
 
 // This is the same as LocalNetworkAccessBrowserTest, but runs each test twice,
@@ -2157,4 +2169,343 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
 }
+
+// ====================================
+// PRIVATE NETWORK REQUEST POLICY TESTS
+// ====================================
+//
+// These tests verify the correct setting of
+// `ClientSecurityState.private_network_request_policy` in various situations.
+
+// If --disable-web-security is set, allow all LNA requests.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTestDisableWebSecurity,
+                       LocalNetworkPolicyIsAllowInsecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTestDisableWebSecurity,
+                       LocalNetworkPolicyIsAllowSecure) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to block requests from non-secure
+// contexts in the `public` address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkPolicyIsBlockForInsecurePublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to block requests from non-secure
+// contexts in the `local` address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkPolicyIsBlockForInsecureLocal) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to block requests from non-secure
+// contexts in the `unknown` address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkPolicyIsBlockForInsecureUnknown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to ask for permission from secure
+// contexts in the `public` address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkPolicyIsPermissionBlockForSecurePublic) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to ask for permission from secure
+// contexts in the `local` address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkPolicyIsPermissionBlockForSecureLocal) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
+// This test verifies that the initial empty document, which inherits its origin
+// from the document creator, also inherits its private network request policy.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    LocalNetworkRequestPolicyInheritedWithOriginForInitialEmptyDoc) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that `about:blank` iframes, which inherit their origin
+// from the navigation initiator, also inherit their private network request
+// policy.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    LocalNetworkRequestPolicyInheritedWithOriginForAboutBlank) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that `data:` iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    LocalNetworkRequestPolicyNotInheritedWithOriginForDataURL) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    LocalNetworkRequestPolicyNotInheritedForSandboxedInitialEmptyDoc) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildInitialEmptyDoc(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that sandboxed iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy. "about:blank" behaves slightly differently from the
+// initial empty doc in code, but should have the same policy in the end.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    LocalNetworkRequestPolicyNotInheritedForSandboxedAboutBlank) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddSandboxedChildFromAboutBlank(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that error pages have a set private network request
+// policy of `kBlock` irrespective of the navigation initiator.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkRequestPolicyIsBlockForErrorPage) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), "/close-socket");
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that child frames with distinct origins from their parent
+// do not inherit their private network request policy, which is based on the
+// origin of the child document instead.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkRequestPolicyCalculatedPerOrigin) {
+  GURL url = InsecurePublicURL(kDefaultPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame =
+      AddChildFromURL(root_frame_host(), InsecureLoopbackURL(kDefaultPath));
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+class LocalNetworkAccessBrowserTestWithWarnInsteadOfBlockOption
+    : public LocalNetworkAccessBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LocalNetworkAccessBrowserTestWithWarnInsteadOfBlockOption,
+    testing::Values(false, true));
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests can be overridden to warn instead of
+// block for insecure contexts in the `public` address space.
+IN_PROC_BROWSER_TEST_P(
+    LocalNetworkAccessBrowserTestWithWarnInsteadOfBlockOption,
+    LocalNetworkPolicyCanWarnForInsecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool warn_instead_of_block = GetParam();
+  if (warn_instead_of_block) {
+    client.SetWarnInsteadOfBlock();
+  }
+
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            warn_instead_of_block
+                ? network::mojom::PrivateNetworkRequestPolicy::kWarn
+                : network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests can be overridden to warn instead of
+// block for secure contexts in the `public` address space.
+IN_PROC_BROWSER_TEST_P(
+    LocalNetworkAccessBrowserTestWithWarnInsteadOfBlockOption,
+    LocalNetworkPolicyCanWarnForSecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool warn_instead_of_block = GetParam();
+  if (warn_instead_of_block) {
+    client.SetWarnInsteadOfBlock();
+  }
+
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(
+      security_state->private_network_request_policy,
+      warn_instead_of_block
+          ? network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn
+          : network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
 }  // namespace content
