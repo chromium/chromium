@@ -19,10 +19,12 @@ namespace {
 constexpr int64_t kTabId = 1;
 constexpr char kUrl[] = "https://example.com/";
 
-proto::AnnotatedPageContent TestContent(const std::string& title) {
-  proto::AnnotatedPageContent apc;
-  apc.mutable_main_frame_data()->set_title(title);
-  return apc;
+proto::PageContext TestContent(const std::string& title) {
+  proto::PageContext page_context;
+  page_context.mutable_annotated_page_content()
+      ->mutable_main_frame_data()
+      ->set_title(title);
+  return page_context;
 }
 
 }  // namespace
@@ -58,29 +60,31 @@ class PageContentStoreTest : public testing::Test {
 
 TEST_F(PageContentStoreTest, AddPageContent_TestMultipleTabs) {
   const GURL url1("https://example.com/1");
-  const auto apc1 = TestContent("test title 1");
+  const auto page_context1 = TestContent("test title 1");
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url1, apc1, visit_timestamp,
+  EXPECT_TRUE(store_->AddPageContent(url1, page_context1, visit_timestamp,
                                      extraction_timestamp, 1));
 
   const GURL url2("https://example.com/2");
-  const auto apc2 = TestContent("test title 2");
-  EXPECT_TRUE(store_->AddPageContent(url2, apc2, visit_timestamp,
+  const auto page_context2 = TestContent("test title 2");
+  EXPECT_TRUE(store_->AddPageContent(url2, page_context2, visit_timestamp,
                                      extraction_timestamp, 2));
 
-  std::optional<proto::AnnotatedPageContent> got_apc1 =
+  std::optional<proto::PageContext> got_page_context1 =
       store_->GetPageContent(url1);
-  ASSERT_TRUE(got_apc1.has_value());
-  EXPECT_EQ(apc1.main_frame_data().title(),
-            got_apc1->main_frame_data().title());
+  ASSERT_TRUE(got_page_context1.has_value());
+  EXPECT_EQ(
+      page_context1.annotated_page_content().main_frame_data().title(),
+      got_page_context1->annotated_page_content().main_frame_data().title());
 
-  std::optional<proto::AnnotatedPageContent> got_apc2 =
+  std::optional<proto::PageContext> got_page_context2 =
       store_->GetPageContent(url2);
-  ASSERT_TRUE(got_apc2.has_value());
-  EXPECT_EQ(apc2.main_frame_data().title(),
-            got_apc2->main_frame_data().title());
+  ASSERT_TRUE(got_page_context2.has_value());
+  EXPECT_EQ(
+      page_context2.annotated_page_content().main_frame_data().title(),
+      got_page_context2->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentStoreTest, AddPageContent_FailsOnDuplicate) {
@@ -89,11 +93,13 @@ TEST_F(PageContentStoreTest, AddPageContent_FailsOnDuplicate) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
-  EXPECT_FALSE(store_->AddPageContent(url, apc, visit_timestamp,
-                                      extraction_timestamp, kTabId));
+  EXPECT_FALSE(store_->AddPageContent(url, TestContent("test title"),
+                                      visit_timestamp, extraction_timestamp,
+                                      kTabId));
 }
 
 TEST_F(PageContentStoreTest, AddPageContent_SucceedsAfterDelete) {
@@ -102,28 +108,31 @@ TEST_F(PageContentStoreTest, AddPageContent_SucceedsAfterDelete) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc1, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title 1"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
   EXPECT_TRUE(store_->DeletePageContentForTab(kTabId));
 
-  const auto apc2 = TestContent("test title 2");
-  EXPECT_TRUE(store_->AddPageContent(url, apc2, visit_timestamp,
+  const auto page_context2 = TestContent("test title 2");
+  EXPECT_TRUE(store_->AddPageContent(url, page_context2, visit_timestamp,
                                      extraction_timestamp, kTabId));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
+  std::optional<proto::PageContext> got_page_context =
       store_->GetPageContent(url);
-  ASSERT_TRUE(got_apc.has_value());
-  EXPECT_EQ(apc2.main_frame_data().title(), got_apc->main_frame_data().title());
+  ASSERT_TRUE(got_page_context.has_value());
+  EXPECT_EQ(
+      page_context2.annotated_page_content().main_frame_data().title(),
+      got_page_context->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentStoreTest, GetPageContent_ReturnsMostRecent) {
   const GURL url(kUrl);
-  const auto apc1 = TestContent("old title");
+  const auto page_context1 = TestContent("old title");
   const base::Time visit_timestamp1 = base::Time::Now() - base::Days(1);
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc1, visit_timestamp1,
+  EXPECT_TRUE(store_->AddPageContent(url, page_context1, visit_timestamp1,
                                      extraction_timestamp, 1));
 
   const auto apc2 = TestContent("new title");
@@ -131,10 +140,10 @@ TEST_F(PageContentStoreTest, GetPageContent_ReturnsMostRecent) {
   EXPECT_TRUE(store_->AddPageContent(url, apc2, visit_timestamp2,
                                      extraction_timestamp, 2));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_TRUE(got_apc.has_value());
-  EXPECT_EQ(apc2.main_frame_data().title(), got_apc->main_frame_data().title());
+  EXPECT_EQ(apc2.annotated_page_content().main_frame_data().title(),
+            got_apc->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentStoreTest, AddPageContent_NullTabId) {
@@ -143,13 +152,14 @@ TEST_F(PageContentStoreTest, AddPageContent_NullTabId) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, std::nullopt));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     std::nullopt));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_TRUE(got_apc.has_value());
-  EXPECT_EQ(apc.main_frame_data().title(), got_apc->main_frame_data().title());
+  EXPECT_EQ(apc.annotated_page_content().main_frame_data().title(),
+            got_apc->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentStoreTest, DeletePageContentOlderThan) {
@@ -158,14 +168,14 @@ TEST_F(PageContentStoreTest, DeletePageContentOlderThan) {
   const base::Time visit_timestamp = base::Time::Now() - base::Days(8);
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
   EXPECT_TRUE(
       store_->DeletePageContentOlderThan(base::Time::Now() - base::Days(7)));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_FALSE(got_apc.has_value());
 }
 
@@ -175,13 +185,13 @@ TEST_F(PageContentStoreTest, DeletePageContentForTab) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
   EXPECT_TRUE(store_->DeletePageContentForTab(kTabId));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_FALSE(got_apc.has_value());
 }
 
@@ -191,13 +201,15 @@ TEST_F(PageContentStoreTest, GetPageContentForTab) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
+  std::optional<proto::PageContext> got_apc =
       store_->GetPageContentForTab(kTabId);
   ASSERT_TRUE(got_apc.has_value());
-  EXPECT_EQ(apc.main_frame_data().title(), got_apc->main_frame_data().title());
+  EXPECT_EQ(apc.annotated_page_content().main_frame_data().title(),
+            got_apc->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentStoreTest, DeleteAllEntries) {
@@ -206,13 +218,13 @@ TEST_F(PageContentStoreTest, DeleteAllEntries) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, apc, visit_timestamp,
-                                     extraction_timestamp, kTabId));
+  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+                                     visit_timestamp, extraction_timestamp,
+                                     kTabId));
 
   EXPECT_TRUE(store_->DeleteAllEntries());
 
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_FALSE(got_apc.has_value());
 }
 
@@ -257,23 +269,22 @@ class PageContentStoreNoEncryptorTest : public testing::Test {
 
 TEST_F(PageContentStoreNoEncryptorTest, AddPageContentFails) {
   const GURL url(kUrl);
-  const auto apc = TestContent("test title");
+  const auto page_context = TestContent("test title");
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_FALSE(store_->AddPageContent(url, apc, visit_timestamp,
+  EXPECT_FALSE(store_->AddPageContent(url, page_context, visit_timestamp,
                                       extraction_timestamp, kTabId));
 }
 
 TEST_F(PageContentStoreNoEncryptorTest, GetPageContentFails) {
   const GURL url(kUrl);
-  std::optional<proto::AnnotatedPageContent> got_apc =
-      store_->GetPageContent(url);
+  std::optional<proto::PageContext> got_apc = store_->GetPageContent(url);
   ASSERT_FALSE(got_apc.has_value());
 }
 
 TEST_F(PageContentStoreNoEncryptorTest, GetPageContentForNonExistentTabId) {
-  std::optional<proto::AnnotatedPageContent> got_apc =
+  std::optional<proto::PageContext> got_apc =
       store_->GetPageContentForTab(kTabId);
   ASSERT_FALSE(got_apc.has_value());
 }

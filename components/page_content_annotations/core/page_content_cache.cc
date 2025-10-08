@@ -134,15 +134,15 @@ void PageContentCache::CachePageContent(
     const GURL& url,
     const base::Time& visit_timestamp,
     const base::Time& extraction_timestamp,
-    const optimization_guide::proto::AnnotatedPageContent& apc) {
+    const optimization_guide::proto::PageContext& page_context) {
   if (!store_initialized_) {
     pending_tasks_.push_back(base::BindOnce(
         &PageContentCache::CachePageContent, weak_ptr_factory_.GetWeakPtr(),
-        tab_id, url, visit_timestamp, extraction_timestamp, apc));
+        tab_id, url, visit_timestamp, extraction_timestamp, page_context));
     return;
   }
   store_.AsyncCall(&optimization_guide::PageContentStore::AddPageContent)
-      .WithArgs(url, apc, visit_timestamp, extraction_timestamp,
+      .WithArgs(url, page_context, visit_timestamp, extraction_timestamp,
                 std::make_optional(tab_id))
       .Then(base::BindOnce([](bool success) {
         base::UmaHistogramBoolean(

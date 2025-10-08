@@ -10,6 +10,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
@@ -31,6 +32,13 @@ WebStateWrapper ToWebStateWrapper(content::WebContents* web_contents) {
       web_contents->GetVisibility() == content::Visibility::VISIBLE
           ? PageContentVisibility::kVisible
           : PageContentVisibility::kHidden);
+}
+
+optimization_guide::proto::PageContext ToPageContext(
+    optimization_guide::proto::AnnotatedPageContent apc) {
+  optimization_guide::proto::PageContext page_context;
+  *page_context.mutable_annotated_page_content() = std::move(apc);
+  return page_context;
 }
 
 }  // namespace
@@ -83,7 +91,7 @@ void PageContentExtractionService::OnPageContentExtracted(
   }
 
   page_content_cache_handler_->ProcessPageContentExtraction(
-      tab_id, ToWebStateWrapper(web_contents), page_content);
+      tab_id, ToWebStateWrapper(web_contents), ToPageContext(page_content));
 }
 
 std::optional<ExtractedPageContentResult>
@@ -109,7 +117,7 @@ void PageContentExtractionService::OnVisibilityChanged(
     if (extracted_result) {
       page_content_cache_handler_->OnVisibilityChanged(
           tab_id, ToWebStateWrapper(web_contents),
-          std::move(extracted_result->page_content));
+          ToPageContext(std::move(extracted_result->page_content)));
     }
   }
 }

@@ -44,7 +44,7 @@ class PageContentCacheHandler {
   void OnVisibilityChanged(
       std::optional<int64_t> tab_id,
       const WebStateWrapper& web_state,
-      std::optional<optimization_guide::proto::AnnotatedPageContent> result);
+      std::optional<optimization_guide::proto::PageContext> page_context);
 
   // Called when a new navigation happens in a WebContents.
   void OnNewNavigation(std::optional<int64_t> tab_id,
@@ -53,7 +53,7 @@ class PageContentCacheHandler {
   void ProcessPageContentExtraction(
       std::optional<int64_t> tab_id,
       const WebStateWrapper& web_state,
-      const optimization_guide::proto::AnnotatedPageContent& page_content);
+      const optimization_guide::proto::PageContext& page_context);
 
   PageContentCache* page_content_cache() { return page_content_cache_.get(); }
 

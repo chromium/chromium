@@ -61,7 +61,7 @@ bool PageContentStore::InitializeDb() {
     static const char kCreateContentTableSql[] =
         "CREATE TABLE page_content ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "apc BLOB)";
+        "value BLOB)";
     if (!db_.Execute(kCreateContentTableSql)) {
       return false;
     }
@@ -94,7 +94,7 @@ void PageContentStore::InitWithEncryptor(os_crypt_async::Encryptor encryptor) {
 }
 
 bool PageContentStore::AddPageContent(const GURL& url,
-                                      const proto::AnnotatedPageContent& apc,
+                                      const proto::PageContext& page_context,
                                       base::Time visit_timestamp,
                                       base::Time extraction_timestamp,
                                       std::optional<int64_t> tab_id) {
@@ -103,12 +103,13 @@ bool PageContentStore::AddPageContent(const GURL& url,
     return false;
   }
 
-  std::string serialized_apc;
-  if (!apc.SerializeToString(&serialized_apc)) {
+  std::string serialized_page_context;
+  if (!page_context.SerializeToString(&serialized_page_context)) {
     return false;
   }
-  std::string encrypted_apc;
-  if (!encryptor_->EncryptString(serialized_apc, &encrypted_apc)) {
+  std::string encrypted_page_context;
+  if (!encryptor_->EncryptString(serialized_page_context,
+                                 &encrypted_page_context)) {
     return false;
   }
 
@@ -118,10 +119,10 @@ bool PageContentStore::AddPageContent(const GURL& url,
   }
 
   static const char kInsertContentSql[] =
-      "INSERT INTO page_content (apc) VALUES (?)";
+      "INSERT INTO page_content (value) VALUES (?)";
   sql::Statement content_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertContentSql));
-  content_statement.BindBlob(0, encrypted_apc);
+  content_statement.BindBlob(0, encrypted_page_context);
   if (!content_statement.Run()) {
     return false;
   }
@@ -151,7 +152,7 @@ bool PageContentStore::AddPageContent(const GURL& url,
   return transaction.Commit();
 }
 
-std::optional<proto::AnnotatedPageContent> PageContentStore::GetPageContent(
+std::optional<proto::PageContext> PageContentStore::GetPageContent(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_initialized_ || !encryptor_.has_value()) {
@@ -159,7 +160,7 @@ std::optional<proto::AnnotatedPageContent> PageContentStore::GetPageContent(
   }
 
   static const char kSelectSql[] =
-      "SELECT pc.apc FROM page_content pc "
+      "SELECT pc.value FROM page_content pc "
       "JOIN page_metadata pm ON pc.id = pm.content_id "
       "WHERE pm.url = ? "
       "ORDER BY pm.visit_timestamp DESC "
@@ -170,15 +171,15 @@ std::optional<proto::AnnotatedPageContent> PageContentStore::GetPageContent(
   return GetPageContentFromStatement(&statement);
 }
 
-std::optional<proto::AnnotatedPageContent>
-PageContentStore::GetPageContentForTab(int64_t tab_id) {
+std::optional<proto::PageContext> PageContentStore::GetPageContentForTab(
+    int64_t tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_initialized_ || !encryptor_.has_value()) {
     return std::nullopt;
   }
 
   static const char kSelectSql[] =
-      "SELECT pc.apc FROM page_content pc "
+      "SELECT pc.value FROM page_content pc "
       "JOIN page_metadata pm ON pc.id = pm.content_id "
       "WHERE pm.tab_id = ?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
@@ -187,25 +188,26 @@ PageContentStore::GetPageContentForTab(int64_t tab_id) {
   return GetPageContentFromStatement(&statement);
 }
 
-std::optional<proto::AnnotatedPageContent>
-PageContentStore::GetPageContentFromStatement(sql::Statement* statement) {
+std::optional<proto::PageContext> PageContentStore::GetPageContentFromStatement(
+    sql::Statement* statement) {
   if (!statement->Step()) {
     return std::nullopt;
   }
 
-  std::string encrypted_apc;
-  if (!statement->ColumnBlobAsString(0, &encrypted_apc)) {
+  std::string encrypted_page_context;
+  if (!statement->ColumnBlobAsString(0, &encrypted_page_context)) {
     return std::nullopt;
   }
-  std::string serialized_apc;
-  if (!encryptor_->DecryptString(encrypted_apc, &serialized_apc)) {
+  std::string serialized_page_context;
+  if (!encryptor_->DecryptString(encrypted_page_context,
+                                 &serialized_page_context)) {
     return std::nullopt;
   }
-  proto::AnnotatedPageContent apc;
-  if (!apc.ParseFromString(serialized_apc)) {
+  proto::PageContext page_context;
+  if (!page_context.ParseFromString(serialized_page_context)) {
     return std::nullopt;
   }
-  return apc;
+  return page_context;
 }
 
 bool PageContentStore::DeletePageContentOlderThan(base::Time timestamp) {

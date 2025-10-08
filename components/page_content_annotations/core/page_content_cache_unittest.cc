@@ -21,11 +21,12 @@ namespace page_content_annotations {
 
 namespace {
 
-optimization_guide::proto::AnnotatedPageContent TestContent(
-    const std::string& title) {
-  optimization_guide::proto::AnnotatedPageContent apc;
-  apc.mutable_main_frame_data()->set_title(title);
-  return apc;
+optimization_guide::proto::PageContext TestContent(const std::string& title) {
+  optimization_guide::proto::PageContext page_context;
+  page_context.mutable_annotated_page_content()
+      ->mutable_main_frame_data()
+      ->set_title(title);
+  return page_context;
 }
 
 }  // namespace
@@ -48,19 +49,18 @@ class PageContentCacheTest : public testing::Test {
     return cache_.get();
   }
 
-  std::optional<optimization_guide::proto::AnnotatedPageContent>
-  GetContentForTab(int64_t tab_id) {
+  std::optional<optimization_guide::proto::PageContext> GetContentForTab(
+      int64_t tab_id) {
     base::RunLoop run_loop;
-    std::optional<optimization_guide::proto::AnnotatedPageContent> result;
+    std::optional<optimization_guide::proto::PageContext> result;
     GetOrCreateCache()->GetPageContentForTab(
         tab_id,
         base::BindOnce(
             [](base::RunLoop* run_loop,
-               std::optional<optimization_guide::proto::AnnotatedPageContent>*
-                   result,
-               std::optional<optimization_guide::proto::AnnotatedPageContent>
-                   apc) {
-              *result = std::move(apc);
+               std::optional<optimization_guide::proto::PageContext>* result,
+               std::optional<optimization_guide::proto::PageContext>
+                   page_context) {
+              *result = std::move(page_context);
               run_loop->Quit();
             },
             &run_loop, &result));
@@ -78,15 +78,16 @@ class PageContentCacheTest : public testing::Test {
 TEST_F(PageContentCacheTest, CacheAndGet) {
   const int64_t kTabId = 1;
   const GURL kUrl("https://example.com/");
-  const auto kApc = TestContent("test title");
+  const auto kPageContext = TestContent("test title");
 
   GetOrCreateCache()->CachePageContent(kTabId, kUrl, base::Time::Now(),
-                                       base::Time::Now(), kApc);
+                                       base::Time::Now(), kPageContext);
 
-  std::optional<optimization_guide::proto::AnnotatedPageContent> apc =
+  std::optional<optimization_guide::proto::PageContext> page_context =
       GetContentForTab(kTabId);
-  ASSERT_TRUE(apc.has_value());
-  EXPECT_EQ(kApc.main_frame_data().title(), apc->main_frame_data().title());
+  ASSERT_TRUE(page_context.has_value());
+  EXPECT_EQ(kPageContext.annotated_page_content().main_frame_data().title(),
+            page_context->annotated_page_content().main_frame_data().title());
 }
 
 TEST_F(PageContentCacheTest, Remove) {
@@ -95,7 +96,8 @@ TEST_F(PageContentCacheTest, Remove) {
   const auto kApc = TestContent("test title");
 
   GetOrCreateCache()->CachePageContent(kTabId, kUrl, base::Time::Now(),
-                                       base::Time::Now(), kApc);
+                                       base::Time::Now(),
+                                       TestContent("test title"));
 
   ASSERT_TRUE(GetContentForTab(kTabId));
 

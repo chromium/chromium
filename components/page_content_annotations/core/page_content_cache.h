@@ -37,7 +37,7 @@ class PageContentCache {
   PageContentCache& operator=(const PageContentCache&) = delete;
 
   using GetPageContentCallback = base::OnceCallback<void(
-      std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
+      std::optional<optimization_guide::proto::PageContext>)>;
   using GetAllTabIdsCallback = base::OnceCallback<void(std::vector<int64_t>)>;
 
   // Retrieves the page content for a given tab ID.
@@ -55,7 +55,7 @@ class PageContentCache {
       const GURL& url,
       const base::Time& visit_timestamp,
       const base::Time& extraction_timestamp,
-      const optimization_guide::proto::AnnotatedPageContent& apc);
+      const optimization_guide::proto::PageContext& page_context);
 
   // Called when a tab is updated or closed. This will remove any contents
   // stored for the tab.

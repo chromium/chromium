@@ -56,14 +56,14 @@ void PageContentCacheHandler::OnTabClosed(int64_t tab_id) {
 void PageContentCacheHandler::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
     const WebStateWrapper& web_state,
-    std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
+    std::optional<optimization_guide::proto::PageContext> page_context) {
   if (!tab_id || web_state.is_off_the_record) {
     return;
   }
   if (web_state.visibility != PageContentVisibility::kHidden) {
     return;
   }
-  if (!result) {
+  if (!page_context) {
     RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
                                          kContentsNotAvailableWhenBackgrounded);
     return;
@@ -76,7 +76,7 @@ void PageContentCacheHandler::OnVisibilityChanged(
   // TODO(crbug.com/440643544): Pass in the extraction timestamp.
   page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
                                         web_state.navigation_timestamp,
-                                        base::Time::Now(), *result);
+                                        base::Time::Now(), *page_context);
   RecordExtractionAndCachingStatus(PageContentExtractionAndCachingStatus::
                                        kContentsAvailableWhenBackgrounded);
 }
@@ -96,7 +96,7 @@ void PageContentCacheHandler::OnNewNavigation(
 void PageContentCacheHandler::ProcessPageContentExtraction(
     std::optional<int64_t> tab_id,
     const WebStateWrapper& web_state,
-    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+    const optimization_guide::proto::PageContext& page_context) {
   if (!tab_id || web_state.is_off_the_record) {
     return;
   }
@@ -109,7 +109,7 @@ void PageContentCacheHandler::ProcessPageContentExtraction(
         PageContentExtractionAndCachingStatus::kExtractionObservedInBackground);
     page_content_cache_->CachePageContent(*tab_id, web_state.last_committed_url,
                                           web_state.navigation_timestamp,
-                                          base::Time::Now(), page_content);
+                                          base::Time::Now(), page_context);
   } else {
     RecordExtractionAndCachingStatus(
         PageContentExtractionAndCachingStatus::kExtractionObservedInForeground);
