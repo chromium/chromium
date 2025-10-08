@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -75,8 +77,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
         content::WebContents::FromRenderFrameHost(source_render_frame_host));
     auto* glic_embedder = instance_->GetEmbedderForTab(source_tab);
 
-    // Ensure the previous side panel was active. If so, then deactivate it and
-    // open it in the new tab.
+    // Only bind if the previous instance was active.
     if (glic_embedder && glic_embedder->IsShowing()) {
       instance_->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab_to_bind);
     }
@@ -300,10 +301,7 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 }
 
 void GlicInstanceImpl::UnbindTab(tabs::TabInterface* tab) {
-  if (active_embedder_key_.has_value() &&
-      active_embedder_key_.value() == EmbedderKey(tab)) {
-    DeactivateCurrentEmbedder();
-  }
+  MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey(tab));
   embedders_.erase(EmbedderKey(tab));
 }
 
@@ -555,6 +553,16 @@ void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
     // TODO: Figure out what else should go into host_.PanelWasClosed() and
     // maybe call it here.
     DeactivateCurrentEmbedder();
+    // Post a task to maybe activate another embedder. This is to avoid a race
+    // condition where the deactivation of an old embedder (e.g. during a tab
+    // switch) tries to show the new embedder before the browser's own tab
+    // activation logic has had a chance to run. By posting, we allow the
+    // synchronous activation logic to complete, and then this task will run
+    // and activate a foreground embedder only if one isn't already active.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GlicInstanceImpl::MaybeActivateForegroundEmbedder,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -617,6 +625,22 @@ mojom::PanelState GlicInstanceImpl::GetPanelState() {
   mojom::PanelState panel_state;
   panel_state.kind = mojom::PanelState_Kind::kHidden;
   return panel_state;
+}
+
+// If no embedder is active, finds an embedder associated with an active
+// tab and activates it. Note: The order is not guaranteed to be MRU.
+void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
+  if (active_embedder_key_.has_value()) {
+    return;
+  }
+  for (auto const& [key, entry] : embedders_) {
+    if (auto* tab = std::get_if<tabs::TabInterface*>(&key)) {
+      if (entry.embedder->IsShowing()) {
+        Show(EmbedderType::kSidePanel, *tab);
+        return;
+      }
+    }
+  }
 }
 
 }  // namespace glic
