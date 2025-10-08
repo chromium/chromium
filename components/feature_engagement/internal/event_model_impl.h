@@ -52,6 +52,8 @@ class EventModelImpl : public EventModel {
   bool IsSnoozeDismissed(const std::string& event_name) const override;
 
  private:
+  friend class EventStorageMigration;
+
   // Callback for loading the underlying store.
   void OnStoreLoaded(OnModelInitializationFinished callback,
                      uint32_t current_day,

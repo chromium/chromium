@@ -7,12 +7,11 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/feature_engagement/internal/event_model_impl.h"
 
 namespace feature_engagement {
 
 namespace {
-// Number of db to initialize.
-const int kNumberOfDBs = 2;
 // Type alias for a pair of a key and an event.
 using KeyEventPair = std::pair<std::string, Event>;
 // Type alias for a list of key and event pairs.
@@ -21,12 +20,16 @@ using KeyEventList = std::vector<KeyEventPair>;
 
 EventStorageMigration::EventStorageMigration(
     raw_ptr<leveldb_proto::ProtoDatabase<Event>> profile_db,
-    raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db)
-    : profile_db_(profile_db), device_db_(device_db) {}
+    raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db,
+    raw_ptr<EventModelImpl> device_event_model)
+    : profile_db_(profile_db),
+      device_db_(device_db),
+      device_event_model_(device_event_model) {}
 
 EventStorageMigration::~EventStorageMigration() = default;
 
-void EventStorageMigration::Migrate(MigrationCallback callback) {
+void EventStorageMigration::Migrate(MigrationCallback callback,
+                                    uint32_t current_day) {
   // If a request is already in progress, drop the new request.
   if (migration_callback_) {
     return;
@@ -36,52 +39,13 @@ void EventStorageMigration::Migrate(MigrationCallback callback) {
 
   // Set the callback to be invoked once overall initialization is complete.
   migration_callback_ = std::move(callback);
-  // Use a `BarrierClosure` to ensure all async tasks are completed before
-  // executing the overall completion callback and returning the data. The
-  // BarrierClosure will wait until the `OnInitializationComplete` callback
-  // is itself run `kNumberOfDBs` times.
-  initialization_complete_barrier_ = base::BarrierClosure(
-      kNumberOfDBs,
-      base::BindOnce(&EventStorageMigration::OnDBsInitializationCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // Initialize to true. The overall success is the AND of all individual db
-  // initializations. If any of them fail, this will become false.
-  initialization_success_ = true;
-
-  profile_db_->Init(
-      base::BindOnce(&EventStorageMigration::OnInitializationComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-  device_db_->Init(
-      base::BindOnce(&EventStorageMigration::OnInitializationComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void EventStorageMigration::OnInitializationComplete(
-    leveldb_proto::Enums::InitStatus status) {
-  bool success = status == leveldb_proto::Enums::InitStatus::kOK;
-  // If any of the db fail to initialize, the overall initialization
-  // will fail.
-  initialization_success_ = initialization_success_ && success;
-  // The `BarrierClosure` must be run regardless of the error type to ensure
-  // that it is run `kNumberOfDBs` times before the
-  // `OnDBsInitializationCompleted` callback can be run.
-  initialization_complete_barrier_.Run();
-}
-
-void EventStorageMigration::OnDBsInitializationCompleted() {
-  if (!initialization_success_) {
-    RecordMigrationStatus(EventStorageMigrationStatus::kFailedToInitialize);
-    std::move(migration_callback_).Run(false);
-    return;
-  }
-
   profile_db_->LoadEntries(
       base::BindOnce(&EventStorageMigration::OnLoadEntriesComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), current_day));
 }
 
 void EventStorageMigration::OnLoadEntriesComplete(
+    uint32_t current_day,
     bool success,
     std::unique_ptr<std::vector<Event>> entries) {
   if (!success) {
@@ -100,10 +64,28 @@ void EventStorageMigration::OnLoadEntriesComplete(
   device_db_->UpdateEntries(
       std::move(event_list), std::make_unique<std::vector<std::string>>(),
       base::BindOnce(&EventStorageMigration::OnEventWrittenCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), current_day,
+                     std::move(entries)));
 }
 
-void EventStorageMigration::OnEventWrittenCompleted(bool success) {
+void EventStorageMigration::OnEventWrittenCompleted(
+    uint32_t current_day,
+    std::unique_ptr<std::vector<Event>> entries,
+    bool success) {
+  if (!success) {
+    RecordMigrationStatus(EventStorageMigrationStatus::kFailedToWrite);
+    std::move(migration_callback_).Run(false);
+    return;
+  }
+
+  // Update the in-memory device event model.
+  device_event_model_->OnStoreLoaded(
+      base::BindOnce(&EventStorageMigration::OnDeviceEventModelUpdateCompleted,
+                     weak_ptr_factory_.GetWeakPtr()),
+      current_day, success, std::move(entries));
+}
+
+void EventStorageMigration::OnDeviceEventModelUpdateCompleted(bool success) {
   RecordMigrationStatus(success ? EventStorageMigrationStatus::kCompleted
                                 : EventStorageMigrationStatus::kFailedToWrite);
 
