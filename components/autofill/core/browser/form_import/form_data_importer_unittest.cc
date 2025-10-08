@@ -3760,11 +3760,15 @@ TEST_F(FormDataImporterTest,
                                   ukm_source_id());
 }
 
-// Test that in the case where the MandatoryReauthManager denotes we should
-// offer re-auth opt-in, we start the opt-in in credit card processing flow if
-// the card is not a new card.
+// Verifies the legacy behavior when
+// `kAutofillPrioritizeSaveCardOverMandatoryReauth` is disabled. Verifies that
+// when the conditions for offering mandatory re-auth are met, the re-auth
+// bubble is offered immediately and the save card flow is not attempted.
 TEST_F(FormDataImporterTest,
-       ProcessExtractedCreditCard_MandatoryReauthOffered) {
+       ProcessExtractedCreditCard_PrioritizeSaveCard_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
   CreditCard extracted_credit_card = test::GetCreditCard2();
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
@@ -3775,6 +3779,8 @@ TEST_F(FormDataImporterTest,
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kLocalCard);
 
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .Times(0);
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(true));
   EXPECT_CALL(reauth_manager(), StartOptInFlow);
 
@@ -3789,6 +3795,68 @@ TEST_F(FormDataImporterTest,
       test_api(form_data_importer())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
+}
+
+// Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
+// the save card bubble is prioritized. If that bubble is shown, the mandatory
+// re-auth bubble is not offered.
+TEST_F(
+    FormDataImporterTest,
+    ProcessExtractedCreditCard_PrioritizeSaveCard_SaveSucceedsMandatoryReauthNotOffered) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
+
+  CreditCard card = test::GetCreditCard();
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  test_api(form_data_importer())
+      .set_credit_card_import_type(
+          FormDataImporter::CreditCardImportType::kLocalCard);
+  form_data_importer()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalCard);
+
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .WillOnce(Return(true));
+  // Verify that the mandatory re-auth flow is never started.
+  EXPECT_CALL(reauth_manager(), ShouldOfferOptin).Times(0);
+  EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(0);
+
+  test_api(form_data_importer())
+      .ProcessExtractedCreditCard(*form_structure, card,
+                                  /*is_credit_card_upstream_enabled=*/false,
+                                  ukm_source_id());
+}
+
+// Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
+// offering the save card bubble is prioritized. If it fails, we offer the
+// mandatory re-auth bubble as a fallback.
+TEST_F(
+    FormDataImporterTest,
+    ProcessExtractedCreditCard_PrioritizeSaveCard_SaveCardFailsMandatoryReauthOffered) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPrioritizeSaveCardOverMandatoryReauth);
+
+  CreditCard card = test::GetCreditCard();
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  test_api(form_data_importer())
+      .set_credit_card_import_type(
+          FormDataImporter::CreditCardImportType::kLocalCard);
+  form_data_importer()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalCard);
+
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .WillOnce(Return(false));
+  // As a fallback, the mandatory re-auth flow should be offered.
+  EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(true));
+  EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(1);
+
+  test_api(form_data_importer())
+      .ProcessExtractedCreditCard(*form_structure, card,
+                                  /*is_credit_card_upstream_enabled=*/false,
+                                  ukm_source_id());
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should

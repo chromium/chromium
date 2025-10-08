@@ -286,6 +286,11 @@ class FormDataImporter : public AddressDataManager::Observer,
       bool is_credit_card_upstream_enabled,
       ukm::SourceId ukm_source_id);
 
+  // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
+  // function will start the flow and return true. Otherwise, it will return
+  // false.
+  bool ProceedWithCardMandatoryReauthOptInIfApplicable();
+
   // Processes the extracted address profiles. `extracted_address_profiles`
   // contains the addresses extracted from the form. |allow_prompt| denotes if a
   // prompt can be shown. Returns true if the import of a complete profile is
