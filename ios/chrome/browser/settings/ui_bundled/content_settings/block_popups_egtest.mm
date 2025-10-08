@@ -175,6 +175,10 @@ class ScopedBlockPopupsException {
 // Tests that the "exceptions" section on the settings page is hidden and
 // revealed properly when the preference switch is toggled.
 - (void)testSettingsPageWithExceptions {
+  // TODO(crbug.com/441738071): Still flaky on iOS 18.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 18.");
+  }
   std::string allowedPattern = "[*.]example.com";
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   ScopedBlockPopupsException exceptionSetter(allowedPattern);
