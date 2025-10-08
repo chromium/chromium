@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {NavigatorDelegate} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {OpenPdfParamsParser, PdfNavigator, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {NavigatorDelegate, PdfNavigator} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {OpenPdfParamsParser, PdfNavigatorImpl, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -118,8 +118,8 @@ async function doNavigationUrlTests(
       getNamedDestinationCallback, getPageBoundingBoxCallback);
 
   const navigatorDelegate = new MockNavigatorDelegate();
-  const navigator =
-      new PdfNavigator(originalUrl, viewport, paramsParser, navigatorDelegate);
+  const navigator = new PdfNavigatorImpl(
+      originalUrl, viewport, paramsParser, navigatorDelegate);
 
   await doNavigationUrlTest(
       navigator, url, WindowOpenDisposition.CURRENT_TAB, expectedResultUrl,
@@ -165,7 +165,7 @@ chrome.test.runTests([
 
     const navigatorDelegate = new MockNavigatorDelegate();
     const navigator =
-        new PdfNavigator(url, viewport, paramsParser, navigatorDelegate);
+        new PdfNavigatorImpl(url, viewport, paramsParser, navigatorDelegate);
 
     const documentDimensions = new MockDocumentDimensions();
     documentDimensions.addPage(100, 100);

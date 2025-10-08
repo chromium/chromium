@@ -64,7 +64,7 @@ export {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, TextBoxInit} fr
 // </if>
 export {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
-export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigator.js';
+export {NavigatorDelegate, PdfNavigator, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 export {OpenPdfParamsParser, ViewMode} from './open_pdf_params_parser.js';
 export {getFilenameFromURL, PdfViewerElement} from './pdf_viewer.js';
 export {PdfViewerBaseElement} from './pdf_viewer_base.js';
