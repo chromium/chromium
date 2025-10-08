@@ -113,6 +113,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/coordinator/data_controls_dialog_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
+#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
@@ -688,6 +689,7 @@ const char kChromeAppStoreUrl[] =
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
+  FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
   ReaderModeCoordinator* _readerModeCoordinator;
@@ -2915,12 +2917,24 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showFileUploadPanel API_AVAILABLE(ios(18.4)) {
   CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
-  // TODO(crbug.com/441659098): Start the FileUploadPanelCoordinator.
+  ChooseFileTabHelper* tabHelper =
+      ChooseFileTabHelper::FromWebState(self.activeWebState);
+  if (!tabHelper || !tabHelper->IsChoosingFiles()) {
+    return;
+  }
+  if (_fileUploadPanelCoordinator) {
+    return;
+  }
+  _fileUploadPanelCoordinator = [[FileUploadPanelCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  [_fileUploadPanelCoordinator start];
 }
 
 - (void)hideFileUploadPanel API_AVAILABLE(ios(18.4)) {
   CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
-  // TODO(crbug.com/441659098): Stop the FileUploadPanelCoordinator.
+  [_fileUploadPanelCoordinator stop];
+  _fileUploadPanelCoordinator = nil;
 }
 
 #pragma mark - FindInPageCommands
