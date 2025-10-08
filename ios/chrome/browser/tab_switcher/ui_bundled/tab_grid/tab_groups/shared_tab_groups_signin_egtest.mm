@@ -337,10 +337,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Tests joining a group when sign in is disabled.
 - (void)testJoinGroupSignedInDisabled {
-  // TODO(crbug.com/449215049): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky on iOS 26.");
-  }
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSigninAllowed];
 
   [TabGroupAppInterface mockSharedEntitiesPreview];
@@ -349,9 +345,9 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
 
   // Check that a sign in disabled alert is presented.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_COLLABORATION_SIGNED_OUT_HEADER))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_COLLABORATION_SIGNED_OUT_HEADER))];
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_COLLABORATION_SIGNED_OUT_BODY))]
       assertWithMatcher:grey_sufficientlyVisible()];
