@@ -1703,8 +1703,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('UnusedSitePermissionsReview')");
 }
 
-// TODO(crbug.com/40669164): flaky crash on Linux Tests (dbg).
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, DISABLED_SoundPage) {
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SoundPage) {
   RunTest("settings/sound_page_test.js", "runMochaSuite('SoundPage')");
 }
 
