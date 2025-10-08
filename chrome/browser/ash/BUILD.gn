@@ -34,6 +34,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/ash/extended_updates/test:test_support",
     "//chrome/browser/ash/login/demo_mode",

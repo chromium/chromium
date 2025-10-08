@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -138,7 +138,8 @@ void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(
   const AccountId& owner = multi_user_window_manager_->GetWindowOwner(window);
   // Browser windows don't use kAvatarIconKey. See
   // BrowserFrameViewAsh::UpdateProfileIcons().
-  if (owner.is_valid() && !chrome::FindBrowserWithWindow(window)) {
+  if (owner.is_valid() &&
+      !ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     const user_manager::User* const window_owner =
         user_manager::UserManager::IsInitialized()
             ? user_manager::UserManager::Get()->FindUser(owner)

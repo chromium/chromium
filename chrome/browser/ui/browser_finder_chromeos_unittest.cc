@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/browser_finder.h"
 
+#include <optional>
+
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -48,9 +51,12 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
     LogIn(kTestAccountId2.GetUserEmail(), kTestAccountId2.GetGaiaId());
     second_profile_ =
         CreateProfile(std::string(kTestAccountId2.GetUserEmail()));
+
+    browser_controller_.emplace();
   }
 
   void TearDown() override {
+    browser_controller_.reset();
     second_profile_ = nullptr;
     multi_user_window_manager_browser_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
@@ -80,6 +86,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
       multi_user_window_manager_browser_adaptor_;
   raw_ptr<TestingProfile> second_profile_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
 };
 
 TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
