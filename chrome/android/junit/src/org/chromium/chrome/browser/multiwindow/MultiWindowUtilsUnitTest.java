@@ -82,6 +82,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -531,6 +532,42 @@ public class MultiWindowUtilsUnitTest {
                 /* incognitoTabCount= */ 2,
                 MultiWindowUtils.INVALID_TASK_ID);
         assertEquals(2, MultiWindowUtils.getInstanceCount());
+    }
+
+    @Test
+    public void testGetActiveInstanceCount() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+
+        // Create 2 active instances.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 1, /* incognitoTabCount= */ 0, TASK_ID_6);
+
+        // Create 1 inactive instance. This instance is restorable because it has tabs, but it is
+        // not active because it does not have a valid task ID.
+        writeInstanceInfo(
+                INSTANCE_ID_2,
+                URL_3,
+                /* tabCount= */ 5,
+                /* incognitoTabCount= */ 0,
+                MultiWindowUtils.INVALID_TASK_ID);
+
+        // Mock that the tasks for the 2 active instances are running.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+                new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
+
+        assertEquals(
+                "getActiveInstanceCount should only count active instances.",
+                2,
+                MultiWindowUtils.getActiveInstanceCount());
+
+        assertEquals(
+                "getInstanceCount should count all instances.",
+                3,
+                MultiWindowUtils.getInstanceCount());
     }
 
     @Test

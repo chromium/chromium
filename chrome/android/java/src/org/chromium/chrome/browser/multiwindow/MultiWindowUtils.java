@@ -498,6 +498,15 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
+     * @return The number of active Chrome instances, that are associated with a live task.
+     */
+    public static int getActiveInstanceCount() {
+        return MultiInstanceManagerApi31.getPersistedInstanceIds(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ACTIVE)
+                .size();
+    }
+
+    /**
      * @return Whether the app menu 'Manage windows' should be shown.
      */
     public static boolean shouldShowManageWindowsMenu() {
