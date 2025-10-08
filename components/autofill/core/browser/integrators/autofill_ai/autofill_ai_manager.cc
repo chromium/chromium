@@ -222,6 +222,8 @@ void AutofillAiManager::OnDidFillSuggestion(
 bool AutofillAiManager::MaybeUpstreamEntityToWallet(
     const FormStructure& form,
     ukm::SourceId ukm_source_id) {
+  // TODO(crbug.com/450060416): Do an EntityType-specific
+  // MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
@@ -311,6 +313,8 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
+  // TODO(crbug.com/450060416): Do an EntityType-specific
+  // MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
@@ -477,6 +481,8 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
 
 bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
                                          FieldGlobalId field_id) const {
+  // TODO(crbug.com/450060416): Do an EntityType-specific
+  // MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn)) {
     return false;
   }

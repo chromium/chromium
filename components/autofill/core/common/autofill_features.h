@@ -34,6 +34,8 @@ BASE_DECLARE_FEATURE(kAutofillAiDedupeEntities);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiCreateEntityDataManager);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiIdentityAndTravelPrefs);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiIgnoreCapabilityCheck);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>

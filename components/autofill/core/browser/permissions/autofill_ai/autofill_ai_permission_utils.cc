@@ -183,8 +183,10 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
 // Checks if the `entity_type` safistifes specific action requirements.
 [[nodiscard]] bool SatisfiesEntityTypeRequirements(
+    const AutofillClient& client,
     AutofillAiAction action,
-    std::optional<EntityType> entity_type) {
+    std::optional<EntityType> entity_type,
+    std::string* debug_message) {
   auto entity_type_can_be_upstreamed = [](EntityType type) {
     switch (type.name()) {
       case EntityTypeName::kVehicle:
@@ -199,19 +201,42 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     }
     NOTREACHED();
   };
+  auto entity_type_is_enabled_in_settings = [&](EntityType type) {
+    const PrefService* const prefs = client.GetPrefs();
+    if (!prefs) {
+      MaybeOutputReason(debug_message, "Prefs are not available.");
+      return false;
+    }
+    switch (type.name()) {
+      case EntityTypeName::kNationalIdCard:
+      case EntityTypeName::kPassport:
+      case EntityTypeName::kDriversLicense:
+        return prefs->GetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled);
+      case EntityTypeName::kVehicle:
+      case EntityTypeName::kFlightReservation:
+      case EntityTypeName::kRedressNumber:
+      case EntityTypeName::kKnownTravelerNumber:
+        return prefs->GetBoolean(prefs::kAutofillAiTravelEntitiesEnabled);
+    }
+    NOTREACHED();
+  };
   switch (action) {
     case AutofillAiAction::kImportToWallet:
       CHECK(entity_type) << "An entity type is required to check if an entity "
                             "can be upstreamed";
       return entity_type_can_be_upstreamed(*entity_type);
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
+      // TODO(crbug.com/450060416): Make `entity_type.has_value()` mandatory.
+      return !entity_type || entity_type_is_enabled_in_settings(*entity_type) ||
+             !base::FeatureList::IsEnabled(
+                 features::kAutofillAiIdentityAndTravelPrefs);
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
-    case AutofillAiAction::kFilling:
-    case AutofillAiAction::kImport:
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
@@ -457,7 +482,8 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
     return false;
   }
 
-  if (!SatisfiesEntityTypeRequirements(action, entity_type)) {
+  if (!SatisfiesEntityTypeRequirements(client, action, entity_type,
+                                       debug_message)) {
     return false;
   }
 

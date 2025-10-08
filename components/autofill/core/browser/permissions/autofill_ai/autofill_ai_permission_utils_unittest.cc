@@ -563,6 +563,54 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatusMetrics) {
               BucketsAre(Bucket(kOptedIn, 1), Bucket(kOptedOut, 2)));
 }
 
+// Tests that the prefs affect MayPerformAutofillAiAction() for kFilling and
+// kImport. The `bool` parameters are the pref values.
+class AutofillAiMayPerformFillOrImportTest
+    : public AutofillAiPermissionUtilsTest,
+      public testing::WithParamInterface<
+          std::tuple<AutofillAiAction, bool, bool>> {
+ public:
+  AutofillAiAction action() const { return std::get<0>(GetParam()); }
+  bool identity_entities_enabled() const { return std::get<1>(GetParam()); }
+  bool travel_entities_enabled() const { return std::get<2>(GetParam()); }
+
+  void SetUp() override {
+    AutofillAiPermissionUtilsTest::SetUp();
+    client().GetPrefs()->SetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled,
+                                    identity_entities_enabled());
+    client().GetPrefs()->SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled,
+                                    travel_entities_enabled());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillAiMayPerformFillOrImportTest,
+    testing::Combine(testing::Values(AutofillAiAction::kFilling,
+                                     AutofillAiAction::kImport),
+                     testing::Bool(),
+                     testing::Bool()));
+
+// Tests that MayPerformAutofillAiAction() without an EntityType parameter is
+// independent of the prefs.
+TEST_P(AutofillAiMayPerformFillOrImportTest, WithoutEntityParameter) {
+  EXPECT_TRUE(MayPerformAutofillAiAction(client(), action()));
+  EXPECT_TRUE(MayPerformAutofillAiAction(client(), action()));
+}
+
+// Tests that MayPerformAutofillAiAction() depends on the given EntityType and
+// the pref state.
+TEST_P(AutofillAiMayPerformFillOrImportTest,
+       PrefsAndEntityAffectMayPerformAutofillAiAction) {
+  using enum EntityTypeName;
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), action(), EntityType(kPassport)),
+      identity_entities_enabled());
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), action(), EntityType(kVehicle)),
+      travel_entities_enabled());
+}
+
 class AutofillAiMayPerformImportToWalletTest
     : public AutofillAiPermissionUtilsTest {
  public:

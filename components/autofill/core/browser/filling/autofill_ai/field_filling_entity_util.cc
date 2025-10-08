@@ -187,6 +187,8 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const AutofillClient& client) {
   const EntityDataManager* const edm = client.GetEntityDataManager();
+  // TODO(crbug.com/450060416): Do an EntityType-specific
+  // MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
     return {};
   }

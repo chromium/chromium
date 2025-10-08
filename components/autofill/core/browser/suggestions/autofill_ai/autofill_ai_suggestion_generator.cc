@@ -532,6 +532,8 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
+  // TODO(crbug.com/450060416): Do an EntityType-specific
+  // MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling)) {
     callback({SuggestionDataSource::kAutofillAi, {}});
     return;

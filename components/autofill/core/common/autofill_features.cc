@@ -85,6 +85,13 @@ BASE_FEATURE(kAutofillAiCreateEntityDataManager,
 #endif
 );
 
+// Kill switch: If enabled, MayPerformAutofillAiAction() also depends on two
+// prefs that enable/disable filling and import of identity-related and
+// travel-related entities.
+// TODO(crbug.com/450060416): Remove after M144 branch point (2025-01-12).
+BASE_FEATURE(kAutofillAiIdentityAndTravelPrefs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, no account-level capabilities are checked to determine whether
 // a user is eligible for AutofillAI.
 BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,
