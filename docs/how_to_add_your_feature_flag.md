@@ -83,7 +83,7 @@ and [this document](initialize_blink_features.md) to see
 3. How to wire your new `base::Feature` to a Blink runtime feature:
    [[1][blink-rte-init]]
 4. How to use it in Blink:
-   [[1](https://chromium-review.googlesource.com/c/554510/8/third_party/blnk/renderere/core/workers/worker_thread.cc)]
+   [[1](https://chromium-review.googlesource.com/c/chromium/src/+/554510/8/third_party/WebKit/Source/core/workers/WorkerThread.cpp)]
 
 Also, this patch added a virtual test for running web tests with the flag.
 When you add a flag, you can consider to use that.
