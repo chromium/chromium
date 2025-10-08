@@ -31,7 +31,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonE
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.NON_EDITABLE_TEXT_ALL_KEYS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
@@ -365,21 +365,15 @@ class AddressEditorMediator {
      */
     private ListModel<EditorItem> buildNonEditableItemsList() {
         ListModel<EditorItem> editorFields = new ListModel<>();
-        PropertyModel descriptionModel =
-                new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS)
-                        .with(
-                                TEXT,
-                                mPersonalDataManager.getProfileDescriptionForEditor(
-                                        mProfileToEdit.getGUID()))
-                        .build();
-        editorFields.add(
-                new EditorItem(NON_EDITABLE_TEXT, descriptionModel, /* isFullLine= */ true));
 
+        addProfileDescriptionItem(editorFields);
         maybeAddRecordTypeNotice(editorFields);
 
         PropertyModel model =
                 new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS)
-                        .with(TEXT, mContext.getString(R.string.autofill_edit_address_label))
+                        .with(
+                                PRIMARY_TEXT,
+                                mContext.getString(R.string.autofill_edit_address_label))
                         .with(ICON, R.drawable.autofill_external_link)
                         .with(CLICK_RUNNABLE, () -> mDelegate.onExternalEdit(mProfileToEdit))
                         .with(
@@ -390,6 +384,27 @@ class AddressEditorMediator {
         editorFields.add(new EditorItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
 
         return editorFields;
+    }
+
+    private void addProfileDescriptionItem(ListModel<EditorItem> editorFields) {
+        PropertyModel.Builder descriptionModelBuilder =
+                new PropertyModel.Builder(NON_EDITABLE_TEXT_ALL_KEYS);
+        if (mProfileToEdit.getRecordType() == RecordType.ACCOUNT_NAME_EMAIL) {
+            descriptionModelBuilder
+                    .with(PRIMARY_TEXT, mProfileToEdit.getInfo(FieldType.NAME_FULL))
+                    .with(
+                            EditorProperties.NonEditableTextProperties.SECONDARY_TEXT,
+                            mProfileToEdit.getInfo(FieldType.EMAIL_ADDRESS));
+        } else {
+            descriptionModelBuilder.with(
+                    PRIMARY_TEXT,
+                    mPersonalDataManager.getProfileDescriptionForEditor(mProfileToEdit.getGUID()));
+        }
+        editorFields.add(
+                new EditorItem(
+                        NON_EDITABLE_TEXT,
+                        descriptionModelBuilder.build(),
+                        /* isFullLine= */ true));
     }
 
     private void maybeAddRecordTypeNotice(ListModel<EditorItem> editorFields) {

@@ -180,8 +180,10 @@ public class EditorProperties {
 
     /** Properties specific for the non-editable text fields. */
     public static class NonEditableTextProperties {
-        public static final ReadableObjectPropertyKey<String> TEXT =
+        public static final ReadableObjectPropertyKey<String> PRIMARY_TEXT =
                 new ReadableObjectPropertyKey<>("text");
+        public static final ReadableObjectPropertyKey<String> SECONDARY_TEXT =
+                new ReadableObjectPropertyKey<>("secondary_text");
         public static final ReadableObjectPropertyKey<Runnable> CLICK_RUNNABLE =
                 new ReadableObjectPropertyKey<>("click_runnable");
         public static final ReadableIntPropertyKey ICON = new ReadableIntPropertyKey("icon");
@@ -189,7 +191,7 @@ public class EditorProperties {
                 new ReadableObjectPropertyKey<>("content_description");
 
         public static final PropertyKey[] NON_EDITABLE_TEXT_ALL_KEYS = {
-            TEXT, CLICK_RUNNABLE, ICON, CONTENT_DESCRIPTION
+            PRIMARY_TEXT, SECONDARY_TEXT, CLICK_RUNNABLE, ICON, CONTENT_DESCRIPTION
         };
     }
 

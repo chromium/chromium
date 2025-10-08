@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -39,7 +40,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Item
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.PRIMARY_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.SECONDARY_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
@@ -1185,7 +1187,8 @@ public class AddressEditorTest {
         EditorItem descriptionItem = model.get(0);
         assertEquals(NON_EDITABLE_TEXT, descriptionItem.type);
         assertTrue(descriptionItem.isFullLine);
-        assertEquals("Profile description", descriptionItem.model.get(TEXT));
+        assertEquals("Profile description", descriptionItem.model.get(PRIMARY_TEXT));
+        assertNull(descriptionItem.model.get(SECONDARY_TEXT));
 
         // Validate notices.
         final String recordTypeNotice =
@@ -1201,7 +1204,8 @@ public class AddressEditorTest {
         assertTrue(linkItem.isFullLine);
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label),
-                linkItem.model.get(TEXT));
+                linkItem.model.get(PRIMARY_TEXT));
+        assertNull(linkItem.model.get(SECONDARY_TEXT));
         assertEquals(R.drawable.autofill_external_link, linkItem.model.get(ICON));
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label_content_description),
@@ -1282,7 +1286,8 @@ public class AddressEditorTest {
         EditorItem descriptionItem = model.get(0);
         assertEquals(NON_EDITABLE_TEXT, descriptionItem.type);
         assertTrue(descriptionItem.isFullLine);
-        assertEquals("Profile description", descriptionItem.model.get(TEXT));
+        assertEquals("Elisa Beckett", descriptionItem.model.get(PRIMARY_TEXT));
+        assertEquals("elisa.beckett@gmail.com", descriptionItem.model.get(SECONDARY_TEXT));
 
         // Validate notices.
         final String recordTypeNotice =
@@ -1298,7 +1303,8 @@ public class AddressEditorTest {
         assertTrue(linkItem.isFullLine);
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label),
-                linkItem.model.get(TEXT));
+                linkItem.model.get(PRIMARY_TEXT));
+        assertNull(linkItem.model.get(SECONDARY_TEXT));
         assertEquals(R.drawable.autofill_external_link, linkItem.model.get(ICON));
         assertEquals(
                 mActivity.getString(R.string.autofill_edit_address_label_content_description),

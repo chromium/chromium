@@ -17,13 +17,28 @@ found in the LICENSE file.
     android:background="?attr/selectableItemBackground"
     android:clickable="false">
 
-    <TextView
-        android:id="@+id/non_editable_textview"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:breakStrategy="balanced"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/primary_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:breakStrategy="balanced"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/secondary_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:breakStrategy="balanced"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/icon"

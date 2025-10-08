@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.ICON;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
@@ -154,9 +153,19 @@ public class EditorDialogViewBinder {
     }
 
     static void bindNonEditableTextView(PropertyModel model, View view, PropertyKey key) {
-        if (key == TEXT) {
-            TextView textView = view.findViewById(R.id.non_editable_textview);
-            textView.setText(model.get(TEXT));
+        if (key == EditorProperties.NonEditableTextProperties.PRIMARY_TEXT) {
+            TextView textView = view.findViewById(R.id.primary_text);
+            textView.setText(model.get(EditorProperties.NonEditableTextProperties.PRIMARY_TEXT));
+        } else if (key == EditorProperties.NonEditableTextProperties.SECONDARY_TEXT) {
+            TextView secondaryTextView = view.findViewById(R.id.secondary_text);
+            String secondaryText =
+                    model.get(EditorProperties.NonEditableTextProperties.SECONDARY_TEXT);
+            if (secondaryText != null && !secondaryText.isEmpty()) {
+                secondaryTextView.setText(secondaryText);
+                secondaryTextView.setVisibility(View.VISIBLE);
+            } else {
+                secondaryTextView.setVisibility(View.GONE);
+            }
         } else if (key == ICON) {
             ImageView iconView = view.findViewById(R.id.icon);
             iconView.setImageResource(model.get(ICON));
