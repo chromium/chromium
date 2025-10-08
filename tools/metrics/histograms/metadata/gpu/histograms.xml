@@ -1281,7 +1281,7 @@ chromium-metrics-reviews@google.com.
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
     Whether the gpu::GpuPersistentCache is ready when {LoadStore}Data() is
-    called.
+    called. Recorded only for first 100 {LoadStore}.
   </summary>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
   <token key="LoadStore">
