@@ -1837,6 +1837,8 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
 
 bool WebGLRenderingContextBase::
     CanUseDrawingBufferSIWithoutCopyForLowLatency() {
+  CHECK(GetDrawingBuffer());
+
   if (!SharedGpuContext::IsGpuCompositingEnabled()) {
     return false;
   }
@@ -1857,12 +1859,7 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  auto* drawing_buffer = GetDrawingBuffer();
-  if (!drawing_buffer) {
-    return false;
-  }
-
-  return drawing_buffer->SupportsConcurrentReadWrite();
+  return GetDrawingBuffer()->SupportsConcurrentReadWrite();
 }
 
 void WebGLRenderingContextBase::PageVisibilityChanged() {
