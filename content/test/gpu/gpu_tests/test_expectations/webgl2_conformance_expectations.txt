@@ -758,7 +758,6 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
 # Canvas missing colored squares - synchronization issue.
-crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/canvas/tex-2d* [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/canvas/tex-3d* [ Failure ]
@@ -766,8 +765,6 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/c
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/image_bitmap_from_video/* [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/video/tex-2d* [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/video/tex-3d* [ Failure ]
-crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/webgl_canvas/tex-3d* [ Failure ]
-crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 
 # WebGL: INVALID_ENUM: getShaderParameter
 crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -807,7 +804,7 @@ crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] confor
 # Android failures #
 ####################
 
-crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+crbug.com/angleproject/4417 [ android graphite-disabled ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Video uploads to some texture formats new in WebGL 2.0 are
 # failing.
@@ -827,7 +824,7 @@ crbug.com/40167875 [ android android-pixel-2 passthrough ] conformance2/reading/
 
 crbug.com/40167875 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
-crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
+crbug.com/angleproject/3684 [ android angle-opengles graphite-disabled qualcomm target-cpu-32 ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 ## DrDc being re-enabled ##
 crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
@@ -1059,14 +1056,9 @@ crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scis
 ###############
 # V8 Failures #
 ###############
-crbug.com/447457276 [ android android-pixel-2 graphite-disabled ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
-crbug.com/447457276 [ android android-pixel-2 graphite-disabled ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
+crbug.com/447457276 [ android android-pixel-2 angle-opengles graphite-disabled passthrough ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
 
-crbug.com/447457276 [ win qualcomm-0x41333430 graphite-disabled passthrough ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
-crbug.com/447457276 [ win qualcomm-0x41333430 graphite-disabled passthrough ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
 
-crbug.com/447457276 [ mac passthrough ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
-crbug.com/447457276 [ mac passthrough ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
