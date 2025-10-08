@@ -16638,7 +16638,7 @@
                     "name": "Enabled",
                     "params": {
                         "CyclingPlaceholders": "true",
-                        "RealboxLayoutMode": "Tall"
+                        "RealboxLayoutMode": "TallBottomContext"
                     },
                     "enable_features": [
                         "NtpRealboxNext"

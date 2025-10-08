@@ -280,6 +280,10 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
 
+      cyclingPlaceholders: {
+        type: Boolean,
+      },
+
       composeboxEnabled: {type: Boolean},
 
       composeButtonEnabled: {type: Boolean},
@@ -396,10 +400,9 @@ export class SearchboxElement extends SearchboxElementBase {
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor realboxLayoutMode: string =
-      loadTimeData.getString('realboxLayoutMode');
-  accessor ntpRealboxNextEnabled: boolean =
-      loadTimeData.getBoolean('ntpRealboxNextEnabled');
+  accessor realboxLayoutMode: string = '';
+  accessor ntpRealboxNextEnabled: boolean = false;
+  accessor cyclingPlaceholders: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
@@ -459,7 +462,7 @@ export class SearchboxElement extends SearchboxElementBase {
         this.callbackRouter_.onContextualInputStatusChanged.addListener(
             this.onContextualInputStatusChanged_.bind(this));
 
-    if (loadTimeData.getBoolean('searchboxCyclingPlaceholders')) {
+    if (this.cyclingPlaceholders) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();
       const texts = config.texts;
       assert(texts[0]);

@@ -89,7 +89,8 @@ extern const base::FeatureParam<bool> kCyclingPlaceholders;
 
 // Enum for `kRealboxLayoutMode`.
 enum class RealboxLayoutMode {
-  kTall,
+  kTallBottomContext,
+  kTallTopContext,
   kCompact,
 };
 
@@ -99,7 +100,9 @@ extern const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode;
 bool IsNtpRealboxNextEnabled(Profile* profile);
 
 // String constants for RealboxLayoutMode.
-inline constexpr char kRealboxLayoutModeTall[] = "Tall";
+inline constexpr char kRealboxLayoutModeTallBottomContext[] =
+    "TallBottomContext";
+inline constexpr char kRealboxLayoutModeTallTopContext[] = "TallTopContext";
 inline constexpr char kRealboxLayoutModeCompact[] = "Compact";
 
 // Returns the string representation of `RealboxLayoutMode`.
