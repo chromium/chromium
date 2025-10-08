@@ -1,0 +1,21 @@
+Name: PipeWire
+URL: https://gitlab.freedesktop.org/pipewire/pipewire
+Version: 1.4.8
+Revision: 8b43ed5c910e892d53de5a96aa01e9280a5b6650
+Update Mechanism: Manual (https://crbug.com/446536454)
+License: MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+PipeWire is a server and user space API to deal with multimedia pipelines.
+
+This contains a 3pp description used to build a CIPD package of the above code.
+This package is used only by WebRTC to test PipeWire code.
+
+Local Modifications:
+A patch removing unused include of <threads.h> to avoid a build failure.
+
+This package will be only pulled in to CIPD and not into chromium/src.
+

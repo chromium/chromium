@@ -1,0 +1,20 @@
+diff --git a/lib/wp/log.c b/lib/wp/log.c
+index 084f3ad5..b7bf7c56 100644
+--- a/lib/wp/log.c
++++ b/lib/wp/log.c
+@@ -777,7 +777,6 @@ wp_log_fields_write_to_journal (WpLogFields *lf)
+   g_autofree gchar *full_message = NULL;
+   const gchar *message = lf->message ? lf->message : "";
+   g_autofree gchar *pid = g_strdup_printf("%d", getpid());
+-  g_autofree gchar *tid = g_strdup_printf("%d", gettid());
+ #ifdef HAS_SHORT_NAME
+   const gchar *syslog_identifier = program_invocation_short_name;
+ #else
+@@ -805,7 +804,6 @@ wp_log_fields_write_to_journal (WpLogFields *lf)
+   }
+ 
+   fields[n_fields++] = (GLogField) { "SYSLOG_PID", pid, -1 };
+-  fields[n_fields++] = (GLogField) { "TID", tid, -1 };
+   fields[n_fields++] = (GLogField) { "SYSLOG_IDENTIFIER", syslog_identifier, -1 };
+   fields[n_fields++] = (GLogField) { "SYSLOG_FACILITY", "3", -1 };
+   fields[n_fields++] = (GLogField) { "PRIORITY", log_level_info[lf->log_level].priority, -1 };
