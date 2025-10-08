@@ -296,7 +296,7 @@ BASE_FEATURE(kMigrateAccountManagerDelegate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNonDefaultGaiaOriginCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE(kOfferMigrationToDiceUsers, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOfferMigrationToDiceUsers, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kOfferMigrationToDiceUsersMinDelay,
                    &kOfferMigrationToDiceUsers,
