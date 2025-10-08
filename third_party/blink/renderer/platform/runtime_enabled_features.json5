@@ -329,6 +329,14 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
+    // In AIPageContentAgent::ComputeHitTestableNodesInViewport, the hit test
+    // may hit the same node multiple times, which causes issues with computing
+    // the final z-order of page elements. This flag will filter those
+    // duplicate results first before doing any further processing.
+    {
+      name: "AIPageContentZOrderEarlyFiltering",
+      status: "stable"
+    },
     {
       name: "AIPromptAPI",
       public: true,
