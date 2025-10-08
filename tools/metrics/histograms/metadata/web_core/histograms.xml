@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Document.execCommand" enum="MappedEditingCommands"
-    expires_after="2025-11-08">
+    expires_after="2026-05-08">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <summary>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Editing.Commands" enum="MappedEditingCommands"
-    expires_after="2025-11-08">
+    expires_after="2026-05-08">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <summary>
