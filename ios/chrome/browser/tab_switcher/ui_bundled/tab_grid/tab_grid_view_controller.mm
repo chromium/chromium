@@ -180,6 +180,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   TabGridMode _mode;
   // The app bar, for diamond prototype.
   ChromeAppBarPrototype* _appBar;
+  // Top and bottom toolbar edge effects.
+  UIScrollEdgeElementContainerInteraction* _topToolbarEdgeEffect
+      API_AVAILABLE(ios(26.0));
+  UIScrollEdgeElementContainerInteraction* _bottomToolbarEdgeEffect
+      API_AVAILABLE(ios(26.0));
 }
 
 - (instancetype)initWithPageConfiguration:
@@ -206,6 +211,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   [self setupBottomToolbar];
 
+  [self updateToolbarEdgeEffects];
+
   if (IsPinnedTabsEnabled()) {
     CHECK(self.pinnedTabsViewController);
     [self setupPinnedTabsViewController];
@@ -220,7 +227,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
   [self registerForTraitChanges:traits
-                     withAction:@selector(updateConstraintsOnTraitChange)];
+                     withAction:@selector(handleTraitChanges)];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -498,6 +505,34 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - Private
+
+// Updates elements in response to trait collection changes.
+- (void)handleTraitChanges {
+  [self updateConstraintsOnTraitChange];
+  [self updateToolbarEdgeEffects];
+}
+
+// Updates the edge effects on the top and bottom toolbars based on the current
+// layout.
+- (void)updateToolbarEdgeEffects {
+  if (!@available(iOS 26, *)) {
+    return;
+  }
+
+  UIView* topToolbar = self.topToolbar;
+  UIView* bottomToolbar = self.bottomToolbar;
+
+  // Only use the edge effects for compact layout (not large width).
+  BOOL shouldUseCompactLayout = [self shouldUseCompactLayout];
+
+  if (shouldUseCompactLayout) {
+    [topToolbar addInteraction:_topToolbarEdgeEffect];
+    [bottomToolbar addInteraction:_bottomToolbarEdgeEffect];
+  } else {
+    [topToolbar removeInteraction:_topToolbarEdgeEffect];
+    [bottomToolbar removeInteraction:_bottomToolbarEdgeEffect];
+  }
+}
 
 // Records the idle page status for the current `currentPage`.
 - (void)recordIdlePageStatus {
@@ -791,7 +826,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     } else {
       [edgeEffect setEdge:UIRectEdgeTop];
     }
-    [topToolbar addInteraction:edgeEffect];
+    _topToolbarEdgeEffect = edgeEffect;
   }
 }
 
@@ -851,7 +886,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     } else {
       [edgeEffect setEdge:UIRectEdgeBottom];
     }
-    [bottomToolbar addInteraction:edgeEffect];
+    _bottomToolbarEdgeEffect = edgeEffect;
   }
 }
 
