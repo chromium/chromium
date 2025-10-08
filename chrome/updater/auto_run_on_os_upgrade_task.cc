@@ -93,7 +93,7 @@ size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
           scope_, base::SysUTF8ToWide(app_id)),
       [&](const auto& app_command_runner) {
         base::Process process;
-        if (FAILED(app_command_runner.Run(
+        if (FAILED(app_command_runner->Run(
                 {base::SysUTF8ToWide(os_upgrade_string_)}, process))) {
           return;
         }

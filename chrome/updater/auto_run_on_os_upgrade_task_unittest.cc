@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
@@ -74,6 +75,7 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
   base::ScopedTempDir temp_programfiles_dir_;
+  base::test::TaskEnvironment environment_;
 };
 
 TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {

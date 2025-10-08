@@ -320,7 +320,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   ~LegacyAppCommandWebImpl() override;
 
   base::Process process_;
-  HResultOr<AppCommandRunner> app_command_runner_;
+  HResultOr<scoped_refptr<AppCommandRunner>> app_command_runner_;
   UpdaterScope scope_ = UpdaterScope::kSystem;
   std::string app_id_;
   std::string command_id_;
