@@ -39,6 +39,12 @@ def __step_config(ctx, step_config):
                 # not specified in the build graph correctly.
                 "output_local": True,
             },
+            {
+                "name": "blink/build_web_idl_database",
+                "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/build_web_idl_database.py",
+                "remote": True,
+                "timeout": "2m",
+            },
         ])
     return step_config
 
