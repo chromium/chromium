@@ -76,6 +76,10 @@
 
 BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kDesktopMediaPickerCheckAudioPermissions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -855,11 +859,25 @@ std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(
   DisplaySurfaceCategory& category =
       categories_.emplace_back(type, std::move(controller), audio_offered,
                                audio_checked, supports_reselect_button);
+
+  base::RepeatingCallback<void(void)> trigger_audio_permission_check;
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kDesktopMediaPickerCheckAudioPermissions) &&
+      (type == DesktopMediaList::Type::kScreen ||
+       type == DesktopMediaList::Type::kWindow)) {
+    trigger_audio_permission_check = base::BindRepeating(
+        &DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck,
+        weak_factory_.GetWeakPtr());
+  }
+#endif
+
   auto share_audio_view =
       audio_requested_
           ? std::make_unique<ShareAudioView>(GetLabelForAudioToggle(category),
-                                             category.audio_offered)
+                                             category.audio_offered,
+                                             trigger_audio_permission_check)
           : nullptr;
+
   auto pane = std::make_unique<DesktopMediaPaneView>(
       category.type, std::move(content_view), std::move(share_audio_view));
   if (audio_requested_ && audio_offered) {
@@ -1251,6 +1269,11 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
                                     : PermissionInteraction::kNotShown;
 
   RecordUma(permission_interaction);
+}
+
+void DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck() {
+  // TODO(crbug.com/447521447): Add code to check audio permission status and
+  // update UI depending on outcome.
 }
 #endif
 

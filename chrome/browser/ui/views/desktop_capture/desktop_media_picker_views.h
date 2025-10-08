@@ -183,6 +183,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 #if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
   void RecordPermissionInteractionUma() const;
+  void OnTriggerAudioPermissionCheck();
 #endif
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
