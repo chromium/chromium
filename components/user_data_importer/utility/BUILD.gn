@@ -132,15 +132,23 @@ zip("garbage_test_archive") {
   deps = [ ":garbage_test_archive_files" ]
 }
 
+copy("non_ascii_valid_test_archive") {
+  testonly = true
+  sources = [ "//components/test/data/user_data_importer/non_ascii_valid_test_archive.zip" ]
+  outputs = [ "$root_out_dir/non_ascii测试文件.zip" ]
+}
+
 if (is_ios) {
   bundle_data("test_archive_bundle_data") {
     testonly = true
     public_deps = [
       ":garbage_test_archive",
+      ":non_ascii_valid_test_archive",
       ":valid_test_archive",
     ]
     sources = [
       "$root_out_dir/garbage_test_archive.zip",
+      "$root_out_dir/non_ascii测试文件.zip",
       "$root_out_dir/valid_test_archive.zip",
     ]
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]

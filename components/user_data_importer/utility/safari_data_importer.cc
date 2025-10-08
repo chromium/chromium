@@ -292,7 +292,7 @@ SafariDataImporter::~SafariDataImporter() = default;
 void SafariDataImporter::PrepareImport(const base::FilePath& path) {
   metrics_recorder_.OnFlowStarted();
 
-  std::string zip_filename = path.MaybeAsASCII();
+  std::string zip_filename = path.AsUTF8Unsafe();
   if (zip_filename.empty()) {
     LogTotalFailureError(TotalFailureError::kNoFileProvided);
     client_->OnTotalFailure();

@@ -266,6 +266,13 @@ class SafariDataImporterTest : public testing::Test {
         zip_archive_path.Append(FILE_PATH_LITERAL("garbage_test_archive.zip")));
   }
 
+  void PrepareImportFromNonASCIIFile() {
+    base::FilePath zip_archive_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
+    PrepareFile(zip_archive_path.Append(
+        base::FilePath(FILE_PATH_LITERAL("non_ascii测试文件.zip"))));
+  }
+
   void CancelImport() { importer_->CancelImport(); }
 
   void SetHistorySizeThreshold(size_t history_size_threshold) {
@@ -896,6 +903,15 @@ TEST_F(SafariDataImporterTest, HandleGarbageFile) {
 
   CompleteImport({});
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(SafariDataImporterTest, HandleNonASCIIFile) {
+  SetUpEndToEndPrepareExpectations();
+  SetUpEndToEndCompleteExpectations();
+  PrepareImportFromNonASCIIFile();
+  CompleteImport({});
+}
+#endif
 
 TEST_F(SafariDataImporterTest, CancelImport) {
   ExpectBookmarksReady(_);
