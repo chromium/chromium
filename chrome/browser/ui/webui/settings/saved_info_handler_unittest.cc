@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/settings/saved_info_handler.h"
 
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -21,10 +25,7 @@ using password_manager::TestPasswordStore;
 
 class TestSavedInfoHandler : public SavedInfoHandler {
  public:
-  explicit TestSavedInfoHandler(
-      Profile* profile,
-      std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter)
-      : SavedInfoHandler(profile, std::move(presenter)) {}
+  explicit TestSavedInfoHandler(Profile* profile) : SavedInfoHandler(profile) {}
   ~TestSavedInfoHandler() override = default;
 
   // Make public for testing.
@@ -39,6 +40,20 @@ class SavedInfoHandlerTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     profile_store_ = CreateAndUseTestPasswordStore(profile_.get());
+    AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindOnce(
+            [](content::BrowserContext* context)
+                -> scoped_refptr<RefcountedKeyedService> { return nullptr; }));
+    PasskeyModelFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindOnce([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<webauthn::TestPasskeyModel>();
+        }));
+    AffiliationServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindOnce(&SavedInfoHandlerTest::CreateAfilliationService,
+                       base::Unretained(this)));
   }
 
   void TearDown() override { profile_store_->ShutdownOnUIThread(); }
@@ -46,19 +61,26 @@ class SavedInfoHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return &web_ui_; }
   TestingProfile* profile() { return profile_.get(); }
   TestPasswordStore* profile_store() { return profile_store_.get(); }
-  webauthn::TestPasskeyModel* passkey_model() { return &passkey_model_; }
+  webauthn::TestPasskeyModel* passkey_model() {
+    return static_cast<webauthn::TestPasskeyModel*>(
+        PasskeyModelFactory::GetForProfile(profile_.get()));
+  }
   affiliations::FakeAffiliationService* affiliation_service() {
     return &affiliation_service_;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  std::unique_ptr<KeyedService> CreateAfilliationService(
+      content::BrowserContext* context) {
+    return std::make_unique<affiliations::FakeAffiliationService>();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   scoped_refptr<TestPasswordStore> profile_store_;
-  webauthn::TestPasskeyModel passkey_model_;
   affiliations::FakeAffiliationService affiliation_service_;
 };
 
@@ -83,16 +105,13 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
   passkey.set_user_id("user_id");
   passkey_model()->AddNewPasskeyForTesting(passkey);
 
-  auto presenter = std::make_unique<password_manager::SavedPasswordsPresenter>(
-      affiliation_service(), profile_store(), nullptr, passkey_model());
-  presenter->Init();
-  auto handler =
-      std::make_unique<TestSavedInfoHandler>(profile(), std::move(presenter));
+  auto handler = std::make_unique<TestSavedInfoHandler>(profile());
   handler->set_web_ui(web_ui());
   handler->RegisterMessages();
   handler->AllowJavascriptForTesting();
-  handler->OnJavascriptAllowed();  // Re-initialize the observer.
-  RunUntilIdle();
+  handler->OnJavascriptAllowed();
+  RunUntilIdle();  // Allow presenter to initialize
+
   web_ui()->ClearTrackedCalls();
 
   base::Value::List args;

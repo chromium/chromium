@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 
 class Profile;
 
@@ -16,12 +17,10 @@ namespace settings {
 
 class SavedInfoHandler
     : public SettingsPageUIHandler,
-      public password_manager::SavedPasswordsPresenter::Observer {
+      public password_manager::SavedPasswordsPresenter::Observer,
+      public webauthn::PasskeyModel::Observer {
  public:
   explicit SavedInfoHandler(Profile* profile);
-  explicit SavedInfoHandler(
-      Profile* profile,
-      std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter);
   ~SavedInfoHandler() override;
 
   SavedInfoHandler(const SavedInfoHandler&) = delete;
@@ -40,6 +39,12 @@ class SavedInfoHandler
   void OnSavedPasswordsChanged(
       const password_manager::PasswordStoreChangeList& changes) override;
 
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override {}
+  void OnPasskeyModelIsReady(bool is_ready) override {}
+
   void HandleGetPasswordCount(const base::Value::List& args);
   base::Value::Dict GetPasswordCounts();
 
@@ -50,7 +55,10 @@ class SavedInfoHandler
 
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
                           password_manager::SavedPasswordsPresenter::Observer>
-      observation_{this};
+      password_observation_{this};
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      passkey_observation_{this};
 };
 
 }  // namespace settings
