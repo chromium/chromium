@@ -32,23 +32,18 @@ public class ReaderModeIphControllerTest {
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private View mAnchorView;
     @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     private ReaderModeIphController mController;
 
     @Before
     public void setUp() {
         mController =
-                new ReaderModeIphController(
-                        mUserEducationHelper,
-                        mAnchorView,
-                        mAppMenuHandler,
-                        mReaderModeActionRateLimiter);
+                new ReaderModeIphController(mUserEducationHelper, mAnchorView, mAppMenuHandler);
     }
 
     @Test
     public void testShowIph() {
-        mController.onActionSuppressed();
+        mController.showIph();
 
         ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
         verify(mUserEducationHelper).requestShowIph(captor.capture());

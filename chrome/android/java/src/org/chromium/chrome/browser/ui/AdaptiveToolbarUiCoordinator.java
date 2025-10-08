@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeIphController;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -116,7 +117,8 @@ public class AdaptiveToolbarUiCoordinator {
             Runnable onShareRunnable,
             WindowAndroid windowAndroid,
             Supplier<@Nullable Tracker> trackerSupplier,
-            Supplier<ScrimManager> scrimSupplier) {
+            Supplier<ScrimManager> scrimSupplier,
+            Supplier<@Nullable ReaderModeIphController> readerModeIphControllerSupplier) {
         if (!toolbarBehavior.shouldInitialize()) return;
 
         mBottomSheetController = bottomSheetController;
@@ -157,7 +159,8 @@ public class AdaptiveToolbarUiCoordinator {
                         mContext,
                         mProfileSupplier,
                         mActivityTabProvider,
-                        mModalDialogManagerSupplier.get());
+                        mModalDialogManagerSupplier.get(),
+                        readerModeIphControllerSupplier);
         ReadAloudToolbarButtonController readAloudButtonController =
                 new ReadAloudToolbarButtonController(
                         mContext,

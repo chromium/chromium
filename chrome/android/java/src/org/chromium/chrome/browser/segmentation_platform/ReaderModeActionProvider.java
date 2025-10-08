@@ -225,7 +225,6 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         if (ReaderModeActionRateLimiter.getInstance().isActionSuppressed()) {
             ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
                     ReaderModeMetrics.ReaderModeContextualPageActionEvent.SUPPRESSED);
-            ReaderModeActionRateLimiter.getInstance().onActionSuppressed();
             return;
         }
         signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, isDistillable);
