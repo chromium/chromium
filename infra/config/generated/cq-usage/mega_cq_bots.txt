@@ -109,6 +109,7 @@ chromium/try/linux-chromeos-compile-dbg
 chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
+chromium/try/linux-crossbench
 chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
 chromium/try/linux-full-remote-rel

@@ -358,6 +358,7 @@ ci/linux-cfm-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
+ci/linux-crossbench
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
 ci/linux-oi-rel
@@ -596,6 +597,7 @@ try/linux-chromeos-compile-dbg
 try/linux-chromeos-dbg
 try/linux-chromeos-rel
 try/linux-clobber-rel
+try/linux-crossbench
 try/linux-dcheck-off-rel
 try/linux-enterprise-companion-try-builder-dbg
 try/linux-enterprise-companion-try-builder-rel

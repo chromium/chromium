@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-crossbench/gn-args.json"
+        "infra/config/generated/builders/try/linux-crossbench/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -38,14 +38,12 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-crossbench",
-          "group": "tryserver.crossbench"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-crossbench/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-crossbench/targets"
     }
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
   },
   "$build/siso": {
     "configs": [
@@ -56,8 +54,8 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -66,12 +64,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "crossbench",
-  "gardener_rotations": [
-    "crossbench"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "crossbench"
-  ]
+  "builder_group": "tryserver.crossbench",
+  "cq": "path-based",
+  "recipe": "chromium_trybot"
 }

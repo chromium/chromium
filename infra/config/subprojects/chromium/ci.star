@@ -148,6 +148,7 @@ luci.gitiles_poller(
         "chromium.swangle",
         "chromium.updater",
         "chromium.enterprise_companion",
+        "crossbench",
     ],
 ) for name, title in (
     ("main", "{} Main Console".format(settings.project_title)),

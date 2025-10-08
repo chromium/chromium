@@ -1,4 +1,4 @@
-# Copyright 20205 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,4 +19,5 @@ gardener_rotations = struct(
     IOS = _gardener_rotations.rotation("ios", "ios rotation", "ios tree closers"),
     CHROMIUMOS = _gardener_rotations.rotation("chromiumos", "chromiumos rotation", "chromiumos tree closers"),  # This group is not on SoM.
     CRONET = _gardener_rotations.rotation("cronet", "cronet rotation", None),
+    CROSSBENCH = _gardener_rotations.rotation("crossbench", "crossbench rotation", None),
 )
