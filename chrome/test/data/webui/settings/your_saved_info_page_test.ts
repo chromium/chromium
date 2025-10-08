@@ -4,15 +4,14 @@
 
 import 'chrome://settings/settings.js';
 
-import type {SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
-import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
-
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 suite('YourSavedInfoPage', function() {
@@ -71,7 +70,6 @@ suite('YourSavedInfoPage', function() {
     assertEquals(3, yourSavedInfoPage.ibansCount);
     assertEquals(1, yourSavedInfoPage.payOverTimeIssuersCount);
   });
-
 });
 
 suite('RelatedServices', function() {
@@ -96,8 +94,7 @@ suite('RelatedServices', function() {
     PasswordManagerImpl.setInstance(passwordManager);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage =
-        document.createElement('settings-your-saved-info-page');
+    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
     document.body.appendChild(yourSavedInfoPage);
     flush();
   });

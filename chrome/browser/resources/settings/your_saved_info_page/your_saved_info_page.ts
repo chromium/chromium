@@ -12,11 +12,11 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_page/autofill_manager_proxy.js';
+import {AutofillManagerImpl} from '../autofill_page/autofill_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
-import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_page/autofill_manager_proxy.js';
-import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
-import {AutofillManagerImpl} from '../autofill_page/autofill_manager_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
