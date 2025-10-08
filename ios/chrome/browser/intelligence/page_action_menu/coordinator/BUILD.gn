@@ -10,11 +10,13 @@ source_set("coordinator") {
     "page_action_menu_mediator.mm",
   ]
   deps = [
+    "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
     "//ios/chrome/browser/intelligence/bwg/model",

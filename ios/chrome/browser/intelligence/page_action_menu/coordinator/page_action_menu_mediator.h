@@ -14,6 +14,7 @@ class BwgService;
 class PrefService;
 class ReaderModeTabHelper;
 class TemplateURLService;
+class HostContentSettingsMap;
 
 @protocol PageActionMenuCommands;
 
@@ -30,6 +31,7 @@ class WebState;
               templateURLService:(TemplateURLService*)templateURLService
                       BWGService:(BwgService*)BWGService
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
+          hostContentSettingsMap:(HostContentSettingsMap*)hostContentSettingsMap
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

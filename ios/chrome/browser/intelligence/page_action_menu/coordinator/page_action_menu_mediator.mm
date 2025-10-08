@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
@@ -55,13 +56,18 @@ const CGFloat kFeatureRowIconSize = 20;
 
   // The tab helper for Reader mode.
   raw_ptr<ReaderModeTabHelper> _readerModeTabHelper;
+
+  // The host content settings map for managing site permissions.
+  raw_ptr<HostContentSettingsMap> _hostContentSettingsMap;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
                       BWGService:(BwgService*)BWGService
-             readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper {
+             readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
+          hostContentSettingsMap:
+              (HostContentSettingsMap*)hostContentSettingsMap {
   self = [super init];
   if (self) {
     _webState = webState;
@@ -69,6 +75,7 @@ const CGFloat kFeatureRowIconSize = 20;
     _templateURLService = templateURLService;
     _BWGService = BWGService;
     _readerModeTabHelper = readerModeTabHelper;
+    _hostContentSettingsMap = hostContentSettingsMap;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
   }
@@ -144,9 +151,19 @@ const CGFloat kFeatureRowIconSize = 20;
       return state == web::PermissionStateAllowed;
     }
     case PageActionMenuPopupBlocker: {
+      if (!_hostContentSettingsMap) {
+        return NO;
+      }
+      GURL url = _webState->GetLastCommittedURL();
+      ContentSetting setting = _hostContentSettingsMap->GetContentSetting(
+          url, url, ContentSettingsType::POPUPS);
+
+      // Show row only if blocking is active AND there are blocked popups.
       BlockedPopupTabHelper* helper =
           BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
-      return helper && helper->GetBlockedPopupCount() > 0;
+      bool hasBlockedPopups = helper && helper->GetBlockedPopupCount() > 0;
+
+      return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
     }
   }
 }
@@ -285,6 +302,39 @@ const CGFloat kFeatureRowIconSize = 20;
   }
 
   return features;
+}
+
+- (void)allowBlockedPopups {
+  if (!_webState || !_hostContentSettingsMap) {
+    return;
+  }
+
+  BlockedPopupTabHelper* helper =
+      BlockedPopupTabHelper::GetOrCreateForWebState(_webState);
+  if (!helper) {
+    return;
+  }
+
+  // Get the blocked popups.
+  std::vector<BlockedPopupTabHelper::Popup> popups = helper->GetBlockedPopups();
+
+  GURL currentUrl = _webState->GetLastCommittedURL();
+
+  // Open each blocked popup and allow future popups from this site.
+  for (const auto& popup : popups) {
+    web::WebState::OpenURLParams params(popup.popup_url, popup.referrer,
+                                        WindowOpenDisposition::NEW_POPUP,
+                                        ui::PAGE_TRANSITION_LINK, true);
+    _webState->OpenURL(params);
+
+    // Set popup permission to ALLOW for the referrer site.
+    _hostContentSettingsMap->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromURL(popup.referrer.url),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
+        CONTENT_SETTING_ALLOW);
+  }
+
+  [self.consumer updateFeatureRowsAvailability];
 }
 
 #pragma mark - CRWWebStateObserver

@@ -45,6 +45,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Returns array of currently active features to display.
 - (NSArray<PageActionMenuFeature*>*)activeFeatures;
 
+// Allows all blocked popups for the current site.
+- (void)allowBlockedPopups;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

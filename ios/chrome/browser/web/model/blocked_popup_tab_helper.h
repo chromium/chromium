@@ -63,6 +63,9 @@ class BlockedPopupTabHelper
     const web::Referrer referrer;
   };
 
+  // Returns a copy of the currently blocked popups.
+  std::vector<Popup> GetBlockedPopups() const { return popups_; }
+
  private:
   friend class web::LazyWebStateUserData<BlockedPopupTabHelper>;
 
