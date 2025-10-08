@@ -44,6 +44,13 @@ class AutofillFieldPromoView {
   // Destroys the view. As a consequence, the IPH is also hidden.
   virtual void Close() = 0;
 
+  // Makes the view invisible (but does not destroy it). Leading to the IPH to
+  // also be hidden. This method is used before `Close()` as a way to first hide
+  // and then wait until pending UI tasks (such as calculating bounds) before
+  // destroying the view. This covers the case where successful bounds updates
+  // lead to the view being destroyed too early, causing nullptr dereference.
+  virtual void MakeInvisible() = 0;
+
   virtual base::WeakPtr<AutofillFieldPromoView> GetWeakPtr() = 0;
 };
 

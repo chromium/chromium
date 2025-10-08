@@ -70,6 +70,10 @@ void AutofillFieldPromoViewImpl::Close() {
   parent()->RemoveChildViewT(this);
 }
 
+void AutofillFieldPromoViewImpl::MakeInvisible() {
+  SetVisible(false);
+}
+
 base::WeakPtr<AutofillFieldPromoView> AutofillFieldPromoViewImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
