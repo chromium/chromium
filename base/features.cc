@@ -184,6 +184,12 @@ BASE_FEATURE_PARAM(bool,
                    true);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When enabled, GetTerminationStatus() returns
+// TERMINATION_STATUS_EVICTED_FOR_MEMORY for processes terminated due to commit
+// failures. Otherwise, it returns TERMINATION_STATUS_OOM.
+BASE_FEATURE(kUseTerminationStatusMemoryExhaustion,
+             FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsReducePPMsEnabled() {
   return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
 }

@@ -65,6 +65,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kLibraryPrefetcherMadviseFallback);
 
 #endif
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseTerminationStatusMemoryExhaustion);
+
 // Whether the ReducePPMs feature is enabled. Unlike
 // `FeatureList::IsEnabled(base::features::kReducePPMs)`, this can be called
 // racily with initializing the FeatureList (although the return value might not

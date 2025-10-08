@@ -11,10 +11,12 @@
 
 #include <algorithm>
 
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/process/process_iterator.h"
+#include "partition_alloc/page_allocator.h"
 
 namespace base {
 
@@ -76,6 +78,15 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
                                             // object memory limits.
     case win::kOomExceptionCode:            // Ran out of memory.
       return TERMINATION_STATUS_OOM;
+    // This exit code is used when a process is terminated by another process
+    // due to a commit failure. See
+    // `CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE`
+    // in `chrome/common/chrome_result_codes.h`.
+    case partition_alloc::kTerminateOnCommitFailureExitCode:
+      return FeatureList::IsEnabled(
+                 features::kUseTerminationStatusMemoryExhaustion)
+                 ? TERMINATION_STATUS_EVICTED_FOR_MEMORY
+                 : TERMINATION_STATUS_OOM;
     // This exit code means the process failed an OS integrity check.
     // This is tested in ProcessMitigationsTest.* in sandbox.
     case win::kStatusInvalidImageHashExitCode:
