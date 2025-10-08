@@ -149,7 +149,7 @@ BatteryInfo::BatteryInfo(BatteryInfo&&) = default;
 
 BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
 
-bool BatteryInfo::operator==(const BatteryInfo& other) {
+bool BatteryInfo::operator==(const BatteryInfo& other) const {
   return type == other.type && percentage == other.percentage &&
          charge_state == other.charge_state;
 }

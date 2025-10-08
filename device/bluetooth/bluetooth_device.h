@@ -152,7 +152,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     BatteryInfo(BatteryInfo&&);
     BatteryInfo& operator=(BatteryInfo&&);
     ~BatteryInfo();
-    bool operator==(const BatteryInfo& other);
+    bool operator==(const BatteryInfo& other) const;
   };
 
   typedef std::vector<BluetoothUUID> UUIDList;
