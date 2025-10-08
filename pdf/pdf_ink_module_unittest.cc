@@ -1305,8 +1305,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         const ink::StrokeInputBatch& input_batch = stroke.stroke.GetInputs();
         StrokeInputPoints stroke_points;
         stroke_points.reserve(input_batch.Size());
-        for (size_t i = 0; i < input_batch.Size(); ++i) {
-          ink::StrokeInput stroke_input = input_batch.Get(i);
+        for (ink::StrokeInput stroke_input : input_batch) {
           stroke_points.emplace_back(stroke_input.position.x,
                                      stroke_input.position.y);
         }
