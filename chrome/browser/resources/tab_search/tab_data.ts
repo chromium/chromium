@@ -118,6 +118,18 @@ export function normalizeURL(url: string): string {
   return url || 'about:blank';
 }
 
+export function getDisplayHostnameForUrl(url: URL): string {
+  if (url.protocol === 'blob:') {
+    return loadTimeData.getString('blobUrlSource');
+  } else if (url.protocol === 'file:') {
+    return loadTimeData.getString('fileUrlSource');
+  } else if (url.protocol === 'about:' && url.pathname === 'blank') {
+    return 'about:blank';
+  } else {
+    return url.hostname;
+  }
+}
+
 export function getTitle(data: TabData|TabGroupData): string|undefined {
   if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
     return undefined;
