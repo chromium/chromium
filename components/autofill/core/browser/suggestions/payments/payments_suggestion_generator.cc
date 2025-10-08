@@ -1266,9 +1266,9 @@ Suggestion CreateBnplSuggestion(
       switch (id) {
         case BnplIssuer::IssuerId::kBnplAffirm:
           return 4;
-        case BnplIssuer::IssuerId::kBnplZip:
-          return 3;
         case BnplIssuer::IssuerId::kBnplKlarna:
+          return 3;
+        case BnplIssuer::IssuerId::kBnplZip:
           return 2;
         case BnplIssuer::IssuerId::kBnplAfterpay:
           NOTREACHED();

@@ -2194,10 +2194,10 @@ TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
           /*labels=*/
           {{Suggestion::Text(l10n_util::GetStringFUTF16(
               IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_THREE_ISSUERS,
-              // Affirm comes before Zip, and Zip comes before Klarna.
+              // Affirm comes before Klarna, and Klarna comes before Zip.
               bnpl_issuers[2].GetDisplayName(),
-              bnpl_issuers[1].GetDisplayName(),
-              bnpl_issuers[0].GetDisplayName()))}}));
+              bnpl_issuers[0].GetDisplayName(),
+              bnpl_issuers[1].GetDisplayName()))}}));
 }
 
 TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_FlagDisabled) {
