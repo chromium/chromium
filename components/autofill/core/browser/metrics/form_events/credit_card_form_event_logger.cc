@@ -183,24 +183,11 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
               form);
         }
 
-        // Log masked server card selected once events for benefits.
-        if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
-          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
-              form);
-        }
         // Log when a masked server card was selected after benefits were shown.
         if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
-          Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              form);
           LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kSelected,
                                          metadata_logging_context_);
         }
-      }
-
-      // Log masked server card selected events for benefits.
-      if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
-        Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED,
-            form);
       }
 
       // Log card info retrieval enrolled card is selected.
