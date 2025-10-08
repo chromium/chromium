@@ -246,8 +246,9 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 // the server supports it.
 // TODO(crbug.com/446972028): Remove this method in favor of the one below that
 // takes `contextual_inputs` once the server fully supports it.
-GURL GetUrlForMultimodalAim(
+GURL GetUrlForMultimodalSearch(
     TemplateURLService* turl_service,
+    bool is_aim_search,
     omnibox::ChromeAimEntryPoint aim_entrypoint,
     const base::Time& query_start_time,
     const std::string& search_session_id,
@@ -266,8 +267,9 @@ GURL GetUrlForMultimodalAim(
 // to obtain the uploaded context.
 // TODO(crbug.com/430070871): Make `lns_surface` a required parameter when
 // the server supports it.
-GURL GetUrlForMultimodalAim(
+GURL GetUrlForMultimodalSearch(
     TemplateURLService* turl_service,
+    bool is_aim_search,
     omnibox::ChromeAimEntryPoint aim_entrypoint,
     const base::Time& query_start_time,
     const std::string& search_session_id,
