@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
@@ -113,8 +114,9 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
     UMA_HISTOGRAM_BOOLEAN("WebUICodeCache.FeatureEnabled", true);
   }
 
+  base::FilePath generated_js_code_cache_path = path.AppendASCII("js");
   generated_js_code_cache_ = {
-      new GeneratedCodeCache(path.AppendASCII("js"), max_bytes_js,
+      new GeneratedCodeCache(generated_js_code_cache_path, max_bytes_js,
                              GeneratedCodeCache::CodeCacheType::kJavaScript),
       base::OnTaskRunnerDeleter(task_runner_)};
 
@@ -123,20 +125,31 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
                              GeneratedCodeCache::CodeCacheType::kWebAssembly),
       base::OnTaskRunnerDeleter(task_runner_)};
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUsePersistentCacheForCodeCache)) {
+  // Use a short name for the root directory due to max path length limits.
+  base::FilePath persistent_cache_collection_path = path.AppendASCII("pc");
+  bool use_persistent_cache = base::FeatureList::IsEnabled(
+      blink::features::kUsePersistentCacheForCodeCache);
+  if (use_persistent_cache) {
     // Target the same amount of disk space used for persistent_cache as is used
     // for disk_cache.
     int64_t disk_cache_max_size = disk_cache::PreferredCacheSize(
         base::SysInfo::AmountOfFreeDiskSpace(path),
         net::GENERATED_BYTE_CODE_CACHE);
 
-    // Use a short name for the root directory due to max path length limits.
     persistent_cache_collection_ = {
-        new persistent_cache::PersistentCacheCollection(path.AppendASCII("pc"),
-                                                        disk_cache_max_size),
+        new persistent_cache::PersistentCacheCollection(
+            persistent_cache_collection_path, disk_cache_max_size),
         base::OnTaskRunnerDeleter(task_runner_)};
   }
+
+  // Delete the js cache files that won't be used to avoid wasting space.
+  base::FilePath directory_to_delete = use_persistent_cache
+                                           ? generated_js_code_cache_path
+                                           : persistent_cache_collection_path;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(base::IgnoreResult(base::DeletePathRecursively),
+                                directory_to_delete));
 }
 
 void GeneratedCodeCacheContext::Shutdown() {
