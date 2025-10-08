@@ -764,6 +764,14 @@ gfx::Rect CompoundImageBacking::ClearedRect() const {
 
 void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
+void CompoundImageBacking::MarkForDestruction() {
+  for (const auto& element : elements_) {
+    if (element.backing) {
+      element.backing->MarkForDestruction();
+    }
+  }
+}
+
 gfx::GpuMemoryBufferHandle CompoundImageBacking::GetGpuMemoryBufferHandle() {
   auto& element = GetShmElement();
   CHECK(element.backing);

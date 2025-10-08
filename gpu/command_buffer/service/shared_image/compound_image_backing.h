@@ -114,6 +114,13 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void OnAddSecondaryReference() override;
+
+  // CompoundImageBacking is registered as the primary backing while creating a
+  // SharedImageRepresentationFactoryRef whereas the underlying
+  // elements/backings it holds are not. Since the MarkForDestruction() method
+  // in SharedImageRepresentationFactoryRef only runs for primary backing,
+  // CompoundImageBacking needs to propagate this call to all its elements.
+  void MarkForDestruction() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
  protected:
