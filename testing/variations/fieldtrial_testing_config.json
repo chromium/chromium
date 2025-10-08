@@ -9600,7 +9600,7 @@
             ]
         }
     ],
-    "EmitPerScrollJankV1MetricAtEndOfScroll": [
+    "EmitPerScrollJankMetricsAtEndOfScroll": [
         {
             "platforms": [
                 "android",
@@ -9611,27 +9611,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Experiment_V1EnabledV4Disabled",
                     "enable_features": [
                         "EmitPerScrollJankV1MetricAtEndOfScroll"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EmitPerScrollJankV4MetricAtEndOfScroll": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                    ],
+                    "disable_features": [
                         "EmitPerScrollJankV4MetricAtEndOfScroll"
                     ]
                 }
