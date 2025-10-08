@@ -27,6 +27,11 @@ BASE_DECLARE_FEATURE(kKeyboardLockPrompt);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionElementPromptPositioning);
 
+// DO NOT REMOVE THIS FLAG.
+// This feature was used to enable the V2 version of the permission predictions
+// model. It is enabled by default. This flag is kept around to be able to
+// fetch the size of the holdback group that is provided in the experiment
+// parameters.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPredictionsV2);
 
