@@ -54,8 +54,13 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
-  # Label of the target providing implementation for PasskeyKeychainProvider.
+  # Label of the targets providing implementation for PasskeyKeychainProvider.
+  # Different for Chrome and extensions due to different internal dependencies.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_passkey_keychain_provider_chrome_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
+  ios_passkey_keychain_provider_extension_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
+
+  # TODO(crbug.com/448228341): Remove after transition to two targets.
   ios_passkey_keychain_provider_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
 
   # Label of the target providing implementation for FontProvider.

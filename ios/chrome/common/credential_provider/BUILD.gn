@@ -66,8 +66,20 @@ source_set("mock_credential_store") {
   deps = [ ":ui" ]
 }
 
-source_set("passkey_keychain_provider") {
+# TODO(crbug.com/450221329): Use a template for those targets.
+source_set("passkey_keychain_provider_chrome") {
   public_deps = [ ":passkey_keychain_provider_header" ]
+
+  # TODO(crbug.com/448228341): Replace with target from internal.
+  deps = [ ":passkey_keychain_provider_implementation" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_extension") {
+  public_deps = [ ":passkey_keychain_provider_header" ]
+
+  # TODO(crbug.com/448228341): Replace with new target from internal.
   deps = [ ios_passkey_keychain_provider_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
@@ -90,14 +102,29 @@ source_set("passkey_keychain_provider_implementation") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("passkey_keychain_provider_bridge") {
+source_set("passkey_keychain_provider_bridge_chrome") {
   sources = [
     "passkey_keychain_provider_bridge.h",
     "passkey_keychain_provider_bridge.mm",
   ]
   deps = [
     ":credential_provider",
-    ":passkey_keychain_provider",
+    ":passkey_keychain_provider_chrome",
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_bridge_extension") {
+  sources = [
+    "passkey_keychain_provider_bridge.h",
+    "passkey_keychain_provider_bridge.mm",
+  ]
+  deps = [
+    ":credential_provider",
+    ":passkey_keychain_provider_extension",
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
