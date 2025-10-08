@@ -914,6 +914,7 @@ clang_tot_linux_builder(
             "shared",
             "release",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -953,6 +954,7 @@ clang_tot_linux_builder(
             "shared",
             "debug",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -992,6 +994,7 @@ clang_tot_linux_builder(
             "lsan",
             "release_builder",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -1033,6 +1036,7 @@ clang_tot_linux_builder(
         configs = [
             "libfuzzer",
             "asan",
+            "remoteexec",
             "clang_tot_gn",
             "no_treat_warnings_as_errors",
             "shared",
@@ -1099,6 +1103,7 @@ clang_tot_linux_builder(
             "msan",
             "release",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -1139,6 +1144,7 @@ clang_tot_linux_builder(
             "no_symbols",
             "pgo_phase_1",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -1178,6 +1184,7 @@ clang_tot_linux_builder(
             "tsan",
             "release",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
@@ -1217,6 +1224,7 @@ clang_tot_linux_builder(
             "ubsan_vptr_no_recover_hack",
             "release_builder",
             "x64",
+            "remoteexec",
         ],
     ),
     targets = targets.bundle(
