@@ -707,7 +707,7 @@ BASE_FEATURE_PARAM(bool,
                    kHttpCacheNoVarySearchKeepNotSuitable,
                    &kHttpCacheNoVarySearch,
                    "keep_not_suitable",
-                   false);
+                   true);
 
 BASE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent,
              base::FEATURE_DISABLED_BY_DEFAULT);
