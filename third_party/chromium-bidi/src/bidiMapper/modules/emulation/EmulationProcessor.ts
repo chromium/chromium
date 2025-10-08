@@ -351,9 +351,62 @@ export class EmulationProcessor {
 
     await Promise.all(
       browsingContexts.map(
-        async (context) =>
-          await context.setUserAgentOverrideParams(params.userAgent),
+        async (context) => await context.setUserAgentOverride(params.userAgent),
       ),
+    );
+    return {};
+  }
+
+  async setNetworkConditions(
+    params: Emulation.SetNetworkConditionsParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+      true,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          emulatedNetworkConditions: params.networkConditions,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        emulatedNetworkConditions: params.networkConditions,
+      });
+    }
+
+    if (params.contexts === undefined && params.userContexts === undefined) {
+      this.#contextConfigStorage.updateGlobalConfig({
+        emulatedNetworkConditions: params.networkConditions,
+      });
+    }
+
+    if (
+      params.networkConditions !== null &&
+      params.networkConditions.type !== 'offline'
+    ) {
+      throw new UnsupportedOperationException(
+        `Unsupported network conditions ${params.networkConditions.type}`,
+      );
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const emulatedNetworkConditions =
+          this.#contextConfigStorage.getActiveConfig(
+            context.id,
+            context.userContext,
+          ).emulatedNetworkConditions ?? null;
+
+        await context.setEmulatedNetworkConditions(emulatedNetworkConditions);
+      }),
     );
     return {};
   }

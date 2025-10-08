@@ -34,6 +34,7 @@ export class ContextConfig {
   acceptInsecureCerts?: boolean;
   devicePixelRatio?: number | null;
   downloadBehavior?: Browser.DownloadBehavior | null;
+  emulatedNetworkConditions?: Emulation.NetworkConditions | null;
   // Extra headers are kept in CDP format.
   extraHeaders?: Protocol.Network.Headers;
   geolocation?:

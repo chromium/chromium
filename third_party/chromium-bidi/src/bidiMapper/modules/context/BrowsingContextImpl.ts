@@ -1943,10 +1943,21 @@ export class BrowsingContextImpl {
     );
   }
 
-  async setUserAgentOverrideParams(userAgent: string | null) {
+  async setUserAgentOverride(userAgent: string | null) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setUserAgent(userAgent),
+      ),
+    );
+  }
+
+  async setEmulatedNetworkConditions(
+    networkConditions: Emulation.NetworkConditions | null,
+  ) {
+    await Promise.all(
+      this.#getAllRelatedCdpTargets().map(
+        async (cdpTarget) =>
+          await cdpTarget.setEmulatedNetworkConditions(networkConditions),
       ),
     );
   }

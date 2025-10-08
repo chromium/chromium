@@ -244,7 +244,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'browser.setClientWindowState':
         this.#parser.parseSetClientWindowStateParameters(command.params);
-        throw new UnknownErrorException(
+        throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,
         );
       case 'browser.setDownloadBehavior':
@@ -327,7 +327,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         this.#parser.parseSetForcedColorsModeThemeOverrideParams(
           command.params,
         );
-        throw new UnknownErrorException(
+        throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,
         );
       case 'emulation.setGeolocationOverride':
@@ -339,9 +339,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSetLocaleOverrideParams(command.params),
         );
       case 'emulation.setNetworkConditions':
-        this.#parser.parseSetNetworkConditionsParams(command.params);
-        throw new UnsupportedOperationException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setNetworkConditions(
+          this.#parser.parseSetNetworkConditionsParams(command.params),
         );
       case 'emulation.setScreenOrientationOverride':
         return await this.#emulationProcessor.setScreenOrientationOverride(
@@ -478,7 +477,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Session module
       // keep-sorted start block=yes
       case 'session.end':
-        throw new UnknownErrorException(
+        throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,
         );
       case 'session.new':

@@ -251,6 +251,7 @@ export class CdpTarget {
     ]);
     for (const result of results) {
       if (result instanceof Error) {
+        // Ignore errors during configuring targets, just log them.
         this.#logger?.(
           LogType.debugError,
           'Error happened when configuring a new target',
@@ -712,6 +713,12 @@ export class CdpTarget {
       );
     }
 
+    if (config.emulatedNetworkConditions !== undefined) {
+      promises.push(
+        this.setEmulatedNetworkConditions(config.emulatedNetworkConditions),
+      );
+    }
+
     await Promise.all(promises);
   }
 
@@ -903,5 +910,36 @@ export class CdpTarget {
     await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
       userAgent: userAgent ?? '',
     });
+  }
+
+  async setEmulatedNetworkConditions(
+    networkConditions: Emulation.NetworkConditions | null,
+  ): Promise<void> {
+    if (networkConditions !== null && networkConditions.type !== 'offline') {
+      throw new UnsupportedOperationException(
+        `Unsupported network conditions ${networkConditions.type}`,
+      );
+    }
+
+    await Promise.all([
+      this.cdpClient.sendCommand('Network.emulateNetworkConditionsByRule', {
+        offline: networkConditions?.type === 'offline',
+        matchedNetworkConditions: [
+          {
+            urlPattern: '',
+            latency: 0,
+            downloadThroughput: -1,
+            uploadThroughput: -1,
+          },
+        ],
+      }),
+      this.cdpClient.sendCommand('Network.overrideNetworkState', {
+        offline: networkConditions?.type === 'offline',
+        // TODO: restore the original `latency` value when emulation is removed.
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      }),
+    ]);
   }
 }
