@@ -57,9 +57,8 @@ void BoxPainterBase::PaintFillLayers(
     const PhysicalRect& rect,
     const BoxBackgroundPaintContext& bg_paint_context,
     BackgroundBleedAvoidance bleed) {
-  FillLayerOcclusionOutputList reversed_paint_list;
-  bool should_draw_background_in_separate_buffer =
-      CalculateFillLayerOcclusionCulling(reversed_paint_list, fill_layer);
+  auto [should_draw_background_in_separate_buffer, last_layer] =
+      AnalyzeFillLayersForPainting(fill_layer);
 
   // TODO(trchen): We can optimize out isolation group if we have a
   // non-transparent background color and the bottom layer encloses all other
@@ -68,9 +67,12 @@ void BoxPainterBase::PaintFillLayers(
   if (should_draw_background_in_separate_buffer)
     context.BeginLayer();
 
-  for (auto* const paint : base::Reversed(reversed_paint_list)) {
-    PaintFillLayer(paint_info, c, *paint, rect, bleed, bg_paint_context);
-  }
+  FillLayer::IterateFillLayersInReverseOrder(
+      &fill_layer, last_layer,
+      [this, paint_info, c, rect, bleed,
+       bg_paint_context](const FillLayer& paint) {
+        PaintFillLayer(paint_info, c, paint, rect, bleed, bg_paint_context);
+      });
 
   if (should_draw_background_in_separate_buffer)
     context.EndLayer();
@@ -459,13 +461,11 @@ bool BoxPainterBase::ShouldForceWhiteBackgroundForPrintEconomy(
           !document.GetSettings()->GetShouldPrintBackgrounds());
 }
 
-bool BoxPainterBase::CalculateFillLayerOcclusionCulling(
-    FillLayerOcclusionOutputList& reversed_paint_list,
+std::pair<bool, const FillLayer*> BoxPainterBase::AnalyzeFillLayersForPainting(
     const FillLayer& fill_layer) {
   bool is_non_associative = false;
-  for (auto* current_layer = &fill_layer; current_layer;
-       current_layer = current_layer->Next()) {
-    reversed_paint_list.push_back(current_layer);
+  const FillLayer* current_layer = &fill_layer;
+  for (; current_layer; current_layer = current_layer->Next()) {
     // Stop traversal when an opaque layer is encountered.
     // FIXME : It would be possible for the following occlusion culling test to
     // be more aggressive on layers with no repeat by testing whether the image
@@ -488,7 +488,7 @@ bool BoxPainterBase::CalculateFillLayerOcclusionCulling(
       break;
     }
   }
-  return is_non_associative;
+  return {is_non_associative, current_layer};
 }
 
 BoxPainterBase::FillLayerInfo::FillLayerInfo(

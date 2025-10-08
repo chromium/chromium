@@ -300,6 +300,18 @@ class CORE_EXPORT FillLayer {
   }
   static StyleImage* InitialFillImage(EFillLayerType) { return nullptr; }
 
+  template <typename Callback>
+  static void IterateFillLayersInReverseOrder(const FillLayer* start,
+                                              const FillLayer* end,
+                                              Callback callback) {
+    if (start != end) {
+      IterateFillLayersInReverseOrder(start->Next(), end, callback);
+    }
+    if (start) {
+      callback(*start);
+    }
+  }
+
  private:
   friend class ComputedStyle;
 
