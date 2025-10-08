@@ -18,7 +18,6 @@
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 

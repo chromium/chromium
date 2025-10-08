@@ -28,7 +28,6 @@
 #include "media/parsers/webp_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libwebp/src/src/webp/decode.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

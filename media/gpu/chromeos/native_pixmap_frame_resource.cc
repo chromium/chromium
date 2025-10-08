@@ -20,7 +20,6 @@
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/switches.h"
 
 namespace media {

@@ -36,7 +36,6 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"

@@ -38,7 +38,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_util.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

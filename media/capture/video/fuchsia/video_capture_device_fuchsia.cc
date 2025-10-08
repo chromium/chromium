@@ -17,7 +17,6 @@
 #include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/video_common.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 

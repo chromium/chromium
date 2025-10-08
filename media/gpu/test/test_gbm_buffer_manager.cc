@@ -23,7 +23,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"

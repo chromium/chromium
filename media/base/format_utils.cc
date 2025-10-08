@@ -4,7 +4,6 @@
 
 #include "media/base/format_utils.h"
 #include "base/logging.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 

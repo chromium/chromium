@@ -35,7 +35,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/rect.h"

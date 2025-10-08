@@ -46,7 +46,6 @@
 #include "media/gpu/vaapi/vp8_vaapi_video_decoder_delegate.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.h"
 #include "media/media_buildflags.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"

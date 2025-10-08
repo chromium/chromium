@@ -71,7 +71,6 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/linux/drm_util_linux.h"

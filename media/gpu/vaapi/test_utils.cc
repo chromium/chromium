@@ -17,7 +17,6 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/test/test_gbm_buffer_manager.h"
