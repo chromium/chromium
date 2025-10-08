@@ -85,8 +85,8 @@ DbusVariant CreateDefaultPropertyValue(const std::string& property_name) {
   return DbusVariant();
 }
 
-DbusString DbusTextDirection() {
-  return DbusString(base::i18n::IsRTL() ? "rtl " : "ltr");
+const char* DbusTextDirection() {
+  return base::i18n::IsRTL() ? "rtl " : "ltr";
 }
 
 void WriteRemovedProperties(dbus::MessageWriter* writer,
@@ -180,14 +180,14 @@ DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
 
   properties_ = std::make_unique<DbusProperties>(menu_, barrier_);
   properties_->RegisterInterface(kInterfaceDbusMenu);
-  auto set_property = [&](const std::string& property_name, auto&& value) {
-    properties_->SetProperty(kInterfaceDbusMenu, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_property(kPropertyIconThemePath, DbusArray<DbusString>());
-  set_property(kPropertyMenuStatus, DbusString(kPropertyValueStatusNormal));
-  set_property(kPropertyTextDirection, DbusTextDirection());
-  set_property(kPropertyVersion, DbusUint32(kPropertyValueVersion));
+  properties_->SetProperty<"as">(kInterfaceDbusMenu, kPropertyIconThemePath, {},
+                                 false);
+  properties_->SetProperty<"s">(kInterfaceDbusMenu, kPropertyMenuStatus,
+                                kPropertyValueStatusNormal, false);
+  properties_->SetProperty<"s">(kInterfaceDbusMenu, kPropertyTextDirection,
+                                DbusTextDirection(), false);
+  properties_->SetProperty<"u">(kInterfaceDbusMenu, kPropertyVersion,
+                                kPropertyValueVersion, false);
 }
 
 DbusMenu::~DbusMenu() = default;

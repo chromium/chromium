@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -18,7 +19,8 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
-#include "components/dbus/properties/types.h"
+#include "components/dbus/properties/dbus_properties.h"
+#include "components/dbus/utils/signature.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
@@ -92,6 +94,21 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetBusForTesting(scoped_refptr<dbus::Bus> bus) { bus_ = bus; }
 
  private:
+  template <dbus_utils::SignatureLiteral Signature>
+  void SetProperty(const std::string& property_name,
+                   dbus_utils::internal::ParseDBusSignature<Signature> value) {
+    properties_->SetProperty<Signature>(kMprisAPIInterfaceName, property_name,
+                                        std::move(value), false);
+  }
+
+  template <dbus_utils::SignatureLiteral Signature>
+  void SetPlayerProperty(
+      const std::string& property_name,
+      dbus_utils::internal::ParseDBusSignature<Signature> value) {
+    properties_->SetProperty<Signature>(kMprisAPIPlayerInterfaceName,
+                                        property_name, std::move(value), false);
+  }
+
   void InitializeProperties();
   void InitializeDbusInterface();
   void OnExported(const std::string& interface_name,
@@ -122,10 +139,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void DoNothing(dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender response_sender);
 
-  // Sets a value on the Metadata property map and sends a PropertiesChanged
-  // signal if necessary.
-  void SetMetadataPropertyInternal(const std::string& property_name,
-                                   DbusVariant&& new_value);
+  void UpdateMetadata();
 
   void ClearTrackId();
 
@@ -144,6 +158,14 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   std::optional<media_session::MediaPosition> position_;
   base::RepeatingTimer position_update_timer_;
   bool playing_ = false;
+
+  // Values for the MPRIS metadata dictionary property.
+  std::optional<std::string> track_id_;
+  std::optional<std::string> title_;
+  std::optional<std::vector<std::string>> artist_;
+  std::optional<std::string> album_;
+  std::optional<int64_t> length_;
+  std::optional<std::string> art_url_;
 
   const std::string product_name_;
 

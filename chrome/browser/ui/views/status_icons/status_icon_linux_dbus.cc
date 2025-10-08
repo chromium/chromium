@@ -25,8 +25,9 @@
 #include "components/dbus/menu/menu.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/signature.h"
+#include "components/dbus/utils/variant.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
@@ -134,7 +135,11 @@ std::string PropertyIdFromId(int service_id) {
   return "chrome_status_icon_" + base::NumberToString(service_id);
 }
 
-auto MakeDbusImage(const gfx::ImageSkia& image) {
+using DbusImage = std::tuple</*width=*/int32_t,
+                             /*height=*/int32_t,
+                             /*pixels=*/std::vector<uint8_t>>;
+
+std::vector<DbusImage> MakeDbusImage(const gfx::ImageSkia& image) {
   const SkBitmap* bitmap = image.bitmap();
   int width = bitmap->width();
   int height = bitmap->height();
@@ -150,17 +155,18 @@ auto MakeDbusImage(const gfx::ImageSkia& image) {
       color_data.push_back(SkColorGetB(color));
     }
   }
-  return MakeDbusArray(MakeDbusStruct(
-      DbusInt32(width), DbusInt32(height),
-      DbusByteArray(
-          base::MakeRefCounted<base::RefCountedBytes>(std::move(color_data)))));
+  std::vector<DbusImage> images;
+  images.emplace_back(width, height, std::move(color_data));
+  return images;
 }
 
-auto MakeDbusToolTip(const std::string& text) {
-  return MakeDbusStruct(
-      DbusString(""),
-      DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>(),
-      DbusString(text), DbusString(""));
+using DbusToolTip = std::tuple</*icon=*/std::string,
+                               /*image=*/std::vector<DbusImage>,
+                               /*title=*/std::string,
+                               /*subtitle=*/std::string>;
+
+DbusToolTip MakeDbusToolTip(const std::string& text) {
+  return {"", {}, text, ""};
 }
 
 bool ShouldWriteIconToFile() {
@@ -265,7 +271,7 @@ void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
 
   UpdateMenuImpl(delegate_->GetMenuModel(), true);
 
-  properties_->SetProperty(
+  properties_->SetProperty<"(sa(iiay)ss)">(
       kInterfaceStatusNotifierItem, kPropertyToolTip,
       MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())));
   dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewToolTip);
@@ -382,26 +388,34 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
 
   properties_ = std::make_unique<DbusProperties>(item_, barrier_);
   properties_->RegisterInterface(kInterfaceStatusNotifierItem);
-  auto set_property = [&](const std::string& property_name, auto&& value) {
-    properties_->SetProperty(kInterfaceStatusNotifierItem, property_name,
-                             std::forward<decltype(value)>(value), false);
-  };
-  set_property(kPropertyItemIsMenu, DbusBoolean(false));
-  set_property(kPropertyWindowId, DbusInt32(0));
-  set_property(kPropertyMenu, DbusObjectPath(dbus::ObjectPath(kPathDbusMenu)));
-  set_property(kPropertyAttentionIconName, DbusString(""));
-  set_property(kPropertyAttentionMovieName, DbusString(""));
-  set_property(kPropertyCategory, DbusString(kPropertyValueCategory));
-  set_property(kPropertyId, DbusString(PropertyIdFromId(service_id_)));
-  set_property(kPropertyOverlayIconName, DbusString(""));
-  set_property(kPropertyStatus, DbusString(kPropertyValueStatus));
-  set_property(kPropertyTitle, DbusString(""));
-  set_property(kPropertyAttentionIconPixmap,
-               DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>());
-  set_property(kPropertyOverlayIconPixmap,
-               DbusArray<DbusStruct<DbusInt32, DbusInt32, DbusByteArray>>());
-  set_property(kPropertyToolTip,
-               MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())));
+
+  properties_->SetProperty<"b">(kInterfaceStatusNotifierItem,
+                                kPropertyItemIsMenu, false, false);
+  properties_->SetProperty<"i">(kInterfaceStatusNotifierItem, kPropertyWindowId,
+                                0, false);
+  properties_->SetProperty<"o">(kInterfaceStatusNotifierItem, kPropertyMenu,
+                                dbus::ObjectPath(kPathDbusMenu), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyAttentionIconName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyAttentionMovieName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyCategory,
+                                kPropertyValueCategory, false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyId,
+                                PropertyIdFromId(service_id_), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyOverlayIconName, "", false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyStatus,
+                                kPropertyValueStatus, false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyTitle,
+                                "", false);
+  properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                      kPropertyAttentionIconPixmap, {}, false);
+  properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                      kPropertyOverlayIconPixmap, {}, false);
+  properties_->SetProperty<"(sa(iiay)ss)">(
+      kInterfaceStatusNotifierItem, kPropertyToolTip,
+      MakeDbusToolTip(base::UTF16ToUTF8(delegate_->GetToolTip())), false);
   if (delegate_->GetIcon() && !delegate_->GetIcon()->is_empty()) {
     SetIcon(*delegate_->GetIcon());
   } else if (!delegate_->GetImage().isNull()) {
@@ -549,8 +563,9 @@ void StatusIconLinuxDbus::SetImageImpl(const gfx::ImageSkia& image,
                        /*is_vector_icon=*/false),
         base::BindOnce(&StatusIconLinuxDbus::OnIconFileWritten, this));
   } else {
-    properties_->SetProperty(kInterfaceStatusNotifierItem, kPropertyIconPixmap,
-                             MakeDbusImage(image), send_signals, false);
+    properties_->SetProperty<"a(iiay)">(kInterfaceStatusNotifierItem,
+                                        kPropertyIconPixmap,
+                                        MakeDbusImage(image), send_signals);
     if (send_signals) {
       dbus::Signal signal(kInterfaceStatusNotifierItem, kSignalNewIcon);
       item_->SendSignal(&signal);
@@ -566,11 +581,12 @@ void StatusIconLinuxDbus::OnIconFileWritten(const base::FilePath& icon_file) {
     return;
   }
 
-  properties_->SetProperty(kInterfaceStatusNotifierItem, kPropertyIconThemePath,
-                           DbusString(icon_file_.DirName().value()), false);
-  properties_->SetProperty(
-      kInterfaceStatusNotifierItem, kPropertyIconName,
-      DbusString(icon_file_.BaseName().RemoveExtension().value()), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
+                                kPropertyIconThemePath,
+                                icon_file_.DirName().value(), false);
+  properties_->SetProperty<"s">(kInterfaceStatusNotifierItem, kPropertyIconName,
+                                icon_file_.BaseName().RemoveExtension().value(),
+                                false);
 
   dbus::Signal new_icon_theme_path_signal(kInterfaceStatusNotifierItem,
                                           kSignalNewIconThemePath);

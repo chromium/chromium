@@ -16,6 +16,7 @@ source_set("properties") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/dbus/utils",
   ]
   public_deps = [ "//dbus" ]
 }
