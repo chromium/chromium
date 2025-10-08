@@ -13,6 +13,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -56,7 +57,7 @@ const HttpResponseInfo* QuicProxyDatagramClientSocket::GetConnectResponseInfo()
   return response_.headers.get() ? &response_ : nullptr;
 }
 
-bool QuicProxyDatagramClientSocket::IsConnected() const {
+bool QuicProxyDatagramClientSocket::IsConnectedForTesting() const {
   return next_state_ == STATE_CONNECT_COMPLETE && stream_handle_->IsOpen();
 }
 
@@ -135,6 +136,10 @@ void QuicProxyDatagramClientSocket::Close() {
     stream_handle_->UnregisterHttp3DatagramVisitor();
     datagram_visitor_registered_ = false;
   }
+
+  connect_request_sent_ = false;
+  awaiting_connect_response_ = false;
+
   stream_handle_->Reset(quic::QUIC_STREAM_CANCELLED);
 }
 
@@ -305,7 +310,7 @@ int QuicProxyDatagramClientSocket::Write(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(connect_callback_.is_null());
 
-  if (next_state_ != STATE_CONNECT_COMPLETE) {
+  if (!connect_request_sent_) {
     return ERR_SOCKET_NOT_CONNECTED;
   }
 
@@ -322,11 +327,23 @@ int QuicProxyDatagramClientSocket::Write(
 
 void QuicProxyDatagramClientSocket::OnIOComplete(int result) {
   DCHECK_NE(STATE_DISCONNECTED, next_state_);
+
+  // If the client didn't wait for a connect response so that it could
+  // immediately start writing, get it ready to resume the full process of
+  // tunnel establishment.
+  if (awaiting_connect_response_) {
+    next_state_ = STATE_READ_REPLY;
+    awaiting_connect_response_ = false;
+  }
+
   int rv = DoLoop(result);
   if (rv != ERR_IO_PENDING) {
-    // Connect() finished (successfully or unsuccessfully).
-    DCHECK(!connect_callback_.is_null());
-    std::move(connect_callback_).Run(rv);
+    // Connect() finished (successfully or unsuccessfully) but we may not have
+    // a connect_callback if we didn't wait for the response before considering
+    // the connection established.
+    if (!connect_callback_.is_null()) {
+      std::move(connect_callback_).Run(rv);
+    }
   }
 }
 
@@ -455,7 +472,10 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
       request_, /*priority=*/std::nullopt, "connect-udp",
       request_.extra_headers, &headers);
 
-  return stream_handle_->WriteHeaders(std::move(headers), false, nullptr);
+  int result = stream_handle_->WriteHeaders(std::move(headers), /*fin=*/false,
+                                            /*ack_notifier_delegate=*/nullptr);
+  connect_request_sent_ = true;
+  return result;
 }
 
 int QuicProxyDatagramClientSocket::DoSendRequestComplete(int result) {
@@ -481,7 +501,20 @@ int QuicProxyDatagramClientSocket::DoReadReply() {
       base::BindOnce(
           &QuicProxyDatagramClientSocket::OnReadResponseHeadersComplete,
           weak_factory_.GetWeakPtr()));
+
   if (rv == ERR_IO_PENDING) {
+    // If the feature is enabled, the stream supports H3 datagrams and we
+    // haven't received a response to the CONNECT-UDP request yet, bypass
+    // processing response headers and consider tunnel "established" so
+    // datagrams can be sent and traffic is not blocked.
+    if (net::features::kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse
+            .Get() &&
+        stream_handle_->SupportsH3Datagram()) {
+      next_state_ = STATE_CONNECT_COMPLETE;
+      awaiting_connect_response_ = true;
+      return OK;
+    }
+
     return ERR_IO_PENDING;
   }
   if (rv < 0) {

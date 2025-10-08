@@ -14,6 +14,8 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -106,6 +108,14 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
     ASSERT_THAT(callback.WaitForResult(), IsOk());
   }
 
+  void AssertConnectSucceedsOK() {
+    TestCompletionCallback callback;
+    ASSERT_THAT(
+        sock_->ConnectViaStream(local_addr_, peer_addr_,
+                                std::move(stream_handle_), callback.callback()),
+        IsOk());
+  }
+
   void AssertConnectFails(int result) override {
     TestCompletionCallback callback;
     ASSERT_THAT(
@@ -132,7 +142,7 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
     ASSERT_EQ(data.size(),
               sock_->Read(buf.get(), data.size(), CompletionOnceCallback()));
     ASSERT_EQ(data, base::as_chars(buf->span()));
-    ASSERT_TRUE(sock_->IsConnected());
+    ASSERT_TRUE(sock_->IsConnectedForTesting());
   }
 
   void AssertAsyncReadEquals(base::span<const char> data) override {
@@ -143,11 +153,11 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
     read_buf_ = base::MakeRefCounted<IOBufferWithSize>(data.size());
     ASSERT_EQ(ERR_IO_PENDING, sock_->Read(read_buf_.get(), data.size(),
                                           read_callback_.callback()));
-    EXPECT_TRUE(sock_->IsConnected());
+    EXPECT_TRUE(sock_->IsConnectedForTesting());
   }
 
   void AssertReadReturns(base::span<const char> data) override {
-    EXPECT_TRUE(sock_->IsConnected());
+    EXPECT_TRUE(sock_->IsConnectedForTesting());
 
     // Now the read will return.
     EXPECT_EQ(data.size(), read_callback_.WaitForResult());
@@ -156,6 +166,27 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
 
  protected:
   std::unique_ptr<QuicProxyDatagramClientSocket> sock_;
+};
+
+class QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest
+    : public QuicProxyDatagramClientSocketTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::
+              kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse.name,
+          "true"}});
+  }
+
+  void InitializeClientSocket() override {
+    sock_ = std::make_unique<QuicProxyDatagramClientSocket>(
+        destination_endpoint_.GetURL(), proxy_chain_, user_agent_,
+        NetLogWithSource::Make(NetLogSourceType::NONE), proxy_delegate_.get());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(QuicProxyDatagramClientSocketTest, ConnectSendsCorrectRequest) {
@@ -176,7 +207,7 @@ TEST_P(QuicProxyDatagramClientSocketTest, ConnectSendsCorrectRequest) {
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   AssertConnectSucceeds();
 
@@ -220,7 +251,7 @@ TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateHeaders) {
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   AssertConnectSucceeds();
 
@@ -269,7 +300,7 @@ TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateHeadersAsync) {
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   TestCompletionCallback callback;
   ASSERT_THAT(
@@ -323,7 +354,7 @@ TEST_P(QuicProxyDatagramClientSocketTest,
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   AssertConnectFails(ERR_TUNNEL_CONNECTION_FAILED);
 }
@@ -352,7 +383,7 @@ TEST_P(QuicProxyDatagramClientSocketTest,
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   TestCompletionCallback callback;
   ASSERT_THAT(
@@ -398,7 +429,7 @@ TEST_P(QuicProxyDatagramClientSocketTest,
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   TestCompletionCallback callback;
   ASSERT_THAT(
@@ -432,11 +463,11 @@ TEST_P(QuicProxyDatagramClientSocketTest, ConnectFails) {
   InitializeSession();
   InitializeClientSocket();
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 
   AssertConnectFails(ERR_QUIC_PROTOCOL_ERROR);
 
-  ASSERT_FALSE(sock_->IsConnected());
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
 }
 
 TEST_P(QuicProxyDatagramClientSocketTest, WriteSendsData) {
@@ -667,9 +698,206 @@ TEST_P(QuicProxyDatagramClientSocketTest,
       QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram, true, 1);
 }
 
+TEST_P(QuicProxyDatagramClientSocketTest,
+       SocketConnectionSetupBlocksOnConnectResponse) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  InitializeSession();
+
+  sock_ = std::make_unique<QuicProxyDatagramClientSocket>(
+      destination_endpoint_.GetURL(), proxy_chain_, user_agent_,
+      NetLogWithSource::Make(NetLogSourceType::NONE), proxy_delegate_.get());
+
+  // Callback will not be triggered because no response will be returned.
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      sock_->ConnectViaStream(local_addr_, peer_addr_,
+                              std::move(stream_handle_), callback.callback()),
+      IsError(ERR_IO_PENDING));
+  ASSERT_FALSE(callback.have_result());
+}
+
+TEST_P(QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
+       BypassHeaderProcessingForTunnelEstablishment) {
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  InitializeSession();
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnectedForTesting());
+
+  AssertConnectSucceedsOK();
+
+  ASSERT_TRUE(sock_->IsConnectedForTesting());
+}
+
+TEST_P(QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
+       WriteSendsDataWithoutConnectReplyReceived) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+
+  std::string quarter_stream_id(1, '\0');
+  std::string context_id(1, '\0');
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg1))}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg2))}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  InitializeSession();
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+
+  InitializeClientSocket();
+
+  AssertConnectSucceedsOK();
+
+  AssertSyncWriteSucceeds(kMsg1);
+  AssertSyncWriteSucceeds(kMsg2);
+}
+
+TEST_P(QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
+       AckConnectReplyAfterWrites) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+
+  std::string quarter_stream_id(1, '\0');
+  std::string context_id(1, '\0');
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg1))}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg2))}));
+
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(/*packet_number=*/1, !kFin));
+  mock_quic_data_.AddReadPauseForever();
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(
+                       packet_number++, quic::QUIC_STREAM_CANCELLED,
+                       /*largest_received=*/1, /*smallest_received=*/1));
+
+  InitializeSession();
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+
+  InitializeClientSocket();
+
+  AssertConnectSucceedsOK();
+  AssertSyncWriteSucceeds(kMsg1);
+  AssertSyncWriteSucceeds(kMsg2);
+
+  session_->StartReading();
+
+  // There is no connect callback to wait on in this scenario because the
+  // connection is considered established immediately after sending the request.
+  // Wait until the socket is no longer connected.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !sock_->IsConnectedForTesting(); }));
+}
+
+TEST_P(QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
+       ConnectFailsAfterWrites) {
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+
+  std::string quarter_stream_id(1, '\0');
+  std::string context_id(1, '\0');
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg1))}));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructDatagramPacket(packet_number++,
+                              {quarter_stream_id + context_id +
+                               std::string(base::as_string_view(kMsg2))}));
+
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  InitializeSession();
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+
+  InitializeClientSocket();
+
+  TestCompletionCallback connect_callback;
+  ASSERT_THAT(sock_->ConnectViaStream(local_addr_, peer_addr_,
+                                      std::move(stream_handle_),
+                                      connect_callback.callback()),
+              IsOk());
+
+  ASSERT_TRUE(sock_->IsConnectedForTesting());
+  AssertSyncWriteSucceeds(kMsg1);
+  AssertSyncWriteSucceeds(kMsg2);
+
+  // Start reading so that the server-side connection closed error is received.
+  session_->StartReading();
+
+  // There is no connect callback to wait on in this scenario because the
+  // connection is considered established immediately after sending the request.
+  // Wait until the socket is no longer connected.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !sock_->IsConnectedForTesting(); }));
+}
+
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          QuicProxyDatagramClientSocketTest,
                          ::testing::ValuesIn(AllSupportedQuicVersions()),
                          ::testing::PrintToStringParamName());
+
+INSTANTIATE_TEST_SUITE_P(
+    VersionIncludeStreamDependencySequence,
+    QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
+    ::testing::ValuesIn(AllSupportedQuicVersions()),
+    ::testing::PrintToStringParamName());
 
 }  // namespace net::test

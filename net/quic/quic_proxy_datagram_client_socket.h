@@ -118,7 +118,7 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
                         const quiche::UnknownCapsule& capsule) override;
 
   const HttpResponseInfo* GetConnectResponseInfo() const;
-  bool IsConnected() const;
+  bool IsConnectedForTesting() const;
 
   const std::queue<std::string>& GetDatagramsForTesting() { return datagrams_; }
 
@@ -192,6 +192,15 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   std::queue<std::string> datagrams_;
   // Visitor on stream is registered to receive HTTP/3 datagrams.
   bool datagram_visitor_registered_ = false;
+
+  // Tracks whether the CONNECT-UDP request has been sent (even if response not
+  // received yet).
+  bool connect_request_sent_ = false;
+
+  // True if the response from the CONNECT-UDP request has not been received or
+  // processed yet. Will only be true if the client isn't waiting for the
+  // response before performing writes.
+  bool awaiting_connect_response_ = false;
 
   // CONNECT request and response.
   HttpRequestInfo request_;

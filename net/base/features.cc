@@ -443,6 +443,12 @@ const base::FeatureParam<bool> kIpPrivacyUseQuicProxiesOnly{
     /*name=*/"IpPrivacyUseQuicProxiesOnly",
     /*default_value=*/false};
 
+const base::FeatureParam<bool>
+    kIpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyUseQuicProxiesWithoutWaitingForConnectResponse",
+        /*default_value=*/false};
+
 const base::FeatureParam<bool> kIpPrivacyFallbackToDirect{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyFallbackToDirect",
