@@ -9535,6 +9535,8 @@ crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.ht
 # view-transitions do not trigger DOM callbacks in creation order
 crbug.com/424474086 external/wpt/css/css-view-transitions/scoped/callback-order.tentative.html [ Failure Pass ]
 
+# DCHECK starting simultaneous outer + inner transitions with snapshot capture
+crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Timeout Pass ]
 
 # Gardener 2025-06-03
 crbug.com/422174062 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure Pass ]
