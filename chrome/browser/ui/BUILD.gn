@@ -3966,6 +3966,8 @@ static_library("ui") {
       "views/omnibox/omnibox_popup_view_views.h",
       "views/omnibox/omnibox_popup_view_webui.cc",
       "views/omnibox/omnibox_popup_view_webui.h",
+      "views/omnibox/omnibox_popup_webui_content.cc",
+      "views/omnibox/omnibox_popup_webui_content.h",
       "views/omnibox/omnibox_result_view.cc",
       "views/omnibox/omnibox_result_view.h",
       "views/omnibox/omnibox_row_grouped_view.cc",

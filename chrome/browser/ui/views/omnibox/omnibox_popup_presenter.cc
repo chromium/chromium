@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list_types.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -21,39 +24,36 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "omnibox_popup_webui_content.h"
+#include "rounded_omnibox_results_frame.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view_utils.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
-    : views::WebView(location_bar_view->profile()),
-      location_bar_view_(location_bar_view),
+    : location_bar_view_(location_bar_view),
+      controller_(controller),
       include_location_bar_cutout_(
           !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-  set_owned_by_client(OwnedByClientPassKey());
-
-  // Make the OmniboxController available to the OmniboxPopupUI.
-  OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
-  OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
-      ->set_omnibox_controller(controller);
-
-  LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
-
+  owned_omnibox_popup_webui_content_ =
+      std::make_unique<OmniboxPopupWebUIContent>(
+          this, location_bar_view_, controller_, include_location_bar_cutout_);
   location_bar_view_->AddObserver(this);
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() {
   location_bar_view_->RemoveObserver(this);
-  ReleaseWidget(false);
+  ReleaseWidget();
 }
 
 void OmniboxPopupPresenter::Show() {
   if (!widget_) {
-    widget_ = new ThemeCopyingWidget(location_bar_view_->GetWidget());
+    widget_ =
+        std::make_unique<ThemeCopyingWidget>(location_bar_view_->GetWidget());
 
     const views::Widget* parent_widget = location_bar_view_->GetWidget();
     views::Widget::InitParams params(
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
@@ -64,36 +64,28 @@ void OmniboxPopupPresenter::Show() {
     params.parent = parent_widget->GetNativeView();
     params.context = parent_widget->GetNativeWindow();
 
-    RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_);
+    RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_.get());
+
+    widget_->MakeCloseSynchronous(base::BindOnce(
+        &OmniboxPopupPresenter::OnWidgetClosed, base::Unretained(this)));
 
     widget_->Init(std::move(params));
     widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
-        this, location_bar_view_, include_location_bar_cutout_));
-    widget_->AddObserver(this);
+        owned_omnibox_popup_webui_content_.release(), location_bar_view_,
+        include_location_bar_cutout_));
+
     widget_->SetVisibilityChangedAnimationsEnabled(false);
-    // On ShowInactive(), the widget height can not be 0 or else the compositor
-    // thinks the webview is hidden and will not calculate its preferred size.
+    // On Show(), the widget height can not be 0 or else the compositor thinks
+    // the webview is hidden and will not calculate its preferred size.
     SetWidgetContentHeight(1);
     widget_->ShowInactive();
-
-    // Manually set zoom level, since any zooming is undesirable in the omnibox.
-    auto* zoom_controller =
-        zoom::ZoomController::FromWebContents(GetWebContents());
-    if (!zoom_controller) {
-      // Create ZoomController manually, if not already exists, because it is
-      // not automatically created when the WebUI has not been opened in a tab.
-      zoom_controller =
-          zoom::ZoomController::CreateForWebContents(GetWebContents());
-    }
-    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_ISOLATED);
-    zoom_controller->SetZoomLevel(0);
   }
 }
 
 void OmniboxPopupPresenter::Hide() {
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
-    ReleaseWidget(true);
+    ReleaseWidget();
   }
 }
 
@@ -102,36 +94,10 @@ bool OmniboxPopupPresenter::IsShown() const {
 }
 
 WebuiOmniboxHandler* OmniboxPopupPresenter::GetHandler() {
-  const bool ready = IsHandlerReady();
-  if (!requested_handler_) {
-    // Only log on first access.
-    requested_handler_ = true;
-    base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReadyOnFirstAccess", ready);
+  if (auto* content = GetOmniboxPopupWebUIContent()) {
+    return content->GetHandler();
   }
-  if (!ready) {
-    return nullptr;
-  }
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler();
-}
-
-void OmniboxPopupPresenter::AddedToWidget() {
-  views::WebView::AddedToWidget();
-  const float corner_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kOmniboxExpandedRadius);
-  gfx::RoundedCornersF rounded_corner_radii =
-      gfx::RoundedCornersF(include_location_bar_cutout_ ? 0 : corner_radius,
-                           include_location_bar_cutout_ ? 0 : corner_radius,
-                           corner_radius, corner_radius);
-  holder()->SetCornerRadii(rounded_corner_radii);
-}
-
-void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
-  if (widget == widget_) {
-    widget_ = nullptr;
-  }
+  return nullptr;
 }
 
 void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
@@ -151,53 +117,49 @@ void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
   }
 }
 
-void OmniboxPopupPresenter::ResizeDueToAutoResize(content::WebContents* source,
-                                                  const gfx::Size& new_size) {
-  SetWidgetContentHeight(new_size.height());
+void OmniboxPopupPresenter::OnViewBoundsChanged(views::View* observed_view) {
+  CHECK(observed_view == location_bar_view_);
+  if (auto* content = GetOmniboxPopupWebUIContent()) {
+    const int width =
+        location_bar_view_->width() +
+        RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().width();
+    gfx::Size min_size(width, 1);
+    gfx::Size max_size(width, INT_MAX);
+
+    content::RenderWidgetHostView* render_widget_host_view =
+        content->GetWebContents()->GetRenderWidgetHostView();
+    if (render_widget_host_view) {
+      render_widget_host_view->EnableAutoResize(min_size, max_size);
+    }
+  }
 }
 
-void OmniboxPopupPresenter::OnViewBoundsChanged(View* observed_view) {
-  CHECK(observed_view == location_bar_view_);
-  const int width =
-      location_bar_view_->width() +
-      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().width();
-  gfx::Size min_size(width, 1);
-  gfx::Size max_size(width, INT_MAX);
-
-  content::RenderWidgetHostView* render_widget_host_view =
-      GetWebContents()->GetRenderWidgetHostView();
-  if (render_widget_host_view) {
-    render_widget_host_view->EnableAutoResize(min_size, max_size);
-  }
+void OmniboxPopupPresenter::OnWidgetClosed(
+    views::Widget::ClosedReason closed_reason) {
+  owned_omnibox_popup_webui_content_ = AsViewClass<OmniboxPopupWebUIContent>(
+      AsViewClass<RoundedOmniboxResultsFrame>(widget_->GetContentsView())
+          ->ExtractContents());
+  widget_.reset();
 }
 
 bool OmniboxPopupPresenter::IsHandlerReady() {
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler() &&
-         omnibox_popup_ui->handler()->IsRemoteBound();
+  return GetOmniboxPopupWebUIContent()->IsHandlerReady();
 }
 
-void OmniboxPopupPresenter::ReleaseWidget(bool close) {
+void OmniboxPopupPresenter::ReleaseWidget() {
   if (widget_) {
-    // Avoid possibility of dangling raw_ptr by nulling before cleanup.
-    views::Widget* widget = widget_;
-    widget_ = nullptr;
-
-    widget->RemoveObserver(this);
-    if (close) {
-      // Ensure we close `widget_` synchronously.  This is necessary as the
-      // `widget_`'s contents view has dependencies on the hosting widget's
-      // BrowserView (see `SetContentsView()` above). Since the popup widget is
-      // owned by its NativeWidget there is a risk of dangling pointers if it is
-      // not destroyed synchronously with its parent.
-      // TODO(crbug.com/40232479): Once this is migrated to CLIENT_OWNS_WIDGET
-      // this will no longer be necessary.
-      widget->CloseNow();
-    }
+    widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
-  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
-BEGIN_METADATA(OmniboxPopupPresenter)
-END_METADATA
+OmniboxPopupWebUIContent* OmniboxPopupPresenter::GetOmniboxPopupWebUIContent() {
+  if (widget_) {
+    return views::AsViewClass<OmniboxPopupWebUIContent>(
+        views::AsViewClass<RoundedOmniboxResultsFrame>(
+            widget_->GetContentsView()));
+  }
+  if (owned_omnibox_popup_webui_content_) {
+    return owned_omnibox_popup_webui_content_.get();
+  }
+  return nullptr;
+}
