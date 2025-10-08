@@ -230,7 +230,7 @@ class StyleChange {
   String FontFace() { return apply_font_face_; }
   String FontSize() { return apply_font_size_; }
 
-  bool operator==(const StyleChange& other) {
+  bool operator==(const StyleChange& other) const {
     return css_style_ == other.css_style_ && apply_bold_ == other.apply_bold_ &&
            apply_italic_ == other.apply_italic_ &&
            apply_underline_ == other.apply_underline_ &&
