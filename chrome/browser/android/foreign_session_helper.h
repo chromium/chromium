@@ -16,6 +16,10 @@
 
 using base::android::ScopedJavaLocalRef;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // TODO(crbug.com/40261558): Move this class to chrome/browser/recent_tabs
 // module once dependency issues have been resolved.
 class ForeignSessionHelper {
@@ -58,8 +62,9 @@ class ForeignSessionHelper {
  private:
   // Fires |callback_| if it is not null.
   void FireForeignSessionCallback();
-  // Returns whether a foreground tab with renderer was restored.
-  bool RestoreTabWithRenderer(
+  // Returns the WebContents of the new foreground tab or nullptr if the
+  // operation failed.
+  content::WebContents* RestoreTabWithRenderer(
       const base::android::JavaParamRef<jstring>& session_tag,
       const base::android::JavaParamRef<jobject>& j_tab,
       int session_tab_id);

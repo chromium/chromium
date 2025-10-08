@@ -374,18 +374,16 @@ jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
   }
 
   // Open the first tab in the list with a renderer and web contents.
-  if (!ForeignSessionHelper::RestoreTabWithRenderer(session_tag, j_tab,
-                                                    session_tab_ids[0])) {
-    return 0;
-  }
-  content::WebContents* web_contents = tab_android->web_contents();
+  content::WebContents* web_contents =
+      ForeignSessionHelper::RestoreTabWithRenderer(session_tag, j_tab,
+                                                   session_tab_ids[0]);
   if (!web_contents) {
     return 0;
   }
   int num_tabs_restored = 1;
 
   // Using the web contents of the first tab, load the rest of the tabs
-  // with no renderer and as background tabs.
+  // as background tabs without a renderer.
   for (int i = 1; i < tabs_android_count; i++) {
     if (ForeignSessionHelper::RestoreTabNoRenderer(
             session_tag, session_tab_ids[i], web_contents)) {
@@ -395,14 +393,14 @@ jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
   return num_tabs_restored;
 }
 
-bool ForeignSessionHelper::RestoreTabWithRenderer(
+content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
     const JavaParamRef<jstring>& session_tag,
     const JavaParamRef<jobject>& j_tab,
     int session_tab_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
-    return false;
+    return nullptr;
   }
 
   const sessions::SessionTab* foreground_session_tab;
@@ -410,26 +408,25 @@ bool ForeignSessionHelper::RestoreTabWithRenderer(
   if (!open_tabs->GetForeignTab(ConvertJavaStringToUTF8(env, session_tag),
                                 SessionID::FromSerializedValue(session_tab_id),
                                 &foreground_session_tab)) {
-    return false;
+    return nullptr;
   }
 
   if (foreground_session_tab->navigations.empty()) {
-    return false;
+    return nullptr;
   }
 
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab_android) {
-    return false;
+    return nullptr;
   }
   content::WebContents* web_contents = tab_android->web_contents();
   if (!web_contents) {
-    return false;
+    return nullptr;
   }
 
-  SessionRestore::RestoreForeignSessionTab(web_contents,
-                                           *foreground_session_tab,
-                                           WindowOpenDisposition::CURRENT_TAB);
-  return true;
+  return SessionRestore::RestoreForeignSessionTab(
+      web_contents, *foreground_session_tab,
+      WindowOpenDisposition::CURRENT_TAB);
 }
 
 bool ForeignSessionHelper::RestoreTabNoRenderer(
