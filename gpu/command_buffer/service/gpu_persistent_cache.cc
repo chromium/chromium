@@ -31,6 +31,25 @@ namespace {
 
 constexpr size_t kMaxLoadStoreForTrackingCacheAvailable = 100;
 
+class ScopedHistogramTimer {
+ public:
+  explicit ScopedHistogramTimer(const std::string& name) : name_(name) {}
+  ~ScopedHistogramTimer() {
+    if (enabled_) {
+      base::UmaHistogramCustomMicrosecondsTimes(name_, timer_.Elapsed(),
+                                                base::Microseconds(1),
+                                                base::Seconds(30), 100);
+    }
+  }
+
+  void SetEnabled(bool enabled) { enabled_ = enabled; }
+
+ private:
+  const std::string name_;
+  base::ElapsedTimer timer_;
+  bool enabled_ = true;
+};
+
 }  // namespace
 
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix)
@@ -52,6 +71,7 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     size_t key_size,
                                     void* value,
                                     size_t value_size) {
+  ScopedHistogramTimer timer(GetHistogramName("Load"));
   SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadData", "persistent_cache_",
                !!persistent_cache_);
@@ -64,10 +84,10 @@ size_t GpuPersistentCache::LoadData(const void* key,
   }
 
   if (!persistent_cache_) {
+    timer.SetEnabled(false);
     return 0;
   }
 
-  base::ElapsedTimer timer;
   std::string_view key_str(static_cast<const char*>(key), key_size);
   std::unique_ptr<persistent_cache::Entry> entry =
       persistent_cache_->Find(key_str);
@@ -76,18 +96,9 @@ size_t GpuPersistentCache::LoadData(const void* key,
     return 0;
   }
 
-  size_t bytes_copied = 0;
   if (value_size > 0) {
-    bytes_copied = entry->CopyContentTo(
+    return entry->CopyContentTo(
         UNSAFE_TODO(base::span(static_cast<uint8_t*>(value), value_size)));
-  }
-
-  base::UmaHistogramCustomMicrosecondsTimes(
-      GetHistogramName("Load"), timer.Elapsed(), base::Microseconds(1),
-      base::Seconds(30), 100);
-
-  if (bytes_copied > 0) {
-    return bytes_copied;
   }
 
   return entry->GetContentSize();
