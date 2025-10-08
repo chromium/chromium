@@ -50,6 +50,7 @@ export function getHtml(this: ComposeboxElement) {
           @on-file-validation-error="${this.onFileValidationError_}"
           @set-deep-search-mode="${this.setDeepSearchMode_}"
           @set-create-image-mode="${this.setCreateImageMode_}"
+          @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.showDropdown_}"
           ?inputs-disabled="${this.inputsDisabled_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}">

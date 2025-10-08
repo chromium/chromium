@@ -15,9 +15,8 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -79,13 +78,11 @@ export class ContextMenuEntrypointElement extends
   protected accessor showDeepSearch_: boolean =
       loadTimeData.getBoolean('composeboxShowDeepSearchButton');
 
-  private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor showCreateImage_: boolean =
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
 
   constructor() {
     super();
-    this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
   }
 
   protected onEntrypointClick_() {
@@ -119,7 +116,7 @@ export class ContextMenuEntrypointElement extends
     this.$.menu.close();
   }
 
-  protected async onTabPointerenter_(e: Event) {
+  protected onTabPointerenter_(e: Event) {
     if (!this.tabPreviewsEnabled_) {
       return;
     }
@@ -131,9 +128,12 @@ export class ContextMenuEntrypointElement extends
     // Clear the preview URL before fetching the new one to make sure an old
     // or incorrect preview doesn't show while the new one is loading.
     this.tabPreviewUrl_ = '';
-    const {previewDataUrl} =
-        await this.searchboxHandler_.getTabPreview(tabInfo.tabId);
-    this.tabPreviewUrl_ = previewDataUrl || '';
+    this.fire('get-tab-preview', {
+      tabId: tabInfo.tabId,
+      onPreviewFetched: (previewDataUrl: string) => {
+        this.tabPreviewUrl_ = previewDataUrl;
+      },
+    });
   }
 
   protected shouldShowTabPreview_(): boolean {

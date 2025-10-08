@@ -34,6 +34,12 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'getPlaceholderConfig',
       'getRecentTabs',
       'getTabPreview',
+      'notifySessionStarted',
+      'notifySessionAbandoned',
+      'addFileContext',
+      'addTabContext',
+      'deleteContext',
+      'clearFiles',
       'submitQuery',
     ]);
   }
