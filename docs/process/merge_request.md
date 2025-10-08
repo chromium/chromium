@@ -65,7 +65,8 @@ Before requesting a merge, first ensure your change is a good merge candidate:
     [below](#merge-criteria-phases)
 *   Verify merging the change to an older branch would be safe, e.g. unlikely to
     introduce new regressions, no major merge conflicts, automated test coverage
-    present, etc; chat with your TL for input if you're not sure
+    present, etc; consider adding a kill-switch & chat with your TL 
+    for input if you're not sure
 *   Confirm your change fixes the issue at hand, preferably by testing on and
     monitoring the canary channel for 24 hours post-release (see
     [Chromium Dash](https://chromiumdash.appspot.com/commits) to determine if
