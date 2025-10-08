@@ -354,7 +354,6 @@ class FakeTextureBacking : public cc::TextureBacking {
 
   const SkImageInfo& GetSkImageInfo() override { return image_->imageInfo(); }
   gpu::Mailbox GetMailbox() const override { return mailbox_; }
-  sk_sp<SkImage> GetAcceleratedSkImage() override { return nullptr; }
   sk_sp<SkImage> GetSkImageViaReadback() override { return image_; }
   bool readPixels(const SkImageInfo& dstInfo,
                   void* dstPixels,

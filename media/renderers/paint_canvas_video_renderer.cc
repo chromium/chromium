@@ -913,7 +913,6 @@ class VideoTextureBacking : public cc::TextureBacking {
   const scoped_refptr<gpu::ClientSharedImage>& GetSharedImage() const {
     return shared_image_;
   }
-  sk_sp<SkImage> GetAcceleratedSkImage() override { return nullptr; }
   const scoped_refptr<viz::RasterContextProvider>& raster_context_provider()
       const {
     return raster_context_provider_;

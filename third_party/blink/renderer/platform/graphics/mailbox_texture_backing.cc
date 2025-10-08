@@ -51,12 +51,6 @@ gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
   return mailbox_;
 }
 
-sk_sp<SkImage> MailboxTextureBacking::GetAcceleratedSkImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  return nullptr;
-}
-
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!mailbox_.IsZero()) {
