@@ -99,13 +99,13 @@
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
-      <property name="severity" value="error"/>
-      <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="LocalVariableName">
-      <property name="severity" value="error"/>
-      <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="FallThrough">
@@ -234,7 +234,7 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="ParamComments"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/(,|\))|(,|\() */\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
     </module>
     <module name="RegexpSinglelineJava">
@@ -276,6 +276,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Android context menu has been proven not compatible well with theme changes. Use Chrome's ListMenu instead. See crbug.com/339864862."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="IntDefsNotEnums"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\benum [A-Z].*\{"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
@@ -286,7 +293,7 @@
   <module name="RegexpMultiline">
     <property name="id" value="ContextGetString"/>
     <property name="severity" value="warning"/>
-    <property name="format" value="ontext\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
+    <property name="format" value="(c|ontext)\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
     <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
   </module>
   <module name="RegexpMultiline">
