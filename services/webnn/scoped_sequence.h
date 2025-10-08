@@ -17,6 +17,7 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 class Scheduler;
+class SchedulerTaskRunner;
 }  // namespace gpu
 
 namespace webnn {
@@ -42,9 +43,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedSequence {
   gpu::SequenceId sequence_id() const { return sequence_id_; }
   gpu::Scheduler& scheduler() const { return scheduler_.get(); }
 
+  // Exposes a SequencedTaskRunner which can be used to schedule tasks in
+  // this sequence. Does not support nested loops or delayed tasks.
+  const scoped_refptr<gpu::SchedulerTaskRunner>& scheduler_task_runner() const {
+    return scheduler_task_runner_;
+  }
+
  private:
   const raw_ref<gpu::Scheduler> scheduler_;
   const gpu::SequenceId sequence_id_;
+  const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 };
 
 }  // namespace webnn

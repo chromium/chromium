@@ -200,16 +200,12 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   auto sequence = std::make_unique<ScopedSequence>(
       *scheduler_, main_thread_task_runner_, command_buffer_id);
 
-  auto scheduler_task_runner = base::MakeRefCounted<gpu::SchedulerTaskRunner>(
-      *scheduler_, sequence->sequence_id());
-
   ScopedTrace scoped_trace("WebNNContextProviderImpl::CreateWebNNContext");
 
   if (g_backend_for_testing) {
     context_impls_.emplace(g_backend_for_testing->CreateWebNNContext(
         AsWeakPtr(), std::move(options), command_buffer_id, std::move(sequence),
-        std::move(scheduler_task_runner), memory_tracker_,
-        main_thread_task_runner_, shared_image_manager_,
+        memory_tracker_, main_thread_task_runner_, shared_image_manager_,
         main_thread_task_runner_, std::move(callback)));
     return;
   }
@@ -265,9 +261,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         sequence = std::make_unique<ScopedSequence>(*scheduler_, task_runner,
                                                     command_buffer_id);
 
-        scheduler_task_runner = base::MakeRefCounted<gpu::SchedulerTaskRunner>(
-            *scheduler_, sequence->sequence_id());
-
         scoped_trace.AddStep("Create on sequence");
 
         // Safe to use base::Unretained for shared_image_manager_ since it
@@ -281,8 +274,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                 std::move(options), std::move(write_tensor_consumer),
                 std::move(read_tensor_producer),
                 std::move(env_creation_results.value()), command_buffer_id,
-                std::move(sequence), std::move(scheduler_task_runner),
-                std::move(memory_tracker_), task_runner,
+                std::move(sequence), std::move(memory_tracker_), task_runner,
                 base::Unretained(shared_image_manager_.get()),
                 main_thread_task_runner_, std::move(scoped_trace)),
             base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
@@ -297,9 +289,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
           std::move(options), std::move(write_tensor_consumer),
           std::move(read_tensor_producer),
           std::move(env_creation_results.value()), command_buffer_id,
-          std::move(sequence), std::move(scheduler_task_runner),
-          memory_tracker_, std::move(task_runner), shared_image_manager_,
-          main_thread_task_runner_);
+          std::move(sequence), memory_tracker_, std::move(task_runner),
+          shared_image_manager_, main_thread_task_runner_);
     }
   } else if (dml::ShouldCreateDmlContext(*options)) {
     base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
@@ -307,8 +298,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             std::move(options), std::move(write_tensor_consumer),
             std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
             shared_context_state_.get(), std::move(receiver), AsWeakPtr(),
-            command_buffer_id, std::move(sequence),
-            std::move(scheduler_task_runner), memory_tracker_,
+            command_buffer_id, std::move(sequence), memory_tracker_,
             main_thread_task_runner_, shared_image_manager_,
             main_thread_task_runner_);
     if (!context_creation_results.has_value()) {
@@ -334,8 +324,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       read_tensor_consumer.reset();
       context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
           std::move(receiver), AsWeakPtr(), std::move(options),
-          command_buffer_id, std::move(sequence),
-          std::move(scheduler_task_runner), memory_tracker_,
+          command_buffer_id, std::move(sequence), memory_tracker_,
           main_thread_task_runner_, shared_image_manager_,
           main_thread_task_runner_);
     }
@@ -348,21 +337,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       sequence.reset();
       sequence = std::make_unique<ScopedSequence>(*scheduler_, task_runner,
                                                   command_buffer_id);
-      scheduler_task_runner = base::MakeRefCounted<gpu::SchedulerTaskRunner>(
-          *scheduler_, sequence->sequence_id());
 
       scoped_trace.AddStep("Create on sequence");
 
       task_runner->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&tflite::ContextImplTflite::Create,
-                         std::move(receiver), AsWeakPtr(), std::move(options),
-                         std::move(write_tensor_consumer),
-                         std::move(read_tensor_producer), command_buffer_id,
-                         std::move(sequence), std::move(scheduler_task_runner),
-                         std::move(memory_tracker_), task_runner,
-                         base::Unretained(shared_image_manager_.get()),
-                         main_thread_task_runner_, std::move(scoped_trace)),
+          base::BindOnce(
+              &tflite::ContextImplTflite::Create, std::move(receiver),
+              AsWeakPtr(), std::move(options), std::move(write_tensor_consumer),
+              std::move(read_tensor_producer), command_buffer_id,
+              std::move(sequence), std::move(memory_tracker_), task_runner,
+              base::Unretained(shared_image_manager_.get()),
+              main_thread_task_runner_, std::move(scoped_trace)),
           base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
                          AsWeakPtr(), std::move(callback), std::move(remote),
                          std::move(write_tensor_producer),
@@ -372,8 +358,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     context_impl = base::MakeRefCounted<tflite::ContextImplTflite>(
         std::move(receiver), AsWeakPtr(), std::move(options),
         std::move(write_tensor_consumer), std::move(read_tensor_producer),
-        command_buffer_id, std::move(sequence),
-        std::move(scheduler_task_runner), memory_tracker_,
+        command_buffer_id, std::move(sequence), memory_tracker_,
         std::move(task_runner), shared_image_manager_,
         main_thread_task_runner_);
   }

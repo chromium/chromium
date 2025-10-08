@@ -30,7 +30,6 @@ scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
     scoped_refptr<Environment> env,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -42,9 +41,8 @@ scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
       std::move(ep_workarounds), std::move(options),
       std::move(write_tensor_consumer), std::move(read_tensor_producer),
       std::move(env), command_buffer_id, std::move(sequence),
-      std::move(scheduler_task_runner), std::move(memory_tracker),
-      std::move(owning_task_runner), shared_image_manager,
-      std::move(main_task_runner));
+      std::move(memory_tracker), std::move(owning_task_runner),
+      shared_image_manager, std::move(main_task_runner));
 }
 
 ContextImplOrt::ContextImplOrt(
@@ -57,7 +55,6 @@ ContextImplOrt::ContextImplOrt(
     scoped_refptr<Environment> env,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -71,7 +68,6 @@ ContextImplOrt::ContextImplOrt(
           std::move(write_tensor_producer),
           command_buffer_id,
           std::move(sequence),
-          std::move(scheduler_task_runner),
           std::move(memory_tracker),
           std::move(owning_task_runner),
           shared_image_manager,

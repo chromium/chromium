@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
-#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -90,15 +89,15 @@ class WebNNObjectImpl
   // the GPU sequence. The owning_task_runner is the underlying single-thread
   // runner for the GPU sequence, used for object deletions.
   template <typename MojoPendingReceiverType>
-  WebNNObjectImpl(MojoPendingReceiverType pending_receiver,
-                  scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
-                  scoped_refptr<base::SequencedTaskRunner> owning_task_runner)
+  WebNNObjectImpl(
+      MojoPendingReceiverType pending_receiver,
+      scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> owning_task_runner)
       : base::RefCountedDeleteOnSequence<WebNNObjectType>(
             std::move(owning_task_runner)),
-        scheduler_task_runner_(scheduler_task_runner),
         mojo_receiver_(this,
                        std::move(pending_receiver),
-                       scheduler_task_runner) {
+                       std::move(scheduler_task_runner)) {
     mojo_receiver_.set_disconnect_handler(base::BindOnce(
         &WebNNObjectType::OnDisconnect, weak_factory_.GetWeakPtr()));
   }
@@ -114,13 +113,6 @@ class WebNNObjectImpl
     return mojo_receiver_;
   }
 
-  // Posts a scheduled task to the gpu sequence.
-  // Only legal to call from within the stack frame of a message dispatch.
-  void PostTaskToSchedulerTaskRunner(base::OnceClosure task) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-    scheduler_task_runner_->PostTask(FROM_HERE, std::move(task));
-  }
-
  protected:
   // This SequenceChecker is bound to the sequence where WebNNObjectImpl is
   // constructed. All messages dispatches and access to
@@ -131,8 +123,6 @@ class WebNNObjectImpl
   friend class base::DeleteHelper<WebNNObjectImpl>;
 
   const WebNNTokenType handle_;
-
-  const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 
   MojoReceiverType mojo_receiver_ GUARDED_BY_CONTEXT(gpu_sequence_checker_);
 

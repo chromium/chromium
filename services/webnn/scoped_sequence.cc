@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/scheduler_task_runner.h"
 
 namespace webnn {
 
@@ -18,9 +19,16 @@ ScopedSequence::ScopedSequence(
           gpu::SchedulingPriority::kNormal,
           std::move(task_runner),
           gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE,
-          command_buffer_id)) {}
+          command_buffer_id)),
+      scheduler_task_runner_(
+          base::MakeRefCounted<gpu::SchedulerTaskRunner>(*scheduler_,
+                                                         sequence_id_)) {}
 
 ScopedSequence::~ScopedSequence() {
+  // Note: ShutDown() prevents new tasks from being scheduled and drops existing
+  // ones from executing.
+  scheduler_task_runner_->ShutDown();
+
   scheduler_->DestroySequence(sequence_id_);
 }
 

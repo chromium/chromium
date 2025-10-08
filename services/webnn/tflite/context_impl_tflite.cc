@@ -26,7 +26,6 @@ scoped_refptr<WebNNContextImpl> ContextImplTflite::Create(
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -36,9 +35,9 @@ scoped_refptr<WebNNContextImpl> ContextImplTflite::Create(
   return base::MakeRefCounted<ContextImplTflite>(
       std::move(receiver), std::move(context_provider), std::move(options),
       std::move(write_tensor_consumer), std::move(read_tensor_producer),
-      command_buffer_id, std::move(sequence), std::move(scheduler_task_runner),
-      std::move(memory_tracker), std::move(owning_task_runner),
-      shared_image_manager, std::move(main_task_runner));
+      command_buffer_id, std::move(sequence), std::move(memory_tracker),
+      std::move(owning_task_runner), shared_image_manager,
+      std::move(main_task_runner));
 }
 
 ContextImplTflite::ContextImplTflite(
@@ -49,7 +48,6 @@ ContextImplTflite::ContextImplTflite(
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
@@ -62,7 +60,6 @@ ContextImplTflite::ContextImplTflite(
                        std::move(read_tensor_producer),
                        command_buffer_id,
                        std::move(sequence),
-                       std::move(scheduler_task_runner),
                        std::move(memory_tracker),
                        std::move(owning_task_runner),
                        shared_image_manager,

@@ -68,7 +68,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
@@ -147,9 +146,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Exposes a SequencedTaskRunner which can be used to schedule tasks in
   // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
   // sequence. Does not support nested loops or delayed tasks.
-  scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner() const {
-    return scheduler_task_runner_;
-  }
+  const scoped_refptr<gpu::SchedulerTaskRunner>& scheduler_task_runner() const;
 
   // Waits for the given SyncToken to release before executing WebNN operations.
   void WaitSyncToken(const gpu::SyncToken& fence);
@@ -248,11 +245,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Within a WebNN context, tasks are orderered, but remain async with respect
   // to tasks in other WebNN contexts or sequences.
   std::unique_ptr<ScopedSequence> sequence_;
-
-  // WebNN IPC operations without a SyncToken are re-posted to the scheduled
-  // task runner to ensure they execute in the same sequence and order as those
-  // with a SyncToken.
-  const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 
   // Marks the completion of previously scheduled tasks.
   // Used to generate a SyncToken for the renderer which can be passed
