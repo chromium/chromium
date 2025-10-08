@@ -398,8 +398,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
                                        frame_timing_details);
   manager_->RecordCompositorLatencyUKM(
       report_types(), stage_history, active_trackers, processed_blink_breakdown,
-      processed_viz_breakdown,
-      trees_in_viz_mode ? &processed_trees_in_viz_breakdown : nullptr);
+      processed_viz_breakdown, processed_trees_in_viz_breakdown);
 
   const auto& entries = recorder()->GetEntriesByName(kCompositorLatency);
   EXPECT_EQ(1u, entries.size());
@@ -580,38 +579,6 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   EXPECT_FALSE(recorder()->EntryHasMetric(entry, kRAF));
   EXPECT_FALSE(recorder()->EntryHasMetric(entry, kVideo));
   EXPECT_FALSE(recorder()->EntryHasMetric(entry, kWheelScroll));
-}
-
-TEST_F(UkmManagerTest, PassEmptyTimestamps) {
-  auto frame_timing_details = BuildVizBreakdown(false);
-  BeginMainFrameMetrics blink_breakdown = BuildBlinkBreakdown();
-  CompositorFrameReporter::ProcessedBlinkBreakdown processed_blink_breakdown(
-      AdvanceNowByMs(1), AdvanceNowByMs(2), blink_breakdown);
-  CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
-      AdvanceNowByMs(10), frame_timing_details);
-
-  // No timestamps for TreesInViz.
-  CompositorFrameReporter::ProcessedTreesInVizBreakdown*
-      processed_trees_in_viz_breakdown = nullptr;
-  std::vector<CompositorFrameReporter::StageData> stage_history;
-  stage_history.emplace_back(
-      CompositorFrameReporter::StageType::kEndActivateToSubmitUpdateDisplayTree,
-      AdvanceNowByMs(2), AdvanceNowByMs(19));
-  stage_history.emplace_back(
-      CompositorFrameReporter::StageType::
-          kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
-      AdvanceNowByMs(3), frame_timing_details.presentation_feedback.timestamp);
-  ActiveTrackers active_trackers;
-  active_trackers.set(
-      static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
-  CompositorFrameReporter::FrameReportTypes report_types_;
-  report_types_.set(static_cast<size_t>(
-      CompositorFrameReporter::FrameReportType::kNonDroppedFrame));
-
-  // Should not crash!
-  manager_->RecordCompositorLatencyUKM(
-      report_types_, stage_history, active_trackers, processed_blink_breakdown,
-      processed_viz_breakdown, processed_trees_in_viz_breakdown);
 }
 
 // TODO(crbug.com/443785891): EventLatency metrics support TreesInViz stages.

@@ -96,7 +96,7 @@ void LatencyUkmReporter::ReportCompositorLatencyUkm(
         processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
         processed_viz_breakdown,
-    CompositorFrameReporter::ProcessedTreesInVizBreakdown*
+    const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
         processed_trees_in_viz_breakdown) {
   if (ukm_manager_ &&
       compositor_latency_sampling_controller_->ShouldRecordNextEvent()) {

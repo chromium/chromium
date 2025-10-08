@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -68,7 +69,7 @@ void UkmManager::RecordCompositorLatencyUKM(
         processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
         processed_viz_breakdown,
-    CompositorFrameReporter::ProcessedTreesInVizBreakdown*
+    const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
         processed_trees_in_viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
 
@@ -130,7 +131,9 @@ void UkmManager::RecordCompositorLatencyUKM(
     }
   }
 
-  if (!processed_trees_in_viz_breakdown) {
+  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
+
+  if (!trees_in_viz_mode) {
     // Record Viz breakdowns.
     for (auto it = processed_viz_breakdown.CreateIterator(false); it.IsValid();
          it.Advance()) {
@@ -156,7 +159,7 @@ void UkmManager::RecordCompositorLatencyUKM(
     }
   } else {
     // Record TreesInViz breakdowns
-    for (auto it = processed_trees_in_viz_breakdown->CreateIterator();
+    for (auto it = processed_trees_in_viz_breakdown.CreateIterator();
          it.IsValid(); it.Advance()) {
       switch (it.GetBreakdown()) {
 #define CASE_FOR_TREES_IN_VIZ_CC_BREAKDOWN(name)              \
