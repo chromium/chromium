@@ -166,9 +166,10 @@ bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
 }
 
 void GlicInstanceCoordinatorImpl::FocusIfOpen() {
-  // TODO(crbug/449179649): This is not called, and should not be called.
-  // Similar to ActivateBrowser().
-  NOTREACHED();
+  // TODO(crbug/449179649): This is called from
+  // BrowserView::FocusInactivePopupForAccessibility(), and needs implemented
+  // to focus the floating panel.
+  NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
