@@ -1942,9 +1942,6 @@ extern const char kCrosSystemLevelPermissionBlockedWarningsName[];
 extern const char kCrosSystemLevelPermissionBlockedWarningsDescription[];
 #endif
 
-extern const char kPermissionsAIv1Name[];
-extern const char kPermissionsAIv1Description[];
-
 extern const char kPermissionsAIv3Name[];
 extern const char kPermissionsAIv3Description[];
 
@@ -2880,10 +2877,12 @@ extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
 extern const char kClientSideDetectionSendIntelligentScanInfoAndroidName[];
-extern const char kClientSideDetectionSendIntelligentScanInfoAndroidDescription[];
+extern const char
+    kClientSideDetectionSendIntelligentScanInfoAndroidDescription[];
 
 extern const char kClientSideDetectionShowScamVerdictWarningAndroidName[];
-extern const char kClientSideDetectionShowScamVerdictWarningAndroidDescription[];
+extern const char
+    kClientSideDetectionShowScamVerdictWarningAndroidDescription[];
 
 extern const char kClankDefaultBrowserPromoName[];
 extern const char kClankDefaultBrowserPromoDescription[];

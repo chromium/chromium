@@ -3353,13 +3353,6 @@ const char kCrosSystemLevelPermissionBlockedWarningsDescription[] =
     "disabled in the OS.";
 #endif
 
-const char kPermissionsAIv1Name[] = "PermissionsAIv1";
-const char kPermissionsAIv1Description[] =
-    "Use the Permission Predictions Service and the AIv1 model to surface "
-    "permission requests using a quieter UI when the likelihood of the user "
-    "granting the permission is predicted to be low. Requires `Make Searches "
-    "and Browsing Better` to be enabled.";
-
 const char kPermissionsAIv3Name[] = "PermissionsAIv3";
 const char kPermissionsAIv3Description[] =
     "Use the Permission Predictions Service and the AIv3 model to surface "

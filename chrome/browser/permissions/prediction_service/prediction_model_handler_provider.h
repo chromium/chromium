@@ -19,7 +19,6 @@ class OptimizationGuideKeyedService;
 namespace permissions {
 
 class PredictionModelHandler;
-class PermissionsAiv1Handler;
 class PermissionsAiv3Handler;
 class PermissionsAiv4Handler;
 
@@ -36,8 +35,6 @@ class PredictionModelHandlerProvider
       delete;
   PredictionModelHandlerProvider& operator=(
       const PredictionModelHandlerProvider&) = delete;
-
-  PermissionsAiv1Handler* GetPermissionsAiv1Handler();
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -63,7 +60,6 @@ class PredictionModelHandlerProvider
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
 
-  std::unique_ptr<PermissionsAiv1Handler> permissions_aiv1_handler_;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<PredictionModelHandler>
       notification_prediction_model_handler_;

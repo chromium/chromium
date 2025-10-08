@@ -10,7 +10,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
@@ -67,7 +66,7 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
   }
 
   // We set up model handlers if necessary in order of preference:
-  // Aiv4, Aiv3, Aiv1
+  // Aiv4, Aiv3
   // CPSSv1 is defined always as backup if further requirements for AivX are not
   // fulfilled (like the MSBB bit that we don't check here at the moment).
   // TODO(crbug.com/414527270) Only create models when its really necessary (see
@@ -113,19 +112,9 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
     return;
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-    permissions_aiv1_handler_ =
-        std::make_unique<PermissionsAiv1Handler>(optimization_guide);
-  }
 }
 
 PredictionModelHandlerProvider::~PredictionModelHandlerProvider() = default;
-
-PermissionsAiv1Handler*
-PredictionModelHandlerProvider::GetPermissionsAiv1Handler() {
-  return permissions_aiv1_handler_.get();
-}
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PredictionModelHandlerProvider::EmbedderMetadataUpdated(

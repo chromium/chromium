@@ -8028,14 +8028,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "permissions-ai-v1",
-    "owners": [
-      "elklm@chromium.org",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "permissions-ai-v3",
     "owners": [
       "elklm@chromium.org",

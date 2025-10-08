@@ -11445,10 +11445,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsLiveEditDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsLiveEdit)},
 
-    {"permissions-ai-v1", flag_descriptions::kPermissionsAIv1Name,
-     flag_descriptions::kPermissionsAIv1Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv1)},
-
     {"permissions-ai-v3", flag_descriptions::kPermissionsAIv3Name,
      flag_descriptions::kPermissionsAIv3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv3)},

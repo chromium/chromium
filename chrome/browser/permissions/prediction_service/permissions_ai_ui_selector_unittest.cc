@@ -296,43 +296,6 @@ TEST_F(PermissionsAiUiSelectorTest, OnlyPromptsForCurrentTypeAreCounted) {
                 kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
-// `kPermissionsAIv1` is not enabled for Android.
-// This test verifies that `GetPredictionRequestProto` does not crash if
-// `kPermissionsAIv1` is enabled.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(PermissionsAiUiSelectorTest, GetPredictionTypeToUseCpssV1) {
-  // Disable msbb.
-  profile()->GetPrefs()->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
-
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      /*enabled_features=*/{permissions::features::kPermissionsAIv1},
-      /*disabled_features=*/{});
-
-  PermissionsAiUiSelector prediction_selector(profile());
-
-  EXPECT_EQ(PredictionSource::kOnDeviceCpssV1Model,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-
-  auto decided = [](PermissionDecision, bool,
-                    const permissions::PermissionRequestData&) {};
-  permissions::PermissionRequest permission_request(
-      std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::GEOLOCATION),
-          /*user_gesture=*/true, GURL("http://example.com/")),
-      base::BindRepeating(decided));
-
-  permissions::PredictionRequestFeatures features =
-      prediction_selector.BuildPredictionRequestFeatures(
-          &permission_request,
-          PredictionSource::kOnDeviceAiv1AndServerSideModel);
-
-  auto proto_request = GetPredictionRequestProto(features);
-}
-#endif
 
 struct PredictionSourceTestCase {
   std::string test_name;
@@ -367,29 +330,15 @@ INSTANTIATE_TEST_SUITE_P(
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kServerSideCpssV3Model},
-        {/*test_name=*/"UsePermissionsAiv1OnDesktop",
-         /*enabled_features=*/
-         {permissions::features::kPermissionsAIv1},
-         /*disabled_features=*/{},
-         /*expected_prediction_source=*/
-         PredictionSource::kOnDeviceAiv1AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv3OnDesktop",
          /*enabled_features=*/
          {permissions::features::kPermissionsAIv3},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},
-        {/*test_name=*/"UsePermissionsAiv3OverAiv1OnDesktop",
+        {/*test_name=*/"UsePermissionsAiv4OverAiv4OnDesktop",
          /*enabled_features=*/
-         {permissions::features::kPermissionsAIv1,
-          permissions::features::kPermissionsAIv3},
-         /*disabled_features=*/{},
-         /*expected_prediction_source=*/
-         PredictionSource::kOnDeviceAiv3AndServerSideModel},
-        {/*test_name=*/"UsePermissionsAiv4OverAivXOnDesktop",
-         /*enabled_features=*/
-         {permissions::features::kPermissionsAIv1,
-          permissions::features::kPermissionsAIv3,
+         {permissions::features::kPermissionsAIv3,
           permissions::features::kPermissionsAIv4},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
@@ -537,22 +486,6 @@ INSTANTIATE_TEST_SUITE_P(
             /*request_type=*/permissions::RequestType::kGeolocation,
             /*updated_histograms=*/
             {kPredServiceResponseGeolocationHistogram},
-        },
-        // ----------------------- on-device AIv1 + server-side CPSSv3
-        // We don't separately analyse holdback UMA statistics for AIv1.
-        {
-            /*holdback_chance=*/0,
-            /*prediction_source=*/
-            PredictionSource::kOnDeviceAiv1AndServerSideModel,
-            /*request_type=*/permissions::RequestType::kGeolocation,
-            /*updated_histograms=*/{kPredServiceResponseGeolocationHistogram},
-        },
-        {
-            /*holdback_chance=*/1,
-            /*prediction_source=*/
-            PredictionSource::kOnDeviceAiv1AndServerSideModel,
-            /*request_type=*/permissions::RequestType::kNotifications,
-            /*updated_histograms=*/{kPredServiceResponseNotificationsHistogram},
         },
         // ----------------------- on-device AIv3 + server-side CPSSv3
         {

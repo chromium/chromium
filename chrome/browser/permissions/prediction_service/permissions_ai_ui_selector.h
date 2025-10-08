@@ -11,16 +11,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
-#include "components/content_extraction/content/browser/inner_text.h"
-#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/features/permissions_ai.pb.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -30,6 +22,12 @@
 // include this dependency themselves
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/render_widget_host_view.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
+#include "components/content_extraction/content/browser/inner_text.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
+#endif
 
 class PredictionServiceRequest;
 class Profile;
@@ -52,6 +50,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
     permissions::RequestType request_type;
   };
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Contains input data and metadata that are important for the
   // superset of model execution workflows supported by the ui selector.
   struct ModelExecutionData {
@@ -72,11 +71,12 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
     ModelExecutionData& operator=(const ModelExecutionData&) = delete;
   };
 
-  using PredictionGrantLikelihood =
-      permissions::PermissionUiSelector::PredictionGrantLikelihood;
-
   using ModelExecutionCallback =
       base::OnceCallback<void(ModelExecutionData model_data)>;
+#endif
+
+  using PredictionGrantLikelihood =
+      permissions::PermissionUiSelector::PredictionGrantLikelihood;
 
   // The timeout to ensure that deciding which UI to chose for a permission
   // request is not taking longer than n seconds..
@@ -150,13 +150,6 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   // reached.
   void OnTimeout();
 
-  // Callback for the Aiv1ModelHandler, with the first to parameters being
-  // curryed to be used for the server side model call.
-  void OnDeviceAiv1ModelExecutionCallback(
-      permissions::PredictionRequestFeatures features,
-      PredictionRequestMetadata request_metadata,
-      std::optional<optimization_guide::proto::PermissionsAiResponse> response);
-
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request,
       permissions::PermissionPredictionSource prediction_source);
@@ -191,19 +184,9 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
       const permissions::PredictionRequestFeatures& features,
       PredictionRequestMetadata request_metadata);
 
-  // As the first part of the AIv1 model execution chain, this function triggers
-  // AIv1 input collection and model execution, with its output being input of
-  // the follow-up CPSSv3 server side model execution. If the AIv1 model is not
-  // available or is executed with an error, only the server side model will get
-  // called.
-  void InquireOnDeviceAiv1AndServerModelIfAvailable(
-      content::RenderFrameHost* render_frame_host,
-      permissions::PredictionRequestFeatures features,
-      PredictionRequestMetadata request_metadata);
-
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Function that handles model execution for all AIvX models.
   void ExecuteOnDeviceAivXModel(ModelExecutionData model_data);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // As the first part of the AIv3 model execution chain, this function triggers
   // AIv3 input collection and model execution, with its output being input of
   // the follow-up CPSSv3 server side model execution. If the AIv3 model is not
@@ -287,23 +270,24 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
 
   base::OneShotTimer timeout_timer_;
 
-  std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
   std::optional<SkBitmap> snapshot_for_testing_;
 
   //  Handles calls to the passage embedder, a tflite model that is used to
   //  compute the embeddings used as input for the AIv4 model.
+  //  Needs to be initialized after profile_;
   std::unique_ptr<permissions::PassageEmbedderDelegate>
       passage_embedder_delegate_;
 
   // For the Aiv4 execution flow we use a text embeddings model that only works
   // for the English language. Therefore we use an observer to wait for language
   // detection to finish (in case its not already done when we need this).
+  //  Needs to be initialized after profile_;
   std::unique_ptr<permissions::LanguageDetectionObserver>
       language_detection_observer_;
 
-#endif
-
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PermissionsAiUiSelector> weak_ptr_factory_{this};
 };

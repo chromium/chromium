@@ -44,8 +44,6 @@ source_set("permissions") {
     "prediction_service/passage_embedder_delegate.h",
     "prediction_service/permissions_ai_ui_selector.cc",
     "prediction_service/permissions_ai_ui_selector.h",
-    "prediction_service/permissions_aiv1_handler.cc",
-    "prediction_service/permissions_aiv1_handler.h",
     "prediction_service/prediction_model_handler_provider.cc",
     "prediction_service/prediction_model_handler_provider.h",
     "prediction_service/prediction_service_factory.cc",
@@ -235,7 +233,6 @@ source_set("unit_tests") {
     "permission_subscription_unittest.cc",
     "prediction_service/contextual_notification_permission_ui_selector_unittest.cc",
     "prediction_service/permissions_ai_ui_selector_unittest.cc",
-    "prediction_service/permissions_aiv1_handler_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
   ]
 

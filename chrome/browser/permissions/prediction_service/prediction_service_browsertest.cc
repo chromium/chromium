@@ -22,7 +22,6 @@
 #include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 #include "chrome/browser/permissions/prediction_service/passage_embedder_delegate.h"
 #include "chrome/browser/permissions/prediction_service/permissions_ai_ui_selector.h"
-#include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_service_factory.h"
@@ -342,7 +341,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   explicit PredictionServiceBrowserTestBase(
       const std::vector<FeatureRefAndParams>& enabled_features = {},
       const std::vector<FeatureRef>& disabled_features = {
-          permissions::features::kPermissionsAIv1,
           permissions::features::kPermissionsAIv3,
           permissions::features::kPermissionsAIv4}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -409,10 +407,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
   PredictionModelHandler* prediction_model_handler() {
     return model_handler_provider()->GetPredictionModelHandler(request_type());
-  }
-
-  PermissionsAiv1Handler* aiv1_model_handler() {
-    return model_handler_provider()->GetPermissionsAiv1Handler();
   }
 
   PermissionsAiv3Handler* aiv3_model_handler() {
@@ -498,7 +492,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTestBase,
                        PredictionServiceEnabled) {
-  EXPECT_FALSE(aiv1_model_handler());
   EXPECT_FALSE(aiv3_model_handler());
   EXPECT_FALSE(aiv4_model_handler());
   EXPECT_TRUE(prediction_model_handler());
@@ -529,8 +522,6 @@ class PredictionServiceHoldbackBrowserTest
                                          },
                                          /*disabled_features=*/
                                          {permissions::features::
-                                              kPermissionsAIv1,
-                                          permissions::features::
                                               kPermissionsAIv3,
                                           permissions::features::
                                               kPermissionsAIv4,
@@ -667,8 +658,6 @@ class SignatureModelPredictionServiceBrowserTest
                                            {}}},
                                          /*disabled_features=*/
                                          {permissions::features::
-                                              kPermissionsAIv1,
-                                          permissions::features::
                                               kPermissionsAIv3,
                                           permissions::features::
                                               kPermissionsAIv4,
@@ -900,9 +889,6 @@ class Aiv3ModelPredictionServiceBrowserTest
                                               {
                                                   CONFIGURE_NO_HOLDBACK_CHANCE,
                                                   {permissions::features::
-                                                       kPermissionsAIv1,
-                                                   {}},
-                                                  {permissions::features::
                                                        kPermissionsAIv3,
                                                    {}},
                                               }, /*disabled_features=*/
@@ -1003,7 +989,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                        Aiv3ModelHandlerDefined) {
-  EXPECT_FALSE(aiv1_model_handler());
   EXPECT_TRUE(aiv3_model_handler());
 }
 
@@ -1084,9 +1069,6 @@ class Aiv4ModelPredictionServiceBrowserTestBase
                                               {
                                                   CONFIGURE_NO_HOLDBACK_CHANCE,
                                                   {permissions::features::
-                                                       kPermissionsAIv1,
-                                                   {}},
-                                                  {permissions::features::
                                                        kPermissionsAIv3,
                                                    {}},
                                                   {permissions::features::
@@ -1148,7 +1130,6 @@ class Aiv4ModelPredictionServiceBrowserTestBase
 IN_PROC_BROWSER_TEST_F(Aiv4ModelPredictionServiceBrowserTestBase,
                        Aiv4ModelHandlerDefined) {
   // If AIv4 flag is defined, no other AIvX model should get initialized.
-  EXPECT_FALSE(aiv1_model_handler());
   EXPECT_FALSE(aiv3_model_handler());
   EXPECT_TRUE(aiv4_model_handler());
 }

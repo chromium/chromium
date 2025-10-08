@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -31,6 +32,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::base::test::EqualsProto;
+using ::testing::ElementsAre;
+using ::testing::Pointee;
 // Helper common requests and responses. All of these are for the NOTIFICATION
 // type.
 
@@ -359,7 +364,7 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
+       permissions::features::kPermissionsAIv4},
       {});
 
   struct {
@@ -395,9 +400,8 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
     StartLookup(features, &run_loop, nullptr /* response_loop */);
     run_loop.Run();
 
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
+    EXPECT_THAT(received_requests_,
+                ElementsAre(Pointee(EqualsProto(expected_request))));
 
     received_requests_.clear();
   }
@@ -408,7 +412,7 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
+       permissions::features::kPermissionsAIv4},
       {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(
@@ -452,10 +456,8 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
     StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
     run_loop.Run();
 
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(kTest.expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
-
+    EXPECT_THAT(received_requests_,
+                ElementsAre(Pointee(EqualsProto(kTest.expected_request))));
     received_requests_.clear();
   }
 }
@@ -465,7 +467,7 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
+       permissions::features::kPermissionsAIv4},
       {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(
@@ -532,10 +534,8 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
     StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
     run_loop.Run();
 
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(kTest.expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
-
+    EXPECT_THAT(received_requests_,
+                ElementsAre(Pointee(EqualsProto(kTest.expected_request))));
     received_requests_.clear();
   }
 }
