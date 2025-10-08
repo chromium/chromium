@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 import android.content.res.Resources;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -22,6 +28,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -29,18 +36,42 @@ import java.util.function.Supplier;
 /** Shows a message notifying the user that they have been removed from the 3PCD 1% experiment. */
 @NullMarked
 public class PrivacySandbox3pcdRollbackMessageController {
-    public static boolean maybeShow(
-            Context context, Profile profile, MessageDispatcher messageDispatcher) {
-        final PrefService prefService = UserPrefs.get(profile);
+    private final Context mContext;
+    private final Profile mProfile;
+    private final ActivityTabProvider mActivityTabProvider;
+    private final MessageDispatcher mMessageDispatcher;
+    private @Nullable ActivityTabTabObserver mActivityTabTabObserver;
+
+    public PrivacySandbox3pcdRollbackMessageController(
+            Context context,
+            Profile profile,
+            ActivityTabProvider activityTabProvider,
+            MessageDispatcher messageDispatcher) {
+        mContext = context;
+        mProfile = profile;
+        mActivityTabProvider = activityTabProvider;
+        mMessageDispatcher = messageDispatcher;
+        if (!UserPrefs.get(profile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)) {
+            TrackingProtectionSettingsBridge.maybeSetRollbackPrefsModeB(profile);
+        }
+        createActivityTabTabObserver(profile);
+    }
+
+    public void destroy() {
+        destroyActivityTabTabObserver();
+    }
+
+    public boolean maybeShow() {
+        final PrefService prefService = UserPrefs.get(mProfile);
         // The message should only be shown for regular profiles when the associated pref and
         // feature are true.
         if (!prefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)
-                || profile.isOffTheRecord()
+                || mProfile.isOffTheRecord()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.ROLL_BACK_MODE_B)) {
             return false;
         }
 
-        Resources resources = context.getResources();
+        Resources resources = mContext.getResources();
         Supplier<Integer> onPrimaryAction =
                 () -> {
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
@@ -78,11 +109,13 @@ public class PrivacySandbox3pcdRollbackMessageController {
         message.set(
                 MessageBannerProperties.ON_SECONDARY_ACTION,
                 () -> {
-                    messageDispatcher.dismissMessage(message, DismissReason.SECONDARY_ACTION);
+                    mMessageDispatcher.dismissMessage(message, DismissReason.SECONDARY_ACTION);
                     SiteSettingsHelper.showCategorySettings(
-                            context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                            mContext, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
                 });
-        messageDispatcher.enqueueWindowScopedMessage(message, /* highPriority= */ true);
+        mMessageDispatcher.enqueueWindowScopedMessage(message, /* highPriority= */ true);
+        // Stop observation to ensure the message is only ever queued once.
+        destroyActivityTabTabObserver();
         return true;
     }
 
@@ -109,5 +142,47 @@ public class PrivacySandbox3pcdRollbackMessageController {
                 "Privacy.3PCD.RollbackNotice.Action", action, RollBack3pcdNoticeAction.MAX_VALUE);
         RecordHistogram.recordBooleanHistogram(
                 "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", false);
+    }
+
+    private void destroyActivityTabTabObserver() {
+        if (mActivityTabTabObserver != null) {
+            mActivityTabTabObserver.destroy();
+            mActivityTabTabObserver = null;
+        }
+    }
+
+    private void createActivityTabTabObserver(Profile profile) {
+        mActivityTabTabObserver =
+                new ActivityTabTabObserver(mActivityTabProvider) {
+                    @Override
+                    public void onDidStartNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        // Offboard here iff the user *did not* block 3PCs in Mode B and therefore
+                        // will not need their 3PC blocking state updated (setting 3PC blocking
+                        // state here creates a startup race condition with local pref resolution).
+                        if (!UserPrefs.get(profile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)) {
+                            TrackingProtectionSettingsBridge.maybeSetRollbackPrefsModeB(profile);
+                        }
+                    }
+
+                    @Override
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigation) {
+                        if (tab == null) return;
+                        // Offboard here iff the user *did* block 3PCs in Mode B. There's no
+                        // material difference between doing this here and on DidStartNavigation, as
+                        // the user will continue having 3PCs blocked, and this avoids the race.
+                        if (UserPrefs.get(profile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)) {
+                            TrackingProtectionSettingsBridge.maybeSetRollbackPrefsModeB(profile);
+                            return;
+                        }
+                        if (navigation.hasCommitted()) maybeShow();
+                    }
+                };
+    }
+
+    @VisibleForTesting
+    @Nullable ActivityTabTabObserver getActivityTabTabObserver() {
+        return mActivityTabTabObserver;
     }
 }

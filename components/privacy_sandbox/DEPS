@@ -11,6 +11,7 @@ include_rules = [
   "+components/prefs",
   "+components/signin/public/identity_manager",
   "+components/strings/grit/components_strings.h",
+  "+components/sync",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/version_info/channel.h",
   "+content/public/common/content_features.h",

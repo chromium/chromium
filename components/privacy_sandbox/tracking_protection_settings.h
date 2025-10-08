@@ -13,7 +13,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/sync/service/sync_service.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -31,6 +33,10 @@ inline bool IsTrackingProtectionsUi(CookieControlsState controls_state) {
   return controls_state == CookieControlsState::kActiveTp ||
          controls_state == CookieControlsState::kPausedTp;
 }
+
+// Attempts to set prefs in order to roll back Mode B.
+void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
+                                PrefService* prefs);
 
 // A service which provides an interface for observing and reading tracking
 // protection settings.

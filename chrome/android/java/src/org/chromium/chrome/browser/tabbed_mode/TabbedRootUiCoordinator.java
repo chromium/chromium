@@ -258,6 +258,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private LayoutManagerImpl mLayoutManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
+    private PrivacySandbox3pcdRollbackMessageController
+            mPrivacySandbox3pcdRollbackMessageController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<Tab> mSendToBackground;
@@ -734,6 +736,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mBookmarkBarIphController != null) {
             mBookmarkBarIphController.destroy();
             mBookmarkBarIphController = null;
+        }
+
+        if (mPrivacySandbox3pcdRollbackMessageController != null) {
+            mPrivacySandbox3pcdRollbackMessageController.destroy();
+            mPrivacySandbox3pcdRollbackMessageController = null;
         }
 
         super.onDestroy();
@@ -1712,8 +1719,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        if (PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                mActivity, profile, mMessageDispatcher)) {
+        mPrivacySandbox3pcdRollbackMessageController =
+                new PrivacySandbox3pcdRollbackMessageController(
+                        mActivity, profile, mActivityTabProvider, mMessageDispatcher);
+        if (mPrivacySandbox3pcdRollbackMessageController.maybeShow()) {
             return true;
         }
 

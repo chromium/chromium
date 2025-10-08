@@ -18,6 +18,10 @@ public class TrackingProtectionSettingsBridge {
         mProfile = profile;
     }
 
+    public static void maybeSetRollbackPrefsModeB(Profile profile) {
+        TrackingProtectionSettingsBridgeJni.get().maybeSetRollbackPrefsModeB(profile);
+    }
+
     public boolean isIpProtectionDisabledForEnterprise() {
         return TrackingProtectionSettingsBridgeJni.get()
                 .isIpProtectionDisabledForEnterprise(mProfile);
@@ -25,6 +29,8 @@ public class TrackingProtectionSettingsBridge {
 
     @NativeMethods
     public interface Natives {
+        void maybeSetRollbackPrefsModeB(Profile profile);
+
         boolean isIpProtectionDisabledForEnterprise(Profile profile);
     }
 }
