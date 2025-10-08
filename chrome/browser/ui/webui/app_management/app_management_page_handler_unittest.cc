@@ -611,6 +611,56 @@ TEST_P(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
   EXPECT_TRUE(overlapping_apps.empty());
 }
 
+TEST_P(AppManagementPageHandlerTestBase, GetSupportedLinksWithScopeExtensions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kPwaNavigationCapturingWithScopeExtensions);
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/"));
+  web_app_info->title = u"app_name";
+  web_app_info->scope_extensions = {
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitea.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://app.siteb.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitec.com"),
+                                                  /*has_origin_wildcard=*/true),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://sited.com/path")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("http://☃.net/")) /* Unicode */
+  };
+  web_app_info->validated_scope_extensions = web_app_info->scope_extensions;
+  web_app_info->scope_extensions.insert(
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://unvalidatedscope.com")));
+
+  web_app::WebAppInstallParams install_params;
+  // Skip origin association validation for testing.
+  install_params.skip_origin_association_validation = true;
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  provider->scheduler().InstallFromInfoWithParams(
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, future.GetCallback(),
+      install_params);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            future.Get<webapps::InstallResultCode>());
+  const webapps::AppId& app_id = future.Get<webapps::AppId>();
+
+  base::test::TestFuture<app_management::mojom::AppPtr> result;
+  handler()->GetApp(app_id, result.GetCallback());
+
+  EXPECT_THAT(result.Get()->supported_links,
+              testing::UnorderedElementsAre("sitea.com/*", "app.siteb.com/*",
+                                            "*.sitec.com/*", "sitec.com/*",
+                                            "sited.com/path*", "example.com/*",
+                                            "xn--n3h.net/*"));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(

@@ -55,6 +55,12 @@ class WebAppScope {
       const GURL& url,
       WebAppScopeScoreOptions options = WebAppScopeScoreOptions()) const;
 
+  const GURL& scope() const { return scope_; }
+
+  const base::flat_set<ScopeExtensionInfo>& validated_scope_extensions() const {
+    return validated_scope_extensions_;
+  }
+
   bool operator==(const WebAppScope& other) const;
 
  private:
