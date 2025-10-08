@@ -1672,6 +1672,11 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables rendering the top chrome in WebUI. This is a central flag to enable
+// the WebUI implementation of top chrome. Individual features will be
+// additionally gated by this flag.
+BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only
