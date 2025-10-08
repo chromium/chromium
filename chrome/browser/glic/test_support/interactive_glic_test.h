@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -437,8 +438,9 @@ class InteractiveGlicTestT : public T {
                                        bool expect_within_area) {
     return Api::CheckResult(
         [this, point]() {
-          return window_controller().GetGlicView()->IsPointWithinDraggableArea(
-              point);
+          return GetWindowControllerImpl()
+              .GetGlicViewForTesting()
+              ->IsPointWithinDraggableArea(point);
         },
         expect_within_area,
         "CheckPointIsWithinDraggableArea_" + point.ToString());
@@ -589,7 +591,7 @@ class InteractiveGlicTestT : public T {
       }
       return embedder->GetView();
     }
-    return window_controller().GetGlicView();
+    return GetWindowControllerImpl().GetGlicViewForTesting();
   }
 
   views::Widget* GetGlicWidget() {

@@ -54,9 +54,8 @@
 
 namespace glic {
 
-// TODO(refactor): Remove.
+// TODO(refactor): Remove after launching kGlicMultiInstance.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
-  NOTIMPLEMENTED();
   return *host_manager_;
 }
 
@@ -201,12 +200,6 @@ void GlicInstanceCoordinatorImpl::Close() {
   NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::CloseWithReason(
-    views::Widget::ClosedReason reason) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-}
-
 void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
     gfx::Point event_loc) {
   // TODO(crbug/449179649): Used by the hotkey code. May be needed for the
@@ -283,12 +276,6 @@ base::WeakPtr<GlicWindowController> GlicInstanceCoordinatorImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-GlicView* GlicInstanceCoordinatorImpl::GetGlicView() const {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 base::WeakPtr<views::View> GlicInstanceCoordinatorImpl::GetGlicViewAsView() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
@@ -351,8 +338,10 @@ GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
 
 void GlicInstanceCoordinatorImpl::SidePanelShown(
     BrowserWindowInterface* browser) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
+  // This is a related to the legacy side panel behavior that
+  // GlicWindowController implements, and will not be called when
+  // kGlicMultiInstance is enabled.
+  NOTREACHED();
 }
 
 base::CallbackListSubscription GlicInstanceCoordinatorImpl::RegisterStateChange(

@@ -78,7 +78,6 @@ class GlicInstanceCoordinatorImpl
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetSize() override;
   void Close() override;
-  void CloseWithReason(views::Widget::ClosedReason reason) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
   void AddStateObserver(StateObserver* observer) override;
@@ -97,7 +96,6 @@ class GlicInstanceCoordinatorImpl
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowController> GetWeakPtr() override;
 
-  GlicView* GetGlicView() const override;
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
   gfx::NativeWindow GetHostNativeWindow() override;

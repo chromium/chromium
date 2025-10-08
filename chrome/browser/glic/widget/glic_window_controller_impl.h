@@ -43,8 +43,9 @@ class Point;
 }  // namespace gfx
 
 namespace glic {
-
 class GlicEnabling;
+class GlicView;
+class GlicWindowAnimator;
 class ScopedGlicButtonIndicator;
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -82,7 +83,6 @@ class GlicWindowControllerImpl
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetSize() override;
   void Close() override;
-  void CloseWithReason(views::Widget::ClosedReason reason) override;
   bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
@@ -99,7 +99,6 @@ class GlicWindowControllerImpl
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowController> GetWeakPtr() override;
 
-  GlicView* GetGlicView() const override;
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
   gfx::NativeWindow GetHostNativeWindow() override;
@@ -162,8 +161,11 @@ class GlicWindowControllerImpl
 
   // Testing functionality.
   GlicWindowAnimator* GetWindowAnimatorForTesting();
+  GlicView* GetGlicViewForTesting() const { return GetGlicView(); }
 
  private:
+  void CloseWithReason(views::Widget::ClosedReason reason);
+  GlicView* GetGlicView() const;
   void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
                                    bool prevent_close,
                                    mojom::InvocationSource source);

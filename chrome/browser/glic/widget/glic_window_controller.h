@@ -47,8 +47,6 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicWidget;
 class GlicKeyedService;
-class GlicView;
-class GlicWindowAnimator;
 enum class AttachChangeReason;
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -100,9 +98,6 @@ class GlicWindowController : public GlicInstance::UIDelegate,
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
 
-  // Used when the native window is closed directly.
-  virtual void CloseWithReason(views::Widget::ClosedReason reason) = 0;
-
   // Activates the browser window that the glic panel is associated with. If
   // the panel is not attached to a browser, it will attempt to activate the
   // last active browser. Returns true if a browser was successfully
@@ -145,8 +140,6 @@ class GlicWindowController : public GlicInstance::UIDelegate,
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   virtual base::WeakPtr<GlicWindowController> GetWeakPtr() = 0;
-
-  virtual GlicView* GetGlicView() const = 0;
 
   virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
 

@@ -6,6 +6,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/glic/widget/glic_window_resize_animation.h"

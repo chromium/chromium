@@ -307,15 +307,17 @@ void GlicE2ETest::ThrottleWebContentsNetwork(
 }
 
 void GlicE2ETest::ThrottleGlicNetwork() {
-  auto* glic_view =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-          ->window_controller()
-          .GetGlicView();
-  CHECK(glic_view);
-  content::WebContents* web_contents =
-      glic_view->GetWebContents()->GetInnerWebContents()[0];
-  CHECK(web_contents);
-  ThrottleWebContentsNetwork(web_contents);
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  for (auto* host : glic_service->host_manager().GetAllHosts()) {
+    auto* webui_contents = host->webui_contents();
+    if (webui_contents) {
+      content::WebContents* inner_contents =
+          webui_contents->GetInnerWebContents()[0];
+      CHECK(inner_contents);
+      ThrottleWebContentsNetwork(inner_contents);
+    }
+  }
 }
 
 }  // namespace glic::test

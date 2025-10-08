@@ -48,7 +48,6 @@ class MockGlicWindowController
   MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
-  MOCK_METHOD(void, CloseWithReason, (views::Widget::ClosedReason), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));
   MOCK_METHOD(void, ShowTitleBarContextMenuAt, (gfx::Point), (override));
   MOCK_METHOD(mojom::PanelState, GetPanelState, (), (override));
@@ -65,7 +64,6 @@ class MockGlicWindowController
   MOCK_METHOD(void, Preload, (), (override));
   MOCK_METHOD(void, Reload, (), (override));
   MOCK_METHOD(bool, IsWarmed, (), (const, override));
-  MOCK_METHOD(GlicView*, GetGlicView, (), (const, override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetGlicViewAsView, (), (override));
   MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (const, override));
   MOCK_METHOD(gfx::NativeWindow, GetHostNativeWindow, (), (override));
