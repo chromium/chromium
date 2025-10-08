@@ -307,7 +307,13 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, CreateLogs) {
+// TODO(crbug.com/450169384): flaky test on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CreateLogs DISABLED_CreateLogs
+#else
+#define MAYBE_CreateLogs CreateLogs
+#endif
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, MAYBE_CreateLogs) {
   auto* sm_service = GetSMService();
   structured_metrics_mixin_.UpdateRecordingState(true);
   WaitForConsentChanges();
