@@ -1455,6 +1455,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="340924996148642843">A comparação não está disponível no momento</translation>
 <translation id="3409896703495473338">Gerenciar configurações de segurança</translation>
 <translation id="3411091017011773343">Fazer upload em <ph name="HOURS" />h</translation>
+<translation id="341134412449102894">Suas informações estão salvas na conta <ph name="ACCOUNT" /> da <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3413466783792948876">Caso você esteja usando uma rede pública, será mais seguro visitar este site mais tarde. Uma rede confiável, como o Wi-Fi de casa ou do trabalho, oferece menos riscos.</translation>
 <translation id="3414275587143250384">Computação em nuvem e distribuída</translation>
 <translation id="3414952576877147120">Tamanho:</translation>

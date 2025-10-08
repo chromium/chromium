@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Gérer les données</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 fenêtre}one{# fenêtre}other{# fenêtres}}</translation>
 <translation id="232390861414237658">Utilisez cette carte pour le remplissage automatique lors des achats effectués dans Chrome lorsqu'elle est enregistrée pour être utilisée avec Google Pay</translation>
+<translation id="2326283484705860548">Vous pouvez désormais remplir automatiquement davantage d'informations à partir de Google Portefeuille</translation>
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
 <translation id="2347764072711098973">Utiliser Affirm, Zip ou Klarna pour payer au fil du temps</translation>
 <translation id="2348509731468399833">Suivi des prix arrêté.</translation>
+<translation id="2348836501965732644">Gérez vos informations ou désactivez ces suggestions dans les paramètres</translation>
 <translation id="2349957959687031096">Bouton Ouvrir l'onglet de navigation privée, activez-le pour ouvrir un nouvel onglet de navigation privée pour naviguer en mode privé</translation>
 <translation id="2350796302381711542">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Ce serveur n'a pas pu prouver qu'il s'agit bien de <ph name="DOMAIN" /> parce qu'il utilise un certificat de sécurité qui n'est pas approuvé par Chromium ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique.</translation>
@@ -3144,6 +3146,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6189351761800074311">Le texte et le contenu de votre page sont envoyés à Google, mais ne seront pas utilisés pour améliorer l'IA.
     <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Remplacer certaines touches de votre clavier, comme Échap</translation>
+<translation id="6192524964213419211">Enregistrez vos informations pour effectuer des tâches plus rapidement dans les produits Google. Elles sont enregistrées dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Vous pouvez voir tous vos produits suivis en cliquant ici</translation>
 <translation id="6195371403461054755">Géologie</translation>
 <translation id="6195418151868446719">Électronique grand public</translation>

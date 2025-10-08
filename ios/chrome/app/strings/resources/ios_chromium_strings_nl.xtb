@@ -89,7 +89,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3044857325852340337">Chromium-gegevens verwijderd</translation>
 <translation id="3054480780637153380">Open de Chromium-instellingen in iOS, tik op Standaard browser-app en selecteer Chromium.</translation>
-<translation id="3102849287235003384">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium instellen als je standaardbrowser?</translation>
 <translation id="3180939591219927904">Zet 'Incognitotabbladen vergrendelen als je Chromium sluit' aan</translation>
 <translation id="328933489847748230">{count,plural, =1{Er wordt nu 1 Chromium-venster getoond}other{Er worden nu {count} Chromium-vensters getoond}}</translation>
@@ -200,6 +199,9 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5671188105328420281">Chromium-tips</translation>
 <translation id="5688047395118852662">Op deze kaart zie je suggesties voor hoe je het maximale uit Chromium kunt halen.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
+<translation id="5731004036450828399">Als je je toegangssleutels wilt beveiligen, moet je eerst een herstelpincode maken.
+
+        Toegangssleutels worden opgeslagen in Wachtwoordmanager, zodat je ze op elk apparaat in Chromium kunt gebruiken.</translation>
 <translation id="584550191241316896">Ingelogd bij Chromium</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5889847953983052353">Als dit aanstaat:
@@ -265,8 +267,8 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7269362888766543920">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder deze add-ons.</translation>
 <translation id="7285031092584344905">Krijg toegang tot je Chromium-wachtwoorden en meer in andere apps.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">De geselecteerde gegevens zijn verwijderd uit Chromium en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
 <translation id="7395825497086981028">Je wachtwoord wordt opgeslagen in Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Deze toegangssleutel wordt opgeslagen in Wachtwoordmanager voor <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Open Chromium</translation>
 <translation id="7531461704633548377">Van Chromium</translation>
 <translation id="7554983317097061001">Chromium-tip: verplaats Chromium naar het dock</translation>
@@ -300,6 +302,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8254729934443216898">Ontdek nieuwe functies waarmee je alles uit Chromium kunt halen.</translation>
 <translation id="8293572045658095405">Je bent in de Chromium-incognitomodus</translation>
 <translation id="830951810931292870">Hiermee worden de ingevoerde URL's in Chromium geopend in de incognitomodus.</translation>
+<translation id="8385503371191508165">Sla toegangssleutels op met Wachtwoordmanager</translation>
 <translation id="8390323835464055390">Log in met je opgeslagen wachtwoorden en toegangssleutels vanuit elke app via Chromium voor automatisch invullen</translation>
 <translation id="8409374867500149834">Je hebt de krachtigste beveiliging van Chromium tegen schadelijke websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}}</translation>

@@ -71,7 +71,6 @@
 <translation id="2576431527583832481">Chrome অধিক উৎকৃষ্ট হ'ল! এটা নতুন সংস্কৰণ আছে।</translation>
 <translation id="257708665678654955">ইয়াৰ পাছত আপুনি Google Chromeএ এই ছাইটটোৰ পৰা <ph name="LANGUAGE_NAME" /> পৃষ্ঠা অনুবাদ কৰাৰ সুবিধাটো প্ৰদান কৰাটো বিচাৰেনে?</translation>
 <translation id="2668242166988961773">Chromeত ভইচৰ দ্বাৰা সন্ধান কৰক।</translation>
-<translation id="2689064829982324496">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="2695886661449553974">Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2703746758996815929">Chromeৰ সহায়ক কিটিপ পাবলৈ আপোনাৰ iOSৰ ছেটিঙত জাননী অন কৰক।</translation>
 <translation id="2728851697704606655">Google Lensৰ জৰিয়তে অনুবাদ কৰক</translation>
@@ -87,6 +86,9 @@
 <translation id="2940565985148833945">Chrome সম্পৰ্কীয় পৰামৰ্শ: Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="2986402782150919988">Chromeত বুকমাৰ্ক যোগ দিয়ক</translation>
+<translation id="3027236223714901838">আপোনাৰ পাছকীসমূহ সুৰক্ষিত কৰি ৰাখিবলৈ, আপুনি প্ৰথমে এটা পুনৰুদ্ধাৰৰ পিন সৃষ্টি কৰিব লাগিব।
+
+        পাছকীসমূহ Google Password Managerত ছেভ কৰা হয়, যিয়ে আপোনাক যিকোনো ডিভাইচত সেইসমূহ Chromeত ব্যৱহাৰ কৰিবলৈ দিয়ে।</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="3042447686908081308">Chromeলৈ আমদানি কৰক</translation>
 <translation id="3051521853355903257">Chromeত পাছৱৰ্ড পৰিচালনা কৰক</translation>
@@ -309,7 +311,6 @@
 <translation id="8413500425974960807">Chrome ব্যৱহাৰ সম্পৰ্কীয় কিটিপ: Chromeক ড’কলৈ স্থানান্তৰ কৰক</translation>
 <translation id="8413795581997394485">বিপজ্জনক হিচাপে জনাজাত ছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত কৰে। আপুনি কোনো ছাইটলৈ গ’লে, Chromeএ আপোনাৰ IP ঠিকনা লুকুৱাই ৰখা এটা গোপনীয়তা সম্পৰ্কীয় ছাৰ্ভাৰৰ জৰিয়তে Googleলৈ সেই URLটোৰ এটা অস্পষ্ট অংশ পঠিয়ায়। যদি কোনো ছাইটে কোনো সন্দেহজনক কাৰ্য কৰে, তেন্তে সম্পূৰ্ণ URL আৰু পৃষ্ঠাৰ কিছুমান সমলো পঠিওৱা হয়।</translation>
 <translation id="84594714173170813">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ কৰি থাকক</translation>
-<translation id="8459495907675268833">বাছনি কৰা ডেটাখিনি Chrome আৰু ছিংক কৰি থোৱা ডিভাইচসমূহৰ পৰা আঁতৰোৱা হৈছে। Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে আপোনাৰ Google একাউণ্টৰ অইন ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস history.google.comত থাকিব পাৰে।</translation>
 <translation id="8491300088149538575"><ph name="EMAIL" /> হিচাপে ছাইন ইন কৰিছে।
 
 আপোনাৰ ডেটাখিনি আপোনাৰ পাছফ্ৰে’জৰ জৰিয়তে <ph name="TIME" />ত এনক্ৰিপ্ট কৰা হৈছে। আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এইটো দিয়ক।</translation>

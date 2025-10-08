@@ -1002,6 +1002,7 @@
 <translation id="166278006618318542">विषय सार्वजनिक की एल्गोरिद्म</translation>
 <translation id="1662801900924515589"><ph name="APP" /> इंस्टॉल हो गया</translation>
 <translation id="1663698992894057019">सुरक्षा और सॉफ़्टवेयर के नए अपडेट पाने के लिए, नए Chromebook पर अपग्रेड करें</translation>
+<translation id="1664497218584335032">वेबसाइट, इस लिंक को किसी ऐप्लिकेशन में खोलना चाहती है.</translation>
 <translation id="166454475160289583">इनके पास आपके कीबोर्ड इनपुट को बदलने की अनुमति नहीं है</translation>
 <translation id="1665328953287874063">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए, पासवर्ड या पिन का इस्तेमाल करें</translation>
 <translation id="1665859804801131136">एक्स्प्रेशनिज़्म</translation>
@@ -2886,6 +2887,7 @@
 <translation id="2950666755714083615">मुझे सदस्यता दें</translation>
 <translation id="2953210795988451570">सुरक्षा से जुड़े अपडेट मिलने बंद हो गए हैं. नए Chromebook पर अपग्रेड करें.</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> को सूचनाएं भेजने की अनुमति नहीं है. अगली बार वेबसाइट पर आने पर, आपसे फिर से पूछा जाएगा.</translation>
+<translation id="2955048943983973430">इससे जुड़ी Google की सेवाएं</translation>
 <translation id="2956070239128776395">सेक्शन समूह के अंदर मौजूद है: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">इस एक्सटेंशन का इस्तेमाल करने के लिए, डेवलपर मोड चालू करें. Chrome Web Store इस एक्सटेंशन की समीक्षा नहीं कर सकता.</translation>
 <translation id="2958721676848865875">पैक एक्‍सटेंशन चेतावनी</translation>
@@ -4641,6 +4643,7 @@
 <translation id="4151503145138736576">स्टोरेज खाली करने के लिए, ऑफ़लाइन स्टोरेज उपलब्ध नहीं है</translation>
 <translation id="4152011295694446843">आपको अपने बुकमार्क यहां मिलेंगे</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
+<translation id="4153858337812834972">हाल ही में खोले गए टैब</translation>
 <translation id="4154658846204884961">धूमकेतु</translation>
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - लेफ़्ट व्यू</translation>
@@ -4806,6 +4809,7 @@
 <translation id="4278498748067682896">कीऑस्क और साइनेज अपग्रेड का इस्तेमाल करने से, डिवाइस सिर्फ़ कीऑस्क और साइनेज मोड में काम कर सकता है. अगर आपको उपयोगकर्ता को डिवाइस में साइन इन करने के लिए कहना है, तो वापस जाएं और Chrome Enterprise Upgrade की मदद से डिवाइस को रजिस्टर करें.</translation>
 <translation id="4278779213160967034">इस प्रोसेस को पूरा होने में कुछ मिनट लग सकते हैं. फ़ाइलें डाउनलोड हो रही हैं.</translation>
 <translation id="4279129444466079448">आप इस डिवाइस पर <ph name="PROFILE_LIMIT" /> ई-सिम प्रोफ़ाइलें इंस्टॉल कर सकते हैं. अन्य प्रोफ़ाइल जोड़ने के लिए, पहले किसी मौजूदा प्रोफ़ाइल को हटाएं.</translation>
+<translation id="427987768447457592">नया टैब ग्रुप</translation>
 <translation id="4280325816108262082">बंद होने पर या इस्तेमाल नहीं किए जाने पर डिवाइस अपने-आप डिसकनेक्ट हो जाएगा</translation>
 <translation id="4281412694055934031">साइटें, आपके डिवाइस पर वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति मांग सकती हैं</translation>
 <translation id="4281789858103154731">बनाएं</translation>
@@ -6560,10 +6564,12 @@
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> के लिंक हमेशा इस ऐप्लिकेशन में खोलें</translation>
 <translation id="5520605865175417976">कार्रवाई हटाने के लिए, <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
 <translation id="5522156646677899028">इस एक्सटेंशन में गंभीर सुरक्षा भेद्यता शामिल है.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{आपके एडमिन ने एक एक्सटेंशन इंस्टॉल किया है}one{आपके एडमिन ने # एक्सटेंशन इंस्टॉल किए हैं}other{आपके एडमिन ने # एक्सटेंशन इंस्टॉल किए हैं}}</translation>
+<translation id="5523203511530504754"><ph name="APP_NAME" /> में <ph name="PROTOCOL_SCHEME" /> लिंक खोलें</translation>
 <translation id="5523532775593636291">आपने जो साइटें जोड़ी हैं वे हमेशा ऐक्टिव रहेंगी. साथ ही, उनकी मेमोरी को खाली नहीं किया जाएगा</translation>
 <translation id="5523558474028191231">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं. नाम <ph name="MAX_CHARACTER_COUNT" /> या इससे कम वर्ण का ही होना चाहिए</translation>
 <translation id="5526745900034778153">सिंक फिर से शुरू करने के लिए दोबारा साइन इन करें</translation>
@@ -7114,6 +7120,7 @@
 <translation id="5919305207330938913">इकट्ठा किए गए पूरे डेटा का इस्तेमाल, Google की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> के मुताबिक किया जाएगा.</translation>
 <translation id="5919486630433391408">आपके एडमिन ने फ़र्मवेयर के अपडेट वाली सुविधा बंद कर दी है.</translation>
 <translation id="5920543303088087579">इस नेटवर्क से कनेक्ट करने की सुविधा आपके व्यवस्थापक ने अक्षम कर दी है</translation>
+<translation id="5922493635960054020">हाल ही में खोली गई साइटों पर JavaScript ऑप्टिमाइज़र का ऐक्सेस ब्लॉक करें. सुरक्षित ब्राउज़िंग की सुविधा चालू होना ज़रूरी है</translation>
 <translation id="5922963926582976524">इंस्टैंट हॉटस्पॉट नेटवर्क को डिसकनेक्ट करें</translation>
 <translation id="5924047253200400718">सहायता पाएं<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Microsoft फ़ाइलों को कॉपी करने या Google Drive में ट्रांसफ़र करने से पहले पूछें</translation>
@@ -9407,6 +9414,7 @@
 <translation id="7531771599742723865">इस्तेमाल हो रहा डिवाइस</translation>
 <translation id="7531779363494549572">सेटिंग &gt; ऐप्लिकेशन और सूचनाएं &gt; सूचनाएं पर जाएं.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
+<translation id="75362970626182391">नया टैब ग्रुप</translation>
 <translation id="7536815228183532290">आपने <ph name="EMAIL" /> के तौर पर साइन इन किया है</translation>
 <translation id="7538013435257102593">यह फ़ाइल टाइप आम तौर पर डाउनलोड नहीं किया जाता है और यह खतरनाक हो सकता है</translation>
 <translation id="7540972813190816353">अपडेट की जाँच करते समय कोई गड़बड़ी आई: <ph name="ERROR" /></translation>
@@ -9593,6 +9601,7 @@
 <translation id="7663859337051362114">ई-सिम प्रोफ़ाइल जोड़ें</translation>
 <translation id="76641554187607347">कोई कीबोर्ड कनेक्ट नहीं है</translation>
 <translation id="7664442418269614729">अपने iPhone पर इस कार्ड का इस्तेमाल करें</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> का लिंक खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="7665082356120621510">साइज़ रिज़र्व करें</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
 <translation id="7665445336029073980">डाउनलोड का पूरा इतिहास</translation>
@@ -11215,6 +11224,7 @@
 <translation id="8750786237117206586">ChromeOS Flex की ऑडियो सेटिंग मैनेज करें</translation>
 <translation id="8751034568832412184">स्कूल</translation>
 <translation id="8751329102746373229">आपके एडमिन से मिले सर्टिफ़िकेट</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> साइट, इस लिंक को किसी ऐप्लिकेशन में खोलना चाहती है.</translation>
 <translation id="8752451679755290210">अलग-अलग आइटम पर अपने-आप जाने की सुविधा</translation>
 <translation id="8753948258138515839">Files ऐप्लिकेशन उन फ़ाइलों का क्विक ऐक्सेस देता है जिन्हें आपने Google Drive, बाहरी स्टोरेज या ChromeOS Flex वाले डिवाइस में सेव किया है.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> जिस 'डेस्कटॉप वातावरण' पर काम करता है, उस पर इसे चलाते समय, सिस्टम प्रॉक्सी सेटिंग का उपयोग किया जाएगा.  हालांकि, या तो आपके सिस्टम पर यह सुविधा नहीं है या आपके सिस्टम कॉन्फ़िगरेशन को लॉन्च करने में कोई समस्या थी.&lt;/p&gt;

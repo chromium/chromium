@@ -349,7 +349,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2605017215201958293">Listen to this page with AI</translation>
 <translation id="2607441479295509868">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> invited you to access a shared item.</translation>
-<translation id="2630630219780173487">You can stop these sites from sending future notifications</translation>
 <translation id="2634393460268044753">Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="2643064289437760082">You can always delete ads measurement data by deleting your browsing data</translation>
 <translation id="2647434099613338025">Add language</translation>
@@ -526,7 +525,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3467081767799433066">With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
-<translation id="3479552764303398839">Not now</translation>
 <translation id="3482805106082349287">Search using keyboard, voice, Incognito or camera</translation>
 <translation id="3487903178221457900">The exported file may be accessible to others, including apps. Once you export, your passwords are deleted from Chrome.</translation>
 <translation id="3488199663160411179">name</translation>
@@ -874,7 +872,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4996042648402406470">Get</translation>
 <translation id="4996095658297597226">Use suggested password?</translation>
 <translation id="5001388021414335527">Follow this site here</translation>
-<translation id="5004416275253351869">Google activity controls</translation>
 <translation id="5007392906805964215">Review</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
@@ -1435,7 +1432,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7411224099004328643">Google Account user</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7421293530411019405">Leave tab group?</translation>
-<translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437998757836447326">Sign out of Chrome</translation>
 <translation id="7439467816829380878">Move tab to group</translation>

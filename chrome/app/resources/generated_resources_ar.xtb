@@ -1003,6 +1003,7 @@
 <translation id="166278006618318542">خوارزمية المفتاح العام لصاحب الشهادة</translation>
 <translation id="1662801900924515589">تم تثبيت <ph name="APP" />.</translation>
 <translation id="1663698992894057019">‏عليك الترقية إلى جهاز Chromebook جديد للحصول على أحدث البرامج وميزات الأمان</translation>
+<translation id="1664497218584335032">يطلب الموقع الإلكتروني فتح هذا الرابط في تطبيق.</translation>
 <translation id="166454475160289583">المواقع الإلكترونية غير المسموح لها بتجاوُز إدخالات لوحة المفاتيح</translation>
 <translation id="1665328953287874063">مطلوب استخدام كلمة مرور أو رقم تعريف شخصي لفتح قفل <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">تعبيري</translation>
@@ -4798,6 +4799,7 @@
 <translation id="4278498748067682896">‏بعد التسجيل، ستستخدم "ترقية الكشك واللوحات الرقمية" التي لا تسمح سوى بتشغيل الجهاز في وضع الكشك أو اللوحات الرقمية. إذا أردت أن يتمكّن المستخدمون من تسجيل الدخول إلى الجهاز، يُرجى الرجوع والتسجيل باستخدام "ترقية Chrome Enterprise".</translation>
 <translation id="4278779213160967034">قد تستغرق هذه العملية بضع دقائق. جارٍ تنزيل الملفات.</translation>
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
+<translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
 <translation id="4280325816108262082">سيتم قطع اتصال الجهاز بالبلوتوث تلقائيًا عند إيقاف تشغيله أو عدم استخدامه.</translation>
 <translation id="4281412694055934031">السماح للمواقع الإلكترونية بطلب تثبيت تطبيقات الويب على جهازك</translation>
 <translation id="4281789858103154731">إنشاء</translation>
@@ -6554,10 +6556,12 @@
 <translation id="5517304475148761050">‏يتطلّب هذا التطبيق الوصول إلى "متجر Play"</translation>
 <translation id="5517412723934627386">نوع الشبكة <ph name="NETWORK_TYPE" /> - الاسم المعروض للشبكة <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">فتح روابط <ph name="PROTOCOL_SCHEME" /> دائمًا في هذا التطبيق</translation>
 <translation id="5520605865175417976">إزالة الإجراء: <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">هل هذه هي الصفحة الرئيسية التي كنت تتوقع ظهورها؟</translation>
 <translation id="5522156646677899028">هذه الإضافة تحتوي على ثغرة أمنية خطيرة.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ثبَّت مشرفك إضافة واحدة.}zero{ثبَّت مشرفك # إضافة.}two{ثبَّت مشرفك إضافتَين.}few{ثبَّت مشرفك # إضافات.}many{ثبَّت مشرفك # إضافةً.}other{ثبَّت مشرفك # إضافة.}}</translation>
+<translation id="5523203511530504754">فتح روابط <ph name="PROTOCOL_SCHEME" /> في <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">ستظل المواقع الإلكترونية التي تضيفها نشطة دائمًا ولن يتم إخلاء المساحة التي تشغلها في الذاكرة.</translation>
 <translation id="5523558474028191231">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة، ويجب ألا يزيد عن <ph name="MAX_CHARACTER_COUNT" /> حرف.</translation>
 <translation id="5526745900034778153">تسجيل الدخول مرة أخرى لاستئناف المزامنة</translation>
@@ -9133,7 +9137,7 @@
 <translation id="7348920948593871738">‏تم إيقاف الكاميرا في إعدادات نظام Mac</translation>
 <translation id="7349010927677336670">سلاسة الفيديو</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز فقط.}zero{تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط.}two{تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز فقط.}few{تم حفظ {COUNT} كلمات مرور على هذا الجهاز فقط.}many{تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط.}other{تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط.}}</translation>
-<translation id="7352651011704765696">حدث خطأ ما</translation>
+<translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7353261921908507769">يمكن لجهات الاتصال القريبة منك مشاركة الوسائط معك. ولن تبدأ عمليات النقل إلا عند موافقتك.</translation>
 <translation id="7353432112255316844">إثبات هويّتك</translation>
 <translation id="735361434055555355">‏جارٍ تثبيت نظام التشغيل Linux...</translation>
@@ -9409,6 +9413,7 @@
 <translation id="7531771599742723865">الجهاز قيد الاستخدام</translation>
 <translation id="7531779363494549572">يُرجى الانتقال إلى "الإعدادات" &gt; "التطبيقات والإشعارات" &gt; "الإشعارات".</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
+<translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7536815228183532290">تم تسجيل الدخول بحساب <ph name="EMAIL" />.</translation>
 <translation id="7538013435257102593">لا يتم تنزيل نوع هذا الملف عادةً، وقد يكون خطيرًا.</translation>
 <translation id="7540972813190816353">حدث خطأ أثناء التحقق من التحديثات: <ph name="ERROR" /></translation>
@@ -9595,6 +9600,7 @@
 <translation id="7663859337051362114">‏إضافة الملف الشخصي لشريحة eSIM</translation>
 <translation id="76641554187607347">ما مِن لوحة مفاتيح متصلة.</translation>
 <translation id="7664442418269614729">‏استخدام هذه البطاقة على هاتف iPhone</translation>
+<translation id="7664822217939981459">يجب اختيار تطبيق لفتح الرابط <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">حجز الحجم</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="7665445336029073980">سجلّ التنزيل بالكامل</translation>
@@ -11218,6 +11224,7 @@
 <translation id="8750786237117206586">‏إدارة إعدادات الصوت على ChromeOS Flex</translation>
 <translation id="8751034568832412184">مؤسسة تعليمية</translation>
 <translation id="8751329102746373229">من المُشرف</translation>
+<translation id="875242763254084885">يطلب الموقع الإلكتروني <ph name="ORIGIN" /> فتح هذا الرابط في تطبيق.</translation>
 <translation id="8752451679755290210">التنقُّل بين العناصر تلقائيًا</translation>
 <translation id="8753948258138515839">‏يتيح تطبيق "الملفات" وصولاً سريعًا إلى الملفات التي تم حفظها على Google Drive أو وحدة التخزين الخارجية أو الجهاز الذي يعمل بنظام التشغيل ChromeOS Flex.</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;عند تشغيل <ph name="PRODUCT_NAME" /> من خلال بيئة معتمدة لسطح المكتب، سيتم استخدام إعدادات الخادم الوكيل للنظام. ومع ذلك، يحتمل إما أن يكون نظامك غير مدعم أو أنه ربما حدثت مشكلة أثناء تشغيل إعداد نظامك.&lt;/p&gt;

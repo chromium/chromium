@@ -814,6 +814,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2321291402658100099">Administrar información</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 entana}other{# ventanas}}</translation>
 <translation id="232390861414237658">Autocompleta esta tarjeta para las compras realizadas en Chrome cuando se guarde para usarla con Google Pay</translation>
+<translation id="2326283484705860548">Ahora puedes autocompletar más información desde la Billetera de Google</translation>
 <translation id="2328651992442742497">Se permite (predeterminado)</translation>
 <translation id="2328955282645810595">Herramientas eléctricas y de construcción</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2346319942568447007">Imagen que copiaste</translation>
 <translation id="2347764072711098973">Usar Affirm, Zip o Klarna para pagar en cuotas</translation>
 <translation id="2348509731468399833">Se detuvo el seguimiento de precios.</translation>
+<translation id="2348836501965732644">Administra tu información o desactiva estas sugerencias en Configuración</translation>
 <translation id="2349957959687031096">Botón Abrir una pestaña de incógnito: actívalo para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
 <translation id="2350796302381711542">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Este servidor no pudo probar que su dominio sea <ph name="DOMAIN" /> porque usa un certificado de seguridad que no es de confianza para Chromium o la configuración del sistema para la encriptación del tráfico web. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión.</translation>
@@ -3145,6 +3147,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6189351761800074311">El texto y el contenido de la página se envían a Google, pero no se usarán para mejorar la IA.
     <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Anular algunas teclas del teclado, como Esc</translation>
+<translation id="6192524964213419211">Guarda tu información para completar tareas más rápido en los productos de Google. Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Encuentra todos tus productos con seguimiento aquí</translation>
 <translation id="6195371403461054755">Geología</translation>
 <translation id="6195418151868446719">Electrónica de consumo</translation>

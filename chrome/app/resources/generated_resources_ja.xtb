@@ -999,6 +999,7 @@
 <translation id="166278006618318542">サブジェクトの公開鍵アルゴリズム</translation>
 <translation id="1662801900924515589"><ph name="APP" /> をインストールしました</translation>
 <translation id="1663698992894057019">新しい Chromebook にアップグレードして、最新のセキュリティとソフトウェアを手に入れましょう</translation>
+<translation id="1664497218584335032">ウェブサイトがこのリンクをアプリで開く許可を求めています。</translation>
 <translation id="166454475160289583">キーボード入力のオーバライドを許可しないサイト</translation>
 <translation id="1665328953287874063">パスワードまたは PIN を使用して <ph name="DEVICE_TYPE" /> のロックを解除してください</translation>
 <translation id="1665859804801131136">表現主義</translation>
@@ -1772,6 +1773,7 @@
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="2204168219363024184">Google パスワード マネージャーでこのパスキーを作成するには、本人確認を行ってください</translation>
 <translation id="2204387456724731099">このテキストを翻訳できませんでした</translation>
+<translation id="2204613850236199029">情報を削除しました</translation>
 <translation id="2207116775853792104">この拡張機能を残す</translation>
 <translation id="2209841631181508629">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
@@ -4785,6 +4787,7 @@
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
 <translation id="4279129444466079448">このデバイスにインストールできる eSIM プロファイルは <ph name="PROFILE_LIMIT" /> 個までです。さらにプロファイルを追加するには、その前にいずれかの既存のプロファイルを削除してください。</translation>
+<translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4280325816108262082">デバイスの電源がオフになったときや使用されていないときは接続を自動的に解除します</translation>
 <translation id="4281412694055934031">サイトがデバイスへのウェブアプリのインストールを要求できるようにする</translation>
 <translation id="4281789858103154731">作成</translation>
@@ -6535,10 +6538,12 @@
 <translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> のリンクを常にこのアプリで開く</translation>
 <translation id="5520605865175417976">アクション「<ph name="ACTION_TO_REMOVE" />」を削除</translation>
 <translation id="5521078259930077036">このホーム ページでよろしいですか？</translation>
 <translation id="5522156646677899028">この拡張機能にはセキュリティ上の重大な問題があります。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の拡張機能をインストールしました}other{管理者が # 個の拡張機能をインストールしました}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> のリンクを <ph name="APP_NAME" /> で開く</translation>
 <translation id="5523532775593636291">追加したサイトは常にアクティブになり、メモリの解放は行われません</translation>
 <translation id="5523558474028191231">名前には文字、数字、特殊文字を使用できます。<ph name="MAX_CHARACTER_COUNT" /> 文字以内で指定してください</translation>
 <translation id="5526745900034778153">同期を再開するにはもう一度ログインしてください</translation>
@@ -9380,6 +9385,7 @@
 <translation id="7531771599742723865">デバイスは使用中です</translation>
 <translation id="7531779363494549572">[設定] &gt; [アプリと通知] &gt; [通知] の順に選択します。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> から応答がありません。終了するには [強制終了] を選択してください。</translation>
+<translation id="75362970626182391">新しいタブグループ</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> としてログインしています</translation>
 <translation id="7538013435257102593">このファイル形式は一般的にダウンロードされている形式ではなく、危害を及ぼす可能性があります</translation>
 <translation id="7540972813190816353">更新の確認中にエラーが発生しました: <ph name="ERROR" /></translation>
@@ -9566,6 +9572,7 @@
 <translation id="7663859337051362114">eSIM プロファイルの追加</translation>
 <translation id="76641554187607347">キーボードが接続されていません</translation>
 <translation id="7664442418269614729">このカードを iPhone で使用</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> のリンクを開くアプリを選択してください</translation>
 <translation id="7665082356120621510">サイズを予約</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="7665445336029073980">すべてのダウンロード履歴</translation>
@@ -11187,6 +11194,7 @@
 <translation id="8750786237117206586">ChromeOS Flex の音声設定を管理する</translation>
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">管理者が追加</translation>
+<translation id="875242763254084885">サイト <ph name="ORIGIN" /> がこのリンクをアプリで開く許可を求めています。</translation>
 <translation id="8752451679755290210">アイテム間を自動的に移動する</translation>
 <translation id="8753948258138515839">ファイルアプリを使えば、Google ドライブ、外部ストレージ、ChromeOS Flex デバイスに保存したファイルにすぐにアクセスできます。</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;

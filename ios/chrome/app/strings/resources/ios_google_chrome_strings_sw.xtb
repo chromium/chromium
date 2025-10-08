@@ -71,7 +71,6 @@ Mambo ya kuzingatia:
 <translation id="2576431527583832481">Chrome imekuwa bora! Toleo jipya linapatikana.</translation>
 <translation id="257708665678654955">Ungependa Google Chrome ijitolee kutafsiri kurasa za <ph name="LANGUAGE_NAME" /> kutoka tovuti hii wakati ujao?</translation>
 <translation id="2668242166988961773">Tafuta ukitumia sauti kwenye Chrome.</translation>
-<translation id="2689064829982324496">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="2703746758996815929">Ili upate vidokezo muhimu vya Chrome, washa arifa kwenye mipangilio yako ya iOS.</translation>
 <translation id="2728851697704606655">Kutafsiri ukitumia Lenzi ya Google</translation>
@@ -87,6 +86,9 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="2940565985148833945">Kidokezo cha Chrome: Tafuta kwa kutumia Lenzi</translation>
 <translation id="2957447865124070833">Chagua <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Weka alamisho kwenye Chrome</translation>
+<translation id="3027236223714901838">Ili udumishe usalama wa funguo zako za siri, utahitaji kwanza kuweka PIN ya kurejesha akaunti.
+
+        Funguo za siri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google, hali inayokuwezesha uzitumie kwenye Chrome katika kifaa chochote.</translation>
 <translation id="3030414234702425231">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chrome itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
 <translation id="3042447686908081308">Pakia kwenye Chrome</translation>
 <translation id="3051521853355903257">Kudhibiti manenosiri kwenye Chrome</translation>
@@ -309,7 +311,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8413500425974960807">Kidokezo cha Chrome: Weka Chrome katika sehemu iliyopachikwa</translation>
 <translation id="8413795581997394485">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari. Unapotembelea tovuti, Chrome hutuma kwenda Google msimbo uliofumbwa wa sehemu ya URL kupitia seva ya faragha inayoficha anwani yako ya IP. Iwapo tovuti itafanya kitu cha kutiliwa shaka, URL kamili na sehemu za maudhui ya ukurasa pia zitatumwa.</translation>
 <translation id="84594714173170813">Endelea kutumia data ya Chrome katika Akaunti yako ya Google</translation>
-<translation id="8459495907675268833">Data uliyochagua imeondolewa kwenye Chrome na kwenye vifaa vilivyosawazishwa. Huenda Akaunti yako ya Google ina aina nyingine za historia ya mambo uliyovinjari kama vile mambo uliyotafuta na shughuli kutoka huduma nyingine za Google katika history.google.com.</translation>
 <translation id="8491300088149538575">Umeingia katika akaunti ukitumia <ph name="EMAIL" />.
 
 Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />. Iweke ili utumie na kuhifadhi data ya Chrome kwenye Akaunti yako ya Google.</translation>

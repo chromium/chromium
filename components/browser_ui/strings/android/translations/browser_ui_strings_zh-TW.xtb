@@ -129,7 +129,7 @@
 <translation id="2411116727035790889">啟用快速鍵</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2438120137003069591">你已暫時允許這個網站使用第三方 Cookie。換言之，網頁瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
+<translation id="2438120137003069591">你已暫時允許這個網站使用第三方 Cookie。此時瀏覽防護程度較低，但會增加網站功能正常運作的機率。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="2442870161001914531">一律要求電腦版網站</translation>
 <translation id="2445311670906052406">Chrome 現在會將最近開啟的分頁分享給裝置，這些資訊會顯示在裝置的應用程式清單和搜尋結果。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
@@ -702,7 +702,7 @@
 <translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="884765916894384048">在背景播放</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
+<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
 <translation id="8889294078294184559">你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="8899807382908246773">侵入式廣告</translation>
 <translation id="8903921497873541725">放大</translation>

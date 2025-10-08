@@ -349,7 +349,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2605017215201958293">Slušajte sadržaj ove stranice pomoću AI-ja</translation>
 <translation id="2607441479295509868">Odjavljeni ste. Prijavite se ponovo da koristite oznake, lozinke i drugo na računu.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vas je pozvao/la da pristupite dijeljenoj stavci.</translation>
-<translation id="2630630219780173487">Web lokacijama možete onemogućiti slanje budućih obavještenja</translation>
 <translation id="2634393460268044753">Šalje URL-ove web lokacija koje posjetite i mali uzorak sadržaja stranice, preuzimanja, aktivnosti ekstenzija i sistemskih informacija Sigurnom pregledanju na Googleu radi provjere jesu li štetni.</translation>
 <translation id="2643064289437760082">Uvijek možete izbrisati podatke o mjerenju oglasa brisanjem podataka o pregledanju</translation>
 <translation id="2647434099613338025">Dodavanje jezika</translation>
@@ -526,7 +525,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3467081767799433066">Uz mjerenje oglasa se ograničene vrste podataka dijele između web lokacija radi mjerenja performansi njihovih oglasa, npr. jeste li izvršili kupovinu nakon što ste posjetili web lokaciju.</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Možete odabrati svoj pretraživač</translation>
-<translation id="3479552764303398839">Ne sada</translation>
 <translation id="3482805106082349287">Pretražujte koristeći tastaturu, glas, anonimni način rada ili kameru</translation>
 <translation id="3487903178221457900">Izvezeni fajl će možda biti dostupan drugima, uključujući aplikacije. Nakon što ih izvezete, lozinke se brišu iz Chromea.</translation>
 <translation id="3488199663160411179">ime</translation>
@@ -874,7 +872,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4996042648402406470">Preuzmi</translation>
 <translation id="4996095658297597226">Koristiti predloženu lozinku?</translation>
 <translation id="5001388021414335527">Pratite web lokaciju ovdje</translation>
-<translation id="5004416275253351869">Kontrole aktivnosti na Googleu</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5010886807652684893">Vizuelni prikaz</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želi povezati</translation>
@@ -1435,7 +1432,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7411224099004328643">Korisnik Google računa</translation>
 <translation id="7419565702166471774">Uvijek koristite sigurne veze</translation>
 <translation id="7421293530411019405">Napustiti grupu kartica?</translation>
-<translation id="7431991332293347422">Kontrolirajte kako se koristi vaša historija pregledanja za personalizaciju Pretraživanja i još mnogo toga</translation>
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava iz Chromea</translation>
 <translation id="7439467816829380878">Premjesti karticu u grupu</translation>

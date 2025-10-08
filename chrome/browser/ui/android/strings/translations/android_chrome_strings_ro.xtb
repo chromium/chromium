@@ -349,7 +349,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2605017215201958293">Ascultă pagina cu AI</translation>
 <translation id="2607441479295509868">Te-ai deconectat. Conectează-te din nou pentru a folosi marcajele, parolele și altele în contul tău.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> te-a invitat să accesezi un articol în comun.</translation>
-<translation id="2630630219780173487">Poți împiedica aceste site-uri să trimită notificări în viitor</translation>
 <translation id="2634393460268044753">Trimite adresele URL ale site-urilor pe care le accesezi și un mic eșantion cu conținutul paginilor, descărcări, activități ale extensiilor și informații despre sistem la Navigarea sigură Google pentru a verifica dacă sunt dăunătoare.</translation>
 <translation id="2643064289437760082">Poți să ștergi oricând datele despre cuantificarea anunțurilor dacă ștergi datele de navigare</translation>
 <translation id="2647434099613338025">Adaugă o limbă</translation>
@@ -526,7 +525,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3467081767799433066">Pentru cuantificarea anunțurilor, sunt trimise tipuri de date limitate între site-uri pentru a măsura performanța anunțurilor asociate, de exemplu, dacă ai făcut o achiziție după ce ai accesat un site.</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
-<translation id="3479552764303398839">Nu acum</translation>
 <translation id="3482805106082349287">Caută folosind tastatura, vocea, modul incognito sau camera foto</translation>
 <translation id="3487903178221457900">Fișierul exportat poate fi accesibil altor persoane, inclusiv aplicațiilor. După ce exporți, parolele se șterg din Chrome.</translation>
 <translation id="3488199663160411179">nume</translation>
@@ -874,7 +872,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4996042648402406470">Descarcă</translation>
 <translation id="4996095658297597226">Folosești parola sugerată?</translation>
 <translation id="5001388021414335527">Urmărește site-ul aici</translation>
-<translation id="5004416275253351869">Opțiuni privind activitatea Google</translation>
 <translation id="5007392906805964215">Examinează</translation>
 <translation id="5010886807652684893">Afișare vizuală</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> dorește să se conecteze</translation>
@@ -1435,7 +1432,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7411224099004328643">Utilizator Cont Google</translation>
 <translation id="7419565702166471774">Folosește întotdeauna conexiuni securizate</translation>
 <translation id="7421293530411019405">Ieși din grupul de file?</translation>
-<translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7437998757836447326">Deconectează-te de la Chrome</translation>
 <translation id="7439467816829380878">Mută fila în alt grup</translation>
@@ -1833,6 +1829,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9133397713400217035">Explorează offline</translation>
 <translation id="9143389653531441385">Înscrie-te cu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
+<translation id="9148564897242852377">Comută selectarea filelor</translation>
 <translation id="9157212632995922070">Alege un cont pentru a continua la <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
 <translation id="9161172953291434881">Ai încredere să oferi datele tale acestui site?</translation>

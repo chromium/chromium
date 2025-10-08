@@ -814,6 +814,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2321291402658100099">Menaxho informacionet</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 dritare}other{# dritare}}</translation>
 <translation id="232390861414237658">Plotëso automatikisht këtë kartë për blerjet e bëra në Chrome kur ajo ruhet për t'u përdorur me Google Pay</translation>
+<translation id="2326283484705860548">Tani mund të plotësosh automatikisht më shumë informacione nga "Portofoli i Google"</translation>
 <translation id="2328651992442742497">Lejohet (e parazgjedhur)</translation>
 <translation id="2328955282645810595">Vegla elektrike dhe ndërtimi</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2346319942568447007">Imazhi që kopjove</translation>
 <translation id="2347764072711098973">Përdor Affirm, Zip ose Klarna për të paguar me kalimin e kohës</translation>
 <translation id="2348509731468399833">Monitorimi i çmimeve ndaloi.</translation>
+<translation id="2348836501965732644">Menaxho informacionet e tua ose çaktivizoji këto sugjerime te "Cilësimet"</translation>
 <translation id="2349957959687031096">Butoni "Hap skedën 'e fshehtë'". Aktivizoje për të hapur një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="2350796302381711542">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Ky server nuk mund të vërtetonte që është <ph name="DOMAIN" /> sepse po përdor një certifikatë sigurie që nuk është e besuar nga Chromium ose nga konfigurimi i sistemit tënd për enkriptimin e trafikut të uebit. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>

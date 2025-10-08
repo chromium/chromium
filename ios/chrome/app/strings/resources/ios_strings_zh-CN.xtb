@@ -277,7 +277,6 @@
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
 <translation id="202070562065520783">向我解释</translation>
-<translation id="2021670401941426298">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -296,7 +295,6 @@
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2096239473850415494">无法下载</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
-<translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
 <translation id="2117650889962717098">切换到无痕模式，保持浏览数据的私密性</translation>
@@ -343,7 +341,6 @@
 <translation id="2258326562203545455">{count,plural, =1{您可将书签保存到您的 Google 账号 {email}。}other{您可将书签保存到您的 Google 账号 {email}。}}</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">导出密码…</translation>
-<translation id="2265069324308685684">正在删除浏览数据…</translation>
 <translation id="2267753748892043616">添加账号</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
@@ -448,10 +445,6 @@
 <translation id="2688535388040882469">横幅</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
-<translation id="2696180352517415858">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
-
-
-您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="269819437389494246">您可以查看自己访问过的网页，也可将它们从历史记录中删除</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
@@ -514,7 +507,7 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
-<translation id="2965594942405840553">此操作无法撤消</translation>
+<translation id="2965594942405840553">此操作无法撤销</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975761176769946178">必须提供网址</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
@@ -543,10 +536,6 @@
 <translation id="3072279342064724558">密码已存在</translation>
 <translation id="3073258549280822127">已失效</translation>
 <translation id="3073633853887034268">知道了</translation>
-<translation id="3076846064362030967">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
-
-
-请查看您所用搜索引擎的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3087734570205094154">底部</translation>
@@ -1649,14 +1638,13 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Google 密码管理工具中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
-<translation id="7346909386216857016">知道了</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
 <translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
-<translation id="7380698179418029202">选择您导出的 Safari <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
+<translation id="7380698179418029202">选择您从 Safari 导出的 <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> 文件</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
 <translation id="7393747756726387725">放大</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 个网站}other{# 个网站}}</translation>
@@ -1787,7 +1775,6 @@
 <translation id="7815852444315004084">暂时隐藏</translation>
 <translation id="7825973332242257878">标签页分组</translation>
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
-<translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7841180087127694526">搜索复制的文字</translation>
 <translation id="7841418003178675048">选择要在新标签页上显示的卡片。</translation>
 <translation id="7845466610722898">显示阅读清单</translation>
@@ -1853,7 +1840,6 @@
 <translation id="8035133914807600019">新建文件夹…</translation>
 <translation id="8035412398498507358">相册</translation>
 <translation id="8040407350301524547">如果您想查看路线选项，请点按“查询路线”。</translation>
-<translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
@@ -2072,7 +2058,6 @@
 <translation id="8829809207373502270">此通行密钥已失效，目前已从 <ph name="WEBSITE" /> 中删除，很快也会从此处删除。<ph name="BEGIN_LINK" />关于通行密钥<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">关闭所有闲置标签页</translation>
 <translation id="8837654851594567190">按发布者排序</translation>
-<translation id="8840513115188359703">您不会因此而退出自己的 Google 账号。</translation>
 <translation id="8848286253339013170">正在将图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8855242995793521265">不会显著减慢浏览器或设备的运行速度。</translation>
@@ -2115,7 +2100,6 @@
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
-<translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9000532564152265066">所有标签页</translation>
 <translation id="9003677638446136377">再次检查</translation>
 <translation id="9006453925669499173">菜单 → 打开新的无痕式标签页</translation>

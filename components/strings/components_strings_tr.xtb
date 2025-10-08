@@ -814,6 +814,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2321291402658100099">Bilgileri yönet</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 pencere}other{# pencere}}</translation>
 <translation id="232390861414237658">Bu kart Google Pay ile kullanılmak üzere kaydedildiğinde Chrome'da yapılan satın alma işlemleri için otomatik olarak doldurulur</translation>
+<translation id="2326283484705860548">Artık Google Cüzdan üzerinden daha fazla bilgiyi otomatik doldurabilirsiniz</translation>
 <translation id="2328651992442742497">İzin veriliyor (varsayılan)</translation>
 <translation id="2328955282645810595">El Aletleri ve Elektrikli Aletler</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2346319942568447007">Kopyalanan resim</translation>
 <translation id="2347764072711098973">Affirm, Zip veya Klarna'yı kullanarak taksitle ödeyin</translation>
 <translation id="2348509731468399833">Fiyat takibi duraklatıldı.</translation>
+<translation id="2348836501965732644">Bilgilerinizi yönetin veya bu önerileri Ayarlar'dan devre dışı bırakın</translation>
 <translation id="2349957959687031096">Gizli sekme aç düğmesi, yeni gizli sekme açıp gizli olarak göz atmak için etkinleştirin</translation>
 <translation id="2350796302381711542">Tüm <ph name="PROTOCOL" /> bağlantılarını <ph name="REPLACED_HANDLER_TITLE" /> yerine <ph name="HANDLER_HOSTNAME" /> ana makinesinin açmasına izin verilsin mi?</translation>
 <translation id="2351718832234620840">Bu sunucu, web trafiği şifrelemesi için Chromium veya sistem yapılandırmanız tarafından güvenilmeyen bir güvenlik sertifikası kullandığından <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>

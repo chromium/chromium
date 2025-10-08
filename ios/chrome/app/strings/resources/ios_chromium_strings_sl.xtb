@@ -89,7 +89,6 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="2977470724722393594">Chromium je posodobljen</translation>
 <translation id="3044857325852340337">Izbrisani podatki v Chromiumu</translation>
 <translation id="3054480780637153380">V sistemu iOS odprite nastavitve za Chromium, nato se dotaknite »Privzeti brskalnik« in izberite Chromium.</translation>
-<translation id="3102849287235003384">Če se želite odjaviti iz računa Google na vseh spletnih mestih, <ph name="BEGIN_LINK" />se odjavite iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Želite nastaviti Chromium kot privzeti brskalnik?</translation>
 <translation id="3180939591219927904">Vklopite »Zaklepanje anonimnih zavihkov po zaprtju Chromiuma«</translation>
 <translation id="328933489847748230">{count,plural, =1{Prikazano je 1 okno Chromiuma}one{Prikazano je {count} okno Chromiuma}two{Prikazani sta {count} okni Chromiuma}few{Prikazana so {count} okna Chromiuma}other{Prikazanih je {count} oken Chromiuma}}</translation>
@@ -268,7 +267,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7269362888766543920">Nekateri dodatki povzročajo zrušitve Chromiuma. Poskusite jih odstraniti.</translation>
 <translation id="7285031092584344905">Dostopajte do gesel v Chromiumu in drugega v drugih aplikacijah.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Izbrani podatki so bili odstranjeni iz Chromiuma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>
 <translation id="7395825497086981028">Geslo bo shranjeno v Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Ta ključ za dostop bo shranjen v upravitelju gesel za <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Odprite Chromium</translation>

@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="3044857325852340337">Chromium-н өгөгдлийг устгалаа</translation>
 <translation id="3054480780637153380">iOS-т Chromium-н тохиргоог нээгээд, дараа нь "Өгөгдмөл хөтчийн апп"-ыг товшоод, Chromium-г сонгоно уу.</translation>
-<translation id="3102849287235003384">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium-г таны өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="3180939591219927904">"Таныг Chromium-г хаахад нууцлалтай табыг түгжих" тохиргоог асаана уу</translation>
 <translation id="328933489847748230">{count,plural, =1{Одоо Chromium-н 1 цонхыг харуулж байна}other{Одоо Chromium-н {count} цонхыг харуулж байна}}</translation>
@@ -265,7 +264,6 @@
 <translation id="7269362888766543920">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тэдгээрийг устгана уу.</translation>
 <translation id="7285031092584344905">Бусад аппаас Chromium-н нууц үгнүүд болон бусад зүйлдээ хандаарай.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Сонгосон өгөгдлийг Chromium болон синк хийсэн төхөөрөмжөөс устгaлаа. Tаны Google Бүртгэл history.google.com-д Google-н бусад үйлчилгээнээс авсан үйл ажиллагаа, хайлт зэрэг өөр хэлбэрийн хайлтын түүхтэй байж болно.</translation>
 <translation id="7395825497086981028">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Нууц үгний менежерт хадгална.</translation>
 <translation id="7504829997542308412">Chromium-г нээнэ үү</translation>
 <translation id="7531461704633548377">Chromium-с</translation>

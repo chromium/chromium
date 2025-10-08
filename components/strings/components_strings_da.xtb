@@ -814,6 +814,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2321291402658100099">Administrer oplysninger</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 vindue}one{# vindue}other{# vinduer}}</translation>
 <translation id="232390861414237658">Udfyld automatisk disse kortoplysninger ved køb i Chrome, når kortet er gemt til brug med Google Pay</translation>
+<translation id="2326283484705860548">Nu kan du udfylde flere oplysninger automatisk fra Google Wallet</translation>
 <translation id="2328651992442742497">Tilladt (standard)</translation>
 <translation id="2328955282645810595">Bygge- og elværktøj</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, udløber <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2346319942568447007">Billede, du har kopieret</translation>
 <translation id="2347764072711098973">Brug Affirm, Zip eller Klarna til afbetaling</translation>
 <translation id="2348509731468399833">Prissporing er stoppet.</translation>
+<translation id="2348836501965732644">Administrer dine oplysninger, eller deaktiver disse forslag i Indstillinger</translation>
 <translation id="2349957959687031096">Knappen Åbn inkognitofane, aktivér for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="2350796302381711542">Vil du tillade, at <ph name="HANDLER_HOSTNAME" /> åbner alle <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, fordi den bruger et sikkerhedscertifikat, som Chromium eller din systemkonfiguration til kryptering af webtrafik ikke har tillid til. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
@@ -3144,6 +3146,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6189351761800074311">Dit tekst- og sideindhold sendes til Google, men bruges ikke til at forbedre AI.
     <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Tilsidesætter visse taster på dit tastatur, f.eks. Esc</translation>
+<translation id="6192524964213419211">Gem dine oplysninger for at få tingene klaret hurtigere i Google-produkter. Dine oplysninger gemmes i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Se alle de produkter, du holder øje med, her</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Forbrugerelektronik</translation>

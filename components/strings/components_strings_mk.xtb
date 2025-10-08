@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Управувајте со податоците</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}one{# прозорец}other{# прозорци}}</translation>
 <translation id="232390861414237658">Автоматско пополнување на картичкава за купувањата извршени во Chrome кога е зачувана за да се користи со Google Pay</translation>
+<translation id="2326283484705860548">Отсега може да пополнувате автоматски повеќе податоци од Google Wallet</translation>
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
 <translation id="2347764072711098973">Користете Affirm, Zip или Klarna за плаќање на рати</translation>
 <translation id="2348509731468399833">Следењето на цената е сопрено.</translation>
+<translation id="2348836501965732644">Управувајте со податоците или исклучете ги предлозиве во „Поставки“</translation>
 <translation id="2349957959687031096">Копче за отворање картичка „Инкогнито“, активирајте го за да отворите нова картичка „Инкогнито“ за приватно прелистување</translation>
 <translation id="2350796302381711542">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Серверов не можеше да докаже дека е <ph name="DOMAIN" /> бидејќи користи сертификат за безбедност во којшто нема доверба Chromium или конфигурацијата на системот за шифрирање сообраќај на интернет. Тоа може да се должи на погрешна конфигурација или на напаѓач што ја пресретнува врската.</translation>
@@ -1237,6 +1239,7 @@
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
 <translation id="3052868890529250114">Обично се поврзувате на сајтовите безбедно, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> попуст на <ph name="PRODUCT_NAME" /></translation>
+<translation id="3056660797732519147">Екран со грешка на „Купете сега, платете подоцна“. Тастатурата е скриена.</translation>
 <translation id="3061707000357573562">Услуга за поправање грешки</translation>
 <translation id="3062655045399308513">Избришете ги податоците од прелистување…</translation>
 <translation id="3063453392496098461">Инсталирањето на заднинските услуги на VPN не успеа.</translation>
@@ -1252,6 +1255,7 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
 <translation id="3093122472063815077">Екранот за напредокот на „Купете сега, платете подоцна“ е отворен на половина висина.</translation>
+<translation id="309381737510736393">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, не може да споделувате картички или да соработувате со други лица</translation>
 <translation id="3094051226187213523">Отворете го „AI-режимот“ со предлогов.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Игнорирано бидејќи списокот на оневозможени содржи шема еднаква на „*“, што пак е еднакво на оневозможување на правилото.</translation>
@@ -1697,6 +1701,7 @@
 <translation id="3784372983762739446">Уреди со Bluetooth</translation>
 <translation id="3785246317262748285">Обично се поврзувате на сајтовите безбедно, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Најдобри совпаѓања за „<ph name="SEARCH_QUERY" />“</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> или <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3791118028061680614">Плаќајте без да се префрлате во друга апликација</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -1989,6 +1994,7 @@
 <translation id="4242981939686657948">За помоќно пребарување низ вашата историја на прелистувањето, вклучете</translation>
 <translation id="4244926541863471678">Филм</translation>
 <translation id="4246517972543675653">Студии во странство</translation>
+<translation id="4250343410682686342">Екранот со грешка на „Купете сега, платете подоцна“ е отворен на целосна висина.</translation>
 <translation id="4250431568374086873">Врската со овој сајт не е потполно безбедна</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2505,6 +2511,7 @@
 <translation id="5122786942953798871">Коверт (памук)</translation>
 <translation id="5123063207673082822">Викенд</translation>
 <translation id="5123433949759960244">Баскет</translation>
+<translation id="5124797626438336458">Екранот со грешка на „Купете сега, платете подоцна“ е отворен на половина висина.</translation>
 <translation id="5125575917473813637">Изменете го документот за идентификација</translation>
 <translation id="5125751979347152379">Неважечка URL-адреса.</translation>
 <translation id="512592033764059484">Фудбал</translation>
@@ -2678,6 +2685,7 @@
 <translation id="5412040515238827314">Неважечки формат: се очекува список со шеми.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
+<translation id="5414306071315087019">„Купете сега, платете подоцна“ е достапен со Google Pay</translation>
 <translation id="5414446060143308245">Потребен е преглед пред префрлањето</translation>
 <translation id="5414511064953050917">Сепак премести</translation>
 <translation id="5418700249417444482">URL-адресите на страниците што ги отворате се испраќаат до Google Cloud или трети страни за анализа и можеби се видливи за администраторот. На пример, можеби ќе се скенираат за да се откријат небезбедни веб-сајтови или да се филтрираат веб-сајтови според правилата што ги поставил администраторот.</translation>
@@ -2798,6 +2806,7 @@
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5596939519753369075">2 x 3,5 инчи</translation>
 <translation id="5597254438174353289">Сина 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Управувањето не е поддржано</translation>
 <translation id="5605249000617390290">Дознајте повеќе за следењето цени</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -4170,6 +4179,7 @@
 <translation id="7860345425589240791">Внесете ги новиот датум на истекување и CVC на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Да се напушти ли сајтот?</translation>
 <translation id="7865448901209910068">Најдобра брзина</translation>
+<translation id="7865482168955081228">Екранот со грешка на „Купете сега, платете подоцна“ е затворен.</translation>
 <translation id="7870281855125116701">Најден е попуст</translation>
 <translation id="7871445724586827387">Променете ја лозинката за сметката на Google</translation>
 <translation id="787226752901403048">Најавете се на Chrome за да споделувате и да се придружувате во групи картички, а и работете заедно на идеи</translation>

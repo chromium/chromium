@@ -71,7 +71,6 @@ Considerações:
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="257708665678654955">Quer que na próxima vez o Google Chrome ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
 <translation id="2668242166988961773">Pesquise com a voz no Chrome.</translation>
-<translation id="2689064829982324496">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="2703746758996815929">Para receber dicas úteis sobre o Chrome, ative as notificações nos ajustes do iOS.</translation>
 <translation id="2728851697704606655">Traduza com o Google Lens</translation>
@@ -87,6 +86,9 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="2940565985148833945">Dica do Chrome: use o Lens</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Adicionar favoritos ao Chrome</translation>
+<translation id="3027236223714901838">Para manter suas chaves de acesso seguras, primeiro é necessário criar um PIN de recuperação.
+
+        As chaves de acesso são salvas no Gerenciador de Senhas do Google. Isso permite que você as use no Chrome em qualquer dispositivo.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="3042447686908081308">Importar para o Chrome</translation>
 <translation id="3051521853355903257">Gerenciar senhas no Chrome</translation>
@@ -309,7 +311,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8413500425974960807">Dica: mova o Chrome para o Dock</translation>
 <translation id="8413795581997394485">Protege contra extensões, sites e downloads perigosos. Quando você acessa um site, o Chrome envia ao Google apenas uma parte ofuscada do URL por um servidor de privacidade que oculta seu endereço IP. Se um site fizer algo suspeito, o URL completo e partes do conteúdo da página também serão enviados.</translation>
 <translation id="84594714173170813">Continue usando os dados do Chrome na sua Conta do Google</translation>
-<translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
 <translation id="8491300088149538575">Login feito como <ph name="EMAIL" />.
 
 Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>

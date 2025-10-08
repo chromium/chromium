@@ -89,7 +89,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="3044857325852340337">Datele Chromium au fost șterse</translation>
 <translation id="3054480780637153380">Deschide Setările Chromium în iOS, apoi atinge Aplicația browser prestabilită și selectează Chromium.</translation>
-<translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="3180939591219927904">Activează Blochează filele incognito când închizi Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Se afișează o fereastră Chromium}few{Se afișează {count} ferestre Chromium}other{Se afișează {count} de ferestre Chromium}}</translation>
@@ -265,7 +264,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7269362888766543920">Unele suplimente blochează Chromium. Încearcă să le dezinstalezi.</translation>
 <translation id="7285031092584344905">Accesează parolele Chromium și multe altele în alte aplicații.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Datele selectate au fost eliminate din Chromium și de pe dispozitivele sincronizate. Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi căutările și activitatea din alte servicii Google, la history.google.com.</translation>
 <translation id="7395825497086981028">Parola se va salva în Managerul de parole pentru <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Deschide Chromium</translation>
 <translation id="7531461704633548377">Din Chromium</translation>

@@ -71,7 +71,6 @@
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="257708665678654955">下次造訪這個網站時，需要 Google Chrome 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
 <translation id="2668242166988961773">在 Chrome 中使用語音搜尋。</translation>
-<translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2703746758996815929">如要取得 Chrome 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2728851697704606655">透過 Google 智慧鏡頭翻譯</translation>
@@ -310,7 +309,6 @@
 <translation id="8413500425974960807">Chrome 提示：將 Chrome 移至 Dock</translation>
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
-<translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="8491300088149538575">目前登入的帳戶是 <ph name="EMAIL" />。
 
 你已在 <ph name="TIME" />使用通關密語對資料進行加密。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入通關密語。</translation>

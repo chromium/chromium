@@ -349,7 +349,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2605017215201958293">Lytt til denne siden med AI</translation>
 <translation id="2607441479295509868">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har invitert deg til å få tilgang til et delt element.</translation>
-<translation id="2630630219780173487">Du kan forhindre disse nettstedene fra å sende flere varsler fremover</translation>
 <translation id="2634393460268044753">Sender nettadressene du besøker, samt et lite utvalg av sideinnhold, nedlastinger, utvidelsesaktivitet og systeminformasjon, til Google Safe Browsing for å sjekke om nettadressene er skadelige.</translation>
 <translation id="2643064289437760082">Du kan alltid slette målingsdata for annonser ved å slette nettlesingsdataene dine</translation>
 <translation id="2647434099613338025">Legg til språk</translation>
@@ -526,7 +525,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3467081767799433066">Med annonsemålinger deler nettsteder begrensede typer data mellom seg for å måle annonseresultatene sine, for eksempel om du har kjøpt noe etter å ha besøkt et nettsted.</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan velge søkemotor</translation>
-<translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3482805106082349287">Søk med tastaturet, stemmen, Inkognito eller kameraet</translation>
 <translation id="3487903178221457900">Den eksporterte filen kan være tilgjengelig for andre, inkludert apper. Når du har eksportert filen, slettes passordene dine fra Chrome.</translation>
 <translation id="3488199663160411179">navnet ditt</translation>
@@ -874,7 +872,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4996042648402406470">Hent</translation>
 <translation id="4996095658297597226">Vil du bruke det foreslåtte passordet?</translation>
 <translation id="5001388021414335527">Følg dette nettstedet her</translation>
-<translation id="5004416275253351869">Google Aktivitetslagring</translation>
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5010886807652684893">Visuell visning</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil koble til</translation>
@@ -1435,7 +1432,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7411224099004328643">Google-kontobruker</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7421293530411019405">Vil du forlate fanegruppen?</translation>
-<translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7437998757836447326">Logg av Chrome</translation>
 <translation id="7439467816829380878">Flytt fanen til en gruppe</translation>
@@ -1833,6 +1829,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9133397713400217035">Utforsk uten nett</translation>
 <translation id="9143389653531441385">Registrer deg med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
+<translation id="9148564897242852377">Slå fanevalg av/på</translation>
 <translation id="9157212632995922070">Velg en konto for å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun innhold</translation>
 <translation id="9161172953291434881">Vil du gi dette nettstedet tilgang til dataene dine?</translation>

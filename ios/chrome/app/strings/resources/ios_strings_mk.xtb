@@ -277,7 +277,6 @@
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
 <translation id="202070562065520783">Објасни ми го ова</translation>
-<translation id="2021670401941426298">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -296,7 +295,6 @@
 <translation id="2085876078937250610">Зачувај…</translation>
 <translation id="2096239473850415494">Не можеше да се преземе</translation>
 <translation id="2096716221239095980">Избриши ги сите податоци</translation>
-<translation id="2103075008456228677">Отвори ја history.google.com</translation>
 <translation id="2104436223719117661">Пребарувања во тренд</translation>
 <translation id="21133533946938348">Прикачи картичка</translation>
 <translation id="2117650889962717098">Заштитете ја приватноста на прелистувањето така што ќе се префрлите на режим „Инкогнито“</translation>
@@ -343,7 +341,6 @@
 <translation id="2258326562203545455">{count,plural, =1{Може да го зачувате обележувачот во вашата сметка на Google, {email}.}one{Може да ги зачувате обележувачите во вашата сметка на Google, {email}.}other{Може да ги зачувате обележувачите во вашата сметка на Google, {email}.}}</translation>
 <translation id="225943865679747347">Код на грешка: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Извезување лозинки…</translation>
-<translation id="2265069324308685684">Се бришат податоците од прелистување…</translation>
 <translation id="2267753748892043616">Додајте сметка</translation>
 <translation id="2268044343513325586">Подобри</translation>
 <translation id="2271452184061378400">Вашите групи картички се зачувани овде</translation>
@@ -448,10 +445,6 @@
 <translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
-<translation id="2696180352517415858">Нема да се одјавите од сметката на Google. Кога сте најавени, може да се зачувуваат <ph name="BEGIN_LINK" />други форми на активност<ph name="END_LINK" /> во вашата сметка на Google. Може да ги избришете во секое време.
-
-
-Вашиот пребарувач е <ph name="DSE_NAME" />. По потреба, погледнете ги неговите упатства за бришење на историјата на пребарување.</translation>
 <translation id="269819437389494246">Може да ги видите страниците што сте ги отвориле или да ги избришете од историјата</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2708051474374549906">Проактивна заштита во реално време од опасни сајтови, преземања и екстензии согласно со вашите податоци од прелистување што се испраќаат во Google</translation>
@@ -543,10 +536,6 @@
 <translation id="3072279342064724558">Лозинката веќе постои</translation>
 <translation id="3073258549280822127">Не функционира</translation>
 <translation id="3073633853887034268">Сфатив</translation>
-<translation id="3076846064362030967">Нема да ве одјавиме од сметката на Google. <ph name="BEGIN_LINK" />Други форми на активност<ph name="END_LINK" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.
-
-
-Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="3080525922482950719">Може да зачувувате страници за да ги читате подоцна или офлајн</translation>
 <translation id="3081338492074632642">Проверете дали лозинката што ја зачувувате се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Дно</translation>
@@ -1046,6 +1035,7 @@
 <translation id="5059136629401106827">Во ред</translation>
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
 <translation id="5067540696062462445">Преземања</translation>
+<translation id="5070314445039955096">Дозволите за <ph name="SITE_DOMAIN" />„“ ќе се ресетираат на „Исклучено“ кога ќе го напуштите сајтов</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} од {count} начин на плаќање}one{{position} од {count} начин на плаќање}other{{position} од {count} начини на плаќање}}</translation>
 <translation id="5075939510584558547">Зачувувајте без шифрирање</translation>
 <translation id="5076534614343816664">Следење цена</translation>
@@ -1648,7 +1638,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Веќе имате лозинки за сметкиве во вашата Google Password Manager. Ако изберете да увезете некоја од лозинките подолу, таа ќе ја замени постојната.</translation>
 <translation id="7336264872878993241">Преземено <ph name="PERCENT" /> проценти</translation>
-<translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7352651011704765696">Нешто не е во ред</translation>
 <translation id="7363349185727752629">Упатство за вашите опции за приватноста</translation>
 <translation id="736564850024123010">За приспособено доживување, сменете ја положбата на лентата за адреси.</translation>
@@ -1786,7 +1775,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7815852444315004084">Скриј засега</translation>
 <translation id="7825973332242257878">Групи картички</translation>
 <translation id="7839994177130598711">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
-<translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
 <translation id="7841180087127694526">Пребарајте го копираниот текст</translation>
 <translation id="7841418003178675048">Изберете кои картички да се гледаат на вашата страница во нова картичка.</translation>
 <translation id="7845466610722898">Прикажете го списокот за читање</translation>
@@ -1852,7 +1840,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8035412398498507358">Фотографии</translation>
 <translation id="8040407350301524547">За опции за маршрути, допрете „Добијте насоки“.</translation>
-<translation id="804225253087497565"><ph name="BEGIN_LINK" />Историјата на пребарување<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други форми на активност<ph name="END_LINK" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="804427445359061970">Картичките од другите уреди ќе ги најдете тука</translation>
 <translation id="8058655154417507695">Година на истекување</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
@@ -2071,7 +2058,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8829809207373502270">Овој криптографски клуч веќе не функционира. Избришан е од <ph name="WEBSITE" />, а ќе се избрише и одовде наскоро. <ph name="BEGIN_LINK" />Информации за криптографските клучеви<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затвори ги сите неактивни картички</translation>
 <translation id="8837654851594567190">Подредете според издавач</translation>
-<translation id="8840513115188359703">Нема да ве одјавиме од сметката на Google.</translation>
 <translation id="8848286253339013170">Се зачувува слика во „Фотографии на Google“ за <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скриен</translation>
 <translation id="8855242995793521265">Не го забавува значително прелистувачот или уредот.</translation>
@@ -2114,7 +2100,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8976414606286374109">Картичките се зачувуваат во вашата сметка на Google.</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
-<translation id="9000089900434778519">Вашиот пребарувач е <ph name="DSE_NAME" />. Погледнете го неговото упатство за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="9000532564152265066">Сите картички</translation>
 <translation id="9003677638446136377">Проверете повторно</translation>
 <translation id="9006453925669499173">Мени → Нова картичка „Инкогнито“</translation>

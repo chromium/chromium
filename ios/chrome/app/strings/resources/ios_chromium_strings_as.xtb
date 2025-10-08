@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="3044857325852340337">Chromiumৰ ডেটা মচা হৈছে</translation>
 <translation id="3054480780637153380">iOSত Chromiumৰ ছেটিং খোলক আৰু তাৰ পাছত "ডিফ’ল্ট ব্ৰাউজাৰ এপ"ত টিপক আৰু Chromium বাছনি কৰক।</translation>
-<translation id="3102849287235003384">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK" />Chromiumৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">Chromiumক আপোনাৰ ডি’ফল্ট ব্ৰাউজাৰ কৰিবনে?</translation>
 <translation id="3180939591219927904">“আপুনি Chromium বন্ধ কৰিলে ইনক’গনিট’ টেব লক কৰক” সুবিধাটো অন কৰক</translation>
 <translation id="328933489847748230">{count,plural, =1{এতিয়া ১ খন Chromium ৱিণ্ড’ দেখুৱাই থকা হৈছে}one{এতিয়া {count} খন Chromium ৱিণ্ড’ দেখুৱাই থকা হৈছে}other{এতিয়া {count} খন Chromium ৱিণ্ড’ দেখুৱাই থকা হৈছে}}</translation>
@@ -200,6 +199,9 @@
 <translation id="5671188105328420281">Chromiumৰ কিটিপ</translation>
 <translation id="5688047395118852662">এই কাৰ্ডখনে আপোনাক Chromiumৰ পৰা কেনেকৈ পাৰ্যমানে উপকৃত হ’ব পাৰি তাৰ পৰামৰ্শ দেখুৱায়।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
+<translation id="5731004036450828399">আপোনাৰ পাছকীসমূহ সুৰক্ষিত কৰি ৰাখিবলৈ, আপুনি প্ৰথমে এটা পুনৰুদ্ধাৰৰ পিন সৃষ্টি কৰিব লাগিব।
+
+        পাছকীসমূহ Password Managerত ছেভ কৰা হয়, যিয়ে আপোনাক যিকোনো ডিভাইচত সেইসমূহ Chromiumত ব্যৱহাৰ কৰিবলৈ দিয়ে।</translation>
 <translation id="584550191241316896">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
 <translation id="5889847953983052353">অন হৈ থাকিলে:
@@ -265,8 +267,8 @@
 <translation id="7269362888766543920">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি সেইবোৰ আনইনষ্টল কৰি চাওক।</translation>
 <translation id="7285031092584344905">অন্য এপত আপোনাৰ Chromiumৰ পাছৱৰ্ড আৰু অধিক বস্তু এক্সেছ কৰক।</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">বাছনি কৰা ডেটাখিনি Chromium আৰু ছিংক কৰি থোৱা ডিভাইচসমূহৰ পৰা আঁতৰোৱা হৈছে। Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে আপোনাৰ Google একাউণ্টৰ অইন ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস history.google.comত থাকিব পাৰে।</translation>
 <translation id="7395825497086981028">আপোনাৰ পাছৱৰ্ডটো <ph name="EMAIL" />ৰ পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব।</translation>
+<translation id="7434848749522628428">এই পাছকীটো <ph name="USER_EMAIL" />ৰ বাবে Password Managerত ছেভ কৰা হ’ব</translation>
 <translation id="7504829997542308412">Chromium খোলক</translation>
 <translation id="7531461704633548377">Chromiumৰ পৰা</translation>
 <translation id="7554983317097061001">Chromium ব্যৱহাৰ সম্পৰ্কীয় কিটিপ: Chromiumক ড’কলৈ স্থানান্তৰ কৰক</translation>
@@ -300,6 +302,7 @@
 <translation id="8254729934443216898">নতুন সুবিধাসমূহ অন্বেষণ কৰক যিবোৰে আপোনাক Chromiumৰ পৰা পাৰ্যমানে উপকৃত হোৱাত সহায় কৰে।</translation>
 <translation id="8293572045658095405">আপুনি Chromiumৰ ইনক’গনিট’ত আছে</translation>
 <translation id="830951810931292870">অন্তৰ্ভুক্ত কৰা URLসমূহ Chromiumৰ ইনক’গনিট’ত খোলে।</translation>
+<translation id="8385503371191508165">Password Managerৰ জৰিয়তে পাছকী ছেভ কৰা আৰম্ভ কৰক</translation>
 <translation id="8390323835464055390">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chromium ব্যৱহাৰ কৰি যিকোনো এপৰ পৰা আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পাছকীসমূহৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="8409374867500149834">আপোনাৰ ওচৰত ক্ষতিকাৰক ৱেবছাইটৰ বিৰুদ্ধে Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা ব্যৱস্থা আছে</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। আপুনি ছাইন ইন হৈ থকাৰ সময়ত কেৱল এই ডিভাইচটোত ছেভ কৰা ডেটা মচি পেলোৱা হ’ব। ইয়াত ইতিহাস আৰু পাছৱৰ্ড অন্তৰ্ভুক্ত হ’ব পাৰে।}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। আপুনি ছাইন ইন হৈ থকাৰ সময়ত কেৱল এই ডিভাইচটোত ছেভ কৰা ডেটা মচি পেলোৱা হ’ব। ইয়াত ইতিহাস আৰু পাছৱৰ্ড অন্তৰ্ভুক্ত হ’ব পাৰে।}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। আপুনি ছাইন ইন হৈ থকাৰ সময়ত কেৱল এই ডিভাইচটোত ছেভ কৰা ডেটা মচি পেলোৱা হ’ব। ইয়াত ইতিহাস আৰু পাছৱৰ্ড অন্তৰ্ভুক্ত হ’ব পাৰে।}}</translation>

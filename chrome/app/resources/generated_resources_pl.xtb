@@ -1777,6 +1777,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2204034823255629767">Odczyt i zmiana wpisanego tekstu</translation>
 <translation id="2204168219363024184">Aby utworzyć ten klucz dostępu w Menedżerze haseł Google, potwierdź swoją tożsamość</translation>
 <translation id="2204387456724731099">Nie udało się przetłumaczyć zaznaczonego tekstu</translation>
+<translation id="2204613850236199029">Informacje zostały usunięte</translation>
 <translation id="2207116775853792104">Zachowaj to rozszerzenie</translation>
 <translation id="2209841631181508629">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />. Zobacz jej <ph name="BEGIN_LINK" />warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Nie udało się ukończyć instalacji</translation>
@@ -4181,7 +4182,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3854348409770521214">Malarstwo olejne</translation>
 <translation id="3854967233147778866">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3854976556788175030">Zasobnik wyjściowy jest pełny</translation>
-<translation id="3855441664322950881">Umieść rozszerzenie w pakiecie</translation>
+<translation id="3855441664322950881">Spakuj rozszerzenie</translation>
 <translation id="3855676282923585394">Importuj zakładki i ustawienia...</translation>
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
 <translation id="3856470183388031602">Używaj konta Google na urządzeniu <ph name="DEVICE_TYPE" /></translation>
@@ -4776,6 +4777,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4278498748067682896">Zamierzasz skorzystać z licencji Kiosk &amp; Signage, która umożliwia działanie urządzenia tylko w trybie kiosku lub tablicy informacyjnej. Jeśli chcesz, aby użytkownicy logowali się na urządzeniu, wróć do poprzedniego ekranu i wybierz rejestrację z licencją na Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Może to potrwać kilka minut. Pobieram pliki.</translation>
 <translation id="4279129444466079448">Na tym urządzeniu nie możesz zainstalować więcej niż <ph name="PROFILE_LIMIT" /> profili eSIM. Aby dodać kolejny profil, najpierw usuń jeden z istniejących profili.</translation>
+<translation id="427987768447457592">Nowa grupa kart</translation>
 <translation id="4280325816108262082">Gdy urządzenie zostanie wyłączone lub nie będzie używane, automatycznie się rozłączy</translation>
 <translation id="4281412694055934031">Witryny mogą prosić o zezwolenie na instalowanie aplikacji internetowych na urządzeniu</translation>
 <translation id="4281789858103154731">Utwórz</translation>
@@ -6403,7 +6405,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5434065355175441495">PKCS #1, szyfrowanie RSA</translation>
 <translation id="5435274640623994081">Włącz rejestrowanie ikony audio</translation>
 <translation id="5435779377906857208">Zawsze zezwalaj stronie <ph name="HOST" /> na dostęp do lokalizacji</translation>
-<translation id="5436211819997237281">Rozszerzenie zarządzające teraz Twoją stroną nowej karty</translation>
+<translation id="5436211819997237281">Rozszerzenie zarządzające teraz stroną nowej karty</translation>
 <translation id="5436492226391861498">Czekam na tunel serwera proxy...</translation>
 <translation id="5436510242972373446">Wyszukiwanie w <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Okno <ph name="WINDOW_SIDE" /> ma teraz szerokość <ph name="WINDOW_SIZE_PERCENT" />, a panel <ph name="PANE_SIDE" /> – <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -9379,6 +9381,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7531771599742723865">Urządzenie jest w użyciu</translation>
 <translation id="7531779363494549572">Otwórz Ustawienia &gt; Aplikacje i powiadomienia &gt; Powiadomienia.</translation>
 <translation id="7532009420053991888">Aplikacja <ph name="LINUX_APP_NAME" /> nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
+<translation id="75362970626182391">Nowa grupa kart</translation>
 <translation id="7536815228183532290">Używasz konta <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="7540972813190816353">Podczas sprawdzania dostępności aktualizacji wystąpił błąd: <ph name="ERROR" /></translation>

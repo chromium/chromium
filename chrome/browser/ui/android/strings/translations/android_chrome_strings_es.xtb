@@ -349,7 +349,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2605017215201958293">Escucha esta página con la IA</translation>
 <translation id="2607441479295509868">Se ha cerrado la sesión. Vuelve a iniciarla para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> te ha invitado a acceder a un elemento compartido.</translation>
-<translation id="2630630219780173487">Puedes impedir que estos sitios envíen más notificaciones</translation>
 <translation id="2634393460268044753">Envía las URLs de los sitios que visitas y una pequeña muestra del contenido de la página, de las descargas, de la actividad de las extensiones y de la información del sistema a Navegación segura de Google para comprobar si son dañinas.</translation>
 <translation id="2643064289437760082">Si quieres eliminar tus datos de medición de anuncios, puedes hacerlo en cualquier momento eliminando tus datos de navegación.</translation>
 <translation id="2647434099613338025">Añadir idioma</translation>
@@ -526,7 +525,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3467081767799433066">Con la medición de anuncios, algunos tipos de datos se comparten entre los sitios para medir el rendimiento de sus anuncios, como si has hecho una compra después de visitar un sitio.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puedes elegir tu buscador</translation>
-<translation id="3479552764303398839">Ahora no</translation>
 <translation id="3482805106082349287">Busca con el teclado, la voz, el modo Incógnito o la cámara</translation>
 <translation id="3487903178221457900">Es posible que otros, incluidas aplicaciones, puedan acceder al archivo exportado. Una vez que hayas exportado tus contraseñas, se eliminarán de Chrome.</translation>
 <translation id="3488199663160411179">nombre</translation>
@@ -874,7 +872,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4996042648402406470">Obtener</translation>
 <translation id="4996095658297597226">¿Usar contraseña sugerida?</translation>
 <translation id="5001388021414335527">Seguir a este sitio aquí</translation>
-<translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
@@ -1435,7 +1432,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7411224099004328643">Usuario de cuenta de Google</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
 <translation id="7421293530411019405">¿Salir del grupo de pestañas?</translation>
-<translation id="7431991332293347422">Controla cómo se usa el historial de navegación para personalizar la Búsqueda y más</translation>
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>
 <translation id="7437998757836447326">Cerrar sesión en Chrome</translation>
 <translation id="7439467816829380878">Mover pestaña a grupo</translation>
@@ -1833,6 +1829,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9133397713400217035">Explorar sin conexión</translation>
 <translation id="9143389653531441385">Registrarse con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
+<translation id="9148564897242852377">Alternar selección de pestañas</translation>
 <translation id="9157212632995922070">Elige una cuenta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir solo contenido</translation>
 <translation id="9161172953291434881">¿Confías en este sitio para que use tus datos?</translation>

@@ -277,7 +277,6 @@
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
 <translation id="202070562065520783">Explain this to me</translation>
-<translation id="2021670401941426298">See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">new item</translation>
@@ -296,7 +295,6 @@
 <translation id="2085876078937250610">Save…</translation>
 <translation id="2096239473850415494">Couldn't download</translation>
 <translation id="2096716221239095980">Delete all data</translation>
-<translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2104436223719117661">Trending searches</translation>
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2117650889962717098">Keep your browsing private by switching to Incognito mode</translation>
@@ -343,7 +341,6 @@
 <translation id="2258326562203545455">{count,plural, =1{You can save your bookmark in your Google Account, {email}.}other{You can save your bookmarks in your Google Account, {email}.}}</translation>
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Export passwords…</translation>
-<translation id="2265069324308685684">Deleting browsing data…</translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271452184061378400">Your tab groups are saved here</translation>
@@ -448,10 +445,6 @@
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="2691653761409724435">Not available offline</translation>
-<translation id="2696180352517415858">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
-
-
-Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="269819437389494246">You can see the pages that you've visited or delete them from your history</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that are based on your browsing data getting sent to Google</translation>
@@ -543,10 +536,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="3072279342064724558">Password already exists</translation>
 <translation id="3073258549280822127">Doesn't work</translation>
 <translation id="3073633853887034268">Got it</translation>
-<translation id="3076846064362030967">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
-
-
-See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">Bottom</translation>
@@ -1649,7 +1638,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
-<translation id="7346909386216857016">OK, got it</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
@@ -1787,7 +1775,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7815852444315004084">Hide for now</translation>
 <translation id="7825973332242257878">Tab groups</translation>
 <translation id="7839994177130598711">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
-<translation id="7840771868269352570">The items that you selected will be removed.</translation>
 <translation id="7841180087127694526">Search for copied text</translation>
 <translation id="7841418003178675048">Choose what cards you see on your new tab page.</translation>
 <translation id="7845466610722898">Show reading list</translation>
@@ -1853,7 +1840,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8040407350301524547">For route options, tap 'Get directions'.</translation>
-<translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
 <translation id="8058655154417507695">Expiry year</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
@@ -2072,7 +2058,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8829809207373502270">This passkey doesn't work any more. It was deleted from <ph name="WEBSITE" /> and will get deleted from here soon. <ph name="BEGIN_LINK" />About passkeys<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Close all inactive</translation>
 <translation id="8837654851594567190">Sort by publisher</translation>
-<translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8848286253339013170">Saving image in Google Photos for <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8855242995793521265">Doesn't noticeably slow down your browser or device.</translation>
@@ -2115,7 +2100,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity controls</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
-<translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="9000532564152265066">All tabs</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9006453925669499173">Menu → New Incognito tab</translation>

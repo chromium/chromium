@@ -349,7 +349,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2605017215201958293">Escolta aquesta pàgina amb IA</translation>
 <translation id="2607441479295509868">Has tancat la sessió. Torna-la a iniciar per utilitzar les adreces d'interès, les contrasenyes i més al teu compte.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> t'ha convidat a accedir a un element compartit.</translation>
-<translation id="2630630219780173487">Pots impedir que aquests llocs web enviïn notificacions en el futur</translation>
 <translation id="2634393460268044753">Envia a Navegació segura de Google els URL dels llocs web que visites i una petita mostra del contingut de les pàgines, les baixades, l'activitat de les extensions i informació del sistema per comprovar si són perjudicials.</translation>
 <translation id="2643064289437760082">Pots suprimir les dades de mesurament d'anuncis en qualsevol moment suprimint les dades de navegació</translation>
 <translation id="2647434099613338025">Afegeix un idioma</translation>
@@ -526,7 +525,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3467081767799433066">Amb el mesurament d'anuncis, es comparteixen tipus de dades limitats entre llocs web per mesurar el rendiment dels anuncis, com ara si has fet una compra després de visitar un lloc web.</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Pots triar el motor de cerca que prefereixis</translation>
-<translation id="3479552764303398839">Ara no</translation>
 <translation id="3482805106082349287">Cerca amb el teclat, la veu, el mode d'incògnit o la càmera</translation>
 <translation id="3487903178221457900">És possible que altres persones, i també les aplicacions, puguin accedir al fitxer exportat. Un cop l'exportes, les contrasenyes se suprimeixen de Chrome.</translation>
 <translation id="3488199663160411179">nom</translation>
@@ -874,7 +872,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4996042648402406470">Obtén</translation>
 <translation id="4996095658297597226">Vols utilitzar la contrasenya suggerida?</translation>
 <translation id="5001388021414335527">Segueix aquest lloc web aquí</translation>
-<translation id="5004416275253351869">Controls d'activitat de Google</translation>
 <translation id="5007392906805964215">Revisa</translation>
 <translation id="5010886807652684893">Visualització visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
@@ -1435,7 +1432,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7411224099004328643">Usuari del Compte de Google</translation>
 <translation id="7419565702166471774">Utilitza sempre connexions segures</translation>
 <translation id="7421293530411019405">Vols sortir del grup de pestanyes?</translation>
-<translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
 <translation id="7439467816829380878">Mou la pestanya al grup</translation>
@@ -1833,6 +1829,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9133397713400217035">Explora sense connexió</translation>
 <translation id="9143389653531441385">Registra't amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
+<translation id="9148564897242852377">Commuta la selecció de pestanyes</translation>
 <translation id="9157212632995922070">Tria un compte per continuar a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Comparteix només el contingut</translation>
 <translation id="9161172953291434881">Confies en aquest lloc web perquè accedeixi a les teves dades?</translation>

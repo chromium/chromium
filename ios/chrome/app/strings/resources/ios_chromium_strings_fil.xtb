@@ -89,7 +89,6 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="3044857325852340337">Na-delete na ang data sa Chromium</translation>
 <translation id="3054480780637153380">Buksan ang mga setting ng Chromium sa iOS, pagkatapos ay i-tap ang "Default Browser App" at piliin ang Chromium.</translation>
-<translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gawing default na browser mo ang Chromium?</translation>
 <translation id="3180939591219927904">I-on ang "I-lock ang mga tab na Incognito kapag isinara mo ang Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Nagpapakita ngayon ng 1 window ng Chromium}one{Nagpapakita ngayon ng {count} window ng Chromium}other{Nagpapakita ngayon ng {count} na window ng Chromium}}</translation>
@@ -265,7 +264,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7269362888766543920">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Pakisubukang i-uninstall ang mga ito.</translation>
 <translation id="7285031092584344905">I-access ang iyong mga password sa Chromium at higit pa sa iba pang app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Inalis ang piniling data mula sa Chromium at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>
 <translation id="7395825497086981028">Ise-save ang iyong password sa Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Buksan ang Chromium</translation>
 <translation id="7531461704633548377">Mula sa Chromium</translation>

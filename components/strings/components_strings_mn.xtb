@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Мэдээллийг удирдах</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 цонх}other{# цонх}}</translation>
 <translation id="232390861414237658">Энэ картыг Google Pay-д ашиглахаар хадгалсан үед Chrome-д хийсэн худалдан авалтад зориулж автоматаар бөглөнө үү</translation>
+<translation id="2326283484705860548">Одоо та Google Wallet-н илүү их мэдээллийг автоматаар бөглөх боломжтой</translation>
 <translation id="2328651992442742497">Зөвшөөрсөн (өгөгдмөл)</translation>
 <translation id="2328955282645810595">Барилга болон цахилгааны багажууд</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Таны хуулсан зураг</translation>
 <translation id="2347764072711098973">Цагийн явцад төлөхийн тулд Affirm, Zip, Klarna-г ашиглана уу</translation>
 <translation id="2348509731468399833">Үнэ мөшгөхийг зогсоосон.</translation>
+<translation id="2348836501965732644">Тохиргооноос мэдээллээ удирдаж, эдгээр зөвлөмжийг унтраана уу</translation>
 <translation id="2349957959687031096">Нууцлалтай таб нээх товчлуур, хувиараа үзэх шинэ нууцлалтай таб нээхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" />-ний оронд <ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрөл олгох?</translation>
 <translation id="2351718832234620840">Энэ сервер веб урсгалын шифрлэлтэд Chromium, таны системийн тохируулгын итгэмжлээгүй аюулгүй байдлын сертификат ашиглаж байгаа тул <ph name="DOMAIN" /> домэйн болохоо баталж чадсангүй. Энэ нь буруу тохируулга, халдагч таны холболтыг саатуулж байгаагаас үүдсэн байж болзошгүй.</translation>
@@ -3144,6 +3146,7 @@
 <translation id="6189351761800074311">Таны текст, хуудасны контентыг Google-д илгээдэг ч ХОУ-ыг сайжруулахад ашиглахгүй.
     <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc зэрэг таны гарын зарим товчийг дарах</translation>
+<translation id="6192524964213419211">Google-н бүтээгдэхүүнүүд дээр юмсыг илүү хурдан хийхийн тулд мэдээллээ хадгална уу. Таны мэдээллийг <ph name="ACCOUNT" />-д зориулж <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-д хадгалдаг</translation>
 <translation id="6194209731893739467">Хянаж буй бүх бүтээгдэхүүнээ эндээс харна уу</translation>
 <translation id="6195371403461054755">Геологи</translation>
 <translation id="6195418151868446719">Гэр ахуйн цахилгаан бараанууд</translation>

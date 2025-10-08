@@ -349,7 +349,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2605017215201958293">Ascolta questa pagina con l'AI</translation>
 <translation id="2607441479295509868">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> ti ha inviato un invito ad accedere a un elemento condiviso.</translation>
-<translation id="2630630219780173487">Puoi impedire a questi siti di inviare notifiche future</translation>
 <translation id="2634393460268044753">Invia a Google Navigazione sicura gli URL dei siti che visiti e un piccolo campione di contenuti di pagine, download, attività delle estensioni e informazioni di sistema per controllare se sono dannosi.</translation>
 <translation id="2643064289437760082">Puoi eliminare in qualsiasi momento i dati di misurazione degli annunci eliminando i dati di navigazione</translation>
 <translation id="2647434099613338025">Aggiungi lingua</translation>
@@ -526,7 +525,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3467081767799433066">Per misurare il rendimento dei loro annunci, tra i siti vengono condivisi tipi di dati limitati, ad esempio se hai effettuato un acquisto dopo aver visitato un sito.</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
-<translation id="3479552764303398839">Non adesso</translation>
 <translation id="3482805106082349287">Cerca usando la tastiera, la voce, la modalità di navigazione in incognito o la fotocamera</translation>
 <translation id="3487903178221457900">Il file esportato potrebbe essere accessibile da altri utenti, anche da app. Una volta eseguita l'esportazione, le tue password vengono eliminate da Chrome.</translation>
 <translation id="3488199663160411179">nome</translation>
@@ -874,7 +872,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4996042648402406470">Ottieni</translation>
 <translation id="4996095658297597226">Vuoi utilizzare la password suggerita?</translation>
 <translation id="5001388021414335527">Segui questo sito qui</translation>
-<translation id="5004416275253351869">Gestione attività Google</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5010886807652684893">Visualizzazione grafica</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> desidera collegarsi</translation>
@@ -1435,7 +1432,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7411224099004328643">Utente dell'Account Google</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
 <translation id="7421293530411019405">Uscire dal gruppo di schede?</translation>
-<translation id="7431991332293347422">Controlla come la cronologia di navigazione viene utilizzata per personalizzare la Ricerca e altro</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437998757836447326">Esci da Chrome</translation>
 <translation id="7439467816829380878">Sposta la scheda nel gruppo</translation>
@@ -1833,6 +1829,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9133397713400217035">Esplora offline</translation>
 <translation id="9143389653531441385">Registrati con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
+<translation id="9148564897242852377">Attiva/disattiva selezione scheda</translation>
 <translation id="9157212632995922070">Scegli un account per continuare su <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
 <translation id="9161172953291434881">Ti fidi di come questo sito userà i tuoi dati?</translation>

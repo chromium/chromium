@@ -277,7 +277,6 @@
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="201759455285471444">Развернуть группу вкладок.</translation>
 <translation id="202070562065520783">Объясни мне</translation>
-<translation id="2021670401941426298">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новый продукт</translation>
@@ -296,7 +295,6 @@
 <translation id="2085876078937250610">Сохранить</translation>
 <translation id="2096239473850415494">Не удалось скачать</translation>
 <translation id="2096716221239095980">Удалить все данные</translation>
-<translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2104436223719117661">Популярное</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
 <translation id="2117650889962717098">Переключитесь в режим инкогнито, чтобы сохранять конфиденциальность при посещении сайтов.</translation>
@@ -343,7 +341,6 @@
 <translation id="2258326562203545455">{count,plural, =1{Вы можете добавить закладку в аккаунт Google ({email}).}one{Вы можете добавить закладки в аккаунт Google ({email}).}few{Вы можете добавить закладки в аккаунт Google ({email}).}many{Вы можете добавить закладки в аккаунт Google ({email}).}other{Вы можете добавить закладки в аккаунт Google ({email}).}}</translation>
 <translation id="225943865679747347">Код ошибки: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Экспорт паролей…</translation>
-<translation id="2265069324308685684">Удаление данных о работе в браузере…</translation>
 <translation id="2267753748892043616">Добавить аккаунт</translation>
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2271452184061378400">Здесь находятся группы вкладок</translation>
@@ -448,10 +445,6 @@
 <translation id="2688535388040882469">Баннеры</translation>
 <translation id="2690858294534178585">Камера уже используется</translation>
 <translation id="2691653761409724435">Недоступно в офлайн-режиме</translation>
-<translation id="2696180352517415858">Вы останетесь в аккаунте Google. Сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте, если вы в него вошли. Эти данные можно удалить в любое время.
-
-
-Ваша поисковая система – "<ph name="DSE_NAME" />". Если вы хотите удалить историю поиска, изучите инструкции в справочных материалах для этой системы.</translation>
 <translation id="269819437389494246">Вы сможете посмотреть посещенные страницы или удалить их из истории.</translation>
 <translation id="2704606927547763573">Скопировано</translation>
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов. Она действует с учетом данных о вашей работе в браузере, которые отправляются в Google.</translation>
@@ -543,10 +536,6 @@
 <translation id="3072279342064724558">Пароль уже существует</translation>
 <translation id="3073258549280822127">Не работает</translation>
 <translation id="3073633853887034268">ОК</translation>
-<translation id="3076846064362030967">Вы останетесь в аккаунте Google. Сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте, если вы в него вошли. Их можно удалить в любое время.
-
-
-Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3081338492074632642">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">Снизу</translation>
@@ -1246,7 +1235,7 @@
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="58081802114142635">Ваши действия улучшают ИИ от Google</translation>
-<translation id="5813223718099710537">Когда вы используете эту функцию, URL и данные страницы передаются в Google. Отключить их отправку всегда можно в настройках.</translation>
+<translation id="5813223718099710537">Когда вы используете эту функцию, содержание и URL страниц пересылаются в Google. Вы можете в любой момент отключить это в настройках.</translation>
 <translation id="5817176759448082654">Проверка паролей</translation>
 <translation id="5818161931099046557">Изменить в аккаунте Google</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1649,7 +1638,6 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Пароли для этих аккаунтов уже сохранены в Google Менеджере паролей. Если вы импортируете один из паролей ниже, существующий будет заменен.</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
-<translation id="7346909386216857016">ОК</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7363349185727752629">Все о настройках конфиденциальности</translation>
 <translation id="736564850024123010">Переместите адресную строку в удобное место.</translation>
@@ -1787,7 +1775,6 @@
 <translation id="7815852444315004084">Скрыть</translation>
 <translation id="7825973332242257878">Группы вкладок</translation>
 <translation id="7839994177130598711">Теперь участники вашей семейной группы могут использовать ваши имя пользователя и пароль при входе в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей.</translation>
-<translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7841180087127694526">Поиск скопированного текста</translation>
 <translation id="7841418003178675048">Выберите карточки для страницы быстрого доступа.</translation>
 <translation id="7845466610722898">Показать список для чтения</translation>
@@ -1853,7 +1840,6 @@
 <translation id="8035133914807600019">Создать папку…</translation>
 <translation id="8035412398498507358">Фото</translation>
 <translation id="8040407350301524547">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
-<translation id="804225253087497565"><ph name="BEGIN_LINK" />История поиска<ph name="END_LINK" /> и сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
 <translation id="804427445359061970">Здесь вы найдете свои вкладки с других устройств</translation>
 <translation id="8058655154417507695">Год окончания срока действия</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} закладка.}one{{count} закладка.}few{{count} закладки.}many{{count} закладок.}other{{count} закладки.}}</translation>
@@ -1913,7 +1899,7 @@
 <translation id="826614135184049678">В результате сброса настроек iPad произошел выход из аккаунта <ph name="USER_NAME" />. Чтобы войти, нажмите "Продолжить" ниже.</translation>
 <translation id="8273982424131314219">Данные будут вставлены на сайте <ph name="URL" /></translation>
 <translation id="8275068909952022340">Ещё…</translation>
-<translation id="8277328362018795342">Предоставляется доступ к контенту страницы – так вы можете получать более подходящие ответы</translation>
+<translation id="8277328362018795342">Чтобы ответы были более подходящими, содержание страниц передается Google</translation>
 <translation id="8278488584187265939">Настройка главной страницы</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Пропустить</translation>
@@ -2038,7 +2024,7 @@
 <translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8722229818691036192">Аккаунты на этом устройстве</translation>
-<translation id="8722649775263832315">Нажмите на объект или выделите его для поиска через Google Объектив</translation>
+<translation id="8722649775263832315">Ищите что угодно через Google Объектив – просто выделите нужное или нажмите на него</translation>
 <translation id="8723088494871522141">Скрыть карточку "Отзывы о товарах для вас"</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} вкладка}one{{COUNT} вкладка}few{{COUNT} вкладки}many{{COUNT} вкладок}other{{COUNT} вкладки}}</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
@@ -2072,7 +2058,6 @@
 <translation id="8829809207373502270">Ключ доступа больше не действителен. Он был удален с сайта <ph name="WEBSITE" /> и скоро будет удален из этого сервиса. <ph name="BEGIN_LINK" />О ключах доступа<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Закрыть все неактивные вкладки</translation>
 <translation id="8837654851594567190">Сортировать по издателю</translation>
-<translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8848286253339013170">Сохраняем изображение в Google Фото в аккаунте <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
@@ -2115,7 +2100,6 @@
 <translation id="8976414606286374109">Карты сохраняются в аккаунте Google.</translation>
 <translation id="8981454092730389528">Отслеживание действий в Google</translation>
 <translation id="8998289560386111590">Недоступно на вашем устройстве.</translation>
-<translation id="9000089900434778519">Вы используете "<ph name="DSE_NAME" />". Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="9000532564152265066">Все вкладки</translation>
 <translation id="9003677638446136377">Проверить снова</translation>
 <translation id="9006453925669499173">Меню → Новая вкладка инкогнито</translation>

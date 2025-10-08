@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
 <translation id="3044857325852340337">Chromium డేటా తొలగింపు పూర్తయింది</translation>
 <translation id="3054480780637153380">iOSలో Chromium సెట్టింగ్‌లను తెరిచి, ఆపై "ఆటోమేటిక్ బ్రౌజర్ యాప్"పై ట్యాప్ చేసి, Chromiumను ఎంచుకోండి.</translation>
-<translation id="3102849287235003384">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chromium నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumను మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయాలా?</translation>
 <translation id="3180939591219927904">"మీరు Chromiumను మూసివేసినప్పుడు, అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి"ని ఆన్ చేయండి</translation>
 <translation id="328933489847748230">{count,plural, =1{ఇప్పుడు 1 Chromium విండో చూపబడుతుంది}other{ఇప్పుడు {count} Chromium విండోలు చూపబడుతున్నాయి}}</translation>
@@ -268,7 +267,6 @@
 <translation id="7269362888766543920">కొన్ని యాడ్-ఆన్‌లు Chromium క్రాష్ అయ్యేలా చేశాయి. దయచేసి వాటిని అన్‌ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించండి.</translation>
 <translation id="7285031092584344905">ఇతర యాప్‌లలో మీ Chromium పాస్‌వర్డ్‌లను, మరిన్నింటిని యాక్సెస్ చేయండి.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">ఎంచుకోబడిన డేటా Chromium నుండి, సింక్ చేసిన‌ పరికరాల నుండి తీసివేయబడింది. history.google.comలో మీ Google ఖాతా, ఇతర Google సేవలకు సంబంధించిన సెర్చ్‌లు, కార్య‌క‌లాపాల వంటి ఇతర రకాల బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="7395825497086981028">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం పాస్‌వర్డ్ మేనేజర్‌కు సేవ్ చేయబడుతుంది.</translation>
 <translation id="7434848749522628428">Password Managerలో ఈ పాస్-కీ <ph name="USER_EMAIL" /> ఖాతాకు లింక్ అయి సేవ్ అవుతుంది</translation>
 <translation id="7504829997542308412">Chromium తెరవండి</translation>

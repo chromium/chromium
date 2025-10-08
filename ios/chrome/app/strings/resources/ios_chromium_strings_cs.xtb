@@ -88,7 +88,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="3044857325852340337">Data prohlížeče Chromium byla smazána</translation>
 <translation id="3054480780637153380">V systému iOS otevřete Nastavení prohlížeče Chromium, klepněte na Výchozí prohlížeč a vyberte Chromium.</translation>
-<translation id="3102849287235003384">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromia<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Nastavit Chromium jako výchozí prohlížeč?</translation>
 <translation id="3180939591219927904">Zapněte možnost Při zavření Chromia zamknout anonymní karty</translation>
 <translation id="328933489847748230">{count,plural, =1{Je zobrazeno 1 okno prohlížeče Chromium}few{Jsou zobrazena {count} okna prohlížeče Chromium}many{Je zobrazeno {count} okna prohlížeče Chromium}other{Je zobrazeno {count} oken prohlížeče Chromium}}</translation>
@@ -264,7 +263,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7269362888766543920">Některé doplňky způsobují selhání prohlížeče Chromium. Zkuste je prosím odinstalovat.</translation>
 <translation id="7285031092584344905">Získejte přístup ke svým heslům v prohlížeči Chromium a k dalším funkcím v jiných aplikacích.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Vybraná data byla z prohlížeče Chromium a synchronizovaných zařízení odstraněna. Na stránce history.google.com mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google, například vyhledávací dotazy a aktivita z ostatních služeb Google.</translation>
 <translation id="7395825497086981028">Heslo bude uloženo do Správce hesel pro účet <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Otevřete Chromium</translation>
 <translation id="7531461704633548377">Z prohlížeče Chromium</translation>

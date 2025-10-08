@@ -815,6 +815,7 @@
 <translation id="2321291402658100099">তথ্য ম্যানেজ করুন</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{১টি উইন্ডো}one{#টি উইন্ডো}other{#টি উইন্ডো}}</translation>
 <translation id="232390861414237658">Google Pay-তে ব্যবহারের জন্য এই কার্ড সেভ করা হলে, Chrome-এ করা কেনাকাটার জন্য এটি অটোফিল করুন</translation>
+<translation id="2326283484705860548">আপনি এখন Google Wallet থেকে আরও তথ্য অটোফিল করতে পারবেন</translation>
 <translation id="2328651992442742497">অনুমতি আছে (ডিফল্ট)</translation>
 <translation id="2328955282645810595">নির্মাণ ও পাওয়ার টুল</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />-এর মেয়াদ, <ph name="EXPIRATION_DATE_ABBR" /> তারিখে শেষ হবে</translation>
@@ -825,6 +826,7 @@
 <translation id="2346319942568447007">আপনার কপি করা ছবি</translation>
 <translation id="2347764072711098973">কিস্তিতে পেমেন্ট করতে Affirm, Zip বা Klarna ব্যবহার করুন</translation>
 <translation id="2348509731468399833">দাম ট্র্যাকিংয়ের সুবিধা বন্ধ আছে।</translation>
+<translation id="2348836501965732644">'সেটিংস' থেকে আপনার তথ্য ম্যানেজ বা এইসব সাজেশন বন্ধ করুন</translation>
 <translation id="2349957959687031096">'ছদ্মবেশী ট্যাব খুলুন' বোতাম, গোপনে ব্রাউজ করার জন্য নতুন 'ছদ্মবেশী' ট্যাব খুলতে এটি চালু করুন</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> এর পরিবর্তে সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলি খুলতে <ph name="HANDLER_HOSTNAME" />কে অনুমোদিত করবেন?</translation>
 <translation id="2351718832234620840">এই সার্ভারটি প্রমাণ দিতে পারেনি যে এটি <ph name="DOMAIN" />, কারণ এটি এমন একটি নিরাপত্তা সার্টিফিকেট ব্যবহার করছে যা Chromium বা আপনার ওয়েব ট্রাফিক এনক্রিপশনের জন্য সেট করা সিস্টেম কনফিগারেশনের বিশ্বস্ত নয়। ভুল কনফিগারেশনের কারণে বা কোনও আক্রমণকারী আপনার কানেকশন ইন্টারসেপ্ট করার চেষ্টা করলে এটি হতে পারে।</translation>

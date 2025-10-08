@@ -1002,6 +1002,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="166278006618318542">Algoritmo da chave pública do requerente</translation>
 <translation id="1662801900924515589">O app <ph name="APP" /> foi instalado</translation>
 <translation id="1663698992894057019">Compre um novo Chromebook e tenha a segurança e o software mais recentes</translation>
+<translation id="1664497218584335032">O site quer abrir este link em um app.</translation>
 <translation id="166454475160289583">Não podem substituir a entrada do teclado</translation>
 <translation id="1665328953287874063">Use uma senha ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionismo</translation>
@@ -4809,6 +4810,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4278498748067682896">Você vai usar um Upgrade de quiosque e sinalização, que permite que o dispositivo funcione apenas em um desses dois modos. Se você quer que os usuários façam login no dispositivo, volte e o registre usando o Upgrade do Chrome Enterprise.</translation>
 <translation id="4278779213160967034">O processo pode levar alguns minutos. Fazendo o download dos arquivos.</translation>
 <translation id="4279129444466079448">Você pode instalar até <ph name="PROFILE_LIMIT" /> perfis de eSIM no dispositivo. Para adicionar outro perfil, remova um existente.</translation>
+<translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4280325816108262082">O dispositivo será desconectado automaticamente quando estiver desligado ou não estiver em uso</translation>
 <translation id="4281412694055934031">Os sites podem pedir para instalar apps da Web no dispositivo</translation>
 <translation id="4281789858103154731">Criar</translation>
@@ -6565,10 +6567,12 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5517304475148761050">Este app precisa de acesso à Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Sempre abrir links de <ph name="PROTOCOL_SCHEME" /> neste app</translation>
 <translation id="5520605865175417976">Remover a ação "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">Esta é a página inicial que você esperava?</translation>
 <translation id="5522156646677899028">Esta extensão contém uma grave vulnerabilidade de segurança.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo administrador}one{# extensão foi instalada pelo administrador}other{# extensões foram instaladas pelo administrador}}</translation>
+<translation id="5523203511530504754">Abrir links do esquema <ph name="PROTOCOL_SCHEME" /> no app <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Os sites adicionados sempre ficam ativos e a memória não é liberada</translation>
 <translation id="5523558474028191231">Os nomes precisam ter <ph name="MAX_CHARACTER_COUNT" /> caracteres ou menos e podem usar letras, números e caracteres especiais</translation>
 <translation id="5526745900034778153">Faça login novamente para retomar a sincronização</translation>
@@ -9415,6 +9419,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7531771599742723865">Dispositivo em uso</translation>
 <translation id="7531779363494549572">Acesse Config. &gt; Apps e notificações &gt; Notificações.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está respondendo. Selecione "Forçar fechamento" para fechar o app.</translation>
+<translation id="75362970626182391">Novo grupo de guias</translation>
 <translation id="7536815228183532290">Conta conectada: <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Esse tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
@@ -9601,6 +9606,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7663859337051362114">Adicionar perfil de eSIM</translation>
 <translation id="76641554187607347">Nenhum teclado conectado</translation>
 <translation id="7664442418269614729">Use o cartão no seu iPhone</translation>
+<translation id="7664822217939981459">Escolha um app para abrir o link de <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Reservar tamanho</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="7665445336029073980">Histórico completo de downloads</translation>
@@ -11223,6 +11229,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8750786237117206586">Gerenciar as configurações de áudio do ChromeOS Flex</translation>
 <translation id="8751034568832412184">Escola</translation>
 <translation id="8751329102746373229">Do seu administrador</translation>
+<translation id="875242763254084885">O site <ph name="ORIGIN" /> quer abrir este link em um app.</translation>
 <translation id="8752451679755290210">Navegar pelos itens automaticamente</translation>
 <translation id="8753948258138515839">O app Arquivos fornece acesso rápido a arquivos que foram salvos no Google Drive, em armazenamento externo ou no seu dispositivo ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt; Durante a execução do <ph name="PRODUCT_NAME" /> em um ambiente de computador compatível, serão utilizadas as configurações de proxy do sistema. No entanto, seu sistema não é suportado ou ocorreu um problema ao iniciar a configuração do sistema.&lt;/p&gt;

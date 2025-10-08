@@ -71,7 +71,6 @@ Notas importantes:
 <translation id="2576431527583832481">Chrome sigue mejorando. Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca la posibilidad de traducir las páginas en <ph name="LANGUAGE_NAME" /> de este sitio web la próxima vez?</translation>
 <translation id="2668242166988961773">Busca por voz en Chrome.</translation>
-<translation id="2689064829982324496">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
 <translation id="2703746758996815929">Para recibir consejos útiles sobre Chrome, activa las notificaciones en los ajustes de iOS.</translation>
 <translation id="2728851697704606655">Traduce con Google Lens</translation>
@@ -309,7 +308,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8413500425974960807">Consejo de Chrome: mueve Chrome al Dock</translation>
 <translation id="8413795581997394485">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio hace algo sospechoso, también se envían URLs completas y fragmentos de contenido de la página.</translation>
 <translation id="84594714173170813">Sigue usando los datos de Chrome en tu cuenta de Google</translation>
-<translation id="8459495907675268833">Los datos seleccionados se han eliminado de Chrome y de los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otras formas del historial de navegación, como las búsquedas o la actividad de otros servicios de Google en la página history.google.com.</translation>
 <translation id="8491300088149538575">Has iniciado sesión como <ph name="EMAIL" />.
 
 Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Introdúcela para usar y guardar datos de Chrome en tu cuenta de Google.</translation>

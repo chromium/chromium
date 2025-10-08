@@ -814,6 +814,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2321291402658100099">Hantera information</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 fönster}other{# fönster}}</translation>
 <translation id="232390861414237658">Fyll i det här kortet automatiskt vid köp i Chrome när det har sparats för användning med Google Pay</translation>
+<translation id="2326283484705860548">Nu kan du autofylla fler uppgifter från Google Wallet</translation>
 <translation id="2328651992442742497">Tillåts (standard)</translation>
 <translation id="2328955282645810595">Bygg- och elverktyg</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> upphör att gälla den <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2346319942568447007">Bilden som du kopierade</translation>
 <translation id="2347764072711098973">Använd Affirm, Zip eller Klarna för att betala över tid</translation>
 <translation id="2348509731468399833">Prisbevakning har avslutats.</translation>
+<translation id="2348836501965732644">Hantera din information eller inaktivera dessa förslag i Inställningar</translation>
 <translation id="2349957959687031096">Knappen Öppna en inkognitoflik: aktivera om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2350796302381711542">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Serverns identitet som <ph name="DOMAIN" /> gick inte att styrka eftersom den använder ett säkerhetscertifikat som inte är betrott av Chromium eller din systemkonfiguration för kryptering av webbtrafik. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad.</translation>

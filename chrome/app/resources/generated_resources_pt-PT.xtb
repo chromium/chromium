@@ -1776,6 +1776,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2204034823255629767">Ler e alterar tudo o que introduzir</translation>
 <translation id="2204168219363024184">Para criar esta chave de acesso com o Gestor de Palavras-passe da Google, valide a sua identidade</translation>
 <translation id="2204387456724731099">Não foi possível traduzir esta seleção</translation>
+<translation id="2204613850236199029">Informações removidas</translation>
 <translation id="2207116775853792104">Manter esta extensão</translation>
 <translation id="2209841631181508629">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu <ph name="FIELDS_STRING" /> com este site. Consulte os <ph name="BEGIN_LINK" />termos de utilização<ph name="END_LINK" /> deste site.</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
@@ -4797,6 +4798,7 @@ Quer pará-lo?</translation>
 <translation id="4278498748067682896">Irá usar uma atualização do modo quiosque e sinalização, que só permite que o dispositivo seja executado no modo quiosque ou sinalização. Se quiser que os utilizadores iniciem sessão no dispositivo, retroceda e inscreva-se através da Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Este processo pode demorar alguns minutos. A transferir ficheiros.</translation>
 <translation id="4279129444466079448">Pode instalar até <ph name="PROFILE_LIMIT" /> perfis do eSIM neste dispositivo. Para adicionar outro perfil, remova primeiro um perfil existente.</translation>
+<translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4280325816108262082">O dispositivo desassocia-se automaticamente quando é desligado ou não está a ser utilizado</translation>
 <translation id="4281412694055934031">Os sites podem pedir para instalar apps Web no seu dispositivo</translation>
 <translation id="4281789858103154731">Criar</translation>
@@ -9403,6 +9405,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7531771599742723865">Dispositivo em utilização</translation>
 <translation id="7531779363494549572">Aceda a Definições &gt; Apps e notificações &gt; Notificações.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
+<translation id="75362970626182391">Novo grupo de separadores</translation>
 <translation id="7536815228183532290">Sessão iniciada como <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Este tipo de ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>

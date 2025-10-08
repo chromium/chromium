@@ -1001,6 +1001,7 @@
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="1662801900924515589">已安裝「<ph name="APP" />」</translation>
 <translation id="1663698992894057019">請改用新 Chromebook，以獲得最新的安全和軟件更新</translation>
+<translation id="1664497218584335032">此網站想以應用程式開啟此連結。</translation>
 <translation id="166454475160289583">不允許取代鍵盤輸入</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表現主義</translation>
@@ -1785,6 +1786,7 @@
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="2204168219363024184">如要使用「Google 密碼管理工具」建立此密鑰，請驗證身分</translation>
 <translation id="2204387456724731099">翻譯唔到呢個揀咗嘅項目</translation>
+<translation id="2204613850236199029">資料已經移除咗</translation>
 <translation id="2207116775853792104">保留此擴充程式</translation>
 <translation id="2209841631181508629">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱網站<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />。</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
@@ -2884,6 +2886,7 @@
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2953210795988451570">安全更新已終止，請改用新 Chromebook。</translation>
 <translation id="2953218713108551165">已禁止 <ph name="SITE" /> 傳送通知，系統將在您下次瀏覽網站時再次詢問您。</translation>
+<translation id="2955048943983973430">相關 Google 服務</translation>
 <translation id="2956070239128776395">群組中具有巢狀部份：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">開啟開發人員模式即可使用此擴充程式。請注意，此擴充程式尚未通過 Chrome 網上應用程式商店審核。</translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
@@ -4635,6 +4638,7 @@
 <translation id="4151503145138736576">沒有可清理的離線儲存空間</translation>
 <translation id="4152011295694446843">您可在此查看書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
+<translation id="4153858337812834972">最近的分頁</translation>
 <translation id="4154658846204884961">彗星</translation>
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 左邊畫面</translation>
@@ -4800,6 +4804,7 @@
 <translation id="4278498748067682896">您將使用「Kiosk 和標牌升級」授權，此授權只允許裝置在 Kiosk 或標牌模式下運作。如果您想使用者登入裝置，請返回並使用「Chrome Enterprise 升級」註冊。</translation>
 <translation id="4278779213160967034">此程序可能需時幾分鐘。正在下載檔案。</translation>
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
+<translation id="427987768447457592">新分頁群組</translation>
 <translation id="4280325816108262082">當裝置關閉或處於閒置狀態時，裝置將會自動中斷連線</translation>
 <translation id="4281412694055934031">網站可以要求在你的裝置上安裝網絡應用程式</translation>
 <translation id="4281789858103154731">建立</translation>
@@ -6554,10 +6559,12 @@
 <translation id="5517304475148761050">此應用程式需要存取「Play 商店」才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">一律以此應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結</translation>
 <translation id="5520605865175417976">移除<ph name="ACTION_TO_REMOVE" />嘅操作</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理員已安裝 1 個擴充程式}other{管理員已安裝 # 個擴充程式}}</translation>
+<translation id="5523203511530504754">在 <ph name="APP_NAME" /> 開啟「<ph name="PROTOCOL_SCHEME" />」連結</translation>
 <translation id="5523532775593636291">你新增的網站將一律保持使用中的狀態，不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以使用字母、數字和特殊字元，且不可超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
@@ -7106,6 +7113,7 @@
 <translation id="5919305207330938913">我們會根據 Google 的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
 <translation id="5919486630433391408">管理員已停用韌體更新。</translation>
 <translation id="5920543303088087579">您的管理員已停用連線至此網絡的權限</translation>
+<translation id="5922493635960054020">禁止新瀏覽的網站取用 JavaScript 優化工具。需要開啟「安全瀏覽」</translation>
 <translation id="5922963926582976524">解除與「即時熱點」網絡的連線</translation>
 <translation id="5924047253200400718">查看說明<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">在複製或移動 Microsoft 檔案至「Google 雲端硬碟」前先詢問</translation>
@@ -8544,7 +8552,7 @@
 <translation id="6922763095098248079">您的裝置由您的機構管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="6923633482430812883">連接共用裝置時發生錯誤。請檢查您正連接的檔案伺服器是否支援 SMBv2 或以上版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
-<translation id="6927200998271693557">如想快速重溫你瀏覽過的網站，可將記錄和分頁同步至 <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6927200998271693557">如要快速重溫你瀏覽過的網站，可將記錄和分頁同步至 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕 1 個擴充程式}other{已拒絕 # 個擴充程式}}</translation>
@@ -9396,6 +9404,7 @@
 <translation id="7531771599742723865">裝置使用中</translation>
 <translation id="7531779363494549572">前往 [設定] &gt; [應用程式和通知] &gt; [通知]。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
+<translation id="75362970626182391">新分頁群組</translation>
 <translation id="7536815228183532290">已使用 <ph name="EMAIL" /> 的身分登入</translation>
 <translation id="7538013435257102593">此檔案類型不是常見的下載項目，可能含有危險內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
@@ -9582,6 +9591,7 @@
 <translation id="7663859337051362114">新增 eSIM 卡設定檔</translation>
 <translation id="76641554187607347">未連接鍵盤</translation>
 <translation id="7664442418269614729">在 iPhone 上使用此付款卡</translation>
+<translation id="7664822217939981459">選擇用於開啟「<ph name="PROTOCOL_SCHEME" />」連結的應用程式</translation>
 <translation id="7665082356120621510">預留空間大小</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="7665445336029073980">完整下載記錄</translation>
@@ -11202,6 +11212,7 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自管理員的憑證</translation>
+<translation id="875242763254084885">網站「<ph name="ORIGIN" />」想以應用程式開啟此連結。</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可供快速存取您存放在 Google 雲端硬碟」、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行 <ph name="PRODUCT_NAME" /> 時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;

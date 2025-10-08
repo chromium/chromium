@@ -814,6 +814,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2321291402658100099">Rheoli gwybodaeth</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ffenestr}zero{# ffenestri}two{# ffenestr}few{# ffenestr}many{# ffenestr}other{# ffenestr}}</translation>
 <translation id="232390861414237658">Awtolenwi'r cerdyn hwn ar gyfer pryniannau a wneir yn Chrome pan fydd wedi'i gadw i'w ddefnyddio gyda Google Pay</translation>
+<translation id="2326283484705860548">Gallwch bellach awtolenwi mwy o wybodaeth gan Google Wallet</translation>
 <translation id="2328651992442742497">Caniateir (diofyn)</translation>
 <translation id="2328955282645810595">Offer Adeiladu a Phŵer</translation>
 <translation id="2330137317877982892">Mae <ph name="CREDIT_CARD" /> yn darfod ar <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2346319942568447007">Llun y gwnaethoch ei gopïo</translation>
 <translation id="2347764072711098973">Defnyddiwch Affirm, Zip, neu Klarna i dalu dros amser</translation>
 <translation id="2348509731468399833">Olrhain prisiau wedi stopio.</translation>
+<translation id="2348836501965732644">Rheoli eich gwybodaeth neu ddiffodd yr awgrymiadau hyn yn y Gosodiadau</translation>
 <translation id="2349957959687031096">Botwm agor tab Anhysbys, gweithredwch i agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="2350796302381711542">Caniatáu i <ph name="HANDLER_HOSTNAME" /> agor yr holl ddolenni <ph name="PROTOCOL" /> yn hytrach na <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" /> oherwydd ei fod yn defnyddio tystysgrif diogelwch nad yw Chromium na ffurfweddiad eich system yn ymddiried ynddi ar gyfer amgryptio traffig gwe. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>

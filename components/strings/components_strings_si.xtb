@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">තොරතුරු කළමනාකරණය කරන්න</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 කවුළුවක්}one{කවුළු # ක්}other{කවුළු # ක්}}</translation>
 <translation id="232390861414237658">මෙම කාඩ්පත Google Pay සමග භාවිතා කිරීමට සුරකින විට Chrome හි සිදු කරන ලද මිල දී ගැනීම් සඳහා ස්වයංව පුරවන්න</translation>
+<translation id="2326283484705860548">දැන් ඔබට Google Wallet වෙතින් තවත් තතු ස්වයංව පිරවිය හැක</translation>
 <translation id="2328651992442742497">ඉඩ දේ (පෙරනිමි)</translation>
 <translation id="2328955282645810595">ඉදිකිරීම් සහ බල මෙවලම්</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> දින කල් ඉකුත් වේ</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">ඔබ පිටපත් කළ රූපය</translation>
 <translation id="2347764072711098973">කාලයත් සමග ගෙවීමට Affirm, Zip, හෝ Klarna භාවිත කරන්න</translation>
 <translation id="2348509731468399833">මිල හඹා යෑම නතර විය.</translation>
+<translation id="2348836501965732644">ඔබේ තොරතුරු කළමනාකරණය කරන්න හෝ සැකසීම් තුළ මෙම යෝජනා ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2349957959687031096">අප්‍රකට පටිත්ත විවෘත කරන්න බොත්තම, පෞද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රකට පටිත්තක් විවෘත කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> වෙනුවට සියලු <ph name="PROTOCOL" /> සබැඳි විවෘත කිරීමට <ph name="HANDLER_HOSTNAME" />ට ඉඩ දෙන්නද?</translation>
 <translation id="2351718832234620840">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව ඔප්පු කිරීමට නොහැකි වූයේ එය Chromium හෝ වෙබ් ගමනාගමන සංකේතනය සඳහා ඔබේ පද්ධති වින්‍යාසය මගින් විශ්වාස නොකරන ආරක්ෂක සහතිකයක් භාවිතා කරන බැවිනි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයෙකු ඔබේ සබැඳුමට බාධා කිරීමක් නිසා විය හැක.</translation>

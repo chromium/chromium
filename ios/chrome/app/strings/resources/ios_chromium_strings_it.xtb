@@ -89,7 +89,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
 <translation id="3044857325852340337">Dati di Chromium eliminati</translation>
 <translation id="3054480780637153380">Apri le impostazioni di Chromium in iOS, quindi tocca "App browser predefinita" e seleziona Chromium.</translation>
-<translation id="3102849287235003384">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vuoi imposta Chromium come browser predefinito?</translation>
 <translation id="3180939591219927904">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
@@ -265,7 +264,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7269362888766543920">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Prova a disinstallarli.</translation>
 <translation id="7285031092584344905">Accedi alle tue password di Chromium e ad altri dati in altre app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">I dati selezionati sono stati rimossi da Chromium e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
 <translation id="7395825497086981028">La tua password verrà salvata in Gestore delle password per <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Apri Chromium</translation>
 <translation id="7531461704633548377">Da Chromium</translation>

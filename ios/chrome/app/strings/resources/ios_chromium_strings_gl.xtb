@@ -89,7 +89,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
 <translation id="3054480780637153380">Abre a configuración de Chromium en iOS, toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chromium.</translation>
-<translation id="3102849287235003384">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Queres que Chromium sexa o teu navegador predeterminado?</translation>
 <translation id="3180939591219927904">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventá de Chromium}other{Mostrando {count} ventás de Chromium}}</translation>
@@ -265,7 +264,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="7269362888766543920">Algúns complementos fan que Chromium falle. Proba a desinstalalos.</translation>
 <translation id="7285031092584344905">Accede aos teus contrasinais de Chromium e moito máis noutras aplicacións.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Os datos seleccionados elimináronse de Chromium e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en history.google.com.</translation>
 <translation id="7395825497086981028">O teu contrasinal gardarase no xestor de contrasinais para <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Abre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>

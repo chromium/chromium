@@ -349,7 +349,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2605017215201958293">Få oplæst denne side med AI</translation>
 <translation id="2607441479295509868">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har givet dig adgang til et delt element.</translation>
-<translation id="2630630219780173487">Du kan forhindre disse websites i at sende notifikationer i fremtiden</translation>
 <translation id="2634393460268044753">Sender webadresserne for de websites, du besøger, samt et lille uddrag af sideindhold, downloads, udvidelsesaktivitet og systemoplysninger til Google Beskyttet browsing for at tjekke, om indholdet er skadeligt.</translation>
 <translation id="2643064289437760082">Du kan til enhver tid slette data om annoncemåling ved at slette dine browserdata</translation>
 <translation id="2647434099613338025">Tilføj sprog</translation>
@@ -526,7 +525,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3467081767799433066">Med annoncemåling deles begrænsede typer data mellem websites for at måle, hvor effektive deres annoncer er, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan vælge din søgemaskine</translation>
-<translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3482805106082349287">Søg ved hjælp af tastaturet, stemmen, inkognitotilstand eller kameraet</translation>
 <translation id="3487903178221457900">Den eksporterede fil kan være tilgængelig for andre, herunder apps. Efter eksporten slettes dine adgangskoder fra Chrome.</translation>
 <translation id="3488199663160411179">navn</translation>
@@ -874,7 +872,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4996042648402406470">Hent</translation>
 <translation id="4996095658297597226">Vil du bruge den foreslåede adgangskode?</translation>
 <translation id="5001388021414335527">Følg dette website her</translation>
-<translation id="5004416275253351869">Aktivitetsadministration på Google</translation>
 <translation id="5007392906805964215">Gennemgå</translation>
 <translation id="5010886807652684893">Visuel visning</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil gerne oprette forbindelse</translation>
@@ -1435,7 +1432,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7411224099004328643">Google-kontoens bruger</translation>
 <translation id="7419565702166471774">Brug altid sikre forbindelser</translation>
 <translation id="7421293530411019405">Vil du forlade fanegruppen?</translation>
-<translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at personligt tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437998757836447326">Log ud af Chrome</translation>
 <translation id="7439467816829380878">Flyt fane til gruppe</translation>
@@ -1833,6 +1829,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9133397713400217035">Udforsk offline</translation>
 <translation id="9143389653531441385">Tilmeld dig via <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Log ind igen</translation>
+<translation id="9148564897242852377">Skift fanevalg</translation>
 <translation id="9157212632995922070">Vælg en konto for at fortsætte på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
 <translation id="9161172953291434881">Har du tillid til, at dette website kan håndtere dine data?</translation>

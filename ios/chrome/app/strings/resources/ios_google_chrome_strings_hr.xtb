@@ -71,7 +71,6 @@ Važne napomene:
 <translation id="2576431527583832481">Chrome je postao još bolji! Dostupna je nova verzija.</translation>
 <translation id="257708665678654955">Želite li da Google Chrome sljedeći put ponudi prijevod stranica s te web-lokacije za <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2668242166988961773">Pretražujte glasovno u Chromeu.</translation>
-<translation id="2689064829982324496">Da biste se odjavili sa svojeg Google računa na svim web-lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2703746758996815929">Da biste primali korisne savjete za Chrome, uključite obavijesti u postavkama iOS-a.</translation>
 <translation id="2728851697704606655">Prevođenje pomoću Google objektiva</translation>
@@ -87,6 +86,9 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="2940565985148833945">Savjet za Chrome: pretražujte pomoću Objektiva</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Dodavanje oznaka u Chrome</translation>
+<translation id="3027236223714901838">Da biste zaštitili pristupne ključeve, najprije morate izraditi PIN za oporavak.
+
+        Pristupni ključevi spremaju se u Google upravitelj zaporki, što vam omogućuje da ih upotrebljavate u Chromeu na bilo kojem uređaju.</translation>
 <translation id="3030414234702425231">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="3042447686908081308">Uvezi u Chrome</translation>
 <translation id="3051521853355903257">Upravljanje zaporkama u Chromeu</translation>
@@ -309,7 +311,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="8413500425974960807">Savjet za Chrome: premjestite Chrome na donju traku</translation>
 <translation id="8413795581997394485">Štiti od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni. Kad posjetite neku web-lokaciju, Chrome Googleu šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja.</translation>
 <translation id="84594714173170813">Nastavite upotrebljavati podatke iz Chromea na svom Google računu</translation>
-<translation id="8459495907675268833">Odabrani podaci uklonjeni su iz Chromea i sa sinkroniziranih uređaja. Na Google računu možda postoje drugi oblici povijesti pregledavanja, primjerice pretraživanja i aktivnosti s drugih Googleovih usluga, na stranici history.google.com.</translation>
 <translation id="8491300088149538575">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste upotrebljavali i spremali podatke Chromea na svojem Google računu.</translation>

@@ -70,7 +70,6 @@ Gjëra për të pasur parasysh:
 <translation id="2576431527583832481">Chrome sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="257708665678654955">Dëshiron që Google Chrome të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="2668242166988961773">Kërko me zë në Chrome.</translation>
-<translation id="2689064829982324496">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK" />dil nga Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="2703746758996815929">Për të marrë këshilla të dobishme për Chrome, aktivizo njoftimet te cilësimet e iOS.</translation>
 <translation id="2728851697704606655">Përkthe me "Lenten e Google"</translation>
@@ -308,7 +307,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8413500425974960807">Këshillë për Chrome: Zhvendose Chrome te stacioni</translation>
 <translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="84594714173170813">Vazhdo të përdorësh të dhënat e Chrome në "Llogarinë tënde të Google"</translation>
-<translation id="8459495907675268833">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google, në history.google.com.</translation>
 <translation id="8491300088149538575">Identifikuar si <ph name="EMAIL" />.
 
 Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="TIME" />. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>

@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Gestionează informațiile</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{O fereastră}few{# ferestre}other{# de ferestre}}</translation>
 <translation id="232390861414237658">Completează automat acest card pentru achizițiile făcute în Chrome când este salvat pentru a fi folosit cu Google Pay</translation>
+<translation id="2326283484705860548">Acum poți completa automat mai multe informații din Portofelul Google</translation>
 <translation id="2328651992442742497">Permis (prestabilit)</translation>
 <translation id="2328955282645810595">Instrumente pentru construcții și instrumente electrice</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Imaginea copiată de tine</translation>
 <translation id="2347764072711098973">Folosește Affirm, Zip sau Klarna pentru a plăti în rate</translation>
 <translation id="2348509731468399833">Urmărirea prețului s-a oprit.</translation>
+<translation id="2348836501965732644">Gestionează-ți informațiile sau dezactivează aceste sugestii în Setări</translation>
 <translation id="2349957959687031096">Butonul Deschide o filă incognito, activează pentru a deschide o nouă filă incognito ca să navighezi în privat</translation>
 <translation id="2350796302381711542">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" /> în locul <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Acest server nu a putut dovedi că este <ph name="DOMAIN" />, deoarece folosește un certificat de securitate în care Chromium sau configurația sistemului pentru criptarea traficului web nu are încredere. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.</translation>

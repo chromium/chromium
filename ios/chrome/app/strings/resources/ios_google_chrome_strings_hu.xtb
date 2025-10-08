@@ -71,7 +71,6 @@ Megjegyzések:
 <translation id="2576431527583832481">A Chrome most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="257708665678654955">Szeretné, hogy a Google Chrome a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
 <translation id="2668242166988961773">Hangalapú keresés a Chrome-ban.</translation>
-<translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2703746758996815929">Ha hasznos tippeket szeretne kapni a Chrome-ra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
 <translation id="2728851697704606655">Fordítás a Google Lens segítségével</translation>
@@ -87,6 +86,9 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="2940565985148833945">Chrome-tipp: Kereshet a Lens segítségével</translation>
 <translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
 <translation id="2986402782150919988">Könyvjelzők hozzáadása a Chrome-hoz</translation>
+<translation id="3027236223714901838">Az azonosítókulcsok biztonsága érdekében először létre kell hoznia egy helyreállítási PIN-kódot.
+
+        Az azonosítókulcsokat a Google Jelszókezelő tárolja, így bármely eszközön használhatja őket a Chrome-ban.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="3042447686908081308">Importálás a Chrome-ba</translation>
 <translation id="3051521853355903257">Jelszavak kezelése a Chrome-ban</translation>
@@ -309,7 +311,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8413500425974960807">Chrome-tipp: Helyezze át a Chrome-ot a Dockra</translation>
 <translation id="8413795581997394485">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Amikor Ön felkeresi valamelyik webhelyet, a Chrome az URL obfuszkált részét egy olyan adatvédelmi szerveren keresztül küldi el a Google-nak, amely elrejti az Ön IP-címét. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző a teljes URL-eket és az oldal tartalmának egyes részeit is elküldi.</translation>
 <translation id="84594714173170813">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat</translation>
-<translation id="8459495907675268833">A kiválasztott adatokat eltávolítottuk a Chrome-ból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
 <translation id="8491300088149538575">Bejelentkezve a következőként: <ph name="EMAIL" />.
 
 Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph name="TIME" />. Adja meg, ha Google-fiókjában Chrome-adatokat szeretne használni és menteni.</translation>

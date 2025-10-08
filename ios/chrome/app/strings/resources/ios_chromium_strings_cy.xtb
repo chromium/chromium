@@ -89,7 +89,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
 <translation id="3044857325852340337">Wedi dileu data Chromium</translation>
 <translation id="3054480780637153380">Agorwch y gosodiadau Chromium yn iOS yna tapiwch 'Default Browser App' a dewiswch Chromium.</translation>
-<translation id="3102849287235003384">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gwneud Chromium yn borwr diofyn i chi?</translation>
 <translation id="3180939591219927904">Troi "Cloi tabiau Anhysbys pan fyddwch yn cau Chromium" ymlaen</translation>
 <translation id="328933489847748230">{count,plural, =1{Nawr yn dangos 1 ffenestr Chromium}zero{Nawr yn dangos {count} ffenestr Chromium}two{Nawr yn dangos {count} ffenestr Chromium}few{Nawr yn dangos {count} ffenestr Chromium}many{Nawr yn dangos {count} ffenestr Chromium}other{Nawr yn dangos {count} ffenestr Chromium}}</translation>
@@ -265,7 +264,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7269362888766543920">Mae rhai ychwanegion yn achosi i Chromium dorri. Rhowch gynnig ar ddadosod nhw.</translation>
 <translation id="7285031092584344905">Cyrchwch eich cyfrineiriau Chromium a rhagor ar draws apiau eraill.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Mae'r data a ddewisir wedi'u tynnu o Chromium a dyfeisiau sydd wedi'u cysoni. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori megis chwiliadau a gweithgarwch gan wasanaethau Google eraill yn history.google.com.</translation>
 <translation id="7395825497086981028">Bydd eich cyfrinair yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Agor Chromium</translation>
 <translation id="7531461704633548377">O Chromium</translation>

@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="3044857325852340337">ລຶບຂໍ້ມູນ Chromium ແລ້ວ</translation>
 <translation id="3054480780637153380">ເປີດການຕັ້ງຄ່າ Chromium ໃນ iOS, ຈາກນັ້ນແຕະ "ແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ" ແລ້ວເລືອກ Chromium.</translation>
-<translation id="3102849287235003384">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທ໌ທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">ເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານບໍ?</translation>
 <translation id="3180939591219927904">ເປີດ "ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{ຕອນນີ້ກຳລັງສະແດງໜ້າຈໍ Chromium 1 ໜ້າຈໍ}other{ຕອນນີ້ກຳລັງສະແດງໜ້າຈໍ Chromium {count} ໜ້າຈໍ}}</translation>
@@ -268,7 +267,6 @@
 <translation id="7269362888766543920">ບາງສ່ວນເພີ່ມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາລອງຖອນການຕິດຕັ້ງພວກມັນ.</translation>
 <translation id="7285031092584344905">ເຂົ້າເຖິງລະຫັດຜ່ານ Chromium ຂອງທ່ານ ແລະ ອື່ນໆທົ່ວແອັບຕ່າງໆ.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chromium ແລະ ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນ ເຊັ່ນວ່າ ການຊອກຫາ ແລະ ການເຄື່ອນໄຫວຈາກການບໍລິການອື່ນຂອງ Google ຢູ່ history.google.com.</translation>
 <translation id="7395825497086981028">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">ລະບົບຈະບັນທຶກກະແຈຜ່ານນີ້ໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານສຳລັບ <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">ເປີດ Chromium</translation>

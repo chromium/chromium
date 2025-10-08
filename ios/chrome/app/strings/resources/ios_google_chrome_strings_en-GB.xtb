@@ -71,7 +71,6 @@ Things to consider:
 <translation id="2576431527583832481">Chrome just got better! A new version is available.</translation>
 <translation id="257708665678654955">Would you like Google Chrome to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2668242166988961773">Search with voice in Chrome.</translation>
-<translation id="2689064829982324496">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2703746758996815929">To get helpful Chrome tips, turn on notifications in your iOS settings.</translation>
 <translation id="2728851697704606655">Translate with Google Lens</translation>
@@ -312,7 +311,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8413500425974960807">Chrome tip: Move Chrome to the dock</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>
 <translation id="84594714173170813">Keep using the Chrome data in your Google Account</translation>
-<translation id="8459495907675268833">The selected data has been removed from Chrome and synced devices. Your Google Account may have other forms of browsing history like searches and activity from other Google services at history.google.com.</translation>
 <translation id="8491300088149538575">Signed in as <ph name="EMAIL" />.
 
 Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to use and save Chrome data in your Google Account.</translation>

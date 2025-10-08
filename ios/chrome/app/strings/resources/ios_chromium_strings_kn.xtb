@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium ಅಪ್‌ ಟು ಡೇಟ್‌ ಆಗಿದೆ</translation>
 <translation id="3044857325852340337">Chromium ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3054480780637153380">iOS ನಲ್ಲಿ Chromium ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ, ನಂತರ "ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್‌ ಆ್ಯಪ್‌" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ ಮತ್ತು Chromium ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
-<translation id="3102849287235003384">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />Chromium ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3180939591219927904">"ನೀವು Chromium ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="328933489847748230">{count,plural, =1{ಈಗ 1 Chromium ವಿಂಡೋವನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}one{ಈಗ {count} Chromium ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}other{ಈಗ {count} Chromium ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ}}</translation>
@@ -268,7 +267,6 @@
 <translation id="7269362888766543920">ಕೆಲವು ಆ್ಯಡ್-ಆನ್‌ಗಳು Chromium ಕ್ರ್ಯಾಶ್ ಆಗಲು ಕಾರಣವಾಗುತ್ತವೆ. ಅವುಗಳನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7285031092584344905">ಇತರ ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ Chromium ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">ಆಯ್ಕೆ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು Chromium ಮತ್ತು ಸಿಂಕ್ ಮಾಡಲ್ಪಟ್ಟ ಸಾಧನಗಳಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯು history.google.com ನಲ್ಲಿ ಇತರ Google ಸೇವೆಗಳಿಂದ ಹುಡುಕಾಟಗಳು ಮತ್ತು ಚಟುವಟಿಕೆಯಂತಹ ಬ್ರೌಸಿಂಗ್ ಹುಡುಕಾಟದ ಇತರ ಪ್ರಕಾರಗಳನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="7395825497086981028">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="EMAIL" /> ನ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7434848749522628428"><ph name="USER_EMAIL" /> ಗಾಗಿ ಈ ಪಾಸ್‌ಕೀಯನ್ನು Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="7504829997542308412">Chromium ಅನ್ನು ತೆರೆಯಿರಿ</translation>

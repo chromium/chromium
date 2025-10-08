@@ -89,7 +89,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="3044857325852340337">Chromium дайындары өчүрүлдү</translation>
 <translation id="3054480780637153380">iOS'то Chromium параметрлерин ачып, андан соң "Демейки серепчини" таптап, Chromium'ду тандаңыз.</translation>
-<translation id="3102849287235003384">Бардык вебсайттарда Google аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium демейки серепчиңиз болсунбу?</translation>
 <translation id="3180939591219927904">"Chromium жабылганда, жашыруун өтмөктөрдү кулпулоо" параметрин күйгүзүү</translation>
 <translation id="328933489847748230">{count,plural, =1{Азыр 1 Chromium терезеси көрсөтүлүүдө}other{Азыр {count} Chromium терезеси көрсөтүлүүдө}}</translation>
@@ -265,7 +264,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="7269362888766543920">Айрым көмөкчү жөндөөлөрдөн улам Chromium бузулуп калды. Аларды өчүрүп көрүңүз.</translation>
 <translation id="7285031092584344905">Chromium сырсөздөрүңүзгө жана башка дайындарга башка колдонмолордон кириңиз.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Тандалган дайындар Chromium'дан жана шайкештирилген түзмөктөрдөн өчүрүлдү. Google Аккаунтуңуздун башка Google кызматтарынан алынган серептөө таржымалы history.google.com дарегинде болушу мүмкүн.</translation>
 <translation id="7395825497086981028">Сырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="7504829997542308412">Chromium'ду ачуу</translation>
 <translation id="7531461704633548377">Chromium'дан</translation>

@@ -814,6 +814,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2321291402658100099">Bestuur inligting</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 venster}other{# vensters}}</translation>
 <translation id="232390861414237658">Outovul hierdie kaart vir aankope wat in Chrome gemaak word wanneer dit gestoor is om met Google Pay te gebruik</translation>
+<translation id="2326283484705860548">Jy kan nou meer inligting uit Google Wallet outovul</translation>
 <translation id="2328651992442742497">Toegelaat (verstek)</translation>
 <translation id="2328955282645810595">Konstruksie- en kraggereedskap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2346319942568447007">Prent wat jy gekopieer het</translation>
 <translation id="2347764072711098973">Gebruik Affirm, Zip of Klarna om oor ’n tydperk te betaal</translation>
 <translation id="2348509731468399833">Prysnasporing is gestop.</translation>
+<translation id="2348836501965732644">Bestuur jou inligting of skakel hierdie voorstelle in Instellings af</translation>
 <translation id="2349957959687031096">Knoppie om Incognito-oortjie oop te maak; aktiveer om ’n nuwe Incognito-oortjie oop te maak om privaat te blaai</translation>
 <translation id="2350796302381711542">Laat <ph name="HANDLER_HOSTNAME" /> toe om alle <ph name="PROTOCOL" />-skakels oop te maak eerder as <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie omdat dit ’n sekuriteitsertifikaat gebruik wat nie deur Chromium of jou stelselopstelling vir webverkeerenkripsie vertrou word nie. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het.</translation>

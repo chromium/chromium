@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium புதுப்பித்த நிலையில் உள்ளது</translation>
 <translation id="3044857325852340337">Chromium தரவு நீக்கப்பட்டது</translation>
 <translation id="3054480780637153380">iOSஸில் Chromium அமைப்புகளைத் திறந்து "பிரவுசருக்கான இயல்பான ஆப்ஸ்" என்பதைத் தட்டி Chromium என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
-<translation id="3102849287235003384">இணையதளங்கள் அனைத்திலும் உங்கள் Google கணக்கில் இருந்து வெளியேற <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumமை இயல்பு உலாவியாக அமைக்கவா?</translation>
 <translation id="3180939591219927904">"Chromiumமை மூடும்போது மறைநிலைப் பக்கங்களைப் பூட்டு" என்பதை ஆன் செய்யவும்</translation>
 <translation id="328933489847748230">{count,plural, =1{1 Chromium சாளரம் காட்டப்படுகிறது}other{{count} Chromium சாளரங்கள் காட்டப்படுகின்றன}}</translation>
@@ -268,7 +267,6 @@
 <translation id="7269362888766543920">சில செருகு நிரல்களால் Chromium சிதைவுக்குட்படுகிறது. அவற்றை நிறுவல் நீக்கவும்.</translation>
 <translation id="7285031092584344905">பிற ஆப்ஸில் உங்கள் Chromium கடவுச்சொற்களையும் மேலும் பலவற்றையும் அணுகலாம்.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">தேர்ந்தெடுத்த தரவு Chromium மற்றும் ஒத்திசைத்த சாதனங்களிலிருந்து அகற்றப்பட்டது. history.google.com எனும் தளத்தில் உங்கள் Google கணக்கில் பிற வகை உலாவல் வரலாறு இருக்கக்கூடும். எடுத்துக்காட்டாக, பிற Google சேவைகளில் நீங்கள் மேற்கொள்ளும் தேடல்கள், செயல்பாடுகள் போன்றவை.</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> கணக்கின் கடவுச்சொல் நிர்வாகியில் உங்கள் கடவுச்சொல் சேமிக்கப்படும்.</translation>
 <translation id="7434848749522628428"><ph name="USER_EMAIL" />க்கான Password Managerரில் இந்தக் கடவுச்சாவி சேமிக்கப்படும்</translation>
 <translation id="7504829997542308412">Chromiumமைத் திறக்கவும்</translation>

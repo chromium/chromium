@@ -71,7 +71,6 @@ Cuestións que debes ter en conta:
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
 <translation id="257708665678654955">Queres que a próxima vez Google Chrome che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
 <translation id="2668242166988961773">Fai buscas por voz en Chrome.</translation>
-<translation id="2689064829982324496">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2703746758996815929">Se queres recibir consellos útiles sobre Chrome, activa as notificacións na configuración de iOS.</translation>
 <translation id="2728851697704606655">Traduce textos con Google Lens</translation>
@@ -309,7 +308,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8413500425974960807">Consello de Chrome: Move Chrome á barra de aplicacións</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="84594714173170813">Sigue usando os datos de Chrome na túa Conta de Google</translation>
-<translation id="8459495907675268833">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en history.google.com.</translation>
 <translation id="8491300088149538575">Tes a sesión iniciada como <ph name="EMAIL" />.
 
 Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Introdúcea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>

@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium അപ്‌‌ടുഡേറ്റാണ്</translation>
 <translation id="3044857325852340337">Chromium ഡാറ്റ ഇല്ലാതാക്കി</translation>
 <translation id="3054480780637153380">iOS-ൽ Chromium ക്രമീകരണം തുറക്കുക, തുടർന്ന് "ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്" എന്നതിൽ ടാപ്പ് ചെയ്ത് Chromium തിരഞ്ഞെടുക്കുക.</translation>
-<translation id="3102849287235003384">എല്ലാ വെബ്സൈറ്റുകളിലും നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യാൻ <ph name="BEGIN_LINK" />Chromium-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കണോ?</translation>
 <translation id="3180939591219927904">Chromium അടയ്‌ക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക" ഓണാക്കുക</translation>
 <translation id="328933489847748230">{count,plural, =1{ഇപ്പോൾ 1 Chromium വിൻഡോ കാണിക്കുന്നു}other{ഇപ്പോൾ {count} Chromium വിൻഡോകൾ കാണിക്കുന്നു}}</translation>
@@ -268,7 +267,6 @@
 <translation id="7269362888766543920">ചില ആഡ് ഓണുകൾ Chromium ക്രാഷാകാനിടയാക്കും. അവ അൺഇൻസ്‌റ്റാൾ ചെയ്യുന്നത് പരീക്ഷിച്ചുനോക്കൂ.</translation>
 <translation id="7285031092584344905">മറ്റ് ആപ്പുകളിലുടനീളം നിങ്ങളുടെ Chromium പാസ്‌വേഡുകളും മറ്റും ആക്‌സസ് ചെയ്യുക.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">തിരഞ്ഞെടുത്ത വിവരങ്ങൾ Chromium-ത്തിൽ നിന്നും സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ നിന്നും നീക്കംചെയ്‌തു. നിങ്ങളുടെ Google അക്കൗണ്ടിന് history.google.com എന്നതിൽ മറ്റ് Google സേവനങ്ങളിൽ നിന്നുള്ള തിരയലുകൾ, പ്രവൃത്തി എന്നിങ്ങനെ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="7395825497086981028">നിങ്ങളുടെ പാസ്‌വേഡ് <ph name="EMAIL" /> എന്നതിനുള്ള പാസ്‌വേഡ് മാനേജറിൽ സംരക്ഷിക്കും.</translation>
 <translation id="7434848749522628428"><ph name="USER_EMAIL" /> എന്നതിനുള്ള Password Manager-ൽ ഈ പാസ്‌കീ സംരക്ഷിക്കും</translation>
 <translation id="7504829997542308412">Chromium തുറക്കുക</translation>

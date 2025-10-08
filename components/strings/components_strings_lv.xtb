@@ -814,6 +814,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2321291402658100099">Pārvaldīt informāciju</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{vienā logā}zero{# logos}one{# logā}other{# logos}}</translation>
 <translation id="232390861414237658">Automātiski aizpildiet šīs kartes datus pirkumiem, kas tiek veikti pārlūkā Chrome, kad šī karte ir saglabāta izmantošanai pakalpojumā Google Pay.</translation>
+<translation id="2326283484705860548">Tagad varat automātiski aizpildīt vairāk informācijas no lietotnes Google maks</translation>
 <translation id="2328651992442742497">Atļauja piešķirta (noklusējums)</translation>
 <translation id="2328955282645810595">Celtniecības un motorizēti rīki</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, derīguma termiņš: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2346319942568447007">Kopētais attēls</translation>
 <translation id="2347764072711098973">Maksājiet pa daļām, izmantojot Affirm, Zip vai Klarna</translation>
 <translation id="2348509731468399833">Cenu izsekošana ir apturēta.</translation>
+<translation id="2348836501965732644">Pārvaldiet savu informāciju vai izslēdziet šos ieteikumus sadaļā Iestatījumi.</translation>
 <translation id="2349957959687031096">Poga “Atvērt inkognito cilni”. Aktivizējiet, lai atvērtu jaunu inkognito cilni privātai pārlūkošanai.</translation>
 <translation id="2350796302381711542">Vai ļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites <ph name="REPLACED_HANDLER_TITLE" /> vietā?</translation>
 <translation id="2351718832234620840">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />, jo tajā tiek izmantots drošības sertifikāts, kas netiek uzskatīts par uzticamu pārlūkā Chromium vai jūsu sistēmas konfigurācijā, lai šifrētu tīmekļa datplūsmu. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.</translation>

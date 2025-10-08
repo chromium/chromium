@@ -349,7 +349,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2605017215201958293">Dengarkan halaman ini dengan AI</translation>
 <translation id="2607441479295509868">Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> mengundang Anda untuk mengakses item yang dibagikan.</translation>
-<translation id="2630630219780173487">Anda dapat mencegah situs ini agar tidak mengirim notifikasi pada masa mendatang.</translation>
 <translation id="2634393460268044753">Mengirimkan URL situs yang Anda kunjungi dan contoh kecil konten halaman, download, aktivitas ekstensi, serta informasi sistem ke Google Safe Browsing untuk memeriksa apakah URL tersebut berbahaya.</translation>
 <translation id="2643064289437760082">Anda dapat menghapus data pengukuran iklan kapan saja dengan menghapus data penjelajahan</translation>
 <translation id="2647434099613338025">Tambah bahasa</translation>
@@ -526,7 +525,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3467081767799433066">Dengan pengukuran iklan, jenis data tertentu dibagikan antarsitus untuk mengukur performa iklan situs tersebut, seperti apakah Anda melakukan pembelian setelah mengunjungi situs.</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Anda dapat memilih mesin telusur Anda</translation>
-<translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3482805106082349287">Telusuri menggunakan keyboard, suara, mode Samaran, atau kamera</translation>
 <translation id="3487903178221457900">File yang diekspor dapat diakses oleh orang lain, termasuk aplikasi. Setelah diekspor, sandi Anda akan dihapus dari Chrome.</translation>
 <translation id="3488199663160411179">nama</translation>
@@ -874,7 +872,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4996042648402406470">Dapatkan</translation>
 <translation id="4996095658297597226">Gunakan sandi yang disarankan?</translation>
 <translation id="5001388021414335527">Ikuti situs ini di sini</translation>
-<translation id="5004416275253351869">Kontrol aktivitas Google</translation>
 <translation id="5007392906805964215">Tinjau</translation>
 <translation id="5010886807652684893">Tampilan visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin terhubung</translation>
@@ -1435,7 +1432,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7411224099004328643">Pengguna Akun Google</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
 <translation id="7421293530411019405">Keluar dari grup tab?</translation>
-<translation id="7431991332293347422">Kontrol cara histori penjelajahan digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7437998757836447326">Logout dari Chrome</translation>
 <translation id="7439467816829380878">Pindahkan tab ke grup</translation>
@@ -1833,6 +1829,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9133397713400217035">Jelajahi Offline</translation>
 <translation id="9143389653531441385">Daftar dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
+<translation id="9148564897242852377">Beralih pilihan tab</translation>
 <translation id="9157212632995922070">Pilih akun untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Hanya bagikan konten</translation>
 <translation id="9161172953291434881">Apakah Anda memercayai situs ini untuk menggunakan data Anda?</translation>

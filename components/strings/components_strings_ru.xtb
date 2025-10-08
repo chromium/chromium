@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">Настроить данные</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 окне}one{# окне}few{# окнах}many{# окнах}other{# окна}}</translation>
 <translation id="232390861414237658">После того как вы сохраните эту карту в Google Pay, ее реквизиты будут заполняться автоматически при покупках в Chrome.</translation>
+<translation id="2326283484705860548">Теперь вы можете автоматически заполнять больше данных из Google Кошелька</translation>
 <translation id="2328651992442742497">Разрешено (по умолчанию)</translation>
 <translation id="2328955282645810595">Строительные и механические инструменты</translation>
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">Скопированное изображение</translation>
 <translation id="2347764072711098973">Платите в рассрочку с помощью сервисов Affirm, Zip или Klarna</translation>
 <translation id="2348509731468399833">Отслеживание цен приостановлено.</translation>
+<translation id="2348836501965732644">Чтобы управлять данными или отключить эти подсказки, перейдите в настройки.</translation>
 <translation id="2349957959687031096">Кнопка "Открыть вкладку в режиме инкогнито". Нажмите ее, чтобы открыть такую вкладку.</translation>
 <translation id="2350796302381711542">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />" вместо сервиса "<ph name="REPLACED_HANDLER_TITLE" />"?</translation>
 <translation id="2351718832234620840">Мы не смогли убедиться в подлинности сервера <ph name="DOMAIN" />, так как браузер Chromium или система шифрования веб-трафика считает предоставленный им сертификат безопасности ненадежным. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -1452,6 +1454,7 @@
 <translation id="340924996148642843">Функция сравнения сейчас недоступна</translation>
 <translation id="3409896703495473338">Открыть настройки безопасности</translation>
 <translation id="3411091017011773343">Загрузить через <ph name="HOURS" /> ч.</translation>
+<translation id="341134412449102894">Ваша информация сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="3413466783792948876">Рекомендуем зайти на эту страницу позже, если вы подключены к общедоступной сети. Безопаснее всего использовать надежную сеть Wi-Fi, например домашнюю или рабочую.</translation>
 <translation id="3414275587143250384">Распределенные и облачные вычисления</translation>
 <translation id="3414952576877147120">Размер:</translation>
@@ -3143,6 +3146,7 @@
 <translation id="6189351761800074311">Ваш текст и содержимое страницы передаются в Google, но не используются для улучшения ИИ.
     <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Переопределение некоторых клавиш, например Esc.</translation>
+<translation id="6192524964213419211">Сохраните свои данные, чтобы быстрее выполнять действия в продуктах Google. Ваша информация сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Бытовая электроника</translation>

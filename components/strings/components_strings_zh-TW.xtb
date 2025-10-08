@@ -380,7 +380,7 @@
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
 <translation id="161612500287664753">問問 Google 搜尋關於本頁的資訊</translation>
 <translation id="1617276713587758852">跨界車</translation>
-<translation id="1619007254056372606">管理裝置端網站資料</translation>
+<translation id="1619007254056372606">管理網站在裝置端的資料</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />已移除分頁</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1622966923835127638">商業金融</translation>
@@ -567,7 +567,7 @@
 <translation id="1939059826036755332">自動進入子母畫面</translation>
 <translation id="1939175642807587452">可以要求傳送通知</translation>
 <translation id="1940441167050915935">刪除已儲存的安全碼</translation>
-<translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。換言之，瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。</translation>
+<translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。此時瀏覽防護程度較低，但會增加網站功能正常運作的機率。</translation>
 <translation id="1942498996464084801">圖書與文學</translation>
 <translation id="1943994668912612445">設計</translation>
 <translation id="1945968466830820669">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
@@ -813,6 +813,7 @@
 <translation id="2321291402658100099">管理資訊</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="232390861414237658">只要將這張卡片儲存到 Google Pay，在 Chrome 中購物時就能自動填入卡片資訊</translation>
+<translation id="2326283484705860548">現在可以自動填入更多 Google 錢包中的資訊</translation>
 <translation id="2328651992442742497">允許 (預設)</translation>
 <translation id="2328955282645810595">營建與電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -823,6 +824,7 @@
 <translation id="2346319942568447007">你複製的圖片</translation>
 <translation id="2347764072711098973">使用 Affirm、Zip 或 Klarna 分期付款</translation>
 <translation id="2348509731468399833">已停止追蹤價格。</translation>
+<translation id="2348836501965732644">前往「設定」管理資訊或關閉這些建議</translation>
 <translation id="2349957959687031096">「開啟無痕分頁」按鈕，啟動後即可開啟新的無痕分頁進行私密瀏覽</translation>
 <translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="2351718832234620840">這個伺服器的安全性憑證未取得 Chromium 或系統網路流量加密設定的信任，因此無法證明其屬於「<ph name="DOMAIN" />」網域。這可能是因為設定錯誤，或是有攻擊者攔截連線。</translation>
@@ -4226,7 +4228,7 @@
 <translation id="7952192831285741665">歐洲 EDP</translation>
 <translation id="7952250633095257243">搜尋捷徑不可留空</translation>
 <translation id="7952327717479677595">「管理搜尋引擎」按鈕，啟動後即可管理預設搜尋引擎和站內搜尋</translation>
-<translation id="7953236668995583915">重新載入這個頁面，即可將更新後的設定套用到此網站</translation>
+<translation id="7953236668995583915">重新載入這個頁面，將更新後的設定套用到此網站</translation>
 <translation id="7953569069500808819">邊緣裝訂 (右側)</translation>
 <translation id="7955105108888461311">當面詢問</translation>
 <translation id="7956713633345437162">行動版書籤</translation>
@@ -4764,7 +4766,7 @@
 <translation id="8870700989640064057">要列印機密檔案嗎？</translation>
 <translation id="8871485335898060555">古董與收藏品</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
+<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8877780815363510165">釣魚</translation>
 <translation id="888117890813270681">「<ph name="DATA_CONTROLS_RESTRICTION" />」無法設為「<ph name="DATA_CONTROLS_LEVEL" />」</translation>

@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">माहिती व्यवस्थापित करा</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{१ विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">हे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केलेले असते, तेव्हा Chrome मध्ये केलेल्या खरेदीसाठी ते ऑटोफिल करा</translation>
+<translation id="2326283484705860548">तुम्ही आता Google Wallet मधून आणखी माहिती ऑटोफिल करू शकता</translation>
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
 <translation id="2328955282645810595">बांधकाम आणि मोटारद्वारे चालवली जाणारी टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">तुम्ही कॉपी केलेली इमेज</translation>
 <translation id="2347764072711098973">कालांतराने पेमेंट करण्यासाठी Affirm, Zip किंवा Klarna वापरा</translation>
 <translation id="2348509731468399833">किमतीचा माग ठेवणे थांबवले आहे.</translation>
+<translation id="2348836501965732644">तुमची माहिती व्यवस्थापित करा किंवा सेटिंग्ज मध्ये या सूचना बंद करा</translation>
 <translation id="2349957959687031096">गुप्त टॅब उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडण्याकरिता ॲक्टिव्हेट करा</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2351718832234620840">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chromium द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते.</translation>
@@ -3144,6 +3146,7 @@
 <translation id="6189351761800074311">तुमचा मजकूर आणि पेजचा आशय या गोष्टी Google ला पाठवल्या जातात, पण AI मध्ये सुधारणा करण्यासाठी वापरल्या जाणार नाहीत.
     <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">तुमच्या कीबोर्डवरील Esc सारख्या काही की ओव्हरराइड करा</translation>
+<translation id="6192524964213419211">सर्व Google उत्पादनांवर कामे अधिक जलद पूर्ण करण्यासाठी तुमची माहिती सेव्ह करा. <ph name="ACCOUNT" /> साठी तुमची माहिती <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6195418151868446719">ग्राहकांशी संबंधित इलेक्‍ट्रॉनिक उपकरणे</translation>

@@ -89,7 +89,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="3044857325852340337">S'han suprimit les dades de Chromium</translation>
 <translation id="3054480780637153380">Obre la configuració de Chromium a iOS, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
-<translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="3180939591219927904">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{S'està mostrant 1 finestra de Chromium}other{S'estan mostrant {count} finestres de Chromium}}</translation>
@@ -265,7 +264,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
 <translation id="7285031092584344905">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Les dades seleccionades s'han suprimit de Chromium i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació a history.google.com, com ara les cerques i l'activitat d'altres serveis de Google.</translation>
 <translation id="7395825497086981028">La contrasenya es desarà al gestor de contrasenyes per a <ph name="EMAIL" />.</translation>
 <translation id="7504829997542308412">Obre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>

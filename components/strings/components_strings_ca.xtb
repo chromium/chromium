@@ -814,6 +814,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2321291402658100099">Gestiona la informació</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 finestra}other{# finestres}}</translation>
 <translation id="232390861414237658">Emplena automàticament aquesta targeta per a les compres fetes a Chrome quan s'hagi desat per utilitzar-se amb Google Pay</translation>
+<translation id="2326283484705860548">Ara pots emplenar automàticament més informació de Google Wallet</translation>
 <translation id="2328651992442742497">Permès (opció predeterminada)</translation>
 <translation id="2328955282645810595">Eines elèctriques i de construcció</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, data de caducitat: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2346319942568447007">Imatge que has copiat</translation>
 <translation id="2347764072711098973">Utilitza Affirm, Zip o Klarna per pagar a terminis</translation>
 <translation id="2348509731468399833">S'ha aturat el seguiment dels preus.</translation>
+<translation id="2348836501965732644">Gestiona la teva informació o desactiva aquests suggeriments a Configuració</translation>
 <translation id="2349957959687031096">Botó Obre una pestanya d'incògnit: activa'l per obrir una pestanya d'incògnit nova i navegar en privat</translation>
 <translation id="2350796302381711542">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" /> en comptes de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2351718832234620840">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè utilitza un certificat de seguretat que Chromium o la configuració del sistema per a l'encriptació del trànsit web no consideren de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que ha interceptat la teva connexió.</translation>

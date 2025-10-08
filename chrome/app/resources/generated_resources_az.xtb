@@ -1000,6 +1000,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="166278006618318542">Subyektin İctimai Açarı Alqoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> quraşdırıldı</translation>
 <translation id="1663698992894057019">Ən son təhlükəsizlik və proqram təminatı üçün yeni Chromebook-a təkmilləşdirin</translation>
+<translation id="1664497218584335032">Veb-sayt bu keçidi tətbiqdə açmaq istəyir.</translation>
 <translation id="166454475160289583">Klaviatura daxiletmənizi əvəzləməyə icazə verilmir</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün parol və ya PIN istifadə edin</translation>
 <translation id="1665859804801131136">Ekspressionizm</translation>
@@ -1775,6 +1776,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2204034823255629767">Oxuyun və yazdığınız istənilən şeyi dəyişin</translation>
 <translation id="2204168219363024184">Google Parol Meneceri ilə bu giriş açarını yaratmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="2204387456724731099">Bu seçimi tərcümə etmək mümkün olmadı</translation>
+<translation id="2204613850236199029">Məlumat silindi</translation>
 <translation id="2207116775853792104">Bu artırmanı saxlayın</translation>
 <translation id="2209841631181508629">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />xidmət şərtlərinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="2210462644007531147">Quraşdırmanı tamamlamaq alınmadı</translation>
@@ -4796,6 +4798,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4278498748067682896">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterprise Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="4278779213160967034">Bu, bir neçə dəqiqə çəkə bilər. Fayllar endirilir.</translation>
 <translation id="4279129444466079448">Bu cihazda maksimum <ph name="PROFILE_LIMIT" /> eSIM profili quraşdıra bilərsiniz. Başqa bir profil əlavə etmək üçün əvvəlcə mövcud profili silin.</translation>
+<translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4280325816108262082">Cihaz söndürüldükdə və ya istifadə edilmədikdə avtomatik olaraq ayrılacaq</translation>
 <translation id="4281412694055934031">Saytlar cihazınızda veb-tətbiqləri quraşdırmaqla bağlı sorğu göndərə bilər</translation>
 <translation id="4281789858103154731">Yaradın</translation>
@@ -6552,10 +6555,12 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5517304475148761050">Bu tətbiq Play Marketə giriş tələb edir</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> keçidlərini həmişə bu tətbiqdə açın</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> əməliyyatını silin</translation>
 <translation id="5521078259930077036">Gözlədiyiniz ana səhifə budur?</translation>
 <translation id="5522156646677899028">Bu artırmanın ciddi güvənlik problemləri var.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Artırma administratorunuz tərəfindən quraşdırılıb}other{# artırma administratorunuz tərəfindən quraşdırılıb}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> keçidlərini <ph name="APP_NAME" /> tətbiqində açın</translation>
 <translation id="5523532775593636291">Əlavə etdiyiniz saytlar həmişə aktiv qalacaq və yaddaş boşaldılmayacaq</translation>
 <translation id="5523558474028191231">Adda hərflər, rəqəmlər və xüsusi simvollar ola bilər və maksimum <ph name="MAX_CHARACTER_COUNT" /> simvol ola bilər</translation>
 <translation id="5526745900034778153">Sinxronizasiyaya davam etmək üçün daxil olun</translation>
@@ -9396,6 +9401,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7531771599742723865">İstifadədə olan cihaz</translation>
 <translation id="7531779363494549572">Ayarlar &gt; Tətbiq və bildirişlər &gt; Bildirişlər ünvanına daxil olun.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> cavab vermir. Tətbiqi bağlamaq üçün "Məcbur bağlayın" seçin.</translation>
+<translation id="75362970626182391">Yeni tab qrupu</translation>
 <translation id="7536815228183532290"><ph name="EMAIL" /> kimi giriş edilib</translation>
 <translation id="7538013435257102593">Bu fayl növü adətən endirilmir və təhlükəli ola bilər</translation>
 <translation id="7540972813190816353">Güncəlləşmələri yoxlayarkən xəta baş verdi: <ph name="ERROR" /></translation>
@@ -9582,6 +9588,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7663859337051362114">eSIM profili əlavə edin</translation>
 <translation id="76641554187607347">Klaviatura qoşulmayıb</translation>
 <translation id="7664442418269614729">iPhone-da bu kartı istifadə edin</translation>
+<translation id="7664822217939981459">Keçidi (<ph name="PROTOCOL_SCHEME" />) açmaq üçün tətbiq seçin</translation>
 <translation id="7665082356120621510">Rezerv ölçüsü</translation>
 <translation id="7665369617277396874">Hesab əlavə edin</translation>
 <translation id="7665445336029073980">Tam endirmə tarixçəsi</translation>
@@ -11203,6 +11210,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8750786237117206586">ChromeOS Flex audio ayarlarını idarə edin</translation>
 <translation id="8751034568832412184">Məktəb</translation>
 <translation id="8751329102746373229">Administratorunuzdan</translation>
+<translation id="875242763254084885">Sayt (<ph name="ORIGIN" />) bu keçidi tətbiqdə açmaq istəyir.</translation>
 <translation id="8752451679755290210">Avtomatik olaraq elementlər arasında keçid edin</translation>
 <translation id="8753948258138515839">Fayllar tətbiqi Google Disk, xarici yaddaş və ya ChromeOS Flex cihazınızda saxladığınız fayllara sürətli giriş təmin edir.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> məhsulunu dəstəklənən masaüstündə işlədəndə, sistemin proksi məlumatları istifadə olunacaq. Belə ki, sisteminiz dəstəklənmir və ya sistem konfiqurasiyanızı başladarkən problem oldub.&lt;/p&gt;            &lt;p&gt;Amma əmr sətri vasitəsilə konfiqurasiya edə bilərsiniz. bayraqlar və fəqrlər haqqında əlavə məlumat üçün &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; baxın.&lt;/p&gt;</translation>

@@ -89,7 +89,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="3044857325852340337">Data i Chromium har raderats</translation>
 <translation id="3054480780637153380">Öppna Chromium-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chromium.</translation>
-<translation id="3102849287235003384"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3115956258722352278">Vill du göra Chromium till din standardwebbläsare?</translation>
 <translation id="3180939591219927904">Aktivera Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Nu visas 1 Chromium-fönster}other{Nu visas {count} Chromium-fönster}}</translation>
@@ -268,7 +267,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
 <translation id="7285031092584344905">Få tillgång till dina lösenord i Chromium och mer i andra appar.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Den här nyckeln sparas i Lösenordshantering för <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Öppna Chromium</translation>

@@ -1772,6 +1772,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2204034823255629767">Leer y cambiar todo lo que escribas</translation>
 <translation id="2204168219363024184">Para crear esta llave de acceso con el Administrador de contraseñas de Google, verifica tu identidad</translation>
 <translation id="2204387456724731099">No se pudo traducir esta selección.</translation>
+<translation id="2204613850236199029">Se quitó la información</translation>
 <translation id="2207116775853792104">Conservar esta extensión</translation>
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta las <ph name="BEGIN_LINK" />condiciones del servicio<ph name="END_LINK" /> del sitio.</translation>
 <translation id="2210462644007531147">No se pudo completar la instalación</translation>
@@ -2869,6 +2870,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2950666755714083615">Registrarme</translation>
 <translation id="2953210795988451570">Finalizaron las actualizaciones de seguridad. Obtén una Chromebook nueva.</translation>
 <translation id="2953218713108551165">No se permiten notificaciones para <ph name="SITE" />. Se te volverá a preguntar al respecto en tu próxima visita.</translation>
+<translation id="2955048943983973430">Servicios de Google relacionados</translation>
 <translation id="2956070239128776395">Se anidó la sección en el grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activa el modo de desarrollador para usar esta extensión, que no puede revisarse en Chrome Web Store.</translation>
 <translation id="2958721676848865875">Advertencia sobre el empaquetado de extensiones</translation>
@@ -4625,6 +4627,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4151503145138736576">No hay espacio de almacenamiento sin conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
+<translation id="4153858337812834972">Pestañas más recientes</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: Vista izquierda</translation>
@@ -4790,6 +4793,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4278498748067682896">Utilizarás una Actualización de kiosco y señalización que permite que el dispositivo funcione únicamente en modo kiosco o de señalización. Si quieres que los usuarios accedan al dispositivo, regresa e inscríbete con la actualización de Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Se están descargando los archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para agregar otro perfil, primero debes quitar uno de los perfiles existentes.</translation>
+<translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4280325816108262082">El dispositivo se desconectará de forma automática cuando lo desactives o no lo uses</translation>
 <translation id="4281412694055934031">Los sitios pueden solicitar permiso para instalar apps web en tu dispositivo</translation>
 <translation id="4281789858103154731">Crear</translation>
@@ -7100,6 +7104,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5919305207330938913">Todos los datos recopilados se usarán de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
 <translation id="5919486630433391408">Tu administrador inhabilitó las actualizaciones de firmware.</translation>
 <translation id="5920543303088087579">El administrador inhabilitó la conexión a esta red</translation>
+<translation id="5922493635960054020">Bloquea el acceso al optimizador de JavaScript en los sitios que se visitan por primera vez. Requiere la Navegación segura</translation>
 <translation id="5922963926582976524">Desconectar la red del Hotspot instantáneo</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
@@ -9392,6 +9397,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7531771599742723865">Dispositivo en uso</translation>
 <translation id="7531779363494549572">Ve a Configuración &gt; Apps y notificaciones &gt; Notificaciones.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
+<translation id="75362970626182391">Nuevo grupo de pestañas</translation>
 <translation id="7536815228183532290">Accediste como <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Este tipo de archivo no se descarga con frecuencia y podría ser peligroso</translation>
 <translation id="7540972813190816353">Se produjo un error al buscar actualizaciones: <ph name="ERROR" /></translation>

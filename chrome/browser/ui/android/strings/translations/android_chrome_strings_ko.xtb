@@ -349,7 +349,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2605017215201958293">AI로 이 페이지의 내용 듣기</translation>
 <translation id="2607441479295509868">로그아웃했습니다. 내 계정에서 북마크, 비밀번호 등을 사용하려면 다시 로그인하세요.</translation>
 <translation id="2620314865574742210"><ph name="NAME" />님이 공유 항목에 액세스하도록 나를 초대했습니다</translation>
-<translation id="2630630219780173487">사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2634393460268044753">사용자가 방문하는 사이트 URL과 일부 페이지 콘텐츠, 다운로드, 확장 프로그램 활동, 시스템 정보가 Google 세이프 브라우징으로 전송되어 유해한 페이지인지 확인합니다.</translation>
 <translation id="2643064289437760082">언제든지 인터넷 사용 기록을 삭제하여 광고 측정 데이터를 삭제할 수 있습니다.</translation>
 <translation id="2647434099613338025">언어 추가</translation>
@@ -526,7 +525,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3467081767799433066">광고 측정을 사용하면 광고 실적을 측정하기 위해 제한된 유형의 데이터(예: 사이트 방문 후 구매했는지)가 사이트 간에 공유됩니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
-<translation id="3479552764303398839">나중에</translation>
 <translation id="3482805106082349287">키보드, 음성, 시크릿 모드 또는 카메라를 사용하여 검색</translation>
 <translation id="3487903178221457900">내보낸 파일은 앱을 포함한 다른 사용자가 액세스할 수 있습니다. 내보내면 비밀번호가 Chrome에서 삭제됩니다.</translation>
 <translation id="3488199663160411179">이름</translation>
@@ -874,7 +872,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4996042648402406470">가져오기</translation>
 <translation id="4996095658297597226">추천 비밀번호를 사용하시겠습니까?</translation>
 <translation id="5001388021414335527">여기에서 사이트를 팔로우하세요</translation>
-<translation id="5004416275253351869">Google 활동 제어</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5010886807652684893">시각 뷰</translation>
 <translation id="5011311129201317034"><ph name="SITE" />에서 연결하려고 함</translation>
@@ -1435,7 +1432,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7411224099004328643">Google 계정 사용자</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>
 <translation id="7421293530411019405">탭 그룹에서 나가시겠습니까?</translation>
-<translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
 <translation id="7439467816829380878">그룹으로 탭 이동</translation>

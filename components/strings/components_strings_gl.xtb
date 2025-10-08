@@ -814,6 +814,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2321291402658100099">Xestionar información</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ventá}other{# ventás}}</translation>
 <translation id="232390861414237658">Autocompleta esta tarxeta para as compras que fagas en Chrome cando estea gardada para usar con Google Pay</translation>
+<translation id="2326283484705860548">Xa podes autocompletar máis información de Google Wallet</translation>
 <translation id="2328651992442742497">Permiso concedido (opción predeterminada)</translation>
 <translation id="2328955282645810595">Ferramentas de construción e eléctricas</translation>
 <translation id="2330137317877982892">A tarxeta <ph name="CREDIT_CARD" /> caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2346319942568447007">Imaxe que copiaches</translation>
 <translation id="2347764072711098973">Usa Affirm, Zip ou Klarna para pagar a prazos</translation>
 <translation id="2348509731468399833">Detívose o seguimento de prezos.</translation>
+<translation id="2348836501965732644">Xestiona a túa información ou desactiva estas suxestións en Configuración</translation>
 <translation id="2349957959687031096">Botón para abrir unha pestana do modo de incógnito. Actívao para abrir unha nova pestana do modo de incógnito e navegar de forma privada</translation>
 <translation id="2350796302381711542">Queres permitir que se use <ph name="HANDLER_HOSTNAME" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
 <translation id="2351718832234620840">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque utiliza un certificado de seguranza no que Chromium ou a configuración do sistema para a encriptación de tráfico web non confían. Isto pode deberse a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>

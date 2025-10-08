@@ -89,7 +89,6 @@
 <translation id="2977470724722393594">Chromium ਅੱਪ ਟੂ ਡੇਟ ਹੈ</translation>
 <translation id="3044857325852340337">Chromium ਡਾਟਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="3054480780637153380">iOS 'ਤੇ Chromium Settings ਖੋਲ੍ਹੋ, ਫਿਰ "Default Browser App" 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ Chromium ਚੁਣੋ।</translation>
-<translation id="3102849287235003384">ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">ਕੀ Chromium ਨੂੰ ਆਪਣਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਉਣਾ ਹੈ?</translation>
 <translation id="3180939591219927904">"Chromium ਬੰਦ ਕਰਨ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ" ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="328933489847748230">{count,plural, =1{ਹੁਣ 1 Chromium ਵਿੰਡੋ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}one{ਹੁਣ {count} Chromium ਵਿੰਡੋ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ}other{ਹੁਣ {count} Chromium ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ}}</translation>
@@ -200,6 +199,9 @@
 <translation id="5671188105328420281">Chromium ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="5688047395118852662">ਇਹ ਕਾਰਡ ਤੁਹਾਨੂੰ Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਸੁਝਾਅ ਦਿਖਾਉਂਦਾ ਹੈ।</translation>
 <translation id="5700709190537129682">Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
+<translation id="5731004036450828399">ਆਪਣੀਆਂ ਪਾਸਕੀਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਇੱਕ ਰਿਕਵਰੀ ਪਿੰਨ ਬਣਾਉਣ ਦੀ ਲੋੜ ਪਵੇਗੀ।
+
+        ਪਾਸਕੀਆਂ ਨੂੰ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ Chromium ਵਿੱਚ ਉਨ੍ਹਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="584550191241316896">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5862307444128926510">Chromium ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="5889847953983052353">ਚਾਲੂ ਹੋਣ 'ਤੇ:
@@ -265,8 +267,8 @@
 <translation id="7269362888766543920">ਕੁਝ ਐਡ-ਆਨ Chromium ਨੂੰ ਕ੍ਰੈਸ਼ ਕਰ ਦਿੰਦੇ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7285031092584344905">ਆਪਣੇ Chromium ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਹੋਰ ਚੀਜ਼ਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ।</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">ਚੁਣੇ ਗਏ ਡਾਟਾ ਨੂੰ Chromium ਅਤੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ history.google.com 'ਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਤੋਂ ਖੋਜਾਂ ਅਤੇ ਸਰਗਰਮੀ ਵਰਗਾ ਹੋਰ ਪ੍ਰਕਾਰ ਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਵੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7395825497086981028">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ <ph name="EMAIL" /> ਲਈ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="7434848749522628428">ਇਸ ਪਾਸਕੀ ਨੂੰ <ph name="USER_EMAIL" /> ਲਈ Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7504829997542308412">Chromium ਖੋਲ੍ਹੋ</translation>
 <translation id="7531461704633548377">Chromium ਤੋਂ</translation>
 <translation id="7554983317097061001">Chromium ਨੁਕਤਾ: Chromium ਨੂੰ ਡੌਕ 'ਤੇ ਲਿਜਾਓ</translation>
@@ -300,6 +302,7 @@
 <translation id="8254729934443216898">ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ ਜੋ Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="8293572045658095405">ਤੁਸੀਂ Chromium ਦੇ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਹੋ</translation>
 <translation id="830951810931292870">Chromium ਵਿੱਚ ਦਾਖਲ ਕੀਤੇ URL ਨੂੰ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
+<translation id="8385503371191508165">Password Manager ਨਾਲ ਪਾਸਕੀਆਂ ਰੱਖਿਅਤ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8390323835464055390">ਆਟੋਫਿਲ ਲਈ Chromium ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਕਿਸੇ ਐਪ ਤੋਂ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="8409374867500149834">ਤੁਹਾਡੇ ਕੋਲ ਨੁਕਸਾਨਦੇਹ ਵੈੱਬਸਾਈਟਾਂ ਦੇ ਵਿਰੁੱਧ Chromium ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਹੈ</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chromium ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ। ਸਾਈਨ-ਇਨ ਰਹਿਣ ਦੌਰਾਨ, ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}one{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟ ਲਈ Chromium ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ। ਸਾਈਨ-ਇਨ ਰਹਿਣ ਦੌਰਾਨ, ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}other{ਅਜਿਹਾ ਉਦੋਂ ਹੁੰਦਾ ਹੈ, ਜਦੋਂ {THRESHOLD} ਮਿੰਟਾਂ ਲਈ Chromium ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ। ਸਾਈਨ-ਇਨ ਰਹਿਣ ਦੌਰਾਨ, ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸ ਵਿੱਚ ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}}</translation>

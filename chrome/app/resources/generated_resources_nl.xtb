@@ -1000,6 +1000,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="166278006618318542">Algoritme van openbare sleutel van entiteit</translation>
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleerd</translation>
 <translation id="1663698992894057019">Upgrade naar een nieuwe Chromebook voor de nieuwste beveiliging en software</translation>
+<translation id="1664497218584335032">De website wil deze link openen in een app.</translation>
 <translation id="166454475160289583">Geen toestemming om je toetsenbordinvoer te overschrijven</translation>
 <translation id="1665328953287874063">Gebruik een wachtwoord of pincode om je <ph name="DEVICE_TYPE" /> te ontgrendelen</translation>
 <translation id="1665859804801131136">Expressionisme</translation>
@@ -1775,6 +1776,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2204034823255629767">Alles lezen en wijzigen wat je typt</translation>
 <translation id="2204168219363024184">Laat verifiëren dat jij het bent om deze toegangssleutel te maken met Google Wachtwoordmanager</translation>
 <translation id="2204387456724731099">Deze selectie kan niet worden vertaald</translation>
+<translation id="2204613850236199029">Informatie verwijderd</translation>
 <translation id="2207116775853792104">Deze extensie behouden</translation>
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK" />servicevoorwaarden<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
@@ -4792,6 +4794,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4278498748067682896">Je gebruikt een upgrade voor kiosken en digitale borden waardoor het apparaat alleen de kioskmodus of modus voor digitale borden kan gebruiken. Als je wilt dat gebruikers kunnen inloggen op het apparaat, ga je terug en schrijf je het in via Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Dit kan een paar minuten duren. Bestanden downloaden.</translation>
 <translation id="4279129444466079448">Je kunt maximaal <ph name="PROFILE_LIMIT" /> e-simkaartprofielen installeren op dit apparaat. Als je nog een profiel wilt toevoegen, verwijder je eerst een bestaand profiel.</translation>
+<translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281412694055934031">Sites kunnen vragen of ze web-apps mogen installeren op je apparaat</translation>
 <translation id="4281789858103154731">Maken</translation>
@@ -6546,10 +6549,12 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5517304475148761050">Deze app heeft toegang tot de Play Store nodig</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Links van <ph name="PROTOCOL_SCHEME" /> altijd openen in deze app</translation>
 <translation id="5520605865175417976">Actie <ph name="ACTION_TO_REMOVE" /> verwijderen</translation>
 <translation id="5521078259930077036">Is dit de homepage die je had verwacht?</translation>
 <translation id="5522156646677899028">Deze extensie bevat een groot beveiligingsprobleem.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Je beheerder heeft een extensie geïnstalleerd}other{Je beheerder heeft # extensies geïnstalleerd}}</translation>
+<translation id="5523203511530504754">Links van <ph name="PROTOCOL_SCHEME" /> openen in <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen van vrijgemaakt.</translation>
 <translation id="5523558474028191231">De naam mag letters, cijfers en speciale tekens bevatten en mag maximaal <ph name="MAX_CHARACTER_COUNT" /> tekens lang zijn</translation>
 <translation id="5526745900034778153">Log opnieuw in om door te gaan met synchroniseren</translation>
@@ -9389,6 +9394,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7531771599742723865">Apparaat in gebruik</translation>
 <translation id="7531779363494549572">Ga naar Instellingen &gt; Apps en meldingen &gt; Meldingen.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
+<translation id="75362970626182391">Nieuwe tabbladgroep</translation>
 <translation id="7536815228183532290">Ingelogd als <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Dit bestandstype wordt niet vaak gedownload en kan gevaarlijk zijn</translation>
 <translation id="7540972813190816353">Er is een fout opgetreden bij het ​​zoeken naar updates: <ph name="ERROR" /></translation>
@@ -9575,6 +9581,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7663859337051362114">E-simkaartprofiel toevoegen</translation>
 <translation id="76641554187607347">Geen toetsenbord aangesloten</translation>
 <translation id="7664442418269614729">Deze kaart gebruiken op je iPhone</translation>
+<translation id="7664822217939981459">Kies een app om de link <ph name="PROTOCOL_SCHEME" /> te openen</translation>
 <translation id="7665082356120621510">Grootte reserveren</translation>
 <translation id="7665369617277396874">Account toevoegen</translation>
 <translation id="7665445336029073980">Volledige downloadgeschiedenis</translation>
@@ -11197,6 +11204,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8750786237117206586">ChromeOS Flex-audio-instellingen beheren</translation>
 <translation id="8751034568832412184">School</translation>
 <translation id="8751329102746373229">Van je beheerder</translation>
+<translation id="875242763254084885">De site <ph name="ORIGIN" /> wil deze link openen in een app.</translation>
 <translation id="8752451679755290210">Automatisch tussen items navigeren</translation>
 <translation id="8753948258138515839">De app Bestanden biedt snelle toegang tot bestanden die je op Google Drive, externe opslag of je Chrome OS Flex-apparaat hebt opgeslagen.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Wanneer je <ph name="PRODUCT_NAME" /> uitvoert in een ondersteunde desktopomgeving, worden de proxyinstellingen van het systeem gebruikt. Je systeem wordt echter niet ondersteund of er is een probleem opgetreden met het lanceren van je systeemconfiguratie.&lt;/p&gt;

@@ -349,7 +349,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2605017215201958293">Pakinggan ang page na ito gamit ang AI</translation>
 <translation id="2607441479295509868">Naka-sign out. Mag-sign in ulit para magamit ang mga bookmark, password, at higit pa sa iyong account.</translation>
 <translation id="2620314865574742210">Inimbitahan ka ni <ph name="NAME" /> na i-access ang isang naka-share na item.</translation>
-<translation id="2630630219780173487">Puwede mong pigilan ang mga site na ito na magpadala ng mga notification sa hinaharap</translation>
 <translation id="2634393460268044753">Ipapadala sa Ligtas na Pag-browse sa Google ang mga URL ng mga site na binibisita mo at maliit na sample ng content ng page, mga download, aktibidad ng extension, at impormasyon ng system para suriin kung mapaminsala ang mga ito.</translation>
 <translation id="2643064289437760082">Made-delete mo sa anumang oras ang data ng pagsukat ng ad sa pamamagitan ng pag-delete ng iyong data mula sa pag-browse</translation>
 <translation id="2647434099613338025">Magdagdag ng wika</translation>
@@ -526,7 +525,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3467081767799433066">Sa pagsukat sa ad, nagshe-share ng mga limitadong uri ng data sa pagitan ng mga site para masukat ang performance ng kanilang mga ad, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puwede mong piliin ang iyong search engine</translation>
-<translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3482805106082349287">Maghanap gamit ang keyboard, boses, Incognito, o camera</translation>
 <translation id="3487903178221457900">Ang na-export na file ay posibleng ma-access ng iba, kabilang ang mga app. Kapag nag-export ka na, made-delete na sa Chrome ang iyong mga password.</translation>
 <translation id="3488199663160411179">pangalan</translation>
@@ -874,7 +872,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4996042648402406470">Kunin</translation>
 <translation id="4996095658297597226">Gamitin ang iminumungkahing password?</translation>
 <translation id="5001388021414335527">Subaybayan ang site na ito dito</translation>
-<translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
 <translation id="5007392906805964215">Suriin</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
@@ -1435,7 +1432,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7411224099004328643">User ng Google Account</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7421293530411019405">Umalis sa grupo ng tab?</translation>
-<translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7437998757836447326">Mag-sign out sa Chrome</translation>
 <translation id="7439467816829380878">Ilipat ang tab sa grupo</translation>

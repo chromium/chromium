@@ -71,7 +71,6 @@
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏האם ברצונך ש-Google Chrome יציע בפעם הבאה לתרגם דפים ב-<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
 <translation id="2668242166988961773">‏חיפוש קולי ב-Chrome.</translation>
-<translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>
@@ -312,7 +311,6 @@
 <translation id="8413500425974960807">‏טיפ ל-Chrome: כדאי להעביר את Chrome ל-Dock</translation>
 <translation id="8413795581997394485">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. כשמבקרים באתר מסוים, Chrome שולח ל-Google קטע קוד מעורפל מכתובת ה-URL דרך שרת פרטיות שמסתיר את כתובת ה-IP. אם האתר פועל באופן שמעורר חשד, נשלחות גם כתובות URL מלאות וקטעי תוכן מדפים.</translation>
 <translation id="84594714173170813">‏המשך השימוש בנתוני Chrome בחשבון Google שלך</translation>
-<translation id="8459495907675268833">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת history.google.com ניתן יהיה לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
 <translation id="8491300088149538575">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
 הנתונים שלך הוצפנו באמצעות ביטוי הסיסמה ב-<ph name="TIME" />. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>

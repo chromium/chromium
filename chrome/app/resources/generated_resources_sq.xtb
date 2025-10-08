@@ -2870,6 +2870,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2950666755714083615">Më regjistro</translation>
 <translation id="2953210795988451570">Përditësimet e sigurisë kanë përfunduar. Përmirësoje me një pajisje të re Chromebook.</translation>
 <translation id="2953218713108551165">Njoftimet nuk lejohen për <ph name="SITE" />. Do të pyetesh përsëri gjatë vizitës sate të radhës.</translation>
+<translation id="2955048943983973430">Shërbimet e lidhura të Google</translation>
 <translation id="2956070239128776395">Seksioni i përfshirë në grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Aktivizo modalitetin "si zhvillues" për të përdorur këtë shtesë, e cila nuk mund të shqyrtohet nga "Dyqani i uebit i Chrome".</translation>
 <translation id="2958721676848865875">Paralajmërim i paketimit të shtesës</translation>
@@ -4624,6 +4625,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4151503145138736576">Nuk ka hapësirë ruajtëse offline për të pastruar</translation>
 <translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
+<translation id="4153858337812834972">Skedat më të fundit</translation>
 <translation id="4154658846204884961">Kometë</translation>
 <translation id="4154664944169082762">Gjurmë gishtash</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Pamja majtas</translation>
@@ -4789,6 +4791,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4278498748067682896">Do të përdorësh një përmirësim të kioskës dhe sinjalizimit, i cili e lejon pajisjen të ekzekutohet vetëm në modalitetin e kioskës ose të sinjalizimit. Nëse dëshiron që përdoruesit të identifikohen në këtë pajisje, kthehu dhe regjistrohu duke përdorur përmirësimin e Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Ky proces mund të zgjasë disa minuta. Skedarët po shkarkohen.</translation>
 <translation id="4279129444466079448">Mund të instalosh deri në <ph name="PROFILE_LIMIT" /> profile të kartës eSIM në këtë pajisje. Për të shtuar një profil tjetër, në fillim hiq një profil ekzistues.</translation>
+<translation id="427987768447457592">Grupi i ri i skedave</translation>
 <translation id="4280325816108262082">Pajisja shkëputet automatikisht kur fiket ose kur nuk përdoret</translation>
 <translation id="4281412694055934031">Sajtet mund të kërkojnë të instalojnë aplikacione uebi në pajisjen tënde</translation>
 <translation id="4281789858103154731">Krijo</translation>
@@ -7097,6 +7100,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5919305207330938913">Të gjitha të dhënat e mbledhura do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
 <translation id="5919486630433391408">Përditësimet e firmuerit janë çaktivizuar nga administratori.</translation>
 <translation id="5920543303088087579">Lidhja me këtë rrjet është çaktivizuar nga administratori yt</translation>
+<translation id="5922493635960054020">Blloko qasjen tek optimizuesi i JavaScript në sajtet e vizituara rishtas. Kërkon "Shfletimin e sigurt"</translation>
 <translation id="5922963926582976524">Shkëput rrjetin e "Zonës së qasjes për internet në çast"</translation>
 <translation id="5924047253200400718">Kërko ndihmë<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te "Disku i Google"</translation>
@@ -9388,6 +9392,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7531771599742723865">Pajisja në përdorim</translation>
 <translation id="7531779363494549572">Shko te Cilësimet &gt; Aplikacionet dhe njoftimet &gt; Njoftimet.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> nuk po përgjigjet. Zgjidh "Ndalo me forcë" për ta mbyllur aplikacionin.</translation>
+<translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7536815228183532290">Identifikuar si <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Ky lloj skedari nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="7540972813190816353">Një gabim ndodhi gjatë kontrollit për përditësime: <ph name="ERROR" /></translation>

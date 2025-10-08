@@ -1781,6 +1781,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2204034823255629767">Четене и промяна на всичко, което въвеждате</translation>
 <translation id="2204168219363024184">За да създадете този ключ за достъп посредством Google Мениджър на пароли, потвърдете самоличността си</translation>
 <translation id="2204387456724731099">Избраното не бе преведено</translation>
+<translation id="2204613850236199029">Информацията е премахната</translation>
 <translation id="2207116775853792104">Запазване на това разширение</translation>
 <translation id="2209841631181508629">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK" />общите условия<ph name="END_LINK" /> на сайта.</translation>
 <translation id="2210462644007531147">Инсталацията не завърши</translation>
@@ -2881,6 +2882,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2950666755714083615">Регистрирайте ме</translation>
 <translation id="2953210795988451570">Актуализациите за сигурност приключиха. Преминете към нов Chromebook.</translation>
 <translation id="2953218713108551165">Известията не са разрешени за <ph name="SITE" />. Ще получите повторно запитване при следващото си посещение.</translation>
+<translation id="2955048943983973430">Сродни услуги на Google</translation>
 <translation id="2956070239128776395">В група е вложена секция: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Включете режима за програмисти, за да използвате това разширение, което не може да бъде прегледано от уеб магазина на Chrome.</translation>
 <translation id="2958721676848865875">Предупреждение за пакетиране на разширението</translation>
@@ -4638,6 +4640,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4151503145138736576">Няма офлайн хранилище за изчистване</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
+<translation id="4153858337812834972">Най-скорошни раздели</translation>
 <translation id="4154658846204884961">Комета</translation>
 <translation id="4154664944169082762">Пръстови отпечатъци</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – ляв изглед</translation>
@@ -4803,6 +4806,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4278498748067682896">Ще използвате лиценз Kiosk &amp; Signage Upgrade, който позволява на устройството да работи само в павилионен режим или режим за дигитални знаци и надписи. Ако искате потребителите да влизат в профили на устройството, върнете се назад и го регистрирайте, като използвате Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Този процес може да отнеме няколко минути. Файловете се изтеглят.</translation>
 <translation id="4279129444466079448">На това устройство можете да инсталирате до <ph name="PROFILE_LIMIT" /> профила на електронната SIM карта. За да добавите друг такъв профил, първо премахнете съществуващ.</translation>
+<translation id="427987768447457592">Нова група раздели</translation>
 <translation id="4280325816108262082">Връзката на устройството ще бъде прекратена автоматично, когато бъде изключено или не се използва</translation>
 <translation id="4281412694055934031">Сайтовете могат да извеждат запитвания за инсталиране на уеб приложения на устройството ви</translation>
 <translation id="4281789858103154731">Създаване</translation>
@@ -7114,6 +7118,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5919305207330938913">Всички събрани данни ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията за поверителност<ph name="END_LINK" /> на Google.</translation>
 <translation id="5919486630433391408">Актуализациите на фърмуера са деактивирани от администратора ви.</translation>
 <translation id="5920543303088087579">Свързването с тази мрежа е деактивирано от администратора ви</translation>
+<translation id="5922493635960054020">Блокиране на достъпа до оптимизатора на JavaScript за новопосетените сайтове. Изисква се Безопасно сърфиране</translation>
 <translation id="5922963926582976524">Прекратяване на връзката с мрежата за мигновената точка за достъп</translation>
 <translation id="5924047253200400718">Получете помощ<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Извеждане на запитване преди копиране или преместване на файлове на Microsoft в Google Диск</translation>
@@ -9406,6 +9411,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7531771599742723865">Устройството се използва</translation>
 <translation id="7531779363494549572">Отворете Настройки &gt; „Приложения и известия“ &gt; „Известия“.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не реагира. Изберете „Принудително затваряне“, за да затворите приложението.</translation>
+<translation id="75362970626182391">Нова група раздели</translation>
 <translation id="7536815228183532290">Влезли сте като <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">Този файлов тип обикновено не се изтегля и може да е опасен</translation>
 <translation id="7540972813190816353">При проверката за актуализации възникна грешка: <ph name="ERROR" /></translation>

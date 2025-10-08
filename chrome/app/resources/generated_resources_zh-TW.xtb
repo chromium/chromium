@@ -1400,7 +1400,7 @@
 <translation id="1941410638996203291">開始時間 <ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">系統管理員已將你的帳戶設為自動連線至 Microsoft OneDrive，但發生錯誤。</translation>
-<translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。換言之，瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。</translation>
+<translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。此時瀏覽防護程度較低，但會增加網站功能正常運作的機率。</translation>
 <translation id="1941995177877935582">顯示機碼對應</translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
@@ -2872,6 +2872,7 @@
 <translation id="2950666755714083615">我要訂閱</translation>
 <translation id="2953210795988451570">安全性更新已終止，請改用新款 Chromebook</translation>
 <translation id="2953218713108551165">你並未允許 <ph name="SITE" /> 傳送通知，系統會在你下次造訪時再次詢問。</translation>
+<translation id="2955048943983973430">相關 Google 服務</translation>
 <translation id="2956070239128776395">群組中有巢狀區段：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">開啟開發人員模式即可使用這項擴充功能。請注意，Chrome 線上應用程式商店無法審查這項擴充功能。</translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
@@ -3863,7 +3864,7 @@
 <translation id="3653887973853407813">你的家長或監護人已關閉 Chrome 的「網站、應用程式和擴充功能的權限」，因此你無法使用這個擴充功能。</translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取你的麥克風</translation>
 <translation id="3654045516529121250">讀取你的無障礙設定</translation>
-<translation id="3654682977761834281">來自嵌入網站的資料</translation>
+<translation id="3654682977761834281">嵌入網站的資料</translation>
 <translation id="3656328935986149999">游標速度</translation>
 <translation id="3656701180077048004">在按下按鍵與啟動按鍵間加入延遲時間</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
@@ -4624,6 +4625,7 @@
 <translation id="4151503145138736576">沒有可清理的離線儲存空間</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
+<translation id="4153858337812834972">最近開啟的分頁</translation>
 <translation id="4154658846204884961">彗星</translation>
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - 左側分頁</translation>
@@ -4789,6 +4791,7 @@
 <translation id="4278498748067682896">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="4278779213160967034">這項程序可能需要幾分鐘才能完成。正在下載檔案。</translation>
 <translation id="4279129444466079448">你最多可以在這部裝置上安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
+<translation id="427987768447457592">新分頁群組</translation>
 <translation id="4280325816108262082">裝置關閉或處於閒置狀態時，會自動中斷連線</translation>
 <translation id="4281412694055934031">網站可以要求在裝置上安裝網頁應用程式</translation>
 <translation id="4281789858103154731">建立</translation>
@@ -5736,7 +5739,7 @@
 <translation id="4944310289250773232">這是由 <ph name="SAML_DOMAIN" /> 代管的驗證服務</translation>
 <translation id="4945439665401275950">如要設定指紋，請讓孩子輕觸電源按鈕。孩子的指紋資料會安全儲存在這部 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="4946998421534856407">啟動鍵 + 向上鍵</translation>
-<translation id="4947376546135294974">來自你所造訪網站的資料</translation>
+<translation id="4947376546135294974">所造訪網站的資料</translation>
 <translation id="4950100687509657457">建立設定檔</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
@@ -7092,6 +7095,7 @@
 <translation id="5919305207330938913">我們會依《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
 <translation id="5919486630433391408">系統管理員已停用韌體更新。</translation>
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
+<translation id="5922493635960054020">禁止初次造訪的網站使用 JavaScript 最佳化工具 (必須開啟安全瀏覽功能)</translation>
 <translation id="5922963926582976524">中斷與即時無線基地台網路的連線</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
@@ -9381,6 +9385,7 @@
 <translation id="7531771599742723865">裝置使用中</translation>
 <translation id="7531779363494549572">依序輕觸 [設定] &gt; [應用程式和通知] &gt; [通知]。</translation>
 <translation id="7532009420053991888">「<ph name="LINUX_APP_NAME" />」沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
+<translation id="75362970626182391">新增分頁群組</translation>
 <translation id="7536815228183532290">目前登入的帳戶：<ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">這種檔案類型不是常見的下載項目，可能含有危險內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
@@ -10002,7 +10007,7 @@
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="795282463722894016">還原完成</translation>
 <translation id="7952904276017482715">預期的 ID 為「<ph name="EXPECTED_ID" />」，但實際的 ID 為「<ph name="NEW_ID" />」</translation>
-<translation id="7953236668995583915">重新載入這個頁面，即可將更新後的設定套用到此網站</translation>
+<translation id="7953236668995583915">重新載入這個頁面，將更新後的設定套用到此網站</translation>
 <translation id="7953669802889559161">輸入法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">當面詢問</translation>
@@ -11176,7 +11181,7 @@
 <translation id="8742998548129056176">這個頁面會顯示裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="8743357966416354615">受管理的開發環境 (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">羅馬字</translation>
-<translation id="8745034592125932220">無法將資料儲存到你的裝置</translation>
+<translation id="8745034592125932220">不允許將資料儲存到你的裝置</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>
 <translation id="8748916845823567967"><ph name="SITE" /> 儲存的所有資料和 Cookie 都將遭到刪除。</translation>
@@ -11364,7 +11369,7 @@
 <translation id="8874341931345877644">投放到裝置：</translation>
 <translation id="8874448314264883207">「<ph name="EXTENSION_NAME" />」已關閉</translation>
 <translation id="8874647982044395866">有機</translation>
-<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie，這代表網頁瀏覽保護程度較低，但網站功能較容易正常運作。</translation>
+<translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
 <translation id="8875221558267407626">生成內容摘要、簡化複雜語言或提問</translation>
 <translation id="8875520811099717934">Linux 升級</translation>
 <translation id="8875736897340638404">選擇瀏覽權限</translation>

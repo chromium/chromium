@@ -814,6 +814,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2321291402658100099">Spravovat informace</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 okno}few{# okna}many{# okna}other{# oken}}</translation>
 <translation id="232390861414237658">Při nákupech v Chromu automaticky vyplňovat tuhle kartu, když je uložená k použití s Google Pay</translation>
+<translation id="2326283484705860548">Teď můžete automaticky vyplňovat více informací z Peněženky Google</translation>
 <translation id="2328651992442742497">Povoleno (výchozí)</translation>
 <translation id="2328955282645810595">Stavební a elektrické nástroje</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, platnost vyprší <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -824,6 +825,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2346319942568447007">Obrázek, který jste zkopírovali</translation>
 <translation id="2347764072711098973">Uhradit na splátky prostřednictvím společnosti Affirm, Zip nebo Klarna</translation>
 <translation id="2348509731468399833">Sledování ceny bylo ukončeno.</translation>
+<translation id="2348836501965732644">Své informace můžete spravovat nebo tyto návrhy vypnout v Nastavení</translation>
 <translation id="2349957959687031096">Tlačítko Otevřít anonymní kartu, aktivací otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
 <translation id="2350796302381711542">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" /> (namísto obslužného nástroje <ph name="REPLACED_HANDLER_TITLE" />)?</translation>
 <translation id="2351718832234620840">Tento server nemohl prokázat, že patří do domény <ph name="DOMAIN" />, protože používá bezpečnostní certifikát, kterému Chromium ani konfigurace vašeho systému pro šifrování webového provozu nedůvěřují. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>

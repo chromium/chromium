@@ -814,6 +814,7 @@
 <translation id="2321291402658100099">መረጃ አስተዳድር</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 መስኮት}one{# መስኮት}other{# መስኮቶች}}</translation>
 <translation id="232390861414237658">በGoogle Pay ለመጠቀም ሲቀመጥ Chrome ውስጥ ለተደረጉ ግዢዎች ይህ ካርድ በራስ-ይሙሉ</translation>
+<translation id="2326283484705860548">አሁን ተጨማሪ መረጃ ከGoogle Wallet በራስ-መሙላት ይችላሉ</translation>
 <translation id="2328651992442742497">ተፈቅዷል (ነባሪ)</translation>
 <translation id="2328955282645810595">የግንባታ እና የኃይል መሣሪያዎች</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />፣ በ<ph name="EXPIRATION_DATE_ABBR" /> አገልግሎት ጊዜው ያበቃል</translation>
@@ -824,6 +825,7 @@
 <translation id="2346319942568447007">እርስዎ የቀዱት ምስል</translation>
 <translation id="2347764072711098973">በጊዜ ሂደት ለመክፈል Affirm፣ Zip ወይም Klarna ይጠቀሙ</translation>
 <translation id="2348509731468399833">የዋጋ ክትትል ቆሟል።</translation>
+<translation id="2348836501965732644">የእርስዎን መረጃ ያስተዳድሩ ወይም እነዚህን ጥቆማዎች ቅንብሮች ውስጥ ያጥፉ</translation>
 <translation id="2349957959687031096">ማንነትን የማያሳውቅ ትር አዝራርን ይክፈቱ፣ በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትር ለመክፈት ያግብሩ</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ከ<ph name="REPLACED_HANDLER_TITLE" /> ይልቅ ሁሉንም የ<ph name="PROTOCOL" /> አገናኞች እንዲከፍት ይፈቀድለት?</translation>
 <translation id="2351718832234620840">ይህ አገልጋይ ለድር ትራፊክ ምሥጠራ በChromium ወይም በእርስዎ የሥርዓት ውቅረት ተዓማኒነት የሌለው የደኅንነት የዕውቅና ማረጋገጫ እየተጠቀመ ስለሆነ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም። ይህ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>

@@ -349,7 +349,6 @@
 <translation id="2605017215201958293">運用 AI 朗讀這頁內容</translation>
 <translation id="2607441479295509868">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀請你取用一個共用項目。</translation>
-<translation id="2630630219780173487">你可以禁止這些網站再傳送通知</translation>
 <translation id="2634393460268044753">將你造訪的網站網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
 <translation id="2643064289437760082">刪除瀏覽資料即可刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
@@ -526,7 +525,6 @@
 <translation id="3467081767799433066">藉由廣告評估機制，網站間可分享某些特定資料，以便評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
-<translation id="3479552764303398839">現在不要</translation>
 <translation id="3482805106082349287">使用鍵盤、語音、無痕模式或相機搜尋</translation>
 <translation id="3487903178221457900">其他人 (包括應用程式) 可能可以存取匯出的檔案。匯出後，系統會從 Chrome 中刪除密碼。</translation>
 <translation id="3488199663160411179">名稱</translation>
@@ -874,7 +872,6 @@
 <translation id="4996042648402406470">取得</translation>
 <translation id="4996095658297597226">要使用建議的密碼嗎？</translation>
 <translation id="5001388021414335527">在這裡追蹤這個網站</translation>
-<translation id="5004416275253351869">Google 活動控制項</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連線</translation>
@@ -1435,7 +1432,6 @@
 <translation id="7411224099004328643">Google 帳戶使用者</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7421293530411019405">要退出分頁群組嗎？</translation>
-<translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
 <translation id="7439467816829380878">將分頁移到群組</translation>
@@ -1833,6 +1829,7 @@
 <translation id="9133397713400217035">離線探索</translation>
 <translation id="9143389653531441385">註冊 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
 <translation id="9148126808321036104">重新登入</translation>
+<translation id="9148564897242852377">切換選取的分頁</translation>
 <translation id="9157212632995922070">請選擇帳戶繼續登入「<ph name="SITE_ETLD_PLUS_ONE" />」</translation>
 <translation id="9158770349521403363">僅分享內容</translation>
 <translation id="9161172953291434881">你是否信任這個網站，願意提供個人資料？</translation>

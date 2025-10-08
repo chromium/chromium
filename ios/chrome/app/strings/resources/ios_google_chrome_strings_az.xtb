@@ -71,7 +71,6 @@ Nəzərə alın ki:
 <translation id="2576431527583832481">Chrome yeniləndi! Yeni versiya əlçatandır.</translation>
 <translation id="257708665678654955">Google Chrome'un növbəti dəfə bu saytdakı <ph name="LANGUAGE_NAME" /> səhifələrini tərcümə etməyini istəyirsiniz?</translation>
 <translation id="2668242166988961773">Chrome-da səs ilə axtarın.</translation>
-<translation id="2689064829982324496">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chrome'dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="2703746758996815929">Faydalı Chrome məsləhətləri üçün iOS ayarlarında bildirişləri aktiv edin.</translation>
 <translation id="2728851697704606655">Google Linza ilə tərcümə edin</translation>
@@ -87,6 +86,9 @@ Nəzərə alın ki:
 <translation id="2940565985148833945">Chrome məsləhəti: Linza ilə axtarın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
 <translation id="2986402782150919988">Chrome-a əlfəcinlər əlavə edin</translation>
+<translation id="3027236223714901838">Giriş açarlarını təhlükəsiz saxlamaq üçün əvvəlcə bərpa PIN-i yaratmalısınız.
+
+        Giriş açarları Google Parol Menecerində yadda saxlanılır və bu, onları istənilən cihazdakı Chrome-da istifadə etməyə imkan verir.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
 <translation id="3042447686908081308">Chrome-a import edin</translation>
 <translation id="3051521853355903257">Chrome-da parolları idarə edin</translation>
@@ -309,7 +311,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8413500425974960807">Chrome ipucusu: Chrome-u doka köçürün</translation>
 <translation id="8413795581997394485">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Sayta daxil olduqda Chrome IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt şübhəli nəsə edərsə, tam URL və kiçik səhifə kontenti nümunələri də göndərilir.</translation>
 <translation id="84594714173170813">Google Hesabında Chrome datasından istifadəyə davam edin</translation>
-<translation id="8459495907675268833">Seçilmiş data Chrome və sinxronizasiya olunmuş cihazdan silindi. Google Hesabınızın history.google.com linkində axtarış və digər Google xidmətlərindən fəaliyyət kimi axtarış tarixçəsi formaları ola bilər.</translation>
 <translation id="8491300088149538575"><ph name="EMAIL" /> kimi daxil olunub.
 
 Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün onu daxil edin.</translation>

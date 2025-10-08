@@ -277,7 +277,6 @@
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="202070562065520783">Explique-moi</translation>
-<translation id="2021670401941426298">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -296,7 +295,6 @@
 <translation id="2085876078937250610">Enregistrer…</translation>
 <translation id="2096239473850415494">Téléchargement impossible</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
-<translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2104436223719117661">Recherches populaires</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2117650889962717098">Protégez la confidentialité de votre navigation en passant en mode navigation privée</translation>
@@ -343,7 +341,6 @@
 <translation id="2258326562203545455">{count,plural, =1{Vous pouvez enregistrer votre favori dans votre compte Google ({email}).}one{Vous pouvez enregistrer votre favori dans votre compte Google ({email}).}other{Vous pouvez enregistrer vos favoris dans votre compte Google ({email}).}}</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
-<translation id="2265069324308685684">Suppression des données de navigation…</translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
@@ -448,10 +445,6 @@
 <translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
-<translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
-
-
-Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="269819437389494246">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2708051474374549906">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google.</translation>
@@ -543,10 +536,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="3072279342064724558">Ce mot de passe existe déjà</translation>
 <translation id="3073258549280822127">Ne fonctionne pas</translation>
 <translation id="3073633853887034268">OK</translation>
-<translation id="3076846064362030967">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
-
-
-Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond bien à celui que vous utilisez pour accéder à <ph name="WEBSITE" /></translation>
 <translation id="3087734570205094154">En bas</translation>
@@ -882,7 +871,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="446314443268698477">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo ou de vos photos.</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4471472356135655769">Impossible d'exporter les mots de passe</translation>
-<translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4472575034687746823">Commencer</translation>
 <translation id="4473608001744970767">Masquer "Suivre le prix"</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
@@ -1649,7 +1638,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Vous disposez déjà de mots de passe pour ces comptes dans le Gestionnaire de mots de passe de Google. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera le mot de passe existant.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % téléchargés</translation>
-<translation id="7346909386216857016">OK</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7363349185727752629">Guide de vos paramètres de confidentialité</translation>
 <translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
@@ -1787,7 +1775,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7815852444315004084">Masquer pour le moment</translation>
 <translation id="7825973332242257878">Groupes d'onglets</translation>
 <translation id="7839994177130598711">Les membres de votre famille peuvent désormais se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> avec votre nom d'utilisateur et votre mot de passe en utilisant le Gestionnaire de mots de passe de Google.</translation>
-<translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez les cartes à afficher sur la page "Nouvel onglet".</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
@@ -1853,7 +1840,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8035133914807600019">Nouveau dossier…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8040407350301524547">Pour afficher les options d'itinéraire, appuyez sur "Obtenir un itinéraire".</translation>
-<translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Les onglets ouverts sur d'autres appareils s'afficheront ici</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
@@ -2072,7 +2058,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8829809207373502270">Cette clé d'accès ne fonctionne plus. Elle a été supprimée de <ph name="WEBSITE" /> et sera bientôt supprimée ici. <ph name="BEGIN_LINK" />À propos des clés d'accès<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fermer tous les onglets inactifs</translation>
 <translation id="8837654851594567190">Trier par éditeur</translation>
-<translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="8848286253339013170">Enregistrement de l'image dans Google Photos pour <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Masqué</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
@@ -2115,7 +2100,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
-<translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9000532564152265066">Tous les onglets</translation>
 <translation id="9003677638446136377">Revérifier</translation>
 <translation id="9006453925669499173">Menu → Nouvel onglet de navigation privée</translation>
