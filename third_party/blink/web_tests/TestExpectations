@@ -3276,7 +3276,6 @@ crbug.com/431040244 [ Mac14 ] external/wpt/focus/nested-focus-within-iframe-focu
 crbug.com/431038527 [ Mac14 ] external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Skip Timeout ]
 crbug.com/431039947 [ Mac14 ] external/wpt/html-aam/roles-minimum.tentative.html [ Timeout ]
 crbug.com/431040245 [ Mac14 ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Timeout ]
-crbug.com/431038528 [ Mac14 ] external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/empty-spaces.html [ Timeout ]
 crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-arrow-keys.optional.html [ Timeout ]
 crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.html [ Timeout ]
 crbug.com/431040246 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-show-stacked.html [ Timeout ]
