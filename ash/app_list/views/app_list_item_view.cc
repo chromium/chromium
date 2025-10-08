@@ -667,6 +667,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  icon_background_->SetBackground(
+      views::CreateLayerBasedSolidBackground(GetBackgroundLayerColorId()));
+  icon_background_->background()->SetInternalName(
+      "AppListItemView/icon-background");
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 
@@ -1664,10 +1668,6 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_) {
-      icon_background_->layer()->SetColor(
-          GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
-    }
   }
 
   UpdateIconView(/*update_item_icon=*/true);

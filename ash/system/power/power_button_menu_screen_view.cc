@@ -20,6 +20,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -71,6 +72,8 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
       base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    SetBackground(
+        views::CreateLayerBasedSolidBackground(kColorAshShieldAndBaseOpaque));
     layer()->SetOpacity(0.f);
   }
   PowerButtonMenuBackgroundView(const PowerButtonMenuBackgroundView&) = delete;
@@ -116,13 +119,6 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   }
 
  private:
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    layer()->SetColor(
-        GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
-  }
-
   // A callback for when the animation that shows the power menu has finished.
   base::RepeatingClosure show_animation_done_;
 };

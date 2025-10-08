@@ -110,7 +110,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   void HandleLocaleChange() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -124,9 +123,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-
-  // Update the icons for the children views.
-  void UpdateIcons();
 
   // Update the bounds insets based on shelf alignment.
   void UpdateBoundsInset();

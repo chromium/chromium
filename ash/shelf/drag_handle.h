@@ -75,7 +75,6 @@ class ASH_EXPORT DragHandle : public views::Button,
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  void OnThemeChanged() override;
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;

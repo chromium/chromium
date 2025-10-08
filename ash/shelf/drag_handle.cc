@@ -32,7 +32,9 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -100,10 +102,9 @@ DragHandle::DragHandle(float drag_handle_corner_radius, Shelf* shelf)
     : views::Button(base::BindRepeating(&DragHandle::ButtonPressed,
                                         base::Unretained(this))),
       shelf_(shelf) {
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetRoundedCornerRadius(
-      {drag_handle_corner_radius, drag_handle_corner_radius,
-       drag_handle_corner_radius, drag_handle_corner_radius});
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      cros_tokens::kCrosSysOnSurface,
+      gfx::RoundedCornersF(drag_handle_corner_radius)));
   SetSize(ShelfConfig::Get()->DragHandleSize());
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -280,12 +281,6 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
 
   anchor_bounds.set_origin(gfx::ToRoundedPoint(origin_in_screen));
   return anchor_bounds;
-}
-
-void DragHandle::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  layer()->SetColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
 }
 
 void DragHandle::OnOverviewModeStarting() {

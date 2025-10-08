@@ -103,8 +103,6 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   virtual std::u16string GetCollapsedStateTooltipText() const;
 
  private:
-  void UpdateBackgroundColor();
-
   // Owned by views hierarchy.
   raw_ptr<views::Label> label_;
   raw_ptr<views::ImageView> image_;
