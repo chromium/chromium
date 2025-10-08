@@ -394,6 +394,7 @@ src/webgpu/shader/values.ts
 src/webgpu/shader/execution/float_parse.spec.ts
 src/webgpu/shader/execution/limits.spec.ts
 src/webgpu/shader/execution/memory_layout.spec.ts
+src/webgpu/shader/execution/override.spec.ts
 src/webgpu/shader/execution/padding.spec.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
