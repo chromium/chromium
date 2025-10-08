@@ -105,7 +105,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
-    private @Nullable TopControlsStacker mTopControlsStacker;
+    private TopControlsStacker mTopControlsStacker;
     private ToolbarDataProvider mToolbarDataProvider;
 
     /**
@@ -356,10 +356,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         // When app header state available, set the state accordingly.
         if (appHeaderState != null && appHeaderState.isInDesktopWindow()) {
+            int topInset =
+                    Math.max(0, appHeaderState.getAppHeaderHeight() - mToolbar.getTabStripHeight());
             backgroundDrawable.setLayerInset(
                     backgroundTabImageIndex,
                     appHeaderState.getLeftPadding(),
-                    0,
+                    topInset,
                     appHeaderState.getRightPadding(),
                     0);
         }

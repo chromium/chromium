@@ -480,10 +480,11 @@ public class ToolbarControlContainerTest {
         // This is needed for the control container to read the height of the toolbar.
         controlContainer.setToolbarForTesting(mToolbar);
 
-        // Set app header with 10px padding on left, 20px on right, and 50px height.
-        doReturn(50).when(mToolbar).getTabStripHeight();
+        // Set app header with 10px padding on left, 20px on right, and 100px height. Set tab strip
+        // height to 80px. Top inset should be 100 - 80 = 20.
+        doReturn(80).when(mToolbar).getTabStripHeight();
         var appHeaderState =
-                new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
         controlContainer.onAppHeaderStateChanged(appHeaderState);
         assertNotNull(
                 "Control container background is null after app header state change.",
@@ -499,6 +500,20 @@ public class ToolbarControlContainerTest {
                 "Right padding for tab drawable is wrong.",
                 20,
                 background.getLayerInsetRight(tabDrawableIndex));
+        assertEquals(
+                "Top inset for tab drawable is wrong.",
+                20,
+                background.getLayerInsetTop(tabDrawableIndex));
+
+        // Set app header with 40px height, and tab strip with 50px height.
+        // Top inset should be max(0, 40 - 50) = 0.
+        appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 40), new Rect(10, 0, 80, 40), true);
+        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        background = (LayerDrawable) controlContainer.getBackground();
+        assertEquals(
+                "Top inset for tab drawable should be 0.",
+                0,
+                background.getLayerInsetTop(tabDrawableIndex));
 
         controlContainer.onAppHeaderStateChanged(new AppHeaderState());
         background = (LayerDrawable) controlContainer.getBackground();
@@ -510,6 +525,10 @@ public class ToolbarControlContainerTest {
                 "Right padding for tab drawable is wrong.",
                 0,
                 background.getLayerInsetRight(tabDrawableIndex));
+        assertEquals(
+                "Top inset for tab drawable should be 0.",
+                0,
+                background.getLayerInsetTop(tabDrawableIndex));
     }
 
     @Test
