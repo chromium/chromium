@@ -48,7 +48,10 @@ enum class ManifestSilentUpdateCommandStage {
   kDeletingPendingUpdateIconsFromDisk
 };
 
-// This enum is recorded by UMA, the numeric values must not change.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ManifestSilentUpdateCheckResult)
 enum class ManifestSilentUpdateCheckResult {
   kAppNotInstalled = 0,
   kAppUpdateFailedDuringInstall = 1,
@@ -64,8 +67,10 @@ enum class ManifestSilentUpdateCheckResult {
   kInvalidPendingUpdateInfo = 11,
   kUserNavigated = 12,
   kManifestToWebAppInstallInfoError = 13,
-  kMaxValue = kManifestToWebAppInstallInfoError,
+  kAppHasSecurityUpdateDueToThrottle = 14,
+  kMaxValue = kAppHasSecurityUpdateDueToThrottle,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppManifestSilentUpdateCheckResult)
 
 bool IsAppUpdated(ManifestSilentUpdateCheckResult result);
 

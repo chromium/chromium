@@ -112,11 +112,13 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     page_state.manifest_before_default_processing = std::move(manifest);
   }
 
-  ManifestSilentUpdateCheckResult RunManifestUpdateAndGetResult() {
+  ManifestSilentUpdateCheckResult RunManifestUpdateAndGetResult(
+      std::optional<base::Time> previous_time_for_silent_icon_update =
+          std::nullopt) {
     base::test::TestFuture<ManifestSilentUpdateCompletionInfo>
         manifest_silent_update_future;
     fake_provider().scheduler().ScheduleManifestSilentUpdate(
-        *web_contents(), /*previous_time_for_silent_icon_update=*/std::nullopt,
+        *web_contents(), previous_time_for_silent_icon_update,
         manifest_silent_update_future.GetCallback());
 
     EXPECT_TRUE(manifest_silent_update_future.Wait());
@@ -804,6 +806,82 @@ TEST_F(ManifestSilentUpdateCommandTest,
               BucketsAre(base::Bucket(
                   ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
                   /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconLessThanTenPercentDiffThrottledTwiceResult) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+
+  // Setup bitmap icons so that bitmap1 and bitmap2 are the same, with only
+  // color differences in pixels, and both being <10% diff from each other. This
+  // makes it easier to trigger multiple icon updates back to back.
+  // For a 96x96 image, total pixels = 9216.
+  // 10% of 9216 = 921.6 pixels.
+  // We'll change a small area, for example, the first 9 rows, to a different
+  // color. 9 rows * 96 columns = 864 pixels changed. This is < 10%.
+  GURL bitmap_url1 = GURL("https://example2.com/path/def_icon.png");
+  SkBitmap bitmap1 = gfx::test::CreateBitmap(96, SK_ColorCYAN);
+  bitmap1.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorRED);
+
+  GURL bitmap_url2 = GURL("https://example3.com/path/def_icon.png");
+  SkBitmap bitmap2 = gfx::test::CreateBitmap(96, SK_ColorCYAN);
+  bitmap1.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorWHITE);
+
+  // Trigger first update, verify that app icon updates are applied silently.
+  auto& new_manifest = GetPageManifest();
+  blink::Manifest::ImageResource first_update_icon;
+  first_update_icon.src = bitmap_url1;
+  first_update_icon.sizes = {{96, 96}};
+  first_update_icon.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  new_manifest->icons = {first_update_icon};
+  web_contents_manager().GetOrCreateIconState(bitmap_url1).bitmaps = {bitmap1};
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            bitmap_url1);
+
+  // Trigger another update directly after the first update, but this time, set
+  // up the manifest to point to the 2nd bitmap.
+  blink::Manifest::ImageResource second_update_icon;
+  second_update_icon.src = bitmap_url2;
+  second_update_icon.sizes = {{96, 96}};
+  second_update_icon.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY};
+  new_manifest->icons = {second_update_icon};
+  web_contents_manager().GetOrCreateIconState(bitmap_url2).bitmaps = {bitmap2};
+  EXPECT_EQ(
+      RunManifestUpdateAndGetResult(base::Time::Now()),
+      ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle);
+
+  // Pending update should be stored on the disk, but the app icons shouldn't be
+  // updated.
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            bitmap_url1);
+
+  // Verify pending update icon bitmaps are saved to disk.
+  EXPECT_TRUE(
+      base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_TRUE(
+      base::PathExists(GetAppPendingManifestIconsDir(profile(), app_id)));
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(
+          base::Bucket(ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                       /*count=*/1),
+          base::Bucket(ManifestSilentUpdateCheckResult::
+                           kAppHasSecurityUpdateDueToThrottle,
+                       /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest,

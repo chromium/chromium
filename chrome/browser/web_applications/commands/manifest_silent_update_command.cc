@@ -107,25 +107,25 @@ constexpr const char kBypassSmallIconDiffThrottle[] =
     "bypass-small-icon-diff-throttle";
 
 // Returns whether the throttle for less than 10% icon diffs will be applied.
-// This returns true if:
+// This returns false if:
 // 1. This is the first silent icon update that might be triggered.
 // 2. The command line flag to skip the throttle has been applied.
-// 3. If more than 24 hours has passed since the last update was applied for an
-// icon that was less than 10% different.
-bool NoThrottleForSilentIconUpdates(
+// 3. If less than (or equal to) 24 hours has passed since the last update was
+// applied for an icon that was less than 10% different.
+bool ThrottleForSilentIconUpdates(
     std::optional<base::Time> previous_time_for_silent_icon_update,
     base::Time new_icon_check_time) {
   if (!previous_time_for_silent_icon_update.has_value()) {
-    return true;
+    return false;
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kBypassSmallIconDiffThrottle)) {
-    return true;
+    return false;
   }
 
-  return (new_icon_check_time > (*previous_time_for_silent_icon_update +
-                                 kDelayForTenPercentIconDiffSilentUpdate));
+  return (new_icon_check_time <= (*previous_time_for_silent_icon_update +
+                                  kDelayForTenPercentIconDiffSilentUpdate));
 }
 
 google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
@@ -180,6 +180,7 @@ bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
     case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
     case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
+    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
       return true;
   }
 }
@@ -258,6 +259,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kUserNavigated";
     case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
       return os << "kManifestToWebAppInstallInfoError";
+    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
+      return os << "kAppHasSecurityUpdateDueToThrottle";
   }
 }
 
@@ -840,21 +843,24 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
     return icon_it->second;
   }();
 
+  base::Time current_time = app_lock_->clock().Now();
+
   // TODO(crbug.com/437379182): HasMoreThanTenPercentImageDiff() should happen
   // in a different thread.
-  // TODO(crbug.com/448891020): Measure the throttle as a reason for silent
-  // updates as a different check result.
-  base::Time current_time = app_lock_->clock().Now();
-  bool should_update_icons_silently =
+  // Only update icons silently if the icons are less than ten percent in
+  // difference in a pixel by pixel comparison, and if icon updates shouldn't be
+  // throttled.
+  bool silent_icon_update_throttled = ThrottleForSilentIconUpdates(
+      previous_time_for_silent_icon_update_, current_time);
+  bool silent_icon_update =
       !HasMoreThanTenPercentImageDiff(&old_trusted_icon, &new_trusted_icon) &&
-      NoThrottleForSilentIconUpdates(previous_time_for_silent_icon_update_,
-                                     current_time);
-  if (should_update_icons_silently) {
+      !silent_icon_update_throttled;
+  if (silent_icon_update) {
     completion_info_.time_for_icon_diff_check = current_time;
   }
 
   // Case: The icons are being set in the PendingUpdateInfo to be updated later.
-  if (old_trusted_icon.empty() || !should_update_icons_silently) {
+  if (old_trusted_icon.empty() || !silent_icon_update) {
     if (!pending_update_info.has_value()) {
       pending_update_info = proto::PendingUpdateInfo();
     }
@@ -891,11 +897,16 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
             &ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfo,
             GetWeakPtr(), std::move(pending_update_info)));
   } else {
-    // If there is no silent update, that means it MUST be pending update.
+    // If there is no silent update, that means it MUST be pending update. Also
+    // measure if the pending update is because the icon updates were throttled.
     CHECK(pending_update_info);
-    WritePendingUpdateInfoThenComplete(
-        pending_update_info,
-        ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+    ManifestSilentUpdateCheckResult result_for_icon_changes =
+        silent_icon_update_throttled
+            ? ManifestSilentUpdateCheckResult::
+                  kAppHasSecurityUpdateDueToThrottle
+            : ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate;
+    WritePendingUpdateInfoThenComplete(pending_update_info,
+                                       result_for_icon_changes);
   }
 }
 
@@ -1067,6 +1078,7 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
     case ManifestSilentUpdateCheckResult::kInvalidManifest:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
+    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
       record_update = false;
       command_result = CommandResult::kSuccess;
       break;

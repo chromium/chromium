@@ -497,6 +497,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Manifest ID Mismatch"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppManifestSilentUpdateCheckResult) -->
+
 <enum name="WebAppManifestSilentUpdateCheckResult">
   <int value="0" label="App not installed"/>
   <int value="1" label="App update failed during installation"/>
@@ -505,7 +507,19 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="App is up to date"/>
   <int value="5" label="Icon read from disk failed"/>
   <int value="6" label="WebContents destroyed"/>
+  <int value="7" label="App not updated, secure fields stored"/>
+  <int value="8" label="App updated, secure fields stored"/>
+  <int value="9" label="Pending icons failed to be written to disk"/>
+  <int value="10" label="App has invalid manifest"/>
+  <int value="11" label="App has invalid pending update info"/>
+  <int value="12"
+      label="Update stopped because user navigated page in the middle"/>
+  <int value="13" label="Manifest could not be converted to a web app"/>
+  <int value="14"
+      label="App not updated due to icon diff throttle, secure fields stored"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/commands/manifest_silent_update_command.h:ManifestSilentUpdateCheckResult) -->
 
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
