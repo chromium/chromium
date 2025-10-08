@@ -23,23 +23,6 @@
 
 namespace blink {
 
-namespace {
-
-FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
-                                      const Font& font) {
-  if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
-    return FontHeight::Empty();
-
-  LayoutUnit emphasis_mark_height =
-      LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
-  DCHECK_GE(emphasis_mark_height, LayoutUnit());
-  return style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver
-             ? FontHeight(emphasis_mark_height, LayoutUnit())
-             : FontHeight(LayoutUnit(), emphasis_mark_height);
-}
-
-}  // namespace
-
 void LogicalRubyColumn::Trace(Visitor* visitor) const {
   visitor->Trace(annotation_items);
   visitor->Trace(state_stack);
@@ -230,6 +213,21 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
         NOTREACHED();
     }
   }
+}
+
+FontHeight InlineBoxState::ComputeEmphasisMarkOutsets(
+    const ComputedStyle& style,
+    const Font& font) {
+  if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone) {
+    return FontHeight::Empty();
+  }
+
+  LayoutUnit emphasis_mark_height =
+      LayoutUnit(font.EmphasisMarkHeight(style.TextEmphasisMarkString()));
+  DCHECK_GE(emphasis_mark_height, LayoutUnit());
+  return style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver
+             ? FontHeight(emphasis_mark_height, LayoutUnit())
+             : FontHeight(LayoutUnit(), emphasis_mark_height);
 }
 
 void InlineBoxState::ResetTextMetrics() {

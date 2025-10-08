@@ -96,15 +96,6 @@ inline const InlineCursor& InlineCursorForBlockFlow(
   return **storage;
 }
 
-// Check if text-emphasis and ruby annotation text are on different sides.
-//
-// TODO(layout-dev): The current behavior is compatible with the legacy layout.
-// However, the specification asks to draw emphasis marks over ruby annotation
-// text.
-// https://drafts.csswg.org/css-text-decor-4/#text-emphasis-position-property
-// > If emphasis marks are applied to characters for which ruby is drawn in the
-// > same position as the emphasis mark, the emphasis marks are placed outside
-// > the ruby.
 bool ShouldPaintEmphasisMark(const ComputedStyle& style,
                              const LayoutObject& layout_object,
                              const FragmentItem& text_item) {
@@ -116,6 +107,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
 
   if (text_item.IsEllipsis()) {
     return false;
+  }
+
+  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
+    return true;
   }
 
   if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
@@ -329,6 +324,27 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);
+
+    // Expand |visual_rect| to prevent emphasis mark clipping if emphasis mark
+    // and nested ruby annotation exist on the same side.
+    bool has_over_text_emphasis =
+        style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver;
+    if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
+        ShouldPaintEmphasisMark(style, *layout_object, text_item) &&
+        ((has_over_text_emphasis && text_item.HasOverAnnotation()) ||
+         (!has_over_text_emphasis && text_item.HasUnderAnnotation()))) {
+      gfx::Rect emphasis_rect = visual_rect;
+      FontHeight annotation_metrics = text_item.AnnotationMetrics();
+      if (has_over_text_emphasis) {
+        const auto ascent = annotation_metrics.ascent.Ceil();
+        emphasis_rect.set_y(emphasis_rect.y() - ascent);
+        emphasis_rect.set_height(emphasis_rect.height() + ascent);
+      } else {
+        const auto descent = annotation_metrics.descent.Ceil();
+        emphasis_rect.set_height(emphasis_rect.height() + descent);
+      }
+      visual_rect.Union(emphasis_rect);
+    }
   }
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
@@ -505,7 +521,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
   if (ShouldPaintEmphasisMark(style, *layout_object, text_item)) {
     text_painter.SetEmphasisMark(style.TextEmphasisMarkString(),
-                                 style.GetTextEmphasisLineLogicalSide());
+                                 style.GetTextEmphasisLineLogicalSide(),
+                                 &text_item);
   }
 
   DOMNodeId node_id = kInvalidDOMNodeId;

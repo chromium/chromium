@@ -4970,6 +4970,11 @@
       status: "stable"
     },
     {
+      // crbug.com/442481227
+      name: "TextEmphasisWithRuby",
+      status: "stable",
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },

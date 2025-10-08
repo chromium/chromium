@@ -151,6 +151,9 @@ struct InlineBoxState {
                           bool should_apply_under,
                           FontHeight& metrics);
 
+  static FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
+                                               const Font& font);
+
 #if DCHECK_IS_ON()
   void CheckSame(const InlineBoxState&) const;
 #endif
@@ -396,6 +399,8 @@ struct CORE_EXPORT LogicalRubyColumn
   std::pair<LayoutUnit, LayoutUnit> base_insets;
 
   Member<LogicalLineItems> annotation_items;
+
+  FontHeight annotation_metrics;
 
   // `ruby-position` property value.
   RubyPosition ruby_position = RubyPosition::kOver;

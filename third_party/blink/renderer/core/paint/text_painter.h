@@ -126,7 +126,9 @@ class CORE_EXPORT TextPainter {
                                           const ComputedStyle&,
                                           const PaintInfo&);
 
-  void SetEmphasisMark(const AtomicString&, LineLogicalSide);
+  void SetEmphasisMark(const AtomicString&,
+                       LineLogicalSide,
+                       const FragmentItem* text_item = nullptr);
 
  protected:
   const Font& font() const { return font_; }

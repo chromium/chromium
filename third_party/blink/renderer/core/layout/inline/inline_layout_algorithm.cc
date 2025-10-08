@@ -404,6 +404,15 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
           .PlaceLines(*line_box, line_box_metrics)
           .AddLinesTo(*line_container);
       annotation_metrics = calculator.AnnotationMetrics();
+
+      if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
+        for (const auto& column : column_list) {
+          for (wtf_size_t i = 0; i < column->size; ++i) {
+            (*line_box)[column->start_index + i].annotation_metrics =
+                column->annotation_metrics;
+          }
+        }
+      }
     }
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));

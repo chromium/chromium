@@ -479,6 +479,13 @@ enum class LineLogicalSide {
   kOver,
   kUnder,
 };
+inline bool operator==(LineLogicalSide line_logical_side,
+                       RubyPosition ruby_position) {
+  return (line_logical_side == LineLogicalSide::kOver &&
+          ruby_position == RubyPosition::kOver) ||
+         (line_logical_side == LineLogicalSide::kUnder &&
+          ruby_position == RubyPosition::kUnder);
+}
 
 constexpr size_t kScrollbarGutterBits = 2;
 enum ScrollbarGutter {

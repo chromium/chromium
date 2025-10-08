@@ -170,7 +170,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
           line_item.is_hidden_for_paint);
       has_over_annotation_ = line_item.has_over_annotation;
       has_under_annotation_ = line_item.has_under_annotation;
-      SetFitTextScale(line_item.fit_text_scale);
+      SetTextRareData(line_item.fit_text_scale, line_item.annotation_metrics);
       return;
     }
 
@@ -181,7 +181,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      line_item.is_hidden_for_paint);
     has_over_annotation_ = line_item.has_over_annotation;
     has_under_annotation_ = line_item.has_under_annotation;
-    SetFitTextScale(line_item.fit_text_scale);
+    SetTextRareData(line_item.fit_text_scale, line_item.annotation_metrics);
     return;
   }
 
@@ -200,7 +200,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      std::move(line_item.shape_result), line_item.text_content,
                      ToPhysicalSize(line_item.MarginSize(), writing_mode),
                      line_item.is_hidden_for_paint);
-    SetFitTextScale(line_item.fit_text_scale);
+    SetTextRareData(line_item.fit_text_scale);
     return;
   }
 
@@ -777,24 +777,35 @@ const Font& FragmentItem::ScaledFont() const {
   return data && data->scaled_font ? *data->scaled_font : *Style().GetFont();
 }
 
-void FragmentItem::SetFitTextScale(const FitTextScale* scale) {
-  if (!scale || (scale->scale == 1.0f && !scale->font)) {
+void FragmentItem::SetTextRareData(const FitTextScale* scale,
+                                   FontHeight annotation_metrics) {
+  bool is_fit_text = scale && (scale->scale != 1.0f || scale->font);
+  if (!is_fit_text && annotation_metrics.ascent == 0 &&
+      annotation_metrics.descent == 0) {
     return;
   }
   auto* data = MakeGarbageCollected<SvgFragmentData>();
-  data->is_fit_text_inline = scale->is_scaled_inline_only;
+  data->annotation_metrics = annotation_metrics;
   data->is_svg = false;
-  data->length_adjust_scale = scale->scale;
-  data->scaled_font = scale->font;
-  if (Type() == kText) {
-    text_.svg_data = data;
-  } else if (Type() == kGeneratedText) {
-    generated_text_.extra_data = data;
+  if (is_fit_text) {
+    data->is_fit_text_inline = scale->is_scaled_inline_only;
+    data->length_adjust_scale = scale->scale;
+    data->scaled_font = scale->font;
+    if (Type() == kText) {
+      text_.svg_data = data;
+    } else if (Type() == kGeneratedText) {
+      generated_text_.extra_data = data;
+    } else {
+      // Do not call this function for this Type().
+      NOTREACHED();
+    }
+    DCHECK_EQ(scale->scale, GetFitTextScale().first);
   } else {
-    // Do not call this function for this Type().
-    NOTREACHED();
+    DCHECK_EQ(Type(), kText);
+    data->is_fit_text_inline = false;
+    data->length_adjust_scale = 1.0f;
+    text_.svg_data = data;
   }
-  DCHECK_EQ(scale->scale, GetFitTextScale().first);
 }
 
 std::pair<float, bool> FragmentItem::GetFitTextScale() const {
@@ -811,6 +822,14 @@ std::pair<float, bool> FragmentItem::GetFitTextScale() const {
     }
   }
   return {1.0f, false};
+}
+
+FontHeight FragmentItem::AnnotationMetrics() const {
+  if (Type() != kText) {
+    return FontHeight();
+  }
+  const auto* svg_data = text_.svg_data.Get();
+  return svg_data ? svg_data->annotation_metrics : FontHeight();
 }
 
 String FragmentItem::ToString() const {

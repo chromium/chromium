@@ -47,6 +47,8 @@ struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
   // `scaled_font` is not used for SVG text.
   Member<Font> scaled_font;
   bool in_text_path;
+  // `annotation_metrics` is not used for SVG text.
+  FontHeight annotation_metrics;
   // A flag whether SVG or not
   bool is_svg;
   // A flag whether FitTextInline or not
@@ -499,6 +501,16 @@ class CORE_EXPORT FragmentItem final {
   // These functions are valid only if IsText() is true.
   bool HasOverAnnotation() const { return has_over_annotation_; }
   bool HasUnderAnnotation() const { return has_under_annotation_; }
+  // Returns the height of over/under ruby annotations for this fragment,
+  // measured from the annotation's baseline.
+  //
+  // If this FragmentItem is associated with multiple ruby texts, the returned
+  // metrics only include the annotations directly associated with this fragment
+  // for now, and do not account for heights of other ruby annotations.
+  // For example, in:
+  // <ruby><ruby>base<rt><em>THIS</em></rt></ruby><rt>outer rt</rt></ruby>
+  // the returned metrics for |THIS| do not include those of |outer rt|.
+  FontHeight AnnotationMetrics() const;
 
   // Whether this item was marked dirty for reuse or not.
   bool IsDirty() const { return is_dirty_; }
@@ -605,7 +617,8 @@ class CORE_EXPORT FragmentItem final {
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
 
-  void SetFitTextScale(const FitTextScale* scale);
+  void SetTextRareData(const FitTextScale* scale,
+                       FontHeight annotation_metrics = FontHeight());
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we

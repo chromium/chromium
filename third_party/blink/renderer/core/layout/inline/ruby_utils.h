@@ -215,8 +215,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
   }
 
  private:
-  void HandleRubyLine(const RubyLine& current_ruby_line,
-                      const HeapVector<Member<LogicalRubyColumn>>& column_list);
+  // Returns the maximum metrics of the ruby annotations from the |column_list|.
+  FontHeight HandleRubyLine(
+      const RubyLine& current_ruby_line,
+      const HeapVector<Member<LogicalRubyColumn>>& column_list);
   RubyLine& EnsureRubyLine(const RubyLevel& level);
 
   HeapVector<Member<RubyLine>, 2> ruby_lines_;
