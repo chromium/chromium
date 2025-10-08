@@ -33,9 +33,8 @@ namespace blink {
 GlyphData CachingWordShaper::EmphasisMarkGlyphData(
     const TextRun& emphasis_mark_run) const {
   ShapeResultBuffer buffer;
-  buffer.AppendResult(
-      CachingWordShapeIterator(font_.GetShapeCache(), emphasis_mark_run, &font_)
-          .ShapeWordWithoutSpacing(emphasis_mark_run, &font_));
+  buffer.AppendResult(CachingWordShapeIterator::ShapeWordWithoutSpacing(
+      emphasis_mark_run, &font_));
   return buffer.EmphasisMarkGlyphData(font_.GetFontDescription());
 }
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 
 namespace blink {
@@ -12,7 +13,7 @@ namespace blink {
 const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
     const TextRun& word_run,
     const Font* font) {
-  ShapeCacheEntry* cache_entry = shape_cache_->Add(word_run);
+  ShapeCacheEntry* cache_entry = font->GetShapeCache()->Add(word_run);
   if (cache_entry && *cache_entry)
     return *cache_entry;
 
@@ -25,16 +26,6 @@ const ShapeResult* CachingWordShapeIterator::ShapeWordWithoutSpacing(
     *cache_entry = shape_result;
 
   return shape_result;
-}
-
-const ShapeResult* CachingWordShapeIterator::ShapeWord(const TextRun& word_run,
-                                                       const Font* font) {
-  const ShapeResult* result = ShapeWordWithoutSpacing(word_run, font);
-  if (!spacing_.HasSpacing()) [[likely]] {
-    return result;
-  }
-
-  return result->ApplySpacingToCopy(spacing_, word_run);
 }
 
 }  // namespace blink
