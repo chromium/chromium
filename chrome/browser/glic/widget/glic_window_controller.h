@@ -93,11 +93,6 @@ class GlicWindowController : public GlicInstance::UIDelegate {
   // open the panel again.
   virtual void ShowAfterSignIn(base::WeakPtr<Browser> browser) = 0;
 
-  // Handle Toggle when AlwaysDetached is true.
-  virtual void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
-                                           bool prevent_close,
-                                           mojom::InvocationSource source) = 0;
-
   virtual void FocusIfOpen() = 0;
 
   // Destroy the glic panel and its web contents.
@@ -126,12 +121,6 @@ class GlicWindowController : public GlicInstance::UIDelegate {
   // Displays a context menu when the user right clicks on the title bar.
   // This is probably Windows only.
   virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
-
-  // Returns true if the mouse has been dragged more than a minimum distance
-  // from `initial_press_loc`, so a mouse down followed by a move of less than
-  // the minimum number of pixels doesn't start a window drag.
-  virtual bool ShouldStartDrag(const gfx::Point& initial_press_loc,
-                               const gfx::Point& mouse_location) = 0;
 
   virtual const mojom::PanelState& GetPanelState() const = 0;
 
@@ -200,8 +189,6 @@ class GlicWindowController : public GlicInstance::UIDelegate {
     kWaitingForSidePanelToShow,
   };
   virtual State state() const = 0;
-
-  virtual GlicWindowAnimator* window_animator() = 0;
 
   virtual Profile* profile() = 0;
 

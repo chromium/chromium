@@ -1620,7 +1620,7 @@ Profile* GlicWindowControllerImpl::profile() {
   return profile_;
 }
 
-GlicWindowAnimator* GlicWindowControllerImpl::window_animator() {
+GlicWindowAnimator* GlicWindowControllerImpl::GetWindowAnimatorForTesting() {
   return glic_window_animator_.get();
 }
 

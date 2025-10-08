@@ -32,7 +32,6 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
-#include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -161,24 +160,23 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
 }
 
 bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(crbug/449179649): This is not called, and should not be called.
+  // Each side panel and floating panel will have it's own instance of
+  // hotkey delegates, which should not call this function.
+  NOTREACHED();
+}
+
+void GlicInstanceCoordinatorImpl::FocusIfOpen() {
+  // TODO(crbug/449179649): This is not called, and should not be called.
+  // Similar to ActivateBrowser().
+  NOTREACHED();
 }
 
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
     base::WeakPtr<Browser> browser) {
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::ToggleWhenNotAlwaysDetached(
-    Browser* new_attached_browser,
-    bool prevent_close,
-    mojom::InvocationSource source) {
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::FocusIfOpen() {
+  // TODO(crbug/4263869): Used by GlicPageHandler::SignInAndClosePanel(), which
+  // should close glic and reopen it after signin is complete. This flow likely
+  // still makes sense for the floating panel, but not for the side panel.
   NOTIMPLEMENTED();
 }
 
@@ -211,16 +209,9 @@ void GlicInstanceCoordinatorImpl::CloseWithReason(
 
 void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
     gfx::Point event_loc) {
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug/449179649): Used by the hotkey code. May be needed for the
+  // floating panel.
   NOTIMPLEMENTED();
-}
-
-bool GlicInstanceCoordinatorImpl::ShouldStartDrag(
-    const gfx::Point& initial_press_loc,
-    const gfx::Point& mouse_location) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
 }
 
 const mojom::PanelState& GlicInstanceCoordinatorImpl::GetPanelState() const {
@@ -326,13 +317,6 @@ GlicWindowController::State GlicInstanceCoordinatorImpl::state() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return GlicWindowController::State::kClosed;
-}
-
-GlicWindowAnimator* GlicInstanceCoordinatorImpl::window_animator() {
-  // TODO(crbug.com/441545112) - Remove from GlicWindowController.
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 Profile* GlicInstanceCoordinatorImpl::profile() {

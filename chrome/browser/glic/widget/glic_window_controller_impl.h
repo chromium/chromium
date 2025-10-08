@@ -77,9 +77,6 @@ class GlicWindowControllerImpl
               bool prevent_close,
               mojom::InvocationSource source) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
-  void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
-                                   bool prevent_close,
-                                   mojom::InvocationSource source) override;
   void FocusIfOpen() override;
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
@@ -88,8 +85,6 @@ class GlicWindowControllerImpl
   void CloseWithReason(views::Widget::ClosedReason reason) override;
   bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
-  bool ShouldStartDrag(const gfx::Point& initial_press_loc,
-                       const gfx::Point& mouse_location) override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
@@ -111,7 +106,6 @@ class GlicWindowControllerImpl
 
   Browser* attached_browser() override;
   State state() const override;
-  GlicWindowAnimator* window_animator() override;
   Profile* profile() override;
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
@@ -164,7 +158,20 @@ class GlicWindowControllerImpl
   base::CallbackListSubscription RegisterLastActiveInstanceChangedCallback(
       LastActiveInstanceChangedCallback callback) override;
 
+  // Testing functionality.
+  GlicWindowAnimator* GetWindowAnimatorForTesting();
+
  private:
+  void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
+                                   bool prevent_close,
+                                   mojom::InvocationSource source);
+
+  // Returns true if the mouse has been dragged more than a minimum distance
+  // from `initial_press_loc`, so a mouse down followed by a move of less than
+  // the minimum number of pixels doesn't start a window drag.
+  bool ShouldStartDrag(const gfx::Point& initial_press_loc,
+                       const gfx::Point& mouse_location);
+
   // Sets the floating attributes of the glic window.
   //
   // When set to true, the glic window is set to have a `kFloatingWindow`
@@ -347,6 +354,7 @@ class GlicWindowControllerImpl
 
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;
+  friend class WindowEventObserver;
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 
   // True while RunMoveLoop() has been called on a widget.

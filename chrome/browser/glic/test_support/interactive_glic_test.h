@@ -52,6 +52,10 @@
 #include "url/gurl.h"
 #include "url/url_util.h"
 
+namespace glic {
+class GlicWindowControllerImpl;
+}
+
 namespace glic::test {
 
 extern const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton;
@@ -547,6 +551,12 @@ class InteractiveGlicTestT : public T {
 
   GlicWindowController& window_controller() {
     return glic_service()->window_controller();
+  }
+
+  GlicWindowControllerImpl& GetWindowControllerImpl() {
+    CHECK(!base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    return static_cast<GlicWindowControllerImpl&>(
+        glic_service()->window_controller());
   }
 
   GlicInstance* GetGlicInstance() {

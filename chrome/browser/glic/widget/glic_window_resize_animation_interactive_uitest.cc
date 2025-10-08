@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/glic/widget/glic_window_resize_animation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -83,8 +84,8 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
                 base::OnceClosure callback) {
     auto animation = std::make_unique<GlicWindowResizeAnimation>(
         window_controller().GetGlicWidget()->GetWeakPtr(),
-        window_controller().window_animator(), target_bounds, duration,
-        std::move(callback));
+        GetWindowControllerImpl().GetWindowAnimatorForTesting(), target_bounds,
+        duration, std::move(callback));
     auto test_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
     test_api->SetStartTime(animation_creation_time_);
     return {std::move(animation), std::move(test_api)};
