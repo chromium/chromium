@@ -660,10 +660,10 @@ result.links = linksArray;
                      isMainFrame:(BOOL)isMainFrame
                   securityOrigin:(const url::Origin&)securityOrigin {
   if (error || !value || !value->is_dict()) {
-    DLOG(WARNING) << "Failed to fetch frame's innerText tree.";
     if (error) {
       // TODO(crbug.com/401282824): Log the failure rate of aggregation.
-      DLOG(WARNING) << base::SysNSStringToUTF8([error localizedDescription]);
+      DLOG(WARNING) << "Failed to fetch frame's innerText tree."
+                    << base::SysNSStringToUTF8([error localizedDescription]);
     }
     return;
   }
@@ -695,12 +695,20 @@ result.links = linksArray;
     return;
   }
 
+  // Create a special subtree for the mainframe, and then recursively populate
+  // its children iframe subtrees. Else, recursively populate cross-origin
+  // iframes.
   if (isMainFrame) {
     [self populateMainFrameSubtreeWithValue:value origin:securityOrigin];
+  } else {
+    [self populateIframeSubtreeWithValue:value
+                                  origin:securityOrigin
+                              parentNode:_rootAPCNode->mutable_root_node()];
+    return;
   }
 
-  // Recursively populate the ContentNode subtree for any of the WebFrame's
-  // iframes.
+  // Recursively populate the ContentNode subtree for any of the main WebFrame's
+  // children iframes.
   const base::Value::List* childrenFrames =
       value->GetDict().FindList(kChildrenFramesDictKey);
   if (childrenFrames && !childrenFrames->empty()) {
