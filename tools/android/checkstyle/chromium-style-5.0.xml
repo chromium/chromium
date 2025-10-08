@@ -113,7 +113,8 @@
       <property name="reliefPattern" value=".*"/>
     </module>
     <module name="NoFinalizer">
-      <property name="severity" value="info"/>
+      <property name="severity" value="warning"/>
+      <message key="avoid.finalizer.method" value="Use of finalize() is banned. https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Finalizers" />
     </module>
     <module name="NeedBraces">
       <property name="severity" value="warning"/>

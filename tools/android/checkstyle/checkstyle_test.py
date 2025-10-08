@@ -361,7 +361,7 @@ class A {
 }
 """)
     def test_NoFinalizer(self):
-        self._check()
+        self._check('finalize() is banned')
 
     @java("""
 class A {
