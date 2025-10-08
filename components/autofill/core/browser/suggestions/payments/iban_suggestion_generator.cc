@@ -106,6 +106,15 @@ void IbanSuggestionGenerator::FetchSuggestionData(
   std::vector<Iban> ibans = client.GetPaymentsAutofillClient()
                                 ->GetPaymentsDataManager()
                                 .GetOrderedIbansToSuggest();
+  // If the input box content equals any of the available IBANs, then
+  // assume the IBAN has been filled, and don't show any suggestions.
+  if (!trigger_autofill_field ||
+      (!trigger_autofill_field->value().empty() &&
+       base::Contains(ibans, trigger_autofill_field->value(), &Iban::value))) {
+    callback({SuggestionDataSource::kIban, {}});
+    return;
+  }
+
   FilterIbansToSuggest(trigger_autofill_field->value(), ibans);
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       std::move(ibans),
@@ -130,14 +139,6 @@ void IbanSuggestionGenerator::GenerateSuggestions(
       std::move(iban_suggestion_data), [](SuggestionData& suggestion_data) {
         return std::get<autofill::Iban>(std::move(suggestion_data));
       });
-  // If the input box content equals any of the available IBANs, then
-  // assume the IBAN has been filled, and don't show any suggestions.
-  if (!trigger_autofill_field ||
-      (!trigger_autofill_field->value().empty() &&
-       base::Contains(ibans, trigger_autofill_field->value(), &Iban::value))) {
-    callback({FillingProduct::kIban, {}});
-    return;
-  }
 
   callback({FillingProduct::kIban, GetSuggestionsForIbans(ibans)});
 }
