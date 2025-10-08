@@ -123,17 +123,6 @@ const char kRollBackModeBForcedName[] = "force";
 const base::FeatureParam<bool> kRollBackModeBForced{
     &kRollBackModeB, kRollBackModeBForcedName, false};
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kTrackingProtectionUserBypassPwa,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisplayWildcardInContentSettings,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

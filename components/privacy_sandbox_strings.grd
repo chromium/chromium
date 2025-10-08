@@ -297,13 +297,6 @@
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
       </message>
-      <!-- ACT Snackbar -->
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        App not working?
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
-        Change protections
-      </message>
       <!-- Mode B Rollback -->
       <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="Label for a button on the 3PCD rollback notice that acknowledges and closes the notice." formatter_data="android_java">
         Got it

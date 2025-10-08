@@ -931,8 +931,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/privacy_sandbox/FakeCookieControlsBridge.java",
       "src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandbox3pcdRollbackMessageControllerTest.java",
       "src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyControllerTest.java",
-      "src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarControllerTest.java",
-      "src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarLimiterTest.java",
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]

@@ -70,14 +70,11 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFa
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.page_info.ChromePageInfo;
-import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -111,7 +108,6 @@ import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -141,7 +137,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable CustomTabHistoryIphController mCustomTabHistoryIphController;
     private @Nullable ReadAloudIphController mReadAloudIphController;
     private @Nullable GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
-    private @Nullable TrackingProtectionSnackbarController mTrackingProtectionSnackbarController;
 
     private @Nullable EdgeToEdgeSupplier.ChangeObserver mEdgeToEdgeChangeObserver;
     private final @NonNull Runnable mOpenInBrowserRunnable;
@@ -533,11 +528,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 /* showAppMenuTextBubble= */ false);
                             }
                         }));
-
-        SupplierUtils.waitForAll(
-                () -> initializeTrackingProtectionSnackbarController(),
-                mActivityTabProvider,
-                mProfileSupplier);
     }
 
     @Override
@@ -549,24 +539,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (googleBottomBarCoordinator != null) {
             googleBottomBarCoordinator.initDefaultSearchEngine(
                     currentlySelectedProfile.getOriginalProfile());
-        }
-    }
-
-    private void initializeTrackingProtectionSnackbarController() {
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
-                && mActivityType == ActivityType.WEB_APK) {
-
-            Profile profile = mProfileSupplier.get();
-            assert profile != null;
-            mTrackingProtectionSnackbarController =
-                    new TrackingProtectionSnackbarController(
-                            getPageInfoSnackbarOnAction(),
-                            mSnackbarManagerSupplier,
-                            mActivityTabProvider.get().getWebContents(),
-                            profile,
-                            mActivityType,
-                            profile.isIncognitoBranded());
         }
     }
 
@@ -1018,15 +990,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 mAppMenuCoordinator.getAppMenuHandler(),
                                                 /* isBrowserApp= */ false);
                             }
-
-                            if (!didShowPrompt
-                                    && ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList
-                                                    .TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
-                                    && mActivityType == ActivityType.WEB_APK
-                                    && mTrackingProtectionSnackbarController != null) {
-                                mTrackingProtectionSnackbarController.maybeTriggerSnackbar();
-                            }
                         }));
         SupplierUtils.waitForAll(
                 () -> maybeRecordPrivacySandboxActivityType(),
@@ -1046,20 +1009,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         PrivacySandboxBridge privacySandboxBridge =
                 new PrivacySandboxBridge(mProfileSupplier.get());
         privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
-    }
-
-    private Runnable getPageInfoSnackbarOnAction() {
-        return () ->
-                new ChromePageInfo(
-                                mModalDialogManagerSupplier,
-                                null,
-                                OpenedFromSource.WEBAPK_SNACKBAR,
-                                getMerchantTrustSignalsCoordinatorSupplier()::get,
-                                getEphemeralTabCoordinatorSupplier(),
-                                mTabCreatorManagerSupplier
-                                        .get()
-                                        .getTabCreator(mProfileSupplier.get().isOffTheRecord()))
-                        .show(mActivityTabProvider.get(), ChromePageInfoHighlight.noHighlight());
     }
 
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {

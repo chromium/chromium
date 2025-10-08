@@ -1,7 +1,6 @@
 include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ssl/ChromeSecurityStateModelDelegate.java",
