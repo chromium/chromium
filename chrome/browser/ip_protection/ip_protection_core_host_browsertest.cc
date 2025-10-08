@@ -701,9 +701,8 @@ class IpProtectionCoreHostUserSettingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// FLAKY <https://crbug.com/445760641>
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
-                       DISABLED_OnIpProtectionEnabledChanged) {
+                       OnIpProtectionEnabledChanged) {
   IpProtectionCoreHost* provider =
       IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
@@ -713,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
   // Simulate the user disabling the IP Protection setting.
   GetProfile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
   provider->OnIpProtectionEnabledChanged();
-  main_profile_ipp_control_test_.FlushForTesting();
-  incognito_profile_ipp_control_test_.FlushForTesting();
+
+  provider->remotes_.FlushForTesting();
 
   // Check that network contexts got notified that IP Protection should be
   // disabled.
@@ -755,6 +754,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
   // accordingly.
   GetProfile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
   provider->OnIpProtectionEnabledChanged();
+
+  provider->remotes_.FlushForTesting();
 
   main_profile_is_enabled_future.Clear();
   incognito_profile_is_enabled_future.Clear();
