@@ -120,6 +120,15 @@ img, figcaption, picture:first-child + p:last-child {
   font-style: italic;
 }
 
+/*
+  If there are inlined divs in a span (to host an image for example), they will
+  be replaced by a paragraph element which is display: block by default. This
+  style will cause the image to be inline instead.
+*/
+span p {
+  display: inline;
+}
+
 /* list specific styling */
 
 ul, ol {
