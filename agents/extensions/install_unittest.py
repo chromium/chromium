@@ -120,12 +120,11 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         with unittest.mock.patch('sys.argv',
                                  ['install.py', 'add', '--copy', 'sample_1']):
             install.main()
-        self.mock_run_command.assert_called_once_with(
-            [
-                'gemini', 'extensions', 'install', '--path',
-                str(self.source_extensions_dir / 'sample_1')
-            ],
-            skip_prompt=False)
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'install',
+            str(self.source_extensions_dir / 'sample_1')
+        ],
+                                                      skip_prompt=False)
 
     @unittest.mock.patch('install.get_project_root')
     @unittest.mock.patch('install.find_extensions_dir_for_extension')

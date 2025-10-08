@@ -223,7 +223,7 @@ def _check_for_workspace_extensions(project_root: Path | None) -> None:
 
 def check_gemini_version() -> None:
     """Checks if the Gemini CLI version is sufficient."""
-    required_version = (0, 4, 0)
+    required_version = (0, 8, 0)
     version_str = get_gemini_version()
     if not version_str:
         print(
@@ -347,7 +347,7 @@ def main() -> None:
                 sys.exit(1)
             cmd = [gemini_cmd, 'extensions']
             if args.copy:
-                cmd.extend(['install', '--path', str(source_dir / extension)])
+                cmd.extend(['install', str(source_dir / extension)])
             else:
                 cmd.extend(['link', str(source_dir / extension)])
             _run_command(cmd, skip_prompt=args.skip_prompt)
