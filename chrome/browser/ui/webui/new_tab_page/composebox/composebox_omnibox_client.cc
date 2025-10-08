@@ -8,6 +8,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace composebox {
@@ -16,10 +17,11 @@ ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     Profile* profile,
     content::WebContents* web_contents,
     BaseComposeboxHandler* composebox_handler,
-    ComposeboxQueryController* query_controller)
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        contextual_session_handle)
     : SearchboxOmniboxClient(profile, web_contents),
       composebox_handler_(composebox_handler),
-      query_controller_(query_controller) {}
+      contextual_session_handle_(std::move(contextual_session_handle)) {}
 
 ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
 
@@ -54,10 +56,16 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (!query_controller_) {
+  if (!contextual_session_handle_) {
     return std::nullopt;
   }
-  const auto& suggest_inputs = query_controller_->suggest_inputs();
+
+  auto* query_controller = contextual_session_handle_->GetController();
+  if (!query_controller) {
+    return std::nullopt;
+  }
+
+  const auto& suggest_inputs = query_controller->suggest_inputs();
   if (suggest_inputs.has_encoded_request_id()) {
     return suggest_inputs;
   }

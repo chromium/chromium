@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/composebox/contextual_session_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -71,6 +72,15 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         /*enable_multi_context_input_flow=*/false,
         /*enable_viewport_images=*/true);
     query_controller_ = query_controller_ptr.get();
+
+    service_ = std::make_unique<ContextualSessionService>(
+        /*identity_manager=*/nullptr, url_loader_factory(),
+        template_url_service(), fake_variations_client(),
+        version_info::Channel::UNKNOWN, "en-US");
+    auto contextual_session_handle =
+        service_->CreateSessionForTesting(std::move(query_controller_ptr));
+    auto session_id = contextual_session_handle->session_id();
+
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr =
         std::make_unique<MockComposeboxMetricsRecorder>();
@@ -79,8 +89,9 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        std::move(query_controller_ptr), std::move(metrics_recorder_ptr),
-        profile(), web_contents(), /*metrics_reporter=*/nullptr);
+        std::move(contextual_session_handle), service_->GetSession(session_id),
+        std::move(metrics_recorder_ptr), profile(), web_contents(),
+        /*metrics_reporter=*/nullptr);
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }
@@ -105,6 +116,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     query_controller_ = nullptr;
     metrics_recorder_ = nullptr;
     handler_.reset();
+    service_.reset();
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -132,6 +144,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
+  std::unique_ptr<ContextualSessionService> service_;
   raw_ptr<MockComposeboxMetricsRecorder> metrics_recorder_;
   std::unique_ptr<ComposeboxHandler> handler_;
 };
