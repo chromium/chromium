@@ -56,6 +56,7 @@ public class QuickDeleteController {
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private final QuickDeleteDialogDelegate mDialogDelegate;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -122,7 +123,7 @@ public class QuickDeleteController {
                         mDeleteRegularTabsFilter,
                         mDeleteArchivedTabsFilter);
 
-        QuickDeleteDialogDelegate dialogDelegate =
+        mDialogDelegate =
                 new QuickDeleteDialogDelegate(
                         context,
                         quickDeleteView,
@@ -130,7 +131,6 @@ public class QuickDeleteController {
                         this::onDialogDismissed,
                         tabModelSelector,
                         mQuickDeleteMediator);
-        dialogDelegate.showDialog();
     }
 
     void destroy() {
@@ -143,6 +143,11 @@ public class QuickDeleteController {
      */
     public static boolean isQuickDeleteSurveyEnabled() {
         return ChromeFeatureList.sQuickDeleteAndroidSurvey.isEnabled();
+    }
+
+    /** Show the Quick Delete dialog. */
+    public void showDialog() {
+        mDialogDelegate.showDialog();
     }
 
     /** A method called when the user confirms or cancels the dialog. */

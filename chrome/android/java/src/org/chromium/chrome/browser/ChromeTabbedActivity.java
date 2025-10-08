@@ -202,8 +202,6 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.recent_tabs.CrossDevicePaneFactory;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
-import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
@@ -2666,10 +2664,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE) {
                     mTipsPromoCoordinator =
                             new TipsPromoCoordinator(
-                                    this, mRootUiCoordinator.getBottomSheetController());
-                    mTipsPromoCoordinator.showBottomSheet(
-                            fromTipsNotifications,
-                            () -> getTipsNotificationsFeatureTipAction(fromTipsNotifications));
+                                    this,
+                                    mRootUiCoordinator.getBottomSheetController(),
+                                    getQuickDeleteController());
+                    mTipsPromoCoordinator.showBottomSheet(fromTipsNotifications);
                 }
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:
@@ -2770,26 +2768,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             hideOverview(/* animate= */ false);
         }
         return resultTab;
-    }
-
-    // TODO(crbug.com/449743910): Refactor this logic to TipsNotifications module after all the
-    // feature tip launch logic is added, if possible.
-    private void getTipsNotificationsFeatureTipAction(
-            @TipsNotificationsFeatureType int featureType) {
-        switch (featureType) {
-            case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
-                Intent intent =
-                        SettingsNavigationFactory.createSettingsNavigation()
-                                .createSettingsIntent(
-                                        this,
-                                        SafeBrowsingSettingsFragment.class,
-                                        SafeBrowsingSettingsFragment.createArguments(
-                                                SettingsAccessPoint.TIPS_NOTIFICATIONS_PROMO));
-                startActivity(intent);
-                break;
-            default:
-                assert false : "Invalid feature type: " + featureType;
-        }
     }
 
     private boolean isProbablyFromChrome(Intent intent, String externalAppId) {
@@ -3982,15 +3960,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
             }
 
-            new QuickDeleteController(
-                    this,
-                    new QuickDeleteDelegateImpl(mTabModelProfileSupplier, mTabSwitcherSupplier),
-                    getModalDialogManager(),
-                    getSnackbarManager(),
-                    getLayoutManager(),
-                    mTabModelSelector,
-                    ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
-                            .getTabModelSelector());
+            getQuickDeleteController().showDialog();
         } else if (id == R.id.switch_to_incognito_menu_id) {
             mTabModelSelector.selectModel(true);
             RecordUserAction.record("MobileMenuSwitchToIncognito");
@@ -4034,6 +4004,18 @@ public class ChromeTabbedActivity extends ChromeActivity {
             return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
         }
         return true;
+    }
+
+    private QuickDeleteController getQuickDeleteController() {
+        return new QuickDeleteController(
+                this,
+                new QuickDeleteDelegateImpl(mTabModelProfileSupplier, mTabSwitcherSupplier),
+                getModalDialogManager(),
+                getSnackbarManager(),
+                getLayoutManager(),
+                mTabModelSelector,
+                ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
+                        .getTabModelSelector());
     }
 
     private boolean isTabNtp(Tab tab) {

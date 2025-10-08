@@ -1616,17 +1616,19 @@ public class RootUiCoordinator
                             },
                             // Open Quick Delete Dialog callback:
                             () -> {
-                                new QuickDeleteController(
-                                        mActivity,
-                                        new QuickDeleteDelegateImpl(
-                                                mProfileSupplier, mTabSwitcherSupplier),
-                                        mModalDialogManagerSupplier.get(),
-                                        mSnackbarManagerSupplier.get(),
-                                        mLayoutManager,
-                                        mTabModelSelectorSupplier.get(),
-                                        ArchivedTabModelOrchestrator.getForProfile(
-                                                        mProfileSupplier.get())
-                                                .getTabModelSelector());
+                                QuickDeleteController quickDeleteController =
+                                        new QuickDeleteController(
+                                                mActivity,
+                                                new QuickDeleteDelegateImpl(
+                                                        mProfileSupplier, mTabSwitcherSupplier),
+                                                mModalDialogManagerSupplier.get(),
+                                                mSnackbarManagerSupplier.get(),
+                                                mLayoutManager,
+                                                mTabModelSelectorSupplier.get(),
+                                                ArchivedTabModelOrchestrator.getForProfile(
+                                                                mProfileSupplier.get())
+                                                        .getTabModelSelector());
+                                quickDeleteController.showDialog();
                             },
                             TabWindowManagerSingleton::getInstance,
                             IntentHandler::bringTabToFront);
