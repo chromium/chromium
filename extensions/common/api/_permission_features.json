@@ -479,12 +479,6 @@
       "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
       "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
     ]
-  },
-  {
-    "channel": "dev",
-    "extension_types": ["extension"],
-    "platforms": ["chromeos"],
-    "session_types": ["kiosk"]
   }],
   "networkingPrivate": {
     "channel": "stable",
@@ -722,20 +716,12 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
-  "usb": [
-    {
-      "channel": "stable",
-      "extension_types": ["platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"]
-    },
-    {
-      "channel": "dev",
-      "extension_types": ["extension"],
-      "platforms": ["chromeos"],
-      "session_types": ["kiosk"]
-    }
-  ],
+  "usb": {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
+  },
   "usbDevices": [
     {
       "channel": "stable",
@@ -750,12 +736,6 @@
         "4839A26B29CD1BD021B2E126EF6D28C9CB84018B",  // http://crbug.com/710541
         "8F44FBB4474CCDF23450B166C9E83E85BD03AE24"   // http://crbug.com/710541
       ]
-    },
-    {
-      "channel": "dev",
-      "extension_types": ["extension"],
-      "platforms": ["chromeos"],
-      "session_types": ["kiosk"]
     }
   ],
   "videoCapture": [
@@ -772,17 +752,12 @@
       ]
     }
   ],
-  "virtualKeyboard": [{
+  "virtualKeyboard": {
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"],
     "session_types": ["kiosk"]
-  }, {
-    "channel": "dev",
-    "extension_types": ["extension"],
-    "platforms": ["chromeos"],
-    "session_types": ["kiosk"]
-  }],
+  },
   "virtualKeyboardPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
