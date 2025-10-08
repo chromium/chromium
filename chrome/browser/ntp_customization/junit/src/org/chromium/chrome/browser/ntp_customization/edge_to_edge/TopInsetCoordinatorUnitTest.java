@@ -24,9 +24,9 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,10 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -70,7 +73,6 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private TopInsetCoordinator.Observer mObserver;
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private Context mContext;
 
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
@@ -79,11 +81,16 @@ public class TopInsetCoordinatorUnitTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
+
+    private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private TopInsetCoordinator mTopInsetCoordinator;
 
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+
         when(mNtpTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         when(mNtpTab.isNativePage()).thenReturn(true);
         when(mNtpTab.getNativePage()).thenReturn(mNativePage);
@@ -227,18 +234,20 @@ public class TopInsetCoordinatorUnitTest {
 
     @Test
     public void testOnBackgroundColorChanged_fromInitialization() {
-        @ColorInt int color = Color.RED;
+        NtpThemeColorFromHexInfo colorInfo =
+                new NtpThemeColorFromHexInfo(mContext, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET);
 
+        mNtpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.CHROME_COLOR);
         mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
-                color, /* fromInitialization= */ true, NtpBackgroundImageType.DEFAULT);
-        assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColorForTesting());
+                mContext, /* fromInitialization= */ true, NtpBackgroundImageType.DEFAULT);
+        assertEquals(colorInfo, mNtpCustomizationConfigManager.getNtpThemeColorInfoForTesting());
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
 
         mNtpCustomizationConfigManager.notifyBackgroundColorChanged(
-                color, /* fromInitialization= */ false, NtpBackgroundImageType.DEFAULT);
-        assertEquals(color, mNtpCustomizationConfigManager.getBackgroundColorForTesting());
+                mContext, /* fromInitialization= */ false, NtpBackgroundImageType.DEFAULT);
+        assertEquals(colorInfo, mNtpCustomizationConfigManager.getNtpThemeColorInfoForTesting());
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
     }
 

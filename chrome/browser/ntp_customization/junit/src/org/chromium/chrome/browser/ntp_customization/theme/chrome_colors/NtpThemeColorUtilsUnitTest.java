@@ -76,13 +76,13 @@ public class NtpThemeColorUtilsUnitTest {
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorNull() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                /* primaryColor= */ null, RecyclerView.NO_POSITION, /* expectedSize= */ 2);
+                /* primaryColorInfo= */ null, RecyclerView.NO_POSITION, /* expectedSize= */ 2);
     }
 
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorExist() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary),
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE),
                 /* expectedIndex= */ 1,
                 /* expectedSize= */ 2);
     }
@@ -94,13 +94,17 @@ public class NtpThemeColorUtilsUnitTest {
         NtpCustomizationUtils.setBackgroundColorToSharedPreference(backgroundColor);
 
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                primaryColor, /* expectedIndex= */ 2, /* expectedSize= */ 3);
+                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor),
+                /* expectedIndex= */ 2,
+                /* expectedSize= */ 3);
     }
 
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_customColorWithoutBackgroundColor() {
+        @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_red);
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                ContextCompat.getColor(mContext, R.color.default_red),
+                new NtpThemeColorFromHexInfo(
+                        mContext, NtpThemeColorInfo.COLOR_NOT_SET, primaryColor),
                 RecyclerView.NO_POSITION,
                 /* expectedSize= */ 2);
     }
@@ -112,9 +116,8 @@ public class NtpThemeColorUtilsUnitTest {
         colorList.remove(1);
         int originalSize = 1;
         assertEquals(originalSize, colorList.size());
-        @ColorInt
-        Integer primaryColor =
-                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        NtpThemeColorInfo primaryColor =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
 
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
@@ -136,13 +139,134 @@ public class NtpThemeColorUtilsUnitTest {
         assertEquals(3, drawable.getNumberOfLayers());
     }
 
+    @Test
+    public void testGetNtpThemePrimaryColorFromPreBuiltColors() {
+        @ColorInt
+        int lightBluePrimaryColor =
+                NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, NtpThemeColorId.LIGHT_BLUE);
+        assertEquals(
+                mContext.getColor(R.color.ntp_color_light_blue_primary), lightBluePrimaryColor);
+
+        @ColorInt
+        int bluePrimaryColor =
+                NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, NtpThemeColorId.BLUE);
+        assertEquals(mContext.getColor(R.color.ntp_color_blue_primary), bluePrimaryColor);
+
+        assertNull(NtpThemeColorUtils.getNtpThemePrimaryColor(mContext, -1));
+    }
+
+    @Test
+    public void testIsPrimaryColorMatched_primaryColorFromHex() {
+        @ColorInt
+        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.default_red);
+        NtpThemeColorFromHexInfo primaryColorInfo =
+                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
+
+        NtpThemeColorInfo lightBlueInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+
+        assertEquals(
+                false, NtpThemeColorUtils.isPrimaryColorMatched(mContext, primaryColorInfo, null));
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, lightBlueInfo));
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, primaryColorInfo));
+
+        // Test with another hex info with the same primary color.
+        @ColorInt
+        int anotherBackgroundColor =
+                ContextCompat.getColor(mContext, R.color.default_bg_color_blue);
+        NtpThemeColorFromHexInfo samePrimaryHexInfo =
+                new NtpThemeColorFromHexInfo(mContext, anotherBackgroundColor, primaryColor);
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, samePrimaryHexInfo));
+
+        // Test with another hex info with a different primary color.
+        @ColorInt int anotherPrimaryColor = ContextCompat.getColor(mContext, R.color.default_green);
+        NtpThemeColorFromHexInfo differentPrimaryHexInfo =
+                new NtpThemeColorFromHexInfo(mContext, backgroundColor, anotherPrimaryColor);
+        assertEquals(
+                false,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, differentPrimaryHexInfo));
+    }
+
+    @Test
+    public void testIsPrimaryColorMatched_primaryColorFromPreBuildColors() {
+        NtpThemeColorInfo primaryColorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+        NtpThemeColorInfo lightBlueInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+        NtpThemeColorInfo blueInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.BLUE);
+
+        assertEquals(
+                false, NtpThemeColorUtils.isPrimaryColorMatched(mContext, primaryColorInfo, null));
+        assertEquals(
+                false,
+                NtpThemeColorUtils.isPrimaryColorMatched(mContext, primaryColorInfo, blueInfo));
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, lightBlueInfo));
+
+        @ColorInt
+        int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+        @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
+        NtpThemeColorFromHexInfo anotherHexColorInfo =
+                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, anotherHexColorInfo));
+        assertEquals(
+                true,
+                NtpThemeColorUtils.isPrimaryColorMatched(
+                        mContext, primaryColorInfo, primaryColorInfo));
+    }
+
+    @Test
+    public void testGetBackgroundColorFromColorInfo() {
+        assertEquals(
+                NtpThemeColorUtils.getDefaultBackgroundColor(mContext),
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, null));
+
+        NtpThemeColorInfo blueInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.BLUE);
+        assertEquals(
+                mContext.getColor(R.color.ntp_color_blue_background),
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, blueInfo));
+
+        @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
+        NtpThemeColorFromHexInfo customInfo =
+                new NtpThemeColorFromHexInfo(
+                        mContext, backgroundColor, NtpThemeColorInfo.COLOR_NOT_SET);
+        assertEquals(
+                backgroundColor,
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, customInfo));
+    }
+
+    @Test
+    public void testGetDefaultBackgroundColor() {
+        assertEquals(
+                ContextCompat.getColor(mContext, R.color.home_surface_background_color),
+                NtpThemeColorUtils.getDefaultBackgroundColor(mContext));
+    }
+
     private void verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-            @Nullable @ColorInt Integer primaryColor, int expectedIndex, int expectedSize) {
+            @Nullable NtpThemeColorInfo primaryColorInfo, int expectedIndex, int expectedSize) {
         List<NtpThemeColorInfo> colorList = new ArrayList<>();
 
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
-                        mContext, colorList, primaryColor);
+                        mContext, colorList, primaryColorInfo);
         assertEquals(expectedSize, colorList.size());
         assertEquals(expectedIndex, index);
     }

@@ -51,11 +51,13 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator.ColorGridView;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Unit tests for {@link NtpChromeColorsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class NtpChromeColorsCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -168,11 +170,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
     @Test
     public void testOnItemClicked_noPrimaryColorSelected() {
-        @Nullable
-        @ColorInt
-        Integer primaryColor = mCoordinator.getPrimaryColorForTesting();
+        @Nullable NtpThemeColorInfo primaryColorInfo = mCoordinator.getPrimaryColorInfoForTesting();
 
-        assertNull(primaryColor);
+        assertNull(primaryColorInfo);
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.BLUE);
@@ -184,19 +184,19 @@ public class NtpChromeColorsCoordinatorUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnItemClicked_withPrimaryColorSelected() {
-        NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(
-                        mContext, NtpThemeColorInfo.NtpThemeColorId.BLUE);
+        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
+        NtpThemeColorInfo colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
         NtpThemeColorInfo colorInfo1 =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE);
-        @ColorInt Integer primaryColor = colorInfo.primaryColor;
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
-        assertEquals(primaryColor, NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
 
         createCoordinator();
-        assertEquals(primaryColor, mCoordinator.getPrimaryColorForTesting());
+        assertEquals(
+                colorInfo.primaryColorResId,
+                mCoordinator.getPrimaryColorInfoForTesting().primaryColorResId);
 
         mCoordinator.onItemClicked(colorInfo);
         verify(mBottomSheetDelegate).onNewColorSelected(eq(false));
@@ -233,7 +233,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 backgroundColor, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(-1));
         assertEquals(
                 primaryColor,
-                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor().intValue());
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext).intValue());
     }
 
     @Test

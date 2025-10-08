@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -21,7 +18,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -30,7 +30,6 @@ import java.util.concurrent.Executor;
 /** Manages the NTP's background configuration and notifies listeners of changes. */
 @NullMarked
 public class NtpCustomizationConfigManager {
-    public static final int COLOR_NOT_SET = -1;
     private static final Executor EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, r);
 
@@ -38,7 +37,7 @@ public class NtpCustomizationConfigManager {
     private @NtpBackgroundImageType int mBackgroundImageType;
     private @Nullable Bitmap mOriginalBitmap;
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
-    private @ColorInt int mBackgroundColor;
+    private @Nullable NtpThemeColorInfo mNtpThemeColorInfo;
     private boolean mIsMvtToggleOn;
 
     /** An interface to get NewTabPage's configuration updates. */
@@ -109,9 +108,6 @@ public class NtpCustomizationConfigManager {
 
     private NtpCustomizationConfigManager() {
         mHomepageStateListeners = new ObserverList<>();
-        // Don't use the application's context to initialize these colors since only the Activity's
-        // context is themed. Otherwise a wrong color is provided.
-        mBackgroundColor = COLOR_NOT_SET;
 
         mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
@@ -143,14 +139,27 @@ public class NtpCustomizationConfigManager {
         if (mIsInitialized) return;
 
         mIsInitialized = true;
-        mBackgroundColor = getDefaultBackgroundColor(context);
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            mBackgroundColor =
-                    NtpCustomizationUtils.getBackgroundColorFromSharedPreference(mBackgroundColor);
+            @NtpThemeColorId
+            int colorId = NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference();
+            mNtpThemeColorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(context, colorId);
             notifyBackgroundColorChanged(
-                    mBackgroundColor,
+                    context,
                     /* fromInitialization= */ true,
                     /* oldType= */ NtpBackgroundImageType.DEFAULT);
+
+        } else if (mBackgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
+            @ColorInt
+            int backgroundColor =
+                    NtpCustomizationUtils.getBackgroundColorFromSharedPreference(
+                            NtpThemeColorUtils.getDefaultBackgroundColor(context));
+            @ColorInt
+            int primaryColor =
+                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
+            mNtpThemeColorInfo =
+                    new NtpThemeColorFromHexInfo(context, backgroundColor, primaryColor);
+            notifyBackgroundColorChanged(
+                    context, /* fromInitialization= */ true, NtpBackgroundImageType.DEFAULT);
         }
     }
 
@@ -176,9 +185,11 @@ public class NtpCustomizationConfigManager {
                             mBackgroundImageType);
                 }
             }
-            case NtpBackgroundImageType.CHROME_COLOR, NtpBackgroundImageType.DEFAULT ->
+            case NtpBackgroundImageType.CHROME_COLOR,
+                    NtpBackgroundImageType.COLOR_FROM_HEX,
+                    NtpBackgroundImageType.DEFAULT ->
                     listener.onBackgroundColorChanged(
-                            mBackgroundColor,
+                            getBackgroundColor(context),
                             /* fromInitialization= */ true,
                             NtpBackgroundImageType.DEFAULT,
                             mBackgroundImageType);
@@ -236,21 +247,29 @@ public class NtpCustomizationConfigManager {
             @Nullable NtpThemeColorInfo colorInfo,
             @NtpBackgroundImageType int backgroundImageType) {
         @NtpBackgroundImageType int oldType = mBackgroundImageType;
-
         mBackgroundImageType = backgroundImageType;
         NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
+        mNtpThemeColorInfo = colorInfo;
 
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            notifyBackgroundColorChanged(
-                    assumeNonNull(colorInfo).backgroundColor,
-                    /* fromInitialization= */ false,
-                    oldType);
-            NtpCustomizationUtils.setBackgroundColorToSharedPreference(colorInfo.backgroundColor);
+            if (colorInfo == null) return;
+
+            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
+            NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorInfo.id);
+
+        } else if (mBackgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
+            if (colorInfo == null) return;
+
+            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
+
+            NtpThemeColorFromHexInfo colorFromHexInfo = (NtpThemeColorFromHexInfo) colorInfo;
+            NtpCustomizationUtils.setBackgroundColorToSharedPreference(
+                    colorFromHexInfo.backgroundColor);
             NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
-                    colorInfo.primaryColor);
+                    colorFromHexInfo.primaryColor);
+
         } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
-            notifyBackgroundColorChanged(
-                    getDefaultBackgroundColor(context), /* fromInitialization= */ false, oldType);
+            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
             NtpCustomizationUtils.resetCustomizedColors();
         }
     }
@@ -286,23 +305,24 @@ public class NtpCustomizationConfigManager {
     /**
      * Notifies the NTP's background color is changed.
      *
-     * @param color The new background color.
+     * @param context Used to get a color based on the theme.
      * @param fromInitialization Whether the update of the background comes from the initialization
      *     of the {@link NtpCustomizationConfigManager}, i.e,loading the image from the device.
      * @param oldType The previously set background type for NTP.
      */
     @VisibleForTesting
     public void notifyBackgroundColorChanged(
-            @ColorInt int color, boolean fromInitialization, @NtpBackgroundImageType int oldType) {
-        mBackgroundColor = color;
-
+            Context context, boolean fromInitialization, @NtpBackgroundImageType int oldType) {
         // Clear out image state when switching to a color background.
         mOriginalBitmap = null;
         mBackgroundImageInfo = null;
 
+        @ColorInt
+        int backgroundColor =
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(context, mNtpThemeColorInfo);
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundColorChanged(
-                    mBackgroundColor, fromInitialization, oldType, mBackgroundImageType);
+                    backgroundColor, fromInitialization, oldType, mBackgroundImageType);
         }
     }
 
@@ -346,23 +366,11 @@ public class NtpCustomizationConfigManager {
      * @param context The current Activity context. It is themed and can provide the correct color.
      */
     public @ColorInt int getBackgroundColor(Context context) {
-        if (!mIsInitialized || mBackgroundColor == NtpCustomizationConfigManager.COLOR_NOT_SET) {
-            return getDefaultBackgroundColor(context);
+        if (!mIsInitialized || mNtpThemeColorInfo == null) {
+            return NtpThemeColorUtils.getDefaultBackgroundColor(context);
         }
 
-        return mBackgroundColor;
-    }
-
-    /**
-     * Returns the default background color for NTP. Needs to use the Activity's context rather than
-     * the application's context, which isn't themed and will provide a wrong color.
-     *
-     * @param context The current Activity context. It is themed and can provide the correct color.
-     */
-    @VisibleForTesting
-    @ColorInt
-    int getDefaultBackgroundColor(Context context) {
-        return ContextCompat.getColor(context, R.color.home_surface_background_color);
+        return NtpThemeColorUtils.getBackgroundColorFromColorInfo(context, mNtpThemeColorInfo);
     }
 
     /**
@@ -375,12 +383,12 @@ public class NtpCustomizationConfigManager {
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
-    public void setBackgroundColorForTesting(@ColorInt int color) {
-        mBackgroundColor = color;
+    public void setNtpThemeColorInfoForTesting(@Nullable NtpThemeColorInfo colorInfo) {
+        mNtpThemeColorInfo = colorInfo;
     }
 
-    public @ColorInt int getBackgroundColorForTesting() {
-        return mBackgroundColor;
+    public @Nullable NtpThemeColorInfo getNtpThemeColorInfoForTesting() {
+        return mNtpThemeColorInfo;
     }
 
     public int getListenersSizeForTesting() {

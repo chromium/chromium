@@ -10,10 +10,14 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.util.ColorUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /** The data class for NTP's theme color. */
 @NullMarked
@@ -24,6 +28,7 @@ public class NtpThemeColorInfo {
         NtpThemeColorId.LIGHT_BLUE,
         NtpThemeColorId.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface NtpThemeColorId {
         int DEFAULT = 0;
         int BLUE = 1;
@@ -31,11 +36,13 @@ public class NtpThemeColorInfo {
         int NUM_ENTRIES = 3;
     }
 
+    public static final int COLOR_NOT_SET = -1;
+
     public @NtpThemeColorId int id;
     // Used as the NTP's background color
-    public @ColorInt int backgroundColor;
+    public @ColorRes int backgroundColorResId;
     // Used as Google logo color.
-    public @ColorInt int primaryColor;
+    public @ColorRes int primaryColorResId;
     // Used as the omnibox color.
     public @ColorInt int highlightColor;
 
@@ -57,13 +64,16 @@ public class NtpThemeColorInfo {
             @ColorRes int backgroundColorResId,
             @ColorRes int primaryColorResId) {
         this.id = id;
-        backgroundColor = ContextCompat.getColor(context, backgroundColorResId);
-        primaryColor = ContextCompat.getColor(context, primaryColorResId);
-        highlightColor =
-                ColorUtils.setAlphaComponentWithFloat(this.primaryColor, HIGHLIGHT_COLOR_ALPHA);
+        this.backgroundColorResId = backgroundColorResId;
+        this.primaryColorResId = primaryColorResId;
+        @ColorInt int primaryColor = context.getColor(primaryColorResId);
+        highlightColor = ColorUtils.setAlphaComponentWithFloat(primaryColor, HIGHLIGHT_COLOR_ALPHA);
         iconDrawable =
                 NtpThemeColorUtils.createColoredCircle(
-                        context, backgroundColor, primaryColor, highlightColor);
+                        context,
+                        context.getColor(backgroundColorResId),
+                        primaryColor,
+                        highlightColor);
     }
 
     /**
@@ -75,12 +85,28 @@ public class NtpThemeColorInfo {
      */
     public NtpThemeColorInfo(
             Context context, @ColorInt int backgroundColor, @ColorInt int primaryColor) {
-        this.backgroundColor = backgroundColor;
-        this.primaryColor = primaryColor;
         this.highlightColor =
                 ColorUtils.setAlphaComponentWithFloat(primaryColor, HIGHLIGHT_COLOR_ALPHA);
         iconDrawable =
                 NtpThemeColorUtils.createColoredCircle(
                         context, backgroundColor, primaryColor, highlightColor);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) return false;
+
+        if (obj instanceof NtpThemeColorInfo info) {
+            return id == info.id
+                    && primaryColorResId == info.primaryColorResId
+                    && backgroundColorResId == info.backgroundColorResId;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.primaryColorResId, this.backgroundColorResId);
     }
 }

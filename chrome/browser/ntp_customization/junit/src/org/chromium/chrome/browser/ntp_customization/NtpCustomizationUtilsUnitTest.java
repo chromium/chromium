@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 
@@ -28,9 +29,11 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +50,10 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,8 +70,15 @@ import java.io.File;
 public class NtpCustomizationUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
-    @Mock private Context mContext;
     @Mock private Drawable mDrawable;
+
+    private Context mContext;
+
+    @Before
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+    }
 
     @After
     public void tearDown() {
@@ -228,7 +242,7 @@ public class NtpCustomizationUtilsUnitTest {
         @ColorInt int color = Color.BLUE;
 
         assertEquals(
-                NtpCustomizationConfigManager.COLOR_NOT_SET,
+                NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(color);
@@ -238,7 +252,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_flagDisabled() {
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
     }
 
     @Test
@@ -246,27 +260,30 @@ public class NtpCustomizationUtilsUnitTest {
     public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testGetPrimaryColorFromCustomizedThemeColor_colorNotSet() {
+    public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorNotSet() {
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
 
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testGetPrimaryColorFromCustomizedThemeColor_colorSet() {
+    public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet() {
+        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+        @ColorInt int primaryColor = mContext.getColor(R.color.ntp_color_blue_primary);
 
         assertEquals(
-                Color.RED, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+                primaryColor,
+                (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
     }
 
     @Test
@@ -276,7 +293,73 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.BLUE);
 
         assertEquals(
-                Color.BLUE, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+                Color.BLUE,
+                (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testLoadColorInfoFromSharedPreference_flagDisabled() {
+        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testLoadColorInfoFromSharedPreference_wrongImageType() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testLoadColorInfoFromSharedPreference_chromeColor() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
+
+        // Verifies that null is returned when color id isn't set.
+        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
+
+        @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
+        NtpThemeColorInfo colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+
+        assertEquals(colorInfo, NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testLoadColorInfoFromSharedPreference_colorFromHex() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(COLOR_FROM_HEX);
+        @ColorInt int primaryColor = Color.RED;
+        @ColorInt int backgroundColor = Color.BLUE;
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
+        NtpCustomizationUtils.setBackgroundColorToSharedPreference(backgroundColor);
+
+        // Verifies that both the primary color and background color from the loaded results match.
+        NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
+        assertTrue(info instanceof NtpThemeColorFromHexInfo);
+        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColor);
+        assertEquals(backgroundColor, ((NtpThemeColorFromHexInfo) info).backgroundColor);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testLoadColorInfoFromSharedPreference_colorSetWithImage() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(IMAGE_FROM_DISK);
+        // Verifies that null is returned if no primary color is set.
+        assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
+
+        @ColorInt int primaryColor = Color.RED;
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
+
+        // Verifies that the primary color from the loaded results matches.
+        NtpThemeColorInfo info = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
+        assertTrue(info instanceof NtpThemeColorFromHexInfo);
+        assertEquals(primaryColor, ((NtpThemeColorFromHexInfo) info).primaryColor);
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET, ((NtpThemeColorFromHexInfo) info).backgroundColor);
     }
 
     @Test
@@ -402,19 +485,22 @@ public class NtpCustomizationUtilsUnitTest {
         // Test cases in light mode:
 
         // Verifies that when the primary color is missing, no tint color is set in light mode.
-        @ColorInt int primaryColor = Color.RED;
+        @NtpThemeColorId int colorId = NtpThemeColorId.LIGHT_BLUE;
+        NtpThemeColorInfo ntpThemeColorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
+        @ColorInt int primaryColor = mContext.getColor(ntpThemeColorInfo.primaryColorResId);
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
         customizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.CHROME_COLOR);
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
         verify(mDrawable, never()).setTint(anyInt());
 
         // Verifies that the saved primary color is set for customized color themes if exists.
-        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
-        assertEquals(
-                primaryColor,
-                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor().intValue());
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+        assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
         verify(mDrawable).setTint(eq(primaryColor));
 
@@ -428,11 +514,22 @@ public class NtpCustomizationUtilsUnitTest {
 
         // Verifies when the primary color is missing, color white is set in dark mode.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
         NtpCustomizationUtils.setTintForDefaultGoogleLogo(mContext, mDrawable);
         verify(mDrawable).setTint(eq(Color.WHITE));
 
         // Cleans up.
         customizationConfigManager.resetForTesting();
+    }
+
+    @Test
+    public void testSetAndGetNtpThemeColorIdFromSharedPreference() {
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+
+        @NtpThemeColorId int id = NtpThemeColorId.LIGHT_BLUE;
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(id);
+        assertEquals(id, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
     }
 }

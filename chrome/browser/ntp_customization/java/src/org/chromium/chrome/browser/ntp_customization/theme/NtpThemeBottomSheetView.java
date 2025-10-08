@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
@@ -80,6 +81,8 @@ public class NtpThemeBottomSheetView extends ScrollView {
 
     void destroy() {
         for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
+            if (i == COLOR_FROM_HEX) continue;
+
             NtpThemeListItemView child = assumeNonNull(getItemBySectionType(i));
             child.destroy();
         }
@@ -120,6 +123,7 @@ public class NtpThemeBottomSheetView extends ScrollView {
             case IMAGE_FROM_DISK:
                 return mUploadImageSection;
             case CHROME_COLOR:
+            case COLOR_FROM_HEX:
                 return mChromeColorsSection;
             case THEME_COLLECTION:
                 return mThemeCollectionsSection;

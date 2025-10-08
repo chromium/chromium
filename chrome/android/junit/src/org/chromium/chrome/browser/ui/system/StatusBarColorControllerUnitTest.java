@@ -40,6 +40,9 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -216,12 +219,15 @@ public class StatusBarColorControllerUnitTest {
     public void testBackgroundColorForNtp() {
         @ColorInt
         int defaultNtpBackground = mContext.getColor(R.color.home_surface_background_color);
-        @ColorInt int currentNtpBackground = mContext.getColor(R.color.default_red);
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, NtpThemeColorId.LIGHT_BLUE);
+        @ColorInt int currentNtpBackground = mContext.getColor(colorInfo.backgroundColorResId);
+
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
         ntpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.CHROME_COLOR);
-        ntpCustomizationConfigManager.setBackgroundColorForTesting(currentNtpBackground);
+        ntpCustomizationConfigManager.setNtpThemeColorInfoForTesting(colorInfo);
 
         // Verifies when customized NTP background isn't supported, the status bar color is set to
         // the default NTP background color.
