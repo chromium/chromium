@@ -342,9 +342,6 @@ bool PaintImage::IsTextureBacked() const {
   return false;
 }
 
-void PaintImage::FlushPendingSkiaOps() {
-}
-
 gfx::Size PaintImage::GetSize(AuxImage aux_image) const {
   return gfx::SkISizeToSize(GetSkISize(aux_image));
 }

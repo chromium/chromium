@@ -310,9 +310,6 @@ class CC_PAINT_EXPORT PaintImage {
   }
   bool NeedsLayer() const;
   bool IsTextureBacked() const;
-  // Skia internally buffers commands and flushes them as necessary but there
-  // are some cases where we need to force a flush.
-  void FlushPendingSkiaOps();
   int width() const { return GetSkImageInfo().width(); }
   int height() const { return GetSkImageInfo().height(); }
   SkColorSpace* color_space() const {
