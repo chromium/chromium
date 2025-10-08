@@ -419,10 +419,12 @@ namespace autofillPrivate {
   dictionary EntityInstanceWithLabels {
     // The guid of the entity instance.
     DOMString guid;
-    // The enitity instance label.
+    // The entity instance label.
     DOMString entityInstanceLabel;
-    // The enitity instance sublabel.
+    // The entity instance sublabel.
     DOMString entityInstanceSubLabel;
+    // Whether the entity is stored on Google Wallet servers.
+    boolean stored_in_wallet;
   };
 
   // A Pay Over Time Issuer entry which can be displayed in the autofill

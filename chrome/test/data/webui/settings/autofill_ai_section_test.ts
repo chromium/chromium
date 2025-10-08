@@ -43,11 +43,13 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
+        storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
+        storedInWallet: false,
       },
     ];
     entityDataManager.setLoadEntityInstancesResponse(
@@ -220,16 +222,20 @@ suite('AutofillAiSectionUiTest', function() {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
+        storedInWallet: true,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
+        storedInWallet: false,
       },
       {
+        // Note that this is the `testEntityInstance` guid.
         guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Driver\'s license',
+        storedInWallet: false,
       },
     ];
     entityDataManager.setGetOptInStatusResponse(true);
@@ -265,6 +271,43 @@ suite('AutofillAiSectionUiTest', function() {
 
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
   }
+
+  // Tests that walletable entities have an icon button mentionining the wallet
+  // type in its title. Local entities have an actionable button which allows
+  // users editing and deleting.
+  test('AutofillAiWalletEntitiesHaveWalletPassesIconButton', async function() {
+    await createPage();
+
+    const listItems =
+        entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(
+        4, listItems.length,
+        '3 entity instances and a hidden element were loaded.');
+
+    for (let i = 0; i < listItems.length; i++) {
+      const item = listItems[i]!;
+      // Note that the last element is a hidden element that is only
+      // visible when the user has no entities stored.
+      if (i === listItems.length - 1) {
+        assertFalse(isVisible(item));
+        continue;
+      }
+
+      const iconButton = item.querySelector('cr-icon-button')!;
+      // Only the Vehicle entity (Toyota) is stored in Wallet.
+      if (!item.textContent!.includes('Toyota')) {
+        const labels = item.querySelectorAll<HTMLElement>('.ellipses');
+        assertTrue(
+            iconButton.getAttribute('title')!.includes(loadTimeData.getStringF(
+                'autofillAiMoreActionsForEntityInstance', labels[0]!.innerText,
+                labels[1]!.innerText)));
+      } else {
+        assertEquals(
+            loadTimeData.getString('remoteWalletPassesLinkLabel'),
+            iconButton.getAttribute('title'));
+      }
+    }
+  });
 
   test(
       'AutofillAiEnterpriseUserLoggingAllowedAndNonEnterpriseUserHaveNoLoggingInfoBullet',
@@ -508,16 +551,19 @@ suite('AutofillAiSectionUiTest', function() {
             guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Passport',
+            storedInWallet: false,
           },
           {
             guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
             entityInstanceLabel: 'Honda',
             entityInstanceSubLabel: 'Car',
+            storedInWallet: false,
           },
           {
             guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Driver\'s license',
+            storedInWallet: false,
           },
         ];
 
@@ -604,16 +650,19 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
         entityInstanceLabel: 'A label'.repeat(100),
         entityInstanceSubLabel: 'Car',
+        storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Sublabel'.repeat(100),
+        storedInWallet: false,
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
         entityInstanceLabel: 'Mark Donald',
         entityInstanceSubLabel: 'Passport',
+        storedInWallet: false,
       },
     ];
     entityDataManager.setLoadEntityInstancesResponse(

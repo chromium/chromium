@@ -277,6 +277,7 @@ declare global {
         guid: string;
         entityInstanceLabel: string;
         entityInstanceSubLabel: string;
+        storedInWallet: boolean;
       }
 
       export interface PayOverTimeIssuerEntry {
