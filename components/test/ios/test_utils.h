@@ -7,6 +7,28 @@
 
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+// This file contains helpers, in order to easily uses OCMStub and OCMExpect
+// with methods whose arguments are pointers to c++ object.
+//
+// The method whose name start with `and` can be used as method defined on the
+// OCMExpect/OCMStub. For example, let’s consider a method
+// `-fooWithString:(std::string*)string`. Then OCMStub([mock_
+// fooWithString:ios::OCM::AnyPointer<std::string]).
+//    andCompareObjectAtIndex("foo", 0);
+// checks that the parameter in the string foo. And
+// std::string s;
+// OCMStub([mock_ fooWithString:ios::OCM::AnyPointer<std::string]).
+//   andAssignStructParameterAtAddressToVariable(s, 0);
+// will set `s` to the value of the argument to `fooWithString`.
+//
+// Given how usual it is to save the value in a variable, a similar helper was
+// introduced for NSObject. Let’s consider a method
+// `-fooWithNSString:(NSString*)string`. You can assign the value sent to the
+// argument with:
+// __block NSString* s;
+// OCMStub([mock_ fooWithNSString:AssignValueToVariable(s)]);
+// or with `CopyValueToVariable` if the value is copyable.
+
 // Expects that the i-th parameter of the invocation is equal to `expected`
 #define andCompareObjectAtIndex(expected, index)                      \
   andDo(^(NSInvocation * invocation) {                                \
