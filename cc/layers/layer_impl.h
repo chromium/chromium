@@ -525,9 +525,7 @@ class CC_EXPORT LayerImpl {
   // When |will_always_push_properties| is true, the layer will not itself set
   // its SetNeedsPushProperties() state, as it expects to be always pushed to
   // the active tree regardless.
-  LayerImpl(LayerTreeImpl* layer_impl,
-            int id,
-            bool will_always_push_properties = false);
+  LayerImpl(LayerTreeImpl* layer_impl, int id);
 
   // Get the color and size of the layer's debug border.
   virtual void GetDebugBorderProperties(SkColor4f* color, float* width) const;
@@ -557,7 +555,6 @@ class CC_EXPORT LayerImpl {
 
   const int layer_id_;
   const raw_ptr<LayerTreeImpl> layer_tree_impl_;
-  const bool will_always_push_properties_ : 1;
 
   // Properties synchronized from the associated Layer.
   gfx::Size bounds_;

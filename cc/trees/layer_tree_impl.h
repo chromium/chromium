@@ -516,10 +516,6 @@ class CC_EXPORT LayerTreeImpl {
     needs_surface_ranges_sync_ = needs_surface_ranges_sync;
   }
 
-  bool always_push_properties_on_picture_layers() const {
-    return always_push_properties_on_picture_layers_;
-  }
-
   void ForceRedrawNextActivation() { next_activation_forces_redraw_ = true; }
 
   void set_ui_resource_request_queue(UIResourceRequestQueue queue);
@@ -946,8 +942,6 @@ class CC_EXPORT LayerTreeImpl {
   // Whether we have a request to force-send RenderFrameMetadata with the next
   // frame.
   bool force_send_metadata_request_ : 1 = false;
-
-  bool always_push_properties_on_picture_layers_ : 1 = false;
 
   gfx::Rect device_viewport_rect_;
 

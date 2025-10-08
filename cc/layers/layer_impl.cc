@@ -96,12 +96,9 @@ LayerImpl::RareProperties::RareProperties() = default;
 LayerImpl::RareProperties::RareProperties(const RareProperties&) = default;
 LayerImpl::RareProperties::~RareProperties() = default;
 
-LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
-                     int id,
-                     bool will_always_push_properties)
+LayerImpl::LayerImpl(LayerTreeImpl* tree_impl, int id)
     : layer_id_(id),
       layer_tree_impl_(tree_impl),
-      will_always_push_properties_(will_always_push_properties),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
@@ -755,12 +752,6 @@ void LayerImpl::ReleaseTileResources() {}
 void LayerImpl::RecreateTileResources() {}
 
 void LayerImpl::SetNeedsPushProperties(uint8_t changed_props) {
-  // For the pending tree, there's no need to mark this layer to push properties
-  // when |will_always_push_properties_| is true.
-  if (will_always_push_properties_ && layer_tree_impl()->IsPendingTree()) {
-    return;
-  }
-
   // We never push properties from the active tree unless using a LayerContext.
   if (layer_tree_impl()->IsActiveTree() &&
       !layer_tree_impl()->settings().TreesInVizInClientProcess()) {
