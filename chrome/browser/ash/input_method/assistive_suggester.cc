@@ -208,9 +208,7 @@ void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
-  return profile_->GetPrefs()->GetBoolean(
-             prefs::kEmojiSuggestionEnterpriseAllowed) &&
-         profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
+  return false;
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {

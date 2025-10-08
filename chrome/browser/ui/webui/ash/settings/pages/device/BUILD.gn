@@ -82,7 +82,6 @@ source_set("unit_tests") {
   sources = [
     "device_keyboard_handler_unittest.cc",
     "device_section_unittest.cc",
-    "inputs_section_unittest.cc",
   ]
 
   deps = [

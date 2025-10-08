@@ -190,18 +190,6 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_EnterprisePrefEnabledFalse) {
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   true);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
-
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
 TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1179,25 +1167,6 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
-TEST_F(AssistiveSuggesterEmojiTest, ShouldRecordNotAllowedWhenSwitchDisabled) {
-  // TODO(b/242472734): Allow enabled suggestions passed without replace.
-  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
-          .emoji_suggestions = false,
-      }));
-  assistive_suggester_->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.NotAllowed", 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
-                                       AssistiveType::kEmoji, 1);
-}
-
 TEST_F(AssistiveSuggesterEmojiTest,
        ShouldRecordDisabledReasonWhenSwitchDisabled) {
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
@@ -1216,15 +1185,6 @@ TEST_F(AssistiveSuggesterEmojiTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.Emoji", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
                                        DisabledReason::kUrlOrAppNotAllowed, 1);
-}
-
-TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←;↑;→");
 }
 
 }  // namespace ash::input_method
