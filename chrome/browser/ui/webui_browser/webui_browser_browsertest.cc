@@ -84,3 +84,57 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_NavigatePage) {
   EXPECT_EQ("Default response given for path: /defaultresponse",
             EvalJs(web_contents, "document.body.textContent"));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Begin security related tests. These tests validate the security
+// boundary between a GuestContents and the parent.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, HistoryLengthIndependent) {
+  auto* window = browser()->window();
+  ASSERT_TRUE(window);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Make sure that the web contents actually got converted to a guest before
+  // we navigate it again, so that WebContentsViewChildFrame gets involved.
+  EXPECT_TRUE(base::test::RunUntil([web_contents]() {
+    return web_contents->GetOuterWebContents() != nullptr;
+  }));
+
+  GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ(2, EvalJs(web_contents, "window.history.length"));
+
+  content::WebContents* outer_webcontents = web_contents->GetOuterWebContents();
+  EXPECT_TRUE(outer_webcontents->GetOuterWebContents() == nullptr);
+  EXPECT_NE(outer_webcontents, nullptr);
+  EXPECT_EQ(1, EvalJs(outer_webcontents, "window.history.length"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, FramesIndependent) {
+  auto* window = browser()->window();
+  ASSERT_TRUE(window);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Make sure that the web contents actually got converted to a guest before
+  // we navigate it again, so that WebContentsViewChildFrame gets involved.
+  EXPECT_TRUE(base::test::RunUntil([web_contents]() {
+    return web_contents->GetOuterWebContents() != nullptr;
+  }));
+
+  GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ(0, EvalJs(web_contents, "window.frames.length"));
+
+  content::WebContents* outer_webcontents = web_contents->GetOuterWebContents();
+  EXPECT_TRUE(outer_webcontents->GetOuterWebContents() == nullptr);
+  EXPECT_NE(outer_webcontents, nullptr);
+  EXPECT_EQ(0, EvalJs(outer_webcontents, "window.frames.length"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
