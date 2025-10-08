@@ -180,7 +180,8 @@ void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/450286204): This is likely needed, or needed to be
+  // refactored.
   NOTIMPLEMENTED();
 }
 
@@ -196,7 +197,8 @@ gfx::Size GlicInstanceCoordinatorImpl::GetSize() {
 }
 
 void GlicInstanceCoordinatorImpl::Close() {
-  // Method should only be called on individual panels not the coordinator.
+  // TODO(crbug.com/450286204): This is likely needed, or needed to be
+  // refactored.
   NOTIMPLEMENTED();
 }
 
