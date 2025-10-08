@@ -53,4 +53,8 @@ std::string TabStoragePackage::SerializePayload() const {
   return payload;
 }
 
+std::string TabStoragePackage::SerializeChildren() const {
+  return "";
+}
+
 }  // namespace tabs

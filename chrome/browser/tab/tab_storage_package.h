@@ -30,6 +30,7 @@ struct TabStoragePackage : public StoragePackage {
   // Serializes the data contained within this package into a string payload for
   // storage.
   std::string SerializePayload() const override;
+  std::string SerializeChildren() const override;
 
   const int user_agent_;
   const base::Token tab_group_id_;

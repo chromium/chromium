@@ -213,6 +213,7 @@ source_set("tab") {
     ":jni_headers",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab/protocol",
     "//components/keyed_service/core",
     "//components/tabs:public",
     "//content/public/browser",

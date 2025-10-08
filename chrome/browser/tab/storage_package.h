@@ -17,6 +17,10 @@ class StoragePackage {
   // Serializes the data contained within this package into a string payload for
   // storage.
   virtual std::string SerializePayload() const = 0;
+
+  // Serializes the identity and order of the direct children of the tab
+  // collection represented by this package into a string payload for storage.
+  virtual std::string SerializeChildren() const = 0;
 };
 
 }  // namespace tabs

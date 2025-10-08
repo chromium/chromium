@@ -6,13 +6,21 @@
 
 namespace tabs {
 
-CollectionStoragePackage::CollectionStoragePackage() = default;
+CollectionStoragePackage::CollectionStoragePackage(tabs_pb::Children children)
+    : children_(std::move(children)) {}
+
 CollectionStoragePackage::~CollectionStoragePackage() = default;
 
 std::string CollectionStoragePackage::SerializePayload() const {
   // TODO(https://crbug.com/448875689): Needs to understand type and serialize
   // data.
   return "";
+}
+
+std::string CollectionStoragePackage::SerializeChildren() const {
+  std::string payload;
+  children_.SerializeToString(&payload);
+  return payload;
 }
 
 }  // namespace tabs

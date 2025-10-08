@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/storage_package.h"
 
 namespace tabs {
@@ -14,7 +15,7 @@ namespace tabs {
 // A StoragePackage implementation for TabCollection data.
 class CollectionStoragePackage : public StoragePackage {
  public:
-  CollectionStoragePackage();
+  explicit CollectionStoragePackage(tabs_pb::Children children);
   ~CollectionStoragePackage() override;
 
   CollectionStoragePackage(const CollectionStoragePackage&) = delete;
@@ -22,6 +23,10 @@ class CollectionStoragePackage : public StoragePackage {
 
   // StoragePackage:
   std::string SerializePayload() const override;
+  std::string SerializeChildren() const override;
+
+ private:
+  tabs_pb::Children children_;
 };
 
 }  // namespace tabs

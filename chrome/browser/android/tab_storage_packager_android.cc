@@ -17,6 +17,7 @@
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "components/tabs/public/direct_child_walker.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/TabStoragePackager_jni.h"
@@ -38,8 +39,32 @@ void TabStoragePackagerAndroid::Package(const TabInterface* tab) {
 
 void TabStoragePackagerAndroid::Package(const TabCollection* collection,
                                         StorageIdMapping& mapping) {
-  // TODO(https://crbug.com/448875689): Fill this package with relevant data.
-  package_ = std::make_unique<CollectionStoragePackage>();
+  tabs_pb::Children children_proto;
+  class ChildProcessor : public DirectChildWalker::Processor {
+   public:
+    ChildProcessor(tabs_pb::Children& children_proto, StorageIdMapping& mapping)
+        : children_proto_(children_proto), mapping_(mapping) {}
+
+    void ProcessTab(const TabInterface* tab) override {
+      children_proto_->add_storage_id(mapping_->GetStorageId(tab));
+    }
+    void ProcessCollection(const TabCollection* collection) override {
+      children_proto_->add_storage_id(mapping_->GetStorageId(collection));
+    }
+
+   private:
+    raw_ref<tabs_pb::Children> children_proto_;
+    raw_ref<StorageIdMapping> mapping_;
+  };
+
+  ChildProcessor processor(children_proto, mapping);
+  DirectChildWalker walker(collection, &processor);
+  walker.Walk();
+
+  // TODO(https://crbug.com/448875689): Fill this package with collection
+  // specific data.
+  package_ =
+      std::make_unique<CollectionStoragePackage>(std::move(children_proto));
 }
 
 void TabStoragePackagerAndroid::ConsolidatePackageData(
