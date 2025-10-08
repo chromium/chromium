@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,6 +45,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/webui/web_ui_util.h"
 
 using composebox::SessionState;
 
@@ -59,6 +62,11 @@ class MockTabContextualizationController
   MOCK_METHOD(void,
               GetPageContext,
               (GetPageContextCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              CaptureScreenshot,
+              (std::optional<lens::ImageEncodingOptions> image_options,
+               CaptureScreenshotCallback callback),
               (override));
 };
 
@@ -330,6 +338,11 @@ class ContextualSearchboxHandlerTestTabsTest
     ContextualSearchboxHandlerTest::TearDown();
   }
 
+  base::TimeTicks IncrementTimeTicksAndGet() {
+    last_active_time_ticks_ += base::Seconds(1);
+    return last_active_time_ticks_;
+  }
+
   TestTabStripModelDelegate* delegate() { return &delegate_; }
   TabStripModel* tab_strip_model() { return &tab_strip_model_; }
   MockBrowserWindowInterface* browser_window_interface() {
@@ -346,6 +359,8 @@ class ContextualSearchboxHandlerTestTabsTest
     content::WebContentsTester::For(contents_unique_ptr.get())
         ->NavigateAndCommit(url);
     content::WebContents* content_ptr = contents_unique_ptr.get();
+    content::WebContentsTester::For(content_ptr)
+        ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
     tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
     tabs::TabInterface* tab_interface =
         tab_strip_model()->GetTabForWebContents(content_ptr);
@@ -370,10 +385,12 @@ class ContextualSearchboxHandlerTestTabsTest
   }
 
  private:
+  base::TimeTicks last_active_time_ticks_;
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_{&delegate_, profile()};
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
+  base::HistogramTester histogram_tester_;
   std::map<tabs::TabInterface* const, std::unique_ptr<tabs::TabAlertController>>
       tab_interface_to_alert_controller_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
@@ -531,6 +548,138 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), callback1.Get());
   histogram_tester().ExpectUniqueSample(
       "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
+  base::FieldTrialParams params;
+  params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_composebox::kNtpComposebox, params);
+
+  // Add only 1 valid tab, and ensure it is the only one returned.
+  auto* about_blank_tab = AddTab(GURL("about:blank"));
+  AddTab(GURL("chrome://webui-is-ignored"));
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future1;
+  handler().GetRecentTabs(future1.GetCallback());
+  auto tabs = future1.Take();
+  ASSERT_EQ(tabs.size(), 1u);
+  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+
+  // Add more tabs, and ensure no more than the max allowed tabs are returned.
+  AddTab(GURL("https://www.google.com"));
+  auto* youtube_tab = AddTab(GURL("https://www.youtube.com"));
+  auto* gmail_tab = AddTab(GURL("https://www.gmail.com"));
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future2;
+  handler().GetRecentTabs(future2.GetCallback());
+  tabs = future2.Take();
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, gmail_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
+
+  // Activate an older tab, and ensure it is returned first.
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future3;
+  handler().GetRecentTabs(future3.GetCallback());
+  tabs = future3.Take();
+  EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
+  // Add tabs with duplicate titles.
+  AddTab(GURL("https://a1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+      ->SetTitle(u"Title B");
+  AddTab(GURL("https://a2.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(2))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://c1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(3))
+      ->SetTitle(u"Title C");
+  AddTab(GURL("https://a3.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(4))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b2.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(5))
+      ->SetTitle(u"Title B");
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>
+      tab_info_future;
+  handler().GetRecentTabs(tab_info_future.GetCallback());
+  auto tabs = tab_info_future.Take();
+
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", 2, 1);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, ActiveTabsCountMetric) {
+  AddTab(GURL("https://a1.com"));
+  AddTab(GURL("https://b1.com"));
+  AddTab(GURL("https://a2.com"));
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>
+      tab_info_future;
+  handler().GetRecentTabs(tab_info_future.GetCallback());
+  auto tabs = tab_info_future.Take();
+
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_InvalidTab) {
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler().GetTabPreview(12345, future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_FALSE(preview.has_value());
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_CaptureFails) {
+  tabs::TabInterface* tab = AddTab(GURL("https://a1.com"));
+
+  MockTabContextualizationController* controller =
+      static_cast<MockTabContextualizationController*>(
+          tab->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
+      .WillOnce(
+          [](std::optional<lens::ImageEncodingOptions> image_options,
+             lens::TabContextualizationController::CaptureScreenshotCallback
+                 callback) { std::move(callback).Run(SkBitmap()); });
+
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler().GetTabPreview(tab->GetHandle().raw_value(), future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_FALSE(preview.has_value());
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_Success) {
+  tabs::TabInterface* tab = AddTab(GURL("https://a1.com"));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorRED);
+
+  MockTabContextualizationController* controller =
+      static_cast<MockTabContextualizationController*>(
+          tab->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
+      .WillOnce(
+          [&bitmap](
+              std::optional<lens::ImageEncodingOptions> image_options,
+              lens::TabContextualizationController::CaptureScreenshotCallback
+                  callback) { std::move(callback).Run(bitmap); });
+
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler().GetTabPreview(tab->GetHandle().raw_value(), future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_TRUE(preview.has_value());
+  EXPECT_EQ(preview.value(), webui::GetBitmapDataUrl(bitmap));
 }
 
 class ContextualSearchboxHandlerFileUploadStatusTest

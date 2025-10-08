@@ -107,14 +107,14 @@ source_set("searchbox_test_utils") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "searchbox_handler_browsertest.cc" ]
+  sources = [ "contextual_searchbox_handler_browsertest.cc" ]
   deps = [
     ":searchbox",
     ":searchbox_test_utils",
     "//chrome/browser/ui",
-    "//components/lens:lens",
     "//chrome/browser/ui/omnibox",
     "//chrome/test:test_support_ui",
+    "//components/lens",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//ui/display",
