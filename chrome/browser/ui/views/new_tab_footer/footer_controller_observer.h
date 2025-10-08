@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_NEW_TAB_FOOTER_FOOTER_CONTROLLER_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
 namespace new_tab_footer {
 

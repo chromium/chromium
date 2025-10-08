@@ -22,7 +22,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -46,6 +45,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 
 class GURL;
+class OptimizationGuideKeyedService;
 class Profile;
 class MicrosoftAuthService;
 class NTPUserDataLogger;
@@ -230,20 +230,20 @@ class NewTabPageHandler
   // loadable.
   bool SyncMicrosoftModulesWithAuth();
 
-  raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
-  raw_ptr<search_provider_logos::LogoService> logo_service_;
-  raw_ptr<const ui::ThemeProvider> theme_provider_;
-  raw_ptr<ThemeService> theme_service_;
-  raw_ptr<syncer::SyncService> sync_service_;
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
+  raw_ptr<NtpCustomBackgroundService> const ntp_custom_background_service_;
+  raw_ptr<search_provider_logos::LogoService> const logo_service_;
+  raw_ptr<const ui::ThemeProvider> const theme_provider_;
+  raw_ptr<ThemeService> const theme_service_;
+  raw_ptr<syncer::SyncService> const sync_service_;
+  raw_ptr<segmentation_platform::SegmentationPlatformService> const
       segmentation_platform_service_;
   GURL last_blocklisted_;
   std::optional<base::TimeTicks> one_google_bar_load_start_time_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Profile> const profile_;
+  raw_ptr<content::WebContents> const web_contents_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   base::Time ntp_navigation_start_time_;
-  raw_ptr<const std::vector<ntp::ModuleIdDetail>> module_id_details_;
+  raw_ptr<const std::vector<ntp::ModuleIdDetail>> const module_id_details_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
@@ -251,8 +251,9 @@ class NewTabPageHandler
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<PromoService> promo_service_;
-  raw_ptr<MicrosoftAuthService> microsoft_auth_service_;
-  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  raw_ptr<MicrosoftAuthService> const microsoft_auth_service_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
+      nullptr;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
