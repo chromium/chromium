@@ -62,7 +62,10 @@ class MockGlicWindowController
               (WindowActivationChangedCallback),
               (override));
   MOCK_METHOD(void, Preload, (), (override));
-  MOCK_METHOD(void, Reload, (), (override));
+  MOCK_METHOD(void,
+              Reload,
+              (content::RenderFrameHost * render_frame_host),
+              (override));
   MOCK_METHOD(bool, IsWarmed, (), (const, override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetGlicViewAsView, (), (override));
   MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (const, override));

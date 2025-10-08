@@ -84,6 +84,25 @@ void Host::Shutdown() {
   contents_.reset();
 }
 
+void Host::Reload(content::RenderFrameHost* render_frame_host) {
+  content::RenderFrameHost* outer_frame =
+      render_frame_host->GetOutermostMainFrame();
+
+  // Reload if the outer frame matches either the WebUI frame or the guest
+  // frame.
+  auto* contents = webui_contents();
+  if (contents && contents->GetOuterWebContentsFrame() == outer_frame) {
+    Reload();
+    return;
+  }
+  auto* handler = page_handler();
+  if (handler) {
+    if (handler->GetGuestMainFrame() == outer_frame) {
+      Reload();
+    }
+  }
+}
+
 void Host::Reload() {
   auto* contents = webui_contents();
   if (!contents) {

@@ -204,7 +204,9 @@ class Host : public GlicSharingManagerProvider {
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
 
-  // Reload the web contents, if it is present.
+  // Reload the web contents, if it is present and matches.
+  void Reload(content::RenderFrameHost* render_frame_host);
+  // Reload the web contents.
   void Reload();
 
   // Creates the web contents that will own the Glic WebUI.

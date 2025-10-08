@@ -1522,8 +1522,9 @@ void GlicWindowControllerImpl::Preload() {
   }
 }
 
-void GlicWindowControllerImpl::Reload() {
-  host().Reload();
+void GlicWindowControllerImpl::Reload(
+    content::RenderFrameHost* render_frame_host) {
+  host().Reload(render_frame_host);
 }
 
 bool GlicWindowControllerImpl::IsWarmed() const {

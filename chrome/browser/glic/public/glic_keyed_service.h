@@ -239,7 +239,7 @@ class GlicKeyedService : public KeyedService,
   virtual void TryPreload();
   void TryPreloadAfterDelay();
   virtual void TryPreloadFre(GlicPrewarmingFreSource source);
-  void Reload();
+  void Reload(content::RenderFrameHost* render_frame_host);
 
   Profile* profile() const { return profile_; }
 

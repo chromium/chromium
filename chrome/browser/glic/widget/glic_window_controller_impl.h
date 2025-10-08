@@ -95,7 +95,7 @@ class GlicWindowControllerImpl
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
   void Preload() override;
-  void Reload() override;
+  void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowController> GetWeakPtr() override;
 

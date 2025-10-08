@@ -774,15 +774,18 @@ void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
                                GetWeakPtr(), source));
 }
 
-void GlicKeyedService::Reload() {
+void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
   if (fre_controller_->IsShowingDialog()) {
     if (auto* fre_contents = fre_controller_->GetWebContents()) {
-      fre_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
-                                           /*check_for_repost=*/false);
+      if (fre_contents ==
+          content::WebContents::FromRenderFrameHost(render_frame_host)) {
+        fre_contents->GetController().Reload(
+            content::ReloadType::BYPASSING_CACHE,
+            /*check_for_repost=*/false);
+      }
     }
-  } else {
-    window_controller().Reload();
   }
+  window_controller().Reload(render_frame_host);
 }
 
 void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {

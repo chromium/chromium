@@ -264,9 +264,13 @@ void GlicInstanceCoordinatorImpl::Preload() {
   CreateWarmedInstance();
 }
 
-void GlicInstanceCoordinatorImpl::Reload() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
+void GlicInstanceCoordinatorImpl::Reload(
+    content::RenderFrameHost* render_frame_host) {
+  for (auto iter = instances_.begin(); iter != instances_.end();) {
+    // Advance iterator now, in case Reload deletes the instance.
+    auto& instance = *iter++;
+    instance.second->host().Reload(render_frame_host);
+  }
 }
 
 bool GlicInstanceCoordinatorImpl::IsWarmed() const {

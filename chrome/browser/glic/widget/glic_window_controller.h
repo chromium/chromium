@@ -29,6 +29,10 @@
 #include "ui/views/widget/widget.h"
 
 class Browser;
+
+namespace content {
+class RenderFrameHost;
+}
 namespace gfx {
 class Size;
 class Point;
@@ -131,7 +135,7 @@ class GlicWindowController : public GlicInstance::UIDelegate,
 
   // Reloads the glic web contents or the FRE's web contents (depending on
   // which is currently visible).
-  virtual void Reload() = 0;
+  virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;
 
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
