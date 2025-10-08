@@ -179,12 +179,6 @@ suite(`PrivacySandbox`, function() {
   });
 });
 
-suite('WebPrintingNotShown', function () {
-  test('navigateToWebPrinting', function () {
-    assertThrows(() => Router.getInstance().navigateTo(routes.SITE_SETTINGS_WEB_PRINTING));
-  });
-});
-
 suite(`CookiesSubpage`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;

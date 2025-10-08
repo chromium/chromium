@@ -1279,16 +1279,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list2_;
 };
 
-// Tests that the content settings page for Web Printing is not shown by
-// default.
-class SettingsPrivacyPageTestWithoutWebPrinting : public SettingsBrowserTest {};
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestWithoutWebPrinting,
-                       WebPrintingNotShown) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('WebPrintingNotShown')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
@@ -1702,6 +1692,17 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        ContentSettingsVisibility) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('ContentSettingsVisibility')");
+}
+
+// Tests that the content settings page for Web Printing is not shown by
+// default.
+class SettingsSiteSettingsPageTestWithoutWebPrinting
+    : public SettingsBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTestWithoutWebPrinting,
+                       WebPrintingNotShown) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('WebPrintingNotShown')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SoundPage) {
