@@ -306,6 +306,10 @@ public class Features {
     public static final String ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS =
             "ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS";
 
+    // WebViewCompat.startUpWebView
+    // WebViewStartUpResult.getAsyncStartUpLocations
+    public static final String ASYNC_WEBVIEW_STARTUP_V2 = "ASYNC_WEBVIEW_STARTUP_V2";
+
     // WebViewCompat.prerenderUrl
     // WebViewCompat.clearPrerender
     public static final String PRERENDER_WITH_URL = "PRERENDER_URL_V3";
