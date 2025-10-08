@@ -5115,14 +5115,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Navigation history is closed
       </message>
 
-      <!-- Rtl Gesture Nav Iph -->
-      <message name="IDS_RTL_GESTURE_NAV_IPH_DIALOG_TITLE" desc="Title string for help dialog of educating users on how to navigate by gesture in RTL mode.">
-        A new way to swipe
-      </message>
-      <message name="IDS_RTL_GESTURE_NAV_IPH_DIALOG_CONTENT" desc="Content string for help dialog of educating users on how to navigate by gesture in RTL mode.">
-        Now, a right swipe takes you backward to see previous pages you’ve visited and a left swipe moves you forward
-      </message>
-
       <!-- Ephemeral Tab -->
       <message name="IDS_EPHEMERAL_TAB_SHEET_DESCRIPTION" desc="The content description of the preview tab bottom sheet.">
         Preview tab

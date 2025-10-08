@@ -793,7 +793,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.gesturenav") {
     "src/org/chromium/chrome/browser/gesturenav/NavigationHandlerTest.java",
     "src/org/chromium/chrome/browser/gesturenav/NavigationSheetTest.java",
     "src/org/chromium/chrome/browser/gesturenav/NavigationTransitionsTest.java",
-    "src/org/chromium/chrome/browser/gesturenav/RtlGestureNavIphTest.java",
     "src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTest.java",
   ]
 

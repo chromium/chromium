@@ -89,10 +89,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
-import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
-import org.chromium.chrome.browser.gesturenav.RtlGestureNavIphController;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
@@ -194,7 +192,6 @@ import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordi
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -212,7 +209,6 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -245,7 +241,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ReadLaterIphController mReadLaterIphController;
     private DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
     private PdfPageIphController mPdfPageIphController;
-    private RtlGestureNavIphController mRtlGestureNavIphController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
@@ -681,11 +676,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mPdfPageIphController = null;
         }
 
-        if (mRtlGestureNavIphController != null) {
-            mRtlGestureNavIphController.destroy();
-            mRtlGestureNavIphController = null;
-        }
-
         if (mCoordinator != null && mDragDropTouchObserver != null) {
             ((CoordinatorLayoutForPointer) mCoordinator)
                     .removeTouchEventObserver(mDragDropTouchObserver);
@@ -900,20 +890,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     case ActionType.EXIT_APP:
                                         mSendToBackground.onResult(tab);
                                         break;
-                                }
-                            }
-
-                            @Override
-                            public void onGestureUnhandled() {
-                                if (mRtlGestureNavIphController != null) {
-                                    mRtlGestureNavIphController.onGestureUnhandled();
-                                }
-                            }
-
-                            @Override
-                            public void onGestureHandled() {
-                                if (mRtlGestureNavIphController != null) {
-                                    mRtlGestureNavIphController.onGestureHandled();
                                 }
                             }
                         },
@@ -1252,15 +1228,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         new LinkToTextIphController(
                 mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
-        if (!didTriggerPromo
-                && mWindowAndroid.getWindow() != null
-                && LocalizationUtils.isLayoutRtl()
-                && GestureNavigationUtils.areBackForwardTransitionsEnabled()
-                && ChromeFeatureList.isEnabled(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)
-                && !UiUtils.isGestureNavigationMode(mWindowAndroid.getWindow())) {
-            mRtlGestureNavIphController =
-                    new RtlGestureNavIphController(mActivityTabProvider, mProfileSupplier);
-        }
 
         Tab tab = mActivityTabProvider.get();
 
@@ -1679,10 +1646,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
-    }
-
-    public RtlGestureNavIphController getRtlGestureNavIphControllerForTesting() {
-        return mRtlGestureNavIphController;
     }
 
     public TabbedSystemUiCoordinator getTabbedSystemUiCoordinatorForTesting() {

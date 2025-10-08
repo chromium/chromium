@@ -127,7 +127,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
-    FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE,
@@ -420,9 +419,6 @@ public @interface FeatureConstants {
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
      */
     String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
-
-    /** An IPH feature to inform users about the gesture navigation in RTL mode. */
-    String IPH_RTL_GESTURE_NAVIGATION = "IPH_RtlGestureNavigation";
 
     /** An IPH feature to inform users about the pdf download option in the app menu. */
     String IPH_PDF_PAGE_DOWNLOAD = "IPH_PdfPageDownload";

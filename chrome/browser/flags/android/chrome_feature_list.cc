@@ -173,7 +173,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kTaskManagerClank,
     &features::kQuietNotificationPrompts,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
-    &feature_engagement::kIPHRtlGestureNavigationFeature,
     &feed::kAndroidOpenIncognitoAsWindow,
     &feed::kFeedAudioOverviews,
     &feed::kFeedContainment,

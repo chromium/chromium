@@ -1717,18 +1717,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHRtlGestureNavigationFeature.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(LESS_THAN, 1);
-    config.used =
-        EventConfig("rtl_gesture_iph_show", Comparator(EQUAL, 0), 365, 365);
-    config.trigger =
-        EventConfig("rtl_gesture_iph_trigger", Comparator(EQUAL, 0), 30, 365);
-    return config;
-  }
-
   if (kIPHPageZoomFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

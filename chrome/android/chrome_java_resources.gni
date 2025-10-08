@@ -413,7 +413,6 @@ chrome_java_resources = [
   "java/res/drawable/qr_code.xml",
   "java/res/drawable/reading_list_empty_state_illustration.xml",
   "java/res/drawable/receipt_long.xml",
-  "java/res/drawable/rtl_gesture_nav_iph_dialog_drawable.xml",
   "java/res/drawable/search_activity_bg.xml",
   "java/res/drawable/send_tab.xml",
   "java/res/drawable/shared_clipboard_zero_state_dark.xml",

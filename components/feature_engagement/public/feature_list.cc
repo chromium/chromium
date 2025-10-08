@@ -124,7 +124,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSharedHighlightingReceiverFeature,
     &kIPHSharingHubWebnotesStylizeFeature,
     &kIPHRestoreTabsOnFREFeature,
-    &kIPHRtlGestureNavigationFeature,
     &kIPHTabSwitcherXR,
     &kIPHTabTearingXR,
 #endif  // BUILDFLAG(IS_ANDROID)
