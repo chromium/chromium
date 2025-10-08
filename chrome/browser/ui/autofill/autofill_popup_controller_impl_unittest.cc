@@ -74,17 +74,17 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
   }
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-  client().popup_controller(manager()).OnPopupPainted();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Only now suggestions should be accepted.
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
@@ -104,17 +104,17 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsWaitsForPaint) {
   // No matter how long painting takes, the threshold starts counting only once
   // the popup has been painted.
   task_environment()->FastForwardBy(base::Seconds(2));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 
-  client().popup_controller(manager()).OnPopupPainted();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
   // Only now suggestions should be accepted.
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
@@ -131,12 +131,12 @@ TEST_F(AutofillPopupControllerImplTest,
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 
-  client().popup_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).OnPopupPainted();
   // Calls before the threshold are ignored.
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
@@ -146,16 +146,16 @@ TEST_F(AutofillPopupControllerImplTest,
 
   // The threshold timer does not start until the popup is painted.
   task_environment()->FastForwardBy(base::Seconds(2));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
-  client().popup_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).OnPopupPainted();
 
   // After waiting again, suggestions become acceptable.
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
@@ -167,12 +167,12 @@ TEST_F(AutofillPopupControllerImplTest,
 
   ShowSuggestions(manager(), {SuggestionType::kCreateNewPlusAddressInline});
 
-  client().popup_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).OnPopupPainted();
   // Calls before the threshold are ignored.
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
@@ -180,13 +180,13 @@ TEST_F(AutofillPopupControllerImplTest,
   ShowSuggestions(
       manager(), {SuggestionType::kCreateNewPlusAddressInline},
       AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
 }
@@ -194,10 +194,10 @@ TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
 // Tests that a sub-popup shares its UI session id with its parent controller.
 TEST_F(AutofillPopupControllerImplTest, SubPopupHasSameUiSessionIdAsParent) {
   const std::optional<AutofillSuggestionController::UiSessionId> parent_id =
-      client().popup_controller(manager()).GetUiSessionId();
+      client().suggestion_controller(manager()).GetUiSessionId();
   ASSERT_TRUE(parent_id.has_value());
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
   EXPECT_EQ(sub_controller->GetUiSessionId(), parent_id);
@@ -210,7 +210,7 @@ TEST_F(AutofillPopupControllerImplTest,
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
 
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {Suggestion(SuggestionType::kAddressEntry)},
           AutoselectFirstSuggestion(false));
   ASSERT_TRUE(sub_controller);
@@ -307,7 +307,8 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_PopupInteraction_PopupLevel_0_SuggestionShown"));
 
-  static_cast<AutofillPopupController&>(client().popup_controller(manager()))
+  static_cast<AutofillPopupController&>(
+      client().suggestion_controller(manager()))
       .SelectSuggestion(/*index=*/0);
   histogram_tester.ExpectBucketCount(
       "Autofill.PopupInteraction.PopupLevel.0.Address",
@@ -318,9 +319,9 @@ TEST_F(AutofillPopupControllerImplTest,
             user_action_tester.GetActionCount(
                 "Autofill_PopupInteraction_PopupLevel_0_SuggestionSelected"));
 
-  client().popup_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).OnPopupPainted();
   task_environment()->FastForwardBy(base::Milliseconds(1000));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 
   histogram_tester.ExpectBucketCount(
@@ -340,33 +341,35 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown).Times(0);
   ON_CALL(*client().sub_popup_view(), Show).WillByDefault(Return(true));
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
   EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden()).Times(0);
   sub_controller->Hide(SuggestionHidingReason::kUserAborted);
 
   EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden());
-  client().popup_controller(manager()).Hide(
+  client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kUserAborted);
 }
 
 TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
   EXPECT_CALL(manager().external_delegate(), OnSuggestionsShown).Times(0);
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
   input::NativeWebKeyboardEvent event = CreateKeyPressEvent(ui::VKEY_LEFT);
   EXPECT_CALL(*client().sub_popup_view(), HandleKeyPressEvent)
       .WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(), HandleKeyPressEvent).Times(0);
-  EXPECT_TRUE(client().popup_controller(manager()).HandleKeyPressEvent(event));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).HandleKeyPressEvent(event));
 
   EXPECT_CALL(*client().sub_popup_view(), HandleKeyPressEvent)
       .WillOnce(Return(false));
   EXPECT_CALL(*client().popup_view(), HandleKeyPressEvent).Times(1);
-  EXPECT_FALSE(client().popup_controller(manager()).HandleKeyPressEvent(event));
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).HandleKeyPressEvent(event));
 }
 
 // Tests that the controller forwards calls to perform a button action (such as
@@ -375,7 +378,7 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
   ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
   EXPECT_CALL(manager().external_delegate(),
               DidPerformButtonActionForSuggestion);
-  client().popup_controller(manager()).PerformButtonActionForSuggestion(
+  client().suggestion_controller(manager()).PerformButtonActionForSuggestion(
       0, SuggestionButtonAction());
 }
 
@@ -383,7 +386,7 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
 // the information regarding the popup level is passed on to the delegate.
 TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
-      client().popup_controller(manager()).OpenSubPopup(
+      client().suggestion_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {Suggestion(SuggestionType::kAddressEntry)},
           AutoselectFirstSuggestion(false));
   ASSERT_TRUE(sub_controller);
@@ -407,7 +410,7 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
   task_environment()->FastForwardBy(base::Milliseconds(1000));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
@@ -419,7 +422,7 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
 
   EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
   task_environment()->FastForwardBy(base::Milliseconds(1000));
-  client().popup_controller(manager()).SelectSuggestion(/*index=*/0);
+  client().suggestion_controller(manager()).SelectSuggestion(/*index=*/0);
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -434,7 +437,7 @@ TEST_F(AutofillPopupControllerImplTest,
   test::GenerateTestAutofillPopup(&manager().external_delegate());
 
   EXPECT_TRUE(client()
-                  .popup_controller(manager())
+                  .suggestion_controller(manager())
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
@@ -445,7 +448,7 @@ TEST_F(AutofillPopupControllerImplTest,
       AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_TRUE(client()
-                  .popup_controller(manager())
+                  .suggestion_controller(manager())
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
@@ -457,8 +460,9 @@ TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
   constexpr gfx::Rect kSampleRect = gfx::Rect(123, 234);
   EXPECT_CALL(*client().popup_view(), GetPopupScreenLocation)
       .WillOnce(Return(PopupScreenLocation{.bounds = kSampleRect}));
-  EXPECT_THAT(client().popup_controller(manager()).GetPopupScreenLocation(),
-              Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
+  EXPECT_THAT(
+      client().suggestion_controller(manager()).GetPopupScreenLocation(),
+      Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
 }
 
 // Tests that Compose saved state notification popup gets hidden after 2
@@ -471,13 +475,13 @@ TEST_F(AutofillPopupControllerImplTest,
   {
     ::testing::InSequence s;
     EXPECT_CALL(check, Call);
-    EXPECT_CALL(client().popup_controller(manager()),
+    EXPECT_CALL(client().suggestion_controller(manager()),
                 Hide(SuggestionHidingReason::kFadeTimerExpired));
   }
   task_environment()->FastForwardBy(base::Seconds(1));
   check.Call();
   task_environment()->FastForwardBy(base::Seconds(1));
-  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+  Mock::VerifyAndClearExpectations(&client().suggestion_controller(manager()));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
@@ -486,7 +490,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(*client().popup_view(), HasFocus).WillOnce(Return(false));
   EXPECT_CALL(*client().popup_view(), Hide);
-  client().popup_controller(manager()).Hide(
+  client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kFocusChanged);
 
   Mock::VerifyAndClearExpectations(client().popup_view());
@@ -498,7 +502,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(*client().popup_view(), HasFocus).WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(), Hide).Times(0);
-  client().popup_controller(manager()).Hide(
+  client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kFocusChanged);
 
   Mock::VerifyAndClearExpectations(client().popup_view());
@@ -510,7 +514,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(*client().popup_view(), HasFocus).WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(), Hide).Times(0);
-  client().popup_controller(manager()).Hide(
+  client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kEndEditing);
 
   Mock::VerifyAndClearExpectations(client().popup_view());
@@ -534,13 +538,13 @@ TEST_F(AutofillPopupControllerImplTest,
   // changed.
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   Mock::VerifyAndClearExpectations(client().popup_view());
 
   EXPECT_TRUE(client()
-                  .popup_controller(manager())
+                  .suggestion_controller(manager())
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
@@ -551,22 +555,23 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   // Triggered by OnZoomChanged().
-  EXPECT_CALL(client().popup_controller(manager()),
+  EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kContentAreaMoved));
   // Override the default ON_CALL behavior to do nothing to avoid destroying the
   // hide helper. We want to test ZoomObserver events explicitly.
-  EXPECT_CALL(client().popup_controller(manager()),
+  EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kWidgetChanged))
       .WillOnce(Return());
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
   zoom_controller->SetZoomLevel(zoom_controller->GetZoomLevel() + 1.0);
   // Verify and clear before TearDown() closes the popup.
-  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+  Mock::VerifyAndClearExpectations(&client().suggestion_controller(manager()));
 }
 
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_NoFilteringByDefault) {
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(),
                   {Suggestion(u"abc", SuggestionType::kAutocompleteEntry)});
 
@@ -576,7 +581,8 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_SuggestionChangeNotifications) {
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(),
                   {
                       Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
@@ -593,7 +599,8 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(),
                   {
                       Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
@@ -627,7 +634,8 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
 
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_SuggestionIsDeletedFromFilteredList) {
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(),
                   {
                       Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
@@ -659,7 +667,8 @@ TEST_F(AutofillPopupControllerImplTest,
   Suggestion footer_suggestion2 = Suggestion(kUndoOrClear);
   footer_suggestion2.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc", kAddressEntry),
                                  Suggestion(u"abx", kAddressEntry),
@@ -693,7 +702,8 @@ TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_HasFilteredOutSuggestions) {
   using enum SuggestionType;
 
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abcd", kAddressEntry),
                                  Suggestion(u"abxy", kAddressEntry),
@@ -715,7 +725,8 @@ TEST_F(
   suggestion2.filtration_policy =
       Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
 
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   ShowSuggestions(manager(), {std::move(suggestion1), std::move(suggestion2)});
 
   ASSERT_EQ(controller.GetSuggestions().size(), 2u);
@@ -726,7 +737,8 @@ TEST_F(
 
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_NonEmptyFilterStatusIsPassedToDelegateOnAccepting) {
-  AutofillPopupController& controller = client().popup_controller(manager());
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
   test_api(static_cast<AutofillPopupControllerImpl&>(controller))
       .DisableThreshold(true);
   ShowSuggestions(manager(),
@@ -759,15 +771,15 @@ TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   // changed.
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   Mock::VerifyAndClearExpectations(client().popup_view());
 
   // Remove the next entry. The popup should then be hidden since there are
   // no Autofill entries left.
-  EXPECT_CALL(client().popup_controller(manager()),
+  EXPECT_CALL(client().suggestion_controller(manager()),
               Hide(SuggestionHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
 }
 
@@ -783,7 +795,7 @@ TEST_F(AutofillPopupControllerImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(),
               AxAnnounce(Eq(u"Entry main text has been deleted")));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
 }
 
@@ -797,7 +809,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
       .WillOnce(Return(false));
 
-  EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
@@ -817,7 +829,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kAutocompleteEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
@@ -842,7 +854,7 @@ TEST_F(AutofillPopupControllerImplTest,
       RemoveSuggestion(Field(&Suggestion::type, SuggestionType::kAddressEntry)))
       .WillOnce(Return(false));
 
-  EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_FALSE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
   histogram_tester.ExpectUniqueSample(
@@ -860,7 +872,7 @@ TEST_F(AutofillPopupControllerImplTest,
       RemoveSuggestion(Field(&Suggestion::type, SuggestionType::kAddressEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
@@ -891,7 +903,7 @@ TEST_F(AutofillPopupControllerImplTest,
                   Field(&Suggestion::type, SuggestionType::kCreditCardEntry)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Autocomplete.SingleEntryRemovalMethod",
@@ -907,7 +919,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
-  client().popup_controller(manager()).UnselectSuggestion();
+  client().suggestion_controller(manager()).UnselectSuggestion();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1003,7 +1015,7 @@ class AutofillPopupControllerImplTestAccessibility
     AutofillPopupControllerImplTestAccessibilityBase::SetUp();
 
     ON_CALL(driver(), GetAxTreeId()).WillByDefault(Return(test_tree_id_));
-    ON_CALL(client().popup_controller(manager()),
+    ON_CALL(client().suggestion_controller(manager()),
             GetRootAXPlatformNodeForWebContents)
         .WillByDefault(Return(&mock_ax_platform_node_));
     ON_CALL(mock_ax_platform_node_, IsDestroyed).WillByDefault(Return(false));
@@ -1036,10 +1048,10 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   // Manually fire the event for popup show since setting the test view results
   // in the fire controls changed event not being sent.
-  client().popup_controller(manager()).FireControlsChangedEvent(true);
+  client().suggestion_controller(manager()).FireControlsChangedEvent(true);
   EXPECT_EQ(kAxUniqueId, ui::GetActivePopupAxUniqueId());
 
-  client().popup_controller(manager()).DoHide();
+  client().suggestion_controller(manager()).DoHide();
   EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 
@@ -1054,7 +1066,7 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   // Manually fire the event for popup show since setting the test view results
   // in the fire controls changed event not being sent.
-  client().popup_controller(manager()).FireControlsChangedEvent(true);
+  client().suggestion_controller(manager()).FireControlsChangedEvent(true);
   EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 
@@ -1069,7 +1081,7 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   // Manually fire the event for popup show since setting the test view results
   // in the fire controls changed event not being sent.
-  client().popup_controller(manager()).FireControlsChangedEvent(true);
+  client().suggestion_controller(manager()).FireControlsChangedEvent(true);
   EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 #endif

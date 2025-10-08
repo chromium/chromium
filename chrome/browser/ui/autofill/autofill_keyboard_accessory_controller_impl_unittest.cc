@@ -105,16 +105,16 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   }
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Only now suggestions should be accepted.
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
@@ -131,30 +131,30 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   // Calls before the threshold are ignored.
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
   // different).
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 
   // After waiting again, suggestions become acceptable.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 // Tests that calling `Show()` on the controller shows the view.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {
   // Ensure that controller and view have been created.
-  client().popup_controller(manager());
+  client().suggestion_controller(manager());
 
   EXPECT_CALL(*client().popup_view(), Show());
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
@@ -167,7 +167,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
                                          SuggestionType::kAutocompleteEntry)});
 
   EXPECT_CALL(*client().popup_view(), Hide);
-  client().popup_controller(manager()).Hide(SuggestionHidingReason::kTabGone);
+  client().suggestion_controller(manager()).Hide(
+      SuggestionHidingReason::kTabGone);
   // The keyboard accessory view is destroyed synchronously.
   EXPECT_FALSE(client().popup_view());
 }
@@ -178,8 +179,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       manager(),
       {Suggestion(u"Entry", SuggestionType::kAddressFieldByFieldFilling)});
 
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, nullptr));
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -188,8 +190,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                                  SuggestionType::kAddressFieldByFieldFilling,
                                  u"Entry", Suggestion::Guid("1111"))});
 
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, nullptr));
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -197,8 +200,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
                                          SuggestionType::kAutocompleteEntry)});
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -213,8 +217,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_LocalCreditCard) {
   CreditCard local_card = ShowLocalCardSuggestion();
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -235,8 +240,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                       SuggestionType::kCreditCardEntry, u"Server credit card",
                       Suggestion::Guid(server_card.guid()))});
 
-  EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, nullptr));
+  EXPECT_FALSE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, nullptr));
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -244,8 +250,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   AutofillProfile complete_profile = test::GetFullProfile();
   ShowAutofillProfileSuggestion(complete_profile);
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -267,8 +274,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                             web_contents()->GetBrowserContext())
                             ->email);
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -292,8 +300,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                             web_contents()->GetBrowserContext())
                             ->email);
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -317,8 +326,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                             web_contents()->GetBrowserContext())
                             ->email);
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -343,8 +353,9 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
                                      Suggestion::Guid(profile.guid())))});
 
   RemovalConfirmationText confirmation_text;
-  EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
-      0, &confirmation_text));
+  EXPECT_TRUE(
+      client().suggestion_controller(manager()).GetRemovalConfirmationText(
+          0, &confirmation_text));
   EXPECT_THAT(
       confirmation_text,
       MatchesConfirmationText(
@@ -371,7 +382,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
   EXPECT_CALL(*client().popup_view(),
               AxAnnounce(Eq(u"Entry Autocomplete entry has been deleted")));
 
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+  EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       /*index=*/0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 }
@@ -387,10 +398,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion)
       .WillOnce([this]() {
-        client().popup_controller(manager()).Hide(
+        client().suggestion_controller(manager()).Hide(
             SuggestionHidingReason::kAcceptSuggestion);
       });
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
@@ -403,7 +414,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
@@ -413,11 +424,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, ReorderUpdatedSuggestions) {
   const std::vector<Suggestion> suggestions =
       CreateSuggestionsWithUndoOrClearEntry(/*clear_form_offset=*/2);
   // Force creation of controller and view.
-  client().popup_controller(manager());
+  client().suggestion_controller(manager());
   EXPECT_CALL(*client().popup_view(), Show);
   ShowSuggestions(manager(), suggestions);
 
-  EXPECT_THAT(client().popup_controller(manager()).GetSuggestions(),
+  EXPECT_THAT(client().suggestion_controller(manager()).GetSuggestions(),
               ElementsAre(suggestions[2], suggestions[0], suggestions[1],
                           suggestions[3]));
 }
@@ -433,20 +444,24 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(0),
-              label_is(std::u16string()));
+  EXPECT_THAT(
+      client().suggestion_controller(manager()).GetSuggestionLabelsAt(0),
+      label_is(std::u16string()));
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(1),
-              label_is(u"********"));
+  EXPECT_THAT(
+      client().suggestion_controller(manager()).GetSuggestionLabelsAt(1),
+      label_is(u"********"));
 
   // If the label is empty, use the additional label:
-  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(2),
-              label_is(u"psl.origin.eg ********"));
+  EXPECT_THAT(
+      client().suggestion_controller(manager()).GetSuggestionLabelsAt(2),
+      label_is(u"psl.origin.eg ********"));
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(3),
-              label_is(u"***"));
+  EXPECT_THAT(
+      client().suggestion_controller(manager()).GetSuggestionLabelsAt(3),
+      label_is(u"***"));
 }
 
 // This is a regression test for crbug.com/521133 to ensure that we don't crash
@@ -457,10 +472,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0,  // Non-acceptable type.
       autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
-  client().popup_controller(manager()).AcceptSuggestion(
+  client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/1,  // Out of bounds!
       autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
@@ -477,7 +492,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Simulate user accepting deletion dialog.
   EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
       .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/true));
-  client().popup_controller(manager()).RemoveSuggestion(
+  client().suggestion_controller(manager()).RemoveSuggestion(
       /*index=*/0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 
@@ -498,7 +513,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Simulate user cancelling deletion dialog.
   EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
       .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/false));
-  client().popup_controller(manager()).RemoveSuggestion(
+  client().suggestion_controller(manager()).RemoveSuggestion(
       /*index=*/0,
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 
