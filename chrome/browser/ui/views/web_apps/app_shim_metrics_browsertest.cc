@@ -18,7 +18,8 @@ void FetchHistogramsFromChildProcesses() {
 
 using AppShimMetricsTest = WebAppIntegrationTest;
 
-IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, Basics) {
+// TODO(crbug.com/450134727): Re-enable this test
+IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, DISABLED_Basics) {
   base::HistogramTester histogram_tester;
   helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
