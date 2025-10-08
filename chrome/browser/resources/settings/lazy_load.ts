@@ -298,6 +298,7 @@ export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSyste
 // <if expr="is_chromeos">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 // </if>
+export {SoundPageElement} from './site_settings/sound_page.js';
 export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
 export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
 export {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from './site_settings/storage_access_static_site_list_entry.js';

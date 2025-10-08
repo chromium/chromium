@@ -1322,11 +1322,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");
 }
 
-// TODO(crbug.com/40669164): flaky crash on Linux Tests (dbg).
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_PrivacyPageSound) {
-  RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPageSound')");
-}
-
 // TODO(crbug.com/40710522): flaky failure on multiple platforms
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        DISABLED_HappinessTrackingSurveys) {
@@ -1706,6 +1701,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        MAYBE_UnusedSitePermissionsReview) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('UnusedSitePermissionsReview')");
+}
+
+// TODO(crbug.com/40669164): flaky crash on Linux Tests (dbg).
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, DISABLED_SoundPage) {
+  RunTest("settings/sound_page_test.js", "runMochaSuite('SoundPage')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
