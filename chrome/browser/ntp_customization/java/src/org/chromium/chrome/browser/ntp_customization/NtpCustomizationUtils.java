@@ -202,7 +202,7 @@ public class NtpCustomizationUtils {
             Context context) {
         if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
 
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageType();
+        @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
         if (imageType == NtpBackgroundImageType.DEFAULT) {
             return null;
         }
@@ -222,7 +222,7 @@ public class NtpCustomizationUtils {
     public @Nullable static NtpThemeColorInfo loadColorInfoFromSharedPreference(Context context) {
         if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
 
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageType();
+        @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
         if (imageType == NtpBackgroundImageType.DEFAULT) {
             return null;
         }
@@ -271,18 +271,19 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Sets the NTP's background image type.
+     * Sets the NTP's background image type to the SharedPreference.
      *
      * @param imageType The new image type.
      */
-    public static void setNtpBackgroundImageType(@NtpBackgroundImageType int imageType) {
+    public static void setNtpBackgroundImageTypeToSharedPreference(
+            @NtpBackgroundImageType int imageType) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE, imageType);
     }
 
-    /** Gets the current NTP's background image type. */
-    public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
+    /** Gets the current NTP's background image type from the SharedPreference. */
+    public static @NtpBackgroundImageType int getNtpBackgroundImageTypeFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,

@@ -138,12 +138,14 @@ public class NtpCustomizationUtilsUnitTest {
     public void testGetAndSetNtpBackgroundImageType() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         assertEquals(
-                NtpBackgroundImageType.DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
+                NtpBackgroundImageType.DEFAULT,
+                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
 
         @NtpBackgroundImageType int imageType = IMAGE_FROM_DISK;
-        NtpCustomizationUtils.setNtpBackgroundImageType(imageType);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(imageType);
 
-        assertEquals(imageType, NtpCustomizationUtils.getNtpBackgroundImageType());
+        assertEquals(
+                imageType, NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
     }
 
     @Test
@@ -258,7 +260,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
         assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
     }
@@ -266,7 +269,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorNotSet() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
 
@@ -277,7 +281,8 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet() {
         @NtpThemeColorId int colorId = NtpThemeColorId.BLUE;
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
         @ColorInt int primaryColor = mContext.getColor(R.color.ntp_color_blue_primary);
 
@@ -289,7 +294,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(IMAGE_FROM_DISK);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.BLUE);
 
         assertEquals(
@@ -306,7 +311,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testLoadColorInfoFromSharedPreference_wrongImageType() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
         assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
     }
@@ -314,7 +320,8 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testLoadColorInfoFromSharedPreference_chromeColor() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
 
@@ -331,7 +338,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testLoadColorInfoFromSharedPreference_colorFromHex() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(COLOR_FROM_HEX);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(COLOR_FROM_HEX);
         @ColorInt int primaryColor = Color.RED;
         @ColorInt int backgroundColor = Color.BLUE;
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
@@ -347,7 +354,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testLoadColorInfoFromSharedPreference_colorSetWithImage() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(IMAGE_FROM_DISK);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(IMAGE_FROM_DISK);
         // Verifies that null is returned if no primary color is set.
         assertNull(NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext));
 
@@ -489,7 +496,8 @@ public class NtpCustomizationUtilsUnitTest {
         NtpThemeColorInfo ntpThemeColorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId);
         @ColorInt int primaryColor = mContext.getColor(ntpThemeColorInfo.primaryColorResId);
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
         customizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(

@@ -190,7 +190,8 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE);
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
         assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
 
         createCoordinator();

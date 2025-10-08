@@ -239,7 +239,8 @@ public class NtpThemeMediator {
 
     /** Sets the initial visibility of the trailing icon based on the current theme settings. */
     private void initTrailingIcon() {
-        @NtpBackgroundImageType int imageType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        @NtpBackgroundImageType
+        int imageType = NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference();
         updateTrailingIconVisibilityForSectionType(imageType);
     }
 

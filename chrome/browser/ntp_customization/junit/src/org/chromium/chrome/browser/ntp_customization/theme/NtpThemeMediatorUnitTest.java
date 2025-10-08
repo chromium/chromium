@@ -217,7 +217,7 @@ public class NtpThemeMediatorUnitTest {
 
     @Test
     public void testInitTrailingIcon() {
-        NtpCustomizationUtils.setNtpBackgroundImageType(CHROME_COLOR);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(CHROME_COLOR);
         createMediator(true);
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLOR, true)));

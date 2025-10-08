@@ -109,7 +109,8 @@ public class NtpCustomizationConfigManager {
     private NtpCustomizationConfigManager() {
         mHomepageStateListeners = new ObserverList<>();
 
-        mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        mBackgroundImageType =
+                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference();
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
             mIsInitialized = true;
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageMatrices();
@@ -217,7 +218,7 @@ public class NtpCustomizationConfigManager {
         @NtpBackgroundImageType int oldType = mBackgroundImageType;
 
         mBackgroundImageType = NtpBackgroundImageType.IMAGE_FROM_DISK;
-        NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
 
         notifyBackgroundImageChanged(
                 bitmap, backgroundImageInfo, /* fromInitialization= */ false, oldType);
@@ -248,7 +249,7 @@ public class NtpCustomizationConfigManager {
             @NtpBackgroundImageType int backgroundImageType) {
         @NtpBackgroundImageType int oldType = mBackgroundImageType;
         mBackgroundImageType = backgroundImageType;
-        NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
         mNtpThemeColorInfo = colorInfo;
 
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
