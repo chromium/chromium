@@ -102,11 +102,21 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
     // to `ParseScopeBoundary` here.
     //
     // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
+    //
+    // Note: We are in the process of changing this behavior. The '&' pseudo-
+    // class should now behave like :where(:scope), which is what we
+    // automatically get if we pass nullptr as the parent rule.
+    // See crbug.com/445949406.
+    StyleRule* parent_rule_for_to_selector =
+        RuntimeEnabledFeatures::CSSScopeifiedParentPseudoClassEnabled()
+            ? nullptr
+            : from_rule;
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
     to = CSSSelectorParser::ParseScopeBoundary(
         stream, context, CSSNestingType::kScope,
-        /* parent_rule_for_nesting */ from_rule, style_sheet, arena);
+        /*parent_rule_for_nesting=*/parent_rule_for_to_selector, style_sheet,
+        arena);
     if (to.empty()) {
       return nullptr;
     }
@@ -122,6 +132,13 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
   }
 
   return MakeGarbageCollected<StyleScope>(from_rule, to_list);
+}
+
+StyleRule* StyleScope::RuleForNesting() const {
+  if (RuntimeEnabledFeatures::CSSScopeifiedParentPseudoClassEnabled()) {
+    return nullptr;
+  }
+  return from_.Get();
 }
 
 void StyleScope::Trace(blink::Visitor* visitor) const {

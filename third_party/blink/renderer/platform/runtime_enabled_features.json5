@@ -1540,6 +1540,12 @@
       status: "experimental",
     },
     {
+      // The '&' pseudo-class effectively behaves like :where(:scope)
+      // when used in @scope rules.
+      name: "CSSScopeifiedParentPseudoClass",
+      status: "experimental",
+    },
+    {
       // The "@import scope(...)" syntax.
       // https://github.com/w3c/csswg-drafts/issues/7348
       name: "CSSScopeImport",

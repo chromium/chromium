@@ -58,7 +58,7 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
 
   // The rule to use for resolving the nesting selector (&) for this scope's
   // inner rules.
-  StyleRule* RuleForNesting() const { return from_.Get(); }
+  StyleRule* RuleForNesting() const;
 
   // Returns a copy of StyleScope, with any '&' selectors in the prelude updated
   // to `new_parent`.
