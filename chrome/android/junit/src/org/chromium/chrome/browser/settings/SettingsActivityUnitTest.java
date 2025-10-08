@@ -89,6 +89,17 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "w720dp-h1024dp")
+    public void testApplyOverrides() {
+        startSettings(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+        assertEquals(
+                "SmallestScreenWidthDp should be overridden.",
+                720,
+                mSettingsActivity.getResources().getConfiguration().smallestScreenWidthDp);
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
     public void testAutomotiveBackButtonBarStreamline_hidesToolbarOnStart() {
         // Required for the feature flag check to pass.
