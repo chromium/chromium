@@ -1229,13 +1229,17 @@ Response TargetHandler::ActivateTarget(const std::string& target_id) {
 
 Response TargetHandler::CloseTarget(const std::string& target_id,
                                     bool* out_success) {
-  if (access_mode_ == AccessMode::kAutoAttachOnly) {
-    return Response::ServerError(kNotAllowedError);
-  }
   scoped_refptr<DevToolsAgentHost> agent_host =
       DevToolsAgentHost::GetForId(target_id);
   if (!agent_host) {
     return Response::InvalidParams(kTargetNotFound);
+  }
+  if (access_mode_ == AccessMode::kAutoAttachOnly) {
+    // Only allow to close the targets that we are attached to.
+    if (target_id != owner_target_id_ &&
+        !base::Contains(auto_attached_sessions_, agent_host.get())) {
+      return Response::ServerError(kNotAllowedError);
+    }
   }
   if (!agent_host->Close()) {
     return Response::InvalidParams("Specified target doesn't support closing");

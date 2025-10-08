@@ -111,6 +111,45 @@ chrome.test.getConfig(config => chrome.test.runTests([
     });
   },
 
+  async function closeTarget() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+
+    let onDetachReceived = false;
+    let tabRemovedReceived = false;
+
+    function checkFinish() {
+      if (onDetachReceived && tabRemovedReceived)
+        chrome.test.succeed();
+    }
+
+    function onDetach(debuggee, reason) {
+      chrome.test.assertEq(tab.id, debuggee.tabId);
+      chrome.test.assertEq("target_closed", reason);
+      chrome.debugger.onDetach.removeListener(onDetach);
+      onDetachReceived = true;
+      checkFinish();
+    }
+
+    function onTabRemoved(closedTabId) {
+      chrome.test.assertEq(tab.id, closedTabId);
+      chrome.tabs.onRemoved.removeListener(onTabRemoved);
+      tabRemovedReceived = true;
+      checkFinish();
+    }
+
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion, function() {
+      chrome.debugger.getTargets(function(targets) {
+        const target = targets.find(t => t.tabId === tab.id);
+        chrome.test.assertTrue(!!target);
+        chrome.debugger.onDetach.addListener(onDetach);
+        chrome.tabs.onRemoved.addListener(onTabRemoved);
+        chrome.debugger.sendCommand(debuggee, "Target.closeTarget",
+            { targetId: target.id }, () => chrome.test.assertNoLastError());
+      });
+    });
+  },
+
   async function attachToWebUI() {
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
