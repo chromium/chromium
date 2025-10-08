@@ -183,6 +183,7 @@ if __name__ == '__main__':
       '--revision',
       help='The revisions to add the bug to',
       nargs='+',
+      required=True,
   )
   parser_add.add_argument(
       '-f',
