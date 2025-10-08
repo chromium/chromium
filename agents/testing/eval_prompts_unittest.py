@@ -749,6 +749,22 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             [pathlib.Path('/test/a.yaml')] * 4)
         self.assertEqual(returncode, 0)
 
+    def test_run_prompt_eval_tests_full_parallel(self):
+        """Tests that a -1 parallel workers makes a worker for each test."""
+        self.mock_get_tests_to_run.return_value = [
+            pathlib.Path('/test/a.yaml'),
+            pathlib.Path('/test/b.yaml'),
+            pathlib.Path('/test/c.yaml'),
+        ]
+        self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
+            return_value = []
+        self.args.parallel_workers = -1
+
+        returncode = eval_prompts._run_prompt_eval_tests(self.args)
+        self.mock_worker_pool.assert_called_with(3, mock.ANY, mock.ANY,
+                                                 mock.ANY)
+        self.assertEqual(returncode, 0)
+
 
 class ParseArgsUnittest(unittest.TestCase):
     """Unit tests for the `_parse_args` function."""
@@ -851,6 +867,12 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertEqual(args.parallel_workers, 4)
         self.assertEqual(args.retries, 2)
         self.assertEqual(args.isolated_script_test_repeat, 3)
+
+    def test_parse_args_full_parallel_args(self):
+        """Tests that all test runner arguments are parsed correctly."""
+        self.mock_argv[:] = ['eval_prompts.py', '--parallel-workers', '-1']
+        args = eval_prompts._parse_args()
+        self.assertEqual(args.parallel_workers, -1)
 
     def test_parse_args_isolated_script_test_launcher_retry_limit(self):
         """Tests the --isolated-script-test-launcher-retry-limit argument."""

@@ -266,9 +266,13 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                            sandbox=args.sandbox,
                                            gemini_cli_bin=args.gemini_cli_bin)
 
-    worker_pool = workers.WorkerPool(args.parallel_workers, promptfoo,
-                                     worker_options,
-                                     args.print_output_on_success)
+    worker_pool = workers.WorkerPool(
+        args.parallel_workers
+        if args.parallel_workers != -1 else len(configs_to_run),
+        promptfoo,
+        worker_options,
+        args.print_output_on_success,
+    )
     configs_for_current_iteration = configs_to_run
     failed_test_results = []
     for iteration in range(args.retries + 1):
@@ -322,8 +326,8 @@ def _validate_args(args: argparse.Namespace,
             'all')
 
     # Test Runner Arguments group.
-    if args.parallel_workers < 1:
-        parser.error('--parallel-workers must be positive')
+    if args.parallel_workers < 1 and args.parallel_workers != -1:
+        parser.error('--parallel-workers must be positive or -1')
     if args.retries < 0:
         parser.error('--retries must be non-negative')
     if args.isolated_script_test_repeat < 0:
@@ -429,7 +433,8 @@ def _parse_args() -> argparse.Namespace:
         default=1,
         help=('The number of parallel workers to run tests in. Changing this '
               'is not recommended if the Chromium checkout being used is not '
-              'on btrfs.'))
+              'on btrfs. A value of -1 will use a separate worker for each '
+              'eval.'))
     retry_group = group.add_mutually_exclusive_group()
     retry_group.add_argument('--retries',
                              type=int,
