@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+class BrowserWindowInterface;
 class PrefService;
 
 namespace glic {
@@ -41,6 +42,8 @@ class GlicButton : public TabStripNudgeButton,
   GlicButton(const GlicButton&) = delete;
   GlicButton& operator=(const GlicButton&) = delete;
   ~GlicButton() override;
+
+  static GlicButton* FromBrowser(BrowserWindowInterface* browser);
 
   void SetNudgeLabel(std::string label);
   void RestoreDefaultLabel();

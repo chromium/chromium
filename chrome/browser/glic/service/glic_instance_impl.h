@@ -99,8 +99,6 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
-  // Opens the floating UI for this instance
-  void Detach() override;
 
   // Host::InstanceDelegate:
   void CreateTab(
@@ -148,6 +146,8 @@ class GlicInstanceImpl : public GlicInstance,
   void WillCloseFor(tabs::TabInterface* tab) override;
   void Attach(tabs::TabInterface* tab) override;
   void NotifyPanelStateChanged() override;
+  // Opens the floating UI for this instance
+  void Detach(tabs::TabInterface* tab) override;
 
   // Host::InstanceInterface:
   mojom::PanelState GetPanelState() override;
@@ -191,7 +191,9 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
-  GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
+  GlicUiEmbedder* CreateActiveEmbedderForSidePanel(tabs::TabInterface* tab);
+  GlicUiEmbedder* CreateActiveEmbedderForFloaty(
+      BrowserWindowInterface* browser);
   void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);

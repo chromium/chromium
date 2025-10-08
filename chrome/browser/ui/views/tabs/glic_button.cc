@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
@@ -204,6 +205,15 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 }
 
 GlicButton::~GlicButton() = default;
+
+// Static
+GlicButton* GlicButton::FromBrowser(BrowserWindowInterface* browser) {
+  if (!browser) {
+    return nullptr;
+  }
+  return BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
+      kGlicButtonElementId);
+}
 
 void GlicButton::SetNudgeLabel(std::string label) {
   if (!EntrypointVariationsEnabled()) {

@@ -12,20 +12,32 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
-
-namespace {
-
-// constexpr static int kDraggableAreaHeight = 44;
-
-}  // namespace
+#include "chrome/common/chrome_features.h"
 
 namespace glic {
 
+// static
+gfx::Size GlicFloatingUi::GetDefaultSize() {
+  return {features::kGlicMultiInstanceFloatyWidth.Get(),
+          features::kGlicMultiInstanceFloatyHeight.Get()};
+}
+
+// end static
+
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
+                               BrowserWindowInterface* browser,
+                               GlicUiEmbedder::Delegate& delegate)
+    : GlicFloatingUi(
+          profile,
+          GlicWidget::GetInitialBounds(browser,
+                                       GlicFloatingUi::GetDefaultSize()),
+          delegate) {}
+
+GlicFloatingUi::GlicFloatingUi(Profile* profile,
+                               gfx::Rect initial_bounds,
                                GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), delegate_(delegate) {
-  LOG(ERROR) << "tnp: Floating UI created";
-  CreateAndSetupWidget();
+  CreateAndSetupWidget(initial_bounds);
   panel_state_.kind = mojom::PanelState_Kind::kDetached;
 }
 
@@ -39,10 +51,6 @@ mojom::PanelState GlicFloatingUi::GetPanelState() const {
   return panel_state_;
 }
 
-GlicWindowAnimator* GlicFloatingUi::window_animator() {
-  return glic_window_animator_.get();
-}
-
 GlicWidget* GlicFloatingUi::GetGlicWidget() const {
   return glic_widget_.get();
 }
@@ -54,9 +62,8 @@ GlicView* GlicFloatingUi::GetGlicView() const {
   return nullptr;
 }
 
-void GlicFloatingUi::CreateAndSetupWidget() {
-  glic_widget_ =
-      GlicWidget::Create(profile_, gfx::Rect(10, 10, 400, 400), nullptr, true);
+void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
+  glic_widget_ = GlicWidget::Create(profile_, initial_bounds, nullptr, true);
   // TODO: Setup Hotkeys and AccessibilityText
 
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
@@ -73,13 +80,11 @@ void GlicFloatingUi::CreateAndSetupWidget() {
 void GlicFloatingUi::Resize(const gfx::Size& size,
                             base::TimeDelta duration,
                             base::OnceClosure callback) {
-  glic_size_ = size;
-
   // TODO: Don't animate while the user is manually resizing the widget.
   if (glic_window_animator_ && IsShowing()) {
     glic_window_animator_->AnimateSize(
-        GlicWidget::GetLastRequestedSizeClamped(GetGlicWidget(), glic_size_),
-        duration, std::move(callback));
+        GlicWidget::ClampSize(size, GetGlicWidget()), duration,
+        std::move(callback));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
@@ -92,21 +97,6 @@ void GlicFloatingUi::SetDraggableAreas(
     glic_view->SetDraggableAreas(draggable_areas);
   }
 }
-
-// void GlicFloatingUi::SetDraggingAreasAndWatchForMouseEvents() {
-//   if (window_event_observer_) {
-//     return;
-//   }
-
-//   window_event_observer_ =
-//       std::make_unique<WindowEventObserver>(this, GetGlicView());
-
-//   if (!draggable_area_) {
-//     // Set the draggable area to the top bar of the window.
-//     GetGlicView()->SetDraggableAreas(
-//         {{0, 0, GetGlicView()->width(), kDraggableAreaHeight}});
-//   }
-// }
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
   NOTIMPLEMENTED();
@@ -130,7 +120,6 @@ bool GlicFloatingUi::IsShowing() const {
 }
 
 void GlicFloatingUi::Show() {
-  LOG(ERROR) << "tnp: Floating UI show";
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();

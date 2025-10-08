@@ -81,7 +81,10 @@ void GlicSidePanelUi::Attach() {
 }
 
 void GlicSidePanelUi::Detach() {
-  delegate_->Detach();
+  if (!tab_) {
+    return;
+  }
+  delegate_->Detach(tab_.get());
 }
 
 void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {

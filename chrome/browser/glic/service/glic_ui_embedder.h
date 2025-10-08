@@ -29,7 +29,7 @@ class GlicUiEmbedder {
     virtual void WillCloseFor(tabs::TabInterface* tab) = 0;
     virtual Host& host() = 0;
     virtual void Attach(tabs::TabInterface* tab) = 0;
-    virtual void Detach() = 0;
+    virtual void Detach(tabs::TabInterface* tab) = 0;
     // Called after the value of GetPanelState() changes.
     virtual void NotifyPanelStateChanged() = 0;
   };

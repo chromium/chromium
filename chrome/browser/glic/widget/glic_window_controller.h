@@ -43,10 +43,6 @@ class TabInterface;
 }
 
 namespace glic {
-// Distance the detached window should be from the top and the right of the
-// display when opened unassociated to a browser.
-inline constexpr static int kDefaultDetachedTopRightDistance = 48;
-
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicWidget;

@@ -436,6 +436,11 @@ BASE_FEATURE(kGlicMultiInstance, base::FEATURE_DISABLED_BY_DEFAULT);
 // if user manually resizes.
 const base::FeatureParam<int> kGlicSidePanelMinWidth{
     &kGlicMultiInstance, "glic-side-panel-min-width", 384};
+// Controls the width and height of the multi-instance floating panel.
+const base::FeatureParam<int> kGlicMultiInstanceFloatyWidth{
+    &kGlicMultiInstance, "glic-multi-instance-floaty-width", 400};
+const base::FeatureParam<int> kGlicMultiInstanceFloatyHeight{
+    &kGlicMultiInstance, "glic-multi-instance-floaty-height", 400};
 
 // Controls whether the Glic feature's z order changes based on the webclient
 // mode.

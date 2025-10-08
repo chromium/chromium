@@ -12,6 +12,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+class BrowserWindowInterface;
+
 namespace glic {
 
 class GlicWindowAnimator;
@@ -21,8 +23,15 @@ class GlicView;
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
  public:
-  GlicFloatingUi(Profile* profile, GlicUiEmbedder::Delegate& delegate);
+  GlicFloatingUi(Profile* profile,
+                 BrowserWindowInterface* browser,
+                 GlicUiEmbedder::Delegate& delegate);
+  GlicFloatingUi(Profile* profile,
+                 gfx::Rect initial_bounds,
+                 GlicUiEmbedder::Delegate& delegate);
   ~GlicFloatingUi() override;
+
+  static gfx::Size GetDefaultSize();
 
   // GlicUiEmbedder:
   Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
@@ -49,12 +58,10 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void ClosePanel() override;
 
-  GlicWindowAnimator* window_animator();
-
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
-  void CreateAndSetupWidget();
+  void CreateAndSetupWidget(gfx::Rect initial_bounds);
   // void SetDraggingAreasAndWatchForMouseEvents();
 
   // Used to monitor key and mouse events from native window.
@@ -63,7 +70,6 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
-  std::optional<gfx::Size> glic_size_;
   mojom::PanelState panel_state_;
 
   raw_ptr<Profile> profile_;

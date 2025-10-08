@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -149,12 +150,23 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
     embedder_to_show = GetActiveEmbedder();
   } else {
     DeactivateCurrentEmbedder();
-    embedder_to_show = CreateActiveEmbedderFor(new_key);
+    if (type == EmbedderType::kSidePanel) {
+      embedder_to_show = CreateActiveEmbedderForSidePanel(tab);
+    } else {
+      embedder_to_show =
+          CreateActiveEmbedderForFloaty(tab->GetBrowserWindowInterface());
+    }
+    CHECK(embedder_to_show);
+    host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
     SetActiveEmbedderAndNotifyStateChange(new_key);
   }
 
   MaybeShowHostUi(embedder_to_show);
   embedder_to_show->Show();
+}
+
+void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
+  Show(EmbedderType::kFloating, tab);
 }
 
 void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
@@ -444,28 +456,21 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   ClearActiveEmbedderAndNotifyStateChange();
 }
 
-GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
-    const EmbedderKey& key) {
-  GlicUiEmbedder* embedder_ptr = nullptr;
-  std::visit(absl::Overload{
-                 [&](FloatingEmbedderKey) {
-                   auto [entry_iter, _] = embedders_.try_emplace(key);
-                   entry_iter->second.embedder =
-                       std::make_unique<GlicFloatingUi>(profile_, *this);
-                   embedder_ptr = entry_iter->second.embedder.get();
-                 },
-                 [&](tabs::TabInterface* tab) {
-                   auto& entry = BindTab(tab);
-                   entry.embedder = std::make_unique<GlicSidePanelUi>(
-                       profile_, tab->GetWeakPtr(), *this);
-                   embedder_ptr = entry.embedder.get();
-                 },
-             },
-             key);
+GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
+    tabs::TabInterface* tab) {
+  auto& entry = BindTab(tab);
+  entry.embedder =
+      std::make_unique<GlicSidePanelUi>(profile_, tab->GetWeakPtr(), *this);
+  return entry.embedder.get();
+}
 
-  CHECK(embedder_ptr);
-  host_.SetDelegate(embedder_ptr->GetHostEmbedderDelegate());
-  return embedder_ptr;
+GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
+    BrowserWindowInterface* browser) {
+  GlicInstanceImpl::EmbedderKey key = FloatingEmbedderKey();
+  auto [entry_iter, _] = embedders_.try_emplace(key);
+  entry_iter->second.embedder =
+      std::make_unique<GlicFloatingUi>(profile_, browser, *this);
+  return entry_iter->second.embedder.get();
 }
 
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
@@ -511,10 +516,6 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
   options.conversation_id = conversation_id();
   host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
                       std::move(options));
-}
-
-void GlicInstanceImpl::Detach() {
-  Show(EmbedderType::kFloating, nullptr);
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,

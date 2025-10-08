@@ -187,16 +187,6 @@ class GlicWindowControllerImpl
   // on the Mac, all special activation and visibility properties are cleared.
   void SetGlicWindowToFloatingMode(bool floating);
 
-  // Return the default detached bounds which are just below the tab strip
-  // button on the active browser.
-  std::optional<gfx::Rect> GetInitialDetachedBoundsFromBrowser(
-      Browser* browser,
-      const gfx::Size& target_size);
-
-  // Return the default detached bounds when there is no active browser. The
-  // position is relative to the top right of the current display.
-  gfx::Rect GetInitialDetachedBoundsNoBrowser(const gfx::Size& target_size);
-
   // Check if the panel position should be reset based on `window_config_`.
   // Update `window_config_` that the panel was shown.
   void MaybeResetPanelPostionOnShow(mojom::InvocationSource source);

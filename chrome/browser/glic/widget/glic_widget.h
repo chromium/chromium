@@ -18,7 +18,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
+class BrowserWindowInterface;
+
 namespace glic {
+// Distance the detached window should be from the top and the right of the
+// display when opened unassociated to a browser.
+inline constexpr static int kDefaultDetachedTopRightDistance = 48;
 
 class GlicView;
 
@@ -31,7 +36,19 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
   GlicWidget& operator=(const GlicWidget&) = delete;
   ~GlicWidget() override;
 
+  // Returns the initial size for the single instance floating window.
   static gfx::Size GetInitialSize();
+
+  static gfx::Rect GetInitialBounds(BrowserWindowInterface* browser,
+                                    gfx::Size target_size);
+
+  // Return `current_size` or the default minimum size if not provided.
+  // The return value is clamped to fit between the minimum and maximum sizes.
+  static gfx::Size ClampSize(std::optional<gfx::Size> current_size,
+                             const GlicWidget* glic_widget);
+
+  // True if |bounds| is an allowed position the Widget can be shown in.
+  static bool IsWidgetLocationAllowed(const gfx::Rect& bounds);
 
   // Create a widget with the given bounds.
   static std::unique_ptr<GlicWidget> Create(
