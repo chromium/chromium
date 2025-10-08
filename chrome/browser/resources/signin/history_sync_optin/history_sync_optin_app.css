@@ -138,12 +138,12 @@
 
 h1 {
   font-size: 36px;
+  font-weight: 500;
   margin-top: 24px;
 }
 
 :host([is-modal_]) h1 {
   font-size: 16px;
-  font-weight: 500;
   margin-top: 0;
 }
 
