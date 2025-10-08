@@ -21122,6 +21122,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "RendererSideContentDecodingForNavigation": "true"
+                    },
                     "enable_features": [
                         "RendererSideContentDecoding"
                     ]
