@@ -812,6 +812,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttached) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();

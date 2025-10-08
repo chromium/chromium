@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind} from '/glic/glic_api/glic_api.js';
 import {ObservableValue, type Subscriber} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
@@ -96,15 +96,18 @@ export class WebClient implements GlicWebClient {
   initializedPromise = Promise.withResolvers<void>();
   onNotifyPanelWasClosed: () => void = () => {};
   panelOpenState = ObservableValue.withValue<boolean>(false);
+  panelOpenStateKind = ObservableValue.withNoValue<PanelStateKind>();
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
     this.initializedPromise.resolve();
   }
 
-  async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
+  async notifyPanelWillOpen(panelOpeningData: PanelOpeningData):
       Promise<OpenPanelInfo> {
     this.panelOpenState.assignAndSignal(true);
+    this.panelOpenStateKind.assignAndSignal(
+        checkDefined(panelOpeningData.panelState?.kind));
     this.firstOpened.resolve();
 
     const openPanelInfo: OpenPanelInfo = {
