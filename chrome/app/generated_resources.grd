@@ -12155,6 +12155,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_OPEN_GROUP_IN_BROWSER_MENU" desc="The title of the 'Open group' submenu item in the App Menu.">
           Open group
         </message>
+        <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into an existing group.">
+          New tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
+        </message>
+        <message name="IDS_NEW_TAB_IN_GROUP_NO_GROUPS" desc="The label of a context menu item for adding a new tab into a group, and no groups are open.">
+          New tab in group
+        </message>
+        <message name="IDS_NEW_TAB_IN_GROUP_NO_NAME" desc="The label of a context menu item for adding a new tab into an existing group with no name.">
+          {NUM_TABS, plural, =1 {New tab in 1 tab} other {New tab in # tabs}}
+        </message>
+        <message name="IDS_NEW_TAB_GROUP" desc="The label of a context menu item for creating a new tab group.">
+          New tab group
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="In Title Case: Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
@@ -12171,6 +12183,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_OPEN_GROUP_IN_BROWSER_MENU" desc="The title of the 'Open Group' submenu item in the App Menu.">
           Open Group
+        </message>
+        <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into a group.">
+          New Tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
+        </message>
+        <message name="IDS_NEW_TAB_IN_GROUP_NO_GROUPS" desc="The label of a context menu item for adding a new tab into a group, and no groups are open.">
+          New Tab in Group
+        </message>
+        <message name="IDS_NEW_TAB_IN_GROUP_NO_NAME" desc="The label of a context menu item for adding a new tab into an existing group with no name.">
+          {NUM_TABS, plural, =1 {New Tab in 1 Tab} other {New Tab in # Tabs}}
+        </message>
+        <message name="IDS_NEW_TAB_GROUP" desc="The label of a context menu item for creating a new tab group.">
+          New Tab Group
         </message>
       </if>
 

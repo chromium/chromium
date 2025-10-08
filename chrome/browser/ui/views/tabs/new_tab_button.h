@@ -54,8 +54,8 @@ class NewTabButtonMenuModel : public ui::SimpleMenuModel,
                               public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewWindow);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewIncognitoWindow);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTabInGroup);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   explicit NewTabButtonMenuModel(BrowserWindowInterface* browser);
   NewTabButtonMenuModel(const NewTabButtonMenuModel&) = delete;
   NewTabButtonMenuModel& operator=(const NewTabButtonMenuModel&) = delete;
@@ -67,6 +67,8 @@ class NewTabButtonMenuModel : public ui::SimpleMenuModel,
                                   ui::Accelerator* accelerator) const override;
 
  private:
+  void AddNewTabInGroupItem();
+
   raw_ptr<BrowserWindowInterface> browser_;
 };
 
