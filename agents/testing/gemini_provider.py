@@ -18,6 +18,7 @@ from typing import Any
 import constants
 
 sys.path.append(str(constants.CHROMIUM_SRC))
+from agents.common import gemini_helpers
 from agents.testing import checkout_helpers
 
 DEFAULT_TIMEOUT_SECONDS = 600
@@ -42,6 +43,48 @@ def _stream_reader(stream, output_list: list[str], width):
         pass
     finally:
         stream.close()
+
+
+def _get_sandbox_image_tag() -> str | None:
+    """Gets the full sandbox image tag."""
+    gemini_version = gemini_helpers.get_gemini_version()
+    if not gemini_version:
+        logging.error('Failed to get gemini version.')
+        return None
+    return f'{constants.GEMINI_SANDBOX_IMAGE_URL}:{gemini_version}'
+
+
+def _get_container_path(sandbox_image: str) -> str | None:
+    """Gets the default PATH from the sandbox container."""
+    if not sandbox_image:
+        return None
+
+    # This is a Go template that iterates over all environment variables in the
+    # image's configuration and prints each one on a new line.
+    command = [
+        'docker', 'inspect',
+        r'--format={{range .Config.Env}}{{printf "%s\n" .}}{{end}}',
+        sandbox_image
+    ]
+    try:
+        result = subprocess.run(command,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True,
+                                check=True)
+        logging.debug('docker inspect output:\n%s', result.stdout)
+        for line in result.stdout.splitlines():
+            if line.startswith('PATH='):
+                return line.split('=', 1)[1]
+
+        logging.warning('PATH not found in environment of %s', sandbox_image)
+        return None
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        error_message = f'Failed to get container PATH for {sandbox_image}: {e}'
+        if hasattr(e, 'stderr') and e.stderr:
+            error_message += f'\nstderr:\n{e.stderr}'
+        logging.error(error_message)
+        return None
 
 
 def _get_env_with_overrides(
@@ -163,7 +206,7 @@ def call_api(prompt: str, options: dict[str, Any],
         }
 
     sandbox_flags = []
-    sandbox_image = os.environ.get('GEMINI_SANDBOX_IMAGE')
+    sandbox_image = _get_sandbox_image_tag()
     if provider_vars.get('sandbox', False):
         command.append('--sandbox')
         depot_tools_path = checkout_helpers.get_depot_tools_path()
@@ -173,6 +216,15 @@ def call_api(prompt: str, options: dict[str, Any],
                 'Sandbox requires depot_tools, but it could not be located.'
             }
         sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
+
+        container_path = _get_container_path(sandbox_image)
+        if container_path:
+            sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
+        else:
+            return {
+                'error': ('Could not determine container PATH. '
+                          'PATH will not be overridden.')
+            }
 
     system_prompt = provider_config.get('system_prompt', '')
     try:

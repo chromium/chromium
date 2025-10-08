@@ -5,6 +5,7 @@
 """Tests for gemini_provider."""
 
 import pathlib
+import subprocess
 import unittest
 import unittest.mock
 
@@ -35,6 +36,16 @@ class GeminiProviderUnittest(unittest.TestCase):
             'gemini_provider.checkout_helpers.get_depot_tools_path')
         self.mock_get_depot_tools_path = get_depot_tools_path_patcher.start()
         self.addCleanup(get_depot_tools_path_patcher.stop)
+
+        get_gemini_version_patcher = unittest.mock.patch(
+            'agents.common.gemini_helpers.get_gemini_version')
+        self.mock_get_gemini_version = get_gemini_version_patcher.start()
+        self.addCleanup(get_gemini_version_patcher.stop)
+
+        get_sandbox_image_tag_patcher = unittest.mock.patch(
+            'gemini_provider._get_sandbox_image_tag')
+        self.mock_get_sandbox_image_tag = get_sandbox_image_tag_patcher.start()
+        self.addCleanup(get_sandbox_image_tag_patcher.stop)
 
     def tearDown(self):
         gemini_provider.checkout_helpers.get_depot_tools_path.cache_clear()
@@ -86,18 +97,43 @@ class GeminiProviderUnittest(unittest.TestCase):
         """Tests that sandbox flags are set when depot_tools is found."""
         fake_depot_tools_path = pathlib.Path('/fake/depot_tools')
         self.mock_get_depot_tools_path.return_value = fake_depot_tools_path
+        fake_sandbox_image = 'fake/sandbox/image:latest'
+        self.mock_get_sandbox_image_tag.return_value = fake_sandbox_image
+        fake_container_path = '/usr/bin:/bin'
+
+        def mock_run_side_effect(*args, **_kwargs):
+            command = args[0]
+            if command[0] == 'docker':
+                self.assertEqual(command, [
+                    'docker', 'inspect',
+                    r'--format={{range .Config.Env}}{{printf "%s\n" .}}{{end}}',
+                    fake_sandbox_image
+                ])
+                return unittest.mock.MagicMock(
+                    stdout=f'PATH={fake_container_path}', returncode=0)
+            # For _install_extensions
+            return unittest.mock.MagicMock(returncode=0)
+
+        self.mock_run.side_effect = mock_run_side_effect
+
         options = {'config': {}}
         context = {'vars': {'sandbox': True}}
 
-        result = gemini_provider.call_api('test prompt', options, context)
+        with unittest.mock.patch.dict('os.environ', {}, clear=True):
+            result = gemini_provider.call_api('test prompt', options, context)
 
         self.assertNotIn('error', result)
         self.mock_popen.assert_called_once()
         popen_kwargs = self.mock_popen.call_args.kwargs
         self.assertIn('env', popen_kwargs)
         self.assertIn('SANDBOX_FLAGS', popen_kwargs['env'])
-        expected_flag = f'-v {fake_depot_tools_path.as_posix()}:/depot_tools'
-        self.assertIn(expected_flag, popen_kwargs['env']['SANDBOX_FLAGS'])
+        env = popen_kwargs['env']
+        self.assertEqual(env['GEMINI_SANDBOX_IMAGE'], fake_sandbox_image)
+        sandbox_flags = env['SANDBOX_FLAGS']
+        expected_v_flag = f'-v {fake_depot_tools_path.as_posix()}:/depot_tools'
+        self.assertIn(expected_v_flag, sandbox_flags)
+        expected_e_flag = f'-e PATH=/depot_tools:{fake_container_path}'
+        self.assertIn(expected_e_flag, sandbox_flags)
 
     def test_call_api_sandbox_depot_tools_fails(self):
         """Tests that an error is returned when depot_tools is not found."""
@@ -111,6 +147,33 @@ class GeminiProviderUnittest(unittest.TestCase):
         self.assertIn(
             'Sandbox requires depot_tools, but it could not be located.',
             result['error'])
+        self.mock_popen.assert_not_called()
+
+    def test_call_api_sandbox_docker_inspect_fails(self):
+        """Tests that an error is returned when docker inspect fails."""
+        self.mock_get_depot_tools_path.return_value = pathlib.Path(
+            '/fake/depot_tools')
+        fake_sandbox_image = 'fake/sandbox/image:latest'
+        self.mock_get_sandbox_image_tag.return_value = fake_sandbox_image
+
+        def mock_run_side_effect(*args, **_kwargs):
+            command = args[0]
+            if command[0] == 'docker':
+                # Simulate docker inspect failing
+                raise subprocess.CalledProcessError(1, command)
+            # For _install_extensions
+            return unittest.mock.MagicMock(returncode=0)
+
+        self.mock_run.side_effect = mock_run_side_effect
+
+        options = {'config': {}}
+        context = {'vars': {'sandbox': True}}
+
+        with unittest.mock.patch.dict('os.environ', {}, clear=True):
+            result = gemini_provider.call_api('test prompt', options, context)
+
+        self.assertIn('error', result)
+        self.assertIn('Could not determine container PATH', result['error'])
         self.mock_popen.assert_not_called()
 
 
