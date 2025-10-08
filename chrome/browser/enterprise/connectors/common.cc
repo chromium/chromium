@@ -63,6 +63,7 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
       return true;
     case TriggeredRule::WARN:
     case TriggeredRule::BLOCK:
+    case TriggeredRule::FORCE_SAVE_TO_CLOUD:
       return false;
   }
 }

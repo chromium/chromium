@@ -302,6 +302,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
 
+// Revealed for testing.
+DownloadCheckResult ResponseToDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_REQUEST_H_

@@ -280,6 +280,7 @@ message ContentAnalysisResponse {
         REPORT_ONLY = 1;
         WARN = 2;
         BLOCK = 3;
+        FORCE_SAVE_TO_CLOUD = 4;
       }
       optional Action action = 1;
       optional string rule_name = 2;

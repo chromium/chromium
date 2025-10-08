@@ -269,6 +269,9 @@ proto::TriggeredRuleInfo::Action ActionProtoFromTriggerRuleAction(
         ContentAnalysisResponse_Result_TriggeredRule_Action_WARN:
       return proto::TriggeredRuleInfo::WARN;
     case TriggeredRule::Action::
+        ContentAnalysisResponse_Result_TriggeredRule_Action_FORCE_SAVE_TO_CLOUD:
+      return proto::TriggeredRuleInfo::FORCE_SAVE_TO_CLOUD;
+    case TriggeredRule::Action::
         ContentAnalysisResponse_Result_TriggeredRule_Action_BLOCK:
       return proto::TriggeredRuleInfo::BLOCK;
   }

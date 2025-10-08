@@ -2365,4 +2365,22 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(MetadataSourceType::kDownloadItem,
                     MetadataSourceType::kFileSystemAccessWriteItem));
 
+TEST(ForceDownloadToDriveTest, ReturnsBlockByDefault) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(
+      enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+  dlp_rule->set_rule_name("dlp_rule");
+  dlp_rule->set_rule_id("0");
+
+  DownloadCheckResult result = ResponseToDownloadCheckResult(response);
+  ASSERT_EQ(result, DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+}
+
 }  // namespace safe_browsing
