@@ -7683,8 +7683,23 @@ const CSSValue* OverscrollArea::ParseSingleValue(
           css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
     return value;
   }
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeDashedIdent, stream, context);
+  HashSet<String> parsed_values;
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  do {
+    CSSCustomIdentValue* value =
+        css_parsing_utils::ConsumeDashedIdent(stream, context);
+    if (!value) {
+      return nullptr;
+    }
+
+    if (!parsed_values.Contains(value->Value())) {
+      parsed_values.insert(value->Value());
+      list->Append(*value);
+    }
+  } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
+
+  DCHECK(list->length());
+  return list;
 }
 
 const CSSValue* OverscrollArea::CSSValueFromComputedStyleInternal(
