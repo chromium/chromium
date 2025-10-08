@@ -219,6 +219,43 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
       net::GetValueForKeyInQuery(query_url_disabled_dr, "dr", &dr_param));
 }
 
+TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), NotifySessionStarted)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
+  // Submitting with create image mode enabled.
+  handler().SetCreateImageMode(true);
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url_create_image =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  std::string imgn_param;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(query_url_create_image, "imgn", &imgn_param));
+  EXPECT_EQ("1", imgn_param);
+
+  // Submitting with create image mode disabled.
+  handler().SetCreateImageMode(false);
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url_disabled_create_image =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  EXPECT_FALSE(net::GetValueForKeyInQuery(query_url_disabled_create_image,
+                                          "imgn", &imgn_param));
+}
+
 TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
   std::string file_type = ".Image";
   std::string file_status = ".NotUploaded";

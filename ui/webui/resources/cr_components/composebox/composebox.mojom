@@ -28,6 +28,8 @@ interface PageHandler {
   FocusChanged(bool focused);
   // Called when the user enables deep search mode.
   SetDeepSearchMode(bool enabled);
+  // Called when the user enables create image mode.
+  SetCreateImageMode(bool enabled);
 
   // Called when the Lens button is clicked in the composebox.
   HandleLensButtonClick();

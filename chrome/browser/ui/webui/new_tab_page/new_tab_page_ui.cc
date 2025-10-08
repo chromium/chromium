@@ -578,6 +578,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxSmartComposeEnabled", true);
   source->AddBoolean("composeboxShowDeepSearchButton",
                      ntp_composebox::kShowToolsAndModels.Get());
+  source->AddBoolean("composeboxShowCreateImageButton",
+                     ntp_composebox::kShowToolsAndModels.Get());
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);

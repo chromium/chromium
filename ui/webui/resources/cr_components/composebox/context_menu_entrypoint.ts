@@ -51,10 +51,18 @@ export class ContextMenuEntrypointElement extends
     return {
       inputsDisabled: {type: Boolean},
       showContextMenuDescription: {type: Boolean},
+      inCreateImageMode: {
+        reflect: true,
+        type: Boolean,
+      },
       tabSuggestions_: {type: Array},
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showDeepSearch_: {
+        reflect: true,
+        type: Boolean,
+      },
+      showCreateImage_: {
         reflect: true,
         type: Boolean,
       },
@@ -63,14 +71,17 @@ export class ContextMenuEntrypointElement extends
 
   accessor inputsDisabled: boolean = false;
   accessor showContextMenuDescription: boolean = false;
+  protected accessor inCreateImageMode: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor tabPreviewUrl_: string = '';
-  protected accessor showDeepSearch_: boolean =
-      loadTimeData.getBoolean('composeboxShowDeepSearchButton');
   protected accessor tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
+  protected accessor showDeepSearch_: boolean =
+      loadTimeData.getBoolean('composeboxShowDeepSearchButton');
 
   private searchboxHandler_: SearchboxPageHandlerRemote;
+  protected accessor showCreateImage_: boolean =
+      loadTimeData.getBoolean('composeboxShowCreateImageButton');
 
   constructor() {
     super();
@@ -142,6 +153,12 @@ export class ContextMenuEntrypointElement extends
   protected onDeepSearchClick_() {
     this.inputsDisabled = !this.inputsDisabled;
     this.fire('deep-search-click');
+    this.$.menu.close();
+  }
+
+  protected onCreateImageClick_() {
+    this.fire('create-image-click',
+        {inCreateImageMode: this.inCreateImageMode});
     this.$.menu.close();
   }
 }

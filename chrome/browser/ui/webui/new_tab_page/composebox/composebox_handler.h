@@ -63,6 +63,8 @@ class ComposeboxHandler
                    bool shift_key) override;
   void FocusChanged(bool focused) override;
   void SetDeepSearchMode(bool enabled) override;
+  void SetCreateImageMode(bool enabled) override;
+
   void HandleLensButtonClick() override;
 
   // searchbox::mojom::PageHandler:
@@ -81,6 +83,7 @@ class ComposeboxHandler
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 
   bool deep_search_mode_enabled_ = false;
+  bool create_image_mode_enabled_ = false;
   raw_ptr<content::WebContents> web_contents_;
 
   // These are located at the end of the list of member variables to ensure the

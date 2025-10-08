@@ -29,19 +29,23 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           @open-file-upload="${this.openFileUpload_}"
           @add-tab-context="${this.addTabContext_}"
           @deep-search-click="${this.onDeepSearchClick_}"
+          @create-image-click="${this.onCreateImageClick_}"
+          ?in-create-image-mode="${this.inCreateImageMode_}"
           ?inputs-disabled="${this.inputsDisabled_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}">
       </composebox-context-menu-entrypoint>
-    ${this.inDeepSearchMode_ ? html`
-      <cr-button id="deepSearchButton" class="upload-icon no-overlap"
+      <composebox-tool-chip
+          icon="composebox:deepSearch"
+          label="${this.i18n('deepSearch')}"
+          ?visible="${this.inDeepSearchMode_}"
           @click="${this.onDeepSearchClick_}">
-        <div class="icon-container" slot="prefix-icon">
-          <cr-icon class="deep-search-icon" icon="composebox:deepSearch">
-          </cr-icon>
-          <cr-icon class="close-icon" icon="cr:close"></cr-icon>
-        </div>
-        <div>${this.i18n('deepSearch')}</div>
-      </cr-button>` : ''}
+      </composebox-tool-chip>
+      <composebox-tool-chip
+          icon="composebox:createImage"
+          label="Create Image"
+          ?visible="${this.inCreateImageMode_}"
+          @click="${this.onCreateImageClick_}">
+      </composebox-tool-chip>
     </div>
   ` : html`
     <div id="uploadContainer" class="icon-fade">

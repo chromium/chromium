@@ -90,6 +90,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      inCreateImageMode_: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -108,6 +112,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
+  protected accessor inCreateImageMode_: boolean = false;
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
@@ -258,6 +263,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.inDeepSearchMode_ = !this.inDeepSearchMode_;
     this.fire(
         'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
+  }
+
+  protected onCreateImageClick_(e: CustomEvent<{inCreateImageMode: boolean}>) {
+    this.showContextMenuDescription_ = !this.showContextMenuDescription_;
+    this.inCreateImageMode_ = !this.inCreateImageMode_;
+    this.fire('set-create-image-mode',
+      {inCreateImageMode: e.detail.inCreateImageMode});
   }
 
   private recordFileValidationMetric_(

@@ -88,6 +88,10 @@ void ComposeboxHandler::SubmitQuery(
     additional_params["dr"] = "1";
   }
 
+  if (create_image_mode_enabled_) {
+    additional_params["imgn"] = "1";
+  }
+
   // This is the time that the user clicked the submit button, however optional
   // autocomplete logic may be run before this if there was a match associated
   // with the query.
@@ -105,6 +109,10 @@ void ComposeboxHandler::SubmitQuery(
 
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
   deep_search_mode_enabled_ = enabled;
+}
+
+void ComposeboxHandler::SetCreateImageMode(bool enabled) {
+  create_image_mode_enabled_ = enabled;
 }
 
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,

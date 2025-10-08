@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './contextual_entrypoint_and_carousel.js';
 import './composebox_dropdown.js';
@@ -108,6 +109,23 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
       },
       smartComposeInlineHint_: {type: String},
+      showFileCarousel_ : {
+        reflect: true,
+        type: Boolean,
+      },
+      //inDeepSearchMode_ : {
+       // reflect: true,
+//type: Boolean,
+      //},
+      inCreateImageMode_: {
+        reflect: true,
+        type: Boolean,
+      },
+      showContextMenuDescription_: {type: Boolean},
+      inputsDisabled_: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -135,6 +153,11 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxSmartComposeEnabled');
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
+  protected accessor showFileCarousel_: boolean = false;
+  // protected accessor inDeepSearchMode_: boolean = false;
+  protected accessor inCreateImageMode_: boolean = false;
+  protected accessor showContextMenuDescription_: boolean = true;
+  protected accessor inputsDisabled_: boolean = false;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -435,6 +458,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected setDeepSearchMode_(e: CustomEvent<{inDeepSearchMode: boolean}>) {
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
+  }
+
+  protected setCreateImageMode_(e: CustomEvent<{inCreateImageMode: boolean}>) {
+    this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
   }
 
   // Sets the input property to compute the cancel button title without using
