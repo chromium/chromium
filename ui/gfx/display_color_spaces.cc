@@ -84,23 +84,17 @@ DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c,
   }
 }
 
-void DisplayColorSpaces::SetOutputBufferFormats(
-    gfx::BufferFormat buffer_format_no_alpha,
-    gfx::BufferFormat buffer_format_needs_alpha) {
-  for (const auto& color_usage : kAllColorUsages) {
-    size_t i_no_alpha = GetIndex(color_usage, false);
-    size_t i_needs_alpha = GetIndex(color_usage, true);
-    buffer_formats_[i_no_alpha] = buffer_format_no_alpha;
-    buffer_formats_[i_needs_alpha] = buffer_format_needs_alpha;
-  }
-}
-
 void DisplayColorSpaces::SetOutputFormats(
     viz::SharedImageFormat format_no_alpha,
     viz::SharedImageFormat format_with_alpha) {
-  SetOutputBufferFormats(
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format_no_alpha),
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format_with_alpha));
+  for (const auto& color_usage : kAllColorUsages) {
+    size_t i_no_alpha = GetIndex(color_usage, false);
+    size_t i_needs_alpha = GetIndex(color_usage, true);
+    buffer_formats_[i_no_alpha] =
+        viz::SinglePlaneSharedImageFormatToBufferFormat(format_no_alpha);
+    buffer_formats_[i_needs_alpha] =
+        viz::SinglePlaneSharedImageFormatToBufferFormat(format_with_alpha);
+  }
 }
 
 void DisplayColorSpaces::SetOutputColorSpaceAndFormat(
