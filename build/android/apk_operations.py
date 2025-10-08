@@ -248,7 +248,7 @@ def _ResolveActivity(device, package_name, category, action):
     raise Exception(f'Did not find {category_text}, {action_text} in\n{data}')
   if len(matched_entries) > 1:
     # When there are multiple matches, look for the one marked as default.
-    # Necessary for Monochrome, which also has MonochromeLauncherActivity.
+    # Added for Monochrome.
     default_entries = [
         e for e in matched_entries if 'android.intent.category.DEFAULT' in e
     ]

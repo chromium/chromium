@@ -466,7 +466,6 @@ template("chrome_common_apk_or_module_tmpl") {
     if (_is_monochrome) {
       deps += [
         "//android_webview/glue:glue_java",
-        "//android_webview/nonembedded:monochrome_devui_launcher_icon_resources",
         "//android_webview/nonembedded:nonembedded_java",
       ]
 

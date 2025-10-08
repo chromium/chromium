@@ -278,8 +278,3 @@ android_resources("devui_resources") {
 java_group("devui_launcher_icon_resources") {
   mergeable_android_manifests = [ "java/DeveloperUiLauncherManifest.xml" ]
 }
-
-java_group("monochrome_devui_launcher_icon_resources") {
-  mergeable_android_manifests =
-      [ "java/MonochromeDeveloperUiLauncherManifest.xml" ]
-}
