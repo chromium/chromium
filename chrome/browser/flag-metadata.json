@@ -3642,13 +3642,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "enable-get-all-screens-media",
-    "owners": [
-      "simonha@chromium.org"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-global-vaapi-lock",
     "owners": [
       "jeffcchen@chromium.org",

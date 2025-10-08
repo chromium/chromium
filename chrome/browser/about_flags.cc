@@ -9338,12 +9338,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kWallpaperGooglePhotosSharedAlbums)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-    {"enable-get-all-screens-media", flag_descriptions::kGetAllScreensMediaName,
-     flag_descriptions::kGetAllScreensMediaDescription, kOsCrOS | kOsLinux,
-     FEATURE_VALUE_TYPE(blink::features::kGetAllScreensMedia)},
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-prevent-close", flag_descriptions::kPreventCloseName,
      flag_descriptions::kPreventCloseDescription, kOsCrOS,
