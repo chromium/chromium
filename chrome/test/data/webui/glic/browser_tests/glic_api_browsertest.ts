@@ -1431,6 +1431,7 @@ class ApiTests extends ApiTestFixtureBase {
   async testGetPinCandidatesSingleTab() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinCandidates);
+    assertDefined(this.host.getHostCapabilities);
 
     // Gets pinned candidates and asserts that their comma-separated titles
     // equal `expected`.
@@ -1471,8 +1472,14 @@ class ApiTests extends ApiTestFixtureBase {
     // Pin the current focus. A pinned tab isn't a valid candidate.
     const focus =
         await observeSequence(this.host.getFocusedTabStateV2!()).next();
-    await this.host.pinTabs([checkDefined(focus.hasFocus?.tabData.tabId)]);
-
+    // In multi-instance, only pinned tabs can be considered focused, but the
+    // candidate does reveal the active tab.
+    if (this.host.getHostCapabilities().has(HostCapability.MULTI_INSTANCE)) {
+      await this.host.pinTabs(
+          [checkDefined(focus.hasNoFocus?.tabFocusCandidateData?.tabId)]);
+    } else {
+      await this.host.pinTabs([checkDefined(focus.hasFocus?.tabData.tabId)]);
+    }
     await getCandidatesEquals({maxCandidates: 1}, '');
   }
 
@@ -1517,7 +1524,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertUndefined(this.host.getModelQualityClientId);
   }
 
-/**
+  /**
    * A basic test to verify that `getPageMetadata` correctly retrieves metadata
    * for a given tab.
    */

@@ -2072,7 +2072,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPinCandidatesSingleTab) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // In multi-instance mode, the tab is automatically pinned. Unpin it now.
+  if (GetParam().multi_instance) {
+    GetGlicInstanceImpl()->sharing_manager().UnpinAllTabs();
+  }
   ExecuteJsTest();
 }
 
