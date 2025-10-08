@@ -75,7 +75,21 @@ export class Service implements ServiceInterface {
   }
 
   getExtensionSize(id: string) {
-    return chrome.developerPrivate.getExtensionSize(id);
+    return chrome.developerPrivate.getExtensionSize(id).catch(error => {
+      // The extension is no longer in the system so we should no longer
+      // remain on this page. It's safe to catch this error here because
+      // `ExtensionsManagerElement` should navigate back to the LIST page if
+      // an extension for an extension specific page (such as this one) is
+      // uninstalled.
+      // For this API call, check that this should be the only error message
+      // that could be returned.
+      if (error.message !==
+          `No such extension found for call to ` +
+              `'developerPrivate.getExtensionSize'.`) {
+        throw error;
+      }
+      return '';
+    });
   }
 
   addRuntimeHostPermission(id: string, host: string): Promise<void> {

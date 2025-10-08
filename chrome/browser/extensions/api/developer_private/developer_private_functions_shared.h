@@ -34,7 +34,7 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // development and we can move these constants to an anonymous namespace once
   // we finish it.
   static constexpr char kNoSuchExtensionError[] =
-      "No such extension found for call to *.";
+      "No such extension found for call to '*'.";
   static constexpr char kRequiresUserGestureError[] =
       "This action requires a user gesture.";
   static constexpr char kCouldNotShowSelectFileDialogError[] =
