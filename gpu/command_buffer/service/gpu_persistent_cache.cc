@@ -18,6 +18,8 @@
 
 namespace gpu {
 
+namespace {
+
 // We have to enable lock tracking to allow PersistentCache to be used on
 // multiple threads/different sequences.
 #if DCHECK_IS_ON()
@@ -26,6 +28,10 @@ namespace gpu {
 #else
 #define SCOPED_LOCK(lock) base::AutoLock auto_lock(lock)
 #endif  // DCHECK_IS_ON()
+
+constexpr size_t kMaxLoadStoreForTrackingCacheAvailable = 100;
+
+}  // namespace
 
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix)
     : cache_prefix_(cache_prefix) {}
@@ -49,8 +55,14 @@ size_t GpuPersistentCache::LoadData(const void* key,
   SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::LoadData", "persistent_cache_",
                !!persistent_cache_);
-  base::UmaHistogramBoolean(GetHistogramName("Load.CacheAvailable"),
-                            !!persistent_cache_);
+
+  // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
+  // loads.
+  if (++load_count_ <= kMaxLoadStoreForTrackingCacheAvailable) {
+    base::UmaHistogramBoolean(GetHistogramName("Load.CacheAvailable"),
+                              !!persistent_cache_);
+  }
+
   if (!persistent_cache_) {
     return 0;
   }
@@ -88,8 +100,13 @@ void GpuPersistentCache::StoreData(const void* key,
   SCOPED_LOCK(lock_);
   TRACE_EVENT1("gpu", "GpuPersistentCache::StoreData", "persistent_cache_",
                !!persistent_cache_);
-  base::UmaHistogramBoolean(GetHistogramName("Store.CacheAvailable"),
-                            !!persistent_cache_);
+
+  // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
+  // stores.
+  if (++store_count_ <= kMaxLoadStoreForTrackingCacheAvailable) {
+    base::UmaHistogramBoolean(GetHistogramName("Store.CacheAvailable"),
+                              !!persistent_cache_);
+  }
   if (!persistent_cache_) {
     return;
   }

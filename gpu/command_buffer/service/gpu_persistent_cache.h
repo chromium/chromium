@@ -50,6 +50,9 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU
   const std::string cache_prefix_;
 
+  size_t load_count_ = 0;
+  size_t store_count_ = 0;
+
   base::Lock lock_;
   std::unique_ptr<persistent_cache::PersistentCache> persistent_cache_
       GUARDED_BY(lock_);
