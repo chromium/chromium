@@ -564,9 +564,12 @@ struct numeric_limits_float8_base {
   static inline constexpr const bool is_integer = false;
   static inline constexpr const bool is_exact = false;
   static inline constexpr const bool has_quiet_NaN = true;
+// has_denorm and has_denorm_loss are deprecated in C++23.
+#if !defined(__cplusplus) || __cplusplus < 202302L
   static inline constexpr const std::float_denorm_style has_denorm =
       std::denorm_present;
   static inline constexpr const bool has_denorm_loss = false;
+#endif
   static inline constexpr const std::float_round_style round_style =
       std::round_to_nearest;
   static inline constexpr const bool is_bounded = true;
@@ -733,7 +736,7 @@ struct numeric_limits_float8_e4m3fn : public numeric_limits_float8_base {
   static constexpr float8_e4m3fn min() {
     return float8_e4m3fn::FromRep(0b0'0001 << kMantissaBits);
   }
-  // -(1 + 0b110 * 2^-3) * 2^(0b1111 - 7) = -1.75 * 2^8 = 448
+  // -(1 + 0b110 * 2^-3) * 2^(0b1111 - 7) = -1.75 * 2^8 = -448
   static constexpr float8_e4m3fn lowest() {
     return float8_e4m3fn::FromRep(0b1'1111'110);
   }
@@ -1005,8 +1008,11 @@ struct numeric_limits_float8_e8m0fnu : public numeric_limits_float8_base {
  public:
   // NOLINTBEGIN: these names must match std::numeric_limits.
   static inline constexpr const bool is_signed = false;
+// has_denorm and has_denorm_loss are deprecated in C++23.
+#if !defined(__cplusplus) || __cplusplus < 202302L
   static inline constexpr const std::float_denorm_style has_denorm =
       std::denorm_absent;
+#endif
   static inline constexpr const int digits = kMantissaBits + 1;
   static inline constexpr const int digits10 = Digits10FromDigits(digits);
   static inline constexpr const int max_digits10 =
@@ -1635,7 +1641,7 @@ EIGEN_DEVICE_FUNC Derived float8_base<Derived>::ConvertFrom(const From from) {
   // rounding is odd." 17th IMACS World Congress. 2005.
   if constexpr (std::is_floating_point_v<From> &&
                 sizeof(From) > sizeof(double)) {
-    // binary64, float80, binary128, etc. end up here.
+    // float80, binary128, etc. end up here.
     static_assert(std::numeric_limits<From>::digits >=
                   std::numeric_limits<float>::digits + 2);
     static_assert(std::numeric_limits<float>::min_exponent >=

@@ -127,8 +127,10 @@ struct numeric_limits_mxfloat_tpl {
   static constexpr bool has_infinity = false;
   static constexpr bool has_quiet_NaN = false;
   static constexpr bool has_signaling_NaN = false;
+#if !defined(__cplusplus) || __cplusplus < 202302L
   static constexpr std::float_denorm_style has_denorm = std::denorm_present;
   static constexpr bool has_denorm_loss = false;
+#endif
   static constexpr std::float_round_style round_style = std::round_to_nearest;
   static constexpr bool is_iec559 = false;
   static constexpr bool is_bounded = true;
