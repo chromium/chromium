@@ -113,6 +113,9 @@ class GlicButton : public TabStripNudgeButton,
 
   void StartShowAnimation();
   void StartHideAnimation();
+  void ApplyTextAndFadeIn(std::optional<std::u16string> text,
+                          base::TimeDelta delay,
+                          base::TimeDelta duration);
   void MaybeFadeHighlightOnHover(float final_opacity);
   void StartExpansionAnimations(bool show,
                                 base::TimeDelta overall_duration,
@@ -174,8 +177,14 @@ class GlicButton : public TabStripNudgeButton,
   // changing the button width when the nudge is shown.
   std::unique_ptr<gfx::SlideAnimation> expansion_animation_;
 
+  // Holds the incoming nudge text until the point in the animation when it can
+  // be applied.
+  std::optional<std::u16string> pending_text_;
+
   const ui::ImageModel normal_icon_;
   const ui::ImageModel icon_for_highlight_;
+
+  base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
