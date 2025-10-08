@@ -130,6 +130,39 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
             *entry.parent_computed_style)) {
       continue;
     }
+    if (style_resolver_state.IsForHighlight()) {
+      // For highlight pseudos, inherited _and_ non-inherited data
+      // comes from the parent, so non-inherited properties also
+      // need to match.
+      if (!style_resolver_state.ParentStyle()->NonInheritedEqual(
+              *entry.parent_computed_style)) {
+        continue;
+      }
+
+      // Finally, some properties come from the originating element,
+      // which is not the same as the parent element. We need to
+      // test those as well. Note that this check can be overly
+      // restrictive, since these properties were already tested earlier.
+      // E.g., if the parent element is in dark mode but the originating
+      // element is not, the style will always get rejected. This is
+      // obscure enough that we don't consider it a problem in practice;
+      // we'll get a false MPC miss but that's OK.
+      //
+      // DarkColorScheme() is marked as custom_compare, and InsideLink()
+      // is a special case (see comments in computed_style_extra_fields.json5),
+      // so we need to add those comparisons manually.
+      const ComputedStyle& originating_style =
+          *style_resolver_state.OriginatingElementStyle();
+      if (!originating_style.HighlightOriginatingElementDataEqual(
+              *entry.computed_style) ||
+          originating_style.DarkColorScheme() !=
+              entry.computed_style->DarkColorScheme() ||
+          originating_style.InsideLink() !=
+              entry.computed_style->InsideLink()) {
+        continue;
+      }
+    }
+
     if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
         entry.parent_computed_style->UserModify() !=
             ComputedStyleInitialValues::InitialUserModify()) {
@@ -276,13 +309,6 @@ bool MatchedPropertiesCache::IsStyleCacheable(
     // element's position in the DOM.
     return false;
   }
-  // Avoiding cache for ::highlight styles, and the originating styles they are
-  // associated with, because the style depends on the highlight names involved
-  // and they're not cached.
-  if (builder.HasPseudoElementStyle(kPseudoIdHighlight) ||
-      builder.StyleType() == kPseudoIdHighlight) {
-    return false;
-  }
   // Functional media queries cause the style to depend directly on
   // the current MediaValues, without going through RuleSet invalidation.
   // These values are not captured by the MatchResult.
@@ -344,10 +370,6 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
     return false;
   }
 
-  // See StyleResolver::ApplyMatchedCache() for comments.
-  if (state.IsForHighlight()) {
-    return false;
-  }
   if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
     // The result of applying properties with the same matching declarations can
     // be different if the cascade filter is different.

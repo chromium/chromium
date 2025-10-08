@@ -161,6 +161,16 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     );
   }
 
+  inline bool HighlightOriginatingElementDataEqual(const ComputedStyleBase& o) const {
+    return (
+        {{fieldwise_compare(computed_style, computed_style.all_fields
+            |selectattr("is_property")
+            |selectattr("highlight_style_comes_from_originating_element")
+            |list
+          )|indent(8)}}
+    );
+  }
+
   inline bool InheritedDataShared(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}

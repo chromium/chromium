@@ -2694,21 +2694,6 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   // NOTE: Do not add anything here without also adding it to
   // MatchedPropertiesCache::IsCacheable(); you would be inserting
   // elements that can never be fetched.
-  if (state.IsForHighlight()) {
-    // Some pseudo-elements, like ::highlight, are special in that
-    // they inherit _non-inherited_ properties from their parent.
-    // This is different from what the MPC expects; it checks that
-    // the parents are the same before declaring that we have a
-    // valid hit (the check for InheritedDataShared() below),
-    // but it does not do so for non-inherited properties; it assumes
-    // that the base for non-inherited style (before applying the
-    // matched properties) is always the initial style.
-    // Thus, for simplicity, we simply disable the MPC in these cases.
-    //
-    // TODO(sesse): Why don't we have this problem when we use
-    // a different initial style for <img>?
-    can_use_cache = false;
-  }
   if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
     // The result of applying properties with the same matching declarations can
     // be different if the cascade filter is different.
