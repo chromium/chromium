@@ -480,7 +480,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   base::HistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
@@ -495,7 +494,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Fail client initialization, should see error page.
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
@@ -619,7 +617,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -801,7 +798,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
@@ -840,7 +836,6 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
 // method.
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        testErrorShownOnMojoPipeError) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 
   auto* web_contents = FindGlicWebUIContents();
@@ -881,7 +876,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   ExecuteJsTest();
 
@@ -962,7 +956,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestionsForFocusedTabApi) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -973,7 +966,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 IN_PROC_BROWSER_TEST_P(
     GlicApiTestWithOneTabAndContextualCueing,
     testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(0);
@@ -1086,7 +1078,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
@@ -1181,7 +1172,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithNoRequestedData) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 
   // No context error should have been recorded.
@@ -1203,7 +1193,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        MAYBE_testGetContextFromFocusedTabWithAllRequestedData) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 
   // No context error should have been recorded.
@@ -1217,7 +1206,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextForActorFromFocusedTabWithoutPermission) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 
   // No context error should have been recorded.
@@ -1277,7 +1265,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetUserProfileInfo) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetUserProfileInfoDoesNotDeferWhenInactive) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
@@ -1286,7 +1273,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testRefreshSignInCookies) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSignInPauseState) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Check that Glic web client is open and can retrieve the user's info.
   ExecuteJsTest({.expect_guest_frame_destroyed = false});
 
@@ -1356,7 +1342,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToFailsWhenInactive) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
                      "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
@@ -1676,7 +1661,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   // multi-instance: document.visibilityState never transitions to 'hidden'.
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   ExecuteJsTest();
@@ -1692,7 +1676,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabs) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
@@ -1711,7 +1694,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabsWithTwoTabs) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testPinTabsFailsWhenDoesnotExist) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Pinning a non existing tab id should fail.
   ExecuteJsTest();
 }
@@ -1982,7 +1964,6 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
                        testMaybeRefreshUserStatus) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   Profile* profile = browser()->profile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
@@ -2169,28 +2150,23 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadata) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataInvalidTabId) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataEmptyNames) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetPageMetadataMultipleSubscriptions) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Runs the JS test until the first `advanceToNextStep()`.
   ExecuteJsTest();
 
