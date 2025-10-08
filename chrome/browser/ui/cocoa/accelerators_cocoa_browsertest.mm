@@ -7,7 +7,9 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/i18n/base_i18n_switches.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -15,8 +17,6 @@
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
-
-using AcceleratorsCocoaBrowserTest = InProcessBrowserTest;
 
 namespace {
 
@@ -86,6 +86,12 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
 }
 
 }  // namespace
+
+class AcceleratorsCocoaBrowserTest : public InProcessBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kShowTabGroupsMacSystemMenu};
+};
 
 class AcceleratorsCocoaBrowserTestRTL : public AcceleratorsCocoaBrowserTest {
  public:

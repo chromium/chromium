@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/uuid.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_action.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
@@ -60,29 +61,6 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   std::optional<base::Uuid> sync_id() { return sync_id_.value(); }
 
  private:
-  // The action users can perform on a saved tab group's submenu.
-  struct Action {
-    enum class Type {
-      DEFAULT = -1,
-      OPEN_IN_BROWSER,
-      OPEN_OR_MOVE_TO_NEW_WINDOW,
-      PIN_OR_UNPIN_GROUP,
-      DELETE_GROUP,
-      LEAVE_GROUP,
-      OPEN_URL,
-    };
-
-    Action(Type type, std::variant<base::Uuid, GURL> element);
-    Action(const Action&);
-    ~Action();
-
-    Type type = Type::DEFAULT;
-
-    // The action needs either a Uuid (e.g. Open group in new window) or a Url
-    // (e.g. Open tab) to perform.
-    std::variant<base::Uuid, GURL> element;
-  };
-
   void OnFaviconDataAvailable(
       int command_id,
       const favicon_base::FaviconImageResult& image_result);
@@ -102,7 +80,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   // will then delegate to `this` to execute. See `AppMenu::ExecuteCommand`.
   // `this` only gets a command id from AppMenu, so `this` needs to know which
   // action should be performed. That is why this map exists.
-  std::map<int, Action> command_id_to_action_;
+  std::map<int, TabGroupMenuAction> command_id_to_action_;
 
   base::WeakPtrFactory<STGTabsMenuModel> weak_ptr_factory_{this};
 };

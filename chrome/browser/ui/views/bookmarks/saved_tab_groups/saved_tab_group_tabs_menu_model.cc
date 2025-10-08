@@ -47,12 +47,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTab);
 
-STGTabsMenuModel::Action::Action(Type type,
-                                 std::variant<base::Uuid, GURL> element)
-    : type(type), element(element) {}
-STGTabsMenuModel::Action::Action(const Action& action) = default;
-STGTabsMenuModel::Action::~Action() = default;
-
 STGTabsMenuModel::STGTabsMenuModel(Browser* browser)
     : ui::SimpleMenuModel(this), browser_(browser) {}
 
@@ -79,7 +73,8 @@ void STGTabsMenuModel::Build(
                          kOpenGroup);
   command_id_to_action_.emplace(
       latest_command_id,
-      Action{Action::Type::OPEN_IN_BROWSER, sync_id_.value()});
+      TabGroupMenuAction{TabGroupMenuAction::Type::OPEN_IN_BROWSER,
+                         sync_id_.value()});
 
   // Add item: open or move to new window.
   const std::u16string move_or_open_group_text =
@@ -97,7 +92,8 @@ void STGTabsMenuModel::Build(
                          kMoveGroupToNewWindowMenuItem);
   command_id_to_action_.emplace(
       latest_command_id,
-      Action{Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW, sync_id_.value()});
+      TabGroupMenuAction{TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW,
+                         sync_id_.value()});
 
   // Add item: pin or unpin.
   latest_command_id = get_next_command_id.Run();
@@ -112,7 +108,8 @@ void STGTabsMenuModel::Build(
                          kToggleGroupPinStateMenuItem);
   command_id_to_action_.emplace(
       latest_command_id,
-      Action{Action::Type::PIN_OR_UNPIN_GROUP, sync_id_.value()});
+      TabGroupMenuAction{TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP,
+                         sync_id_.value()});
 
   latest_command_id = get_next_command_id.Run();
   if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
@@ -126,7 +123,8 @@ void STGTabsMenuModel::Build(
                            kDeleteGroupMenuItem);
     command_id_to_action_.emplace(
         latest_command_id,
-        Action{Action::Type::DELETE_GROUP, sync_id_.value()});
+        TabGroupMenuAction{TabGroupMenuAction::Type::DELETE_GROUP,
+                           sync_id_.value()});
   } else {
     // Add item: leave group.
     AddItemWithStringIdAndIcon(
@@ -136,7 +134,9 @@ void STGTabsMenuModel::Build(
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kLeaveGroupMenuItem);
     command_id_to_action_.emplace(
-        latest_command_id, Action{Action::Type::LEAVE_GROUP, sync_id_.value()});
+        latest_command_id,
+        TabGroupMenuAction{TabGroupMenuAction::Type::LEAVE_GROUP,
+                           sync_id_.value()});
   }
 
   // Add a separator and title.
@@ -171,8 +171,9 @@ void STGTabsMenuModel::Build(
           &cancelable_task_tracker_);
     }
 
-    command_id_to_action_.emplace(latest_command_id,
-                                  Action{Action::Type::OPEN_URL, tab.url()});
+    command_id_to_action_.emplace(
+        latest_command_id,
+        TabGroupMenuAction{TabGroupMenuAction::Type::OPEN_URL, tab.url()});
     // Assign an element identifier to the first tab.
     if (i == 0) {
       SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
@@ -205,7 +206,7 @@ bool STGTabsMenuModel::HasCommandId(int command_id) const {
 bool STGTabsMenuModel::IsCommandIdEnabled(int command_id) const {
   auto it = command_id_to_action_.find(command_id);
   CHECK(it != command_id_to_action_.end());
-  if (it->second.type == Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW) {
+  if (it->second.type == TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW) {
     return should_enable_move_menu_item_;
   }
   return true;
@@ -215,56 +216,12 @@ void STGTabsMenuModel::ExecuteCommand(int command_id, int event_flags) {
   auto it = command_id_to_action_.find(command_id);
   CHECK(it != command_id_to_action_.end());
 
-  auto type = it->second.type;
-  if (type == Action::Type::OPEN_URL) {
-    SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
-        browser_, std::get<GURL>(it->second.element));
-    return;
-  }
-
-  auto uuid = std::get<base::Uuid>(it->second.element);
-  switch (type) {
-    case Action::Type::OPEN_IN_BROWSER: {
-      base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu"));
-      TabGroupSyncService* tab_group_service =
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser_->profile());
-
-      bool will_open_shared_group = false;
-      if (std::optional<tab_groups::SavedTabGroup> saved_group =
-              tab_group_service->GetGroup(uuid)) {
-        will_open_shared_group = !saved_group->local_group_id().has_value() &&
-                                 saved_group->is_shared_tab_group();
-      }
-
-      tab_group_service->OpenTabGroup(
-          uuid, std::make_unique<TabGroupActionContextDesktop>(
-                    browser_, OpeningSource::kOpenedFromRevisitUi));
-
-      if (will_open_shared_group) {
-        saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-            saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-                kOpenedFromSubmenu);
-      }
-      break;
-    }
-    case Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
-      SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(browser_, uuid);
-      break;
-    case Action::Type::PIN_OR_UNPIN_GROUP:
-      SavedTabGroupUtils::ToggleGroupPinState(browser_, uuid);
-      break;
-    case Action::Type::DELETE_GROUP:
-      SavedTabGroupUtils::DeleteSavedGroup(browser_, uuid);
-      break;
-    case Action::Type::LEAVE_GROUP:
-      SavedTabGroupUtils::LeaveSharedGroup(browser_, uuid);
-      break;
-    case Action::Type::OPEN_URL:
-    case Action::Type::DEFAULT:
-      break;
-  }
+  TabGroupMenuAction action = it->second;
+  TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+  SavedTabGroupUtils::PerformTabGroupMenuAction(action, browser_,
+                                                tab_group_service);
 }
 
 void STGTabsMenuModel::OnFaviconDataAvailable(

@@ -3144,6 +3144,8 @@ static_library("ui") {
       "cocoa/status_icons/status_tray_mac.mm",
       "cocoa/tab_contents/web_drag_bookmark_handler_mac.h",
       "cocoa/tab_contents/web_drag_bookmark_handler_mac.mm",
+      "cocoa/tab_group_menu_bridge.h",
+      "cocoa/tab_group_menu_bridge.mm",
       "cocoa/tab_menu_bridge.h",
       "cocoa/tab_menu_bridge.mm",
       "cocoa/task_manager_mac.h",
