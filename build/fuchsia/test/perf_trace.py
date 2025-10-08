@@ -37,15 +37,14 @@ def start() -> None:
     # TODO(crbug.com/40935291): May include kernel:meta, kernel:sched, magma,
     # oemcrypto, media, kernel:syscall
     run_ffx_command(cmd=('trace', 'start', '--background', '--categories',
-                         'gfx,memory_monitor,system_metrics', '--output',
-                         FXT_FILE, '--buffer-size', '32', '--buffering-mode',
-                         'streaming'))
+                         'gfx,memory_monitor,system_metrics', '--buffer-size',
+                         '32', '--buffering-mode', 'streaming'))
 
 
 def stop(prefix: Optional[str] = None) -> None:
     """ Stops the system tracing and logs the metrics into the monitors system
     with an optional prefix as part of the metric names. """
-    run_ffx_command(cmd=('trace', 'stop'))
+    run_ffx_command(cmd=('trace', 'stop', '--output', FXT_FILE))
     _parse_trace(prefix)
 
 
