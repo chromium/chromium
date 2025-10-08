@@ -9,7 +9,6 @@
 #include <string>
 
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 
 namespace content {
 class BrowserContext;

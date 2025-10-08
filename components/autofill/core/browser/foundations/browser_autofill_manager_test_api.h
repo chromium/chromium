@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

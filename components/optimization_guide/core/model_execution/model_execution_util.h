@@ -13,7 +13,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace optimization_guide {
 

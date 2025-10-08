@@ -15,7 +15,6 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/installable/installable_logging.h"
-#include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace web {

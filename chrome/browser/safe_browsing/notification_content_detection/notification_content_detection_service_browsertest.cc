@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 namespace safe_browsing {

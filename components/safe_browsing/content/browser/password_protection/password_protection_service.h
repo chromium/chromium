@@ -9,7 +9,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"

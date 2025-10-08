@@ -7,7 +7,6 @@
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace gfx {
 struct CALayerParams;

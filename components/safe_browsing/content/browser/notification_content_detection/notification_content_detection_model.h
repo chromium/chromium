@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/inference/bert_model_handler.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
-#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

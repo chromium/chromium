@@ -7,7 +7,6 @@
 
 #include "base/types/pass_key.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"

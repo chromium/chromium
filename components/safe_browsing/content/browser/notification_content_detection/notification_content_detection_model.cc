@@ -19,6 +19,7 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 
 namespace safe_browsing {
 

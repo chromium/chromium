@@ -38,6 +38,7 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"

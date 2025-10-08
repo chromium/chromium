@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/js_injection/common/interfaces.mojom.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"

@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
