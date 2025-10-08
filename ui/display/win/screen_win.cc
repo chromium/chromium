@@ -191,8 +191,8 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& color_space,
     float sdr_white_level) {
   gfx::DisplayColorSpaces display_color_spaces(color_space);
-  display_color_spaces.SetOutputBufferFormats(gfx::BufferFormat::BGRA_8888,
-                                              gfx::BufferFormat::BGRA_8888);
+  display_color_spaces.SetOutputFormats(viz::SinglePlaneFormat::kBGRA_8888,
+                                        viz::SinglePlaneFormat::kBGRA_8888);
   display_color_spaces.SetSDRMaxLuminanceNits(sdr_white_level);
   return display_color_spaces;
 }
@@ -257,11 +257,12 @@ gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
       color_space, gfx::ColorSpace::kDefaultSDRWhiteLevel);
   // Use the forced color profile's buffer format for all content usages.
   if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
-    display_color_spaces.SetOutputBufferFormats(
-        gfx::BufferFormat::RGBA_1010102, gfx::BufferFormat::RGBA_1010102);
+    display_color_spaces.SetOutputFormats(
+        viz::SinglePlaneFormat::kRGBA_1010102,
+        viz::SinglePlaneFormat::kRGBA_1010102);
   } else if (color_space.IsHDR()) {
-    display_color_spaces.SetOutputBufferFormats(gfx::BufferFormat::RGBA_F16,
-                                                gfx::BufferFormat::RGBA_F16);
+    display_color_spaces.SetOutputFormats(viz::SinglePlaneFormat::kRGBA_F16,
+                                          viz::SinglePlaneFormat::kRGBA_F16);
   }
   return display_color_spaces;
 }
