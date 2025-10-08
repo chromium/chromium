@@ -193,7 +193,7 @@ class ValuableSyncBridgeTest : public testing::Test {
 
   ValuableSyncBridge& bridge() { return *bridge_; }
 
- private:
+ protected:
   base::ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
@@ -283,7 +283,7 @@ TEST_F(ValuableSyncBridgeTest, GetClientTag) {
 }
 
 TEST_F(ValuableSyncBridgeTest, SupportsIncrementalUpdates) {
-  ASSERT_FALSE(bridge().SupportsIncrementalUpdates());
+  EXPECT_FALSE(bridge().SupportsIncrementalUpdates());
 }
 
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
@@ -336,40 +336,6 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
 
   EXPECT_TRUE(SyncLoyaltyCards({remote2}));
   EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote2));
-}
-
-using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
-
-// Tests that entity changes passed to `ApplyIncrementalSyncChanges()`
-// are rejected.
-TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
-  const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
-  const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
-
-  // Add a new loyalty card.
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
-      kId2, std::move(*CreateEntityDataFromLoyaltyCard(remote2))));
-
-  // Expect no changes to the loyalty cards.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(backend(), CommitChanges());
-  EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
-
-  ASSERT_TRUE(SyncLoyaltyCards(/*loyalty_cards=*/{remote1}));
-  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
-
-  // `ApplyIncrementalSyncChanges()` does not apply the incremental update.
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        bridge().ApplyIncrementalSyncChanges(
-            bridge().CreateMetadataChangeList(), std::move(entity_change_list));
-      },
-      ".*");
-
-  // Expect that the local loyalty cards have NOT changed.
-  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
 }
 
 // Tests that `GetDataForCommit()` returns only the requested loyalty cards.
@@ -696,6 +662,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
       EntityInstanceChange::UPDATE, vehicle.guid(), vehicle));
 }
 
+using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
+
 // Tests that `EntityInstanceChanged()` crashes on REMOVE change.
 TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_Remove) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
@@ -707,6 +675,101 @@ TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_Remove) {
             EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
       },
       ".*");
+}
+
+class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {
+ public:
+  ValuableSyncBridgeWithIncrementalUpdates(
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      AutofillWebDataBackend* web_data_backend)
+      : ValuableSyncBridge(std::move(change_processor), web_data_backend) {}
+
+  // syncer::DataTypeSyncBridge:
+  bool SupportsIncrementalUpdates() const override { return true; }
+};
+
+class ValuableSyncBridgeIncrementalUpdatesTest : public ValuableSyncBridgeTest {
+ public:
+  void SetUp() override {
+    ValuableSyncBridgeTest::SetUp();
+    bridge_ = std::make_unique<ValuableSyncBridgeWithIncrementalUpdates>(
+        mock_processor().CreateForwardingProcessor(), &backend());
+  }
+};
+
+// Tests that loyalty card changes passed to `ApplyIncrementalSyncChanges()`
+// are applied.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChangesLoyaltyCards) {
+  const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
+  const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
+
+  // Expect changes to the loyalty cards.
+  EXPECT_CALL(backend(), CommitChanges).Times(2);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
+      .Times(2);
+
+  ASSERT_TRUE(SyncLoyaltyCards(/*loyalty_cards=*/{remote1}));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
+
+  // Add a new loyalty card.
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      kId2, std::move(*CreateEntityDataFromLoyaltyCard(remote2))));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateDelete(kId1, syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // Incremental updates were applied. Only `remote2` remains.
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote2));
+}
+
+// Tests that entity instance changes passed to `ApplyIncrementalSyncChanges()`
+// are applied.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChangesEntityInstances) {
+  const EntityInstance remote1 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-0000-0000-000000000001"});
+  const EntityInstance remote2 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-0000-0000-000000000002"});
+  const EntityInstance remote2_updated = GetServerVehicleEntityInstance(
+      {.model = u"updated", .guid = "00000000-0000-0000-0000-000000000002"});
+  const EntityInstance local_entity = GetLocalVehicleEntityInstance(
+      {.guid = "00000000-0000-0000-0000-000000000003"});
+
+  AddEntities({local_entity});
+
+  // Expect changes to the entities.
+  EXPECT_CALL(backend(), CommitChanges).Times(2);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
+      .Times(2);
+
+  ASSERT_TRUE(SyncEntityInstances(/*entities=*/{remote1}));
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(remote1, local_entity));
+
+  // Add a new entity and remove the old one.
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      remote2.guid().value(), EntityInstanceToEntityData(remote2)));
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      remote1.guid().value(), syncer::EntityData()));
+  // Add an update.
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      remote2_updated.guid().value(),
+      EntityInstanceToEntityData(remote2_updated)));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // Incremental updates were applied. Only `remote2` and the local entity
+  // remain.
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(remote2_updated, local_entity));
 }
 
 }  // namespace autofill

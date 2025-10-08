@@ -77,6 +77,39 @@ bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
   NOTREACHED();
 }
 
+// Handles delete request for a valuable with the corresponding `storage_key` as
+// id. As during delete request the valuable type is not available, the function
+// tries to delete the valuable from the corresponding table using only the
+// `storage_key`.
+ValuableDatabaseOperationResult HandleDeleteRequest(
+    const std::string& storage_key,
+    ValuablesTable* valuables_table,
+    EntityTable* entity_table) {
+  if (std::optional<LoyaltyCard> loyalty_card =
+          valuables_table->GetLoyaltyCardById(ValuableId(storage_key))) {
+    if (!valuables_table->RemoveLoyaltyCard(loyalty_card->id())) {
+      return ValuableDatabaseOperationResult::kDatabaseError;
+    }
+    return ValuableDatabaseOperationResult::kDataChanged;
+  }
+
+  if (!IsSyncWalletFlightReservationsEnabled() &&
+      !IsSyncWalletVehicleRegistrationsEnabled()) {
+    return ValuableDatabaseOperationResult::kNoChange;
+  }
+
+  if (entity_table->EntityInstanceExists(
+          EntityInstance::EntityId(storage_key))) {
+    if (!entity_table->RemoveEntityInstance(
+            EntityInstance::EntityId(storage_key))) {
+      return ValuableDatabaseOperationResult::kDatabaseError;
+    }
+    return ValuableDatabaseOperationResult::kDataChanged;
+  }
+
+  return ValuableDatabaseOperationResult::kNoChange;
+}
+
 }  // namespace
 
 ValuableSyncBridge::ValuableSyncBridge(
@@ -124,7 +157,8 @@ syncer::DataTypeSyncBridge* ValuableSyncBridge::FromWebDataService(
 }
 
 bool ValuableSyncBridge::SupportsIncrementalUpdates() const {
-  // This type does not support incremental updates server side.
+  // TODO(crbug.com/): Enable support for incremental updates behind a kill
+  // switch.
   return false;
 }
 
@@ -152,10 +186,82 @@ std::optional<syncer::ModelError>
 ValuableSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // This bridge does not support incremental updates, so whenever this is
-  // called, the change list should be empty.
-  CHECK(entity_changes.empty())
-      << "Received an unsupported incremental update.";
+  // Although the `AUTOFILL_VALUABLE` type does not support incremental update
+  // on the server, it has been implemented as a workaround to
+  // crbug.com/40668179.
+  if (!SupportsIncrementalUpdates()) {
+    CHECK(entity_changes.empty())
+        << "Received an unsupported incremental update.";
+    return std::nullopt;
+  }
+
+  std::unique_ptr<sql::Transaction> transaction =
+      web_data_backend_->GetDatabase()->AcquireTransaction();
+  ValuableDatabaseOperationResult db_operation_result =
+      ValuableDatabaseOperationResult::kNoChange;
+
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    const syncer::EntityData& entity_data = change->data();
+
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::AutofillValuableSpecifics& specifics =
+            entity_data.specifics.autofill_valuable();
+        switch (specifics.valuable_data_case()) {
+          case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
+            const LoyaltyCard loyalty_card =
+                CreateAutofillLoyaltyCardFromSpecifics(specifics);
+            if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(loyalty_card)) {
+              db_operation_result =
+                  ValuableDatabaseOperationResult::kDatabaseError;
+              break;
+            }
+            break;
+          }
+          case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
+          case sync_pb::AutofillValuableSpecifics::kFlightReservation:
+            if (std::optional<EntityInstance> entity =
+                    CreateEntityInstanceFromSpecifics(specifics)) {
+              if (!GetEntityTable()->AddOrUpdateEntityInstance(*entity)) {
+                db_operation_result =
+                    ValuableDatabaseOperationResult::kDatabaseError;
+              }
+            }
+            break;
+          case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
+            break;
+        }
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE:
+        if (HandleDeleteRequest(change->storage_key(), GetValuablesTable(),
+                                GetEntityTable()) ==
+            ValuableDatabaseOperationResult::kDatabaseError) {
+          db_operation_result = ValuableDatabaseOperationResult::kDatabaseError;
+        }
+
+        break;
+    }
+  }
+
+  if (db_operation_result == ValuableDatabaseOperationResult::kDatabaseError) {
+    return syncer::ModelError(
+        FROM_HERE,
+        syncer::ModelError::Type::kAutofillValuableFailedToWriteToDatabase);
+  }
+
+  web_data_backend_->CommitChanges();
+  if (transaction && !transaction->Commit()) {
+    return syncer::ModelError(
+        FROM_HERE,
+        syncer::ModelError::Type::kAutofillValuableFailedToWriteToDatabase);
+  }
+
+  if (!entity_changes.empty()) {
+    web_data_backend_->NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE);
+  }
+
   return std::nullopt;
 }
 
