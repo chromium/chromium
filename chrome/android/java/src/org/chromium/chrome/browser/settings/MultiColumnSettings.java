@@ -15,15 +15,33 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Preference container implementation for SettingsActivity in multi-column mode. */
 @NullMarked
 public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
+
+    interface Observer {
+        /** Called when detailed pane title is updated. */
+        default void onTitleUpdated() {}
+
+        /**
+         * Called when the menu layout is updated. I.e. - Switching between the single pane mode and
+         * the two pane mode. - In the two pane mode, size change of the header layout.
+         */
+        default void onHeaderLayoutUpdated() {}
+    }
+
     /**
      * Thresdhold window DP between narrow header and wide header. If the window width is as same or
      * wider than this, the wider header should be used.
@@ -33,9 +51,20 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     /** Caches the current header panel width in px. */
     private int mHeaderPanelWidthPx;
 
+    /** Caches the view of the header panel. */
+    private View mHeaderView;
+
+    /**
+     * Caches whether currently it is running in single pane mode or two pane mode to detect the
+     * mode changes
+     */
+    private boolean mSlideable;
+
     private InnerOnBackPressedCallback mOnBackPressedCallback;
 
     private @Nullable Intent mPendingFragmentIntent;
+
+    private final FragmentTracker mFragmentTracker = new FragmentTracker();
 
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
@@ -57,6 +86,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     void setPendingFragmentIntent(Intent intent) {
         mPendingFragmentIntent = intent;
+    }
+
+    View getHeaderView() {
+        return mHeaderView;
     }
 
     @Override
@@ -103,9 +136,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-
+        mHeaderView = view.findViewById(R.id.preferences_header);
         // Set up the initial width of child views.
-        updateHeaderLayout(view.findViewById(R.id.preferences_header));
         {
             var resources = view.getResources();
             View detailView = view.findViewById(R.id.preferences_detail);
@@ -151,12 +183,22 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                                 ? org.chromium.chrome.R.dimen.settings_wide_header_width
                                 : org.chromium.chrome.R.dimen.settings_narrow_header_width);
 
+        boolean menuLayoutUpdated = mSlideable != getSlidingPaneLayout().isSlideable();
+        mSlideable = getSlidingPaneLayout().isSlideable();
+
         // Update only when changed to avoid requesting re-layout to the system.
         LayoutParams params = view.getLayoutParams();
         if (headerWidth != params.width) {
             params.width = headerWidth;
             view.setLayoutParams(params);
             mHeaderPanelWidthPx = headerWidth;
+            menuLayoutUpdated = true;
+        }
+
+        if (menuLayoutUpdated) {
+            for (Observer o : mObservers) {
+                o.onHeaderLayoutUpdated();
+            }
         }
     }
 
@@ -208,6 +250,62 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
+    private class FragmentTracker extends FragmentManager.FragmentLifecycleCallbacks {
+        final List<ObservableSupplier<String>> mSuppliers = new ArrayList<>();
+
+        @Override
+        public void onFragmentStarted(@NonNull FragmentManager fm, @NonNull Fragment f) {
+            if (f instanceof MainSettings) {
+                // Skip main settings which is visible in the header pane.
+                return;
+            }
+
+            // This is coming from the click on header pane pref.
+            if (getChildFragmentManager().getBackStackEntryCount() == 0) {
+                mSuppliers.clear();
+            }
+
+            if (f instanceof EmbeddableSettingsPage page) {
+                ObservableSupplier<String> title = page.getPageTitle();
+                int index = mSuppliers.indexOf(title);
+                if (index < 0) {
+                    // Enter into more detailed page.
+                    mSuppliers.add(title);
+                } else {
+                    // Move back from the detailed page.
+                    for (int i = mSuppliers.size() - 1; i > index; --i) {
+                        mSuppliers.remove(i);
+                    }
+                }
+            }
+
+            for (Observer o : mObservers) {
+                o.onTitleUpdated();
+            }
+        }
+    }
+
+    List<ObservableSupplier<String>> getTitles() {
+        return mFragmentTracker.mSuppliers;
+    }
+
+    private final List<Observer> mObservers = new ArrayList<>();
+
+    public void addObserver(@NonNull Observer o) {
+        mObservers.add(o);
+    }
+
+    public void removeObserver(@NonNull Observer o) {
+        mObservers.remove(o);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getChildFragmentManager()
+                .registerFragmentLifecycleCallbacks(mFragmentTracker, /* recursive= */ false);
+    }
+
     @Override
     @SuppressWarnings("MissingSuperCall")
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -243,6 +341,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         if (mOnBackPressedCallback != null) {
             mOnBackPressedCallback.remove();
         }
+        getChildFragmentManager().unregisterFragmentLifecycleCallbacks(mFragmentTracker);
         super.onDestroy();
     }
 }
