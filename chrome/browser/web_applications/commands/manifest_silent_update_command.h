@@ -196,7 +196,7 @@ class ManifestSilentUpdateCommand
       std::optional<proto::PendingUpdateInfo>,
       ManifestSilentUpdateCheckResult result);
 
-  void WritePendingUpdateToWebApp(
+  void WritePendingUpdateToWebAppUpdateObservers(
       std::optional<proto::PendingUpdateInfo> pending_update);
 
   void CompleteCommandAndSelfDestruct(
@@ -240,7 +240,6 @@ class ManifestSilentUpdateCommand
   IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   bool silent_update_required_ = false;
-  bool pending_updated_changed_ = false;
 
   base::WeakPtr<content::WebContents> web_contents_;
   // Note: This must be destroyed before `new_install_info_` since it holds a

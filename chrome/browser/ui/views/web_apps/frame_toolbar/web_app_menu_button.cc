@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -109,6 +111,11 @@ void WebAppMenuButton::UpdateStateForTesting() {
   UpdateTextAndHighlightColor(HasPendingUpdate());
 }
 
+base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
+    base::RepeatingClosure callback) {
+  return label()->AddTextChangedCallback(callback);
+}
+
 void WebAppMenuButton::ShowMenu(int run_types) {
   Browser* browser = browser_view_->browser();
   RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
@@ -181,7 +188,6 @@ void WebAppMenuButton::UpdateTextAndHighlightColor(bool is_pending_update) {
   }
 
   const bool label_present_and_visible = !text.empty();
-
   SetHorizontalAlignment(label_present_and_visible ? gfx::ALIGN_RIGHT
                                                    : gfx::ALIGN_CENTER);
 

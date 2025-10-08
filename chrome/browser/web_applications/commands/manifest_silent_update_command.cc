@@ -951,10 +951,8 @@ void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
   const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
   CHECK(web_app);
 
-  // Used to notify observers at the end of the command.
-  pending_updated_changed_ = web_app->pending_update_info() != pending_update;
   // Exit early if there is no change to the pending update info.
-  if (!pending_updated_changed_) {
+  if (web_app->pending_update_info() == pending_update) {
     CompleteCommandAndSelfDestruct(FROM_HERE, result);
     return;
   }
@@ -967,13 +965,16 @@ void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
       !web_app->pending_update_info()->trusted_icons().empty();
   if (!new_pending_update_has_icons && old_pending_update_has_icons) {
     icon_operation = IconOperation::kDeleteIcons;
-  } else if (new_pending_update_has_icons && pending_updated_changed_) {
+  } else if (new_pending_update_has_icons) {
+    // This is guaranteed to be called if there is a difference in between the
+    // pending update info stored in the app vs an incoming pending update info,
+    // as without that, the command exits early above.
     icon_operation = IconOperation::kWriteIcons;
   }
 
-  auto write_pending_update_info_to_db =
-      base::BindOnce(&ManifestSilentUpdateCommand::WritePendingUpdateToWebApp,
-                     GetWeakPtr(), std::move(pending_update));
+  auto write_pending_update_info_to_db = base::BindOnce(
+      &ManifestSilentUpdateCommand::WritePendingUpdateToWebAppUpdateObservers,
+      GetWeakPtr(), std::move(pending_update));
 
   // Handle any writing or deleting the pending update icons.
   switch (icon_operation) {
@@ -1044,17 +1045,33 @@ void ManifestSilentUpdateCommand::WritePendingUpdateInfoThenComplete(
   }
 }
 
-void ManifestSilentUpdateCommand::WritePendingUpdateToWebApp(
+void ManifestSilentUpdateCommand::WritePendingUpdateToWebAppUpdateObservers(
     std::optional<proto::PendingUpdateInfo> pending_update) {
   // The tracking of time for the icon diff check should not happen if there are
   // icons populated in the `PendingUpdateInfo`.
   if (pending_update.has_value() && !pending_update->trusted_icons().empty()) {
     CHECK(!completion_info_.time_for_icon_diff_check.has_value());
   }
-  web_app::ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
-  CHECK(app_to_update);
-  app_to_update->SetPendingUpdateInfo(std::move(pending_update));
+  bool trigger_pending_update_observers = false;
+  // First write the pending update into the app, and store whether observers
+  // need to be updated.
+  {
+    web_app::ScopedRegistryUpdate update =
+        app_lock_->sync_bridge().BeginUpdate();
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
+    CHECK(app_to_update);
+    trigger_pending_update_observers =
+        app_to_update->pending_update_info() != pending_update;
+    app_to_update->SetPendingUpdateInfo(pending_update);
+  }
+
+  // Only trigger observers of a pending update info change if the value
+  // previously stored in the web app has changed from that of an incoming one.
+  if (trigger_pending_update_observers) {
+    app_lock_->registrar().NotifyPendingUpdateInfoChanged(
+        app_id_, pending_update.has_value(),
+        base::PassKey<ManifestSilentUpdateCommand>());
+  }
 }
 
 void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
@@ -1095,11 +1112,6 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
   if (record_update && app_lock_) {
     app_lock_->sync_bridge().SetAppManifestUpdateTime(app_id_,
                                                       app_lock_->clock().Now());
-  }
-  if (pending_updated_changed_) {
-    app_lock_->registrar().NotifyPendingUpdateInfoChanged(
-        app_id_, /*pending_update_available=*/true,
-        base::PassKey<ManifestSilentUpdateCommand>());
   }
   completion_info_.result = check_result;
   GetMutableDebugValue().Set("completion_info",

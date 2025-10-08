@@ -369,6 +369,77 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   ASSERT_FALSE(web_app->pending_update_info().has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       MenuButtonClearedDynamically) {
+  // First, install a web app.
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url = https_server()->GetURL("/web_apps/updating/index.html");
+  const webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  // TODO(crbug.com/442643377): Delete this wait after the update runs for every
+  // navigation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // Menu button should not have update available.
+  WebAppMenuButton* const menu_button =
+      static_cast<WebAppMenuButton*>(app_browser->GetBrowserView()
+                                         .toolbar_button_provider()
+                                         ->GetAppMenuButton());
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+  EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
+
+  // Second, trigger a security sensitive update, verify pending update stored
+  // in the app, and menu button has the "App Update Available" expanded state.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating/new_icon_page.html");
+  {
+    base::test::TestFuture<void> update_future;
+    UpdateAwaiter awaiter(provider().install_manager());
+    auto subscription = menu_button->AwaitLabelTextUpdated(
+        update_future.GetRepeatingCallback());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    EXPECT_TRUE(update_future.Wait());
+  }
+  EXPECT_EQ(update_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
+
+  // This has a new icon, so a pending update should be there in the app.
+  EXPECT_TRUE(provider()
+                  .registrar_unsafe()
+                  .GetAppById(app_id)
+                  ->pending_update_info()
+                  .has_value());
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
+
+  // Third, trigger a non-security sensitive update, and revert the name changes
+  // back. Verify that the menu button no longer has the "App Update Available"
+  // expanded state.
+  const GURL update_url2 =
+      https_server()->GetURL("/web_apps/updating/new_start_url_page.html");
+  {
+    base::test::TestFuture<void> update_future;
+    UpdateAwaiter awaiter(provider().install_manager());
+    auto subscription = menu_button->AwaitLabelTextUpdated(
+        update_future.GetRepeatingCallback());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url2));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    EXPECT_TRUE(update_future.Wait());
+  }
+  EXPECT_EQ(update_url2, provider().registrar_unsafe().GetAppStartUrl(app_id));
+  // The pending update info should be removed from the app.
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppById(app_id)
+                   ->pending_update_info()
+                   .has_value());
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+}
+
 // Used to verify that if the `kBypassSmallIconDiffThrottle` flag is used,
 // the throttle for limiting silent icon updates of small diffs to once per day
 // can be bypassed.

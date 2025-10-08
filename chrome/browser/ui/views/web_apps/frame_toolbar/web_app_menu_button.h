@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -56,6 +58,12 @@ class WebAppMenuButton : public AppMenuButton,
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
   // with the menu.
   void ShowMenu(int run_types);
+
+  // Safely waits for the label text to be updated, as per the contracts of
+  // `base::CallbackListSubscription`. Currently only used by tests, but can be
+  // used to listen to dynamic label text updates.
+  base::CallbackListSubscription AwaitLabelTextUpdated(
+      base::RepeatingClosure callback);
 
  protected:
   BrowserView* browser_view() { return browser_view_; }
