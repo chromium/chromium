@@ -380,8 +380,7 @@ void AutofillAiManager::HandleUpstreamEntityPrompt(
   }
 
   ClearStrikesForSave(form_url, upstream_entity);
-  // TODO(crbug.com/441742849): Implement main logic by deleting the local
-  // entity and calling the wallet server with the new entity.
+  entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
 }
 
 void AutofillAiManager::HandleSavePromptResult(

@@ -1551,14 +1551,22 @@ TEST_F(AutofillAiManagerUpstreamTest,
 
   std::optional<EntityInstance> entity_to_upstream;
   std::optional<EntityInstance> old_entity;
+  AutofillClient::EntitySaveOrUpdatePromptResultCallback upstream_callback;
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
-      .WillOnce(
-          DoAll(SaveArg<0>(&entity_to_upstream), SaveArg<1>(&old_entity)));
+      .WillOnce(DoAll(SaveArg<0>(&entity_to_upstream), SaveArg<1>(&old_entity),
+                      MoveArg<2>(&upstream_callback)));
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   ASSERT_FALSE(old_entity);
   ASSERT_TRUE(entity_to_upstream);
   // `local_entity_2` was recently used.
   EXPECT_EQ(entity_to_upstream->guid(), local_entity_2.guid());
+
+  // Accept the bubble.
+  std::move(upstream_callback)
+      .Run(AutofillClient::EntitySaveOrUpdatePromptResult(
+          /*did_user_decline=*/false, entity_to_upstream));
+  EXPECT_THAT(GetEntityInstances(), testing::UnorderedElementsAre(
+                                        local_entity_1, entity_to_upstream));
 }
 
 TEST_F(AutofillAiManagerUpstreamTest, FeatureOff_DoNotShowMigrationPrompt) {
