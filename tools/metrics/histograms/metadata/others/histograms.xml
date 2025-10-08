@@ -5636,13 +5636,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Hyphenation.Open" units="ms" expires_after="2025-11-08">
+<histogram name="Hyphenation.Open" units="ms" expires_after="2026-05-08">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time it takes to open a hyphenation dictionary.</summary>
 </histogram>
 
-<histogram name="Hyphenation.Open.File" units="ms" expires_after="2025-11-08">
+<histogram name="Hyphenation.Open.File" units="ms" expires_after="2026-05-08">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time it takes to open a hyphenation dictionary file.</summary>
