@@ -13,20 +13,20 @@
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/device_signals/core/common/signals_features.h"
 
 namespace device_signals {
 
 FileSystemSignalsCollector::FileSystemSignalsCollector(
     SystemSignalsServiceHost* system_service_host)
-    : BaseSignalsCollector({
-          {SignalName::kFileSystemInfo,
-           base::BindRepeating(
-               &FileSystemSignalsCollector::GetFileSystemInfoSignal,
-               base::Unretained(this))},
-      }),
-      system_service_host_(system_service_host) {
-  DCHECK(system_service_host_);
-}
+    : BaseSignalsCollector(
+          {
+              {SignalName::kFileSystemInfo,
+               base::BindRepeating(
+                   &FileSystemSignalsCollector::GetFileSystemInfoSignal,
+                   base::Unretained(this))},
+          },
+          system_service_host) {}
 
 FileSystemSignalsCollector::~FileSystemSignalsCollector() = default;
 
@@ -48,7 +48,7 @@ void FileSystemSignalsCollector::GetFileSystemInfoSignal(
     return;
   }
 
-  auto* system_signals_service = system_service_host_->GetService();
+  auto* system_signals_service = GetService();
   if (!system_signals_service) {
     FileSystemInfoResponse signal_response;
     signal_response.collection_error =
@@ -58,22 +58,38 @@ void FileSystemSignalsCollector::GetFileSystemInfoSignal(
     return;
   }
 
-  system_signals_service->GetFileSystemSignals(
-      request.file_system_signal_parameters,
-      base::BindOnce(&FileSystemSignalsCollector::OnFileSystemSignalCollected,
-                     weak_factory_.GetWeakPtr(), std::ref(response),
-                     std::move(done_closure)));
+  if (enterprise_signals::features::
+          IsSystemSignalCollectionImprovementEnabled()) {
+    int callback_id = AddPendingCallback(std::move(done_closure));
+    system_signals_service->GetFileSystemSignals(
+        request.file_system_signal_parameters,
+        base::BindOnce(&FileSystemSignalsCollector::OnFileSystemSignalCollected,
+                       weak_factory_.GetWeakPtr(), std::ref(response),
+                       callback_id, base::OnceClosure()));
+  } else {
+    system_signals_service->GetFileSystemSignals(
+        request.file_system_signal_parameters,
+        base::BindOnce(&FileSystemSignalsCollector::OnFileSystemSignalCollected,
+                       weak_factory_.GetWeakPtr(), std::ref(response),
+                       /*callback_id=*/0, std::move(done_closure)));
+  }
 }
 
 void FileSystemSignalsCollector::OnFileSystemSignalCollected(
     SignalsAggregationResponse& response,
+    int callback_id,
     base::OnceClosure done_closure,
     const std::vector<FileSystemItem>& file_system_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FileSystemInfoResponse signal_response;
   signal_response.file_system_items = std::move(file_system_items);
   response.file_system_info_response = std::move(signal_response);
-  std::move(done_closure).Run();
+  if (enterprise_signals::features::
+          IsSystemSignalCollectionImprovementEnabled()) {
+    RunPendingCallback(callback_id);
+  } else {
+    std::move(done_closure).Run();
+  }
 }
 
 }  // namespace device_signals

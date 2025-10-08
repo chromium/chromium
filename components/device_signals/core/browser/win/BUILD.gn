@@ -18,7 +18,10 @@ static_library("win") {
     "//components/device_signals/core/browser",
   ]
 
-  deps = [ "//components/device_signals/core/common" ]
+  deps = [
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
+  ]
 }
 
 source_set("unit_tests") {
@@ -33,6 +36,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/device_signals/core/browser:test_support",
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
     "//testing/gmock",
     "//testing/gtest",
   ]
