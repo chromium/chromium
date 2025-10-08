@@ -257,7 +257,7 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
                     CanonOutput* output,
                     Parsed* output_parsed) {
   // Trim leading C0 control characters and spaces.
-  spec = TrimUrl(spec, trim_path_end);
+  spec = TrimUrl(spec, trim_path_end).first;
 
   output->ReserveSizeIfNeeded(spec.length());
 
@@ -360,9 +360,7 @@ bool DoResolveRelative(std::string_view base_spec,
 
   bool is_relative;
   Component relative_component;
-  // TODO(crbug.com/350788890): IsRelativeURL() should accept string_views.
-  if (!IsRelativeURL(base_spec.data(), base_parsed, relative.data(),
-                     relative.length(),
+  if (!IsRelativeUrl(base_spec, base_parsed, relative,
                      (base_is_hierarchical || is_hierarchical_base),
                      &is_relative, &relative_component)) {
     // Error resolving.

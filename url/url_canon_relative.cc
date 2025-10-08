@@ -104,21 +104,21 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   return true;
 }
 
-// See IsRelativeURL in the header file for usage.
-template<typename CHAR>
-bool DoIsRelativeURL(const char* base,
+// See IsRelativeUrl in the header file for usage.
+template <typename CHAR>
+bool DoIsRelativeUrl(std::string_view base,
                      const Parsed& base_parsed,
-                     const CHAR* url,
-                     int url_len,
+                     std::basic_string_view<CHAR> input_url,
                      bool is_base_hierarchical,
                      bool* is_relative,
                      Component* relative_component) {
   *is_relative = false;  // So we can default later to not relative.
 
   // Trim whitespace and construct a new range for the substring.
-  int begin = 0;
-  TrimURL(url, &begin, &url_len);
-  if (begin >= url_len) {
+  auto trim_result = TrimUrl(input_url);
+  size_t begin = trim_result.second;
+  std::basic_string_view<CHAR> url = trim_result.first;
+  if (url.empty()) {
     // Empty URLs are relative, but do nothing.
     if (!is_base_hierarchical) {
       // Don't allow relative URLs if the base scheme doesn't support it.
@@ -141,9 +141,10 @@ bool DoIsRelativeURL(const char* base,
   //
   // We require strict backslashes when detecting UNC since two forward
   // slashes should be treated a a relative URL with a hostname.
-  if (DoesBeginWindowsDriveSpec(url, begin, url_len) ||
-      DoesBeginUNCPath(url, begin, url_len, true))
+  if (DoesBeginWindowsDriveSpec(url.data(), 0, url.length()) ||
+      DoesBeginUNCPath(url.data(), 0, url.length(), true)) {
     return true;
+  }
 #endif  // WIN32
 
   // See if we've got a scheme, if not, we know this is a relative URL.
@@ -151,10 +152,9 @@ bool DoIsRelativeURL(const char* base,
   // "http:foo.html" is a relative URL with path "foo.html". If the scheme is
   // empty, we treat it as relative (":foo"), like IE does.
   Component scheme;
-  const bool scheme_is_empty =
-      !ExtractScheme(url, url_len, &scheme) || scheme.len == 0;
+  const bool scheme_is_empty = !ExtractScheme(url, &scheme) || scheme.len == 0;
   if (scheme_is_empty) {
-    if (url[begin] == '#') {
+    if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo"). This can be resolved against
       // any base. Fall-through.
     } else if (!is_base_hierarchical) {
@@ -162,21 +162,21 @@ bool DoIsRelativeURL(const char* base,
       return false;
     }
 
-    *relative_component = MakeRange(begin, url_len);
+    *relative_component = MakeRange(begin, begin + url.length());
     *is_relative = true;
     return true;
   }
 
   // If the scheme isn't valid, then it's relative.
-  if (!IsValidScheme(url, scheme)) {
-    if (url[begin] == '#') {
+  if (!IsValidScheme(url.data(), scheme)) {
+    if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
     } else if (!is_base_hierarchical) {
       // Don't allow relative URLs if the base scheme doesn't support it.
       return false;
     }
-    *relative_component = MakeRange(begin, url_len);
+    *relative_component = MakeRange(begin, begin + url.length());
     *is_relative = true;
     return true;
   }
@@ -189,8 +189,8 @@ bool DoIsRelativeURL(const char* base,
   // scheme state:
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
-  if (!IsStandard(base_parsed.scheme.maybe_as_string_view_on(base)) ||
-      !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
+  if (!IsStandard(base_parsed.scheme.maybe_as_string_view_on(base.data())) ||
+      !AreSchemesEqual(base.data(), base_parsed.scheme, url.data(), scheme)) {
     return true;
   }
 
@@ -204,19 +204,21 @@ bool DoIsRelativeURL(const char* base,
 
   // If it's a filesystem URL, the only valid way to make it relative is not to
   // supply a scheme. There's no equivalent to e.g. http:index.html.
-  if (CompareSchemeComponent(url, scheme, kFileSystemScheme))
+  if (CompareSchemeComponent(url.data(), scheme, kFileSystemScheme)) {
     return true;
+  }
 
   // ExtractScheme guarantees that the colon immediately follows what it
   // considers to be the scheme. CountConsecutiveSlashes will handle the
   // case where the begin offset is the end of the input.
-  int num_slashes = CountConsecutiveSlashes(url, colon_offset + 1, url_len);
+  int num_slashes = CountConsecutiveSlashesOrBackslashes(url, colon_offset + 1);
 
   if (num_slashes == 0 || num_slashes == 1) {
     // No slashes means it's a relative path like "http:foo.html". One slash
     // is an absolute path. "http:/home/foo.html"
     *is_relative = true;
-    *relative_component = MakeRange(colon_offset + 1, url_len);
+    *relative_component =
+        MakeRange(begin + colon_offset + 1, begin + url.length());
     return true;
   }
 
@@ -646,26 +648,24 @@ bool DoResolveRelativeURL(const char* base_url,
 
 }  // namespace
 
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char* fragment,
-                   int fragment_len,
+                   std::string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component) {
-  return DoIsRelativeURL<char>(
-      base, base_parsed, fragment, fragment_len, is_base_hierarchical,
-      is_relative, relative_component);
+  return DoIsRelativeUrl<char>(base, base_parsed, fragment,
+                               is_base_hierarchical, is_relative,
+                               relative_component);
 }
 
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char16_t* fragment,
-                   int fragment_len,
+                   std::u16string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component) {
-  return DoIsRelativeURL<char16_t>(base, base_parsed, fragment, fragment_len,
+  return DoIsRelativeUrl<char16_t>(base, base_parsed, fragment,
                                    is_base_hierarchical, is_relative,
                                    relative_component);
 }

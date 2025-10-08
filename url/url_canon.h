@@ -1134,25 +1134,23 @@ bool ReplaceMailtoURL(const char* base,
 //
 // The base URL should always be canonical, therefore is ASCII.
 COMPONENT_EXPORT(URL)
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char* fragment,
-                   int fragment_len,
+                   std::string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component);
 COMPONENT_EXPORT(URL)
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char16_t* fragment,
-                   int fragment_len,
+                   std::u16string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component);
 
 // Given a canonical parsed source URL, a URL fragment known to be relative,
 // and the identified relevant portion of the relative URL (computed by
-// IsRelativeURL), this produces a new parsed canonical URL in |output| and
+// IsRelativeUrl), this produces a new parsed canonical URL in |output| and
 // |out_parsed|.
 //
 // It also requires a flag indicating whether the base URL is a file: URL
