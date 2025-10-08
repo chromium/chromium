@@ -85,10 +85,6 @@ void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
   // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
 }
 
-void OmniboxPopupViewWebUI::OnMatchIconUpdated(size_t match_index) {
-  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
-}
-
 void OmniboxPopupViewWebUI::OnDragCanceled() {}
 
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(

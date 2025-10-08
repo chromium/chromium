@@ -37,7 +37,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   void InvalidateLine(size_t line) override;
   void UpdatePopupAppearance() override;
   void ProvideButtonFocusHint(size_t line) override;
-  void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
 
