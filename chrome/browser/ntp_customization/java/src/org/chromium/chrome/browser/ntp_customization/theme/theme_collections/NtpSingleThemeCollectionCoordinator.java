@@ -9,7 +9,9 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.SINGLE_THEME_COLLECTION_ITEM;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,6 +46,7 @@ public class NtpSingleThemeCollectionCoordinator {
     private String mThemeCollectionId;
     private String mThemeCollectionTitle;
     private final List<CollectionImage> mThemeCollectionImageList = new ArrayList<>();
+    private final Context mContext;
     private final View mNtpSingleThemeCollectionBottomSheetView;
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
@@ -55,7 +58,11 @@ public class NtpSingleThemeCollectionCoordinator {
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
     private final Runnable mOnThemeImageSelectedCallback;
+    private final ComponentCallbacks mComponentCallbacks;
+    private final int mItemMaxWidth;
+    private final int mSpacing;
     private boolean mHasDisplayedBefore;
+    private int mScreenWidth;
 
     /**
      * Constructor for the single theme collection coordinator.
@@ -79,12 +86,24 @@ public class NtpSingleThemeCollectionCoordinator {
             String themeCollectionTitle,
             @SheetState int previousBottomSheetState,
             Runnable onThemeImageSelectedCallback) {
+        mContext = context;
         mBottomSheetDelegate = delegate;
         mNtpThemeBridge = ntpThemeBridge;
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
         mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
+
+        mItemMaxWidth =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_customization_theme_collections_list_item_max_width);
+        mSpacing =
+                context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen
+                                                .ntp_customization_theme_collection_list_item_padding_horizontal)
+                        * 2;
 
         mNtpSingleThemeCollectionBottomSheetView =
                 LayoutInflater.from(context)
@@ -116,8 +135,9 @@ public class NtpSingleThemeCollectionCoordinator {
         mSingleThemeCollectionBottomSheetRecyclerView =
                 mNtpSingleThemeCollectionBottomSheetView.findViewById(
                         R.id.single_theme_collection_recycler_view);
-        mSingleThemeCollectionBottomSheetRecyclerView.setLayoutManager(
-                new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT));
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(context, RECYCLE_VIEW_SPAN_COUNT);
+        mSingleThemeCollectionBottomSheetRecyclerView.setLayoutManager(gridLayoutManager);
         mNtpThemeCollectionsAdapter =
                 new NtpThemeCollectionsAdapter(
                         mThemeCollectionImageList,
@@ -125,6 +145,20 @@ public class NtpSingleThemeCollectionCoordinator {
                         this::handleThemeCollectionImageClick,
                         mImageFetcher);
         mSingleThemeCollectionBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
+
+        NtpThemeCollectionsUtils.updateSpanCountOnLayoutChange(
+                gridLayoutManager,
+                mSingleThemeCollectionBottomSheetRecyclerView,
+                mItemMaxWidth,
+                mSpacing);
+        mComponentCallbacks =
+                NtpThemeCollectionsUtils.registerOrientationListener(
+                        mContext,
+                        (newConfig) ->
+                                handleConfigurationChanged(
+                                        newConfig,
+                                        gridLayoutManager,
+                                        mSingleThemeCollectionBottomSheetRecyclerView));
 
         // Fetches the images for the current collection.
         fetchImagesForCollection(previousBottomSheetState);
@@ -145,6 +179,10 @@ public class NtpSingleThemeCollectionCoordinator {
     }
 
     void destroy() {
+        if (mComponentCallbacks != null) {
+            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+        }
+
         mBackButton.setOnClickListener(null);
         mLearnMoreButton.setOnClickListener(null);
 
@@ -153,6 +191,26 @@ public class NtpSingleThemeCollectionCoordinator {
         }
 
         mNtpThemeBridge.removeListener(mThemeCollectionSelectionListener);
+    }
+
+    /**
+     * Handles configuration changes, particularly screen width changes, to update the span count of
+     * the grid layout.
+     *
+     * @param newConfig The new configuration.
+     * @param manager The {@link GridLayoutManager} for the RecyclerView.
+     * @param recyclerView The {@link RecyclerView} whose span count needs to be updated.
+     */
+    private void handleConfigurationChanged(
+            Configuration newConfig, GridLayoutManager manager, RecyclerView recyclerView) {
+        int currentScreenWidth = newConfig.screenWidthDp;
+        if (currentScreenWidth == mScreenWidth) {
+            return;
+        }
+
+        mScreenWidth = currentScreenWidth;
+        NtpThemeCollectionsUtils.updateSpanCountOnLayoutChange(
+                manager, recyclerView, mItemMaxWidth, mSpacing);
     }
 
     /**
@@ -236,5 +294,9 @@ public class NtpSingleThemeCollectionCoordinator {
     void setNtpThemeCollectionsAdapterForTesting(NtpThemeCollectionsAdapter adapter) {
         mNtpThemeCollectionsAdapter = adapter;
         mSingleThemeCollectionBottomSheetRecyclerView.setAdapter(adapter);
+    }
+
+    int getScreenWidthForTesting() {
+        return mScreenWidth;
     }
 }

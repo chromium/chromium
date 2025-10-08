@@ -53,6 +53,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsUtils.java",
   ]
   deps = [
     ":java_resources",
@@ -63,6 +64,7 @@ android_library("java") {
     "//base:resetters_java",
     "//base:supplier_java",
     "//base:tasks_java",
+    "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/magic_stack/android:java",
@@ -159,6 +161,7 @@ android_resources("java_resources") {
     "java/res/layout/ntp_customization_theme_list_upload_an_image_item_layout.xml",
     "java/res/layout/ntp_customization_theme_preview_dialog_layout.xml",
     "java/res/values-night/colors.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
@@ -213,6 +216,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsUtilsUnitTest.java",
   ]
   deps = [
     ":java",

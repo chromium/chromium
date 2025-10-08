@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
@@ -72,11 +74,12 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Runnable mOnThemeImageSelectedCallback;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
-
     @Captor private ArgumentCaptor<ThemeCollectionSelectionListener> mListenerCaptor;
+    @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
 
     private NtpSingleThemeCollectionCoordinator mCoordinator;
     private Context mContext;
+    private Context mContextSpy;
     private View mBottomSheetView;
 
     @Before
@@ -85,12 +88,13 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mContextSpy = spy(mContext);
 
         when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
         mCoordinator =
                 new NtpSingleThemeCollectionCoordinator(
-                        mContext,
+                        mContextSpy,
                         mBottomSheetDelegate,
                         mNtpThemeBridge,
                         mImageFetcher,
@@ -166,6 +170,9 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
+        verify(mContextSpy).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
+        ComponentCallbacks componentCallbacks = mComponentCallbacksCaptor.getValue();
+
         View backButton = mBottomSheetView.findViewById(R.id.back_button);
         ImageView learnMoreButton = mBottomSheetView.findViewById(R.id.learn_more_button);
         NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
@@ -181,6 +188,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         assertFalse(learnMoreButton.hasOnClickListeners());
         verify(adapterSpy).clearOnClickListeners();
         verify(mNtpThemeBridge).removeListener(any());
+        verify(mContextSpy).unregisterComponentCallbacks(eq(componentCallbacks));
     }
 
     @Test
@@ -263,9 +271,9 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         RecyclerView recyclerView =
                 mBottomSheetView.findViewById(R.id.single_theme_collection_recycler_view);
         recyclerView.measure(
-                View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
-        recyclerView.layout(0, 0, 480, 800);
+        recyclerView.layout(0, 0, 400, 800);
 
         // Get the view for the first item.
         View themeCollectionView = recyclerView.getChildAt(0);
@@ -291,5 +299,43 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         listener.onThemeCollectionSelectionChanged(collectionId, imageUrl);
 
         verify(adapterSpy).setSelection(eq(collectionId), eq(imageUrl));
+    }
+
+    @Test
+    public void testConfigurationChanged() {
+        verify(mContextSpy).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
+        ComponentCallbacks componentCallbacks = mComponentCallbacksCaptor.getValue();
+
+        int initialScreenWidth = mCoordinator.getScreenWidthForTesting();
+
+        // Test that screen width is updated on configuration change.
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.screenWidthDp = 1000;
+        componentCallbacks.onConfigurationChanged(newConfig);
+
+        int screenWidthAfterChange = mCoordinator.getScreenWidthForTesting();
+        assertTrue(
+                "Screen width should change on configuration change.",
+                initialScreenWidth != screenWidthAfterChange);
+        assertEquals(
+                "Screen width should be updated to the new value.", 1000, screenWidthAfterChange);
+
+        // Test that screen width is not updated if it is the same.
+        componentCallbacks.onConfigurationChanged(newConfig);
+        assertEquals(
+                "Screen width should not change if configuration is the same.",
+                screenWidthAfterChange,
+                mCoordinator.getScreenWidthForTesting());
+
+        // Test that screen width is updated again with a different value.
+        newConfig.screenWidthDp = 500;
+        componentCallbacks.onConfigurationChanged(newConfig);
+        assertTrue(
+                "Screen width should change on configuration change again.",
+                screenWidthAfterChange != mCoordinator.getScreenWidthForTesting());
+        assertEquals(
+                "Screen width should be updated to the new value.",
+                500,
+                mCoordinator.getScreenWidthForTesting());
     }
 }

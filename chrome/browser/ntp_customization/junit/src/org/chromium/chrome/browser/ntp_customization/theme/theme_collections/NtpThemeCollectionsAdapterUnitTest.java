@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -22,7 +23,9 @@ import android.graphics.Bitmap;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
@@ -363,5 +366,43 @@ public class NtpThemeCollectionsAdapterUnitTest {
         adapter.setSelection("id2", mImageItems.get(0).imageUrl);
         adapter.onBindViewHolder(viewHolder, 0);
         assertFalse(viewHolder.itemView.isActivated());
+    }
+
+    @Test
+    public void testOnCreateViewHolder_layoutParams() {
+        // Test for THEME_COLLECTIONS_ITEM
+        NtpThemeCollectionsAdapter adapterWithTitle =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItems, THEME_COLLECTIONS_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolderWithTitle =
+                (ThemeCollectionViewHolder)
+                        adapterWithTitle.onCreateViewHolder(mParent, THEME_COLLECTIONS_ITEM);
+
+        ImageView imageViewWithTitle = viewHolderWithTitle.mImage;
+        ConstraintLayout.LayoutParams paramsWithTitle =
+                (ConstraintLayout.LayoutParams) imageViewWithTitle.getLayoutParams();
+
+        int expectedHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_customization_theme_collections_list_item_height);
+        assertEquals(expectedHeight, paramsWithTitle.height);
+        assertNull(paramsWithTitle.dimensionRatio);
+
+        // Test for SINGLE_THEME_COLLECTION_ITEM
+        NtpThemeCollectionsAdapter adapterWithoutTitle =
+                new NtpThemeCollectionsAdapter(
+                        mImageItems, SINGLE_THEME_COLLECTION_ITEM, mOnClickListener, mImageFetcher);
+        ThemeCollectionViewHolder viewHolderWithoutTitle =
+                (ThemeCollectionViewHolder)
+                        adapterWithoutTitle.onCreateViewHolder(
+                                mParent, SINGLE_THEME_COLLECTION_ITEM);
+
+        ImageView imageViewWithoutTitle = viewHolderWithoutTitle.mImage;
+        ConstraintLayout.LayoutParams paramsWithoutTitle =
+                (ConstraintLayout.LayoutParams) imageViewWithoutTitle.getLayoutParams();
+
+        assertEquals(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, paramsWithoutTitle.height);
+        assertEquals("1:1", paramsWithoutTitle.dimensionRatio);
     }
 }
