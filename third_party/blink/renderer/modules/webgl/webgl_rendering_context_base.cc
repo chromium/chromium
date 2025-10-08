@@ -1841,10 +1841,6 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  if (!Host()->LowLatencyEnabled()) {
-    return false;
-  }
-
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
   // invalidate the weak pointer.
