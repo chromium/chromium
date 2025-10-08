@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 
@@ -253,8 +248,8 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
 
   MOCK_METHOD1(WaitSyncTokenCHROMIUMMock, void(const GLbyte* sync_token));
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override {
-    memcpy(&most_recently_waited_sync_token_, sync_token,
-           sizeof(most_recently_waited_sync_token_));
+    UNSAFE_TODO(memcpy(&most_recently_waited_sync_token_, sync_token,
+                       sizeof(most_recently_waited_sync_token_)));
     WaitSyncTokenCHROMIUMMock(sync_token);
   }
 
@@ -266,13 +261,13 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     state_.scissor_enabled = saved_state_.scissor_enabled;
   }
   void DrawingBufferClientRestoreMaskAndClearValues() override {
-    memcpy(state_.color_mask, saved_state_.color_mask,
-           sizeof(state_.color_mask));
+    UNSAFE_TODO(memcpy(state_.color_mask, saved_state_.color_mask,
+                       sizeof(state_.color_mask)));
     state_.clear_depth = saved_state_.clear_depth;
     state_.clear_stencil = saved_state_.clear_stencil;
 
-    memcpy(state_.clear_color, saved_state_.clear_color,
-           sizeof(state_.clear_color));
+    UNSAFE_TODO(memcpy(state_.clear_color, saved_state_.clear_color,
+                       sizeof(state_.clear_color)));
     state_.depth_mask = saved_state_.depth_mask;
     state_.stencil_mask = saved_state_.stencil_mask;
   }
