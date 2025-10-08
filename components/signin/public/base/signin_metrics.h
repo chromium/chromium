@@ -687,6 +687,10 @@ void LogSyncOptInStarted(AccessPoint access_point);
 // and its associated access point.
 void LogSyncOptInOffered(AccessPoint access_point);
 
+// Logs a sync opt-in offered event (`Signin.HistorySyncOptIn.Offered`
+// histogram) and its associated access point.
+void LogHistorySyncOptInOffered(AccessPoint access_point);
+
 // Logs that the sync settings were opened at the end of the sync opt-in flow,
 // and the associated access points.
 void LogSyncSettingsOpened(AccessPoint access_point);

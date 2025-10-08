@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -498,8 +499,7 @@ class
         syncer::UserSelectableType::kSavedTabGroups, enabled);
   }
 
-  void ShowAndAcceptDialog(
-      collaboration::ServiceStatus status = collaboration::ServiceStatus()) {
+  void ShowAndAcceptDialog(collaboration::SigninStatus signin_status) {
     // Set up an account picture in case it is shown in the dialog.
     signin::SimulateAccountImageFetch(
         identity_manager(),
@@ -511,7 +511,8 @@ class
     TestCollaborationControllerDelegateDesktop delegate(browser());
     EXPECT_CALL(delegate, GetServiceStatus())
         .Times(2)
-        .WillRepeatedly(testing::Return(status));
+        .WillRepeatedly(testing::Return(
+            collaboration::ServiceStatus{.signin_status = signin_status}));
     EXPECT_EQ(nullptr, delegate.prompt_dialog_widget_for_testing());
     base::MockCallback<
         collaboration::CollaborationControllerDelegate::ResultCallback>
@@ -542,7 +543,9 @@ class
 IN_PROC_BROWSER_TEST_F(
     CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
     PromptDialogAccept_SignedOut) {
-  ShowAndAcceptDialog();
+  base::HistogramTester histogram_tester;
+
+  ShowAndAcceptDialog(collaboration::SigninStatus::kNotSignedIn);
 
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
@@ -564,11 +567,35 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
     PromptDialogAccept_WebSignedIn) {
+  base::HistogramTester histogram_tester;
+
   AccountInfo info = signin::MakeAccountAvailable(
       identity_manager(),
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
@@ -577,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(
           .Build("test@email.com"));
 
   // Accepting the dialog should sign the user in and also enable history sync.
-  ShowAndAcceptDialog();
+  ShowAndAcceptDialog(collaboration::SigninStatus::kNotSignedIn);
 
   EXPECT_TRUE(IsSignedIn());
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
@@ -590,6 +617,31 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -599,7 +651,10 @@ IN_PROC_BROWSER_TEST_F(
       identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
 
-  ShowAndAcceptDialog();
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
+  ShowAndAcceptDialog(collaboration::SigninStatus::kSignedInPaused);
 
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
@@ -626,6 +681,20 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -633,8 +702,11 @@ IN_PROC_BROWSER_TEST_F(
     PromptDialogAccept_SignedInWithoutHistorySync) {
   SignIn();
 
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
   // Accepting the dialog should enable history sync.
-  ShowAndAcceptDialog();
+  ShowAndAcceptDialog(collaboration::SigninStatus::kSignedIn);
 
   EXPECT_TRUE(IsSignedIn());
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
@@ -647,15 +719,29 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signin metrics - nothing should be recorded for only history sync optin.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
     PromptDialogAccept_SignInDisabled) {
+  base::HistogramTester histogram_tester;
+
   // Show dialog and open the Google services settings page.
-  collaboration::ServiceStatus status;
-  status.signin_status = collaboration::SigninStatus::kSigninDisabled;
-  ShowAndAcceptDialog(status);
+  ShowAndAcceptDialog(collaboration::SigninStatus::kSigninDisabled);
 
   // Verify the settings page was opened.
   EXPECT_EQ(
@@ -674,5 +760,19 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kTabs));
   EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signin metrics - nothing should be recorded for sync disabled.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Offered",
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      /*expected_bucket_count=*/0);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
