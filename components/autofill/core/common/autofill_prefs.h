@@ -19,14 +19,18 @@ class PrefRegistrySyncable;
 namespace autofill::prefs {
 
 // Alphabetical list of preference names specific to the Autofill
-// component. Keep alphabetized, and document each in the .cc file.
-// Do not get/set the value of this pref directly. Use provided getter/setter.
+// component. Keep in alphabetical order. Do not get/set the value of this pref
+// directly. Use provided getter/setter.
 
 // Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
 inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
 // String serving as a seed for ablation studies.
 inline constexpr std::string_view kAutofillAblationSeedPref =
     "autofill.ablation_seed";
+// Boolean that is true if identity-related entities of Autofill AI are enabled.
+// Otherwise, saving and filling of these entities is disabled.
+inline constexpr char kAutofillAiIdentityEntitiesEnabled[] =
+    "autofill.autofill_ai.identity_entities_enabled";
 // A dictionary that contains (hashed) GAIA ids and their opt-in status for
 // AutofillAI.
 inline constexpr char kAutofillAiOptInStatus[] =
@@ -35,6 +39,10 @@ inline constexpr char kAutofillAiOptInStatus[] =
 // routine was run. This routine will be run once per version.
 inline constexpr char kAutofillAiLastVersionDeduped[] =
     "autofill.ai_last_version_deduped";
+// Boolean that is true if travel-related entities of Autofill AI are enabled.
+// Otherwise, saving and filling of these entities is disabled.
+inline constexpr char kAutofillAiTravelEntitiesEnabled[] =
+    "autofill.autofill_ai.travel_entities_enabled";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Boolean that is true if BNPL on Autofill is enabled.
