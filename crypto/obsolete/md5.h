@@ -13,6 +13,7 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 
 namespace crypto::obsolete {
+static constexpr size_t kMd5Size = 16;
 class Md5;
 }
 
@@ -30,6 +31,11 @@ crypto::obsolete::Md5 MakeMd5HasherForMd5sumTool();
 
 namespace autofill {
 crypto::obsolete::Md5 MakeMd5HasherForPasswordRequirementsSpec();
+}
+
+namespace base {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForWinInspectionResultsCache(
+    base::span<const uint8_t> payload);
 }
 
 namespace blink {
@@ -102,7 +108,7 @@ namespace crypto::obsolete {
 // MD5 in new production code.
 class CRYPTO_EXPORT Md5 {
  public:
-  static constexpr size_t kSize = 16;
+  static constexpr size_t kSize = kMd5Size;
 
   Md5(const Md5& other);
   Md5(Md5&& other);
@@ -151,6 +157,10 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(https://crbug.com/426243026): get rid of this.
   friend class bookmarks::BookmarkCodec;
+
+  // TODO(https://crbug.com/450285252): get rid of this.
+  friend std::array<uint8_t, Md5::kSize> base::Md5ForWinInspectionResultsCache(
+      base::span<const uint8_t> payload);
 
   // TODO(https://crbug.com/428022614): get rid of this.
   friend Md5 media::test::MakeMd5HasherForVideoFrameValidation();
