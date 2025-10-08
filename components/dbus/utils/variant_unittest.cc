@@ -4,6 +4,8 @@
 
 #include "components/dbus/utils/variant.h"
 
+#include <unistd.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -283,6 +285,61 @@ TEST(DBusVariantTest, ConstructorConvertsTypes) {
   variant = Variant::Wrap<"y">(123);
   EXPECT_EQ(variant.signature(), "y");
   EXPECT_EQ(std::move(variant).Take<uint8_t>(), 123);
+}
+
+TEST(DBusVariantTest, Equality) {
+  // Empty variants.
+  EXPECT_EQ(Variant(), Variant());
+
+  // Primitives.
+  EXPECT_EQ(Variant::Wrap<"i">(123), Variant::Wrap<"i">(123));
+  EXPECT_NE(Variant::Wrap<"i">(123), Variant::Wrap<"i">(456));
+
+  // Different signature.
+  EXPECT_NE(Variant::Wrap<"i">(123), Variant::Wrap<"u">(123));
+  EXPECT_NE(Variant::Wrap<"i">(123), Variant());
+  EXPECT_NE(Variant(), Variant::Wrap<"i">(123));
+
+  EXPECT_EQ(Variant::Wrap<"s">("hello"), Variant::Wrap<"s">("hello"));
+  EXPECT_NE(Variant::Wrap<"s">("hello"), Variant::Wrap<"s">("world"));
+
+  // Containers.
+  std::vector<int32_t> vec1 = {1, 2, 3};
+  std::vector<int32_t> vec2 = {1, 2, 3};
+  std::vector<int32_t> vec3 = {1, 2, 4};
+  EXPECT_EQ(Variant::Wrap<"ai">(vec1), Variant::Wrap<"ai">(vec2));
+  EXPECT_NE(Variant::Wrap<"ai">(vec1), Variant::Wrap<"ai">(vec3));
+
+  // Nested variants.
+  EXPECT_EQ(Variant::Wrap<"v">(Variant::Wrap<"i">(123)),
+            Variant::Wrap<"v">(Variant::Wrap<"i">(123)));
+  EXPECT_NE(Variant::Wrap<"v">(Variant::Wrap<"i">(123)),
+            Variant::Wrap<"v">(Variant::Wrap<"i">(456)));
+
+  // Moved-from variants (empty).
+  Variant v1 = Variant::Wrap<"i">(123);
+  Variant v2 = std::move(v1);
+  EXPECT_EQ(v1, Variant());  // v1 is empty after move.
+  EXPECT_EQ(v2, Variant::Wrap<"i">(123));
+
+  // ScopedFD (comparing FDs).
+  int fds1[2];
+  int fds2[2];
+  ASSERT_EQ(pipe(fds1), 0);
+  ASSERT_EQ(pipe(fds2), 0);
+
+  base::ScopedFD scoped_fd1_read(fds1[0]);
+  base::ScopedFD scoped_fd1_write(fds1[1]);
+  base::ScopedFD scoped_fd2_read(fds2[0]);
+  base::ScopedFD scoped_fd2_write(fds2[1]);
+
+  // Test inequality of different FDs.
+  EXPECT_NE(Variant::Wrap<"h">(std::move(scoped_fd1_read)),
+            Variant::Wrap<"h">(std::move(scoped_fd2_read)));
+
+  // Test equality with empty FDs.
+  EXPECT_EQ(Variant::Wrap<"h">(base::ScopedFD()),
+            Variant::Wrap<"h">(base::ScopedFD()));
 }
 
 }  // namespace

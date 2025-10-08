@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Variant {
 
   ~Variant();
 
+  bool operator==(const Variant& other) const;
+
   // Create a new Variant that wraps the given `value`, which is consumed.
   // The `Signature` template parameter is a required string literal that
   // must match the D-Bus signature of `value`. This is intended to prevent

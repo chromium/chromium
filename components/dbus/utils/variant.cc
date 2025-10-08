@@ -30,6 +30,29 @@ Variant& Variant::operator=(Variant&& other) noexcept {
 
 Variant::~Variant() = default;
 
+bool Variant::operator==(const Variant& other) const {
+  return std::visit(
+      absl::Overload{
+          [](const base::ScopedFD& l, const base::ScopedFD& r) -> bool {
+            return l.get() == r.get();
+          },
+          [](const NestedVariant& l, const NestedVariant& r) -> bool {
+            CHECK(l);
+            CHECK(r);
+            return *l == *r;
+          },
+          []<typename T>(const T& l, const T& r) -> bool {
+            // All other types can be compared directly.
+            return l == r;
+          },
+          [](const auto& l, const auto& r) -> bool {
+            // Different types, cannot be equal.
+            return false;
+          },
+      },
+      state_, other.state_);
+}
+
 void Variant::Write(dbus::MessageWriter& writer) const {
   dbus::MessageWriter variant_writer(nullptr);
   writer.OpenVariant(signature_, &variant_writer);
