@@ -7,6 +7,16 @@
 
 #include "ui/views/view.h"
 
+// This view is responsible for holding the primary elements of the Browser UI
+// other than the tab strip:
+// - TopContainerView
+//   - ToolbarView
+//   - BookmarksBarView
+//   - ContentsSeparator
+//   - TopContainerLoadingBar
+// - InfobarContainerView
+// - ContentContainer
+// - SidePanel
 class MainContainerView : public views::View {
   METADATA_HEADER(MainContainerView, views::View)
 

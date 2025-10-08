@@ -134,6 +134,7 @@
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/main_container_view.h"
+#include "chrome/browser/ui/views/frame/main_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
@@ -792,7 +793,7 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->tab_strip_model()->AddObserver(this);
 
-  main_region_ = AddChildView(std::make_unique<views::View>());
+  main_region_ = AddChildView(std::make_unique<MainRegionView>());
 
   main_container_ =
       main_region_->AddChildView(std::make_unique<MainContainerView>());
