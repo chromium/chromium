@@ -3,3 +3,4 @@
 // found in the LICENSE file.
 
 import './app.js';
+import './full_app.js';

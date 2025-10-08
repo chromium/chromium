@@ -9,15 +9,16 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 
-class OmniboxPopupBrowserTest : public WebUIMochaBrowserTest {
+class OmniboxPopupTest : public WebUIMochaBrowserTest {
  protected:
-  OmniboxPopupBrowserTest() {
+  OmniboxPopupTest() {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
+    scoped_feature_list_.InitWithFeatures({omnibox::kWebUIOmniboxPopup},
+                                          {omnibox::kWebUIOmniboxFullPopup});
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      omnibox::kWebUIOmniboxPopup};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
@@ -26,7 +27,28 @@ class OmniboxPopupBrowserTest : public WebUIMochaBrowserTest {
 #else
 #define MAYBE_App App
 #endif
-typedef OmniboxPopupBrowserTest OmniboxPopupTest;
 IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, MAYBE_App) {
   RunTest("omnibox_popup/app_test.js", "mocha.run();");
+}
+
+class OmniboxPopupFullTest : public WebUIMochaBrowserTest {
+ protected:
+  OmniboxPopupFullTest() {
+    set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
+    scoped_feature_list_.InitWithFeatures(
+        {omnibox::kWebUIOmniboxPopup, omnibox::kWebUIOmniboxFullPopup}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(crbug.com/40284073): Test fails with JS coverage turned on.
+#define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, MAYBE_App) {
+  RunTest("omnibox_popup/full_app_test.js", "mocha.run();");
 }
