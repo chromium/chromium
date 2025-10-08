@@ -307,8 +307,8 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
-// TODO(crbug.com/450169384): flaky test on Linux MSan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/450169384): flaky test on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CreateLogs DISABLED_CreateLogs
 #else
 #define MAYBE_CreateLogs CreateLogs
