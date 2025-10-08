@@ -28,6 +28,7 @@ _CPU_OPTS = '|'.join(cpu.value for cpu in Cpu)
 _PLATFORM = re.compile('^' + ''.join([
     f'(?P<os>{_OS_OPTS})',
     f'(?:-(?P<cpu>{_CPU_OPTS}))?',
+    r'(?P<xcode_suffix>_xcode\d+)?',
 ]) + '$')
 
 
@@ -54,6 +55,10 @@ def main(args):
     # But we do need to be consistent about the CPU we target, so we arbitrarily
     # pick x64 since it's probably the most supported CPU.
     cpu = Cpu(props['cpu'] or 'x64')
+
+    # We want to reconstruct the platform to dedupe xcode versions, and ensure
+    # that we always have the correct cpu arch.
+    platform = f"{os.value}-{cpu.value}"
 
     skip = False
     for k, v in filter.items():
@@ -130,10 +135,7 @@ def _modularize(out_dir: pathlib.Path, error_log: pathlib.Path | None,
       cpu=cpu,
       os=os,
   )
-  platform = f'{compiler.os.value}-{compiler.cpu.value}'
-  logging.info('Detected platform %s', platform)
 
-  out_dir = SOURCE_ROOT / 'build/modules' / out_dir.name
   if compile:
     ps, files = compiler.compile_one(compile)
     print('stderr:', ps.stderr.decode('utf-8'), file=sys.stderr)
@@ -146,6 +148,11 @@ def _modularize(out_dir: pathlib.Path, error_log: pathlib.Path | None,
   graph = compiler.compile_all()
   replacements = fix_graph(graph, compiler)
   targets = run_build(graph)
+
+  platform = (out_dir / 'gen/module_platform.txt').read_text()
+  logging.info('Detected platform %s', platform)
+
+  out_dir = SOURCE_ROOT / 'build/modules' / out_dir.name
   out_dir.mkdir(exist_ok=True, parents=False)
   if compiler.sysroot_dir == IncludeDir.Sysroot:
     render.render_modulemap(out_dir=out_dir,
