@@ -50,10 +50,6 @@
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 namespace {
 
 using ntp_promo::mojom::ShowNtpPromosResult;
@@ -257,6 +253,15 @@ class NtpPromoUiTest
     }
   }
 
+  auto WaitForAndScrollToElement(
+      const ui::ElementIdentifier& ntp_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query) {
+    auto steps = Steps(WaitForElementExists(ntp_id, query),
+                       ScrollIntoView(ntp_id, query));
+    AddDescriptionPrefix(steps, __func__);
+    return steps;
+  }
+
   auto GetActionButtonPath() const {
     return GetFirstPromoPath() + kActionIconId;
   }
@@ -266,7 +271,7 @@ class NtpPromoUiTest
   auto WaitForPromoIcon(std::string_view expected_icon) {
     const auto path = GetPromoIconPath();
     auto steps = Steps(
-        WaitForElementVisible(kNtpElementId, path),
+        WaitForAndScrollToElement(kNtpElementId, path),
         // Verify the icon shows the correct image.
         CheckJsResultAt(kNtpElementId, path, "el => el.icon", expected_icon));
     AddDescriptionPrefix(steps, __func__);
@@ -280,14 +285,16 @@ class NtpPromoUiTest
       case Eligibility::kEligible:
         steps += WaitForPromoIcon(std::string("ntp-promo:") +
                                   std::string(expected_icon));
-        steps += WaitForElementVisible(kNtpElementId, GetActionButtonPath());
+        steps +=
+            WaitForAndScrollToElement(kNtpElementId, GetActionButtonPath());
         break;
       case Eligibility::kCompleted:
         steps += WaitForPromoIcon("cr:check");
         if (GetParam().promo_type == NtpBrowserPromoType::kSimple) {
-          steps += EnsureNotVisible(kNtpElementId, GetActionButtonPath());
+          steps += EnsureNotPresent(kNtpElementId, GetActionButtonPath());
         } else {
-          steps += WaitForElementVisible(kNtpElementId, GetActionButtonPath());
+          steps +=
+              WaitForAndScrollToElement(kNtpElementId, GetActionButtonPath());
         }
         break;
       case Eligibility::kIneligible:
@@ -374,13 +381,6 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
-  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() == 15 && base::mac::IsVirtualMachine()) {
-    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -403,13 +403,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
       CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
 
-// TODO(crbug.com/448993914): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TestPromoCompleted DISABLED_TestPromoCompleted
-#else
-#define MAYBE_TestPromoCompleted TestPromoCompleted
-#endif
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_TestPromoCompleted) {
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
   InstallTestPromo(Eligibility::kCompleted);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -421,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_TestPromoCompleted) {
           Then(WaitForPromoVisible(Eligibility::kCompleted, kSignInIconName),
                VerifyTestPromoText(),
                CheckShowMetrics(ShowNtpPromosResult::kShown)),
-          Else(EnsureNotVisible(kNtpElementId, GetFirstPromoPath()),
+          Else(EnsureNotPresent(kNtpElementId, GetFirstPromoPath()),
                CheckShowMetrics(ShowNtpPromosResult::kNotShownNoPromos))));
 }
 
@@ -455,8 +449,8 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleEnabled) {
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(InstrumentTab(kNtpElementId),
                   NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-                  WaitForElementVisible(kNtpElementId, kPathToModules),
-                  EnsureNotVisible(kNtpElementId, GetFirstPromoPath()),
+                  WaitForAndScrollToElement(kNtpElementId, kPathToModules),
+                  EnsureNotPresent(kNtpElementId, GetFirstPromoPath()),
                   CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));
 }
 
@@ -472,7 +466,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(InstrumentTab(kNtpElementId),
                   NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-                  WaitForElementVisible(kNtpElementId, GetFirstPromoPath()),
+                  WaitForAndScrollToElement(kNtpElementId, GetFirstPromoPath()),
                   EnsureNotVisible(kNtpElementId, kPathToModules),
                   CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
@@ -482,14 +476,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
 // or run these tests on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/448993914): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SigninPromoAppearsAndIsClickable \
-  DISABLED_SigninPromoAppearsAndIsClickable
-#else
-#define MAYBE_SigninPromoAppearsAndIsClickable SigninPromoAppearsAndIsClickable
-#endif
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_SigninPromoAppearsAndIsClickable) {
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpSignInPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -513,16 +500,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_SigninPromoAppearsAndIsClickable) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/448993914): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ExtensionsPromoAppearsAndIsClickable \
-  DISABLED_ExtensionsPromoAppearsAndIsClickable
-#else
-#define MAYBE_ExtensionsPromoAppearsAndIsClickable \
-  ExtensionsPromoAppearsAndIsClickable
-#endif
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
-                       MAYBE_ExtensionsPromoAppearsAndIsClickable) {
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpExtensionsPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -544,16 +522,8 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
   // TODD(https://crbug.com/433607240): Check model, histograms.
 }
 
-// TODO(crbug.com/448993914): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CustomizationPromoAppearsAndIsClickable \
-  DISABLED_CustomizationPromoAppearsAndIsClickable
-#else
-#define MAYBE_CustomizationPromoAppearsAndIsClickable \
-  CustomizationPromoAppearsAndIsClickable
-#endif
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
-                       MAYBE_CustomizationPromoAppearsAndIsClickable) {
+                       CustomizationPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -664,8 +634,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
   RunTestSequence(
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForElementVisible(kNtpElementId, GetFirstPromoPath()),
-      ScrollIntoView(kNtpElementId, GetPromosPath()),
+      WaitForAndScrollToElement(kNtpElementId, GetFirstPromoPath()),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Screenshots not captured on this platform."),
       ScreenshotWebUi(kNtpElementId, GetPromosPath(),
