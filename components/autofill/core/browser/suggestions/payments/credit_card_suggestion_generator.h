@@ -14,6 +14,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -40,14 +42,17 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
       AutofillClient* client,
-      const std::vector<std::string>& four_digit_combinations_in_dom);
+      const std::vector<std::string>& four_digit_combinations_in_dom,
+      autofill_metrics::CreditCardFormEventLogger*
+          credit_card_form_event_logger,
+      autofill_metrics::AddressFormEventLogger* address_form_event_logger);
   ~CreditCardSuggestionGenerator() override;
 
   void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<SuggestionDataSource,
@@ -55,10 +60,10 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
           callback) override;
 
   void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const std::vector<
           std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
           all_suggestion_data,
@@ -68,10 +73,10 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // a base::OnceCallback. Calls that callback exactly once.
   // TODO(crbug.com/409962888): Clean up after launch.
   void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::FunctionRef<void(std::pair<SuggestionDataSource,
                                        std::vector<SuggestionData>>)> callback);
@@ -80,10 +85,10 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // a base::OnceCallback. Calls that callback exactly once.
   // TODO(crbug.com/409962888): Clean up after launch.
   void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const std::vector<
           std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
           all_suggestion_data,
@@ -98,6 +103,36 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   }
 
  private:
+  bool ShouldShowCreditCardSaveAndFill(bool is_complete_form,
+                                       const FormFieldData& trigger_field);
+
+  bool ShouldShowScanCreditCard(const FormData& form,
+                                const FormFieldData& trigger_field,
+                                const AutofillField* autofill_field);
+
+  bool IsFormNonSecure(const FormData& form) const;
+
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin&);
+
+  std::vector<CreditCard> FetchCreditCardsForCreditCardOrCvcField(
+      const AutofillClient& client,
+      const FormFieldData& trigger_field,
+      const std::vector<std::string>& four_digit_combinations_in_dom,
+      const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+      FieldType trigger_field_type,
+      bool should_show_scan_credit_card);
+
+  std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers();
+
+  void FilterCardsToSuggestForCvcFields(
+      FieldType trigger_field_type,
+      const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+      std::vector<CreditCard>& cards_to_suggest);
+
+  std::vector<CreditCard> FetchVirtualCardsForStandaloneCvcField(
+      const FormFieldData& trigger_field);
+
   PaymentsDataManager* payments_data_manager() const {
     return &client_->GetPersonalDataManager().payments_data_manager();
   }
