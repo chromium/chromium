@@ -1251,45 +1251,6 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
                 cascade_layer, style_scope, apply_mixins_stack);
 }
 
-// If there's a reference to the parent selector (implicit or explicit)
-// somewhere in the selector, use that to find the parent StyleRule.
-// If not, it's not relevant what the parent is anyway.
-const StyleRule* FindParentIfUsed(const CSSSelector* selector) {
-  do {
-    if (selector->Match() == CSSSelector::kPseudoClass &&
-        selector->GetPseudoType() == CSSSelector::kPseudoParent) {
-      return selector->ParentRule();
-    }
-    if (selector->SelectorList() && selector->SelectorList()->First()) {
-      const StyleRule* parent =
-          FindParentIfUsed(selector->SelectorList()->First());
-      if (parent != nullptr) {
-        return parent;
-      }
-    }
-  } while (!UNSAFE_TODO((selector++)->IsLastInSelectorList()));
-  return nullptr;
-}
-
-// Whether we should include the given rule (coming from a RuleSet)
-// in a diff rule set, based on the list on “only_include” (which are
-// the ones that have been modified). This is nominally only a simple
-// membership test, but we also need to take into account nested rules;
-// if a parent rule of ours has been modified, we need to also include
-// this rule.
-static bool IncludeRule(const StyleRule* style_rule,
-                        const HeapHashSet<Member<StyleRule>>& only_include) {
-  if (only_include.Contains(const_cast<StyleRule*>(style_rule))) {
-    return true;
-  }
-  const StyleRule* parent_rule = FindParentIfUsed(style_rule->FirstSelector());
-  if (parent_rule != nullptr) {
-    return IncludeRule(parent_rule, only_include);
-  } else {
-    return false;
-  }
-}
-
 void RuleSet::NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
                                              const StyleScope* style_scope,
                                              const RuleSet& old_rule_set,
@@ -1314,7 +1275,7 @@ void RuleSet::AddFilteredRulesFromOtherBucket(
     HeapVector<RuleData>* dst) {
   Seeker<StyleScope> scope_seeker(other.scope_intervals_);
   for (const RuleData& rule_data : src) {
-    if (IncludeRule(rule_data.Rule(), only_include)) {
+    if (only_include.Contains(const_cast<StyleRule*>(rule_data.Rule()))) {
       dst->push_back(rule_data);
       NewlyAddedFromDifferentRuleSet(rule_data,
                                      scope_seeker.Seek(rule_data.GetPosition()),
@@ -1535,7 +1496,7 @@ void RuleMap::AddFilteredRulesFromOtherSet(
     for (const auto& [key, extent] : other.buckets) {
       Seeker<StyleScope> scope_seeker(old_rule_set.scope_intervals_);
       for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
-        if (IncludeRule(rule_data.Rule(), only_include)) {
+        if (only_include.Contains(const_cast<StyleRule*>(rule_data.Rule()))) {
           Add(key, rule_data);
           new_rule_set.NewlyAddedFromDifferentRuleSet(
               rule_data, scope_seeker.Seek(rule_data.GetPosition()),
@@ -1556,7 +1517,7 @@ void RuleMap::AddFilteredRulesFromOtherSet(
     for (wtf_size_t i = 0; i < other.backing.size(); ++i) {
       const unsigned bucket_number = other.bucket_number_[i];
       const RuleData& rule_data = other.backing[i];
-      if (IncludeRule(rule_data.Rule(), only_include)) {
+      if (only_include.Contains(const_cast<StyleRule*>(rule_data.Rule()))) {
         Add(*keys[bucket_number], rule_data);
         new_rule_set.NewlyAddedFromDifferentRuleSet(
             rule_data, scope_seeker.Seek(rule_data.GetPosition()), old_rule_set,

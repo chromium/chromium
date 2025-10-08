@@ -95,6 +95,8 @@ class CORE_EXPORT RuleSetDiff : public GarbageCollected<RuleSetDiff> {
   RuleSet* CreateDiffRuleset() const;
 
  private:
+  void AddRules(StyleRuleBase*);
+
   Member<RuleSet> old_ruleset_;
   Member<RuleSet> new_ruleset_;
   HeapHashSet<Member<StyleRule>> changed_rules_;

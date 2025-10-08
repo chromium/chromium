@@ -21,8 +21,30 @@ void RuleSetDiff::AddDiff(StyleRuleBase* rule) {
   if (!IsA<StyleRule>(rule)) {
     MarkUnrepresentable();
   } else {
-    changed_rules_.insert(To<StyleRule>(rule));
+    AddRules(rule);
   }
+}
+
+// When some style rule has changed, we need to add any child rules as well,
+// since the '&' selector can refer to a parent rule.
+void RuleSetDiff::AddRules(StyleRuleBase* rule) {
+  if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
+    changed_rules_.insert(style_rule);
+    if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
+            style_rule->ChildRules()) {
+      for (StyleRuleBase* child_rule : *child_rules) {
+        AddRules(child_rule);
+      }
+    }
+  } else if (auto* group_rule = DynamicTo<StyleRuleGroup>(rule)) {
+    for (StyleRuleBase* child_rule : group_rule->ChildRules()) {
+      AddRules(child_rule);
+    }
+  }
+  // Note that StyleRuleNestedDeclarations holds an inner StyleRule
+  // which is not reachable by the two branches above. However, adding
+  // that rule here would be redundant since its selector list is always
+  // a copy of the parent rule's selector list.
 }
 
 RuleSet* RuleSetDiff::CreateDiffRuleset() const {
