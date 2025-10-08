@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -1232,6 +1233,11 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     passwords_data_.OnInactive();
   }
 
+  // If Actor is operating on the tab, suppress all popups.
+  if (IsActorOperatingOnTab()) {
+    ClearPopUpFlagForBubble();
+  }
+
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
@@ -1551,6 +1557,18 @@ void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
   }
 
   ShowBubble();
+}
+
+bool ManagePasswordsUIController::IsActorOperatingOnTab() {
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents()->GetBrowserContext());
+  if (!actor_service) {
+    return false;
+  }
+
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

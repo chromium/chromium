@@ -11322,6 +11322,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser:buildflags",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui:interactive_ui_tests",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",

@@ -16,6 +16,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,6 +47,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/render_view_host.h"
@@ -136,6 +141,20 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
 
   ~PasswordBubbleInteractiveUiTest() override = default;
 
+  void AddActorTask() {
+    auto* actor_keyed_service = static_cast<actor::ActorKeyedServiceFake*>(
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(
+            browser()->profile()));
+    actor::TaskId task_id = actor_keyed_service->CreateTaskForTesting();
+    actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
+    base::RunLoop loop;
+    task->AddTab(
+        browser()->tab_strip_model()->GetActiveTab()->GetHandle(),
+        base::BindLambdaForTesting(
+            [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
+    loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -168,6 +187,87 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       ActorActiveSupressesPendingPasswordPopup) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  AddActorTask();
+  SetupPendingPassword();
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       ActorActiveSupressesAutoSignin) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  test_form()->url = GURL("https://example.com");
+  test_form()->display_name = u"Peter";
+  test_form()->username_value = u"pet12@gmail.com";
+  test_form()->icon_url = embedded_test_server()->GetURL("/icon.png");
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      local_credentials;
+  local_credentials.push_back(
+      std::make_unique<password_manager::PasswordForm>(*test_form()));
+
+  AddActorTask();
+  SetupAutoSignin(std::move(local_credentials));
+
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       ActorActiveSupressesAutomaticPasswordSave) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  AddActorTask();
+  SetupAutomaticPassword();
+
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, temp) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  AddActorTask();
+  GetController()->OnBiometricAuthenticationForFilling(
+      browser()->profile()->GetPrefs());
+
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordBubbleInteractiveUiTest,
+    BiometricActivationConfirmation_ActorOperating_NoBubble) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  SetupPendingPassword();
+
+  AddActorTask();
+  GetController()->ShowBiometricActivationConfirmation();
+
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(
+    PasswordBubbleInteractiveUiTest,
+    BiometricAuthenticationForFillingPromo_ActorOperating_NoBubble) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  // Set up preferences to allow the promo to be shown.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  browser()->profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  AddActorTask();
+  GetController()->OnBiometricAuthenticationForFilling(
+      browser()->profile()->GetPrefs());
+
+  EXPECT_FALSE(IsBubbleShowing());
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 // Same as 'BasicOpenAndClose', but use the command rather than the static
 // method directly.

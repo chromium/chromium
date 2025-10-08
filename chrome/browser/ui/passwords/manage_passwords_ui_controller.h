@@ -380,6 +380,10 @@ class ManagePasswordsUIController
       const std::u16string& password,
       const std::u16string& password_backup) const;
 
+  // Queries `ActorKeyedService` about active tasks on the current tab. Paused
+  // tasks are not considered as active.
+  bool IsActorOperatingOnTab();
+
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
 
