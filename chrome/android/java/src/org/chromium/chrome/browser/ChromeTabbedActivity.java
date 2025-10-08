@@ -2666,7 +2666,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             new TipsPromoCoordinator(
                                     this,
                                     mRootUiCoordinator.getBottomSheetController(),
-                                    getQuickDeleteController());
+                                    getQuickDeleteController(),
+                                    getWindowAndroid(),
+                                    getCurrentTabModel().isIncognito());
                     mTipsPromoCoordinator.showBottomSheet(fromTipsNotifications);
                 }
                 break;

@@ -182,6 +182,7 @@ public class LensMetrics {
             case LensEntryPoint.GOOGLE_BOTTOM_BAR:
                 return "CustomTabs.GoogleBottomBar.LensSupportStatus";
             case LensEntryPoint.CONTEXT_MENU_CHIP:
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
             default:
                 assert false : "Method not implemented.";
         }
@@ -228,6 +229,8 @@ public class LensMetrics {
                 return "MobileOmniboxLensShown";
             case LensEntryPoint.TASKS_SURFACE:
                 return "TasksSurface.FakeBox.LensShown";
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
+                return "Notifications.Tips.LensShown";
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
@@ -246,6 +249,8 @@ public class LensMetrics {
                 return "MobileOmniboxLens";
             case LensEntryPoint.TASKS_SURFACE:
                 return "TasksSurface.FakeBox.Lens";
+            case LensEntryPoint.TIPS_NOTIFICATIONS:
+                return "Notifications.Tips.Lens";
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:

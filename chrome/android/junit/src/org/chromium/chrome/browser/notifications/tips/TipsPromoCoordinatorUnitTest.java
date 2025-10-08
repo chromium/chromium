@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
@@ -35,9 +36,8 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link TipsPromoCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,6 +47,8 @@ public class TipsPromoCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private QuickDeleteController mQuickDeleteController;
     @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private LensController mLensController;
 
     private Activity mActivity;
     private TipsPromoCoordinator mTipsPromoCoordinator;
@@ -59,7 +61,12 @@ public class TipsPromoCoordinatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mTipsPromoCoordinator =
-                new TipsPromoCoordinator(mActivity, mBottomSheetController, mQuickDeleteController);
+                new TipsPromoCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        mQuickDeleteController,
+                        mWindowAndroid,
+                        /* isIncognito= */ false);
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();
         mBottomSheetContent = mTipsPromoCoordinator.getBottomSheetContentForTesting();
@@ -97,7 +104,7 @@ public class TipsPromoCoordinatorUnitTest {
 
     @SmallTest
     @Test
-    public void testShowBottomSheet_QuickDelete() throws TimeoutException {
+    public void testShowBottomSheet_QuickDelete() {
         mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.QUICK_DELETE);
 
         assertEquals(
@@ -112,6 +119,26 @@ public class TipsPromoCoordinatorUnitTest {
         mView.findViewById(R.id.tips_promo_settings_button).performClick();
         verify(mBottomSheetController).hideContent(any(), eq(true));
         verify(mQuickDeleteController).showDialog();
+    }
+
+    @SmallTest
+    @Test
+    public void testShowBottomSheet_GoogleLens() {
+        mTipsPromoCoordinator.setLensControllerForTesting(mLensController);
+        mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.GOOGLE_LENS);
+
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+        assertEquals(
+                ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mLensController).startLens(eq(mWindowAndroid), any());
     }
 
     @Test

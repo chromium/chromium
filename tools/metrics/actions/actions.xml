@@ -31683,6 +31683,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Notifications.Tips.Lens">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the user taps the settings button in the Tips Notification
+    promo bottom sheet for Lens to open it.
+  </description>
+</action>
+
+<action name="Notifications.Tips.LensShown">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <description>
+    Recorded when the Lens entry point button in the Tips Notification promo
+    bottom sheet for Lens is shown.
+  </description>
+</action>
+
 <action name="Notifications.Unmute">
   <owner>dewittj@chromium.org</owner>
   <description>

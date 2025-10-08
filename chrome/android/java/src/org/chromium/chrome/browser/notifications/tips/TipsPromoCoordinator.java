@@ -16,6 +16,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.ScreenType;
@@ -27,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -38,11 +42,14 @@ public class TipsPromoCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final QuickDeleteController mQuickDeleteController;
+    private final WindowAndroid mWindowAndroid;
+    private final boolean mIsIncognito;
     private final TipsPromoSheetContent mSheetContent;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
     private final ViewFlipper mViewFlipperView;
     private final View mContentView;
+    private LensController mLensController;
 
     /**
      * Constructor.
@@ -54,11 +61,16 @@ public class TipsPromoCoordinator {
     public TipsPromoCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            QuickDeleteController quickDeleteController) {
+            QuickDeleteController quickDeleteController,
+            WindowAndroid windowAndroid,
+            boolean isIncognito) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mQuickDeleteController = quickDeleteController;
+        mWindowAndroid = windowAndroid;
+        mIsIncognito = isIncognito;
         mPropertyModel = TipsPromoProperties.createDefaultModel();
+        mLensController = LensController.getInstance();
 
         mContentView =
                 LayoutInflater.from(context)
@@ -124,6 +136,13 @@ public class TipsPromoCoordinator {
                 break;
             case TipsNotificationsFeatureType.QUICK_DELETE:
                 mQuickDeleteController.showDialog();
+                break;
+            case TipsNotificationsFeatureType.GOOGLE_LENS:
+                mLensController.startLens(
+                        mWindowAndroid,
+                        new LensIntentParams.Builder(
+                                        LensEntryPoint.TIPS_NOTIFICATIONS, mIsIncognito)
+                                .build());
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
@@ -265,5 +284,9 @@ public class TipsPromoCoordinator {
 
     View getViewForTesting() {
         return mContentView;
+    }
+
+    void setLensControllerForTesting(LensController lensController) {
+        mLensController = lensController;
     }
 }
