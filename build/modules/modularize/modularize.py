@@ -9,7 +9,7 @@ import argparse
 import concurrent.futures
 import logging
 import pathlib
-import shutil
+import re
 import subprocess
 import sys
 import traceback
@@ -23,22 +23,43 @@ from compiler import Cpu
 from compiler import Os
 
 SOURCE_ROOT = pathlib.Path(__file__).parents[3].resolve()
+_OS_OPTS = '|'.join(os.value for os in Os)
+_CPU_OPTS = '|'.join(cpu.value for cpu in Cpu)
+_PLATFORM = re.compile('^' + ''.join([
+    f'(?P<os>{_OS_OPTS})',
+    f'(?:-(?P<cpu>{_CPU_OPTS}))?',
+]) + '$')
 
 
 def main(args):
   logging.basicConfig(level=logging.getLevelNamesMapping()[args.verbosity])
   existing_platforms = [
-      build.parent.name
-      for build in (SOURCE_ROOT / 'build/modules').glob('*-*/BUILD.gn')
+      f.name for f in (SOURCE_ROOT / 'build/modules').iterdir()
   ]
+
+  filter = {
+      'os': args.os,
+      'cpu': args.cpu,
+  }
 
   calls = {}
   for platform in existing_platforms:
-    os, cpu = platform.split('-')
-    os = Os(os)
-    cpu = Cpu(cpu)
-    # Not a match
-    if (args.os and args.os != os) or (args.cpu and args.cpu != cpu):
+    match = _PLATFORM.match(platform)
+    if match is None:
+      continue
+
+    props = match.groupdict()
+    os = Os(props['os'])
+    # If no CPU is provided, we support all CPUs with a single BUILD.gn.
+    # But we do need to be consistent about the CPU we target, so we arbitrarily
+    # pick x64 since it's probably the most supported CPU.
+    cpu = Cpu(props['cpu'] or 'x64')
+
+    skip = False
+    for k, v in filter.items():
+      if v is not None and props[k] != v:
+        skip = True
+    if skip:
       continue
     out_dir = SOURCE_ROOT / 'out' / platform
     args_gn = out_dir / 'args.gn'
@@ -112,13 +133,7 @@ def _modularize(out_dir: pathlib.Path, error_log: pathlib.Path | None,
   platform = f'{compiler.os.value}-{compiler.cpu.value}'
   logging.info('Detected platform %s', platform)
 
-  out_dir = SOURCE_ROOT / f'build/modules/{platform}'
-  out_build = out_dir / 'BUILD.gn'
-  # Otherwise gn will error out because it tries to import a file that doesn't exist.
-  if not out_build.is_file():
-    out_dir.mkdir(exist_ok=True)
-    shutil.copyfile(out_dir.parent / 'linux-x64/BUILD.gn', out_build)
-
+  out_dir = SOURCE_ROOT / 'build/modules' / out_dir.name
   if compile:
     ps, files = compiler.compile_one(compile)
     print('stderr:', ps.stderr.decode('utf-8'), file=sys.stderr)
@@ -175,14 +190,13 @@ if __name__ == '__main__':
       '--no-cache',
       action='store_false',
       dest='cache',
-      help=
-      'Disable caching. Will attempt to recompile the whole libcxx, builtins, and sysroot on every invocation'
-  )
+      help='Disable caching. Will attempt to recompile the whole libcxx, ' +
+      'builtins, and sysroot on every invocation')
 
   parser.add_argument(
       '--compile',
-      help=
-      'Compile a single header file (eg. --compile=sys/types.h) instead of the whole sysroot. Useful for debugging.',
+      help='Compile a single header file (eg. --compile=sys/types.h) instead ' +
+      'of the whole sysroot. Useful for debugging.',
   )
 
   parser.add_argument('--error-log', type=_optional_path)
