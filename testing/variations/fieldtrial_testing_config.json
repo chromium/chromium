@@ -15056,21 +15056,6 @@
             ]
         }
     ],
-    "LinkedServicesSettingIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LinkedServicesSettingIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "LiveCaptionChromeOS2": [
         {
             "platforms": [
