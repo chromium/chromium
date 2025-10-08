@@ -19192,28 +19192,6 @@
             ]
         }
     ],
-    "PreloadingEagerHeuristicsForDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "hover_dwell_time": "10ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerHeuristics"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2EarlyDocumentLifecycleUpdateV2": [
         {
             "platforms": [

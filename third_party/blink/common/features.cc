@@ -1927,12 +1927,21 @@ BASE_FEATURE(kPrefetchFontLookupTables,
 );
 #endif
 
-BASE_FEATURE(kPreloadingEagerHeuristics, base::FEATURE_DISABLED_BY_DEFAULT);
+// Launch this feature only on Desktop.
+// TODO(crbug.com/436705485): Support this on mobile.
+BASE_FEATURE(kPreloadingEagerHeuristics,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kPreloadingEagerHeuristicsHoverDwellTime,
                    &kPreloadingEagerHeuristics,
                    "hover_dwell_time",
-                   base::Milliseconds(5));
+                   base::Milliseconds(10));
 
 BASE_FEATURE(kPreloadingHeuristicsMLModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,

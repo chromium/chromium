@@ -251,7 +251,9 @@ TEST_F(AnchorElementInteractionTest, RightClick) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(hosts_.size(), 1u);
-  EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
+  for (const auto& call : hosts_[0]->calls_) {
+    EXPECT_NE(call.type, PointerEventType::kOnPointerDown);
+  }
 }
 
 TEST_F(AnchorElementInteractionTest, NestedAnchorElementCheck) {
