@@ -16,6 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/base/linux/linux_desktop.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -237,8 +239,9 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
       }
     }
   }
-  color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
-                                      image_format_alpha_.value());
+  color_spaces.SetOutputFormats(
+      viz::GetSharedImageFormat(image_format_no_alpha_.value()),
+      viz::GetSharedImageFormat(image_format_alpha_.value()));
   changed_display.SetColorSpaces(std::move(color_spaces));
 
   // There are 2 cases where |changed_display| must be set as primary:
