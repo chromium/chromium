@@ -297,6 +297,9 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 // contains temporary UI exploration for AIM.
 BASE_DECLARE_FEATURE(kAIMPrototype);
 
+// Autoattach current tab in AIM prototype.
+BASE_DECLARE_FEATURE(kAIMPrototypeAutoattachTab);
+
 // Used to gate the immersive SRP in the AIM prototype.
 BASE_DECLARE_FEATURE(kAIMPrototypeImmersiveSRP);
 

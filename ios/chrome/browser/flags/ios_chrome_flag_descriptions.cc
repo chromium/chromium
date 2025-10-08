@@ -21,6 +21,12 @@ const char kAIMPrototypeDescription[] =
     "When enabled the AIM ZPS entrypoint will open the AIM prototype which "
     "contains temporary UI exploration for AIM.";
 
+const char kAIMPrototypeAutoattachTabName[] =
+    "Automatically attach current tab within the AIM prototype";
+const char kAIMPrototypeAutoattachTabDescription[] =
+    "When enabled, the AIM prototype will automatically attach curent tab as "
+    "context.";
+
 const char kAIMPrototypeImmersiveSRPName[] =
     "Enable the immersive SRP within the AIM prototype";
 const char kAIMPrototypeImmersiveSRPDescription[] =

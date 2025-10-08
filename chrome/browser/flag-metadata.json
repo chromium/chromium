@@ -103,6 +103,11 @@
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145
   },
+    {
+    "name":"aim-prototype-autoattach-tab",
+    "owners": ["stkhapugin@google.com","christianxu@google.com"],
+    "expiry_milestone": 145
+  },
   {
     "name": "aim-prototype-devtools",
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],

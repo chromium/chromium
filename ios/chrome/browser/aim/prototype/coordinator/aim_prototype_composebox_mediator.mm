@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -197,8 +198,12 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   web::WebState* webState = _webStateList->GetActiveWebState();
-  [_consumer
-      setCanAttachTabAction:webState && !IsUrlNtp(webState->GetVisibleURL())];
+  BOOL canAttachTab = webState && !IsUrlNtp(webState->GetVisibleURL());
+  [_consumer setCanAttachTabAction:canAttachTab];
+  if (base::FeatureList::IsEnabled(kAIMPrototypeAutoattachTab) &&
+      canAttachTab) {
+    [self attachCurrentTabContent];
+  }
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
@@ -232,6 +237,11 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (_composeboxQueryController) {
     _composeboxQueryController->DeleteFile(item.token);
+  }
+
+  if (base::FeatureList::IsEnabled(kAIMPrototypeAutoattachTab) &&
+      _items.count == 0) {
+    [self.consumer setAIModeEnabled:NO];
   }
 
   [self updateConsumerItems];

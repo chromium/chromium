@@ -213,6 +213,8 @@ const char kAIMPrototypeParam[] = "AIMPrototypeParam";
 const char kAIMPrototypeParamAllOmniboxEntrypoints[] =
     "AIMPrototypeAllOmniboxEntrypoints";
 
+BASE_FEATURE(kAIMPrototypeAutoattachTab, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Used to gate the immersive SRP in the AIM prototype.
 BASE_FEATURE(kAIMPrototypeImmersiveSRP, base::FEATURE_DISABLED_BY_DEFAULT);
 

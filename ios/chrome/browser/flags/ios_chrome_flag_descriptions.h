@@ -26,6 +26,9 @@ extern const char kAIMPrototypeDevToolsDescription[];
 extern const char kAIMPrototypeName[];
 extern const char kAIMPrototypeDescription[];
 
+extern const char kAIMPrototypeAutoattachTabName[];
+extern const char kAIMPrototypeAutoattachTabDescription[];
+
 extern const char kAIMPrototypeImmersiveSRPName[];
 extern const char kAIMPrototypeImmersiveSRPDescription[];
 
