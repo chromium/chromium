@@ -490,12 +490,23 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   if (can_be_served) {
+    std::optional<std::string> nvs_header =
+        head->headers ? head->headers->GetNormalizedHeader("No-Vary-Search")
+                      : std::nullopt;
     base::UmaHistogramBoolean(
         base::StrCat({"Omnibox.SearchPrefetch.HasNoVarySearchHeader2",
                       is_in_fallback_ ? ".Fallback" : ".Initial",
                       navigation_prefetch_ ? ".NavigationPrefetch"
                                            : ".SuggestionPrefetch"}),
-        head->headers && head->headers->HasHeader("No-Vary-Search"));
+        nvs_header.has_value());
+    if (nvs_header.has_value()) {
+      base::UmaHistogramSparse(
+          base::StrCat({"Omnibox.SearchPrefetch.NoVarySearchHeaderLength",
+                        is_in_fallback_ ? ".Fallback" : ".Initial",
+                        navigation_prefetch_ ? ".NavigationPrefetch"
+                                             : ".SuggestionPrefetch"}),
+          nvs_header->length());
+    }
   }
 
   // Cached metadata is not supported for navigation loader.
