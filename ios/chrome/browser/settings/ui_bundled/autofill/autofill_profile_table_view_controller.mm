@@ -610,7 +610,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::apple::ObjCCastStrict<AutofillProfileItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
     if (item.autofillProfileRecordType == AutofillAccountHomeProfile ||
-        item.autofillProfileRecordType == AutofillAccountWorkProfile) {
+        item.autofillProfileRecordType == AutofillAccountWorkProfile ||
+        item.autofillProfileRecordType == AutofillAccountNameEmailProfile) {
       return l10n_util::GetNSString(
           IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_LABEL);
     }
