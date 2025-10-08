@@ -2104,6 +2104,14 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
     }
   }
 
+  std::vector<BrowserWindowInterface*> GetBrowsersForType(
+      BrowserWindowInterface::Type type) {
+    return ui_test_utils::FindMatchingBrowsers(
+        [type](BrowserWindowInterface* browser) {
+          return browser->GetType() == type;
+        });
+  }
+
   bool browser_added_check_passed_ = false;
 
  private:
@@ -2166,7 +2174,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   // Now close the original (and last alive) tabbed browser window
   // note: there is still an app open
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
-  CloseBrowserSynchronously(browser());
+  BrowserWindowInterface* const normal_browser =
+      GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).front();
+  CloseBrowserSynchronously(normal_browser);
   ASSERT_EQ(1U, BrowserList::GetInstance()->size());
 
   // Now hit the codepath that would get hit if someone opened chrome
@@ -2182,17 +2192,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   // We expect a browser to open, but we should NOT get a duplicate app.
   // Note at this point, the profile IsRestarted() is still true.
   ASSERT_EQ(2u, BrowserList::GetInstance()->size());
-  bool app_found = false;
-  bool browser_found = false;
-  for (Browser* browser : *(BrowserList::GetInstance())) {
-    if (browser->type() == Browser::Type::TYPE_APP) {
-      ASSERT_FALSE(app_found);
-      app_found = true;
-    } else if (browser->type() == Browser::Type::TYPE_NORMAL) {
-      ASSERT_FALSE(browser_found);
-      browser_found = true;
-    }
-  }
+  EXPECT_EQ(
+      1u, GetBrowsersForType(BrowserWindowInterface::Type::TYPE_NORMAL).size());
+  EXPECT_EQ(1u,
+            GetBrowsersForType(BrowserWindowInterface::Type::TYPE_APP).size());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
