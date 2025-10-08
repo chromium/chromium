@@ -152,6 +152,51 @@ TEST_F(SVGResourceDocumentContentSimTest, AsyncLoadCompleteCallbackRace) {
   main_resource.Complete();
 }
 
+TEST_F(SVGResourceDocumentContentSimTest,
+       AsyncLoadCompleteCallbackRevalidationRace) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete("<!doctype html>");
+
+  // Setup response headers so that the resource will be revalidated.
+  SimRequest::Params revalidate_params;
+  revalidate_params.response_http_headers = {{"Cache-Control", "max-age=0"},
+                                             {"ETag", "foo"}};
+  SimSubresourceRequest svg_resource("https://example.com/resource.svg#root",
+                                     "image/svg+xml", revalidate_params);
+
+  // Make an initial request for 'resource.svg'.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<svg><use href='resource.svg#root'/></svg>");
+
+  String svg_resource_content(R"SVG(
+    <svg id="root" xmlns="http://www.w3.org/2000/svg">
+      <image href="data:image/gif;base64,R0lGODdhCQAJAKEAAO6C7v8A/6Ag8AAAACwAAAAACQAJAAACFISPaWLhLhh4UNIQG81zswiGIlgAADs="/>
+    </svg>)SVG");
+  svg_resource.Start();
+  svg_resource.Complete(svg_resource_content);
+
+  // Flush tasks on the "internal loading" task queue. IsolatedSVGDocumentHost
+  // will post/run the async-loading-complete callback on this task queue.
+  base::RunLoop run_loop;
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalLoading)
+      ->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // We don't expect the below to trigger a revalidation, but a new load, so
+  // setup the subresource again.
+  SimSubresourceRequest svg_resource_second_load(
+      "https://example.com/resource.svg#root", "image/svg+xml",
+      revalidate_params);
+
+  // Make another request to the same resource.
+  GetDocument().body()->firstElementChild()->cloneNode(true);
+
+  svg_resource_second_load.Start();
+  svg_resource_second_load.Complete(svg_resource_content);
+}
+
 class SVGResourceDocumentContentTest : public PageTestBase {
  public:
   SVGResourceDocumentContentTest()

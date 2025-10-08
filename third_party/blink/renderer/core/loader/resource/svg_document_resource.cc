@@ -71,6 +71,18 @@ SVGDocumentResource::SVGDocumentResource(
                    decoder_options),
       content_(content) {}
 
+bool SVGDocumentResource::CanUseCacheValidator() const {
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    // Disallow revalidation while the content is still pending. This is
+    // sub-optimal because it will trigger a new load of the same resource.
+    if (!content_->IsLoaded()) {
+      return false;
+    }
+  }
+  return TextResource::CanUseCacheValidator();
+}
+
 void SVGDocumentResource::NotifyStartLoad() {
   TextResource::NotifyStartLoad();
   CHECK_EQ(GetStatus(), ResourceStatus::kPending);
