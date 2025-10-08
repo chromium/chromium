@@ -1313,6 +1313,11 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(old_entity->record_type(), EntityInstance::RecordType::kLocal);
   EXPECT_EQ(new_entity->record_type(),
             EntityInstance::RecordType::kServerWallet);
+  // Accept the bubble.
+  std::move(save_callback)
+      .Run(AutofillClient::EntitySaveOrUpdatePromptResult(
+          /*did_user_decline=*/false, new_entity));
+  EXPECT_THAT(GetEntityInstances(), testing::UnorderedElementsAre(new_entity));
 }
 
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {

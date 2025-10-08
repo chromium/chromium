@@ -443,10 +443,6 @@ void AutofillAiManager::HandleUpdatePromptResult(
 
   ClearStrikesForUpdate(entity_uuid);
   entity_manager->AddOrUpdateEntityInstance(*std::move(result.entity));
-
-  // TODO(crbug.com/441742849): If the entity prior to updating is local and the
-  // resulting entity is a server one, we should delete the local entity and
-  // store the it in the server.
 }
 
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
