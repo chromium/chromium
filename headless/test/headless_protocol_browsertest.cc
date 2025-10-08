@@ -351,6 +351,8 @@ HEADLESS_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
 HEADLESS_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
 HEADLESS_PROTOCOL_TEST(WindowInnerSizeScaled,
                        "shared/window-inner-size-scaled.js")
+HEADLESS_PROTOCOL_TEST(WindowInnerSizeLargerThanScreen,
+                       "shared/window-inner-size-larger-than-screen.js")
 
 // This is not shared because Chrome Headless Mode window.resizeTo() only works
 // under certain conditions which are note currently satisfied by the test.

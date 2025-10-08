@@ -279,7 +279,10 @@ void HeadlessBrowserImpl::WillRunMainMessageLoop(base::RunLoop& run_loop) {
 }
 
 void HeadlessBrowserImpl::PostMainMessageLoopRun() {
-  os_crypt_async_.reset();
+  if (os_crypt_async_) {
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   os_crypt_async_.release());
+  }
 #if defined(HEADLESS_USE_PREFS)
   if (local_state_) {
     local_state_->CommitPendingWrite();

@@ -216,10 +216,17 @@ protocol::Response BrowserHandler::SetContentsSize(int window_id,
         "Contents 'height' must be a positive value");
   }
 
-  contents_size.set_width(width.value_or(contents_size.width()));
-  contents_size.set_height(height.value_or(contents_size.height()));
-
-  window->SetContentsSize(contents_size);
+  // We cannot just call BrowserView::SetContentsSize() here because it will
+  // constrain the browser window to the current screen work area which is not
+  // desirable.
+  const int width_diff = width ? width.value() - contents_size.width() : 0;
+  const int height_diff = height ? height.value() - contents_size.height() : 0;
+  if (width_diff || height_diff) {
+    gfx::Rect bounds = window->GetBounds();
+    bounds.set_width(bounds.width() + width_diff);
+    bounds.set_height(bounds.height() + height_diff);
+    window->SetBounds(bounds);
+  }
 
   return Response::Success();
 }

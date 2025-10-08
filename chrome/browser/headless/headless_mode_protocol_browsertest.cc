@@ -293,6 +293,15 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowInnerSize,
 HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSizeScaled,
                             "shared/window-inner-size-scaled.js")
 
+#if (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN))
+#define MAYBE_WindowInnerSizeLargerThanScreen \
+  DISABLED_WindowInnerSizeLargerThanScreen
+#else
+#define MAYBE_WindowInnerSizeLargerThanScreen WindowInnerSizeLargerThanScreen
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowInnerSizeLargerThanScreen,
+                            "shared/window-inner-size-larger-than-screen.js")
+
 // TODO(crbug.com/443993825): Tests are flaky. Fix and re-enable.
 #if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
 #define MAYBE_LargeBrowserWindowSize DISABLED_LargeBrowserWindowSize

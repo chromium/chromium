@@ -1,0 +1,3 @@
+Tests Browser.setContentsSize larger than the current screen.
+set contents size: 3840x2160
+get contents size: 3840x2160
