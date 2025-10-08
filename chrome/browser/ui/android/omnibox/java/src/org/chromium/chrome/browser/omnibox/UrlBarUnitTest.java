@@ -968,4 +968,36 @@ public class UrlBarUnitTest {
         assertEquals(View.TEXT_DIRECTION_INHERIT, mLastTextDirection);
         assertEquals(View.TEXT_ALIGNMENT_VIEW_START, mLastTextAlignment);
     }
+
+    @Test
+    public void getTextWithAutocomplete_modelNotInitialized() {
+        mUrlBar.setText("some autocomplete text");
+        assertNull(mUrlBar.getModelForTesting());
+        assertEquals("some autocomplete text", mUrlBar.getTextWithAutocomplete());
+    }
+
+    @Test
+    public void getTextWithoutAutocomplete_modelNotInitialized() {
+        mUrlBar.setText("some text");
+        assertNull(mUrlBar.getModelForTesting());
+        assertEquals("some text", mUrlBar.getTextWithoutAutocomplete());
+    }
+
+    @Test
+    public void getTextWithAutocomplete_modelInitialized() {
+        AutocompleteEditTextModelBase model = mock(AutocompleteEditTextModelBase.class);
+        doReturn("model autocomplete text").when(model).getTextWithAutocomplete();
+        mUrlBar.setText("user input");
+        mUrlBar.setModelForTesting(model);
+        assertEquals("model autocomplete text", mUrlBar.getTextWithAutocomplete());
+    }
+
+    @Test
+    public void getTextWithoutAutocomplete_modelInitialized() {
+        AutocompleteEditTextModelBase model = mock(AutocompleteEditTextModelBase.class);
+        doReturn("model non-autocomplete text").when(model).getTextWithoutAutocomplete();
+        mUrlBar.setText("user input");
+        mUrlBar.setModelForTesting(model);
+        assertEquals("model non-autocomplete text", mUrlBar.getTextWithoutAutocomplete());
+    }
 }
