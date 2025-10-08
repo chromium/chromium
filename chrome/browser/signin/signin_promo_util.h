@@ -83,7 +83,9 @@ struct ProfileMenuAvatarButtonPromoInfo {
   // AvatarButton.
   enum class Type {
     kHistorySyncPromo,
+    kBatchUploadPromo,
     kBatchUploadBookmarksPromo,
+    kBatchUploadWindows10DepreciationPromo,
     kSyncPromo,
   };
 
@@ -96,8 +98,8 @@ struct ProfileMenuAvatarButtonPromoInfo {
 };
 
 // Based on the `profile` current state, compute the data to be shown for the
-// promos, if any. The promo between the ProfileMenu and the AvatarButton should
-// always be aligned.
+// promos, if any, based on the promo priority and the profile state. The promo
+// between the ProfileMenu and the AvatarButton should always be aligned.
 void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
     base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback);

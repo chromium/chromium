@@ -742,15 +742,14 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
 }
 
-class SyncPromoIdentityPillManagerTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          ProfileMenuAvatarButtonPromoInfo::Type> {
+class SyncPromoIdentityPillManagerTest : public testing::Test {
  public:
   SyncPromoIdentityPillManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kAvatarButtonSyncPromoForTesting},
+                              switches::kAvatarButtonSyncPromoForTesting,
+                              switches::
+                                  kSigninWindows10DepreciationStateForTesting},
         /*disabled_features=*/{});
 
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -774,7 +773,62 @@ class SyncPromoIdentityPillManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(SyncPromoIdentityPillManagerTest, MaxShownCount) {
+TEST_F(SyncPromoIdentityPillManagerTest, PromoTypesUseDifferentShownLimits) {
+  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 5> promo_type_list{
+      ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
+  };
+
+  Signin("test@email.com");
+
+  const size_t max_shown_count = 2;
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       max_shown_count, /*max_used_count=*/2);
+
+  for (auto promo_type : promo_type_list) {
+    for (size_t count = 0; count < max_shown_count; ++count) {
+      ASSERT_TRUE(manager.ShouldShowPromo(promo_type));
+      manager.RecordPromoShown(promo_type);
+    }
+    ASSERT_FALSE(manager.ShouldShowPromo(promo_type));
+  }
+}
+
+TEST_F(SyncPromoIdentityPillManagerTest, PromoTypesUseDifferentUsedLimits) {
+  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 5> promo_type_list{
+      ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo,
+      ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
+  };
+
+  Signin("test@email.com");
+
+  const size_t max_used_count = 2;
+  SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
+                                       /*max_shown_count=*/2, max_used_count);
+
+  for (auto promo_type : promo_type_list) {
+    for (size_t count = 0; count < max_used_count; ++count) {
+      ASSERT_TRUE(manager.ShouldShowPromo(promo_type));
+      manager.RecordPromoUsed(promo_type);
+    }
+    ASSERT_FALSE(manager.ShouldShowPromo(promo_type));
+  }
+}
+
+class SyncPromoIdentityPillManagerWithParamsTest
+    : public SyncPromoIdentityPillManagerTest,
+      public testing::WithParamInterface<
+          ProfileMenuAvatarButtonPromoInfo::Type> {};
+
+TEST_P(SyncPromoIdentityPillManagerWithParamsTest, MaxShownCount) {
   Signin("test@email.com");
   const int max_shown_count = 10;
   SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
@@ -792,7 +846,7 @@ TEST_P(SyncPromoIdentityPillManagerTest, MaxShownCount) {
   EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
 }
 
-TEST_P(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
+TEST_P(SyncPromoIdentityPillManagerWithParamsTest, MaxUsedCount) {
   Signin("test@email.com");
   const int max_used_count = 5;
   SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
@@ -809,14 +863,16 @@ TEST_P(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
   EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
 }
 
-TEST_P(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfSignedOut) {
+TEST_P(SyncPromoIdentityPillManagerWithParamsTest,
+       ShouldNotShowPromoIfSignedOut) {
   SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
                                        /*max_shown_count=*/10,
                                        /*max_used_count=*/2);
   EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
 }
 
-TEST_P(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfSigninPending) {
+TEST_P(SyncPromoIdentityPillManagerWithParamsTest,
+       ShouldNotShowPromoIfSigninPending) {
   Signin("test@email.com");
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
   SyncPromoIdentityPillManager manager(identity_manager(), &pref_service(),
@@ -825,7 +881,7 @@ TEST_P(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfSigninPending) {
   EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
 }
 
-TEST_P(SyncPromoIdentityPillManagerTest,
+TEST_P(SyncPromoIdentityPillManagerWithParamsTest,
        ShouldNotShowPromoIfPromotionsDisabled) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kPromotionsEnabled, false);
@@ -838,10 +894,13 @@ TEST_P(SyncPromoIdentityPillManagerTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SyncPromoIdentityPillManagerTest,
+    SyncPromoIdentityPillManagerWithParamsTest,
     testing::ValuesIn(
         {ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::
+             kBatchUploadWindows10DepreciationPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo}));
 
 class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
@@ -922,25 +981,39 @@ class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         return 0u;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo:
         return 5u;
     }
   }
 
   void SetRequirementsForInputPromo(
       ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
     switch (promo_type) {
       case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
         SetHistorySyncPreferenceState(/*is_type_on=*/false);
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo:
+        SetHistorySyncPreferenceState(/*is_type_on=*/true);
+        // Any (local/account storage) valid data type that is not
+        // `syncer::BOOKMARKS`, otherwise the bookmarks promo would have a
+        // higher priority (only for `kBatchUploadPromo`).
+        batch_upload_test_helper_.SetReturnDescriptions(
+            syncer::PASSWORDS, GetLocalDataCount(promo_type));
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
         batch_upload_test_helper_.SetReturnDescriptions(
             syncer::BOOKMARKS, GetLocalDataCount(promo_type));
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        ASSERT_FALSE(
-            IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
-                ConsentLevel::kSync));
+        ASSERT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
         break;
     }
   }
@@ -960,12 +1033,32 @@ class ComputeProfileMenuAvatarButtonPromoInfoTest
   ComputeProfileMenuAvatarButtonPromoInfoTest() {
     switch (GetParam()) {
       case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
         scoped_feature_list_.InitWithFeatures(
             // Enabling both features to ensure that
             // `syncer::kReplaceSyncPromosWithSignInPromos` takes over.
-            /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                  switches::kAvatarButtonSyncPromoForTesting},
+            // Enable
+            // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
+            // allow Windows machine to test the regular flow (non-Windows10
+            // specific flow).
+            /*enabled_features=*/
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             switches::kAvatarButtonSyncPromoForTesting,
+             switches::kSigninWindows10DepreciationStateBypassForTesting},
+            /*disabled_features=*/{});
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo:
+        scoped_feature_list_.InitWithFeatures(
+            // Enabling both features to ensure that
+            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over. Also
+            // enabling `switches::kSigninWindows10DepreciationStateForTesting`
+            // to simulate Windows10 setup.
+            /*enabled_features=*/
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             switches::kAvatarButtonSyncPromoForTesting,
+             switches::kSigninWindows10DepreciationStateForTesting},
             /*disabled_features=*/{});
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
@@ -993,7 +1086,7 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest, NoPromoNotSignedIn) {
 TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest,
        PromoShownWhenSignedInAndRequirementsForPromoSet) {
   Signin();
-  SetRequirementsForInputPromo(GetParam());
+  ASSERT_NO_FATAL_FAILURE(SetRequirementsForInputPromo(GetParam()));
 
   base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
@@ -1009,7 +1102,10 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoTest,
   ConsentLevel consent_level;
   switch (GetParam()) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
       consent_level = ConsentLevel::kSignin;
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
@@ -1044,7 +1140,10 @@ INSTANTIATE_TEST_SUITE_P(
     ComputeProfileMenuAvatarButtonPromoInfoTest,
     testing::ValuesIn(
         {ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
+         ProfileMenuAvatarButtonPromoInfo::Type::
+             kBatchUploadWindows10DepreciationPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo}));
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

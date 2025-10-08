@@ -70,18 +70,32 @@ constexpr char kAvatarButtonHistorySyncPromoShownCount[] =
     "AvatarButtonHistorySyncPromoShownCount";
 constexpr char kAvatarButtonHistorySyncPromoUsedCount[] =
     "AvatarButtonHistorySyncPromoUsedCount";
+constexpr char kAvatarButtonBatchUploadPromoShownCount[] =
+    "AvatarButtonBatchUploadPromoShownCount";
+constexpr char kAvatarButtonBatchUploadPromoUsedCount[] =
+    "AvatarButtonBatchUploadPromoUsedCount";
 constexpr char kAvatarButtonBatchUploadBookmarkPromoShownCount[] =
     "AvatarButtonBatchUploadBookmarkPromoShownCount";
 constexpr char kAvatarButtonBatchUploadBookmarkPromoUsedCount[] =
     "AvatarButtonBatchUploadBookmarkPromoUsedCount";
+constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount[] =
+    "AvatarButtonBatchUploadWindows10DepreciationPromoShownCount";
+constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount[] =
+    "AvatarButtonBatchUploadWindows10DepreciationPromoUsedCount";
 
 const char* GetAvatarButtonPromoShownKey(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
   switch (promo_type) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
       return kAvatarButtonHistorySyncPromoShownCount;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      return kAvatarButtonBatchUploadPromoShownCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       return kAvatarButtonBatchUploadBookmarkPromoShownCount;
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      CHECK(switches::IsSigninWindows10DepreciationState());
+      return kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
   }
@@ -92,11 +106,81 @@ const char* GetAvatarButtonPromoUsedKey(
   switch (promo_type) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
       return kAvatarButtonHistorySyncPromoUsedCount;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      return kAvatarButtonBatchUploadPromoUsedCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       return kAvatarButtonBatchUploadBookmarkPromoUsedCount;
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      CHECK(switches::IsSigninWindows10DepreciationState());
+      return kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
   }
+}
+
+void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
+    Profile* profile,
+    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
+    std::map<syncer::DataType, syncer::LocalDataDescription> local_map_result) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+
+  size_t local_data_count = std::accumulate(
+      local_map_result.begin(), local_map_result.end(), 0u,
+      [](size_t current_count,
+         std::pair<syncer::DataType, syncer::LocalDataDescription> local_data) {
+        return current_count + local_data.second.local_data_models.size();
+      });
+
+  // Batch Upload promo: Windows 10 depreciation promo.
+  // TODO(crbug.com/447048341): Confirm whether additional requirements are
+  // needed for this promo (e.g. minimum cookie age, cross account error).
+  if (local_data_count > 0 && switches::IsSigninWindows10DepreciationState()) {
+    std::move(result_callback)
+        .Run(ProfileMenuAvatarButtonPromoInfo{
+            .type = ProfileMenuAvatarButtonPromoInfo::Type::
+                kBatchUploadWindows10DepreciationPromo,
+            .local_data_count = local_data_count});
+    return;
+  }
+
+  // Batch Upload Bookmarks promo: for users that have local bookmarks.
+  // TODO(crbug.com/447048341): Confirm whether additional requirements are
+  // needed for this promo (e.g. previously syncing).
+  if (local_map_result.contains(syncer::BOOKMARKS) &&
+      !local_map_result[syncer::BOOKMARKS].local_data_models.empty()) {
+    std::move(result_callback)
+        .Run(ProfileMenuAvatarButtonPromoInfo{
+            .type = ProfileMenuAvatarButtonPromoInfo::Type::
+                kBatchUploadBookmarksPromo,
+            .local_data_count = local_data_count});
+    return;
+  }
+
+  // History sync promo.
+  if (signin_util::ShouldShowHistorySyncOptinScreen(*profile)) {
+    std::move(result_callback)
+        .Run(ProfileMenuAvatarButtonPromoInfo{
+            .type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+            .local_data_count = local_data_count});
+    return;
+  }
+
+  // Regular Batch Upload promo: for users that have any local data type.
+  if (local_data_count > 0) {
+    std::move(result_callback)
+        .Run(ProfileMenuAvatarButtonPromoInfo{
+            .type = ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
+            .local_data_count = local_data_count});
+    return;
+  }
+
+  // No promo.
+  std::move(result_callback)
+      .Run(ProfileMenuAvatarButtonPromoInfo{
+          .type = std::nullopt, .local_data_count = local_data_count});
+  return;
 }
 
 syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
@@ -473,48 +557,6 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
     case SignInPromoType::kExtension:
       return;
   }
-}
-
-void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
-    Profile* profile,
-    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
-    std::map<syncer::DataType, syncer::LocalDataDescription> local_map_result) {
-  size_t local_data_count = std::accumulate(
-      local_map_result.begin(), local_map_result.end(), 0u,
-      [](size_t current_count,
-         std::pair<syncer::DataType, syncer::LocalDataDescription> local_data) {
-        return current_count + local_data.second.local_data_models.size();
-      });
-
-  // TODO(crbug.com/447048341): Implement the Windows 10 priority with
-  // condition.
-
-  // TODO(crbug.com/447048341): Confirm whether additional requirements are
-  // required for this promo.
-  if (local_map_result.contains(syncer::BOOKMARKS) &&
-      !local_map_result[syncer::BOOKMARKS].local_data_models.empty()) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::
-                kBatchUploadBookmarksPromo,
-            .local_data_count = local_data_count});
-    return;
-  }
-
-  if (signin_util::ShouldShowHistorySyncOptinScreen(*profile)) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
-            .local_data_count = local_data_count});
-    return;
-  }
-
-  // TODO(crbug.com/447048341): Implement the regular BatchUpload condition.
-
-  std::move(result_callback)
-      .Run(ProfileMenuAvatarButtonPromoInfo{
-          .type = std::nullopt, .local_data_count = local_data_count});
-  return;
 }
 
 void ComputeProfileMenuAvatarButtonPromoInfo(
