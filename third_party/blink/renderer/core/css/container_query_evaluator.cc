@@ -1016,10 +1016,8 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
         break;
     }
   }
-  if (!base::ValuesEquivalent(old_style.InheritedVariables(),
-                              new_style.InheritedVariables()) ||
-      !base::ValuesEquivalent(old_style.NonInheritedVariables(),
-                              new_style.NonInheritedVariables()) ||
+  if (old_style.InheritedVariables() != new_style.InheritedVariables() ||
+      old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
       DependsOnTreeCounting()) {
     switch (StyleContainerChanged()) {
       case ContainerQueryEvaluator::Change::kNone:

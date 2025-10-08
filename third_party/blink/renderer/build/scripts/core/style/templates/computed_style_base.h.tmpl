@@ -104,6 +104,12 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endif %}
   {% endfor %}
 
+  template <typename T>
+  friend CSSVariableData* GetVariableDataInternal(
+    const T& style_or_builder,
+    const AtomicString& name,
+    std::optional<bool> inherited_hint);
+
  public:
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
@@ -270,6 +276,11 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
 class ComputedStyleBuilderBase {
   STACK_ALLOCATED();
  public:
+  template <typename T>
+  friend CSSVariableData* GetVariableDataInternal(
+    const T& style_or_builder,
+    const AtomicString& name,
+    std::optional<bool> inherited_hint);
 
   enum IsAtShadowBoundary {
     kAtShadowBoundary,

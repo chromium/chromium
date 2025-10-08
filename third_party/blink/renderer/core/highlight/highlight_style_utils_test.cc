@@ -374,8 +374,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   EXPECT_EQ(Color(0, 128, 0), background_color);
 }
 
-TEST_F(HighlightStyleUtilsTest,
-       CustomPropertyOriginatingInheritanceUniversal) {
+TEST_F(HighlightStyleUtilsTest, CustomPropertyOriginatingInheritanceUniversal) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
   LoadURL("https://example.com/test.html");
@@ -412,7 +411,7 @@ TEST_F(HighlightStyleUtilsTest,
       kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), div_background_color);
 
-  auto* div_inherited_vars = div_style.InheritedVariables();
+  auto& div_inherited_vars = div_style.InheritedVariables();
 
   auto* first_p_node = To<HTMLElement>(div_node->firstChild()->nextSibling());
   const ComputedStyle& first_p_style = first_p_node->ComputedStyleRef();
@@ -421,7 +420,7 @@ TEST_F(HighlightStyleUtilsTest,
           GetDocument(), first_p_style, first_p_node, previous_layer_color,
           kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), first_p_background_color);
-  auto* first_p_inherited_vars = first_p_style.InheritedVariables();
+  auto& first_p_inherited_vars = first_p_style.InheritedVariables();
   EXPECT_EQ(div_inherited_vars, first_p_inherited_vars);
 
   auto* second_p_node =
@@ -432,7 +431,7 @@ TEST_F(HighlightStyleUtilsTest,
           GetDocument(), second_p_style, second_p_node, previous_layer_color,
           kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_p_background_color);
-  auto* second_p_inherited_vars = second_p_style.InheritedVariables();
+  auto& second_p_inherited_vars = second_p_style.InheritedVariables();
   EXPECT_NE(second_p_inherited_vars, first_p_inherited_vars);
 
   auto* second_strong_node =
@@ -445,7 +444,7 @@ TEST_F(HighlightStyleUtilsTest,
           previous_layer_color, kPseudoIdSelection,
           SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_strong_background_color);
-  auto* second_strong_inherited_vars = second_strong_style.InheritedVariables();
+  auto& second_strong_inherited_vars = second_strong_style.InheritedVariables();
   EXPECT_EQ(second_p_inherited_vars, second_strong_inherited_vars);
 }
 

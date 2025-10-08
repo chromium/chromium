@@ -50,7 +50,8 @@ void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
 }
 
 bool StyleVariables::IsEmpty() const {
-  return data_root_->empty() && values_root_->empty();
+  return data_hash_ == 0 && values_hash_ == 0 && data_root_->empty() &&
+         values_root_->empty();
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {

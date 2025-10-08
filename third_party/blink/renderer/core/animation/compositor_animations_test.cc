@@ -760,18 +760,18 @@ TEST_P(AnimationCompositorAnimationsTest,
   UpdateAllLifecyclePhasesForTest();
   const auto* style = GetDocument().GetStyleResolver().ResolveStyle(
       element_, StyleRecalcContext());
-  EXPECT_TRUE(style->NonInheritedVariables());
+  EXPECT_FALSE(style->NonInheritedVariables().IsEmpty());
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--foo"))
+                  .GetData(AtomicString("--foo"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--bar"))
+                  .GetData(AtomicString("--bar"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--loo"))
+                  .GetData(AtomicString("--loo"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--x"))
+                  .GetData(AtomicString("--x"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->GetVariableData(AtomicString("--y")));
   EXPECT_TRUE(style->GetVariableData(AtomicString("--z")));
@@ -2722,7 +2722,7 @@ class ScopedBackgroundColorPaintImageGenerator {
  public:
   explicit ScopedBackgroundColorPaintImageGenerator(LocalFrame* frame)
       : paint_image_generator_(
-        MakeGarbageCollected<FakeBackgroundColorPaintImageGenerator>()),
+            MakeGarbageCollected<FakeBackgroundColorPaintImageGenerator>()),
         frame_(frame) {
     frame_->SetBackgroundColorPaintImageGeneratorForTesting(
         paint_image_generator_);

@@ -64,6 +64,8 @@ ALIGNMENT_ORDER = [
     'StyleAnchorScope',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
+    'StyleInheritedVariables',
+    'StyleNonInheritedVariables',
     'std::optional<StyleOverflowClipMargin>',
     'std::optional<blink::PositionAreaOffsets>',
     'std::optional<PhysicalOffset>',
