@@ -317,7 +317,15 @@ void CodeCacheHostImpl::SetCacheStorageControlForTesting(
   cache_storage_control_for_testing_ = cache_storage_control;
 }
 
-bool CodeCacheHostImpl::IsPersistentCacheForCodeCacheEnabled() {
+bool CodeCacheHostImpl::IsPersistentCacheForCodeCacheEnabled(
+    blink::mojom::CodeCacheType cache_type) {
+  // Serve non-js from existing cache implementation.
+  // TODO(crbug.com/377475540): Use another PersistentCacheCollection for
+  // WASM.
+  if (cache_type != blink::mojom::CodeCacheType::kJavascript) {
+    return false;
+  }
+
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           render_process_id_);
@@ -349,7 +357,7 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
     return;
   }
 
-  if (IsPersistentCacheForCodeCacheEnabled()) {
+  if (IsPersistentCacheForCodeCacheEnabled(cache_type)) {
     if (!generated_code_cache_context_) {
       return;
     }
@@ -394,7 +402,7 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  if (IsPersistentCacheForCodeCacheEnabled()) {
+  if (IsPersistentCacheForCodeCacheEnabled(cache_type)) {
     if (!generated_code_cache_context_) {
       std::move(callback).Run(base::Time(), {});
       return;
@@ -446,6 +454,20 @@ void CodeCacheHostImpl::ClearCodeCacheEntry(
     blink::mojom::CodeCacheType cache_type,
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Note:
+  // There is no handling under `IsPersistentCacheForCodeCacheEnabled()`
+  // here as `PersistentCache` does not expose the ability to delete specific
+  // entries. This will lead to entries that are known to be unusable by
+  // renderers remaining in the cache. This does not lead to keys being
+  // unusable forever since the entries can get overwritten by valid entries.
+  // Additionally this does not lead to invalid values being used by renderers
+  // since the fact that they are unusable was detected by the clients
+  // themselves.
+  if (IsPersistentCacheForCodeCacheEnabled(cache_type)) {
+    return;
+  }
+
   GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
   if (!code_cache)
     return;

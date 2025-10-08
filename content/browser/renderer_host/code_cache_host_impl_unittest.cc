@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -63,6 +64,13 @@ class CodeCacheHostImplTest : public testing::Test,
     }
   }
 
+  void TearDown() override {
+    // The GeneratedCodeCache should not be exercised at all for the queries
+    // done in this test since they are expected to be served from
+    // PersistentCache.
+    histogram_tester.ExpectTotalCount("SiteIsolatedCodeCache.JS.Behaviour", 0);
+  }
+
   bool IsSitePerProcessOrStricter() { return GetParam(); }
 
   void SetupRendererWithLock(int process_id, const GURL& url) {
@@ -81,6 +89,7 @@ class CodeCacheHostImplTest : public testing::Test,
 
  protected:
   BrowserTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester;
   std::vector<int> added_renderers_;
   TestBrowserContext browser_context_;
   base::test::ScopedFeatureList feature_list_;

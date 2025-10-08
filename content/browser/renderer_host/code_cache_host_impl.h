@@ -114,7 +114,8 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       CodeCacheHostImplTest,
       PersistentCacheLockedAndUnlockedProcessesShareNoData);
 
-  bool IsPersistentCacheForCodeCacheEnabled();
+  bool IsPersistentCacheForCodeCacheEnabled(
+      blink::mojom::CodeCacheType cache_type);
 
   // blink::mojom::CodeCacheHost implementation.
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
