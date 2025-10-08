@@ -603,6 +603,29 @@ TEST_F(AccountNameEmailStoreTest,
                                             base::UTF8ToUTF16(info.email))));
 }
 
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/449708427): Remove once `AccountInfo` supports full_name on
+// IOS.
+TEST_F(AccountNameEmailStoreTest,
+       MaybeUpdateOrCreateAccountNameEmail_ExplicitlyPassedNameEmail) {
+  // Needed since MaybeUpdateOrCreateAccountNameEmail() takes references.
+  std::string test_name = "George Washington";
+  std::string test_email = "testing@gmail.com";
+
+  CreatePrimaryAccount(std::string(), kTestEmailAddress1);
+  ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  // On IOS the `AccountInfo` doesn't contain the full name. A dedicated method
+  // should create the profile using the explicitly passed account info.
+  account_name_email_store().MaybeUpdateOrCreateAccountNameEmail(test_name,
+                                                                 test_email);
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(test_name),
+                                            base::UTF8ToUTF16(test_email))));
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreCoreTest {
  public:
   AccountNameEmailStoreSyncTest() {

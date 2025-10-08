@@ -74,6 +74,15 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // This prevents premature update/create without all of the relevant data.
   void MaybeUpdateOrCreateAccountNameEmail();
 
+#if BUILDFLAG(IS_IOS)
+  // The same as MaybeUpdateOrCreateAccountNameEmail(), but creates/updates the
+  // kAccountNameEmail profile using `account_name` and `email`.
+  // TODO(crbug.com/449708427): Remove once `AccountInfo` supports full_name on
+  // IOS.
+  void MaybeUpdateOrCreateAccountNameEmail(const std::string& account_name,
+                                           const std::string& email);
+#endif
+
   // Persists the `change` in prefs, if it applies to kAccountNameEmail
   // profile.
   void ApplyChange(const AutofillProfileChange& change);
@@ -119,6 +128,10 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // `kAutofillNameAndEmailProfileNotSelectedThreshold` the kAccountNameEmail
   // profile will be removed.
   void OnCounterPrefUpdated();
+
+  // Returns true if primary account exists and there are no blocking reasons,
+  // false otherwise.
+  bool ShouldUpdateOrCreateAccountNameEmail();
 
   // `this` is owned by `address_data_manager_`, so `address_data_manager_` will
   // outlive this class.

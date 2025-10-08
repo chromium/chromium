@@ -114,27 +114,35 @@ void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
 }
 
 void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
-  if (!identity_manager_observer_.GetSource() ||
-      GetBlockAccountNameEmailUpdateReason().has_value()) {
-    return;
-  }
-
-  const std::optional<CoreAccountInfo>& core_info =
-      identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  if (!core_info.has_value()) {
+  if (!ShouldUpdateOrCreateAccountNameEmail()) {
     return;
   }
 
   const std::optional<AccountInfo>& extended_info =
       identity_manager_observer_.GetSource()->FindExtendedAccountInfo(
-          core_info.value());
+          identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin));
   if (!extended_info.has_value()) {
     return;
   }
 
   UpdateOrCreateAccountNameEmail(extended_info.value());
 }
+
+#if BUILDFLAG(IS_IOS)
+void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail(
+    const std::string& account_name,
+    const std::string& email) {
+  if (!ShouldUpdateOrCreateAccountNameEmail()) {
+    return;
+  }
+
+  AccountInfo info;
+  info.full_name = account_name;
+  info.email = email;
+  UpdateOrCreateAccountNameEmail(info);
+}
+#endif
 
 void AccountNameEmailStore::ApplyChange(const AutofillProfileChange& change) {
   if (change.data_model().record_type() !=
@@ -286,6 +294,19 @@ void AccountNameEmailStore::OnCounterPrefUpdated() {
   }
   CHECK_EQ(1u, account_name_email_profiles.size());
   address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
+}
+
+bool AccountNameEmailStore::ShouldUpdateOrCreateAccountNameEmail() {
+  if (!identity_manager_observer_.GetSource() ||
+      GetBlockAccountNameEmailUpdateReason().has_value()) {
+    return false;
+  }
+
+  // Primary account has to exists for the AccountNameEmail profile to be
+  // created.
+  return !identity_manager_observer_.GetSource()
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .IsEmpty();
 }
 
 }  // namespace autofill
