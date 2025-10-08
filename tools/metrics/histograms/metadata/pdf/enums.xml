@@ -263,13 +263,14 @@ chromium-metrics-reviews@google.com.
 <!-- This must be kept current with SaveToDriveErrorType in
      tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
 
-  <int value="0" label="No error"/>
-  <int value="1" label="Unknown error"/>
-  <int value="2" label="Quota exceeded"/>
-  <int value="3" label="Offline"/>
-  <int value="4" label="OAuth error"/>
-  <int value="5" label="Account chooser cancelled"/>
-  <int value="6" label="Parent folder selection failed"/>
+  <int value="0" label="Undefined"/>
+  <int value="1" label="No error"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Quota exceeded"/>
+  <int value="4" label="Offline"/>
+  <int value="5" label="OAuth error"/>
+  <int value="6" label="Account chooser cancelled"/>
+  <int value="7" label="Parent folder selection failed"/>
 </enum>
 
 <!-- LINT.IfChange(PDFSaveToDrivePrimaryAccountSelectionStatus) -->
@@ -287,19 +288,20 @@ chromium-metrics-reviews@google.com.
 <!-- This must be kept current with SaveToDriveStatus in
      tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
 
-  <int value="0" label="Not started"/>
-  <int value="1" label="Initiated"/>
-  <int value="2" label="Account chooser shown"/>
-  <int value="3" label="Account selected"/>
-  <int value="4" label="Account add selected"/>
-  <int value="5" label="Account added"/>
-  <int value="6" label="Fetch OAuth"/>
-  <int value="7" label="Fetch parent folder"/>
-  <int value="8" label="Upload started"/>
-  <int value="9" label="Upload in progress"/>
-  <int value="10" label="Upload completed"/>
-  <int value="11" label="Upload retried"/>
-  <int value="12" label="Upload failed"/>
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Not started"/>
+  <int value="2" label="Initiated"/>
+  <int value="3" label="Account chooser shown"/>
+  <int value="4" label="Account selected"/>
+  <int value="5" label="Account add selected"/>
+  <int value="6" label="Account added"/>
+  <int value="7" label="Fetch OAuth"/>
+  <int value="8" label="Fetch parent folder"/>
+  <int value="9" label="Upload started"/>
+  <int value="10" label="Upload in progress"/>
+  <int value="11" label="Upload completed"/>
+  <int value="12" label="Upload retried"/>
+  <int value="13" label="Upload failed"/>
 </enum>
 
 <enum name="PDFVersion">
