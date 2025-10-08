@@ -7,13 +7,31 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
+
+const redesignedPages: Route[] = [
+  routes.SITE_SETTINGS_HANDLERS,
+  routes.SITE_SETTINGS_NOTIFICATIONS,
+  routes.SITE_SETTINGS_PDF_DOCUMENTS,
+  routes.SITE_SETTINGS_PROTECTED_CONTENT,
+
+  // TODO(crbug.com/40719916) After restructure add coverage for elements on
+  // routes which depend on flags being enabled.
+  // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
+  // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
+  // routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+
+  // Doesn't contain toggle or radio buttons
+  // routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+  // routes.SITE_SETTINGS_INSECURE_CONTENT,
+  // routes.SITE_SETTINGS_ZOOM_LEVELS,
+];
 
 // clang-format on
 
@@ -349,5 +367,48 @@ suite('UnusedSitePermissionsReview', function() {
     loadTimeData.overrideValues({
       isGuest: false,
     });
+  });
+});
+
+// Isolated ContentSettingsVisibility test suite due to significantly higher
+// execution time (10-20x factor) of that specific tests compare to other
+// sub-tests.
+suite('ContentSettingsVisibility', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-site-settings-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('ContentSettingsVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    await flushTasks();
+
+    // All redesigned pages will use `settings-category-default-radio-group`,
+    // except
+    //   1. protocol handlers,
+    //   2. pdf documents,
+    //   3. protected content (is in its own element),
+    //   4. notifications (is in its own element)
+    //   5. geolocation (is in its own element)
+    const expectedPagesCount = redesignedPages.length - 4;
+
+    assertEquals(
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
+            .length,
+        expectedPagesCount);
   });
 });

@@ -1293,11 +1293,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, ContentSettingsVisibility) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('ContentSettingsVisibility')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacySandbox')");
 }
@@ -1701,6 +1696,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        MAYBE_UnusedSitePermissionsReview) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('UnusedSitePermissionsReview')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       ContentSettingsVisibility) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('ContentSettingsVisibility')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SoundPage) {
