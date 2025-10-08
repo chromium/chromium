@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/legion/legion_common.h"
 
 namespace legion {
 
@@ -23,8 +24,6 @@ class Transport {
     // An error occurred on the client. Socket is now closed.
     kError,
   };
-  using Request = std::vector<uint8_t>;
-  using Response = std::vector<uint8_t>;
 
   // Callback for when a send operation completes or the status of the
   // connection changes.

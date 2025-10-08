@@ -10,16 +10,14 @@
 
 #include <optional>
 
+#include "components/legion/legion_common.h"
+
 namespace legion {
 
 // Interface for Oak session management.
 // Handles cryptographic operations, including handshake, encryption, and decryption.
 class OakSession {
  public:
-  // Placeholder for request/response data. Likely a serialized proto.
-  using Request = std::vector<uint8_t>;
-  using Response = std::vector<uint8_t>;
-
   virtual ~OakSession() = default;
 
   // Generates the initial handshake message.

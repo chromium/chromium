@@ -11,13 +11,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/legion/legion_common.h"
 
 namespace legion {
-
-// Placeholder for the request data structure. Likely a serialized proto.
-using Request = std::vector<uint8_t>;
-// Placeholder for the response data structure. Likely a deserialized proto.
-using Response = std::vector<uint8_t>;
 
 // Represents the result of an operation.
 enum class ResultCode {

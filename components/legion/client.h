@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 
 namespace legion {
