@@ -16,6 +16,8 @@ extern const char kEnableIOSHandoffToOtherDevices[];
 extern const char kEnableSpotlightActions[];
 extern const char kEnableThirdPartyKeyboardWorkaround[];
 extern const char kEnableDiscoverFeed[];
+extern const char kEnableFullscreenSigninPromo[];
+// DEPRECATED, please use `kEnableFullscreenSigninPromo`.
 extern const char kEnableUpgradeSigninPromo[];
 extern const char kForceDeviceSwitcherExperienceCommandLineFlag[];
 extern const char kForceShopperExperience[];

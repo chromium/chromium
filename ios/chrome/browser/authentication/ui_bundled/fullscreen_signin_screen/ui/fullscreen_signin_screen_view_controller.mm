@@ -335,7 +335,7 @@ NSString* const kCollaborationSigninHeaderBackground =
       break;
     }
     case SigninContextStyle::kDefault: {
-      // Use in the context of the upgrade promo dialog.
+      // Use in the context of the fullscreen sign-in promo dialog.
       self.titleText =
           l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
       self.subtitleText =

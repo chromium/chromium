@@ -78,7 +78,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    // Resets all preferences related to upgrade promo.
+    // Resets all preferences related to fullscreen sign-in promo.
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity_);
   }

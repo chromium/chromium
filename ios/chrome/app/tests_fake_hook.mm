@@ -43,7 +43,7 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
   return nullptr;
 }
-bool DisableUpgradeSigninPromo() {
+bool DisableFullscreenSigninPromo() {
   return false;
 }
 bool DisableUpdateService() {

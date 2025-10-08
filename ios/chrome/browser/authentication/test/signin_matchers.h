@@ -28,7 +28,8 @@ id<GREYMatcher> ConsistencySigninPrimaryButtonMatcher();
 // identity is the one given.
 id<GREYMatcher> AccountChooserButtonMatcher(id<SystemIdentity> identity = nil);
 
-// Matcher for the sign-in screens (like history sync opt-in, upgrade promo…).
+// Matcher for the sign-in screens (like history sync opt-in, fullscreen sign-in
+// promo…).
 id<GREYMatcher> SigninScreenPromoMatcher();
 
 // Matcher for the Settings row which, upon tap, leads the user to sign-in. The

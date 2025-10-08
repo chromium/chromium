@@ -41,7 +41,7 @@ bool DisableGeolocation() {
 bool DisablePromoManagerDisplayingPromo() {
   return true;
 }
-bool DisableUpgradeSigninPromo() {
+bool DisableFullscreenSigninPromo() {
   return true;
 }
 bool DisableUpdateService() {

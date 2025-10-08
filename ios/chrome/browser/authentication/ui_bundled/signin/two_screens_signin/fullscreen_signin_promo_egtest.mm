@@ -57,8 +57,8 @@ void VerifyHystoryOptInPromoSufficientlyVisible() {
 }
 
 // Opens an NTP, sends Chrome to background and brings it back to foreground.
-// The upgrade promo can be triggered when Chrome moves to foreground and
-// nothing is displayed on the tab (so the tab grid must not be opened).
+// The fullscreen sign-in promo can be triggered when Chrome moves to foreground
+// and nothing is displayed on the tab (so the tab grid must not be opened).
 void OpenNTPAndBackgroundAndForegroundApp() {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -68,11 +68,11 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 }  // namespace
 
-// Tests the upgrade sign-in promo restrictions.
-@interface UpgradeSigninPromoTestCase : ChromeTestCase
+// Tests the fullscreen sign-in promo restrictions.
+@interface FullscreenSigninPromoTestCase : ChromeTestCase
 @end
 
-@implementation UpgradeSigninPromoTestCase
+@implementation FullscreenSigninPromoTestCase
 
 - (void)setUp {
   [super setUp];
@@ -102,11 +102,11 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
   config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableUpgradeSigninPromo);
+                                   switches::kEnableFullscreenSigninPromo);
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kEnableIPH +
                                    "=IPH_iOSPromoSigninFullscreen");
-  // Without relaunch upgrade signin promo will not be shown again.
+  // Without relaunch fullscreen signin promo will not be shown again.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }

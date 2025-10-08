@@ -109,9 +109,9 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     PrefService* user_prefs,
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate);
 
-// Returns true if the upgrade sign-in promo should be disabled to allow other
-// tests to run unimpeded.
-bool DisableUpgradeSigninPromo();
+// Returns true if the fullscreen sign-in promo should be disabled to allow
+// other tests to run unimpeded.
+bool DisableFullscreenSigninPromo();
 
 // Returns true if the update service should be disabled so that the update
 // infobar won't be shown during testing.

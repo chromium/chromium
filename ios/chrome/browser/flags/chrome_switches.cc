@@ -36,8 +36,9 @@ const char kEnableThirdPartyKeyboardWorkaround[] =
 // Enabled the NTP Discover feed.
 const char kEnableDiscoverFeed[] = "enable-discover-feed";
 
-// Enables the upgrade sign-in promo.
-const char kEnableUpgradeSigninPromo[] = "enable-upgrade-signin-promo";
+// Enables the fullscreen sign-in promo.
+const char kEnableFullscreenSigninPromo[] = "enable-fullscreen-signin-promo";
+const char kEnableUpgradeSigninPromo[] = "enable-fullscreen-signin-promo";
 
 // Enables device switcher experience for the segment specified in the argument,
 // e.g. "Android."

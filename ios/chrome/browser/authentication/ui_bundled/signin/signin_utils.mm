@@ -64,8 +64,8 @@
 
 namespace {
 
-// The duration between two signin upgrade promo trigger is randomly chosen
-// between [53..68) days.
+// The duration between two signin fullscreen sign-in promo trigger is randomly
+// chosen between [53..68) days.
 base::TimeDelta DurationBetweenPromoTriggers() {
   using signin::kPromoTriggerRange;
   return base::RandTimeDelta(kPromoTriggerRange.first,
@@ -169,7 +169,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   DCHECK(profile);
   DCHECK(current_version.IsValid());
 
-  if (tests_hook::DisableUpgradeSigninPromo()) {
+  if (tests_hook::DisableFullscreenSigninPromo()) {
     return false;
   }
 
@@ -198,7 +198,8 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
     switch (history_sync::GetSkipReason(sync_service, auth_service,
                                         profile->GetPrefs(), YES)) {
       case history_sync::HistorySyncSkipReason::kNone:
-        // Need to show the upgrade promo, to show the history sync opt-in.
+        // Need to show the fullscreen sign-in promo, to show the history sync
+        // opt-in.
         break;
       case history_sync::HistorySyncSkipReason::kNotSignedIn:
         NOTREACHED();
@@ -209,7 +210,7 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
     }
   }
 
-  // Avoid showing the upgrade sign-in promo when the device restore sign-in
+  // Avoid showing the fullscreen sign-in promo when the device restore sign-in
   // promo should be shown instead.
   if (GetPreRestoreIdentity(profile->GetPrefs()).has_value()) {
     return false;

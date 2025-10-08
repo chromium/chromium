@@ -129,9 +129,9 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
   return token_service;
 }
 
-bool DisableUpgradeSigninPromo() {
+bool DisableFullscreenSigninPromo() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableUpgradeSigninPromo);
+      switches::kEnableFullscreenSigninPromo);
 }
 
 bool DisableUpdateService() {

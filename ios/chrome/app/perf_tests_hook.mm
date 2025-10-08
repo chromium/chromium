@@ -55,8 +55,8 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
   return nullptr;
 }
-bool DisableUpgradeSigninPromo() {
-  // Always disable upgrade sign-in promo for perf tests.
+bool DisableFullscreenSigninPromo() {
+  // Always disable fullscreen sign-in promo for perf tests.
   return true;
 }
 bool DisableUpdateService() {
