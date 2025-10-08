@@ -297,7 +297,7 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
               std::move(callback).Run(
                   permission_granted
                       ? net::OK
-                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                      : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
             impl_->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return net::ERR_IO_PENDING;
@@ -305,7 +305,7 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
 
   // Otherwise, if there was a Local Network Access CORS error, block by
   // default.
-  return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
+  return net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS;
 }
 
 void WebSocket::WebSocketEventHandler::OnAddChannelResponse(

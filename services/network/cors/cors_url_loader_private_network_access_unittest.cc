@@ -241,7 +241,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderSimple) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -277,7 +277,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, MissingResponseHeaderPreflight) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -313,7 +313,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderSimple) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -351,7 +351,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, InvalidResponseHeaderPreflight) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1262,7 +1262,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1315,7 +1315,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1706,7 +1706,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockNetError) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1759,7 +1759,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_THAT(client().completion_status().cors_error_status,
               Optional(CorsErrorStatus(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader,
@@ -1839,7 +1839,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1917,7 +1917,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(
       client().completion_status().private_network_access_preflight_result,
       mojom::PrivateNetworkAccessPreflightResult::kError);
@@ -1981,7 +1981,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnRequestOnly) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 // This test verifies that when the loader factory params carry a client
@@ -2018,7 +2018,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryOnly) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 // This test verifies that when both the `ResourceRequest`  and the loader
@@ -2062,7 +2062,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
   RunUntilComplete();
 
   EXPECT_EQ(client().completion_status().error_code,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 }  // namespace

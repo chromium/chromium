@@ -53,7 +53,7 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // network, so resetting the checker.
     checker_.ResetForRetry();
     return net::
-        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
+        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY;
   }
 
   // Report the CORS error back to the URLLoader. This ensures the final
@@ -92,7 +92,7 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
               std::move(callback).Run(
                   permission_granted
                       ? net::OK
-                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                      : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
             weak_ptr_factory_.GetWeakPtr(), std::move(callback_getter).Run()));
     return net::ERR_IO_PENDING;
@@ -100,7 +100,7 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
 
   // Otherwise, if there was a Private Network Access CORS error, block by
   // default.
-  return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
+  return net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS;
 }
 
 void PrivateNetworkAccessUrlLoaderInterceptor::ResetForRedirect(

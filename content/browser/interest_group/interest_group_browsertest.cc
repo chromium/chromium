@@ -18576,7 +18576,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   const network::URLLoaderCompletionStatus& bidder_status =
       url_loader_monitor.WaitForRequestCompletion(bidder_url);
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             bidder_status.error_code);
   EXPECT_THAT(bidder_status.cors_error_status,
               Optional(network::CorsErrorStatus(
@@ -18633,7 +18633,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   const network::URLLoaderCompletionStatus& seller_status =
       url_loader_monitor.WaitForRequestCompletion(seller_url);
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             seller_status.error_code);
   EXPECT_THAT(
       seller_status.cors_error_status,
@@ -18714,7 +18714,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
     SCOPED_TRACE(report_url.spec());
     const network::URLLoaderCompletionStatus& report_status =
         url_loader_monitor.WaitForRequestCompletion(report_url);
-    EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+    EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
               report_status.error_code);
     EXPECT_THAT(report_status.cors_error_status,
                 Optional(network::CorsErrorStatus(

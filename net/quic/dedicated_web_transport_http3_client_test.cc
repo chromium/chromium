@@ -248,7 +248,7 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectLocalNetworkAccessCheckFail) {
 
   EXPECT_CALL(visitor_, OnLocalNetworkAccessCheck)
       .WillOnce(InvokeCallbackArgument<1, CompletionOnceCallback>(
-          ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS));
+          ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS));
 
   WebTransportError error;
   EXPECT_CALL(visitor_, OnConnectionFailed)
@@ -256,7 +256,7 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectLocalNetworkAccessCheckFail) {
   client_->Connect();
   Run();
   ASSERT_TRUE(client_->session() == nullptr);
-  EXPECT_EQ(error.net_error, ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+  EXPECT_EQ(error.net_error, ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 // Check that connecting via a proxy fails. This is currently not implemented,

@@ -245,13 +245,13 @@ void CreateSocketIfAllowed(
     return;
   }
   FulfillWithError(std::move(finish_callback),
-                   net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                   net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 // Queries the embedder whether private network access is allowed, and on
 // success invokes `create_socket_callback` with `finish_callback`. Upon failure
 // discards `create_socket_callback` and errors `finish_callback` with
-// net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.
+// net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.
 template <typename FinishCallback>
 void RequestPrivateNetworkAccessAndCreateSocket(
     const Context& context,

@@ -331,7 +331,7 @@ auto AccessBlocked() {
 }
 
 auto PrivateNetworkAccessBlocked() {
-  return testing::HasSubstr("Access to private network is blocked");
+  return testing::HasSubstr("Access to local network is blocked");
 }
 
 auto ErrorIs(const auto& matcher) {

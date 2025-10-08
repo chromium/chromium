@@ -2215,11 +2215,6 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
 
   // Currently requesting the Local Network Access permission is restricted to
   // subresource requests and subframe navigation requests.
-  // TODO(crbug.com/404887285): Denying permission for a subframe navigation
-  // results in an error page with text that isn't quite true anymore: "The
-  // connection is blocked because it was initiated by a public page to connect
-  // to devices or servers on your private network. Reload this page to allow
-  // the connection." The last sentence should be removed.
 
   // Handle document (Case 1) and navigation (Case 2) contexts.
   if (context.navigation_or_document()) {

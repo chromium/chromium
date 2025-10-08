@@ -558,7 +558,7 @@ struct URLRequest {
   // CorsURLLoader will send requests (both preflights and non-preflights)
   // with the default value of `kUnknown`. If URLLoader gets a connection to
   // a private network, it will fail the request with
-  // `ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS` and populate
+  // `ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS` and populate
   // `URLLoaderCompletionStatus::cors_error_status` with information about the
   // address space that was returned.
   //
@@ -573,6 +573,8 @@ struct URLRequest {
   // are needed, those pass as well), the actual request will be made, with the
   // same `target_ip_address_space` value, which will again bypass the checks,
   // if a connection on the same network is received.
+  //
+  // TODO(crbug.com/394636065): remove this option with PNA preflights
   IPAddressSpace target_ip_address_space;
 
   // The target address space to which a given fetch operation is expected to

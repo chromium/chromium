@@ -1604,7 +1604,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLoopbackBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
@@ -1647,7 +1647,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLoopbackPreflightWarn) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1666,7 +1666,7 @@ TEST_F(URLLoaderTest, SecureUnknownToLoopbackPreflightBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1682,7 +1682,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLoopbackBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
@@ -1722,7 +1722,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLoopbackPreflightWarn) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1740,7 +1740,7 @@ TEST_F(URLLoaderTest, NonSecureUnknownToLoopbackPreflightBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1757,7 +1757,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
@@ -1800,7 +1800,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPreflightWarn) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1819,7 +1819,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPreflightBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1835,7 +1835,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLoopbackBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(client()->completion_status().cors_error_status,
               Optional(InsecurePrivateNetworkCorsErrorStatus(
@@ -1875,7 +1875,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLoopbackPreflightWarn) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -1893,7 +1893,7 @@ TEST_F(URLLoaderTest, NonSecurePublicToLoopbackPreflightBlock) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -2230,7 +2230,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
@@ -2460,7 +2460,7 @@ TEST_P(URLLoaderFakeTransportInfoTest, LocalNetworkRequestLoadsCorrectly) {
   if (params.expected_result != net::OK) {
     if (params.expected_result !=
         net::
-            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY) {
+            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY) {
       // CORS error status shouldn't be set when the cache entry was blocked by
       // private network access policy because we'll retry fetching from the
       // network.
@@ -2555,13 +2555,13 @@ constexpr URLLoaderFakeTransportInfoTestParams
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
         },
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kLoopback,
             net::TransportType::kDirect,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
         },
         // Client: kPublic
         {
@@ -2580,13 +2580,13 @@ constexpr URLLoaderFakeTransportInfoTestParams
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kDirect,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLoopback,
             net::TransportType::kDirect,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
         },
         // Client: kLocal
         {
@@ -2696,14 +2696,14 @@ constexpr URLLoaderFakeTransportInfoTestParams
             mojom::IPAddressSpace::kLoopback,
             net::TransportType::kCached,
             net::
-                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
+                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLoopback,
             net::TransportType::kCached,
             net::
-                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
+                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kLocal,
@@ -7930,7 +7930,7 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   ResourceRequest request = CreateResourceRequest("GET", url);
   request.mode = mojom::RequestMode::kNoCors;
   request.request_initiator = initiator;
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
 
   // Socket should not be closed, since it can be reused.
@@ -8466,7 +8466,7 @@ TEST_F(URLLoaderTest,
   MockDevToolsObserver devtools_observer;
   set_devtools_observer_for_next_request(&devtools_observer);
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
 
   devtools_observer.WaitUntilPrivateNetworkRequest();

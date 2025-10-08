@@ -1115,7 +1115,7 @@ std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
 
   if (*reason == PreflightRequiredReason::kPrivateNetworkAccess) {
     pna_preflight_result_ = mojom::PrivateNetworkAccessPreflightResult::kError;
-    result.error_code = net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
+    result.error_code = net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS;
   }
 
   return result;

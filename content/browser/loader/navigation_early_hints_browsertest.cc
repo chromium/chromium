@@ -912,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsAddressSpaceTest,
   ASSERT_FALSE(it->second.was_canceled);
   ASSERT_TRUE(it->second.error_code.has_value());
   EXPECT_EQ(it->second.error_code.value(),
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   EXPECT_EQ(it->second.cors_error_status->cors_error,
             network::mojom::CorsError::kInsecurePrivateNetwork);
 }

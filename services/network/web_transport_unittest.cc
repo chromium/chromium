@@ -577,7 +577,7 @@ TEST_F(WebTransportTest, ConnectLNAPermissionDenied) {
 
   ASSERT_TRUE(test_handshake_client.handshake_error().has_value());
   EXPECT_EQ(test_handshake_client.handshake_error()->net_error,
-            net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
 }
 
 TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {

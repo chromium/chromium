@@ -631,11 +631,11 @@ void WebTransport::OnLocalNetworkAccessCheck(
               std::move(callback).Run(
                   permission_granted
                       ? net::OK
-                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                      : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
-    std::move(callback).Run(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+    std::move(callback).Run(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   }
 }
 

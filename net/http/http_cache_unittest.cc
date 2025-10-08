@@ -1103,7 +1103,7 @@ TEST_F(HttpCacheSimpleGetTest,
 
 // This test verifies that when the callback passed to SetConnectedCallback()
 // returns
-// `ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY`, the
+// `ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY`, the
 // cache entry is invalidated, and we'll retry the connection from the network.
 TEST_F(HttpCacheSimpleGetTest,
        ConnectedCallbackOnCacheHitReturnPrivateNetworkAccessBlockedError) {
@@ -1122,7 +1122,7 @@ TEST_F(HttpCacheSimpleGetTest,
     // connected callback error.
     ConnectedHandler connected_handler;
     connected_handler.set_result(
-        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY);
+        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY);
 
     auto transaction = cache.CreateTransaction();
     ASSERT_TRUE(transaction);
@@ -1136,7 +1136,7 @@ TEST_F(HttpCacheSimpleGetTest,
     EXPECT_THAT(
         callback.WaitForResult(),
         IsError(
-            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY));
+            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY));
 
     // Used the cache entry only.
     EXPECT_THAT(connected_handler.transports(),
