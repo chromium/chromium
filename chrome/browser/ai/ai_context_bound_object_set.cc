@@ -30,6 +30,6 @@ void AIContextBoundObjectSet::SetPriority(
   }
 }
 
-size_t AIContextBoundObjectSet::GetSizeForTesting() {
+size_t AIContextBoundObjectSet::GetSize() const {
   return context_bound_object_set_.size();
 }

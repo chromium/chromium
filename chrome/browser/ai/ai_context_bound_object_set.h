@@ -21,8 +21,8 @@ class AIContextBoundObjectSet {
 
   // Add an `AIContextBoundObject` into the set.
   void AddContextBoundObject(std::unique_ptr<AIContextBoundObject> object);
-  // Returns the size of user data set for testing purpose.
-  size_t GetSizeForTesting();
+  // Returns the size of set.
+  size_t GetSize() const;
 
   // Remove the `AIContextBoundObject` from the set.
   void RemoveContextBoundObject(AIContextBoundObject* object);

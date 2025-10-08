@@ -864,8 +864,13 @@ void AIManager::FinishCanCreateSession(
   // the reason.
   if (eligibility !=
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
+    // If context_bound_object_set_ size or model_download_progress_manager_
+    // reporters are non-zero, it implies that a download is pending.
+    // TODO(crbug.com/444320307): Make this more robust by actually checking
+    // opt-guide download status.
     bool is_downloading =
-        model_download_progress_manager_.GetNumberOfReporters() >= 1;
+        model_download_progress_manager_.GetNumberOfReporters() >= 1 ||
+        context_bound_object_set_.GetSize() >= 1;
     std::move(callback).Run(
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
             eligibility, is_downloading));

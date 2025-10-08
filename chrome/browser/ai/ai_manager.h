@@ -62,7 +62,7 @@ class AIManager : public base::SupportsUserData::Data,
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
   size_t GetContextBoundObjectSetSizeForTesting() {
-    return context_bound_object_set_.GetSizeForTesting();
+    return context_bound_object_set_.GetSize();
   }
 
   size_t GetDownloadProgressObserversSizeForTesting() {
