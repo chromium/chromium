@@ -3341,6 +3341,9 @@ extern const char kNtpRealboxNextDescription[];
 extern const char kNtpComposeboxUsesChromeComposeClientName[];
 extern const char kNtpComposeboxUsesChromeComposeClientDescription[];
 
+extern const char kNtpCustomizeChromePromoName[];
+extern const char kNtpCustomizeChromePromoDescription[];
+
 extern const char kNtpSearchboxComposeEntrypointName[];
 extern const char kNtpSearchboxComposeEntrypointDescription[];
 

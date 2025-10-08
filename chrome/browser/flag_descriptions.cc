@@ -5786,6 +5786,10 @@ const char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "Composebox will use chrome-compose client when querying suggest for "
     "unimodal typed inputs instead of chrome-omni.";
 
+const char kNtpCustomizeChromePromoName[] = "NTP Customize Chrome Promo";
+const char kNtpCustomizeChromePromoDescription[] =
+    "Shows the Customize Chrome promo on the New Tab Page.";
+
 const char kNtpRealboxNextName[] = "NTP Realbox Next";
 const char kNtpRealboxNextDescription[] =
     "Enables the Realbox 'Next' experience.";

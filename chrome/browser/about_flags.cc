@@ -4915,6 +4915,25 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
+const FeatureEntry::FeatureParam kNtpCustomizeChromePromoOnEveryNTP[] = {
+    {"max_iph_count", "3"},
+    {"max_customize_chrome_shown_count", "5"}};
+const FeatureEntry::FeatureParam kNtpCustomizeChromePromoFirstNTPOnly[] = {
+    {"max_iph_count", "3"},
+    {"max_customize_chrome_shown_count", "1"}};
+const FeatureEntry::FeatureParam kNtpCustomizeChromePromoIPHOnly[] = {
+    {"max_iph_count", "3"},
+    {"max_customize_chrome_shown_count", "0"}};
+const FeatureEntry::FeatureVariation
+    kNtpCustomizeChromePromoVariations[] = {
+        {"- On every NTP", kNtpCustomizeChromePromoOnEveryNTP,
+         std::size(kNtpCustomizeChromePromoOnEveryNTP), nullptr},
+        {"- First NTP only", kNtpCustomizeChromePromoFirstNTPOnly,
+         std::size(kNtpCustomizeChromePromoFirstNTPOnly), nullptr},
+        {"- IPH only", kNtpCustomizeChromePromoIPHOnly,
+         std::size(kNtpCustomizeChromePromoIPHOnly), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithFakeData[] = {
     {"use_fake_data", "true"}};
 const FeatureEntry::FeatureVariation kNtpEnterpriseShortcutsVariations[] = {
@@ -7554,6 +7573,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxUsesChromeComposeClient)},
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"ntp-customize-chrome-promo",
+     flag_descriptions::kNtpCustomizeChromePromoName,
+     flag_descriptions::kNtpCustomizeChromePromoDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCustomizeChromePromo,
+                                    kNtpCustomizeChromePromoVariations,
+                                    "NtpCustomizeChromePromo")},
+#endif
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,

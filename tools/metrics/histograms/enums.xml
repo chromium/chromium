@@ -18003,6 +18003,7 @@ from previous Chrome versions.
   <int value="1363151585" label="SyncPseudoUSSAppList:enabled"/>
   <int value="1363283577" label="CrOSLateBootAudioFlexibleLoopback:enabled"/>
   <int value="1364309298" label="SupportToolCopyTokenButton:enabled"/>
+  <int value="1364393674" label="NtpCustomizeChromePromo:enabled"/>
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
   <int value="1366396538" label="GlanceablesV2:disabled"/>
@@ -18029,6 +18030,7 @@ from previous Chrome versions.
   <int value="1371344350" label="MediaSessionWebRTC:disabled"/>
   <int value="1371902905" label="MerchantTrust:enabled"/>
   <int value="1371907429" label="enable-wallet-card-import"/>
+  <int value="1372241246" label="NtpCustomizeChromePromo:disabled"/>
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
