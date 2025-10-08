@@ -425,7 +425,6 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_page/search_engine_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
-    "site_settings/site_review_shared.css",
     "site_settings/site_settings_shared.css",
   ]
 

@@ -207,14 +207,6 @@ export enum AllSitesDialog {
 export const SITE_EXCEPTION_WILDCARD: string = '*';
 
 /**
- * Corresponds to the animation-duration CSS parameter defined in
- * chrome/browser/resources/settings/site_settings/site_review_shared.css.
- * Set to be slightly higher, as we want to ensure that the animation is
- * finished before updating the model for the right visual effect.
- */
-export const MODEL_UPDATE_DELAY_MS = 300;
-
-/**
  * Types of cookies exceptions based on the use of wildcard in the patterns:
  * - THIRD_PARTY: primary pattern is wildcard (third-party exception).
  * - SITE_DATA: primary pattern is set, secondary pattern is wildcard (site data
