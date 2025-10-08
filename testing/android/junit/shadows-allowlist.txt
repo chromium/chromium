@@ -8,8 +8,6 @@
 
 # TODO(https://crbug.com/341267427): Reduce this list.
 +com.google.android.apps.chrome.rlz.RevenueStatsInternal
-+org.chromium.base.ApplicationStatus
-+org.chromium.base.PathUtils
 +org.chromium.base.SysUtils
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask

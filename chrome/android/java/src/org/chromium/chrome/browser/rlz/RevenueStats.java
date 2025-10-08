@@ -10,6 +10,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -36,6 +37,11 @@ public class RevenueStats {
         }
 
         return sInstance;
+    }
+
+    public static void setInstanceForTesting(RevenueStats instance) {
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = null);
     }
 
     /** Notifies tab creation event. */

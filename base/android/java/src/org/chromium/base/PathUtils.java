@@ -263,6 +263,26 @@ public abstract class PathUtils {
         return getDirectoryPath(THUMBNAIL_DIRECTORY);
     }
 
+    private static String sDownloadsDirectoryForTesting;
+    private static String[] sAllPrivateDownloadsDirectoriesForTesting;
+    private static String[] sExternalDownloadVolumesNamesForTesting;
+
+    public static void setDownloadsDirectoryForTesting(String downloadsDirectory) {
+        sDownloadsDirectoryForTesting = downloadsDirectory;
+        ResettersForTesting.register(() -> sDownloadsDirectoryForTesting = null);
+    }
+
+    public static void setAllPrivateDownloadsDirectoriesForTesting(
+            String[] allPrivateDownloadsDirectories) {
+        sAllPrivateDownloadsDirectoriesForTesting = allPrivateDownloadsDirectories;
+        ResettersForTesting.register(() -> sAllPrivateDownloadsDirectoriesForTesting = null);
+    }
+
+    public static void setExternalDownloadVolumesNamesForTesting(String[] externalDownloadVolumes) {
+        sExternalDownloadVolumesNamesForTesting = externalDownloadVolumes;
+        ResettersForTesting.register(() -> sExternalDownloadVolumesNamesForTesting = null);
+    }
+
     /**
      * Returns the downloads directory. Before Android Q, this returns the public download directory
      * for Chrome app. On Q+, this returns the first private download directory for the app, since Q
@@ -272,6 +292,7 @@ public abstract class PathUtils {
     @SuppressWarnings("unused")
     @CalledByNative
     public static @JniType("std::string") String getDownloadsDirectory() {
+        if (sDownloadsDirectoryForTesting != null) return sDownloadsDirectoryForTesting;
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // https://developer.android.com/preview/privacy/scoped-storage
@@ -283,11 +304,14 @@ public abstract class PathUtils {
 
     /**
      * @return Download directories including the default storage directory on SD card, and a
-     * private directory on external SD card.
+     *     private directory on external SD card.
      */
     @SuppressWarnings("unused")
     @CalledByNative
     public static String[] getAllPrivateDownloadsDirectories() {
+        if (sAllPrivateDownloadsDirectoriesForTesting != null) {
+            return sAllPrivateDownloadsDirectoriesForTesting;
+        }
         List<File> files = new ArrayList<>();
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             File[] externalDirs =
@@ -307,6 +331,9 @@ public abstract class PathUtils {
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
     public static String[] getExternalDownloadVolumesNames() {
+        if (sExternalDownloadVolumesNamesForTesting != null) {
+            return sExternalDownloadVolumesNamesForTesting;
+        }
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
                 MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());
