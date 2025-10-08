@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "url/gurl.h"
 
 namespace cc {

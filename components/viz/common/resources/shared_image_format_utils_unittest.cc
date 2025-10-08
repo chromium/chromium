@@ -9,7 +9,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace viz {
 namespace {
