@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/numerics/angle_conversions.h"
+#include "skia/ext/skcms_ext.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -25,19 +26,6 @@ constexpr float kD50_x = 0.9642f;
 constexpr float kD50_y = 1.0f;
 constexpr float kD50_z = 0.8251f;
 
-// Evaluate the specified transfer function. This can be replaced by
-// skcms_TransferFunction_eval when b/331320414 is fixed.
-float skcmsTrFnEvalExt(const skcms_TransferFunction* fn, float x) {
-  float sign = x < 0 ? -1 : 1;
-  x *= sign;
-  // TODO(b/331320414): Make skcms_TransferFunction_eval not assert on when
-  // this is the case.
-  if (x >= fn->d && fn->a * x + fn->b < 0) {
-    return sign * fn->e;
-  }
-  return sign * skcms_TransferFunction_eval(fn, x);
-}
-
 // Power function extended to all real numbers by point symmetry.
 float powExt(float x, float p) {
   if (x < 0) {
@@ -47,97 +35,46 @@ float powExt(float x, float p) {
   }
 }
 
-const skcms_Matrix3x3* getXYDZ65toXYZD50matrix() {
+skcms_Matrix3x3 getXYDZ65toXYZD50matrix() {
   constexpr float kD65_x = 0.3127f;
   constexpr float kD65_y = 0.3290f;
-  static skcms_Matrix3x3 adapt_d65_to_d50;
+  skcms_Matrix3x3 adapt_d65_to_d50;
   skcms_AdaptToXYZD50(kD65_x, kD65_y, &adapt_d65_to_d50);
-  return &adapt_d65_to_d50;
+  return adapt_d65_to_d50;
 }
 
-const skcms_Matrix3x3* getXYDZ50toXYZD65matrix() {
-  static skcms_Matrix3x3 adapt_d50_to_d65;
-  skcms_Matrix3x3_invert(getXYDZ65toXYZD50matrix(), &adapt_d50_to_d65);
-  return &adapt_d50_to_d65;
+skcms_Matrix3x3 getXYZD65tosRGBLinearMatrix() {
+  const auto xyzd50_to_srgb = skcms::Matrix3x3_invert(SkNamedGamut::kSRGB);
+  const auto xyzd65_to_xyzd50 = getXYDZ65toXYZD50matrix();
+  skcms_Matrix3x3 adapt_XYZD65_to_srgb =
+      skcms_Matrix3x3_concat(&xyzd50_to_srgb, &xyzd65_to_xyzd50);
+  return adapt_XYZD65_to_srgb;
 }
 
-const skcms_Matrix3x3* getXYZD50TosRGBLinearMatrix() {
-  static skcms_Matrix3x3 xyzd50_to_srgb_linear;
-  skcms_Matrix3x3_invert(&SkNamedGamut::kSRGB, &xyzd50_to_srgb_linear);
-  return &xyzd50_to_srgb_linear;
-}
-
-const skcms_Matrix3x3* getXYZD65tosRGBLinearMatrix() {
-  static skcms_Matrix3x3 adapt_XYZD65_to_srgb = skcms_Matrix3x3_concat(
-      getXYZD50TosRGBLinearMatrix(), getXYDZ65toXYZD50matrix());
-  return &adapt_XYZD65_to_srgb;
-}
-
-const skcms_Matrix3x3* getProPhotoRGBtoXYZD50Matrix() {
-  static skcms_Matrix3x3 lin_proPhoto_to_XYZ_D50;
+skcms_Matrix3x3 getProPhotoRGBtoXYZD50Matrix() {
+  skcms_Matrix3x3 lin_proPhoto_to_XYZ_D50;
   SkNamedPrimaries::kProPhotoRGB.toXYZD50(&lin_proPhoto_to_XYZ_D50);
-  return &lin_proPhoto_to_XYZ_D50;
+  return lin_proPhoto_to_XYZ_D50;
 }
 
-const skcms_Matrix3x3* getXYZD50toProPhotoRGBMatrix() {
-  static skcms_Matrix3x3 xyzd50_to_ProPhotoRGB;
-  skcms_Matrix3x3_invert(getProPhotoRGBtoXYZD50Matrix(),
-                         &xyzd50_to_ProPhotoRGB);
-  return &xyzd50_to_ProPhotoRGB;
-}
-
-const skcms_Matrix3x3* getXYZD50toDisplayP3Matrix() {
-  static skcms_Matrix3x3 xyzd50_to_DisplayP3;
-  skcms_Matrix3x3_invert(&SkNamedGamut::kDisplayP3, &xyzd50_to_DisplayP3);
-  return &xyzd50_to_DisplayP3;
-}
-
-const skcms_Matrix3x3* getXYZD50toAdobeRGBMatrix() {
-  static skcms_Matrix3x3 xyzd50_to_kAdobeRGB;
-  skcms_Matrix3x3_invert(&SkNamedGamut::kAdobeRGB, &xyzd50_to_kAdobeRGB);
-  return &xyzd50_to_kAdobeRGB;
-}
-
-const skcms_Matrix3x3* getXYZD50toRec2020Matrix() {
-  static skcms_Matrix3x3 xyzd50_to_Rec2020;
-  skcms_Matrix3x3_invert(&SkNamedGamut::kRec2020, &xyzd50_to_Rec2020);
-  return &xyzd50_to_Rec2020;
-}
-
-const skcms_Matrix3x3* getXYZToLMSMatrix() {
-  static const skcms_Matrix3x3 kXYZ_to_LMS = {
+skcms_Matrix3x3 getXYZToLMSMatrix() {
+  const skcms_Matrix3x3 kXYZ_to_LMS = {
       {{0.8190224432164319f, 0.3619062562801221f, -0.12887378261216414f},
        {0.0329836671980271f, 0.9292868468965546f, 0.03614466816999844f},
        {0.048177199566046255f, 0.26423952494422764f, 0.6335478258136937f}}};
-  return &kXYZ_to_LMS;
+  return kXYZ_to_LMS;
 }
 
-const skcms_Matrix3x3* getLMSToXYZMatrix() {
-  static skcms_Matrix3x3 LMS_to_XYZ;
-  skcms_Matrix3x3_invert(getXYZToLMSMatrix(), &LMS_to_XYZ);
-  return &LMS_to_XYZ;
-}
-
-const skcms_Matrix3x3* getOklabToLMSMatrix() {
-  static const skcms_Matrix3x3 kOklab_to_LMS = {
+skcms_Matrix3x3 getOklabToLMSMatrix() {
+  const skcms_Matrix3x3 kOklab_to_LMS = {
       {{0.99999999845051981432f, 0.39633779217376785678f,
         0.21580375806075880339f},
        {1.0000000088817607767f, -0.1055613423236563494f,
         -0.063854174771705903402f},
        {1.0000000546724109177f, -0.089484182094965759684f,
         -1.2914855378640917399f}}};
-  return &kOklab_to_LMS;
+  return kOklab_to_LMS;
 }
-
-const skcms_Matrix3x3* getLMSToOklabMatrix() {
-  static skcms_Matrix3x3 LMS_to_Oklab;
-  skcms_Matrix3x3_invert(getOklabToLMSMatrix(), &LMS_to_Oklab);
-  return &LMS_to_Oklab;
-}
-
-typedef struct {
-  std::array<float, 3> vals;
-} skcms_Vector3;
 
 typedef struct {
   std::array<float, 2> vals;
@@ -147,108 +84,10 @@ float dot(const skcms_Vector2& a, const skcms_Vector2& b) {
   return a.vals[0] * b.vals[0] + a.vals[1] * b.vals[1];
 }
 
-static skcms_Vector3 skcms_Matrix3x3_apply(const skcms_Matrix3x3* m,
-                                           const skcms_Vector3* v) {
-  skcms_Vector3 dst = {{0, 0, 0}};
-  for (int row = 0; row < 3; ++row) {
-    // SAFETY: both row and col are >= 0 <= 2, and skcms_Matrix3x3 is a 3x3
-    // float array.
-    UNSAFE_BUFFERS(dst.vals[row] = m->vals[row][0] * v->vals[0] +
-                                   m->vals[row][1] * v->vals[1] +
-                                   m->vals[row][2] * v->vals[2]);
-  }
-  return dst;
+std::tuple<float, float, float> ToTuple(const skcms::Vector3& v) {
+  return std::make_tuple(v.vals[0], v.vals[1], v.vals[2]);
 }
 
-skcms_TransferFunction* getSRGBInverseTransferFunction() {
-  static skcms_TransferFunction srgb_inverse;
-  skcms_TransferFunction_invert(&SkNamedTransferFn::kSRGB, &srgb_inverse);
-  return &srgb_inverse;
-}
-
-std::tuple<float, float, float> ApplyInverseTransferFnsRGB(float r,
-                                                           float g,
-                                                           float b) {
-  return std::make_tuple(skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), r),
-                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), g),
-                         skcmsTrFnEvalExt(getSRGBInverseTransferFunction(), b));
-}
-
-std::tuple<float, float, float> ApplyTransferFnsRGB(float r, float g, float b) {
-  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, r),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, g),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kSRGB, b));
-}
-
-std::tuple<float, float, float> ApplyTransferFnProPhoto(float r,
-                                                        float g,
-                                                        float b) {
-  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, r),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, g),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kProPhotoRGB, b));
-}
-
-std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
-                                                        float g,
-                                                        float b) {
-  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, r),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, g),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::k2Dot2, b));
-}
-
-skcms_TransferFunction* getProPhotoInverseTransferFunction() {
-  static skcms_TransferFunction ProPhoto_inverse;
-  skcms_TransferFunction_invert(&SkNamedTransferFn::kProPhotoRGB,
-                                &ProPhoto_inverse);
-  return &ProPhoto_inverse;
-}
-
-std::tuple<float, float, float> ApplyInverseTransferFnProPhoto(float r,
-                                                               float g,
-                                                               float b) {
-  return std::make_tuple(
-      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), r),
-      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), g),
-      skcmsTrFnEvalExt(getProPhotoInverseTransferFunction(), b));
-}
-
-skcms_TransferFunction* getAdobeRGBInverseTransferFunction() {
-  static skcms_TransferFunction AdobeRGB_inverse;
-  skcms_TransferFunction_invert(&SkNamedTransferFn::k2Dot2, &AdobeRGB_inverse);
-  return &AdobeRGB_inverse;
-}
-
-std::tuple<float, float, float> ApplyInverseTransferFnAdobeRGB(float r,
-                                                               float g,
-                                                               float b) {
-  return std::make_tuple(
-      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), r),
-      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), g),
-      skcmsTrFnEvalExt(getAdobeRGBInverseTransferFunction(), b));
-}
-
-std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
-                                                       float g,
-                                                       float b) {
-  return std::make_tuple(skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, r),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, g),
-                         skcmsTrFnEvalExt(&SkNamedTransferFn::kRec2020, b));
-}
-
-skcms_TransferFunction* getRec2020nverseTransferFunction() {
-  static skcms_TransferFunction Rec2020_inverse;
-  skcms_TransferFunction_invert(&SkNamedTransferFn::kRec2020, &Rec2020_inverse);
-  return &Rec2020_inverse;
-}
-
-std::tuple<float, float, float> ApplyInverseTransferFnRec2020(float r,
-                                                              float g,
-                                                              float b) {
-  return std::make_tuple(
-      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), r),
-      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), g),
-      skcmsTrFnEvalExt(getRec2020nverseTransferFunction(), b));
-}
 }  // namespace
 
 std::tuple<float, float, float> LabToXYZD50(float l, float a, float b) {
@@ -406,9 +245,9 @@ std::tuple<float, float, float> OklabGamutMap(float l, float a, float b) {
 }
 
 std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b) {
-  skcms_Vector3 lab_input{{l, a, b}};
-  skcms_Vector3 lms_intermediate =
-      skcms_Matrix3x3_apply(getOklabToLMSMatrix(), &lab_input);
+  skcms::Vector3 lab_input{{l, a, b}};
+  skcms::Vector3 lms_intermediate =
+      skcms::Matrix3x3_apply(getOklabToLMSMatrix(), lab_input);
   lms_intermediate.vals[0] = lms_intermediate.vals[0] *
                              lms_intermediate.vals[0] *
                              lms_intermediate.vals[0];
@@ -418,23 +257,23 @@ std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b) {
   lms_intermediate.vals[2] = lms_intermediate.vals[2] *
                              lms_intermediate.vals[2] *
                              lms_intermediate.vals[2];
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(getLMSToXYZMatrix(), &lms_intermediate);
+  skcms::Vector3 xyz_output =
+      skcms::Matrix3x3_apply_inverse(getXYZToLMSMatrix(), lms_intermediate);
   return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
                          xyz_output.vals[2]);
 }
 
 std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 lms_intermediate =
-      skcms_Matrix3x3_apply(getXYZToLMSMatrix(), &xyz_input);
+  skcms::Vector3 xyz_input{{x, y, z}};
+  skcms::Vector3 lms_intermediate =
+      skcms::Matrix3x3_apply(getXYZToLMSMatrix(), xyz_input);
 
   lms_intermediate.vals[0] = powExt(lms_intermediate.vals[0], 1.0f / 3.0f);
   lms_intermediate.vals[1] = powExt(lms_intermediate.vals[1], 1.0f / 3.0f);
   lms_intermediate.vals[2] = powExt(lms_intermediate.vals[2], 1.0f / 3.0f);
 
-  skcms_Vector3 lab_output =
-      skcms_Matrix3x3_apply(getLMSToOklabMatrix(), &lms_intermediate);
+  skcms::Vector3 lab_output =
+      skcms::Matrix3x3_apply_inverse(getOklabToLMSMatrix(), lms_intermediate);
   return std::make_tuple(lab_output.vals[0], lab_output.vals[1],
                          lab_output.vals[2]);
 }
@@ -449,87 +288,71 @@ std::tuple<float, float, float> LabToLch(float l, float a, float b) {
 }
 
 std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
-  auto [r_, g_, b_] = ApplyTransferFnsRGB(r, g, b);
-  skcms_Vector3 rgb_input{{r_, g_, b_}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(&SkNamedGamut::kDisplayP3, &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply(SkNamedTransferFn::kSRGB, c);
+  c = skcms::Matrix3x3_apply(SkNamedGamut::kDisplayP3, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50ToDisplayP3(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_output =
-      skcms_Matrix3x3_apply(getXYZD50toDisplayP3Matrix(), &xyz_input);
-  return ApplyInverseTransferFnsRGB(rgb_output.vals[0], rgb_output.vals[1],
-                                    rgb_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kDisplayP3, c);
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> ProPhotoToXYZD50(float r, float g, float b) {
-  auto [r_, g_, b_] = ApplyTransferFnProPhoto(r, g, b);
-  skcms_Vector3 rgb_input{{r_, g_, b_}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(getProPhotoRGBtoXYZD50Matrix(), &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply(SkNamedTransferFn::kProPhotoRGB, c);
+  c = skcms::Matrix3x3_apply(getProPhotoRGBtoXYZD50Matrix(), c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50ToProPhoto(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_output =
-      skcms_Matrix3x3_apply(getXYZD50toProPhotoRGBMatrix(), &xyz_input);
-  return ApplyInverseTransferFnProPhoto(rgb_output.vals[0], rgb_output.vals[1],
-                                        rgb_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(getProPhotoRGBtoXYZD50Matrix(), c);
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kProPhotoRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> AdobeRGBToXYZD50(float r, float g, float b) {
-  auto [r_, g_, b_] = ApplyTransferFnAdobeRGB(r, g, b);
-  skcms_Vector3 rgb_input{{r_, g_, b_}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(&SkNamedGamut::kAdobeRGB, &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply(SkNamedTransferFn::k2Dot2, c);
+  c = skcms::Matrix3x3_apply(SkNamedGamut::kAdobeRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50ToAdobeRGB(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_output =
-      skcms_Matrix3x3_apply(getXYZD50toAdobeRGBMatrix(), &xyz_input);
-  return ApplyInverseTransferFnAdobeRGB(rgb_output.vals[0], rgb_output.vals[1],
-                                        rgb_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kAdobeRGB, c);
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::k2Dot2, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> Rec2020ToXYZD50(float r, float g, float b) {
-  auto [r_, g_, b_] = ApplyTransferFnRec2020(r, g, b);
-  skcms_Vector3 rgb_input{{r_, g_, b_}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(&SkNamedGamut::kRec2020, &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply(SkNamedTransferFn::kRec2020, c);
+  c = skcms::Matrix3x3_apply(SkNamedGamut::kRec2020, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50ToRec2020(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_output =
-      skcms_Matrix3x3_apply(getXYZD50toRec2020Matrix(), &xyz_input);
-  return ApplyInverseTransferFnRec2020(rgb_output.vals[0], rgb_output.vals[1],
-                                       rgb_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kRec2020, c);
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kRec2020, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50ToD65(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(getXYDZ50toXYZD65matrix(), &xyz_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(getXYDZ65toXYZD50matrix(), c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD65ToD50(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(getXYDZ65toXYZD50matrix(), &xyz_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply(getXYDZ65toXYZD50matrix(), c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> SRGBToSRGBLegacy(float r, float g, float b) {
@@ -541,44 +364,35 @@ std::tuple<float, float, float> SRGBLegacyToSRGB(float r, float g, float b) {
 }
 
 std::tuple<float, float, float> XYZD50TosRGB(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getXYZD50TosRGBLinearMatrix(), &xyz_input);
-  return ApplyInverseTransferFnsRGB(rgb_result.vals[0], rgb_result.vals[1],
-                                    rgb_result.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kSRGB, c);
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD65TosRGBLinear(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getXYZD65tosRGBLinearMatrix(), &xyz_input);
-  return std::make_tuple(rgb_result.vals[0], rgb_result.vals[1],
-                         rgb_result.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply(getXYZD65tosRGBLinearMatrix(), c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> XYZD50TosRGBLinear(float x, float y, float z) {
-  skcms_Vector3 xyz_input{{x, y, z}};
-  skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getXYZD50TosRGBLinearMatrix(), &xyz_input);
-  return std::make_tuple(rgb_result.vals[0], rgb_result.vals[1],
-                         rgb_result.vals[2]);
+  skcms::Vector3 c{{x, y, z}};
+  c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kSRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> SRGBLinearToXYZD50(float r, float g, float b) {
-  skcms_Vector3 rgb_input{{r, g, b}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(&SkNamedGamut::kSRGB, &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::Matrix3x3_apply(SkNamedGamut::kSRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b) {
-  auto [r_, g_, b_] = ApplyTransferFnsRGB(r, g, b);
-  skcms_Vector3 rgb_input{{r_, g_, b_}};
-  skcms_Vector3 xyz_output =
-      skcms_Matrix3x3_apply(&SkNamedGamut::kSRGB, &rgb_input);
-  return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
-                         xyz_output.vals[2]);
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply(SkNamedTransferFn::kSRGB, c);
+  c = skcms::Matrix3x3_apply(SkNamedGamut::kSRGB, c);
+  return ToTuple(c);
 }
 
 std::tuple<float, float, float> HSLToSRGB(float h, float s, float l) {
@@ -691,8 +505,9 @@ std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
 }
 
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
-  auto [srgb_r, srgb_g, srgb_b] = ApplyInverseTransferFnsRGB(r, g, b);
-  return SkColor4f{srgb_r, srgb_g, srgb_b, alpha};
+  skcms::Vector3 c{{r, g, b}};
+  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
+  return SkColor4f{c.vals[0], c.vals[1], c.vals[2], alpha};
 }
 
 SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha) {
