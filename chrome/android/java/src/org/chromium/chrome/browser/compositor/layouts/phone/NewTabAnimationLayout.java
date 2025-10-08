@@ -773,6 +773,8 @@ public class NewTabAnimationLayout extends Layout {
                                     this::forceAnimationToFinish);
                     assumeNonNull(mBackgroundHostView);
                     mTabCreatedBackgroundAnimation = mBackgroundHostView.getAnimatorSet(x, y);
+                    AnimationFreezeChecker checker =
+                            new AnimationFreezeChecker(AnimationFreezeChecker.BACKGROUND_TAG);
                     mTabCreatedBackgroundAnimation.addListener(
                             new CancelAwareAnimatorListener() {
                                 private void internalBackgroundCleanUp() {
@@ -782,6 +784,7 @@ public class NewTabAnimationLayout extends Layout {
 
                                 @Override
                                 public void onStart(Animator animation) {
+                                    checker.onAnimationStart();
                                     // Release custom tab count as soon as the animation starts to
                                     // avoid showing the old tab count if the user decides to scroll
                                     // up during AnimationType.NTP_PARTIAL_SCROLL or
@@ -792,11 +795,13 @@ public class NewTabAnimationLayout extends Layout {
 
                                 @Override
                                 public void onEnd(Animator animation) {
+                                    checker.onAnimationEnd();
                                     internalBackgroundCleanUp();
                                 }
 
                                 @Override
                                 public void onCancel(Animator animation) {
+                                    checker.onAnimationCancel();
                                     internalBackgroundCleanUp();
                                 }
                             });
