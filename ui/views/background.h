@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -72,6 +73,8 @@ class VIEWS_EXPORT Background {
   // Set a solid color to be used when drawing backgrounds.
   virtual void SetColor(ui::ColorVariant color);
 
+  virtual void SetInternalName(const std::string& name);
+
  private:
   ui::ColorVariant color_;
 };
@@ -79,6 +82,22 @@ class VIEWS_EXPORT Background {
 // Creates a background that fills the canvas in the specified color.
 VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(
     ui::ColorVariant color);
+
+// Creates a background backed by a `ui::LAYER_SOLID_COLOR`. This implementation
+// of background is more efficient than its counterpart.
+// But it has its restrictions:
+//   * Since this background paints the view to a `ui::LAYER_SOLID_COLOR`,
+//   nothing else can be painted by the view or its subtree. (including the
+//   Border)
+//   * For non-zero radii, the view (its layer) will clip its subtree to its
+//   bounds. For example, if the view is focusable, the focus ring will get
+//   clipped and will not be visible.
+VIEWS_EXPORT std::unique_ptr<Background> CreateLayerBasedSolidBackground(
+    ui::ColorVariant color);
+
+VIEWS_EXPORT std::unique_ptr<Background> CreateLayerBasedRoundedBackground(
+    ui::ColorVariant color,
+    const gfx::RoundedCornersF& radii);
 
 // Creates a background that fills the canvas with rounded corners.
 // If using a rounded rect border as well, pass its radius as `radius` and its
