@@ -100,6 +100,12 @@
 }
 
 input {
+  --cr-searchbox-input-start-padding: calc(52px +
+      var(--cr-searchbox-thumbnail-icon-offset, 0px));
+  --cr-searchbox-input-trailing-padding:
+      calc(var(--cr-searchbox-voice-icon-offset)
+      + var(--cr-searchbox-voice-search-button-width)
+      + var(--cr-searchbox-inner-icon-margin));
   background-color: var(--color-searchbox-background);
   border: none;
   border-radius: var(--cr-searchbox-border-radius);
@@ -108,18 +114,23 @@ input {
   font-size: inherit;
   height: 100%;
   outline: none;
-  /* Always include offset and margin padding, even if the voice search button
-   * is not being shown. */
-  padding-inline-end: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
-  padding-inline-start: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
+  padding-inline-end: var(--cr-searchbox-input-trailing-padding);
+  padding-inline-start: var(--cr-searchbox-input-start-padding);
   position: relative;
   width: 100%;
 }
 
 :host-context([dir='rtl']) input[dir='ltr'],
 :host-context([dir='ltr']) input[dir='rtl'] {
-  padding-inline-end: calc(52px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
-  padding-inline-start: calc(var(--cr-searchbox-voice-icon-offset) + var(--cr-searchbox-voice-search-button-width) + var(--cr-searchbox-inner-icon-margin));
+  padding-inline-end: var(--cr-searchbox-input-start-padding);
+  padding-inline-start: var(--cr-searchbox-input-trailing-padding);
+}
+
+:host([compose-button-enabled][dropdown-is-visible]) input,
+:host([realbox-layout-mode='Tall']) input {
+  --cr-searchbox-input-trailing-padding: calc(12px
+      + var(--cr-compose-button-width)
+      + var(--cr-searchbox-icon-spacing));
 }
 
 :host-context([is-back-arrow-visible]) input {
