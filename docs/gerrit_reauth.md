@@ -95,6 +95,15 @@ turned on.
 
 ![Two-step verification](./images/gerrit_reauth_2sv.png)
 
+""" note
+**Known Issue:** If you sign in to your Google account via an external identity provider
+such as **Active Directory, Entra ID, or Okta**, you may see `NO_AVAILABLE_CHALLENGES` error
+when you ReAuth immediately after registering your security key.
+
+You may need to **wait for a few hours** before your first ReAuth can proceed. We're still
+investigating the cause.
+"""
+
 ### Accurate Timezone / Time
 
 Make sure your device's timezone and time are set correctly.
