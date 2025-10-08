@@ -26,16 +26,14 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 
 namespace blink {
 
 GlyphData CachingWordShaper::EmphasisMarkGlyphData(
     const TextRun& emphasis_mark_run) const {
-  ShapeResultBuffer buffer;
-  buffer.AppendResult(CachingWordShapeIterator::ShapeWordWithoutSpacing(
-      emphasis_mark_run, &font_));
-  return buffer.EmphasisMarkGlyphData(font_.GetFontDescription());
+  return CachingWordShapeIterator::ShapeWordWithoutSpacing(emphasis_mark_run,
+                                                           &font_)
+      ->EmphasisMarkGlyphData(font_.GetFontDescription());
 }
 
 }  // namespace blink

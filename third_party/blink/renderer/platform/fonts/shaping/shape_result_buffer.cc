@@ -15,19 +15,6 @@
 
 namespace blink {
 
-namespace {
-
-unsigned CharactersInShapeResult(
-    const HeapVector<Member<const ShapeResult>, 64>& results) {
-  unsigned num_characters = 0;
-  for (const Member<const ShapeResult>& result : results) {
-    num_characters += result->NumCharacters();
-  }
-  return num_characters;
-}
-
-}  // namespace
-
 void ShapeResultBuffer::ComputeRangeIn(const ShapeResult& result,
                                        const gfx::RectF& ink_bounds,
                                        CharacterRangeContext& context) {
@@ -82,70 +69,6 @@ void ShapeResultBuffer::ComputeRangeIn(const ShapeResult& result,
     context.current_x -= result.Width();
   }
   context.total_num_characters += result.NumCharacters();
-}
-
-CharacterRange ShapeResultBuffer::GetCharacterRange(
-    const StringView& text,
-    TextDirection direction,
-    float total_width,
-    unsigned absolute_from,
-    unsigned absolute_to) const {
-  DCHECK_EQ(CharactersInShapeResult(results_), text.length());
-
-  // The absolute_from and absolute_to arguments represent the start/end offset
-  // for the entire run, from/to are continuously updated to be relative to
-  // the current word (ShapeResult instance).
-  int from = absolute_from;
-  int to = absolute_to;
-
-  CharacterRangeContext context{text, IsRtl(direction), from, to,
-                                IsRtl(direction) ? total_width : 0};
-  for (unsigned j = 0; j < results_.size(); j++) {
-    const ShapeResult* result = results_[j];
-    ComputeRangeIn(*result, result->ComputeInkBounds(), context);
-  }
-
-  // The position in question might be just after the text.
-  if (!context.from_x && absolute_from == context.total_num_characters) {
-    context.from_x = direction == TextDirection::kRtl ? 0 : total_width;
-  }
-  if (!context.to_x && absolute_to == context.total_num_characters) {
-    context.to_x = direction == TextDirection::kRtl ? 0 : total_width;
-  }
-  if (!context.from_x) {
-    context.from_x = 0;
-  }
-  if (!context.to_x) {
-    context.to_x = direction == TextDirection::kRtl ? 0 : total_width;
-  }
-
-  // None of our runs is part of the selection, possibly invalid arguments.
-  if (!context.to_x && !context.from_x) {
-    context.from_x = context.to_x = 0;
-  }
-  if (*context.from_x < *context.to_x) {
-    return CharacterRange(*context.from_x, *context.to_x, -context.min_y,
-                          context.max_y);
-  }
-  return CharacterRange(*context.to_x, *context.from_x, -context.min_y,
-                        context.max_y);
-}
-
-GlyphData ShapeResultBuffer::EmphasisMarkGlyphData(
-    const FontDescription& font_description) const {
-  for (const auto& result : results_) {
-    for (const auto& run : result->runs_) {
-      DCHECK(run->font_data_);
-      if (run->glyph_data_.IsEmpty())
-        continue;
-
-      return GlyphData(run->glyph_data_[0].glyph,
-                       run->font_data_->EmphasisMarkFontData(font_description),
-                       run->CanvasRotation());
-    }
-  }
-
-  return GlyphData();
 }
 
 }  // namespace blink
