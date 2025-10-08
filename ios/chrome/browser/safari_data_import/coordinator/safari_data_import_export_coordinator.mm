@@ -58,9 +58,11 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  if (_importCoordinator) {
+    return;
+  }
   RecordActionOnSafariExportEducationScreen(
       SafariDataImportExportEducationAction::kContinue);
-  CHECK(!_importCoordinator);
   _importCoordinator = [[SafariDataImportImportCoordinator alloc]
       initWithBaseNavigationController:_navigationController
                                browser:self.browser];
