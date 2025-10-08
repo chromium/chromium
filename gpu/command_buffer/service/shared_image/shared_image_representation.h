@@ -205,10 +205,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     buffer_usage = backing()->buffer_usage();
   }
   bool PresentSwapChain() { return backing()->PresentSwapChain(); }
-  void RegisterImageFactory(SharedImageFactory* factory) {
-    DCHECK(is_primary_);
-    backing()->RegisterImageFactory(factory);
-  }
   void SetSharedImagePoolId(SharedImagePoolId pool_id) {
     backing()->SetSharedImagePoolId(std::move(pool_id));
   }

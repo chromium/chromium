@@ -27,6 +27,7 @@ namespace gpu {
 class D3DImageBackingFactoryTest;
 class SharedImageBackingFactory;
 class SharedImageCopyManager;
+class SharedImageFactory;
 
 // TODO(kylechar): Merge with OzoneImageBacking::AccessStream enum.
 enum class SharedImageAccessStream {

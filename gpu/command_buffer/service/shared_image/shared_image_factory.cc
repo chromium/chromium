@@ -987,7 +987,6 @@ bool SharedImageFactory::RegisterBacking(
     return false;
   }
 
-  shared_image->RegisterImageFactory(this);
   if (pool_id) {
     shared_image->SetSharedImagePoolId(pool_id.value());
   }
