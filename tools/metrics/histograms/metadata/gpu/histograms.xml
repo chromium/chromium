@@ -54,6 +54,12 @@ chromium-metrics-reviews@google.com.
   <variant name="TwoDisplays"/>
 </variants>
 
+<variants name="ShaderType">
+  <variant name="Compute" summary="compute"/>
+  <variant name="Pixel" summary="pixel"/>
+  <variant name="Vertex" summary="vertex"/>
+</variants>
+
 <variants name="TaskGraphValidationType">
   <variant name="GraphValidation" summary="graph-based validation"/>
   <variant name="OrderValidation" summary="order-based validation"/>
@@ -1537,6 +1543,24 @@ chromium-metrics-reviews@google.com.
     Types of EGL displays used to back WebGL contexts. Recorded at context
     creation time in the GPU process.
   </summary>
+</histogram>
+
+<histogram
+    name="GPU.{ANGLEOrGraphiteDawnOrWebGPU}.D3D11.Create{ShaderType}ShaderUs"
+    units="microseconds" expires_after="2026-09-30">
+  <owner>lehoangquyen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <summary>
+    Tracks the amount of time in microseconds it takes to create a D3D11
+    {ShaderType} shader. Recorded only for clients that support high-resolution
+    clocks.
+  </summary>
+  <token key="ANGLEOrGraphiteDawnOrWebGPU">
+    <variant name="ANGLE" summary="ANGLE"/>
+    <variant name="GraphiteDawn" summary="Graphite Dawn"/>
+    <variant name="WebGPU" summary="WebGPU"/>
+  </token>
+  <token key="ShaderType" variants="ShaderType"/>
 </histogram>
 
 <histogram name="Gpu.{CacheType}LoadHitInCache" enum="Boolean"
