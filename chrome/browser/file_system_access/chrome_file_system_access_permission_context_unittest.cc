@@ -932,6 +932,12 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\share$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
                 PathInfo(FILE_PATH_LITERAL("\\\\server~a\\share\\foo\\bar")),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
@@ -989,6 +995,44 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
                 PathInfo(FILE_PATH_LITERAL("\\\\myhostname\\c$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Drive admin shares should be blocked on any server
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\C$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\d$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Named admin shares should be blocked on any server
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\ADMIN$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\PRINT$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\IPC$\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\FAX$\\foo\\bar")),
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAbort);
 }
