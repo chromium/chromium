@@ -112,8 +112,9 @@ std::string operator*(const std::string& s, unsigned int n) {
 
 // Scroll to the top of the Reading List.
 void ScrollToTop() {
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
-      performAction:[ChromeActionsAppInterface scrollToTop]];
+  XCUIApplication* springboardApplication = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.springboard"];
+  [springboardApplication.statusBars.firstMatch tap];
 }
 
 // Asserts that the "mark" toolbar button is visible and has the a11y label of
@@ -170,7 +171,7 @@ void TapActionSheetButtonWithA11yLabelID(int a11y_label_id) {
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:action];
 }
@@ -190,7 +191,7 @@ void LongPressEntry(NSString* entryTitle) {
 void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()];
 }
@@ -207,6 +208,7 @@ void AssertAllEntriesVisible() {
                   @"The number of entries have changed");
   GREYAssertEqual((size_t)2, kNumberUnreadEntries,
                   @"The number of entries have changed");
+  ScrollToTop();
 }
 
 // Asserts that the entry `title` is not visible.
@@ -216,7 +218,7 @@ void AssertEntryNotVisible(NSString* title) {
   NSError* error;
 
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(title)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()
                   error:&error];
@@ -824,7 +826,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AddEntriesAndOpenReadingList();
 
   [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kReadTitle)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
@@ -1250,9 +1252,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()];
 }
 
-// TODO(crbug.com/446871565): This test is flaky.
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)FLAKY_testContextMenuMarkAsReadAndBack {
+- (void)testContextMenuMarkAsReadAndBack {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
@@ -1271,6 +1272,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   [ReadingListAppInterface unreadEntriesCount],
                   @"Wrong number of unread entry.");
 
+  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   // Mark an unread entry as read.
   LongPressEntry(kUnreadTitle);
 
@@ -1285,6 +1289,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   [ReadingListAppInterface unreadEntriesCount],
                   @"Wrong number of unread entry after marking read.");
 
+  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   // Now mark it back as unread.
   LongPressEntry(kUnreadTitle);
 
