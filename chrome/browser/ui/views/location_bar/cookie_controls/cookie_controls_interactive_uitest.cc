@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -398,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsUiTest, RemoveExceptionPre3pcd) {
       PressButton(CookieControlsContentView::kToggleButton),
       CheckFeedbackButtonVisible(false),
       CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
+                        &CookieControlsIconView::is_animating_label, false),
       CheckStateForNoException());
 }
 
@@ -411,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsUiTest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, true));
+                        &CookieControlsIconView::is_animating_label, true));
 }
 
 // Need a separate fixture to override the enabled feature list.
@@ -423,16 +422,8 @@ class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
   ~CookieControlsWithIphUiTest() override = default;
 };
 
-// TODO(crbug.com/409272227): IPH tests are flaky on Linux.
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
-#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
-  DISABLED_ShowAndDismissIphOnHighSiteEngagement
-#else
-#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
-  ShowAndDismissIphOnHighSiteEngagement
-#endif
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       MAYBE_ShowAndDismissIphOnHighSiteEngagement) {
+                       ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
@@ -440,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that label doesn't animate.
       CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
+                        &CookieControlsIconView::is_animating_label, false),
       // Check that IPH shows, then dismiss it.
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
@@ -785,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, RemoveException) {
       PressButton(CookieControlsContentView::kToggleButton),
       CheckFeedbackButtonVisible(false),
       CheckViewProperty(kCookieControlsIconElementId,
-                        &IconLabelBubbleView::is_animating_label, false),
+                        &CookieControlsIconView::is_animating_label, false),
       CheckUserBypassBlockedState());
 }
 

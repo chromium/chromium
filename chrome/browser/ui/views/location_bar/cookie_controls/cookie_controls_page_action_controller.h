@@ -36,8 +36,6 @@ class CookieControlsPageActionController
     : public content_settings::CookieControlsObserver,
       public page_actions::PageActionObserver {
  public:
-  DECLARE_USER_DATA(CookieControlsPageActionController);
-
   // An interface for interacting with the Cookie Controls bubble.
   class BubbleDelegate {
    public:
@@ -60,8 +58,6 @@ class CookieControlsPageActionController
   CookieControlsPageActionController& operator=(
       const CookieControlsPageActionController&) = delete;
   ~CookieControlsPageActionController() override;
-
-  static CookieControlsPageActionController* From(tabs::TabInterface& tab);
 
   void Init();
 
@@ -122,9 +118,6 @@ class CookieControlsPageActionController
 
   // Timer used to collapse from the chip state after some time.
   base::OneShotTimer hide_chip_timer_;
-
-  ui::ScopedUnownedUserData<CookieControlsPageActionController>
-      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<CookieControlsPageActionController> weak_ptr_factory_{
       this};

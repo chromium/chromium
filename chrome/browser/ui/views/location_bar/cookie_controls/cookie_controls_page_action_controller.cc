@@ -124,8 +124,6 @@ const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
 }
 }  // namespace
 
-DEFINE_USER_DATA(CookieControlsPageActionController);
-
 CookieControlsPageActionController::CookieControlsPageActionController(
     tabs::TabInterface& tab_interface,
     Profile& profile,
@@ -142,20 +140,13 @@ CookieControlsPageActionController::CookieControlsPageActionController(
               HostContentSettingsMapFactory::GetForProfile(&profile),
               TrackingProtectionSettingsFactory::GetForProfile(&profile),
               profile.IsIncognitoProfile())),
-      bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)),
-      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+      bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)) {
   CHECK(IsPageActionMigrated(PageActionIconType::kCookieControls));
   RegisterAsPageActionObserver(page_action_controller_.get());
 }
 
 CookieControlsPageActionController::~CookieControlsPageActionController() =
     default;
-
-// static
-CookieControlsPageActionController* CookieControlsPageActionController::From(
-    tabs::TabInterface& tab) {
-  return Get(tab.GetUnownedUserDataHost());
-}
 
 void CookieControlsPageActionController::Init() {
   controller_observation_.Observe(cookie_controls_controller_.get());
@@ -227,8 +218,7 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
   }
 
   if (!icon_status_.icon_visible || !icon_status_.should_highlight ||
-      icon_status_.controls_state != CookieControlsState::kBlocked3pc ||
-      bubble_delegate_->HasBubble()) {
+      icon_status_.controls_state != CookieControlsState::kBlocked3pc) {
     return;
   }
   if (icon_status_.blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
@@ -236,7 +226,7 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
             tab_->GetBrowserWindowInterface())) {
       MaybeShowIPH(*user_education);
     }
-  } else if (!IsManagedIPHActive()) {
+  } else if (!bubble_delegate_->HasBubble() && !IsManagedIPHActive()) {
     page_action_controller_->OverrideText(
         kActionShowCookieControls,
         l10n_util::GetStringUTF16(
