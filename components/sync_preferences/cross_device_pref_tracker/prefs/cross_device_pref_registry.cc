@@ -20,6 +20,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kCrossDeviceSafetyCheckHomeModuleEnabled,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kCrossDeviceTabResumptionHomeModuleEnabled,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace cross_device

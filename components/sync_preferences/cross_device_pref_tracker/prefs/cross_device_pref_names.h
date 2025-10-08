@@ -26,6 +26,10 @@ inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
 inline constexpr char kCrossDeviceSafetyCheckHomeModuleEnabled[] =
     "cross_device.home.module.safety_check.enabled";
 
+// Dictionary that stores if the Tab Resumption Home Module is enabled.
+inline constexpr char kCrossDeviceTabResumptionHomeModuleEnabled[] =
+    "cross_device.home.module.tab_resumption.enabled";
+
 // go/keep-sorted end
 
 }  // namespace prefs

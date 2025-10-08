@@ -31,6 +31,7 @@ source_set("cross_device_pref_tracker") {
     ":timestamped_pref_value",
     "//base",
     "//components/keyed_service/core",
+    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser:pref_names",
     "//components/prefs",
     "//components/safety_check:pref_names",
