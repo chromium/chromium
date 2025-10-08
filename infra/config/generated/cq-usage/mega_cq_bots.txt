@@ -167,6 +167,7 @@ chromium/try/win-clobber-rel
 chromium/try/win-libfuzzer-asan-rel
 chromium/try/win-official
 chromium/try/win-rel
+chromium/try/win10-dbg
 chromium/try/win11-rel
 chromium/try/win32-clobber-rel
 chromium/try/win32-official
