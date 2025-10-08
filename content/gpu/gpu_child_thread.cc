@@ -172,8 +172,8 @@ void GpuChildThread::Init(
   }
 #endif
 
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread,
           base::BindRepeating(&GpuChildThread::OnMemoryPressure,
                               base::Unretained(this)));

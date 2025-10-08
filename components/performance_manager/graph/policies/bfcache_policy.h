@@ -38,7 +38,8 @@ class BFCachePolicy : public GraphOwned {
  private:
   void OnMemoryPressure(base::MemoryPressureLevel new_level);
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace performance_manager::policies

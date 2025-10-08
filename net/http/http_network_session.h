@@ -365,7 +365,8 @@ class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver {
   HttpNetworkSessionParams params_;
   HttpNetworkSessionContext context_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   bool power_suspended_ = false;
 

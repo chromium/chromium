@@ -357,7 +357,7 @@ GpuChannelManager::GpuChannelManager(
       gpu_feature_info_(gpu_feature_info),
       image_decode_accelerator_worker_(image_decode_accelerator_worker),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kGpuChannelManager,
           base::BindRepeating(&GpuChannelManager::HandleMemoryPressure,

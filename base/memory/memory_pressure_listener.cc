@@ -28,28 +28,31 @@ namespace {
 BASE_FEATURE(kMakeMemoryPressureListenerSync,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>
-CreateMemoryPressureListenerImpl(
+std::variant<SyncMemoryPressureListenerRegistration,
+             AsyncMemoryPressureListenerRegistration>
+CreateMemoryPressureListenerRegistrationImpl(
     const Location& creation_location,
     MemoryPressureListenerTag tag,
-    MemoryPressureListener::MemoryPressureCallback memory_pressure_callback) {
-  using ListenerVariant =
-      std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>;
+    MemoryPressureListenerRegistration::MemoryPressureCallback
+        memory_pressure_callback) {
+  using ListenerVariant = std::variant<SyncMemoryPressureListenerRegistration,
+                                       AsyncMemoryPressureListenerRegistration>;
   if (FeatureList::IsEnabled(kMakeMemoryPressureListenerSync)) {
-    return ListenerVariant(std::in_place_type<SyncMemoryPressureListener>, tag,
-                           std::move(memory_pressure_callback));
+    return ListenerVariant(
+        std::in_place_type<SyncMemoryPressureListenerRegistration>, tag,
+        std::move(memory_pressure_callback));
   } else {
-    return ListenerVariant(std::in_place_type<AsyncMemoryPressureListener>,
-                           creation_location, tag,
-                           std::move(memory_pressure_callback));
+    return ListenerVariant(
+        std::in_place_type<AsyncMemoryPressureListenerRegistration>,
+        creation_location, tag, std::move(memory_pressure_callback));
   }
 }
 
 }  // namespace
 
-// SyncMemoryPressureListener --------------------------------------------------
+// SyncMemoryPressureListenerRegistration --------------------------------------
 
-SyncMemoryPressureListener::SyncMemoryPressureListener(
+SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
     : memory_pressure_callback_(std::move(memory_pressure_callback)),
@@ -57,23 +60,24 @@ SyncMemoryPressureListener::SyncMemoryPressureListener(
   MemoryPressureListenerRegistry::Get().AddObserver(this);
 }
 
-SyncMemoryPressureListener::~SyncMemoryPressureListener() {
+SyncMemoryPressureListenerRegistration::
+    ~SyncMemoryPressureListenerRegistration() {
   MemoryPressureListenerRegistry::Get().RemoveObserver(this);
 }
 
-void SyncMemoryPressureListener::Notify(
+void SyncMemoryPressureListenerRegistration::Notify(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   memory_pressure_callback_.Run(memory_pressure_level);
 }
 
-// AsyncMemoryPressureListener::MainThread -------------------------------------
+// AsyncMainThread -------------------------
 
-class AsyncMemoryPressureListener::MainThread {
+class AsyncMemoryPressureListenerRegistration::MainThread {
  public:
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
-  void Init(WeakPtr<AsyncMemoryPressureListener> parent,
+  void Init(WeakPtr<AsyncMemoryPressureListenerRegistration> parent,
             scoped_refptr<SequencedTaskRunner> listener_task_runner,
             MemoryPressureListenerTag tag) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -87,8 +91,9 @@ class AsyncMemoryPressureListener::MainThread {
   void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AsyncMemoryPressureListener::Notify, parent_,
-                                  memory_pressure_level));
+        FROM_HERE,
+        base::BindOnce(&AsyncMemoryPressureListenerRegistration::Notify,
+                       parent_, memory_pressure_level));
   }
 
   // The task runner on which the listener lives.
@@ -96,27 +101,28 @@ class AsyncMemoryPressureListener::MainThread {
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // A pointer to the listener that lives on `listener_task_runner_`.
-  WeakPtr<AsyncMemoryPressureListener> parent_
+  WeakPtr<AsyncMemoryPressureListenerRegistration> parent_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // The actual sync listener that lives on the main thread.
-  std::optional<SyncMemoryPressureListener> listener_
+  std::optional<SyncMemoryPressureListenerRegistration> listener_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
 };
 
-// AsyncMemoryPressureListener -------------------------------------------------
+// AsyncMemoryPressureListenerRegistration -------------------------------------
 
-AsyncMemoryPressureListener::AsyncMemoryPressureListener(
-    const base::Location& creation_location,
-    MemoryPressureListenerTag tag,
-    MemoryPressureCallback memory_pressure_callback)
+AsyncMemoryPressureListenerRegistration::
+    AsyncMemoryPressureListenerRegistration(
+        const base::Location& creation_location,
+        MemoryPressureListenerTag tag,
+        MemoryPressureCallback memory_pressure_callback)
     : memory_pressure_callback_(std::move(memory_pressure_callback)),
       creation_location_(creation_location) {
   // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
-  // MemoryPressureListener is created in a non-sequenced context. Tests will
-  // need to be adjusted for that to work.
+  // MemoryPressureListenerRegistration is created in a non-sequenced context.
+  // Tests will need to be adjusted for that to work.
   if (SingleThreadTaskRunner::HasMainThreadDefault() &&
       SequencedTaskRunner::HasCurrentDefault()) {
     main_thread_task_runner_ = SingleThreadTaskRunner::GetMainThreadDefault();
@@ -128,7 +134,8 @@ AsyncMemoryPressureListener::AsyncMemoryPressureListener(
   }
 }
 
-AsyncMemoryPressureListener::~AsyncMemoryPressureListener() {
+AsyncMemoryPressureListenerRegistration::
+    ~AsyncMemoryPressureListenerRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (main_thread_) {
     // To ensure |main_thread_| is deleted on the correct thread, we transfer
@@ -140,12 +147,11 @@ AsyncMemoryPressureListener::~AsyncMemoryPressureListener() {
   }
 }
 
-void AsyncMemoryPressureListener::Notify(
+void AsyncMemoryPressureListenerRegistration::Notify(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT(
-      "base", "AsyncMemoryPressureListener::Notify",
-      [&](perfetto::EventContext ctx) {
+      "base", "AsyncNotify", [&](perfetto::EventContext ctx) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_memory_pressure_notification();
@@ -158,44 +164,46 @@ void AsyncMemoryPressureListener::Notify(
   memory_pressure_callback_.Run(memory_pressure_level);
 }
 
-// MemoryPressureListener ------------------------------------------------------
+// MemoryPressureListenerRegistration ------------------------------------------
 
-MemoryPressureListener::MemoryPressureListener(
+MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     const Location& creation_location,
     MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
-    : listener_(CreateMemoryPressureListenerImpl(
+    : listener_(CreateMemoryPressureListenerRegistrationImpl(
           creation_location,
           tag,
           std::move(memory_pressure_callback))) {}
 
-MemoryPressureListener::~MemoryPressureListener() = default;
+MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() =
+    default;
 
 // static
-void MemoryPressureListener::NotifyMemoryPressure(
+void MemoryPressureListenerRegistration::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::NotifyMemoryPressure(memory_pressure_level);
 }
 
 // static
-bool MemoryPressureListener::AreNotificationsSuppressed() {
+bool MemoryPressureListenerRegistration::AreNotificationsSuppressed() {
   return MemoryPressureListenerRegistry::AreNotificationsSuppressed();
 }
 
 // static
-void MemoryPressureListener::SetNotificationsSuppressed(bool suppressed) {
+void MemoryPressureListenerRegistration::SetNotificationsSuppressed(
+    bool suppressed) {
   MemoryPressureListenerRegistry::SetNotificationsSuppressed(suppressed);
 }
 
 // static
-void MemoryPressureListener::SimulatePressureNotification(
+void MemoryPressureListenerRegistration::SimulatePressureNotification(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::SimulatePressureNotification(
       memory_pressure_level);
 }
 
 // static
-void MemoryPressureListener::SimulatePressureNotificationAsync(
+void MemoryPressureListenerRegistration::SimulatePressureNotificationAsync(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
       memory_pressure_level);

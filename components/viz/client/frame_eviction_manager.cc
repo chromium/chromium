@@ -125,7 +125,7 @@ size_t FrameEvictionManager::GetMaxNumberOfSavedFrames() const {
 }
 
 FrameEvictionManager::FrameEvictionManager()
-    : memory_pressure_listener_(
+    : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kFrameEvictionManager,
           base::BindRepeating(&FrameEvictionManager::OnMemoryPressure,

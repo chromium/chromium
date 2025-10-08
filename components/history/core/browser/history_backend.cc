@@ -435,8 +435,8 @@ void HistoryBackend::Init(
     StartDeletingForeignVisits();
   }
 
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kHistoryBackend,
           base::BindRepeating(&HistoryBackend::OnMemoryPressure,
                               base::Unretained(this)));

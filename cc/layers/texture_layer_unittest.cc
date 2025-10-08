@@ -1604,8 +1604,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
 };
 
 // Run the single thread test only.
-// MemoryPressureListener::DoNotifyMemoryPressure() is called in this
-// PurgeMemoryTest. Although the observation is targeted on certain
+// MemoryPressureListenerRegistry::DoNotifyMemoryPressure() is called in
+// this PurgeMemoryTest. Although the observation is targeted on certain
 // configurations and will be dismissed later, it triggers a "CHECK failed:
 // checker.CalledOnValidSequence(&bound_at)" first on the multithreading
 // setting.

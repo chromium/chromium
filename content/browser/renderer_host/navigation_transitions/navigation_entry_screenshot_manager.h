@@ -115,7 +115,7 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
   // The `listener_` monitors the system memory pressure, and calls
   // `NavigationEntryScreenshotManager::OnMemoryPressure` when the system
   // memory pressure level changes.
-  std::unique_ptr<base::MemoryPressureListener> listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration> listener_;
 
   // The most recently used cache is stored at the front of the
   // `base::LRUCacheSet`. A limited interface to the tab's cache is used so that

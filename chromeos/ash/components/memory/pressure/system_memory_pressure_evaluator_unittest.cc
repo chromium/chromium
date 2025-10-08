@@ -66,9 +66,10 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   // events when we're done to validate that the pressure events were as
   // expected.
   std::vector<base::MemoryPressureLevel> pressure_events;
-  auto listener = std::make_unique<base::SyncMemoryPressureListener>(
-      base::MemoryPressureListenerTag::kTest,
-      base::BindRepeating(&PressureCallback, &pressure_events));
+  auto listener =
+      std::make_unique<base::SyncMemoryPressureListenerRegistration>(
+          base::MemoryPressureListenerTag::kTest,
+          base::BindRepeating(&PressureCallback, &pressure_events));
 
   memory_pressure::MultiSourceMemoryPressureMonitor monitor;
 

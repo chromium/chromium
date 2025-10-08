@@ -153,7 +153,8 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   std::optional<base::TimeTicks> last_arcvm_trim_;
   std::optional<base::TimeTicks> last_arcvm_trim_success_;
 
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
  private:
   bool trim_on_freeze_ = false;

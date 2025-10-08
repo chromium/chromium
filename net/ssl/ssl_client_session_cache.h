@@ -137,7 +137,8 @@ class NET_EXPORT SSLClientSessionCache {
   Config config_;
   base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_ = 0;
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace net

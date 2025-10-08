@@ -42,11 +42,11 @@ SharedStorageManager::SharedStorageManager(
           sql_task_runner_,
           special_storage_policy_,
           options_->GetDatabaseOptions())),
-      memory_pressure_listener_(std::make_unique<base::MemoryPressureListener>(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedStorageManager,
           base::BindRepeating(&SharedStorageManager::OnMemoryPressure,
-                              base::Unretained(this)))) {
+                              base::Unretained(this))) {
   timer_.Start(FROM_HERE, options_->stale_purge_initial_interval,
                base::BindOnce(&SharedStorageManager::PurgeStale,
                               weak_ptr_factory_.GetWeakPtr()));

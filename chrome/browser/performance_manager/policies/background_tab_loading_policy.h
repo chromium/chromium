@@ -216,7 +216,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // The mechanism used to load the pages.
   std::unique_ptr<performance_manager::mechanism::PageLoader> page_loader_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // The set of PageNodes that have been restored for which we need to schedule
   // loads.

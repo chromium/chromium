@@ -114,8 +114,8 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
     // If SequencedTaskRunner::HasCurrentDefault() returns true, async
     // OnMemoryPressure() is available, but the test environment seems not
     // to initialize it.
-    memory_pressure_listener_ = std::make_unique<
-        base::SyncMemoryPressureListener>(
+    memory_pressure_listener_registration_ = std::make_unique<
+        base::SyncMemoryPressureListenerRegistration>(
         base::MemoryPressureListenerTag::kTest,
         blink::BindRepeating(
             &UserLevelMemoryPressureSignalGeneratorTest::OnSyncMemoryPressure,
@@ -124,7 +124,7 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
     memory_pressure_count_ = 0;
   }
 
-  void TearDown() override { memory_pressure_listener_.reset(); }
+  void TearDown() override { memory_pressure_listener_registration_.reset(); }
 
   void AdvanceClock(base::TimeDelta delta) {
     DCHECK(!delta.is_negative());
@@ -142,7 +142,8 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   DummyMainThreadScheduler dummy_scheduler_;
-  std::unique_ptr<base::SyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
   unsigned memory_pressure_count_ = 0;
 
  private:

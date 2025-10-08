@@ -341,7 +341,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // shaders. Read by the browser process on GPU process crash.
   const raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_;
 
-  base::AsyncMemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // The SharedContextState is shared across all RasterDecoders. Note
   // that this class needs to be ref-counted to conveniently manage the lifetime

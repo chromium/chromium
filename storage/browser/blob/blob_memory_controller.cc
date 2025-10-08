@@ -552,7 +552,7 @@ BlobMemoryController::BlobMemoryController(
       disk_space_function_(&base::SysInfo::AmountOfFreeDiskSpace),
       populated_memory_items_(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBlobMemoryController,
           base::BindRepeating(&BlobMemoryController::OnMemoryPressure,

@@ -22,10 +22,11 @@ LRURendererCache::LRURendererCache(
       in_use_count_(0),
       weak_factory_(this) {
   DCHECK(browser_context_);
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kLruRendererCache,
-      base::BindRepeating(&LRURendererCache::OnMemoryPressure,
-                          weak_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::MemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kLruRendererCache,
+          base::BindRepeating(&LRURendererCache::OnMemoryPressure,
+                              weak_factory_.GetWeakPtr()));
 }
 
 LRURendererCache::~LRURendererCache() = default;

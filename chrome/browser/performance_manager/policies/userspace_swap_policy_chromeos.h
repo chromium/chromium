@@ -101,7 +101,8 @@ class UserspaceSwapPolicy : public GraphOwned, public ProcessNodeObserver {
 
   void PrintAllSwapMetrics();
 
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   std::unique_ptr<base::RepeatingTimer> metrics_timer_ =
       std::make_unique<base::RepeatingTimer>();

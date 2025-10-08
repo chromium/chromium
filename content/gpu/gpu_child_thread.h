@@ -111,7 +111,8 @@ class GpuChildThread : public ChildThreadImpl,
   // A closure which quits the main message loop.
   base::RepeatingClosure quit_closure_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   performance_scenarios::InputScenario last_input_scenario_;
 

@@ -72,7 +72,8 @@ class OnDeviceTailModelService
 
   // The memory pressure listener which unloads executor when memory pressure
   // level is high.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   base::WeakPtrFactory<OnDeviceTailModelService> weak_ptr_factory_{this};
 };

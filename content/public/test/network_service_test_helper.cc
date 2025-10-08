@@ -429,7 +429,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
       public base::CurrentThread::DestructionObserver {
  public:
   NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
-    memory_pressure_listener_.emplace(
+    memory_pressure_listener_registration_.emplace(
         base::MemoryPressureListenerTag::kTest,
         base::BindRepeating(
             &NetworkServiceTestHelper::NetworkServiceTestImpl::OnMemoryPressure,
@@ -835,7 +835,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
-  std::optional<base::SyncMemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::SyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
   base::MemoryPressureLevel latest_memory_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
   int write_result_;

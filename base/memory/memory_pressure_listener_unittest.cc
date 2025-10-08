@@ -36,7 +36,7 @@ class MemoryPressureListenerTest : public testing::Test {
  private:
   MOCK_METHOD1(OnMemoryPressure, void(MemoryPressureLevel));
 
-  SyncMemoryPressureListener listener_;
+  SyncMemoryPressureListenerRegistration listener_;
 };
 
 TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
@@ -70,18 +70,20 @@ TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
 TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
   base::test::SingleThreadTaskEnvironment task_env;
 
-  auto listener_to_be_deleted = std::make_unique<MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kTest,
-      BindRepeating([](MemoryPressureLevel) {
-        FAIL() << "Async callback should not be called.";
-      }));
+  auto listener_to_be_deleted =
+      std::make_unique<MemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kTest,
+          BindRepeating([](MemoryPressureLevel) {
+            FAIL() << "Async callback should not be called.";
+          }));
 
-  auto deleter_listener = std::make_unique<SyncMemoryPressureListener>(
-      base::MemoryPressureListenerTag::kTest,
-      BindLambdaForTesting([&](MemoryPressureLevel) {
-        // This should not deadlock.
-        listener_to_be_deleted.reset();
-      }));
+  auto deleter_listener =
+      std::make_unique<SyncMemoryPressureListenerRegistration>(
+          base::MemoryPressureListenerTag::kTest,
+          BindLambdaForTesting([&](MemoryPressureLevel) {
+            // This should not deadlock.
+            listener_to_be_deleted.reset();
+          }));
 
   // This should trigger the sync callback in |deleter_listener|, which will
   // delete |listener_to_be_deleted|.

@@ -191,7 +191,8 @@ class ThumbnailCache : ThumbnailDelegate {
   base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};
 };
 

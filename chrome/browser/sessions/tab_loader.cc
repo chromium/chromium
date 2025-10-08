@@ -209,7 +209,7 @@ void TabLoader::SetAllTabsScored(bool all_tabs_scored) {
 }
 
 TabLoader::TabLoader()
-    : memory_pressure_listener_(
+    : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kTabLoader,
           base::BindRepeating(&TabLoader::OnMemoryPressure,

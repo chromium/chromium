@@ -784,7 +784,8 @@ class CC_EXPORT GpuImageDecodeCache
   std::vector<uint32_t> ids_pending_unlock_;
   std::vector<uint32_t> ids_pending_deletion_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
   base::WeakPtrFactory<GpuImageDecodeCache> weak_ptr_factory_{this};
 };
 

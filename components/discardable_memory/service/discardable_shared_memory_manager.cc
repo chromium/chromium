@@ -233,7 +233,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
       mojo_thread_message_loop_(base::CurrentThread::GetNull()),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kDiscardableSharedMemoryManager,
           base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,

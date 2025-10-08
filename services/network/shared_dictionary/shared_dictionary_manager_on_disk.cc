@@ -493,8 +493,8 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kDisableSharedDictionaryStorageCleanupForTesting)) {
   dictionary_cache_ = base::MakeRefCounted<SharedDictionaryCache>();
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedDictionaryManagerOnDisk,
           base::BindRepeating(&SharedDictionaryManagerOnDisk::OnMemoryPressure,

@@ -102,10 +102,11 @@ scoped_refptr<DOMStorageContextWrapper> DOMStorageContextWrapper::Create(
 DOMStorageContextWrapper::DOMStorageContextWrapper(
     StoragePartitionImpl* partition)
     : partition_(partition) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
-      base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
-                          base::Unretained(this)));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::MemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
+          base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
+                              base::Unretained(this)));
 
   // `partition_` can be null in test environments.
   if (!partition_) {
@@ -262,7 +263,7 @@ void DOMStorageContextWrapper::Shutdown() {
   // Signals the implementation to perform shutdown operations.
   session_storage_control_.reset();
   local_storage_control_.reset();
-  memory_pressure_listener_.reset();
+  memory_pressure_listener_registration_.reset();
 
   // Make sure the observer drops its reference to |this|.
   storage_policy_observer_.reset();

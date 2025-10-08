@@ -145,7 +145,8 @@ class CC_EXPORT StagingBufferPool final
   bool reduce_memory_usage_pending_ GUARDED_BY(lock_);
   base::RepeatingClosure reduce_memory_usage_callback_ GUARDED_BY(lock_);
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   base::WeakPtrFactory<StagingBufferPool> weak_ptr_factory_{this};
 };

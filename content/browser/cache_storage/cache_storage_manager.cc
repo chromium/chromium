@@ -402,12 +402,11 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Wait to create the MemoryPressureListener until the first CacheStorage
-  // object is needed.  This ensures we create the listener on the correct
-  // thread.
-  if (!memory_pressure_listener_) {
-    memory_pressure_listener_ =
-        std::make_unique<base::AsyncMemoryPressureListener>(
+  // Wait to register the MemoryPressureListener until the first CacheStorage
+  // object is needed. This ensures it is registered on the correct thread.
+  if (!memory_pressure_listener_registration_) {
+    memory_pressure_listener_registration_ =
+        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kCacheStorageManager,
             base::BindRepeating(&CacheStorageManager::OnMemoryPressure,
                                 base::Unretained(this)));

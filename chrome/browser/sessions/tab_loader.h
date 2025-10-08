@@ -233,7 +233,8 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // Listens for system under memory pressure notifications and stops loading
   // of tabs when we start running out of memory.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Used for selecting which timeout to use, and to prevent additional
   // non-active tabs from being scheduled to load initially.

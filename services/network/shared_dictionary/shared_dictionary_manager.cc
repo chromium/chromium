@@ -111,8 +111,8 @@ std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
 
 SharedDictionaryManager::SharedDictionaryManager()
     : cached_storages_(kCachedStorageMaxSize) {
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kSharedDictionaryManager,
           base::BindRepeating(&SharedDictionaryManager::OnMemoryPressure,
                               weak_factory_.GetWeakPtr()));

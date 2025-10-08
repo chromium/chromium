@@ -332,7 +332,7 @@ base::MemoryPressureLevel GetMemoryPressureLevelThreshold() {
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
-    : memory_pressure_listener_(
+    : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSpareRenderProcessHostManagerImpl,
           base::BindRepeating(

@@ -27,9 +27,9 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   // Intended for use by the platform specific implementation.
   static void NotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
-  void AddObserver(SyncMemoryPressureListener* listener);
+  void AddObserver(SyncMemoryPressureListenerRegistration* listener);
 
-  void RemoveObserver(SyncMemoryPressureListener* listener);
+  void RemoveObserver(SyncMemoryPressureListenerRegistration* listener);
 
   // These methods should not be used anywhere else but in memory measurement
   // code, where they are intended to maintain stable conditions across
@@ -44,7 +44,8 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
  private:
   void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
-  base::ObserverList<SyncMemoryPressureListener>::Unchecked listeners_;
+  base::ObserverList<SyncMemoryPressureListenerRegistration>::Unchecked
+      listeners_;
 };
 
 }  // namespace base

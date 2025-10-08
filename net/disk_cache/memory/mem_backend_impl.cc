@@ -45,7 +45,7 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
       net_log_(net_log),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kMemBackend,
           base::BindRepeating(&MemBackendImpl::OnMemoryPressure,

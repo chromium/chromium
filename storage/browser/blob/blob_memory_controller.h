@@ -316,7 +316,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   // item to the recent_item_cache_ above.
   std::unordered_set<uint64_t> items_paging_to_file_;
 
-  base::AsyncMemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   base::WeakPtrFactory<BlobMemoryController> weak_factory_{this};
 };

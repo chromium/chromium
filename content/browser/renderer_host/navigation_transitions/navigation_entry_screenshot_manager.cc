@@ -32,7 +32,7 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   max_cache_size_in_bytes_ =
       NavigationTransitionConfig::ComputeCacheSizeInBytes();
-  listener_ = std::make_unique<base::MemoryPressureListener>(
+  listener_ = std::make_unique<base::MemoryPressureListenerRegistration>(
       FROM_HERE,
       base::MemoryPressureListenerTag::kNavigationEntryScreenshotManager,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,

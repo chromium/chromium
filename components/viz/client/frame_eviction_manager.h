@@ -120,7 +120,8 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
 
   // Listens for system under pressure notifications and adjusts number of
   // cached frames accordingly.
-  base::AsyncMemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   std::map<FrameEvictionManagerClient*, size_t> locked_frames_;
   // {FrameEvictionManagerClient, Last Unlock() time}, ordered with the most

@@ -38,7 +38,7 @@ std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
 }  // namespace
 
 UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
-    : memory_pressure_listener_(
+    : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
           base::BindRepeating(&UrgentPageDiscardingPolicy::OnMemoryPressure,

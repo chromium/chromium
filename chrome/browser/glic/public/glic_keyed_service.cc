@@ -161,10 +161,11 @@ GlicKeyedService::GlicKeyedService(
   CHECK(actor_keyed_service_);
   metrics_->SetControllers(&window_controller(), sharing_manager_.get());
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
-      base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
-                          weak_ptr_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::MemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
+          base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
+                              weak_ptr_factory_.GetWeakPtr()));
   if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
     share_image_handler_ = std::make_unique<GlicShareImageHandler>(*this);
   }

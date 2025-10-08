@@ -44,7 +44,7 @@ static const size_t kDefaultMaxTotalSizeOfHeapEntries = 32 * 1024 * 1024;
 ImageDecodingStore::ImageDecodingStore()
     : heap_limit_in_bytes_(kDefaultMaxTotalSizeOfHeapEntries),
       heap_memory_usage_in_bytes_(0),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kImageDecodingStore,
           blink::BindRepeating(&ImageDecodingStore::OnMemoryPressure,

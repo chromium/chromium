@@ -366,7 +366,7 @@ class SharedStorageManager {
   int operation_sql_error_count_ = 0;
 
   // Listens for the system being under memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 
   // Callback to be run at the end of `OnDatabaseDestroyed()`.
   base::OnceCallback<void(bool)> on_db_destroyed_callback_for_testing_;

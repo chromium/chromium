@@ -432,7 +432,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // entry for it in the HTTP cache.
   std::unique_ptr<network::SimpleURLLoader> http_cache_query_loader_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   base::ObserverList<Observer> observers_;
 

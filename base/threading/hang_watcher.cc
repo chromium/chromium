@@ -606,7 +606,7 @@ HangWatcher::HangWatcher()
       should_monitor_(WaitableEvent::ResetPolicy::AUTOMATIC),
       thread_(this, kThreadName),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kHangWatcher,
           base::BindRepeating(&HangWatcher::OnMemoryPressure,

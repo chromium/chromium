@@ -128,7 +128,8 @@ class TabManager : public LifecycleUnitObserver,
   LifecycleUnitSet lifecycle_units_;
 
   // A listener to global memory pressure events.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};

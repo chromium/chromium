@@ -260,7 +260,7 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
     : fetch_context_(fetch_context),
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kMediaUrlIndex,
           blink::BindRepeating(&UrlIndex::OnMemoryPressure, Unretained(this))),

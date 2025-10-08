@@ -132,7 +132,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(have_watcher());
 
-  base::MemoryPressureListener listener(
+  base::MemoryPressureListenerRegistration listener(
       FROM_HERE, base::MemoryPressureListenerTag::kTest,
       base::BindRepeating(&TestSystemMemoryPressureEvaluator::OnMemoryPressure,
                           base::Unretained(&evaluator)));

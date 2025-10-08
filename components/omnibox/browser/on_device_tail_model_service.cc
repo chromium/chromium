@@ -118,10 +118,11 @@ OnDeviceTailModelService::OnDeviceTailModelService(
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
       /* model_metadata= */ std::nullopt, model_task_runner_, this);
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kOnDeviceTailModelService,
-      base::BindRepeating(&OnDeviceTailModelService::OnMemoryPressure,
-                          weak_ptr_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::MemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kOnDeviceTailModelService,
+          base::BindRepeating(&OnDeviceTailModelService::OnMemoryPressure,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnDeviceTailModelService::OnDeviceTailModelService()
@@ -138,9 +139,7 @@ OnDeviceTailModelService::~OnDeviceTailModelService() {
 }
 
 void OnDeviceTailModelService::Shutdown() {
-  if (memory_pressure_listener_) {
-    memory_pressure_listener_.reset();
-  }
+  memory_pressure_listener_registration_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

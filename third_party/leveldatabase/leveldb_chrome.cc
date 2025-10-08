@@ -66,10 +66,9 @@ class Globals {
                 : NewLRUCache(DefaultBlockCacheSize())),
         browser_block_cache_(NewLRUCache(DefaultBlockCacheSize())),
         // Using |this| here (when Globals is only partially constructed) is
-        // safe because base::MemoryPressureListener calls our callback
-        // asynchronously, so this instance will be fully constructed by the
-        // time it is called.
-        memory_pressure_listener_(
+        // safe because the memory pressure notification is sent asynchronously,
+        // so this instance will be fully constructed by the time it is called.
+        memory_pressure_listener_registration_(
             FROM_HERE,
             base::MemoryPressureListenerTag::kLevelDb,
             base::BindRepeating(&Globals::OnMemoryPressure,
@@ -118,8 +117,6 @@ class Globals {
 
  private:
   // Instances are never destroyed.
-  // If this destructor needs to exist in the future, the callback given to
-  // base::MemoryPressureListener() must use a WeakPtr.
   ~Globals() = delete;
 
   std::unique_ptr<Cache> web_block_cache_;      // null on low end devices.
@@ -127,7 +124,8 @@ class Globals {
   mutable leveldb::port::Mutex env_mutex_;
   base::flat_set<leveldb::Env*> in_memory_envs_;
   // Listens for the system being under memory pressure.
-  const base::AsyncMemoryPressureListener memory_pressure_listener_;
+  const base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 };
 
 class ChromeMemEnv : public leveldb::EnvWrapper {

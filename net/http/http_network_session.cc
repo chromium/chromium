@@ -226,8 +226,8 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
       context.quic_context->params()->exponential_backoff_on_initial_delay);
 
   if (!params_.disable_idle_sockets_close_on_memory_pressure) {
-    memory_pressure_listener_ =
-        std::make_unique<base::AsyncMemoryPressureListener>(
+    memory_pressure_listener_registration_ =
+        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kHttpNetworkSession,
             base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
                                 base::Unretained(this)));

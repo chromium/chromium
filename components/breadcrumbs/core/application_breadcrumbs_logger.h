@@ -61,7 +61,8 @@ class ApplicationBreadcrumbsLogger {
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
   // A memory pressure listener which observes memory pressure events.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 #if defined(TOOLKIT_VIEWS)
   // Widget listener which observes widget events.
   views::AnyWidgetObserver any_widget_observer_;

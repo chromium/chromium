@@ -154,7 +154,8 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
   base::MemoryPressureLevel memory_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
 

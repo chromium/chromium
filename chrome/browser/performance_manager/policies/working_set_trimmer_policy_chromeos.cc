@@ -413,7 +413,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnTakenFromGraph(Graph* graph) {
-  memory_pressure_listener_.reset();
+  memory_pressure_listener_registration_.reset();
   WorkingSetTrimmerPolicy::OnTakenFromGraph(graph);
 }
 
@@ -441,7 +441,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
   // We wait to register the memory pressure listener so we're on the
   // right sequence.
   params_ = features::TrimOnMemoryPressureParams::GetParams();
-  memory_pressure_listener_.emplace(
+  memory_pressure_listener_registration_.emplace(
       FROM_HERE,
       base::MemoryPressureListenerTag::kWorkingSetTrimmerPolicyChromeOS,
       base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,

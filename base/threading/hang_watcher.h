@@ -398,7 +398,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   raw_ptr<const base::TickClock> tick_clock_;
 
   // Registration to receive memory pressure signals.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // The last time at which a critical memory pressure signal was received, or
   // null if no signal was ever received. Atomic because it's set and read from

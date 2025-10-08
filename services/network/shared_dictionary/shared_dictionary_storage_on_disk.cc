@@ -94,8 +94,8 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
       dictionary_cache_(dictionary_cache) {
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedDictionaryStorageOnDisk,
           base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,

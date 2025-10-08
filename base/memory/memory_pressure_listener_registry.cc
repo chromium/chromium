@@ -58,7 +58,7 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
 }
 
 void MemoryPressureListenerRegistry::AddObserver(
-    SyncMemoryPressureListener* listener) {
+    SyncMemoryPressureListenerRegistration* listener) {
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
@@ -66,7 +66,7 @@ void MemoryPressureListenerRegistry::AddObserver(
 }
 
 void MemoryPressureListenerRegistry::RemoveObserver(
-    SyncMemoryPressureListener* listener) {
+    SyncMemoryPressureListenerRegistration* listener) {
   listeners_.RemoveObserver(listener);
 }
 
@@ -87,7 +87,7 @@ void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
       }
     }
   } else {
-    listeners_.Notify(&SyncMemoryPressureListener::Notify,
+    listeners_.Notify(&SyncMemoryPressureListenerRegistration::Notify,
                       memory_pressure_level);
   }
 }

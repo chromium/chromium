@@ -186,8 +186,8 @@ ResourcePool::ResourcePool(
       clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "cc::ResourcePool", task_runner_.get());
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kResourcePool,
           base::BindRepeating(&ResourcePool::OnMemoryPressure,
                               weak_ptr_factory_.GetWeakPtr()));

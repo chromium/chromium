@@ -190,7 +190,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
       monitor.CreateVoter());
 
-  base::MemoryPressureListener listener(
+  base::MemoryPressureListenerRegistration listener(
       FROM_HERE, base::MemoryPressureListenerTag::kTest,
       base::BindRepeating(&TestSystemMemoryPressureEvaluator::OnMemoryPressure,
                           base::Unretained(&evaluator)));

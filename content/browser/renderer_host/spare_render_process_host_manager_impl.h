@@ -222,7 +222,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   DoesEmbedderAllowSpareUsage(BrowserContext* browser_context,
                               SiteInstanceImpl* site_instance);
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // If this timer is running, then the system is under memory pressure.
   // TODO(380805024): Remove the polling timer when possible.

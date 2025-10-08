@@ -244,7 +244,7 @@ class SlopBucket::Manager {
 
     // This use of base::Unretained() is safe because the callback won't be
     // called after `memory_pressure_listener_` is destroyed.
-    memory_pressure_listener_.emplace(
+    memory_pressure_listener_registration_.emplace(
         FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket,
         base::BindRepeating(&Manager::OnMemoryPressure,
                             base::Unretained(this)));
@@ -386,7 +386,7 @@ class SlopBucket::Manager {
       Disable(DisabledReason::kMemoryPressure);
       RecordDisabledReason();
       DVLOG(1) << "Memory pressure detected. Disabling SlopBucket.";
-      memory_pressure_listener_ = std::nullopt;
+      memory_pressure_listener_registration_ = std::nullopt;
     }
     // We swap the vector so we don't have to hold the lock while we free the
     // elements.
@@ -429,7 +429,8 @@ class SlopBucket::Manager {
 
   // Calls OnMemoryPressure() on the IO thread when there is memory pressure.
   // Only set when SlopBucket is enabled. Only accessed on the IO thread.
-  std::optional<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

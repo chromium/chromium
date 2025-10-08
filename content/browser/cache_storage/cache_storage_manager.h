@@ -207,7 +207,8 @@ class CONTENT_EXPORT CacheStorageManager
   const base::WeakPtr<CacheStorageDispatcherHost>
       cache_storage_dispatcher_host_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

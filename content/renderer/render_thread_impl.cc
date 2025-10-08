@@ -242,7 +242,7 @@ constinit thread_local RenderThreadImpl* render_thread = nullptr;
 base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
     DestructorAtExit g_main_task_runner = LAZY_INSTANCE_INITIALIZER;
 
-// v8::MemoryPressureLevel should correspond to base::MemoryPressureListener.
+// v8::MemoryPressureLevel should correspond to base::MemoryPressureLevel.
 static_assert(
     static_cast<v8::MemoryPressureLevel>(base::MEMORY_PRESSURE_LEVEL_NONE) ==
         v8::MemoryPressureLevel::kNone,
@@ -592,8 +592,8 @@ void RenderThreadImpl::Init() {
   // been initialized by the Zygote before this instance became a Renderer.
   media::InitializeMediaLibrary();
 
-  memory_pressure_listener_ =
-      std::make_unique<base::AsyncMemoryPressureListener>(
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kRenderThreadImpl,
           base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
                               base::Unretained(this)));
@@ -601,8 +601,8 @@ void RenderThreadImpl::Init() {
   // main thread of the process, so we can't register a sync listener.
   if (base::SingleThreadTaskRunner::GetMainThreadDefault()
           ->BelongsToCurrentThread()) {
-    sync_memory_pressure_listener_ =
-        std::make_unique<base::SyncMemoryPressureListener>(
+    sync_memory_pressure_listener_registration_ =
+        std::make_unique<base::SyncMemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kRenderThreadImpl,
             base::BindRepeating(&RenderThreadImpl::OnSyncMemoryPressure,
                                 base::Unretained(this)));

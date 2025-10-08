@@ -149,7 +149,7 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
     : all_restored_tabs_loaded_callback_(
           std::move(all_restored_tabs_loaded_callback)),
       page_loader_(std::make_unique<mechanism::PageLoader>()),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBackgroundTabLoadingPolicy,
           base::BindRepeating(&BackgroundTabLoadingPolicy::OnMemoryPressure,

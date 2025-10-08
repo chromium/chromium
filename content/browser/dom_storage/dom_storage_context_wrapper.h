@@ -191,7 +191,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   // Connections to the partition's Session and Local Storage control interfaces
   // within the Storage Service.
