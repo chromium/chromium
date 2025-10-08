@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class IphMessageServiceUnitTest {
     public void setUp() {
         IphMessageService.setSkipIphInTestsForTesting(false);
         TrackerFactory.setTrackerForTests(mTracker);
-        mIphMessageService = new IphMessageService(mProfile, mIphController);
+        mIphMessageService = new IphMessageService(() -> mProfile, mIphController);
     }
 
     @Test
@@ -70,8 +70,7 @@ public class IphMessageServiceUnitTest {
     public void testAddObserver_NotInitialized() {
         doReturn(false).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
-        Assert.assertTrue(
-                mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
+        assertTrue(mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
         verify(mTracker, times(1))
                 .addOnInitializedCallback(mIphMessageService.getInitializedCallbackForTesting());
     }
@@ -83,8 +82,7 @@ public class IphMessageServiceUnitTest {
                 .wouldTriggerHelpUi(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
-        Assert.assertTrue(
-                mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
+        assertTrue(mIphMessageService.getObserversForTesting().hasObserver(mMessageObserver));
         verify(mMessageObserver, times(1)).messageReady(eq(MessageType.IPH), any());
     }
 

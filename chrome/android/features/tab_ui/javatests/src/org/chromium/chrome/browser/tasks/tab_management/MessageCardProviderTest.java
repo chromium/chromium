@@ -157,7 +157,7 @@ public class MessageCardProviderTest {
 
                     mCoordinator =
                             new MessageCardProviderCoordinator<>(
-                                    sActivity, () -> mProfile, mServiceDismissActionProvider);
+                                    sActivity, mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });

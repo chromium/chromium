@@ -58,7 +58,7 @@ public class IphMessageCardViewModel {
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, true)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, false)
-                .with(MessageCardViewProperties.IS_INCOGNITO, false)
+                .with(MessageCardViewProperties.IS_INCOGNITO, data.isIncognito())
                 .with(
                         MessageCardViewProperties
                                 .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,

@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * This is a {@link MessageObserver} that creates and owns different {@link PropertyModel} based on
@@ -33,16 +31,12 @@ import java.util.function.Supplier;
 @NullMarked
 public class MessageCardProviderMediator<MessageT, UiT> implements MessageObserver<MessageT> {
     private final Context mContext;
-    private final Supplier<Profile> mProfileSupplier;
     private final ServiceDismissActionProvider<MessageT> mServiceDismissActionProvider;
     private final Map<MessageT, MessageService<MessageT, UiT>> mMessageServices = new HashMap<>();
 
     public MessageCardProviderMediator(
-            Context context,
-            Supplier<Profile> profileSupplier,
-            ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
+            Context context, ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
         mContext = context;
-        mProfileSupplier = profileSupplier;
         mServiceDismissActionProvider = serviceDismissActionProvider;
     }
 
@@ -55,13 +49,7 @@ public class MessageCardProviderMediator<MessageT, UiT> implements MessageObserv
     public @Nullable Message<MessageT> getNextMessageItemForType(MessageT messageType) {
         MessageService<MessageT, UiT> service = mMessageServices.get(messageType);
         if (service == null) return null;
-
-        Message<MessageT> message = service.getNextMessageItem();
-        if (message == null) return null;
-
-        PropertyModel model = message.model;
-        maybeSetCardIncognitoStatus(model);
-        return message;
+        return service.getNextMessageItem();
     }
 
     /**
@@ -82,7 +70,6 @@ public class MessageCardProviderMediator<MessageT, UiT> implements MessageObserv
         if (service == null) return;
 
         PropertyModel model = factory.build(mContext, this::invalidateShownMessage);
-        maybeSetCardIncognitoStatus(model);
         service.addMessage(new Message<>(type, model));
     }
 
@@ -130,13 +117,5 @@ public class MessageCardProviderMediator<MessageT, UiT> implements MessageObserv
     @VisibleForTesting
     Map<MessageT, MessageService<MessageT, UiT>> getMessageServicesMap() {
         return mMessageServices;
-    }
-
-    private void maybeSetCardIncognitoStatus(PropertyModel model) {
-        if (model.containsKey(MessageCardViewProperties.IS_INCOGNITO)) {
-            model.set(
-                    MessageCardViewProperties.IS_INCOGNITO,
-                    mProfileSupplier.get().isOffTheRecord());
-        }
     }
 }

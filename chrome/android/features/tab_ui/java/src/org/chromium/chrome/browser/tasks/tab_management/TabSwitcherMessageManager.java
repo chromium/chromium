@@ -231,16 +231,9 @@ public class TabSwitcherMessageManager {
         mDesktopWindowStateManager = desktopWindowStateManager;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
 
-        Supplier<Profile> profileSupplier =
-                () -> {
-                    TabGroupModelFilter tabGroupModelFilter =
-                            mCurrentTabGroupModelFilterSupplier.get();
-                    assumeNonNull(tabGroupModelFilter);
-                    return assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
-                };
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>(
-                        activity, profileSupplier, this::dismissHandler);
+                        activity, this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
                 new TabGridIphDialogCoordinator(activity, mModalDialogManager);
@@ -345,7 +338,7 @@ public class TabSwitcherMessageManager {
         mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
 
         IphMessageService iphMessageService =
-                new IphMessageService(profile, mTabGridIphDialogCoordinator);
+                new IphMessageService(this::getCurrentProfile, mTabGridIphDialogCoordinator);
         mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
@@ -598,9 +591,7 @@ public class TabSwitcherMessageManager {
         if (!shouldShowMessages()) return;
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         assert tabListCoordinator != null;
-
-        assert assumeNonNull(mCurrentTabGroupModelFilterSupplier.get()).getTabModel().getProfile()
-                != null;
+        assert getCurrentProfile() != null;
 
         sAppendedMessagesForTesting = false;
         List<MessageService<@MessageType Integer, @UiType Integer>> messageServices =
@@ -713,5 +704,11 @@ public class TabSwitcherMessageManager {
         if (tabGroupModelFilter.getTabModel().getCount() == numTabsToRemove) {
             removeAllAppendedMessage();
         }
+    }
+
+    private Profile getCurrentProfile() {
+        TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(tabGroupModelFilter);
+        return assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
     }
 }

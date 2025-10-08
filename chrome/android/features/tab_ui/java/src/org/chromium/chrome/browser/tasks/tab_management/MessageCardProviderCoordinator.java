@@ -8,12 +8,10 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * This is the coordinator for MessageCardProvider component. This component is used to build a
@@ -29,12 +27,8 @@ public class MessageCardProviderCoordinator<MessageT, UiT> {
     private @Nullable MessageHostDelegate<MessageT, UiT> mMessageHostDelegate;
 
     MessageCardProviderCoordinator(
-            Context context,
-            Supplier<Profile> profileSupplier,
-            ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
-        mMediator =
-                new MessageCardProviderMediator<>(
-                        context, profileSupplier, serviceDismissActionProvider);
+            Context context, ServiceDismissActionProvider<MessageT> serviceDismissActionProvider) {
+        mMediator = new MessageCardProviderMediator<>(context, serviceDismissActionProvider);
     }
 
     /**
