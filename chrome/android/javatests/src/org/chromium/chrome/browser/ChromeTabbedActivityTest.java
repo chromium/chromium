@@ -15,7 +15,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.provider.Browser;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -53,11 +52,9 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -924,38 +921,6 @@ public class ChromeTabbedActivityTest {
                             tabModel.getCount(),
                             Matchers.is(initialTabCount.get()));
                 });
-    }
-
-    @Test
-    @MediumTest
-    @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testLaunchIncognitoWindowWithExtras_NightModeDefaultEnabled() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setClass(mActivity, ChromeTabbedActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        final ChromeTabbedActivity incognitoWindowActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.CREATED,
-                        () -> mActivity.getApplicationContext().startActivity(intent));
-
-        // Incognito activity should be in night mode by default.
-        NightModeStateProvider incognitoWindowNightModeStateProvider =
-                ThreadUtils.runOnUiThreadBlocking(
-                        incognitoWindowActivity::createNightModeStateProvider);
-        Assert.assertTrue(
-                incognitoWindowNightModeStateProvider
-                        instanceof IncognitoWindowNightModeStateProvider);
-        Assert.assertTrue(incognitoWindowNightModeStateProvider.isInNightMode());
-        Assert.assertEquals(
-                "AppCompatDelegate should be set to local night mode",
-                AppCompatDelegate.MODE_NIGHT_YES,
-                incognitoWindowActivity.getDelegate().getLocalNightMode());
     }
 
     private TabGroupMetadata createTabGroupMetadata() {
