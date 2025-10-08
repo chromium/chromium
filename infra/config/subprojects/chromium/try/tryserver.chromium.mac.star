@@ -853,7 +853,7 @@ gpu.try_.optional_tests_builder(
     ),
     pool = "luci.chromium.gpu.try",
     builderless = True,
-    cpu = None,
+    cpu = "arm64",
     ssd = None,
     free_space = None,
     alerts_enabled = False,

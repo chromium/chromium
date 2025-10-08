@@ -332,7 +332,7 @@ gpu_linux_builder(
 )
 
 def gpu_mac_builder(*, name, **kwargs):
-    kwargs.setdefault("cpu", None)
+    kwargs.setdefault("cpu", "arm64")
     return try_.builder(
         name = name,
         builder_group = "tryserver.chromium.mac",
