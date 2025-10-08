@@ -141,6 +141,25 @@ public class TipsPromoCoordinatorUnitTest {
         verify(mLensController).startLens(eq(mWindowAndroid), any());
     }
 
+    @SmallTest
+    @Test
+    public void testShowBottomSheet_BottomOmnibox() {
+        mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.BOTTOM_OMNIBOX);
+
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+        assertEquals(
+                ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mSettingsNavigation).startSettings(eq(mActivity), any());
+    }
+
     @Test
     public void testSheetContent_handleBackPressDetailScreen() {
         mPropertyModel.set(TipsPromoProperties.CURRENT_SCREEN, ScreenType.DETAIL_SCREEN);

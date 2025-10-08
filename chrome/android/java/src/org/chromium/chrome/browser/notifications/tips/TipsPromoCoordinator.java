@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -143,6 +144,10 @@ public class TipsPromoCoordinator {
                         new LensIntentParams.Builder(
                                         LensEntryPoint.TIPS_NOTIFICATIONS, mIsIncognito)
                                 .build());
+                break;
+            case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .startSettings(mContext, AddressBarSettingsFragment.class);
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
