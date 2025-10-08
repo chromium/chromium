@@ -206,4 +206,56 @@ TEST(StringImplTest, WtfReverseFind) {
   EXPECT_EQ(kNotFound, ReverseFind(text, 'd', 2u));
 }
 
+TEST(StringImplTest, Find) {
+  // 8 search and 8 match
+  scoped_refptr<StringImpl> test_string_impl =
+      StringImpl::Create(base::span_from_cstring("abcde"));
+  EXPECT_EQ(0u, test_string_impl->Find("a"));
+  EXPECT_EQ(4u, test_string_impl->Find("e"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find("z"));
+  EXPECT_EQ(3u, test_string_impl->Find("de"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find("def"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find("abcdef"));
+  EXPECT_EQ(2u, test_string_impl->Find("cd"));
+  EXPECT_EQ(0u, test_string_impl->Find("abcde"));
+
+  // 8 search and 16 match
+  EXPECT_EQ(0u, test_string_impl->Find(u"a"));
+  EXPECT_EQ(4u, test_string_impl->Find(u"e"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find(u"z"));
+  EXPECT_EQ(3u, test_string_impl->Find(u"de"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find(u"def"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find(u"abcdef"));
+  EXPECT_EQ(2u, test_string_impl->Find(u"cd"));
+  EXPECT_EQ(0u, test_string_impl->Find(u"abcde"));
+  EXPECT_EQ(kNotFound, test_string_impl->Find(u"\U0001F929"));
+
+  // 16 search and 8 match
+  scoped_refptr<StringImpl> test_string_impl16 =
+      StringImpl::Create(u"abcde\x4100\U0001F929\U0001F926");
+  EXPECT_EQ(0u, test_string_impl16->Find("a"));
+  EXPECT_EQ(4u, test_string_impl16->Find("e"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find("z"));
+  EXPECT_EQ(3u, test_string_impl16->Find("de"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find("def"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find("abcdef"));
+  EXPECT_EQ(2u, test_string_impl16->Find("cd"));
+  EXPECT_EQ(0u, test_string_impl16->Find("abcde"));
+
+  // 16 search and 16 match
+  EXPECT_EQ(0u, test_string_impl16->Find(u"a"));
+  EXPECT_EQ(4u, test_string_impl16->Find(u"e"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find(u"z"));
+  EXPECT_EQ(3u, test_string_impl16->Find(u"de"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find(u"def"));
+  EXPECT_EQ(kNotFound, test_string_impl16->Find(u"abcdef"));
+  EXPECT_EQ(2u, test_string_impl16->Find(u"cd"));
+  EXPECT_EQ(0u, test_string_impl16->Find(u"abcde"));
+  EXPECT_EQ(6u, test_string_impl16->Find(u"\U0001F929"));
+  EXPECT_EQ(6u, test_string_impl16->Find(u"\U0001F929\U0001F926"));
+  EXPECT_EQ(kNotFound,
+            test_string_impl16->Find(u"\U0001F929\U0001F926\U0001F926"));
+  EXPECT_EQ(5u, test_string_impl16->Find(u"\x4100"));
+}
+
 }  // namespace blink

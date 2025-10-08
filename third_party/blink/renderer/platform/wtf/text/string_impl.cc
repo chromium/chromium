@@ -935,6 +935,46 @@ ALWAYS_INLINE static wtf_size_t FindInternal(
   return index + i;
 }
 
+// Optimized for the most common case where `search` and `match` are LChar.
+template <>
+ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
+                                      base::span<const LChar> match,
+                                      wtf_size_t index) {
+  CHECK_LT(1u, match.size());
+
+  base::span<const LChar> current = search;
+
+  while (current.size() >= match.size()) {
+    base::span<const LChar> search_span =
+        current.first(current.size() - match.size() + 1);
+
+    // SAFETY: Safe because we're staying within the bounds of the span. Did not
+    // use other options (such as std::find) because this is empirically faster
+    // in a hot method.
+    const LChar* p = UNSAFE_BUFFERS(static_cast<const LChar*>(memchr(
+        search_span.data(), match[0], search_span.size() * sizeof(LChar))));
+    if (!p) {
+      return kNotFound;
+    }
+
+    current = current.subspan(static_cast<wtf_size_t>(p - current.data()));
+    CHECK_LE(match.size(), current.size());
+
+    // SAFETY: Safe because we're reading match.size() chars from current and
+    // match and we've just CHECK'd that current is at least as long as match.
+    // Did not use other options because this is empirically faster in a hot
+    // method.
+    if (UNSAFE_BUFFERS(memcmp(current.data(), match.data(),
+                              match.size() * sizeof(LChar))) == 0) {
+      return index + (p - search.data());
+    }
+
+    current = current.subspan(1u);
+  }
+
+  return kNotFound;
+}
+
 wtf_size_t StringImpl::Find(const StringView& match_string,
                             wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
@@ -958,16 +998,19 @@ wtf_size_t StringImpl::Find(const StringView& match_string,
   if (index > length())
     return kNotFound;
   wtf_size_t search_length = length() - index;
-  if (match_length > search_length)
+  if (match_length > search_length) {
     return kNotFound;
+  }
 
   if (Is8Bit()) {
-    if (match_string.Is8Bit())
+    if (match_string.Is8Bit()) {
       return FindInternal(Span8().subspan(index), match_string.Span8(), index);
+    }
     return FindInternal(Span8().subspan(index), match_string.Span16(), index);
   }
-  if (match_string.Is8Bit())
+  if (match_string.Is8Bit()) {
     return FindInternal(Span16().subspan(index), match_string.Span8(), index);
+  }
   return FindInternal(Span16().subspan(index), match_string.Span16(), index);
 }
 
