@@ -2024,7 +2024,6 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
       // have clear rect tracking in the shared image system to enforce this.
       constexpr auto kShouldInitialize =
           CanvasResourceProvider::ShouldInitialize::kNo;
-      CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
       if (SharedGpuContext::IsGpuCompositingEnabled()) {
         gpu::SharedImageUsageSet shared_image_usage_flags =
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -2063,8 +2062,6 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer) {
-  CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
-
   TRACE_EVENT0(
       "blink",
       "WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider");
