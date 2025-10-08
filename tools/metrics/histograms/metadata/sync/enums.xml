@@ -77,7 +77,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Password manager settings"/>
   <int value="1" label="Password promo card"/>
   <int value="2" label="Bookmark manager promo card"/>
-  <int value="3" label="Profile menu button"/>
+  <int value="3" label="Profile menu row button"/>
+  <int value="4" label="Profile menu primary button action"/>
+  <int value="5" label="Profile menu primary button with bookmarks action"/>
+  <int value="6"
+      label="Profile menu priamry button with Windows10 depreciation action"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->

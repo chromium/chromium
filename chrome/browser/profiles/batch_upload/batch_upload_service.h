@@ -50,9 +50,12 @@ class BatchUploadService : public KeyedService {
     kPasswordManagerSettings = 0,
     kPasswordPromoCard = 1,
     kBookmarksManagerPromoCard = 2,
-    kProfileMenu = 3,
+    kProfileMenuRowButtonAction = 3,
+    kProfileMenuPrimaryButtonAction = 4,
+    kProfileMenuPrimaryButtonWithBookmarksAction = 5,
+    kProfileMenuPrimaryButtonWithWindows10DepreciationAction = 6,
 
-    kMaxValue = kProfileMenu,
+    kMaxValue = kProfileMenuPrimaryButtonWithWindows10DepreciationAction,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
 

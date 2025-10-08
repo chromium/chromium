@@ -232,8 +232,9 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
   EXPECT_CALL(opened_callback, Run(true));
 
-  service.OpenBatchUpload(nullptr, BatchUploadService::EntryPoint::kProfileMenu,
-                          opened_callback.Get());
+  service.OpenBatchUpload(
+      nullptr, BatchUploadService::EntryPoint::kProfileMenuRowButtonAction,
+      opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 }
 

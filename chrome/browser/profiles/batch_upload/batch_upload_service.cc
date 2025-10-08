@@ -64,8 +64,13 @@ std::optional<syncer::DataType> PrimaryTypeFromEntryPoint(
     case BatchUploadService::EntryPoint::kPasswordPromoCard:
       return syncer::PASSWORDS;
     case BatchUploadService::EntryPoint::kBookmarksManagerPromoCard:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithBookmarksAction:
       return syncer::BOOKMARKS;
-    case BatchUploadService::EntryPoint::kProfileMenu:
+    case BatchUploadService::EntryPoint::kProfileMenuRowButtonAction:
+    case BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithWindows10DepreciationAction:
       return std::nullopt;
   }
 }
