@@ -284,3 +284,7 @@ video::-webkit-media-controls-fullscreen-button {
   width: 100%;
 }
 
+/* Always hide nav elements. */
+nav {
+  display: none;
+}
