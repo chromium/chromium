@@ -101,6 +101,11 @@
   background-color: var(--color-searchbox-answer-icon-foreground);
 }
 
+:host([has-icon-container-background][is-starter-pack]:not([in-searchbox])) #icon {
+  background-color: var(--color-searchbox-results-starter-pack-icon,
+      var(--color-searchbox-answer-icon-foreground));
+}
+
 #iconImg {
   height: var(--cr-searchbox-results-search-icon-size,16px);
   width: var(--cr-searchbox-results-search-icon-size,16px);

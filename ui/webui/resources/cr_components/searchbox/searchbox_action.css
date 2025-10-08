@@ -74,6 +74,11 @@
   width: 16px;
 }
 
+:host-context(:is(:focus, [selected])) #action-icon {
+  background-color: var(--color-searchbox-results-action-chip-icon-selected,
+      var(--color-searchbox-results-action-chip-icon));
+}
+
 #text {
   overflow: hidden;
   padding-inline-start: 8px;
