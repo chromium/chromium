@@ -46903,6 +46903,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabSwitcher.GroupSuggest">
+  <obsolete>
+    Switched to using enum histogram. See
+    &quot;GroupSuggestionService.SuggestionUiEvent&quot;.
+  </obsolete>
   <owner>mfiaz@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>

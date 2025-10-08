@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.recordGroupSuggestionHistogram;
 import static org.chromium.chrome.browser.tasks.tab_management.TabKeyEventHandler.onPageKeyEvent;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
@@ -803,6 +805,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private void onTabSwitcherShown() {
         if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.TAB_SWITCHER_OPENED);
             showGroupSuggestionsAfterAnimations();
         }
 
