@@ -34,27 +34,20 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/bubble/download_display_controller.h"
-#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_file_icon_extractor.h"
 #include "chrome/browser/download/download_open_prompt.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/api/downloads_internal/downloads_internal_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -77,6 +70,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "net/base/data_url.h"
 #include "net/base/mime_util.h"
@@ -92,6 +86,21 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/download_browsertest_utils.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/download/download_display.h"
+#endif
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
@@ -101,6 +110,9 @@ namespace errors = download_extension_errors;
 
 namespace extensions {
 namespace downloads = api::downloads;
+
+// TODO(crbug.com/405219117): Enable more tests on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -4557,6 +4569,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 class DownloadsApiTest : public ExtensionApiTest {
  public:
   DownloadsApiTest() = default;
@@ -4572,6 +4586,8 @@ IN_PROC_BROWSER_TEST_F(DownloadsApiTest, DownloadsApiTest) {
   ASSERT_TRUE(RunExtensionTest("downloads")) << message_;
 }
 
+// TODO(crbug.com/405219117): Enable more tests on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST(ExtensionDetermineDownloadFilenameInternal,
      ExtensionDetermineDownloadFilenameInternal) {
   std::string winner_id;
@@ -4622,5 +4638,6 @@ TEST(ExtensionDetermineDownloadFilenameInternal,
             warnings.begin()->warning_type());
   EXPECT_EQ("incumbent", warnings.begin()->extension_id());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

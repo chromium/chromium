@@ -7,6 +7,9 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "chrome/common/extensions/api/downloads_internal.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

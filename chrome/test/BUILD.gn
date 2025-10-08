@@ -1556,6 +1556,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/developer_private/developer_private_apitest.cc",
       "../browser/extensions/api/devtools/devtools_apitest.cc",
       "../browser/extensions/api/dns/dns_apitest.cc",
+      "../browser/extensions/api/downloads/downloads_api_browsertest.cc",
       "../browser/extensions/api/extension_action/extension_action_apitest.cc",
       "../browser/extensions/api/extension_action/test_icon_image_observer.cc",
       "../browser/extensions/api/extension_action/test_icon_image_observer.h",
@@ -1666,6 +1667,7 @@ source_set("platform_browser_tests") {
       "//components/privacy_sandbox:privacy_sandbox_settings_headers",
       "//components/proxy_config",
       "//components/reading_list/core:test_support",
+      "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/tabs:public",
       "//components/web_package",
       "//components/web_package/test_support",
@@ -1702,6 +1704,11 @@ source_set("platform_browser_tests") {
       ]
     } else {
       sources += [ "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc" ]
+    }
+
+    # ChromeOS and Android don't use the download bubble UI.
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/download" ]
     }
 
     if (enable_service_discovery) {
@@ -4612,7 +4619,6 @@ if (!is_android) {
         "../browser/extensions/api/context_menus/extension_context_menu_browsertest.cc",
         "../browser/extensions/api/declarative/declarative_apitest.cc",
         "../browser/extensions/api/desktop_capture/desktop_capture_apitest.cc",
-        "../browser/extensions/api/downloads/downloads_api_browsertest.cc",
         "../browser/extensions/api/extension_action/browser_action_apitest.cc",
         "../browser/extensions/api/extension_action/browser_action_browsertest.cc",
         "../browser/extensions/api/extension_action/page_action_apitest.cc",
