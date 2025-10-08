@@ -219,11 +219,11 @@ CreateInputDataFromAnnotatedPageContent(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadDataFromURL, PDFFileURL),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(^(NSData* data) {
+      base::BindOnce(^(NSData* data) {
         [weakSelf onDataReadForItemWithToken:token
                                      fromURL:PDFFileURL
                                     withData:data];
-      })));
+      }));
 }
 
 #pragma mark - AIMPrototypeComposeboxMutator
@@ -562,9 +562,9 @@ CreateInputDataFromAnnotatedPageContent(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GeneratePDFPreview, data),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(^(UIImage* preview) {
+      base::BindOnce(^(UIImage* preview) {
         [weakSelf didLoadPreviewImage:preview forItemWithToken:token];
-      })));
+      }));
 }
 
 #pragma mark - AIMOmniboxClientDelegate
