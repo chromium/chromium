@@ -6,10 +6,14 @@
 
 #include "base/i18n/number_formatting.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/zoom/zoom_controller.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -17,6 +21,23 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+
+namespace {
+
+ZoomBubbleCoordinator* GetZoomBubbleCoordinator(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
+  CHECK(tab_interface);
+
+  auto* bwi = tab_interface->GetBrowserWindowInterface();
+  return ZoomBubbleCoordinator::From(bwi);
+}
+
+}  // namespace
 
 ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                    PageActionIconView::Delegate* page_action_icon_delegate)
@@ -76,6 +97,9 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
     return;
   }
 
+  auto* zoom_bubble_coordinator = GetZoomBubbleCoordinator(web_contents);
+  CHECK(zoom_bubble_coordinator);
+
   if (ShouldBeVisible(can_show_bubble)) {
     zoom::ZoomController* zoom_controller =
         zoom::ZoomController::FromWebContents(web_contents);
@@ -96,26 +120,34 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
     SetVisible(true);
 
     if (can_show_bubble) {
-      ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
+      zoom_bubble_coordinator->Show(web_contents, ZoomBubbleView::AUTOMATIC);
     } else {
-      ZoomBubbleView::RefreshBubbleIfShowing(web_contents);
+      zoom_bubble_coordinator->RefreshIfShowing(web_contents);
     }
   } else {
     // Close the bubble first to ensure focus is not lost when SetVisible(false)
     // is called. See crbug.com/913829.
     if (HasAssociatedBubble()) {
-      ZoomBubbleView::CloseCurrentBubble();
+      zoom_bubble_coordinator->Hide();
     }
     SetVisible(false);
   }
 }
 
 void ZoomView::OnExecuting(PageActionIconView::ExecuteSource source) {
-  ZoomBubbleView::ShowBubble(GetWebContents(), ZoomBubbleView::USER_GESTURE);
+  auto* zoom_bubble_coordinator = GetZoomBubbleCoordinator(GetWebContents());
+  CHECK(zoom_bubble_coordinator);
+
+  zoom_bubble_coordinator->Show(GetWebContents(), ZoomBubbleView::USER_GESTURE);
 }
 
 views::BubbleDialogDelegate* ZoomView::GetBubble() const {
-  return ZoomBubbleView::GetZoomBubble();
+  auto* zoom_bubble_coordinator = GetZoomBubbleCoordinator(GetWebContents());
+  if (!zoom_bubble_coordinator) {
+    return nullptr;
+  }
+
+  return zoom_bubble_coordinator->bubble();
 }
 
 const gfx::VectorIcon& ZoomView::GetVectorIcon() const {
