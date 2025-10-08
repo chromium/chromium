@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_view_controller.h"
 
+#import <WebKit/WebKit.h>
+
 #import <algorithm>
 #import <ostream>
 #import <utility>
@@ -544,56 +546,95 @@ BOOL _keyboardShown;
 - (BOOL)lensOverlayPanTracker:(LensOverlayPanTracker*)panTracker
     shouldRecognizeSimultaneouslyWithGestureRecognizer:
         (UIGestureRecognizer*)gestureRecognizer {
-  BOOL isPanRecognizer =
-      [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
-  BOOL isScrollable =
-      [gestureRecognizer.view isKindOfClass:[UIScrollView class]];
+  // Only handle gestures in the bottom sheet itself.
   BOOL inBottomSheet =
       [gestureRecognizer.view isDescendantOfView:_bottomSheet.view];
-  if (isScrollable && isPanRecognizer && inBottomSheet) {
-    __weak UIScrollView* scrollView = (UIScrollView*)gestureRecognizer.view;
+  if (!inBottomSheet) {
+    return YES;
+  }
 
-    CGFloat verticalVelocity =
-        [(UIPanGestureRecognizer*)gestureRecognizer velocityInView:scrollView]
-            .y;
-    CGPoint translation = [(UIPanGestureRecognizer*)gestureRecognizer
-        translationInView:scrollView];
+  UIView* gestureView = gestureRecognizer.view;
+  BOOL isPanRecognizer =
+      [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
+  BOOL isScrollable = [gestureView isKindOfClass:[UIScrollView class]];
+  BOOL controlsScrolling = isScrollable && isPanRecognizer;
 
-    // Horizontal scroll should not drag the bottom sheet.
-    BOOL verticalScroll = abs(translation.y) > 3 * abs(translation.x);
-    if (!verticalScroll) {
-      return NO;
-    }
+  BOOL isWKGesture = [self viewDescendantOfWKWebView:gestureView];
 
-    BOOL draggingDown = verticalVelocity > 0;
-    BOOL isAtTop = scrollView.contentOffset.y <= 0;
-    BOOL isInLargestDetent = [self isInLargestDetent];
-
-    // When in the largest detent and the scroll view would s
-    BOOL sheetMovementForLargestDetent =
-        isInLargestDetent && isAtTop && draggingDown;
-    BOOL sheetMovementForSmallerDetents = !isInLargestDetent && isAtTop;
-
-    if (sheetMovementForLargestDetent || sheetMovementForSmallerDetents) {
-      // Enable dragging of the bottom sheet while disabling scrolling in all
-      // referenced scroll views. Re-enable scrolling once the bottom sheet
-      // movement finishes.
-      if (scrollView.scrollEnabled) {
-        [_disabledScrollViews addObject:^{
-          return scrollView;
-        }];
-        scrollView.scrollEnabled = NO;
-      }
-
-      return YES;
-    }
-
-    // Prevent dragging the bottom sheet and allow only the pan interactions
-    // withing the scroll view.
+  // WebKit internal gestures must not be recognized at the same time as the
+  // bottom sheet tracker, because moving the web view's container would
+  // interfere with their tracking.
+  BOOL internalNonScrollWKGesture = !isScrollable && isWKGesture;
+  if (internalNonScrollWKGesture) {
     return NO;
   }
 
-  return YES;
+  // Any other gesture that does not handle scrolling should not block the
+  // panning of the bottom sheet.
+  if (!controlsScrolling) {
+    return YES;
+  }
+
+  // Although a `WKWebView` can contain multiple internal scroll views, only the
+  // main scroll view, which controls the viewport scrolling, should affect the
+  // sheet's panning.
+  BOOL isMainWKScrollView =
+      [gestureView.superview isKindOfClass:[WKWebView class]];
+
+  // Refrain from moving the bottom sheet when a gesture is handling sub-scrolls
+  // within a `WKWebView` (e.g.; a draggable HTML element) instead of the
+  // primary viewport scroll.
+  BOOL handlesInnerWKWebViewScrolls =
+      controlsScrolling && isWKGesture && !isMainWKScrollView;
+  if (handlesInnerWKWebViewScrolls) {
+    return NO;
+  }
+
+  UIPanGestureRecognizer* panRecognizer =
+      (UIPanGestureRecognizer*)gestureRecognizer;
+  __weak UIScrollView* scrollView = (UIScrollView*)gestureView;
+
+  CGPoint translation = [panRecognizer translationInView:scrollView];
+
+  // Horizontal scroll should not drag the bottom sheet.
+  BOOL verticalScroll = abs(translation.y) > 3 * abs(translation.x);
+  if (!verticalScroll) {
+    return NO;
+  }
+
+  CGFloat verticalVelocity = [panRecognizer velocityInView:scrollView].y;
+  BOOL draggingDown = verticalVelocity > 0;
+  BOOL isAtTop = scrollView.contentOffset.y <= 0;
+  BOOL isInLargestDetent = [self isInLargestDetent];
+
+  // Overscrolling on top when in the largest detent should defer the gesture to
+  // the pan tracker instead of beign handled by the scroll view.
+  BOOL sheetMovementForLargestDetent =
+      isInLargestDetent && isAtTop && draggingDown;
+  // For all other detents, if the scroll view is at the top, the gesture should
+  // be translation to the bottom sheet in both directions. This implies that:
+  //  - Scrolling the content should only begging in the largest detent.
+  //  - Scrolling in the lower detents should be allowed, but it should be a
+  // continuation of a previous scroll, rather than starting from scratch.
+  BOOL sheetMovementForSmallerDetents = !isInLargestDetent && isAtTop;
+
+  if (sheetMovementForLargestDetent || sheetMovementForSmallerDetents) {
+    // Enable dragging of the bottom sheet while disabling scrolling in all
+    // referenced scroll views. Re-enable scrolling once the bottom sheet
+    // movement finishes.
+    if (scrollView.scrollEnabled) {
+      [_disabledScrollViews addObject:^{
+        return scrollView;
+      }];
+      scrollView.scrollEnabled = NO;
+    }
+
+    return YES;
+  }
+
+  // Prevent dragging the bottom sheet and allow only the pan interactions
+  // withing the scroll view.
+  return NO;
 }
 
 #pragma mark - ViewTouchDelegate
@@ -633,6 +674,17 @@ BOOL _keyboardShown;
   }
 
   return std::clamp<CGFloat>(result, 0, [self bottomSheetContainerHeight]);
+}
+
+- (BOOL)viewDescendantOfWKWebView:(UIView*)targetView {
+  UIView* currentView = targetView;
+  while (currentView != nil) {
+    if ([currentView isKindOfClass:[WKWebView class]]) {
+      return YES;
+    }
+    currentView = currentView.superview;
+  }
+  return NO;
 }
 
 @end
