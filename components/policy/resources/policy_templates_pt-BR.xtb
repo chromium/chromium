@@ -1379,6 +1379,22 @@ Quando ela for definida como falsa, as informações que podem ser usadas para i
 
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
+<translation id="1878535132109943599">Se esta política for ativada, as solicitações de <ph name="LOCAL_NETWORK_ACCESS" />
+só vão mostrar avisos no <ph name="CHROME_DEVTOOLS_NAME" /> devido a falhas nas verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se ela for desativada ou não for definida, as solicitações de <ph name="LOCAL_NETWORK_ACCESS" /> vão usar o
+gerenciamento padrão.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (página em inglês).
+
+Esta política corporativa é temporária e será removida após a versão M146.
+
+A longo prazo, a política <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+pode ser usada para permitir padrões de URL que devem receber automaticamente
+a permissão <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se a política <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" />
+estiver ativada, ela terá precedência sobre esta política.</translation>
 <translation id="187961648719201562">Excluir arquivos locais atuais (compatível desde a versão 137)</translation>
 <translation id="1883274744253492031">Ativar o upgrade automático do conteúdo misto</translation>
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
@@ -7901,6 +7917,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
       Se a política for definida como <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valor 3), por padrão, o usuário vai receber um aviso quando a permissão para fontes locais for solicitada. Se o usuário autorizar, ela vai ampliar a capacidade dos sites de ver informações sobre fontes locais.
 
       Se a política for deixada sem definição, o comportamento padrão será aplicado. Isso significa que os usuários são consultados, mas eles podem mudar essa configuração.</translation>
+<translation id="6203014458380972093">Desativar temporariamente as restrições em solicitações para endpoints da rede local</translation>
 <translation id="6203715554101884845">Se a política for definida, você poderá criar uma lista de URLs que especifique quais sites recebem permissão automaticamente para acessar um dispositivo HID com os IDs de produto e de fornecedor especificados na tela de login. Cada item na lista precisa ter os campos "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que o item seja válido. Caso contrário, ele será ignorado. Cada item em "<ph name="DEVICES_FIELD_NAME" />" precisa ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e pode ter um "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão do campo "<ph name="PRODUCT_ID_FIELD_NAME" />" cria uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Um item com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" e sem um "<ph name="VENDOR_ID_FIELD_NAME" />" será inválido e ignorado.
 
 Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
@@ -10627,6 +10644,7 @@ Esta política é temporária e será removida.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Ativar relatórios do Android</translation>
+<translation id="798671159602573821">Especifica se é necessário desativar (temporariamente) as restrições de acesso à rede local</translation>
 <translation id="7990280274626154329">Ativar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

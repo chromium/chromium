@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Расчистете со групите картички</translation>
 <translation id="2597457036804169544">Не применувај темна тема за сајтови</translation>
 <translation id="2606760465469169465">Автоматска потврда</translation>
+<translation id="2610903128639500624">Управувајте во <ph name="BEGIN_LINK1" />поставките за Android<ph name="END_LINK1" />
+
+„Напредна заштита“ ги контролира овие поставки за Chrome:
+• Поставката „Секогаш користи безбедни врски“ е вклучена.
+• Поставката „Оптимизатор за JavaScript“ е исклучена. <ph name="BEGIN_LINK2" />Управувајте со исклучоците на сајтовите<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Дозволи JavaScript за одреден сајт.</translation>
 <translation id="2626708220538466178">Долниот лист со стандардниот прелистувач е затворен</translation>
 <translation id="2653659639078652383">Испрати</translation>

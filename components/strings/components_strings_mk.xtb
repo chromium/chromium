@@ -1254,6 +1254,7 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
 <translation id="3093122472063815077">Екранот за напредокот на „Купете сега, платете подоцна“ е отворен на половина висина.</translation>
+<translation id="309381737510736393">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, не може да споделувате картички или да соработувате со други лица</translation>
 <translation id="3094051226187213523">Отворете го „AI-режимот“ со предлогов.</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Игнорирано бидејќи списокот на оневозможени содржи шема еднаква на „*“, што пак е еднакво на оневозможување на правилото.</translation>
@@ -1699,6 +1700,7 @@
 <translation id="3784372983762739446">Уреди со Bluetooth</translation>
 <translation id="3785246317262748285">Обично се поврзувате на сајтовите безбедно, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">Најдобри совпаѓања за „<ph name="SEARCH_QUERY" />“</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> или <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3791118028061680614">Плаќајте без да се префрлате во друга апликација</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
@@ -2680,6 +2682,7 @@
 <translation id="5412040515238827314">Неважечки формат: се очекува список со шеми.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
+<translation id="5414306071315087019">„Купете сега, платете подоцна“ е достапен со Google Pay</translation>
 <translation id="5414446060143308245">Потребен е преглед пред префрлањето</translation>
 <translation id="5414511064953050917">Сепак премести</translation>
 <translation id="5418700249417444482">URL-адресите на страниците што ги отворате се испраќаат до Google Cloud или трети страни за анализа и можеби се видливи за администраторот. На пример, можеби ќе се скенираат за да се откријат небезбедни веб-сајтови или да се филтрираат веб-сајтови според правилата што ги поставил администраторот.</translation>
@@ -2800,6 +2803,7 @@
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5596939519753369075">2 x 3,5 инчи</translation>
 <translation id="5597254438174353289">Сина 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Управувањето не е поддржано</translation>
 <translation id="5605249000617390290">Дознајте повеќе за следењето цени</translation>
 <translation id="5605670050355397069">Ledger</translation>

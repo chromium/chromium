@@ -1254,6 +1254,7 @@
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="3090667236485488075">કાચ</translation>
 <translation id="3093122472063815077">'હમણાં ખરીદો, પછીથી ચુકવો' વ્યવહારની પ્રગતિ બતાવતી સ્ક્રીન અડધી ઊંચાઈએ ખોલવામાં આવી.</translation>
+<translation id="309381737510736393">જ્યારે તમારી સંસ્થા તમારા Google એકાઉન્ટમાં સાચવવાનું મર્યાદિત કરે છે, ત્યારે તમે ટૅબ શેર કરી શકતા નથી અથવા અન્ય લોકો સાથે સહયોગ કરી શકતા નથી</translation>
 <translation id="3094051226187213523">આ સૂચન સાથે AI મોડ ખોલો.</translation>
 <translation id="3095940652251934233">સ્ટેટમેંટ</translation>
 <translation id="3098513225387949945">અવગણવામાં આવ્યું કારણ કે "ચાલુ કરો" સૂચિમાં '*'ને સમાન હોય તેવી પૅટર્ન શામેલ છે, જે પૉલિસી બંધ કરવા બરાબર છે.</translation>
@@ -1699,6 +1700,7 @@
 <translation id="3784372983762739446">બ્લૂટૂથ ડિવાઇસ</translation>
 <translation id="3785246317262748285">સામાન્ય રીતે તમને સુરક્ષિત રીતે બધી સાઇટ સાથે કનેક્ટ કરવામાં આવે છે, પરંતુ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ અટૅક કરનારાએ તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" માટે શ્રેષ્ઠ મેળ ખાતા પરિણામો</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /> અથવા <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3791118028061680614">ઍપ સ્વિચ કર્યા વિના ચુકવણી કરો</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ઇંચ)</translation>
@@ -2680,6 +2682,7 @@
 <translation id="5412040515238827314">અમાન્ય ફૉર્મેટ: પૅટર્નની કોઈ સૂચિ અપેક્ષિત છે.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
+<translation id="5414306071315087019">Google Pay સાથે હમણાં ખરીદો અને પછીથી ચૂકવો સુવિધા ઉપલબ્ધ છે</translation>
 <translation id="5414446060143308245">ટ્રાન્સફર કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
 <translation id="5414511064953050917">કોઈપણ રીતે ખસેડો</translation>
 <translation id="5418700249417444482">તમે મુલાકાત લો તે પેજના URLs વિશ્લેષણ માટે Google Cloud પર અથવા ત્રીજા પક્ષોને મોકલવામાં આવે છે અને તે તમારા ઍડમિનિસ્ટ્રેટરને દેખાય તેમ બની શકે. ઉદાહરણ તરીકે, અસુરક્ષિત વેબસાઇટની ભાળ મેળવવા માટે તેને કદાચ સ્કૅન કરવામાં આવી શકે છે અથવા ઍડમિનિસ્ટ્રેટરે સેટ કરેલા નિયમોના આધારે વેબસાઇટને ફિલ્ટર કરવામાં આવી શકે છે.</translation>
@@ -2800,6 +2803,7 @@
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="5596939519753369075">2 x 3.5 ઇંચ</translation>
 <translation id="5597254438174353289">વાદળી 3</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> અથવા <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">સંચાલન સમર્થિત નથી</translation>
 <translation id="5605249000617390290">કિંમત ટ્રૅક કરવાની સુવિધા વિશે વધુ જાણો</translation>
 <translation id="5605670050355397069">લેજર</translation>

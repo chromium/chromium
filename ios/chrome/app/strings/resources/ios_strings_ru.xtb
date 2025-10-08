@@ -1242,7 +1242,7 @@
 <translation id="5804012843049740908">Советы о том, как использовать все возможности Chrome</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="58081802114142635">Ваши действия улучшают ИИ от Google</translation>
-<translation id="5813223718099710537">Когда вы используете эту функцию, URL и данные страницы передаются в Google. Отключить их отправку всегда можно в настройках.</translation>
+<translation id="5813223718099710537">Когда вы используете эту функцию, содержание и URL страниц пересылаются в Google. Вы можете в любой момент отключить это в настройках.</translation>
 <translation id="5817176759448082654">Проверка паролей</translation>
 <translation id="5818161931099046557">Изменить в аккаунте Google</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1907,7 +1907,7 @@
 <translation id="826614135184049678">В результате сброса настроек iPad произошел выход из аккаунта <ph name="USER_NAME" />. Чтобы войти, нажмите "Продолжить" ниже.</translation>
 <translation id="8273982424131314219">Данные будут вставлены на сайте <ph name="URL" /></translation>
 <translation id="8275068909952022340">Ещё…</translation>
-<translation id="8277328362018795342">Предоставляется доступ к контенту страницы – так вы можете получать более подходящие ответы</translation>
+<translation id="8277328362018795342">Чтобы ответы были более подходящими, содержание страниц передается Google</translation>
 <translation id="8278488584187265939">Настройка главной страницы</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Пропустить</translation>
@@ -2031,7 +2031,7 @@
 <translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8722229818691036192">Аккаунты на этом устройстве</translation>
-<translation id="8722649775263832315">Нажмите на объект или выделите его для поиска через Google Объектив</translation>
+<translation id="8722649775263832315">Ищите что угодно через Google Объектив – просто выделите нужное или нажмите на него</translation>
 <translation id="8723088494871522141">Скрыть карточку "Отзывы о товарах для вас"</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} вкладка}one{{COUNT} вкладка}few{{COUNT} вкладки}many{{COUNT} вкладок}other{{COUNT} вкладки}}</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>

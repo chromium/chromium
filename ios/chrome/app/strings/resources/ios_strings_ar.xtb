@@ -144,7 +144,7 @@
 <translation id="1521774566618522728">نشط اليوم</translation>
 <translation id="1523567067736644845">يُرجى فتح القفل لعرض كلمة المرور</translation>
 <translation id="1524563461097350801">لا، شكرًا</translation>
-<translation id="1528290585275339320">ننصح بتفعيل ميزة مشاركة محتوى الصفحة</translation>
+<translation id="1528290585275339320">تفعيل ميزة مشاركة محتوى الصفحة</translation>
 <translation id="1531038290222364269">إظهار علامات التبويب</translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
 <translation id="1540800554400757039">العنوان 1</translation>
@@ -318,7 +318,7 @@
 <translation id="218350106843433823">الملء التلقائي لكلمات المرور ومفاتيح المرور</translation>
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="2186206192313702726">‏عدسة Google</translation>
-<translation id="2188993354115194873">يُرجى النقر على <ph name="BEGIN_BOLD" />الحفظ في "عمليات التنزيل"<ph name="END_BOLD" /></translation>
+<translation id="2188993354115194873">‏انقر على <ph name="BEGIN_BOLD" />الحفظ في عمليات التنزيل (Save to Downloads)<ph name="END_BOLD" /></translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2196428379625389579">البحث على الويب</translation>
@@ -721,7 +721,7 @@
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
 <translation id="3853162385423733133">‏يُرجى مواصلة استخدام كلمات المرور وحفظها في حسابك على Google: <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">استيراد</translation>
-<translation id="3857113360369572832">‏يُرجى فتح <ph name="BEGIN_BOLD" />إعدادات Safari‏<ph name="END_BOLD" /> (Safari Settings)</translation>
+<translation id="3857113360369572832">‏افتح <ph name="BEGIN_BOLD" />إعدادات Safari‏<ph name="END_BOLD" /> (Safari Settings)</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3868495844258915202">‏عرض عناوين URL بالكامل</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
@@ -1174,7 +1174,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5611398002774823980">الحفظ في الحساب</translation>
-<translation id="561269594905823128">‏يُرجى النقر على <ph name="BEGIN_BOLD" />اختيار الملف (Select your file)<ph name="END_BOLD" /></translation>
+<translation id="561269594905823128">‏انقر على <ph name="BEGIN_BOLD" />اختيار الملف (Select your file)<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">الترتيب حسب الأحدث</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5617769621178348890">‏الفتح في تطبيق Files</translation>
@@ -1314,7 +1314,7 @@
 <translation id="6090760257419195752">التحذيرات المغلقة</translation>
 <translation id="6096965253650248286">علامات التبويب المفتوحة: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">تم تسجيل الدخول بحساب "<ph name="USER_EMAIL" />". يفتح هذا الزر صفحة الإعدادات.</translation>
-<translation id="6100676328067737810">‏سيتم حفظ بياناتك في حسابك على Google، <ph name="USER_EMAIL" /></translation>
+<translation id="6100676328067737810">‏سيتم حفظ بياناتك في حسابك على Google‏ (<ph name="USER_EMAIL" />)</translation>
 <translation id="610083648014322104">يمكنك الحصول على إجابات ذات صلة استنادًا إلى محتوى الصفحة التي يتم تصفُّحها</translation>
 <translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
 <translation id="611361228753138223">المواقع الإلكترونية التي زرتها مؤخرًا على هذا الجهاز</translation>
@@ -1339,7 +1339,7 @@
 <translation id="6169031022444660352">لحذف جميع بيانات الاعتماد المحفوظة، عليك أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="6172428250974276014">نعم، أريد الاحتفاظ بالبيانات منفصلة (يُنصح بهذا الخيار)</translation>
 <translation id="6173499589275053515">‏تم حفظ كلمة المرور في حساب Google الخاص بك: <ph name="EMAIL" />.</translation>
-<translation id="6181969657494915430">البحث عن محتوى على الشاشة</translation>
+<translation id="6181969657494915430">البحث على الشاشة</translation>
 <translation id="6187302354554850004">تاريخ آخر مزامنة: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189413832092199491">غير مقروءة</translation>
@@ -1644,13 +1644,13 @@
 <translation id="7334364820047587268">‏لديك كلمات مرور لهذه الحسابات في "مدير كلمات المرور في Google". وإذا اخترت استيراد إحدى كلمات المرور الموضَّحة أدناه، سيتم استبدال كلمة المرور الحالية بها.</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
 <translation id="7346909386216857016">حسنًا</translation>
-<translation id="7352651011704765696">حدث خطأ ما</translation>
+<translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7363349185727752629">دليل خيارات الخصوصية</translation>
 <translation id="736564850024123010">يمكنك تبديل مكان شريط العناوين للحصول على تجربة استخدام مخصصة.</translation>
 <translation id="7366909168761621528">بيانات التصفح</translation>
 <translation id="7367530036083223701">يمكنك الوصول إلى كلمات المرور بأمان من الشاشة الرئيسية باستخدام التطبيق المصغَّر "مدير كلمات المرور".</translation>
 <translation id="7380220816562673297">‏في الوقت الحالي، لا يمكنك مشاركة كلمات المرور إلّا مع أفراد العائلة. ويمكنك <ph name="BEGIN_LINK" />إنشاء مجموعة عائلة<ph name="END_LINK" /> تضم 6 أفراد كحد أقصى والاستفادة بشكل أفضل من المنتجات والاشتراكات التي توفّرها Google.</translation>
-<translation id="7380698179418029202">‏يُرجى اختيار ملف <ph name="BEGIN_BOLD" />‎.zip<ph name="END_BOLD" /> للتصدير من Safari</translation>
+<translation id="7380698179418029202">‏اختَر ملف <ph name="BEGIN_BOLD" />‎.zip<ph name="END_BOLD" /> لتصديره من Safari</translation>
 <translation id="739101637685146669">‏ما هو عنوان URL الذي تريد وضع إشارة مرجعية عليه؟</translation>
 <translation id="7393747756726387725">تكبير</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{موقع إلكتروني واحد}zero{‫# موقع إلكتروني}two{موقعان إلكترونيان}few{‫# مواقع إلكترونية}many{‫# موقعًا إلكترونيًا}other{‫# موقع إلكتروني}}</translation>
@@ -1769,7 +1769,7 @@
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7788868432173225918">إغلاق العرض الموسَّع</translation>
 <translation id="7791543448312431591">إضافة</translation>
-<translation id="7795253248079882669">يُرجى النقر على <ph name="BEGIN_BOLD" />تصدير<ph name="END_BOLD" /></translation>
+<translation id="7795253248079882669">‏انقر على <ph name="BEGIN_BOLD" />تصدير (Export)<ph name="END_BOLD" /></translation>
 <translation id="7801064017114765401">أجهزة الكمبيوتر</translation>
 <translation id="7802239711290932774">استخدِم كلمة المرور المقترَحة:</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
@@ -1984,7 +1984,7 @@
 <translation id="8561999115126307258">{count,plural, =1{يتوفّر خيار واحد ({count}) لكلمة المرور أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) لكلمة المرور أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات لكلمة المرور أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا لكلمة المرور أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}}</translation>
 <translation id="8564894539416715395">صفحة علامة تبويب جديدة</translation>
 <translation id="8569721750632860947">‏ما هو عنوان URL الذي تريد إضافته إلى "قائمة القراءة"؟</translation>
-<translation id="8571019948162152515">هل المطلوب حذف <ph name="FILENAME" />؟</translation>
+<translation id="8571019948162152515">حذف <ph name="FILENAME" />؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
@@ -2020,7 +2020,7 @@
 <translation id="8690752723634292147">تأكيد الحذف</translation>
 <translation id="8692107307702113268">عدد أحرف كلمة المرور يزيد عن 1,000 حرف.</translation>
 <translation id="8692689525339542358">يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
-<translation id="8692897097252418799">يُرجى اختيار البيانات المُراد تصديرها</translation>
+<translation id="8692897097252418799">اختَر البيانات المُراد تصديرها</translation>
 <translation id="8694281486652655615">يؤدي هذا الإجراء إلى عرض هذا العنصر</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8697136149718343437">نقل شريط العناوين إلى أسفل الشاشة</translation>

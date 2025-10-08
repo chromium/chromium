@@ -442,7 +442,7 @@
 <translation id="3027950907978057636">來自 <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
-<translation id="3029829659829245765"><ph name="TAB_TITLE" />，已固定選取的分頁</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />，已固定及選取的分頁</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
@@ -1832,7 +1832,7 @@
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9189607089796819144">確定要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="9190276265094487094">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
-<translation id="9197941237799589838"><ph name="TAB_TITLE" />，已固定選取的無痕式分頁</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />，已固定及選取的無痕式分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查拼字，或嘗試在 <ph name="SEARCH_ENGINE" /> 上搜尋。</translation>

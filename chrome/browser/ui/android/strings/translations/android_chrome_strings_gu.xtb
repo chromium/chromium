@@ -9,11 +9,13 @@
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
 <translation id="103269572468856066">આ સાઇટ અને ઍપમાંથી પણ ડેટા સાફ કરીએ?</translation>
 <translation id="1034259925032978114">વિન્ડો ખુલ્લી છે</translation>
+<translation id="1035113036584565771">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો બંધ કર્યો</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1045899828449635435">આ સાઇટમાંથી પણ ડેટા સાફ કરીએ?</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1052842760770519282">તમારા પાસવર્ડમાંથી અમુક ઍક્સેસિબલ નથી</translation>
 <translation id="1058669287135776095">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="1066338698580889414">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો પૂર્ણ ઊંચાઈએ ખોલ્યો</translation>
 <translation id="1070689840697074178">તમે અહીં PDFs ડાઉનલોડ કરી શકો છો</translation>
 <translation id="107147699690128016">જો તમે ફાઇલનું એક્સ્ટેંશન બદલશો, તો તે કોઈ અલગ ઍપ્લિકેશનમાં ખુલી શકે છે અને તમારા ડિવાઇસ માટે નુકસાનકારક હોવાનું સંભવિત હોય શકે.</translation>
 <translation id="1087799850623149508">ઍડ્રેસ બારને સૌથી નીચે ખસેડવા માટે તમે તેને ટચ કરીને થોડીવાર દબાવીને રાખી શકો છો</translation>
@@ -151,6 +153,7 @@
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="1702543251015153180">તમારી ઘેરી થીમ માટેના સેટિંગમાં ફેરફાર કરીએ?</translation>
 <translation id="1702907158640575240">મેનેજ કરવામાં આવતું બ્રાઉઝર</translation>
+<translation id="170478069042229393"><ph name="TAB_TITLE" />, પિન કરેલું છૂપું ટૅબ</translation>
 <translation id="1718835860248848330">છેલ્લા એક કલાક</translation>
 <translation id="1726477445370128854">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome જ્યારે પહેલેથી લોડ કરે, ત્યારે તમે ઝડપથી બ્રાઉઝ અને શોધ કરી શકો છો</translation>
 <translation id="1728803206919861584">છૂપા સિવાયના મોડમાં પાસકી સાચવીએ?</translation>
@@ -439,6 +442,7 @@
 <translation id="3027950907978057636"><ph name="APP_LABEL" />માંથી</translation>
 <translation id="3029276696788198026">પહેલેથી લોડ કરેલો કોઈ વિકલ્પ નથી</translation>
 <translation id="3029704984691124060">પાસફ્રેઝેસ મેળ ખાતા નથી</translation>
+<translation id="3029829659829245765"><ph name="TAB_TITLE" />, પિન કરેલું પસંદગીનું ટૅબ</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
@@ -626,6 +630,7 @@
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="397583555483684758">સમન્વયન એ કામ કરવાનું બંધ કરી દીધું છે</translation>
 <translation id="3976396876660209797">આ શૉર્ટકટ દૂર કરો અને ફરી બનાવો</translation>
+<translation id="397650873162244514"><ph name="TAB_TITLE" />, પિન કરેલું ટૅબ</translation>
 <translation id="3985022125189960801">તમને શું ગમે છે તેનું અનુમાન લગાવી શકતી સાઇટના પૂલમાં જો તમે કોઈ સાઇટ ઇચ્છતા હો, તો તેને ફરીથી ઉમેરો</translation>
 <translation id="3985215325736559418">શું તમે <ph name="FILE_NAME" /> ને ફરી ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="3987993985790029246">લિંક કૉપિ કરો</translation>
@@ -1413,6 +1418,7 @@
 <translation id="7375125077091615385">પ્રકાર:</translation>
 <translation id="7376560087009844242">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, 'શોધવા માટે ટચ કરો'માં તમે કદાચ બહેતર પરિણામો જોઈ શકશો. આમાં ફેરફાર કરવા માટે, તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />ની મુલાકાત લઈ શકો છો.</translation>
 <translation id="7379900596734708416">સાઇટ માટેની ઘેરી થીમ ઉપલબ્ધ છે</translation>
+<translation id="7384486627147155832">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="7388615499319468910">જાહેરાતોના પર્ફોર્મન્સ સંબંધી બાબતો સાઇટ અને જાહેરાતકર્તાઓ સમજી શકે છે. આ સેટિંગ બંધ છે.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{સૂચિમાં અન્ય 1 ફાઇલ છે}one{સૂચિમાં અન્ય # ફાઇલ છે}other{સૂચિમાં અન્ય # ફાઇલ છે}}</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1584,6 +1590,7 @@
 <translation id="8090732854597034573">જો તમને સહાયની કોઈ જરૂર હોય, તો માતાપિતાને પૂછો</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />માં ખોલવામાં આવેલું કોઈપણ ટૅબ બંધ કરાશે નહીં</translation>
 <translation id="8103578431304235997">છૂપું ટૅબ</translation>
+<translation id="810433609302852">ટિપ સંબંધિત નોટિફિકેશન સુવિધાનો પ્રોમો અને વપરાશના પગલાંની બોટમ શીટ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">સૉર્ટ કરવા માટેના વિકલ્પો બંધ કરો</translation>
 <translation id="8110024788458304985">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
@@ -1825,6 +1832,7 @@
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
 <translation id="9189607089796819144">શું તેમ છતાં તમે "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="9190276265094487094">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, પિન કરેલું પસંદગીનું છૂપું ટૅબ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં ચેક કર્યું}one{# મિનિટ પહેલાં ચેક કર્યું}other{# મિનિટ પહેલાં ચેક કર્યું}}</translation>
 <translation id="9204836675896933765">1 ફાઇલ બાકી છે</translation>
 <translation id="9205933215779845960">એ પેજ મળતું નથી. તમારી જોડણી ચેક કરો અથવા <ph name="SEARCH_ENGINE" /> પર પ્રયાસ કરો.</translation>
