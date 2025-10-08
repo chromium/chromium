@@ -60,7 +60,7 @@ const char kDevToolsChannelNameFormat[] = "%s_devtools_remote";
 
 const char kTetheringSocketName[] = "chrome_devtools_tethering_%d_%d";
 
-const int kBackLog = 10;
+const int kBackLog = 4096;
 
 bool AuthorizeSocketAccessWithDebugPermission(
     const net::UnixDomainServerSocket::Credentials& credentials) {
