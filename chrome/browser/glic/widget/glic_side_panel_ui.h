@@ -60,9 +60,10 @@ class GlicSidePanelUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   bool IsShowing() const override;
   void ClosePanel() override;
 
-  void VisibilityChanged(bool visible);
+  void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
  private:
+  GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
   base::CallbackListSubscription panel_visibility_subscription_;
   std::unique_ptr<views::View> CreateView(Profile* profile);
   mojom::PanelState panel_state_;

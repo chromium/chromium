@@ -27,15 +27,15 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
                                  GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), tab_(tab), delegate_(delegate) {
-  if (!tab_ || !tab_->GetTabFeatures()) {
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (!glic_side_panel_coordinator) {
     return;
   }
-  auto* glic_side_panel_coordinator =
-      tab_->GetTabFeatures()->glic_side_panel_coordinator();
 
   panel_visibility_subscription_ =
-      glic_side_panel_coordinator->AddVisibilityCallback(base::BindRepeating(
-          &GlicSidePanelUi::VisibilityChanged, weak_ptr_factory_.GetWeakPtr()));
+      glic_side_panel_coordinator->AddStateCallback(
+          base::BindRepeating(&GlicSidePanelUi::SidePanelStateChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
@@ -89,11 +89,11 @@ void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {
 }
 
 bool GlicSidePanelUi::IsShowing() const {
-  if (!tab_) {
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (!glic_side_panel_coordinator) {
     return false;
   }
-  // If this embedder is active, side panel must be showing.
-  return true;
+  return glic_side_panel_coordinator->IsShowing();
 }
 
 void GlicSidePanelUi::Focus() {
@@ -103,10 +103,11 @@ void GlicSidePanelUi::Focus() {
   }
 }
 
-void GlicSidePanelUi::VisibilityChanged(bool visible) {
+void GlicSidePanelUi::SidePanelStateChanged(
+    GlicSidePanelCoordinator::State state) {
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
-  if (!visible && tab_) {
+  if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
     delegate_->WillCloseFor(tab_.get());
   }
 }
@@ -119,26 +120,24 @@ void GlicSidePanelUi::SwitchConversation(
 }
 
 void GlicSidePanelUi::Show() {
-  if (!tab_) {
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (!glic_side_panel_coordinator) {
     return;
   }
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
   delegate_->NotifyPanelStateChanged();
-  auto* side_panel_coordinator =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
-  side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+  glic_side_panel_coordinator->Show();
   Focus();
 }
 
 void GlicSidePanelUi::Close() {
-  if (!tab_ || !IsShowing()) {
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (!glic_side_panel_coordinator || !IsShowing()) {
     return;
   }
   panel_state_.kind = mojom::PanelState_Kind::kHidden;
   delegate_->NotifyPanelStateChanged();
-  auto* side_panel_coordinator =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
-  side_panel_coordinator->Close();
+  glic_side_panel_coordinator->Close();
 }
 
 void GlicSidePanelUi::ClosePanel() {
@@ -152,8 +151,16 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
 }
 
 views::View* GlicSidePanelUi::GetView() {
-  return tab_ ? tab_->GetTabFeatures()->glic_side_panel_coordinator()->GetView()
-              : nullptr;
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  return glic_side_panel_coordinator ? glic_side_panel_coordinator->GetView()
+                                     : nullptr;
+}
+
+GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
+  if (!tab_ || !tab_->GetTabFeatures()) {
+    return nullptr;
+  }
+  return tab_->GetTabFeatures()->glic_side_panel_coordinator();
 }
 
 }  // namespace glic

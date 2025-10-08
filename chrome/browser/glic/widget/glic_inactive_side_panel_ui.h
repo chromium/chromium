@@ -53,21 +53,18 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
-  void VisibilityChanged(bool visible);
-
  private:
   explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
                                    GlicUiEmbedder::Delegate& delegate);
+  GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
   InactiveViewController inactive_view_controller_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
-  bool is_showing_ = false;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       scoped_view_observation_{this};
 
-  base::CallbackListSubscription panel_visibility_subscription_;
   base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };
 

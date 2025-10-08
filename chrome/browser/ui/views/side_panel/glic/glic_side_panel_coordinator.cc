@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
@@ -48,10 +49,7 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
     : tab_(tab),
       side_panel_registry_(side_panel_registry),
       glic_action_(GetGlicActionItem(
-          tab->GetBrowserWindowInterface()->GetActions()->root_action_item())),
-      side_panel_coordinator_(tab->GetBrowserWindowInterface()
-                                  ->GetFeatures()
-                                  .side_panel_coordinator()) {
+          tab->GetBrowserWindowInterface()->GetActions()->root_action_item())) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab->GetBrowserWindowInterface()->GetProfile());
@@ -62,6 +60,9 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
   if (glic_service->enabling().IsAllowed()) {
     CreateAndRegisterEntry();
   }
+  tab_deactivated_subscription_ =
+      tab_->RegisterWillDeactivate(base::BindRepeating(
+          &GlicSidePanelCoordinator::OnTabDeactivated, base::Unretained(this)));
 }
 
 GlicSidePanelCoordinator::~GlicSidePanelCoordinator() = default;
@@ -81,19 +82,58 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   entry->set_should_show_header(false);
   entry->set_should_show_ephemerally_in_toolbar(false);
   entry->AddObserver(this);
+  entry_ = entry->GetWeakPtr();
   side_panel_registry_->Register(std::move(entry));
+}
+
+void GlicSidePanelCoordinator::Show() {
+  auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
+  if (!window_side_panel_coordinator || !entry_) {
+    return;
+  }
+  if (!tab_->IsActivated()) {
+    if (entry_) {
+      // The tab is in the background, so we just mark it for showing the glic
+      // side panel when it becomes the active tab. eg. This flow can be
+      // encountered when a background tab is bound via daisy chaining.
+      side_panel_registry_->SetActiveEntry(entry_.get());
+    }
+    return;
+  }
+  window_side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+}
+
+void GlicSidePanelCoordinator::Close() {
+  auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
+  if (!window_side_panel_coordinator || !IsShowing()) {
+    return;
+  }
+  window_side_panel_coordinator->Close();
+}
+
+bool GlicSidePanelCoordinator::IsShowing() const {
+  return state_ == State::kShown;
 }
 
 void GlicSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  visibility_changed_callbacks_.Notify(false);
+  state_ = State::kClosed;
+  NotifyStateChanged();
 }
 
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  visibility_changed_callbacks_.Notify(true);
+  state_ = State::kShown;
+  NotifyStateChanged();
+}
+
+void GlicSidePanelCoordinator::OnTabDeactivated(tabs::TabInterface* tab) {
+  if (IsShowing()) {
+    state_ = State::kHidden;
+    NotifyStateChanged();
+  }
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
@@ -111,12 +151,13 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
   } else {
     SidePanelEntry::Key glic_key =
         SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
-    if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
-      side_panel_coordinator_->Close();
+    auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
+    if (window_side_panel_coordinator &&
+        window_side_panel_coordinator->IsSidePanelEntryShowing(glic_key)) {
+      window_side_panel_coordinator->Close();
     }
-    SidePanelEntry* glic_entry = side_panel_registry_->GetEntryForKey(glic_key);
-    if (glic_entry) {
-      glic_entry->RemoveObserver(this);
+    if (entry_) {
+      entry_->RemoveObserver(this);
     }
     side_panel_registry_->Deregister(glic_key);
   }
@@ -142,9 +183,9 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
   return glic_container;
 }
 
-base::CallbackListSubscription GlicSidePanelCoordinator::AddVisibilityCallback(
-    base::RepeatingCallback<void(bool isShowing)> callback) {
-  return visibility_changed_callbacks_.Add(std::move(callback));
+base::CallbackListSubscription GlicSidePanelCoordinator::AddStateCallback(
+    base::RepeatingCallback<void(State state)> callback) {
+  return state_changed_callbacks_.Add(std::move(callback));
 }
 
 void GlicSidePanelCoordinator::SetContentsView(
@@ -164,6 +205,18 @@ views::View* GlicSidePanelCoordinator::GetView() {
 
 int GlicSidePanelCoordinator::GetPreferredWidth() {
   return features::kGlicSidePanelMinWidth.Get();
+}
+
+SidePanelCoordinator* GlicSidePanelCoordinator::GetWindowSidePanelCoordinator()
+    const {
+  if (auto* window = tab_->GetBrowserWindowInterface()) {
+    return window->GetFeatures().side_panel_coordinator();
+  }
+  return nullptr;
+}
+
+void GlicSidePanelCoordinator::NotifyStateChanged() {
+  state_changed_callbacks_.Notify(state_);
 }
 
 }  // namespace glic
