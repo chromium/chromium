@@ -1289,7 +1289,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS,
+        ChromeFeatureList.EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS + ":use_gesture_insets/true",
         ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS
     })
     public void handleWindowInsets_useMandatoryGesturesForBackupInsets() {

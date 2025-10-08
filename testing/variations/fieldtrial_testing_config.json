@@ -9565,6 +9565,24 @@
             ]
         }
     ],
+    "EdgeToEdgeUseBackupNavbarInsets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20251007",
+                    "params": {
+                        "use_gesture_insets": "false"
+                    },
+                    "enable_features": [
+                        "EdgeToEdgeUseBackupNavbarInsets"
+                    ]
+                }
+            ]
+        }
+    ],
     "EffectiveBindingState": [
         {
             "platforms": [
