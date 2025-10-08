@@ -16,8 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -27,11 +25,9 @@ namespace ash {
 
 AutoSignOutService::AutoSignOutService(
     syncer::DeviceInfoSyncService* device_info_sync_service,
-    syncer::SyncService* sync_service,
     session_manager::SessionManager* session_manager,
     PrefService* prefs)
     : device_info_sync_service_(CHECK_DEREF(device_info_sync_service)),
-      sync_service_(CHECK_DEREF(sync_service)),
       session_manager_(CHECK_DEREF(session_manager)),
       prefs_(CHECK_DEREF(prefs)),
       initialization_time_(base::Time::Now()) {
@@ -61,8 +57,9 @@ void AutoSignOutService::UpdateObservations() {
   if (prefs_->GetBoolean(chromeos::prefs::kAutoSignOutEnabled) ||
       prefs_->GetBoolean(chromeos::prefs::kFloatingSsoEnabled) ||
       prefs_->GetBoolean(chromeos::prefs::kFloatingWorkspaceV2Enabled)) {
-    if (!sync_service_observation_.IsObserving()) {
-      sync_service_observation_.Observe(&sync_service_.get());
+    if (!device_info_tracker_observation_.IsObserving()) {
+      device_info_tracker_observation_.Observe(
+          device_info_sync_service_->GetDeviceInfoTracker());
     }
     if (!session_manager_observation_.IsObserving()) {
       session_manager_observation_.Observe(&session_manager_.get());
@@ -72,10 +69,15 @@ void AutoSignOutService::UpdateObservations() {
           chromeos::PowerManagerClient::Get());
     }
     UpdateLocalDeviceInfoWhenReady();
+    // When one of the relevant policies is toggled, devices might not receive
+    // the policy value at the same time. One device might miss a new sign-in
+    // notification from another. To fix this, manually poll for device info
+    // changes.
+    OnDeviceInfoChange();
   } else {
     power_manager_client_observation_.Reset();
     session_manager_observation_.Reset();
-    sync_service_observation_.Reset();
+    device_info_tracker_observation_.Reset();
   }
 }
 
@@ -117,12 +119,7 @@ void AutoSignOutService::UpdateLocalDeviceInfo() {
   device_info_sync_service_->RefreshLocalDeviceInfo();
 }
 
-void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
-  if (sync_service_->GetDownloadStatusFor(syncer::DataType::DEVICE_INFO) !=
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
-    return;
-  }
-
+void AutoSignOutService::OnDeviceInfoChange() {
   std::vector<const syncer::DeviceInfo*> all_devices =
       device_info_sync_service_->GetDeviceInfoTracker()->GetAllDeviceInfo();
 
@@ -141,11 +138,6 @@ void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
       return;
     }
   }
-}
-
-void AutoSignOutService::OnSyncShutdown(syncer::SyncService* sync) {
-  // This service must be destroyed before the SyncService is Shutdown().
-  NOTREACHED();
 }
 
 void AutoSignOutService::OnUnlockScreenAttempt(

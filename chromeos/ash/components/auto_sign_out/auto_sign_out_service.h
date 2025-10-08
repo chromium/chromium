@@ -14,7 +14,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/sync/service/sync_service_observer.h"
+#include "components/sync_device_info/device_info_tracker.h"
 
 class PrefService;
 
@@ -24,7 +24,6 @@ class SessionManager;
 
 namespace syncer {
 class DeviceInfoSyncService;
-class SyncService;
 }  // namespace syncer
 
 namespace ash {
@@ -34,19 +33,18 @@ namespace ash {
 // When a new sign-in is detected, an automatic sign-out is triggered which
 // ensures that only one active session exists for a user at any given time.
 class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
-    : public syncer::SyncServiceObserver,
+    : public syncer::DeviceInfoTracker::Observer,
       public session_manager::SessionManagerObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
-  // DeviceInfoSyncService and SyncService are KeyedServices whose lifetime
-  // is managed by the user's Profile. The owner of AutoSignOutService instance
-  // is responsible for ensuring that it doesn't outlive these KeyedServices.
+  // DeviceInfoSyncService is a KeyedServices whose lifetime is managed by the
+  // user's Profile. The owner of AutoSignOutService instance is responsible for
+  // ensuring that it doesn't outlive these KeyedServices.
   // SessionManager shutdown happens after primary profile shutdown, which is
   // where AutoSignOutService is destroyed, so it is guaranteed to outlive it.
   // PrefService is tied to the user's Profile, which is guaranteed to outlive
   // AutoSignOutService.
   AutoSignOutService(syncer::DeviceInfoSyncService* device_info_sync_service,
-                     syncer::SyncService* sync_service,
                      session_manager::SessionManager* session_manager,
                      PrefService* prefs);
   AutoSignOutService(const AutoSignOutService&) = delete;
@@ -54,9 +52,8 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
 
   ~AutoSignOutService() override;
 
-  // syncer::SyncServiceObserver override:
-  void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncShutdown(syncer::SyncService* sync) override;
+  // syncer::DeviceInfoTracker::Observer override:
+  void OnDeviceInfoChange() override;
 
   // session_manager::SessionManagerObserver override:
   void OnUnlockScreenAttempt(
@@ -85,8 +82,6 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
 
   const raw_ref<syncer::DeviceInfoSyncService> device_info_sync_service_;
 
-  const raw_ref<syncer::SyncService> sync_service_;
-
   const raw_ref<session_manager::SessionManager> session_manager_;
 
   const raw_ref<PrefService> prefs_;
@@ -95,8 +90,9 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
 
   base::Time initialization_time_;
 
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      device_info_tracker_observation_{this};
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

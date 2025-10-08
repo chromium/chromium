@@ -5,7 +5,6 @@ include_rules = [
   "+components/prefs",
   "+components/session_manager/core",
   "+components/sync_device_info",
-  "+components/sync",
   "+content/public/test",
   "+testing",
 ]
