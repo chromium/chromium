@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -341,7 +342,8 @@ class HeadlessWebContentsImpl::PendingFrame final
     has_damage_ = ack.has_damage;
   }
 
-  void OnReadbackComplete(const SkBitmap& bitmap) {
+  void OnReadbackComplete(const viz::CopyOutputBitmapWithMetadata& result) {
+    const SkBitmap& bitmap = result.bitmap;
     TRACE_EVENT2(
         "headless", "HeadlessWebContentsImpl::PendingFrame::OnReadbackComplete",
         "sequence_number", sequence_number_, "success", !bitmap.drawsNothing());

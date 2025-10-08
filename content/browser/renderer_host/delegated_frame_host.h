@@ -33,6 +33,10 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 namespace content {
 
 class DelegatedFrameHost;
@@ -145,7 +149,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback);
+      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          callback);
   void CopyFromCompositingSurfaceAsTexture(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,

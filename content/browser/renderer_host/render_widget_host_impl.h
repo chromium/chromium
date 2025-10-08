@@ -111,6 +111,10 @@ namespace ui {
 enum class DomCode : uint32_t;
 }
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 namespace content {
 class FrameTree;
 class MockRenderWidgetHost;
@@ -1177,9 +1181,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void WindowSnapshotReachedScreen(int snapshot_id);
 
-  void OnSnapshotFromSurfaceReceived(int snapshot_id,
-                                     int retry_count,
-                                     const SkBitmap& bitmap);
+  void OnSnapshotFromSurfaceReceived(
+      int snapshot_id,
+      int retry_count,
+      const viz::CopyOutputBitmapWithMetadata& result);
 
   void OnSnapshotReceived(int snapshot_id, gfx::Image image);
 

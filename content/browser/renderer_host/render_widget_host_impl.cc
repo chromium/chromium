@@ -54,6 +54,7 @@
 #include "components/input/timeout_monitor.h"
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
@@ -3549,8 +3550,9 @@ void RenderWidgetHostImpl::WindowSnapshotReachedScreen(int snapshot_id) {
 void RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived(
     int snapshot_id,
     int retry_count,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
   static constexpr int kMaxRetries = 5;
+  const SkBitmap& bitmap = result.bitmap;
   if (bitmap.drawsNothing() && retry_count < kMaxRetries) {
     GetView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(),

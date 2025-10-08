@@ -37,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/unified_consent/pref_names.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -773,10 +774,13 @@ void PermissionsAiUiSelector::TakeSnapshot(
   } else {
     host_view->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
-        base::BindOnce(
-            &PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel,
-            weak_ptr_factory_.GetWeakPtr(), snapshot_inquire_start_time,
-            std::move(model_data)));
+        base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
+          return result.bitmap;
+        })
+            .Then(base::BindOnce(
+                &PermissionsAiUiSelector::OnSnapshotTakenForOnDeviceModel,
+                weak_ptr_factory_.GetWeakPtr(), snapshot_inquire_start_time,
+                std::move(model_data))));
   }
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

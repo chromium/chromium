@@ -37,6 +37,7 @@ namespace viz {
 class CopyOutputRequest;
 class HostFrameSinkManager;
 class RasterContextProvider;
+struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace ui {
@@ -118,7 +119,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback,
+      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          callback,
       bool capture_exact_surface_id,
       base::TimeDelta ipc_delay);
   bool CanCopyFromCompositingSurface() const;

@@ -22,6 +22,7 @@
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -144,7 +145,8 @@ void DelegatedFrameHost::WasHidden(HiddenCause cause) {
 void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const SkBitmap&)> callback) {
+    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+        callback) {
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
 
   ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
@@ -159,14 +161,16 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
       viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
-          [](base::OnceCallback<void(const SkBitmap&)> callback,
+          [](base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+                 callback,
              ui::Compositor::ScopedKeepSurfaceAliveCallback keep_alive,
              std::unique_ptr<viz::CopyOutputResult> result) {
             if (keep_alive) {
               std::move(keep_alive).RunAndReset();
             }
             auto scoped_bitmap = result->ScopedAccessSkBitmap();
-            std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
+            std::move(callback).Run(
+                scoped_bitmap.GetOutScopedBitmapAndMetadata());
           },
           std::move(callback), std::move(keep_surface_alive)));
 }

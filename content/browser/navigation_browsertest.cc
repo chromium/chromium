@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -9131,8 +9132,8 @@ class NavigationBrowserTestPaintHoldingSubframe
     }
   }
 
-  void OnCopyDone(const SkBitmap& bitmap) {
-    bitmap_ = bitmap;
+  void OnCopyDone(const viz::CopyOutputBitmapWithMetadata& result) {
+    bitmap_ = result.bitmap;
     run_loop_->Quit();
   }
 

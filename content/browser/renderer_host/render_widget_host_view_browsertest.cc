@@ -27,6 +27,7 @@
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -161,7 +162,8 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
 
   // Callback when using CopyFromSurface() API.
   void FinishCopyFromSurface(base::OnceClosure quit_closure,
-                             const SkBitmap& bitmap) {
+                             const viz::CopyOutputBitmapWithMetadata& result) {
+    const SkBitmap& bitmap = result.bitmap;
     ++callback_invoke_count_;
     if (!bitmap.drawsNothing())
       ++frames_captured_;
@@ -1186,7 +1188,9 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         allowable_error_(0),
         test_url_("data:text/html,<!doctype html>") {}
 
-  void VerifyResult(base::OnceClosure quit_callback, const SkBitmap& bitmap) {
+  void VerifyResult(base::OnceClosure quit_callback,
+                    const viz::CopyOutputBitmapWithMetadata& result) {
+    const SkBitmap& bitmap = result.bitmap;
     if (bitmap.drawsNothing()) {
       readback_result_ = READBACK_FAILED;
       std::move(quit_callback).Run();
@@ -1797,10 +1801,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
-                                       CompositorImpl* compositor,
-                                       base::RepeatingClosure resume_test,
-                                       const SkBitmap& btimap) {
+void CheckSurfaceRangeRemovedAfterCopy(
+    viz::SurfaceRange range,
+    CompositorImpl* compositor,
+    base::RepeatingClosure resume_test,
+    const viz::CopyOutputBitmapWithMetadata& result) {
   // The surface range is removed first when the browser receives the result
   // of the copy request. Then the result callback (including this function) is
   // run.
@@ -1874,8 +1879,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
 
 namespace {
 
-void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
-                               const SkBitmap& snapshot) {
+void AssertSnapshotIsPureWhite(
+    base::RepeatingClosure resume_test,
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap snapshot = result.bitmap;
   for (int r = 0; r < snapshot.height(); ++r) {
     for (int c = 0; c < snapshot.width(); ++c) {
       ASSERT_EQ(snapshot.getColor(c, r), SK_ColorWHITE);

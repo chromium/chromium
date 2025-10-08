@@ -51,6 +51,9 @@ namespace views {
 class View;
 class ViewTracker;
 }  // namespace views
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
 namespace tabs {
 class TabModel;
 }
@@ -389,7 +392,8 @@ class TabDragController : public views::WidgetObserver,
   //
   // `window_scale` is the scale of the window that `thumbnail` was captured
   // from.
-  void OnTabThumbnailAvailable(float window_scale, const SkBitmap& thumbnail);
+  void OnTabThumbnailAvailable(float window_scale,
+                               const viz::CopyOutputBitmapWithMetadata& result);
 
   // Starts a regular drag and drop session as a fallback if RunMoveLoop() is
   // not supported and no drag session is currently running. `context` is used

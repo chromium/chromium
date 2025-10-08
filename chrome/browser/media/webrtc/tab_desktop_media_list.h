@@ -11,6 +11,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 // Implementation of DesktopMediaList that shows tab/WebContents.
 class TabDesktopMediaList : public DesktopMediaListBase {
  public:
@@ -62,7 +66,7 @@ class TabDesktopMediaList : public DesktopMediaListBase {
       int remaining_retries,
       const content::DesktopMediaID& id,
       std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
-      const SkBitmap& bitmap);
+      const viz::CopyOutputBitmapWithMetadata& result);
   void CompleteRefreshAfterThumbnailProcessing();
 
   // The WebContents from which the media-picker was invoked, if such

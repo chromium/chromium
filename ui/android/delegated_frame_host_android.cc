@@ -191,7 +191,7 @@ const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {
 void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const SkBitmap&)> callback,
+    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)> callback,
     bool capture_exact_surface_id,
     base::TimeDelta ipc_delay) {
   DCHECK(CanCopyFromCompositingSurface());
@@ -211,7 +211,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
           viz::CopyOutputRequest::ResultFormat::RGBA,
           viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
-              [](base::OnceCallback<void(const SkBitmap&)> copy_result,
+              [](base::OnceCallback<void(
+                     const viz::CopyOutputBitmapWithMetadata&)> copy_result,
                  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
                      keep_alive,
                  std::unique_ptr<viz::CopyOutputResult> result) {
@@ -219,7 +220,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                   std::move(keep_alive).Run();
                 }
                 auto scoped_bitmap = result->ScopedAccessSkBitmap();
-                std::move(copy_result).Run(scoped_bitmap.GetOutScopedBitmap());
+                std::move(copy_result)
+                    .Run(scoped_bitmap.GetOutScopedBitmapAndMetadata());
               },
               std::move(callback), std::move(keep_surface_alive)));
   request->set_send_result_delay(ipc_delay);

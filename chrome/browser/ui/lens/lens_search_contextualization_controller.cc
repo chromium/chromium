@@ -18,6 +18,7 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -818,8 +819,11 @@ void LensSearchContextualizationController::CaptureScreenshot(
 
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         std::move(callback)));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce([](const viz::CopyOutputBitmapWithMetadata& result) {
+            return result.bitmap;
+          }).Then(std::move(callback))));
 }
 
 void LensSearchContextualizationController::DidCaptureScreenshot(
@@ -980,7 +984,8 @@ void LensSearchContextualizationController::
 
 void LensSearchContextualizationController::FetchViewportImageBoundingBoxes(
     OnScreenshotTakenCallback callback,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& bitmap = result.bitmap;
   content::RenderFrameHost* render_frame_host =
       lens_search_controller_->GetTabInterface()
           ->GetContents()

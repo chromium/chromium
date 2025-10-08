@@ -18,6 +18,10 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_context.h"
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 namespace lens {
 
 // LayerDelegate for controlling the background blur behind the overlay. This
@@ -66,7 +70,7 @@ class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
 
   // Updates background_screenshot_ to the new bitmap and rerenders IFF bitmap
   // is visually different than background_screenshot_.
-  void UpdateBackgroundImage(const SkBitmap& bitmap);
+  void UpdateBackgroundImage(const viz::CopyOutputBitmapWithMetadata& result);
 
   // The latest screenshot being used to render the background.
   SkBitmap background_screenshot_;

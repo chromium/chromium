@@ -32,6 +32,7 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -360,8 +361,8 @@ class PageContextFetcher : public content::WebContentsObserver {
         kScreenshotTimeout.Get());
   }
 
-  void ReceivedViewportBitmap(const SkBitmap& bitmap) {
-    ReceivedViewportBitmapOrError(&bitmap);
+  void ReceivedViewportBitmap(const viz::CopyOutputBitmapWithMetadata& result) {
+    ReceivedViewportBitmapOrError(&result.bitmap);
   }
 
   void ReceivedViewportBitmapOrError(

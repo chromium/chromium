@@ -40,6 +40,7 @@ class TextInputClient;
 
 namespace viz {
 class ClientFrameSinkVideoCapturer;
+struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace content {
@@ -236,7 +237,8 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback) = 0;
+      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          callback) = 0;
 
   // Ensures that all surfaces are synchronized for the next call to
   // CopyFromSurface. This is used by web tests.

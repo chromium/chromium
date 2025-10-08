@@ -16,6 +16,7 @@
 #include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -407,7 +408,8 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
 }
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
-    const SkBitmap& screenshot) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& bitmap = result.bitmap;
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
   auto ui_thread_callback = base::BindOnce(
       &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
@@ -416,7 +418,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ExtractVisualFeaturesAndReplyOnUIThread, screenshot,
+      base::BindOnce(&ExtractVisualFeaturesAndReplyOnUIThread, bitmap,
                      std::move(ui_thread_callback)));
 }
 

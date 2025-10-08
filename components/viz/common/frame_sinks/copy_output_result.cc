@@ -329,6 +329,11 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
   return bitmap_copy;
 }
 
+CopyOutputBitmapWithMetadata
+CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmapAndMetadata() const {
+  return CopyOutputBitmapWithMetadata{.bitmap = GetOutScopedBitmap()};
+}
+
 VIZ_COMMON_EXPORT SharedImageFormat
 GetSharedImageFormatFor(CopyOutputResult::Format format) {
   switch (format) {

@@ -34,7 +34,11 @@ class GURL;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
 
 namespace safe_browsing {
 
@@ -153,7 +157,7 @@ class PasswordProtectionRequestContent final
   void CollectVisualFeatures();
 
   // Processes the screenshot of the login page into visual features.
-  void OnScreenshotTaken(const SkBitmap& bitmap);
+  void OnScreenshotTaken(const viz::CopyOutputBitmapWithMetadata& result);
 
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(

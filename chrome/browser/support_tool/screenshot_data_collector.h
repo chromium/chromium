@@ -11,6 +11,10 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 // ScreenshotDataCollector opens a DesktopMediaPicker dialogue so that the user
 // can choose to take a screenshot of the entire screen, a window, or a tab.
 // This screenshot will be included in the exported Support Tool package.
@@ -79,7 +83,7 @@ class ScreenshotDataCollector : public DataCollector,
 #else
   // Is called when a tab has been captured. Encodes the screenshot to JPEG and
   // stores it in `data_`.
-  void OnTabCaptured(const SkBitmap& bitmap);
+  void OnTabCaptured(const viz::CopyOutputBitmapWithMetadata& result);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Is called when the screenshot has been exported (or failed to be exported).

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -101,10 +102,10 @@ void InactiveViewController::CaptureScreenshot(
       gfx::Rect(), gfx::Size(),
       base::BindOnce(
           [](base::WeakPtr<InactiveViewController> weak_ptr,
-             const SkBitmap& bitmap) {
+             const viz::CopyOutputBitmapWithMetadata& result) {
             if (weak_ptr) {
               weak_ptr->OnScreenshotCaptured(
-                  gfx::Image::CreateFrom1xBitmap(bitmap));
+                  gfx::Image::CreateFrom1xBitmap(result.bitmap));
             }
           },
           GetWeakPtr()));

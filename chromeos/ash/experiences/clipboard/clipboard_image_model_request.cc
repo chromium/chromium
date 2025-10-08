@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -330,8 +331,10 @@ void ClipboardImageModelRequest::CopySurface() {
                      source_view->GetDeviceScaleFactor()));
 }
 
-void ClipboardImageModelRequest::OnCopyComplete(float device_scale_factor,
-                                                const SkBitmap& bitmap) {
+void ClipboardImageModelRequest::OnCopyComplete(
+    float device_scale_factor,
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& bitmap = result.bitmap;
   if (!deliver_image_model_callback_) {
     Stop(RequestStopReason::kMultipleCopyCompletion);
     return;

@@ -93,6 +93,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
@@ -593,7 +594,12 @@ void ChromeOmniboxClient::OnResultChanged(
               /*output_size=*/gfx::Size(),
               base::BindPostTask(
                   base::SequencedTaskRunner::GetCurrentDefault(),
-                  base::BindOnce(on_bitmap_fetched, result_index, GURL())));
+                  base::BindOnce(
+                      [](const viz::CopyOutputBitmapWithMetadata& result) {
+                        return result.bitmap;
+                      })
+                      .Then(base::BindOnce(on_bitmap_fetched, result_index,
+                                           GURL()))));
         }
       }
     }

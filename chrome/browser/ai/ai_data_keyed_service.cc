@@ -51,6 +51,7 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -525,13 +526,14 @@ void OnEncodePng(AiDataKeyedService::AiDataCallback continue_callback,
 
 void OnGetTabScreenshotForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
   TRACE_EVENT0("browser", "OnGetTabScreenshotForModelPrototyping");
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&EncodePngOnBackgroundThread, base::OwnedRef(bitmap)),
+      base::BindOnce(&EncodePngOnBackgroundThread,
+                     base::OwnedRef(result.bitmap)),
       base::BindOnce(&OnEncodePng, std::move(continue_callback)));
 }
 
@@ -544,7 +546,7 @@ void GetTabScreenshotForModelPrototyping(
   if (!view) {
     return std::move(continue_callback).Run(std::nullopt);
   }
-  SkBitmap empty;
+  viz::CopyOutputBitmapWithMetadata empty;
   view->CopyFromSurface(
       gfx::Rect(),  // Copy entire surface area.
       gfx::Size(),  // Result contains device-level detail.

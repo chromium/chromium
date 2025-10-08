@@ -281,6 +281,11 @@ class VIZ_COMMON_EXPORT CopyOutputSharedImageResult : public CopyOutputResult {
   ReleaseCallbacks release_callbacks_;
 };
 
+// Output bitmap and metadata.
+struct VIZ_COMMON_EXPORT CopyOutputBitmapWithMetadata {
+  SkBitmap bitmap;
+};
+
 // Scoped class for accessing SkBitmap in CopyOutputRequest.
 // It cannot be used across threads.
 class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
@@ -301,6 +306,10 @@ class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
   // Returns a SkBitmap which can be used out the scope of the ScopedSkBitmap.
   // It makes a copy of the content in CopyOutputResult if it is needed.
   SkBitmap GetOutScopedBitmap() const;
+
+  // Returns a SkBitmap along with other metadata. Makes a copy of the content
+  // in CopyOutputResult if needed.
+  CopyOutputBitmapWithMetadata GetOutScopedBitmapAndMetadata() const;
 
  private:
   friend class CopyOutputResult;

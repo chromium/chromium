@@ -8,6 +8,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/tabs",
   "+components/variations",
+  "+components/viz/common",
   "+components/unified_consent",
   "+content/public/browser",
   "+google_apis",

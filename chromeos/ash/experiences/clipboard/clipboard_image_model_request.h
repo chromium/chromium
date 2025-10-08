@@ -32,6 +32,10 @@ class WebView;
 class Widget;
 }  // namespace views
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 // Renders html in an off-screen WebView, copies the rendered surface, and
 // passes the copy through |deliver_image_model_callback_|. If the request takes
 // takes more than 5s to load, timeout is declared and the callback is not
@@ -165,7 +169,8 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   void CopySurface();
 
   // Callback called when the rendered surface is done being copied.
-  void OnCopyComplete(float device_scale_factor, const SkBitmap& bitmap);
+  void OnCopyComplete(float device_scale_factor,
+                      const viz::CopyOutputBitmapWithMetadata& result);
 
   // Called when the running request takes too long to complete.
   void OnTimeout();

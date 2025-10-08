@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -292,8 +293,9 @@ void TabDesktopMediaList::ScreenshotReceived(
     int remaining_retries,
     const content::DesktopMediaID& id,
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const SkBitmap& bitmap = result.bitmap;
 
   if (id != previewed_source_) {
     // Selection has changed since triggering this screenshot. Quit early to

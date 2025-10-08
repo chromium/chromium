@@ -45,6 +45,7 @@
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/in_memory_federated_permission_context.h"
@@ -1402,7 +1403,9 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(
   ReportResults();
 }
 
-void WebTestControlHost::OnPixelDumpCaptured(const SkBitmap& snapshot) {
+void WebTestControlHost::OnPixelDumpCaptured(
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& snapshot = result.bitmap;
   // In the test: test_runner/notify_done_and_defered_close_dump_surface.html,
   // the |main_window_| is closed while waiting for the pixel dump. When this
   // happens, every window is closed and while pumping the message queue,
