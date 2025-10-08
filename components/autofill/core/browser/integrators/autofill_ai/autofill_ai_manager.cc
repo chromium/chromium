@@ -746,7 +746,6 @@ AutofillAiManager::GetEntityUpstreamCandidate(const FormStructure& form) {
                       return EntityInstance::MigrationOrder(*lhs, *rhs);
                     });
 
-  std::vector<EntityInstance::EntityId> upstream_candidates;
   for (const EntityInstance& observed_entity : observed_entities) {
     for (const EntityInstance* local_entity : saved_local_entities) {
       if (local_entity->type() != observed_entity.type()) {
