@@ -183,16 +183,14 @@ MATCHER_P(InkStrokeBrushSizeEq, expected_size, "") {
 
 // Matcher for ink::Stroke objects against an expected drawing brush type.
 // A pen is opaque while a highlighter has transparency, so a drawing
-// brush type can be deduced from the ink::Stroke's brush coat.
+// brush type can be deduced from the ink::Stroke's brush.
 MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
-  const ink::Brush& ink_brush = arg.GetBrush();
-  const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
-  float opacity = coat.tip.opacity_multiplier;
+  const float opacity = GetOpacityMultiplierFromBrush(arg.GetBrush());
   if (expected_type == PdfInkBrush::Type::kPen) {
     return opacity == 1.0f;
   }
 
-  CHECK(expected_type == PdfInkBrush::Type::kHighlighter);
+  CHECK_EQ(expected_type, PdfInkBrush::Type::kHighlighter);
   return opacity == 0.4f;
 }
 
@@ -642,7 +640,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(1.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(1.0f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 // Verify that a set highlighter message sets the annotation brush to a
@@ -666,7 +664,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(0.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 // Verify that brushes with zero color values can be set as the annotation
@@ -690,7 +688,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
   EXPECT_EQ(1.0f, coat.tip.corner_rounding);
-  EXPECT_EQ(1.0f, coat.tip.opacity_multiplier);
+  EXPECT_EQ(1.0f, GetOpacityMultiplierFromBrush(ink_brush));
 }
 
 TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
@@ -3501,12 +3499,10 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
     const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
     ASSERT_TRUE(brush);
     const ink::Brush& ink_brush = brush->ink_brush();
-    ASSERT_EQ(1u, ink_brush.CoatCount());
-    const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
 
     EXPECT_EQ(kOrangeColor, GetSkColorFromInkBrush(ink_brush));
     EXPECT_EQ(6.0f, ink_brush.GetSize());
-    EXPECT_EQ(0.4f, coat.tip.opacity_multiplier);
+    EXPECT_EQ(0.4f, GetOpacityMultiplierFromBrush(ink_brush));
   }
 
   void ClickTextAtPoint(const gfx::PointF& point, int click_count) {

@@ -58,11 +58,14 @@ ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
   // TODO(crbug.com/353942923): Use real values here.
   ink::BrushTip tip;
   tip.corner_rounding = GetCornerRounding(type);
-  tip.opacity_multiplier = GetOpacity(type);
 
-  // TODO(crbug.com/353942923): Use real `uri_string` here.
-  auto family = ink::BrushFamily::Create(tip, ink::BrushPaint(),
-                                         /*uri_string=*/"");
+  ink::BrushPaint paint;
+  paint.color_functions.emplace_back(
+      ink::ColorFunction::OpacityMultiplier{.multiplier = GetOpacity(type)});
+
+  // TODO(crbug.com/353942923): Use real `client_brush_family_id` here.
+  auto family = ink::BrushFamily::Create(tip, paint,
+                                         /*client_brush_family_id=*/"");
   CHECK(family.ok());
 
   auto brush = ink::Brush::Create(*family,

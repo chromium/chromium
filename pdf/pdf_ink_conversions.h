@@ -26,6 +26,8 @@ ink::StrokeInput CreateInkStrokeInput(ink::StrokeInput::ToolType tool_type,
 
 SkColor GetSkColorFromInkBrush(const ink::Brush& brush);
 
+float GetOpacityMultiplierFromBrush(const ink::Brush& brush);
+
 ink::Point InkPointFromGfxPoint(const gfx::PointF& point);
 
 }  // namespace chrome_pdf
