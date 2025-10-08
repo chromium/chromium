@@ -6764,6 +6764,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Web.FileInput.DirectoryAttributeMismatched" enum="Boolean"
+    expires_after="2026-03-08">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Histogram describing whether a &quot;Choose File&quot; event unexpectedly
+    accepted/denied directories as selection. Logged when an &quot;Open
+    Panel&quot; event is triggered by the web page which does not agree with the
+    &quot;Choose File&quot; event as to whether directories can be selected.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
     expires_after="2026-03-08">
   <owner>olivierrobin@chromium.org</owner>
@@ -6772,6 +6784,29 @@ chromium-metrics-reviews@google.com.
     Histogram describing whether a &quot;Choose File&quot; event was dropped in
     order to record a new incoming &quot;Choose File&quot; event. Logged when a
     new &quot;Choose File&quot; event is triggered by the web page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Web.FileInput.EventMatched" enum="Boolean"
+    expires_after="2026-03-08">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Histogram describing whether a &quot;Choose File&quot; event was matched to
+    an &quot;Open Panel&quot; event. Logged when an &quot;Open Panel&quot; event
+    is triggered by the web page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Web.FileInput.MultipleAttributeMismatched" enum="Boolean"
+    expires_after="2026-03-08">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Histogram describing whether a &quot;Choose File&quot; event unexpectedly
+    accepted/denied multiple files as selection. Logged when an &quot;Open
+    Panel&quot; event is triggered by the web page which does not agree with the
+    &quot;Choose File&quot; event as to whether multiple files can be selected.
   </summary>
 </histogram>
 

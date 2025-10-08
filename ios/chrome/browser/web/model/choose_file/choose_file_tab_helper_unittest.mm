@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
+#import <WebKit/WebKit.h>
+
 #import <memory>
 
 #import "base/functional/callback_helpers.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
@@ -35,18 +38,6 @@ class ChooseFileTabHelperTest : public PlatformTest {
   raw_ptr<ChooseFileTabHelper, DanglingUntriaged> tab_helper_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
-
-// Tests that calling `RunOpenPanel()` invokes the file upload panel handler.
-TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {
-  if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList scoped_feature_list{kIOSCustomFileUploadMenu};
-    id handler = OCMProtocolMock(@protocol(FileUploadPanelCommands));
-    OCMExpect([handler showFileUploadPanel]);
-    tab_helper_->SetFileUploadPanelHandler(handler);
-    tab_helper_->RunOpenPanel(nil, nil, base::DoNothing());
-    EXPECT_OCMOCK_VERIFY(handler);
-  }
-}
 
 // Tests that calling `StopChoosingFiles()` submits file selection and that
 // `IsChoosingFiles()` returns false afterwards.
@@ -199,4 +190,118 @@ TEST_F(ChooseFileTabHelperTest, LastChooseFileEvent) {
   EXPECT_EQ(event.time, tab_helper_event.value().time);
 
   EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+}
+
+// Tests that `RunOpenPanel()` starts file selection in the tab and shows the
+// file upload panel.
+TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {
+  if (@available(iOS 18.4, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
+
+    EXPECT_FALSE(tab_helper_->IsChoosingFiles());
+
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetAllowMultipleFiles(true)
+                                .SetOnlyAllowDirectory(false)
+                                .SetWebState(web_state_.get())
+                                .Build();
+    tab_helper_->SetLastChooseFileEvent(event);
+    EXPECT_TRUE(tab_helper_->HasLastChooseFileEvent());
+
+    __block bool completion_called = false;
+    NSURL* file_url = [NSURL fileURLWithPath:@"/path/to/file"];
+    NSArray<NSURL*>* file_urls = @[ file_url ];
+
+    id parameters = [OCMockObject mockForClass:[WKOpenPanelParameters class]];
+    [[[parameters stub] andReturnValue:@YES] allowsMultipleSelection];
+    [[[parameters stub] andReturnValue:@NO] allowsDirectories];
+
+    id handler = OCMProtocolMock(@protocol(FileUploadPanelCommands));
+    tab_helper_->SetFileUploadPanelHandler(handler);
+    OCMExpect([handler showFileUploadPanel]);
+
+    tab_helper_->RunOpenPanel(parameters, /*frame=*/nil,
+                              base::BindOnce(^(NSArray<NSURL*>* result_urls) {
+                                completion_called = true;
+                                EXPECT_NSEQ(file_urls, result_urls);
+                              }));
+    EXPECT_OCMOCK_VERIFY(handler);
+
+    EXPECT_TRUE(tab_helper_->IsChoosingFiles());
+    EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+
+    tab_helper_->AddFileUrlReadyForSelection(file_url, [NSDate date]);
+    tab_helper_->StopChoosingFiles(file_urls, /*display_string=*/nil,
+                                   /*icon_image=*/nil);
+
+    EXPECT_TRUE(completion_called);
+    EXPECT_FALSE(tab_helper_->IsChoosingFiles());
+  }
+}
+
+// Tests that `RunOpenPanel()` records histograms correctly.
+TEST_F(ChooseFileTabHelperTest, RunOpenPanelHistograms) {
+  if (@available(iOS 18.4, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
+
+    // No event.
+    base::HistogramTester histogram_tester;
+    id parameters = [OCMockObject mockForClass:[WKOpenPanelParameters class]];
+    [[[parameters stub] andReturnValue:@YES] allowsMultipleSelection];
+    [[[parameters stub] andReturnValue:@NO] allowsDirectories];
+    tab_helper_->RunOpenPanel(parameters, nil, base::DoNothing());
+    histogram_tester.ExpectUniqueSample("IOS.Web.FileInput.EventMatched", false,
+                                        1);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.MultipleAttributeMismatched", 0);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.DirectoryAttributeMismatched", 0);
+
+    // Matched event.
+    ChooseFileEvent event = ChooseFileEvent::Builder()
+                                .SetAllowMultipleFiles(true)
+                                .SetOnlyAllowDirectory(false)
+                                .SetWebState(web_state_.get())
+                                .Build();
+    tab_helper_->SetLastChooseFileEvent(event);
+    tab_helper_->RunOpenPanel(parameters, nil, base::DoNothing());
+    histogram_tester.ExpectBucketCount("IOS.Web.FileInput.EventMatched", true,
+                                       1);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.MultipleAttributeMismatched", 0);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.DirectoryAttributeMismatched", 0);
+
+    // Mismatched multiple.
+    event = ChooseFileEvent::Builder()
+                .SetAllowMultipleFiles(false)
+                .SetOnlyAllowDirectory(false)
+                .SetWebState(web_state_.get())
+                .Build();
+    tab_helper_->SetLastChooseFileEvent(event);
+    tab_helper_->RunOpenPanel(parameters, nil, base::DoNothing());
+    histogram_tester.ExpectBucketCount("IOS.Web.FileInput.EventMatched", true,
+                                       2);
+    histogram_tester.ExpectUniqueSample(
+        "IOS.Web.FileInput.MultipleAttributeMismatched", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.DirectoryAttributeMismatched", 0);
+
+    // Mismatched directory.
+    event = ChooseFileEvent::Builder()
+                .SetAllowMultipleFiles(true)
+                .SetOnlyAllowDirectory(true)
+                .SetWebState(web_state_.get())
+                .Build();
+    tab_helper_->SetLastChooseFileEvent(event);
+    tab_helper_->RunOpenPanel(parameters, nil, base::DoNothing());
+    histogram_tester.ExpectBucketCount("IOS.Web.FileInput.EventMatched", true,
+                                       3);
+    histogram_tester.ExpectTotalCount(
+        "IOS.Web.FileInput.MultipleAttributeMismatched", 1);
+    histogram_tester.ExpectUniqueSample(
+        "IOS.Web.FileInput.DirectoryAttributeMismatched", false, 1);
+  }
 }
