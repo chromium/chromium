@@ -5865,6 +5865,10 @@ const char kNtpModuleSignInRequirementDescription[] =
     "Makes NTP Sign-in Requirement per module, removing the requirement for "
     "Microsoft Modules";
 
+const char kNtpNextFeaturesName[] = "NTP Next Features";
+const char kNtpNextFeaturesDescription[] =
+    "Enables features (e.g., AI action chips) in NTP Next";
+
 const char kNtpOneGoogleBarAsyncBarPartsName[] =
     "NTP OneGoogleBar Async Bar Parts";
 const char kNtpOneGoogleBarAsyncBarPartsDescription[] =

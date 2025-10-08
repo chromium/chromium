@@ -11440,6 +11440,7 @@ from previous Chrome versions.
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
   <int value="-988839020"
       label="UsernameFirstFlowWithIntermediateValuesPredictions:disabled"/>
+  <int value="-988829176" label="NtpNextFeatures:enabled"/>
   <int value="-988758700"
       label="AdaptiveSuggestionsVisibleGroupEligibilityUpdate:enabled"/>
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>
@@ -14794,6 +14795,7 @@ from previous Chrome versions.
   <int value="224476390" label="PageInfoAboutThisSiteNonMsbb:enabled"/>
   <int value="225059444" label="ViewTransitionLayeredCapture:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
+  <int value="225857705" label="NtpNextFeatures:disabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="226633333"
       label="enable-experimental-accessibility-manifest-v3:disabled"/>

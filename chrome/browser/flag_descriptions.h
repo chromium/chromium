@@ -3389,6 +3389,9 @@ extern const char kNtpModulesDragAndDropDescription[];
 extern const char kNtpModuleSignInRequirementName[];
 extern const char kNtpModuleSignInRequirementDescription[];
 
+extern const char kNtpNextFeaturesName[];
+extern const char kNtpNextFeaturesDescription[];
+
 extern const char kNtpOneGoogleBarAsyncBarPartsName[];
 extern const char kNtpOneGoogleBarAsyncBarPartsDescription[];
 

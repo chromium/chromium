@@ -7202,6 +7202,16 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-next-features",
+    "owners": [
+      "jennserrano@google.com",
+      "omarflores@google.com",
+      "rtatum@google.com",
+      "shomizoe@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-ogb-async-bar-parts",
     "owners": [ "romanarora@chromium.org" ],
     "expiry_milestone": 150
