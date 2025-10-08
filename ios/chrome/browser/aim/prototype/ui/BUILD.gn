@@ -28,6 +28,7 @@ source_set("ui") {
     "//build:branding_buildflags",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

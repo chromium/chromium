@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -321,7 +322,22 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
   NSMutableArray* menuItems = [NSMutableArray
       arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
-  if (_canAttachCurrentTab) {
+
+  if (base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
+    UIAction* selectTabsAction = [UIAction
+        // TODO(crbug.com/40280872): Localize this string.
+        actionWithTitle:@"Attach tabs"
+                  image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action){
+                    // TODO(crbug.com/449132967): Display the tab picker.
+                }];
+    [menuItems addObject:selectTabsAction];
+  }
+
+  if (_canAttachCurrentTab &&
+      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
     [menuItems addObject:attachCurrentTabAction];
   }
 
