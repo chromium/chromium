@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/check_deref.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -134,7 +134,7 @@ void SystemInfoAnswerResult::UpdateTitleAndDetails(
 
 void SystemInfoAnswerResult::Open(int event_flags) {
   if (system_info_category_ == SystemInfoCategory::kSettings) {
-    ash::NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+    ash::SettingsAppManager::Get()->Open(
         CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
             profile_)),
         {.sub_page = url_path_});

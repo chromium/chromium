@@ -2415,6 +2415,7 @@ static_library("ui") {
       "//chromeos/ash/experiences/arc/touch_selection_menu",
       "//chromeos/ash/experiences/arc/vector_icons",
       "//chromeos/ash/experiences/arc/video_accelerator:protected_native_pixmap_query_client",
+      "//chromeos/ash/experiences/settings_ui",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/resources",
       "//chromeos/ash/services/assistant/public/cpp",

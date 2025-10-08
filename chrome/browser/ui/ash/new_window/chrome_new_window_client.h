@@ -36,8 +36,6 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenUrl(const GURL& url,
                OpenUrlFrom from,
                Disposition disposition) override;
-  void OpenOSSettingsPage(const user_manager::User& user,
-                          const OpenSettingsPageParams& params) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;

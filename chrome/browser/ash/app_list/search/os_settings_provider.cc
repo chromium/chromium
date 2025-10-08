@@ -10,7 +10,6 @@
 
 #include "ash/app_list/vector_icons/vector_icons.h"
 #include "ash/constants/web_app_id_constants.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
@@ -196,7 +196,7 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
 OsSettingsResult::~OsSettingsResult() = default;
 
 void OsSettingsResult::Open(int event_flags) {
-  ash::NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+  ash::SettingsAppManager::Get()->Open(
       CHECK_DEREF(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_)),
       {.sub_page = url_path_});

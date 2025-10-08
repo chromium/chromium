@@ -52,6 +52,7 @@ static_library("accessibility") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/language_packs",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/dbus/power",
     "//components/input",
     "//components/language/core/browser",

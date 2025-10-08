@@ -384,23 +384,6 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
   }
 }
 
-void ChromeNewWindowClient::OpenOSSettingsPage(
-    const user_manager::User& user,
-    const OpenSettingsPageParams& params) {
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
-
-  // TODO(crbug.com/47287122): unify SettingsWindowManager::ShowOSSettings,
-  // after callers are updated.
-  if (params.settings_id.has_value()) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, params.sub_page, *params.settings_id, params.display_id);
-  } else {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, params.sub_page, params.display_id);
-  }
-}
-
 void ChromeNewWindowClient::OpenCalculator() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   apps::AppServiceProxy* proxy =

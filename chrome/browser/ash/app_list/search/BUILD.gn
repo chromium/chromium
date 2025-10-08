@@ -96,6 +96,7 @@ static_library("search") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/components/libsegmentation:buildflags",
     "//chromeos/components/mahi/public/cpp",

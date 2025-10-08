@@ -78,6 +78,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/language/core/browser/pref_names.h"
@@ -2391,7 +2392,7 @@ void AccessibilityManager::OpenSettingsSubpage(const std::string& subpage) {
   Profile* profile = AccessibilityManager::Get()->profile();
   if (IsUserBrowserContext(profile) &&
       chromeos::settings::IsOSSettingsSubPage(subpage)) {
-    NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+    ash::SettingsAppManager::Get()->Open(
         CHECK_DEREF(
             BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
         {.sub_page = subpage});

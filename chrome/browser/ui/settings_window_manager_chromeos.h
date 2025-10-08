@@ -12,6 +12,7 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/display/types/display_constants.h"
 
@@ -27,7 +28,7 @@ class SettingsWindowManagerObserver;
 // Browser window for Settings that will be created when the Settings UI is
 // first opened and reused for any Settings links while it exists.
 
-class SettingsWindowManager {
+class SettingsWindowManager : public ash::SettingsAppManager {
  public:
   SettingsWindowManager(const SettingsWindowManager&) = delete;
   SettingsWindowManager& operator=(const SettingsWindowManager&) = delete;
@@ -44,6 +45,9 @@ class SettingsWindowManager {
   void AddObserver(SettingsWindowManagerObserver* observer);
   void RemoveObserver(SettingsWindowManagerObserver* observer);
 
+  // ash::SettingsAppManager:
+  void Open(const user_manager::User& user, OpenParams params) override;
+
   // Shows a chrome:// page (e.g. Settings, About) in an an existing system
   // Browser window for `profile` or creates a new one. `callback` will run on
   // Chrome page shown. `callback` can be null.
@@ -54,15 +58,18 @@ class SettingsWindowManager {
 
   // Shows the OS settings window for |profile|. When feature SplitSettings is
   // disabled, this behaves like ShowChromePageForProfile().
+  // DEPRECATED. Please use Open().
   void ShowOSSettings(Profile* profile,
                       int64_t display_id = display::kInvalidDisplayId);
 
   // As above, but shows a settings sub-page.
+  // DEPRECATED. Please use Open().
   void ShowOSSettings(Profile* profile,
                       std::string_view sub_page,
                       int64_t display_id = display::kInvalidDisplayId);
 
   // As above, but links to a specific setting.
+  // DEPRECATED. Please use Open().
   void ShowOSSettings(Profile* profile,
                       std::string_view sub_page,
                       const chromeos::settings::mojom::Setting setting_id,
@@ -77,7 +84,7 @@ class SettingsWindowManager {
 
  protected:
   SettingsWindowManager();
-  virtual ~SettingsWindowManager();
+  ~SettingsWindowManager() override;
 
  private:
   friend struct base::DefaultSingletonTraits<SettingsWindowManager>;

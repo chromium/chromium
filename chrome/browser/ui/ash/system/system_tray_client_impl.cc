@@ -72,6 +72,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -95,7 +96,7 @@ constexpr char kOfficialCalendarUrlPrefix[] =
     "https://calendar.google.com/calendar/";
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
-  ash::NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+  ash::SettingsAppManager::Get()->Open(
       CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()),
       {.sub_page = sub_page});
 }
@@ -380,7 +381,7 @@ void SystemTrayClientImpl::SetShowEolNotice(bool show,
 void SystemTrayClientImpl::ShowSettings(int64_t display_id) {
   // TODO(jamescook): Use different metric for OS settings.
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
-  ash::NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+  ash::SettingsAppManager::Get()->Open(
       CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()),
       {.display_id = display_id});
 }

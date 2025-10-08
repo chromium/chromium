@@ -25,12 +25,21 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "url/gurl.h"
+
+// TODO(crbug.com/472871229): Move to chromeos/ash/experiences/settings_ui
+// with getting rid of singleton.
+namespace ash {
+SettingsAppManager* SettingsAppManager::Get() {
+  return chrome::SettingsWindowManager::GetInstance();
+}
+}  // namespace ash
 
 namespace chrome {
 
@@ -81,6 +90,21 @@ void SettingsWindowManager::AddObserver(
 void SettingsWindowManager::RemoveObserver(
     SettingsWindowManagerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void SettingsWindowManager::Open(const user_manager::User& user,
+                                 OpenParams params) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+
+  // TODO(crbug.com/47287122): unify SettingsWindowManager::ShowOSSettings,
+  // after callers are updated.
+  if (params.setting_id.has_value()) {
+    ShowOSSettings(profile, params.sub_page, *params.setting_id,
+                   params.display_id);
+  } else {
+    ShowOSSettings(profile, params.sub_page, params.display_id);
+  }
 }
 
 void SettingsWindowManager::ShowChromePageForProfile(
