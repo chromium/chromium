@@ -568,10 +568,8 @@ test("gpu_unittests") {
   }
 
   if (is_win) {
-    sources += [
-      "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc",
-      "command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi_unittest.cc",
-    ]
+    sources +=
+        [ "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc" ]
   }
 
   if (is_linux || is_chromeos || is_android) {

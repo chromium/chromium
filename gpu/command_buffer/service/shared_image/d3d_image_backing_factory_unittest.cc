@@ -58,6 +58,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -2551,6 +2552,39 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
   CheckDawnBuffer(buffer, instance.Get(), device, kBufferSize, kBufferData);
 
   factory_ref.reset();
+}
+
+// Disabled by default as it requires DX11.
+TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
+  for (auto format : gfx::GetBufferFormatsForTesting()) {
+    gfx::BufferUsage usages[] = {
+        gfx::BufferUsage::GPU_READ,
+        gfx::BufferUsage::SCANOUT,
+        gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
+        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
+    };
+    for (auto usage : usages) {
+      if (!gpu::GpuMemoryBufferSupport::
+              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
+                                                                      usage)) {
+        continue;
+      }
+
+      gfx::GpuMemoryBufferHandle handle =
+          D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
+              /*io_runner=*/nullptr, gfx::Size(2, 2),
+              viz::GetSharedImageFormat(format), usage);
+      EXPECT_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
+    }
+  }
 }
 
 }  // namespace gpu
