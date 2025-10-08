@@ -541,6 +541,7 @@ class HttpStreamPool::AttemptManager
 
   // For trace events.
   const perfetto::Track track_;
+  const perfetto::Flow flow_;
 
   const base::TimeTicks created_time_;
 

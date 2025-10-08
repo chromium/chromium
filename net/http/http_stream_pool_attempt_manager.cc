@@ -162,6 +162,8 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
       track_(base::trace_event::GetNextGlobalTraceId()),
+      flow_(perfetto::Flow::ProcessScoped(
+          base::trace_event::GetNextGlobalTraceId())),
       created_time_(base::TimeTicks::Now()),
       // This must be before the GetTcpBasedAttemptDelay() call, since it needs
       // to know that QUIC is not allowed, or it will try to create an invalid
@@ -174,8 +176,11 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   // Since this is only one of two fixed values, seems not worth CHECKing.
   DCHECK(!allowed_alpns_.Has(NextProto::kProtoUnknown));
 
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManagerStart", group_->track(),
+                      group_->flow(), flow_);
   TRACE_EVENT_BEGIN("net.stream", "AttemptManager::AttemptManager", track_,
-                    "destination", stream_key().destination().Serialize());
+                    flow_, "destination",
+                    stream_key().destination().Serialize());
 
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
@@ -225,6 +230,8 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED,
       net_log_.source());
   TRACE_EVENT_END("net.stream", track_);
+  TRACE_EVENT_INSTANT("net.stream", "AttemptManagerEnd", group_->track(),
+                      group_->flow(), flow_);
 }
 
 void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
