@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -44,10 +45,53 @@ void MaybeCloseTabAsync(tabs::TabInterface& tab) {
   if (tab_strip_model->GetIndexOfTab(&tab) != TabStripModel::kNoTab &&
       tab_strip_model->count() > 1 &&
       tab.GetContents()->GetController().IsInitialNavigation()) {
+    base::UmaHistogramBoolean("WebApp.ProtocolHandlerPicker.TabClosed", true);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&tabs::TabInterface::Close, tab.GetWeakPtr()));
+    return;
   }
+  base::UmaHistogramBoolean("WebApp.ProtocolHandlerPicker.TabClosed", false);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProtocolHandlerPickerDialogClosedReason)
+enum class ProtocolHandlerPickerDialogClosedReason {
+  kOkButtonClicked = 0,
+  kCancelButtonClicked = 1,
+  kOther = 2,
+  kMaxValue = kOther
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:ProtocolHandlerPickerDialogClosedReason)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProtocolHandlerPickerAction)
+enum class ProtocolHandlerPickerAction {
+  kPreferredAppLaunched = 0,
+  kDialogShown = 1,
+  kAbortedDialogAlreadyOpen = 2,
+  kMaxValue = kAbortedDialogAlreadyOpen
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:ProtocolHandlerPickerAction)
+
+ProtocolHandlerPickerDialogClosedReason CloseReasonAsHistogramEnum(
+    views::Widget::ClosedReason reason) {
+  switch (reason) {
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return ProtocolHandlerPickerDialogClosedReason::kOkButtonClicked;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      return ProtocolHandlerPickerDialogClosedReason::kCancelButtonClicked;
+    default:
+      return ProtocolHandlerPickerDialogClosedReason::kOther;
+  }
+}
+
+void RecordPickerAction(ProtocolHandlerPickerAction action) {
+  base::UmaHistogramEnumeration("WebApp.ProtocolHandlerPicker.Action", action);
 }
 
 }  // namespace
@@ -139,6 +183,7 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
     const std::optional<url::Origin>& initiator_origin,
     ProtocolHandlerPickerDialogEntries app_entries) {
   if (HasOpenDialogWidget()) {
+    RecordPickerAction(ProtocolHandlerPickerAction::kAbortedDialogAlreadyOpen);
     return;
   }
 
@@ -162,6 +207,8 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
   dialog_ = tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
       model_host, std::move(params));
 
+  RecordPickerAction(ProtocolHandlerPickerAction::kDialogShown);
+
   // This will be called after the callback supplied to
   // `CreateProtocolHandlerPickerDialog()`.
   dialog_->MakeCloseSynchronous(
@@ -181,6 +228,8 @@ void ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected(
     const GURL& protocol_url,
     const std::string& app_id,
     bool remember_choice) {
+  base::UmaHistogramBoolean("WebApp.ProtocolHandlerPicker.RememberSelection",
+                            remember_choice);
   if (remember_choice) {
     proxy_->SetProtocolLinkPreference(app_id, protocol_url.scheme());
   }
@@ -189,7 +238,10 @@ void ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected(
 
 void ProtocolHandlerPickerCoordinator::CloseDialogWidget(
     views::Widget::ClosedReason reason) {
-  // TODO(cbug.com/422422887): Record `reason`?
+  base::UmaHistogramEnumeration(
+      "WebApp.ProtocolHandlerPicker.DialogClosedReason",
+      CloseReasonAsHistogramEnum(reason));
+
   dialog_.reset();
 
   // If this is a new tab just for protocol navigations, it has to be closed
@@ -213,6 +265,7 @@ void LaunchProtocolUrlInPreferredApp(
 
   if (std::optional<std::string> app_id =
           picker_coordinator->FindPreferredApp(protocol_url, app_ids)) {
+    RecordPickerAction(ProtocolHandlerPickerAction::kPreferredAppLaunched);
     picker_coordinator->LaunchApp(protocol_url, *app_id);
     MaybeCloseTabAsync(*tab);
     return;

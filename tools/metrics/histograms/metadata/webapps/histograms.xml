@@ -2414,6 +2414,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ProtocolHandlerPicker.Action"
+    enum="ProtocolHandlerPickerAction" expires_after="2026-05-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the action taken by the protocol handler picker routine -- either
+    show a dialog listing web apps capable of handling a particular protocol
+    link (say, spotify://) or launch the preferred app directly (if any). Only
+    relevant on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ProtocolHandlerPicker.DialogClosedReason"
+    enum="ProtocolHandlerPickerDialogClosedReason" expires_after="2026-05-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the reason why the protocol handler picker dialog (shown to display
+    web apps capable of handling a particular protocol link, say, spotify://)
+    was closed. Only relevant on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ProtocolHandlerPicker.RememberSelection" enum="Boolean"
+    expires_after="2026-05-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records whether the &quot;always open link in this app&quot; checkbox was
+    ticked by the user in the protocol handler picker dialog. Only relevant on
+    ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ProtocolHandlerPicker.TabClosed" enum="Boolean"
+    expires_after="2026-05-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records whether the protocol handler picker routine closed the current tab;
+    this normally happens when protocol link is opened via window.open() with
+    target=_blank. Only relevant on ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ProtocolHandlers.Registration.Result"
     enum="BooleanSuccess" expires_after="2026-01-11">
   <owner>dibyapal@chromium.org</owner>

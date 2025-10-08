@@ -363,6 +363,26 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="kIgnorePreviouslyUninstalledByUser"/>
 </enum>
 
+<!-- LINT.IfChange(ProtocolHandlerPickerAction) -->
+
+<enum name="ProtocolHandlerPickerAction">
+  <int value="0" label="Preferred app launched"/>
+  <int value="1" label="Dialog shown"/>
+  <int value="2" label="Flow aborted (dialog already opened)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.cc:ProtocolHandlerPickerAction) -->
+
+<!-- LINT.IfChange(ProtocolHandlerPickerDialogClosedReason) -->
+
+<enum name="ProtocolHandlerPickerDialogClosedReason">
+  <int value="0" label="Ok button clicked"/>
+  <int value="1" label="Cancel button clicked"/>
+  <int value="2" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.cc:ProtocolHandlerPickerDialogClosedReason) -->
+
 <enum name="RewriteIconResult">
   <int value="0" label="The app's state was changed unexpectedly"/>
   <int value="1" label="Icon successfully rewritten with mask"/>
