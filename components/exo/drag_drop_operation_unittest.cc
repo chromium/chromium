@@ -228,7 +228,7 @@ TEST_F(DragDropOperationTestWithWebUITabStripTest,
 TEST_F(DragDropOperationTest, DragDropFromPopup) {
   static_cast<ash::DragDropController*>(
       aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()))
-      ->set_should_block_during_drag_drop(false);
+      ->SetDisableNestedLoopForTesting(true);
   TestDataExchangeDelegate data_exchange_delegate;
 
   auto delegate = std::make_unique<TestDataSourceDelegate>();
@@ -286,7 +286,7 @@ TEST_F(DragDropOperationTest, DragDropFromPopup) {
 TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   static_cast<ash::DragDropController*>(
       aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()))
-      ->set_should_block_during_drag_drop(false);
+      ->SetDisableNestedLoopForTesting(true);
   TestDataExchangeDelegate data_exchange_delegate;
 
   auto parent_shell_surface = test::ShellSurfaceBuilder(gfx::Size(100, 100))

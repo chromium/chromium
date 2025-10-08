@@ -109,11 +109,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   void SetDisableNestedLoopForTesting(bool disable);
 
-  // Deprecated: Use `SetDisableNestedLoopForTesting`.
-  void set_should_block_during_drag_drop(bool should_block_during_drag_drop) {
-    SetDisableNestedLoopForTesting(!should_block_during_drag_drop);
-  }
-
   void enable_no_image_touch_drag_for_test() {
     allow_no_image_touch_drag_for_test_ = true;
   }

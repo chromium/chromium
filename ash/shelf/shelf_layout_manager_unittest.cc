@@ -2954,7 +2954,7 @@ class ShelfLayoutManagerDragDropTest
     auto* drag_drop_controller =
         static_cast<DragDropController*>(aura::client::GetDragDropClient(
             GetPrimaryShelf()->GetWindow()->GetRootWindow()));
-    drag_drop_controller->set_should_block_during_drag_drop(false);
+    drag_drop_controller->SetDisableNestedLoopForTesting(true);
     generator_ = GetEventGenerator();
   }
 

@@ -468,7 +468,7 @@ class DragDropControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     drag_drop_controller_ = std::make_unique<TestDragDropController>();
-    drag_drop_controller_->set_should_block_during_drag_drop(false);
+    drag_drop_controller_->SetDisableNestedLoopForTesting(true);
     drag_drop_controller_->set_enabled(true);
     aura::client::SetDragDropClient(Shell::GetPrimaryRootWindow(),
                                     drag_drop_controller_.get());
@@ -1323,7 +1323,7 @@ TEST_F(DragDropControllerTest, EventTarget) {
       FROM_HERE,
       base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   auto data = CreateDragData(/*with_image=*/false);
   drag_drop_controller_->StartDragAndDrop(
       std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
@@ -1359,7 +1359,7 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
       FROM_HERE,
       base::BindLambdaForTesting([&]() { generator.ReleaseLeftButton(); }));
 
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   DragOperation operation = drag_drop_controller_->StartDragAndDrop(
       std::make_unique<ui::OSExchangeData>(), window->GetRootWindow(), window,
       gfx::Point(5, 5), ui::DragDropTypes::DRAG_NONE,

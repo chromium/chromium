@@ -63,7 +63,7 @@ HoldingSpaceTestApi::HoldingSpaceTestApi()
   holding_space_tray_->set_use_zero_previews_update_delay_for_testing(true);
   // Holding space tests perform drag/drop so we need to disable blocking.
   auto* drag_drop_controller = ShellTestApi().drag_drop_controller();
-  drag_drop_controller->set_should_block_during_drag_drop(false);
+  drag_drop_controller->SetDisableNestedLoopForTesting(true);
 }
 
 HoldingSpaceTestApi::~HoldingSpaceTestApi() {
@@ -74,7 +74,7 @@ HoldingSpaceTestApi::~HoldingSpaceTestApi() {
   holding_space_tray_->set_use_zero_previews_update_delay_for_testing(false);
   // Enable blocking during drag/drop that was disabled for holding space tests.
   auto* drag_drop_controller = ShellTestApi().drag_drop_controller();
-  drag_drop_controller->set_should_block_during_drag_drop(true);
+  drag_drop_controller->SetDisableNestedLoopForTesting(false);
 }
 
 // static

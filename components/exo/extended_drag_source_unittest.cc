@@ -109,7 +109,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     drag_drop_controller_ = static_cast<ash::DragDropController*>(
         aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
     ASSERT_TRUE(drag_drop_controller_);
-    drag_drop_controller_->set_should_block_during_drag_drop(false);
+    drag_drop_controller_->SetDisableNestedLoopForTesting(true);
     drag_drop_controller_->set_enabled(true);
 
     seat_ =
@@ -557,7 +557,7 @@ TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
   generator.PressLeftButton();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
 
@@ -630,7 +630,7 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
   generator.PressTouch();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kTouch);
 
@@ -711,7 +711,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   generator->PressLeftButton();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
 
   data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
@@ -816,7 +816,7 @@ TEST_F(ExtendedDragSourceTest,
   generator->PressLeftButton();
 
   // Initiate the drag and drop session from Ash's drag drop controller.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
 
