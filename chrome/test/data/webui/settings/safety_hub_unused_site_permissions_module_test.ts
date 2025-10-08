@@ -206,13 +206,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
     assertEquals(action, result);
 
-    if (!isAbusiveNotification) {
-      isAbusiveNotification = false;
-    }
     if (isAbusiveNotification) {
       const resultAbusiveNotification = await metricsBrowserProxy.whenCalled(
           'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram');
       assertEquals(action, resultAbusiveNotification);
+    } else {
+      // Verify that in non-abusive case, the abusive metric is not logged.
+      assertEquals(0, metricsBrowserProxy.getCallCount(
+        'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram'));
     }
     metricsBrowserProxy.reset();
   }

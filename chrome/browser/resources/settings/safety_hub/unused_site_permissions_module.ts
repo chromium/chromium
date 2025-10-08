@@ -474,24 +474,18 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.showTooltipAtTarget(tooltip, e.target! as Element);
   }
 
-  private doesSiteListIncludeAbusiveNotifications(sites:
-                                                      UnusedSitePermissions[]) {
-    // Convert the permission type lists to i18n versions and check if each list
-    // includes notifications.
-    const listOfPermissionTypes = sites.map(site => site.permissions);
-    const listPermissionsIncludeNotifications = listOfPermissionTypes.map(
-        permissions =>
-            permissions
-                .map(permission => {
-                  const localizationString =
-                      getLocalizationStringForContentType(permission);
-                  return localizationString ? this.i18n(localizationString) :
-                                              '';
-                })
-                .includes('notifications'));
-
-    // Return true if any of the permission type lists includes notifications.
-    return listPermissionsIncludeNotifications.includes(true);
+  private doesSiteListIncludeAbusiveNotifications(
+      sites: UnusedSitePermissions[]) {
+    // Return true if any of the permission includes abusive type.
+    return sites.map(site => site.revocationType)
+               .filter(
+                   type => type ===
+                           PermissionsRevocationType
+                               .ABUSIVE_NOTIFICATION_PERMISSIONS ||
+                       type ===
+                           PermissionsRevocationType
+                               .UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS)
+               .length > 0;
   }
 }
 
