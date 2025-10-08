@@ -758,10 +758,9 @@ ci.builder(
             "x64",
         ],
     ),
-    builderless = True,
+    builderless = False,
     cores = None,  # Swapping between 8 and 24
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "bld",
