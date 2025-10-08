@@ -1865,7 +1865,7 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     Document* document = media_values_->GetDocument();
 
     StyleResolverState state(*document, *container);
-    state.SetStyle(container->ComputedStyleRef());
+    state.CreateNewClonedStyle(container->ComputedStyleRef());
     const auto* context = MakeGarbageCollected<CSSParserContext>(*document);
 
     const CSSValue* reference = StyleCascade::CoerceIntoNumericValue(

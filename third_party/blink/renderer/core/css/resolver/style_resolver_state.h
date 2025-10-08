@@ -97,7 +97,7 @@ class CORE_EXPORT StyleResolverState {
     return element_context_;
   }
 
-  void SetStyle(const ComputedStyle& style) {
+  void CreateNewClonedStyle(const ComputedStyle& style) {
     // FIXME: Improve RAII of StyleResolverState to remove this function.
     style_builder_.emplace(style);
     UpdateLengthConversionData();

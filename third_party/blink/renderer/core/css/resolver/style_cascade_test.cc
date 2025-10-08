@@ -270,7 +270,7 @@ class TestCascade {
       state.CreateNewStyle(*InitialStyle(state.GetDocument()), *parent_style);
       state.SetParentStyle(parent_style);
     } else {
-      state.SetStyle(*InitialStyle(state.GetDocument()));
+      state.CreateNewClonedStyle(*InitialStyle(state.GetDocument()));
       state.SetParentStyle(InitialStyle(state.GetDocument()));
     }
     state.SetOldStyle(state.GetElement().GetComputedStyle());

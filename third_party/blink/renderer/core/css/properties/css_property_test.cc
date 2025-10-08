@@ -98,7 +98,7 @@ class CSSPropertyTest : public PageTestBase {
 
     StyleResolverState state(GetDocument(), *GetDocument().body(),
                              &style_recalc_context);
-    state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
+    state.CreateNewClonedStyle(GetDocument().GetStyleResolver().InitialStyle());
 
     StyleBuilder::ApplyProperty(property, state, *value);
     const ComputedStyle* style = state.TakeStyle();

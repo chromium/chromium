@@ -68,7 +68,7 @@ class MatchedPropertiesCacheTestCache {
       const StyleRecalcContext* style_recalc_context = nullptr) {
     StyleResolverState state(document_, *document_.body(), style_recalc_context,
                              StyleRequest(&parent_style));
-    state.SetStyle(style);
+    state.CreateNewClonedStyle(style);
     return cache_.Find(key.InnerKey(), state);
   }
 

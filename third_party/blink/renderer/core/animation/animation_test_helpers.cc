@@ -92,7 +92,7 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
       document.GetStyleResolver().InitialStyle();
   StyleResolverState state(document, *element, nullptr /* StyleRecalcContext */,
                            StyleRequest(&initial_style));
-  state.SetStyle(initial_style);
+  state.CreateNewClonedStyle(initial_style);
 
   ActiveInterpolationsMap map;
   map.Set(PropertyHandle(AtomicString("--unused")), interpolations);

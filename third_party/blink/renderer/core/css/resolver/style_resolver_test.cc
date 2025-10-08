@@ -3706,7 +3706,7 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
   StyleResolverState state(GetDocument(), *div);
 
   // To make UpdateLengthConversionData happen.
-  state.SetStyle(div->ComputedStyleRef());
+  state.CreateNewClonedStyle(div->ComputedStyleRef());
 
   EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerWidth());
   EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerHeight());

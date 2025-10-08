@@ -1513,7 +1513,7 @@ void StyleResolver::InitStyle(Element& element,
     // if the element has no rules for this highlight pseudo, we skip resolution
     // entirely (leaving the optional unset). The bad news is that if
     // the element has rules but no matched properties, we currently clone.
-    state.SetStyle(*parent_style);
+    state.CreateNewClonedStyle(*parent_style);
 
     // Highlight Pseudos may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
@@ -1969,7 +1969,7 @@ void StyleResolver::ApplyBaseStyle(
                                animation_base_computed_style, *style_snapshot));
 #endif
 
-    state.SetStyle(*animation_base_computed_style);
+    state.CreateNewClonedStyle(*animation_base_computed_style);
     state.StyleBuilder().SetBaseData(GetBaseData(state));
     if (element->IsPseudoElement()) {
       state.StyleBuilder().SetStyleType(element->GetPseudoIdForStyling());
@@ -1992,7 +1992,7 @@ void StyleResolver::ApplyBaseStyle(
     // and just apply the element's inline style on top of it
     // (see the function comment). This is also known as
     // MISU (More Incremental Style Updates).
-    state.SetStyle(*element->GetComputedStyle());
+    state.CreateNewClonedStyle(*element->GetComputedStyle());
 
     // This is always false when creating a new style, but is not reset
     // when copying the style, so it needs to happen here. After us,
@@ -2088,7 +2088,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
   StyleResolverState state(element.GetDocument(), element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style));
-  state.SetStyle(base_style);
+  state.CreateNewClonedStyle(base_style);
   if (value) {
     STACK_UNINITIALIZED StyleCascade cascade(state);
     auto* set =
@@ -2431,7 +2431,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
 HeapHashMap<CSSPropertyName, Member<const CSSValue>>
 StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   StyleResolverState state(GetDocument(), *element);
-  state.SetStyle(InitialStyle());
+  state.CreateNewClonedStyle(InitialStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
   ElementRuleCollector collector(state.ElementContext(),
@@ -2920,7 +2920,7 @@ const CSSValue* StyleResolver::ComputeValue(
   StyleResolverState state(document, *element);
   state.EnsureParentStyle();
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  state.SetStyle(*base_style);
+  state.CreateNewClonedStyle(*base_style);
   // This method does not load any resources, which means that the ComputedStyle
   // contains StylePendingImages. As those are not expected to exist on style
   // for rendered elements, there is a DCHECK that is triggered when trying to
@@ -2954,7 +2954,7 @@ const CSSValue* StyleResolver::ResolveValue(
   Document& document = element.GetDocument();
   document.GetStyleEngine().UpdateViewportSize();
   StyleResolverState state(document, element);
-  state.SetStyle(style);
+  state.CreateNewClonedStyle(style);
   return StyleCascade::Resolve(state, property_name, value,
                                /*tree_scope=*/&document,
                                /*env_bindings=*/nullptr);
@@ -2973,7 +2973,7 @@ FilterOperations StyleResolver::ComputeFilterOperations(
                            StyleRequest(parent));
 
   GetDocument().GetStyleEngine().UpdateViewportSize();
-  state.SetStyle(*parent);
+  state.CreateNewClonedStyle(*parent);
 
   StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
                               filter_value.EnsureScopedValue(&GetDocument()));
@@ -3016,7 +3016,7 @@ const ComputedStyle* StyleResolver::BeforeChangeStyleForTransitionUpdate(
     ActiveInterpolationsMap& transition_interpolations) {
   StyleResolverState state(GetDocument(), element);
   STACK_UNINITIALIZED StyleCascade cascade(state);
-  state.SetStyle(base_style);
+  state.CreateNewClonedStyle(base_style);
 
   // Various property values may depend on the parent style. A valid parent
   // style is required, even if animating the root element, in order to
@@ -3154,7 +3154,7 @@ Font* StyleResolver::ComputeFont(Element& element,
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(&style));
   GetDocument().GetStyleEngine().UpdateViewportSize();
-  state.SetStyle(style);
+  state.CreateNewClonedStyle(style);
   if (const ComputedStyle* parent_style = element.GetComputedStyle()) {
     state.SetParentStyle(parent_style);
   }

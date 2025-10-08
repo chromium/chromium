@@ -816,7 +816,7 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   CSSPropertyRef ref("color-scheme", state.GetDocument());
 
@@ -851,7 +851,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   CSSValueList* dark_value = CSSValueList::CreateSpaceSeparated();
   dark_value->Append(*CSSIdentifierValue::Create(CSSValueID::kDark));
@@ -903,7 +903,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   auto* bgimage_declaration = ParseDeclarationBlock(
       "background-image:light-dark(none, url(dummy.png))", kUASheetMode);
@@ -921,7 +921,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   cascade1.Apply();
   EXPECT_TRUE(state.TakeStyle()->HasBackgroundImage());
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   StyleCascade cascade2(state);
   cascade2.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(document);
@@ -944,7 +944,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
   state.StyleBuilder().SetEffectiveZoom(1.5);
 
   auto* calc_value = CSSMathFunctionValue::Create(
@@ -1519,7 +1519,7 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
   EXPECT_FALSE(state.StyleBuilder().Animations());
   EXPECT_FALSE(state.StyleBuilder().Transitions());
 
@@ -1938,7 +1938,7 @@ TEST_F(ComputedStyleTest, BackgroundRepeat) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatX));
@@ -1963,7 +1963,7 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatY));
@@ -1988,7 +1988,7 @@ TEST_F(ComputedStyleTest, MaskMode) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   auto* mode_style_value = CSSIdentifierValue::Create(CSSValueID::kAlpha);
 
@@ -2025,7 +2025,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
@@ -2059,7 +2059,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
@@ -2093,7 +2093,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
@@ -2128,7 +2128,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial));
 
-  state.SetStyle(*initial);
+  state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
       state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
