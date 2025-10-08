@@ -89,6 +89,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 using content::BrowserContext;
@@ -364,6 +365,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
   content::RenderProcessHost* AddFilenameDeterminer() {
     ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutSecondsForTesting(
         2);
+    // TODO(crbug.com/405219117): Add special navigation for Android here as
+    // NavigateToURLInNewTab() does not take a browser/profile.
     content::WebContents* tab = chrome::AddSelectedTabWithURL(
         current_browser(), extension_->GetResourceURL("empty.html"),
         ui::PAGE_TRANSITION_LINK);
@@ -588,10 +591,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     DownloadManager* manager = GetCurrentManager();
 
     const GURL url = embedded_test_server()->GetURL(path);
-    // TODO(crbug.com/405219117): Replace with cross-platform navigate.
-    ui_test_utils::NavigateToURLWithDisposition(
-        current_browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NO_WAIT);
+    LoadURLNoWait(url, WindowOpenDisposition::CURRENT_TAB);
 
     response->WaitForRequest();
     response->Send(
@@ -701,6 +701,22 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return base::StringPrintf("[%d]", download_item->GetId());
   }
 
+  // Loads a URL without waiting for the navigation to complete.
+  content::WebContents* LoadURLNoWait(const GURL& url,
+                                      WindowOpenDisposition disposition) {
+    content::WebContents* tab = GetActiveWebContents();
+    if (current_profile()->IsOffTheRecord()) {
+      // Ensure we have an OTR window and OTR web contents.
+      tab = PlatformOpenURLOffTheRecord(current_profile(), GURL("about:blank"));
+    }
+    content::OpenURLParams params(url, content::Referrer(), disposition,
+                                  ui::PAGE_TRANSITION_LINK,
+                                  /*is_renderer_initiated=*/false);
+    tab->OpenURL(params,
+                 /*navigation_handle_callback=*/{});
+    return tab;
+  }
+
   base::FilePath downloads_directory() {
     return DownloadPrefs(current_profile()).DownloadPath();
   }
@@ -722,9 +738,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
       observer->WatchExistingWebContents();
       observer->StartWatchingNewWebContents();
       // Recreate the tab each time for insulation.
-      // TODO(crbug.com/405219117): Replace with cross-platform navigate.
-      content::WebContents* tab = chrome::AddSelectedTabWithURL(
-          current_browser(), url, ui::PAGE_TRANSITION_LINK);
+      content::WebContents* tab =
+          LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
       observer->WaitForNavigationFinished();
       function->set_extension(extension);
       function->SetRenderFrameHost(tab->GetPrimaryMainFrame());
@@ -755,10 +770,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
         test_data_dir_.AppendASCII(name),
         {.allow_in_incognito = true, .allow_file_access = enable_file_access});
     CHECK(extension);
-    // TODO(crbug.com/405219117): Replace with cross-platform navigate.
-    content::WebContents* tab = chrome::AddSelectedTabWithURL(
-        current_browser(), extension->GetResourceURL("empty.html"),
-        ui::PAGE_TRANSITION_LINK);
+    GURL url = extension->GetResourceURL("empty.html");
+    content::WebContents* tab =
+        LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
     EXPECT_TRUE(content::WaitForLoadStop(tab));
     EventRouter::Get(current_profile())
         ->AddEventListener(downloads::OnCreated::kEventName,
@@ -935,32 +949,6 @@ class HTML5FileWriter {
                        std::move(quit_closure)));
   }
 };
-
-// TODO(benjhayden) Merge this with the other TestObservers.
-class JustInProgressDownloadObserver
-    : public content::DownloadTestObserverInProgress {
- public:
-  JustInProgressDownloadObserver(
-      DownloadManager* download_manager, size_t wait_count)
-      : content::DownloadTestObserverInProgress(download_manager, wait_count) {
-  }
-
-  JustInProgressDownloadObserver(const JustInProgressDownloadObserver&) =
-      delete;
-  JustInProgressDownloadObserver& operator=(
-      const JustInProgressDownloadObserver&) = delete;
-
-  ~JustInProgressDownloadObserver() override = default;
-
- private:
-  bool IsDownloadInFinalState(DownloadItem* item) override {
-    return item->GetState() == DownloadItem::IN_PROGRESS;
-  }
-};
-
-bool ItemIsInterrupted(DownloadItem* item) {
-  return item->GetState() == DownloadItem::INTERRUPTED;
-}
 
 }  // namespace
 
@@ -4336,142 +4324,6 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// This test is very flaky on Win XP and Aura. http://crbug.com/248438
-// Also flaky on Linux. http://crbug.com/700382
-// Also flaky on Mac ASAN.
-// Test download interruption while extensions determining filename. Should not
-// re-dispatch onDeterminingFilename.
-IN_PROC_BROWSER_TEST_F(
-    DownloadExtensionTest,
-    DISABLED_DownloadExtensionTest_OnDeterminingFilename_InterruptedResume) {
-  LoadExtension("downloads_split");
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  GoOnTheRecord();
-  content::RenderProcessHost* host = AddFilenameDeterminer();
-
-  // Start a download.
-  DownloadItem* item = nullptr;
-  {
-    DownloadManager* manager = GetCurrentManager();
-    std::unique_ptr<content::DownloadTestObserver> observer(
-        new JustInProgressDownloadObserver(manager, 1));
-    ASSERT_EQ(0, manager->InProgressCount());
-    ASSERT_EQ(0, manager->BlockingShutdownCount());
-    // Tabs created just for a download are automatically closed, invalidating
-    // the download's WebContents. Downloads without WebContents cannot be
-    // resumed. http://crbug.com/225901
-    ui_test_utils::NavigateToURLWithDisposition(
-        current_browser(),
-        // This code used to use a mock class that no longer works, due to the
-        // NetworkService shipping.
-        // TODO(crbug.com/41306723): Fix or delete this test.
-        GURL(), WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NO_WAIT);
-    observer->WaitForFinished();
-    EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::IN_PROGRESS));
-    DownloadManager::DownloadVector items;
-    manager->GetAllDownloads(&items);
-    for (download::DownloadItem* download_item : items) {
-      if (download_item->GetState() == DownloadItem::IN_PROGRESS) {
-        // There should be only one IN_PROGRESS item.
-        EXPECT_EQ(nullptr, item);
-        item = download_item;
-      }
-    }
-    ASSERT_TRUE(item);
-  }
-  ScopedCancellingItem canceller(item);
-
-  // Wait for the onCreated and onDeterminingFilename event.
-  ASSERT_TRUE(WaitFor(downloads::OnCreated::kEventName,
-                      base::StringPrintf(
-                          "[{\"danger\": \"safe\","
-                          "  \"incognito\": false,"
-                          "  \"id\": %d,"
-                          "  \"mime\": \"application/octet-stream\","
-                          "  \"paused\": false}]",
-                          item->GetId())));
-  ASSERT_TRUE(WaitFor(downloads::OnDeterminingFilename::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d,"
-                          "  \"incognito\": false,"
-                          "  \"filename\":\"download-unknown-size\"}]",
-                          item->GetId())));
-  ASSERT_TRUE(item->GetTargetFilePath().empty());
-  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
-
-  ClearEvents();
-  ui_test_utils::NavigateToURLWithDisposition(
-      current_browser(),
-      // This code used to use a mock class that no longer works, due to the
-      // NetworkService shipping.
-      // TODO(crbug.com/41306723): Fix or delete this test.
-      GURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Errors caught before filename determination are delayed until after
-  // filename determination.
-  std::string error;
-  ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(
-      current_profile(), false, GetExtensionId(), item->GetId(),
-      base::FilePath(FILE_PATH_LITERAL("42.txt")),
-      downloads::FilenameConflictAction::kUniquify, &error))
-      << error;
-  EXPECT_EQ("", error);
-  ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d,"
-                          "  \"filename\": {"
-                          "    \"previous\": \"\","
-                          "    \"current\": \"%s\"}}]",
-                          item->GetId(),
-                          GetFilename("42.txt").c_str())));
-
-  content::DownloadUpdatedObserver interrupted(
-      item, base::BindRepeating(ItemIsInterrupted));
-  ASSERT_TRUE(interrupted.WaitForEvent());
-  ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d,"
-                          "  \"error\":{\"current\":\"NETWORK_FAILED\"},"
-                          "  \"state\":{"
-                          "    \"previous\":\"in_progress\","
-                          "    \"current\":\"interrupted\"}}]",
-                          item->GetId())));
-
-  ClearEvents();
-  // Downloads that are restarted on resumption trigger another download target
-  // determination.
-  RemoveFilenameDeterminer(host);
-  item->Resume(true);
-
-  // Errors caught before filename determination is complete are delayed until
-  // after filename determination so that, on resumption, filename determination
-  // does not need to be re-done. So, there will not be a second
-  // onDeterminingFilename event.
-
-  ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d,"
-                          "  \"error\":{\"previous\":\"NETWORK_FAILED\"},"
-                          "  \"state\":{"
-                          "    \"previous\":\"interrupted\","
-                          "    \"current\":\"in_progress\"}}]",
-                          item->GetId())));
-
-  ClearEvents();
-  FinishFirstSlowDownloads();
-
-  // The download should complete successfully.
-  ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
-                      base::StringPrintf(
-                          "[{\"id\": %d,"
-                          "  \"state\": {"
-                          "    \"previous\": \"in_progress\","
-                          "    \"current\": \"complete\"}}]",
-                          item->GetId())));
-}
-
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SetShelfEnabled) {
   LoadExtension("downloads_split");
@@ -4552,8 +4404,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       &callback);
 
   const GURL url = extension()->GetResourceURL("accept_danger.html");
-  // TODO(crbug.com/405219117): Replace with cross-platform navigate.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   observer->WaitForFinished();
 }
