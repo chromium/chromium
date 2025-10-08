@@ -218,6 +218,27 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElement) {
   EXPECT_EQ(EvalJs(web_contents(), "offscreen_button_clicked"), true);
 }
 
+// Same as above but the element is an inline element. (i.e. doesn't have a
+// LayoutBox).
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenElementInline) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_EQ(EvalJs(web_contents(), "offscreen_inline_clicked"), false);
+
+  std::optional<int> anchor_id =
+      GetDOMNodeId(*main_frame(), "a#offscreenInline");
+  ASSERT_TRUE(anchor_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), anchor_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(EvalJs(web_contents(), "offscreen_inline_clicked"), true);
+}
+
 // Sending an action to an offscreen coordinate should fail.
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenCoordinate) {
   const GURL url =

@@ -22,6 +22,9 @@
   <button disabled id="disabled">Disabled</button>
   <button style="position: absolute;top:150vh" id="offscreen">Offscreen</button>
   <button style="position: fixed;top:200vh" id="offscreenfixed">Offscreen</button>
+  <div style="position: absolute;top:200vh">
+    <a href="#" id="offscreenInline">Offscreen Inline</a>
+  </div>
   <p id="text">Some text</p>
   <ul>
     <li>
@@ -40,6 +43,7 @@
   let button_pointer_down = false;
   let button_pointer_up = false;
   let offscreen_button_clicked = false;
+  let offscreen_inline_clicked = false;
 
   const button = document.getElementById('clickable');
   button.addEventListener('click', (event) => {
@@ -66,6 +70,11 @@
   const offscreen_button = document.getElementById('offscreen');
   offscreen_button.addEventListener('click', (event) => {
     offscreen_button_clicked = true;
+  });
+
+  const offscreen_inline = document.getElementById('offscreenInline');
+  offscreen_inline.addEventListener('click', (event) => {
+    offscreen_inline_clicked = true;
   });
 
   let mouse_event_log = [];

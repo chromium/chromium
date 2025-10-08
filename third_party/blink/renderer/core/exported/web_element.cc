@@ -401,8 +401,9 @@ bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
 }
 
 void WebElement::ScrollIntoViewIfNeeded() {
-  LayoutBox* box = GetScrollingBox();
-  if (!box) {
+  Element* element = Unwrap<Element>();
+  LayoutObject* layout_object = element->GetLayoutObject();
+  if (!layout_object) {
     return;
   }
 
@@ -427,7 +428,8 @@ void WebElement::ScrollIntoViewIfNeeded() {
   // User scrolling to ensure only user scrollable scrollers are affected.
   params->type = mojom::blink::ScrollType::kUser;
   scroll_into_view_util::ScrollRectToVisible(
-      *box, box->AbsoluteBoundingBoxRectForScrollIntoView(), std::move(params));
+      *layout_object, layout_object->AbsoluteBoundingBoxRectForScrollIntoView(),
+      std::move(params));
 }
 
 bool WebElement::HasScrollBehaviorSmooth() const {
