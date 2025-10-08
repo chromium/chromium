@@ -1040,6 +1040,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.background_sync",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.bookmarks",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.browserservices",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.chrome_item_picker",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.compositor",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.contextmenu",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.contextualsearch",

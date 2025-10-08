@@ -271,6 +271,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/UrlFilters.java",
   "java/src/org/chromium/chrome/browser/chrome_item_picker/ChromeItemPickerActivity.java",
+  "java/src/org/chromium/chrome/browser/chrome_item_picker/TabItemPickerCoordinator.java",
   "java/src/org/chromium/chrome/browser/common/ChromeIsolatedWorldIds.java",
   "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
   "java/src/org/chromium/chrome/browser/compositor/CompositorSurfaceManager.java",

@@ -311,6 +311,9 @@ public class IntentHandler {
     public static final String EXTRA_ITEM_PICKER_MAX_SELECTABLE_ITEMS =
             "org.chromium.chrome.browser.extras.item_picker_max_selectable_items";
 
+    public static final String EXTRA_ITEM_PICKER_ERROR =
+            "org.chromium.chrome.browser.chrome_item_picker.EXTRA_ITEM_PICKER_ERROR";
+
     private static @Nullable Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static @Nullable String sPendingIncognitoUrl;

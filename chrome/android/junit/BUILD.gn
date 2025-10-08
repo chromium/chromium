@@ -505,6 +505,13 @@ if (is_android) {
   }
 
   robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.chrome_item_picker") {
+    sources = [ "src/org/chromium/chrome/browser/chrome_item_picker/TabItemPickerCoordinatorUnitTest.java" ]
+
+    deps = [ ":chrome_junit_tests_helper" ]
+  }
+
+  robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.bookmarks") {
     sources = [
       "src/org/chromium/chrome/browser/bookmarks/BookmarkPageUnitTest.java",
