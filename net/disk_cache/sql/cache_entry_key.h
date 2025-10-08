@@ -37,7 +37,7 @@ namespace disk_cache {
 // the main cache key string.
 class NET_EXPORT_PRIVATE CacheEntryKey {
  public:
-  using Hash = base::StrongAlias<class HashTag, int64_t>;
+  using Hash = base::StrongAlias<class HashTag, int32_t>;
 
   explicit CacheEntryKey(std::string str = "");
   ~CacheEntryKey();

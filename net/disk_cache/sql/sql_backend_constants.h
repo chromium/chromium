@@ -58,21 +58,24 @@ inline constexpr uint64_t kSqlBackendFakeIndexMagicNumber =
 //            cleaned up. Instead of a delayed task, cleanup is now triggered
 //            during browser idle periods. Also, the index on `res_id` for
 //            doomed entries was removed as it's no longer needed.
+// Version 6: https://crrev.com/c/7006231 changed the hash function for cache
+//            keys to base::PersistentHash, which uses a 32-bit hash. This is a
+//            breaking change as the previous version used a 64-bit hash.
 // ----------------------------------------------------------------------------
 
 // The oldest database schema version that the current code can read.
 // A database with a version older than this will be razed as it's considered
 // obsolete and the code no longer supports migrating from it.
-inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 5;
+inline constexpr int kSqlBackendLowestSupportedDatabaseVersion = 6;
 
 // The current version of the database schema. This should be incremented for
 // any schema change.
-inline constexpr int kSqlBackendCurrentDatabaseVersion = 5;
+inline constexpr int kSqlBackendCurrentDatabaseVersion = 6;
 
 // The oldest application version that can use a database with the current
 // schema. If a schema change is not backward-compatible, this must be set to
 // the same value as `kSqlBackendCurrentDatabaseVersion`.
-inline constexpr int kSqlBackendCompatibleDatabaseVersion = 5;
+inline constexpr int kSqlBackendCompatibleDatabaseVersion = 6;
 
 // Estimated static size overhead for a resource entry in the database,
 // excluding the key and any blob data. This is a conservative estimate based on

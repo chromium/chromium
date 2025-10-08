@@ -666,7 +666,7 @@ Error Backend::InitializeInternal(bool& corruption_detected,
             Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources)));
     while (statement.Step()) {
       const auto res_id = ResId(statement.ColumnInt64(0));
-      const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt64(1));
+      const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt(1));
       const bool doomed = statement.ColumnBool(2);
       if (doomed) {
         doomed_entry_res_ids.emplace_back(res_id);
@@ -796,7 +796,7 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectLiveResources)));
-  statement.BindInt64(0, key.hash().value());
+  statement.BindInt(0, key.hash().value());
   statement.BindString(1, key.string());
   if (!statement.Step()) {
     // `Step()` returned false, which means either the query completed with no
@@ -890,7 +890,7 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     statement.BindTime(0, entry_info.last_used);
     statement.BindInt64(1, entry_info.body_end);
     statement.BindInt64(2, bytes_usage);
-    statement.BindInt64(3, key.hash().value());
+    statement.BindInt(3, key.hash().value());
     statement.BindString(4, key.string());
     if (!statement.Step()) {
       return base::unexpected(Error::kFailedToExecute);
@@ -1150,7 +1150,7 @@ ResIdListOrError Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
-    statement.BindInt64(0, key.hash().value());
+    statement.BindInt(0, key.hash().value());
     statement.BindString(1, key.string());
     while (statement.Step()) {
       const auto res_id = ResId(statement.ColumnInt64(0));
@@ -1394,7 +1394,7 @@ Error Backend::UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
         SQL_FROM_HERE,
         GetQuery(Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
-    statement.BindInt64(1, key.hash().value());
+    statement.BindInt(1, key.hash().value());
     statement.BindString(2, key.string());
     if (!statement.Run()) {
       return Error::kFailedToExecute;
