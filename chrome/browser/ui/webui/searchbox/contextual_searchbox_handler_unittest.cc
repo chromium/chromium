@@ -331,6 +331,16 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
   mock_searchbox_page_.FlushForTesting();
 }
 
+TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  handler().AddTabContext(0, callback.Get());
+
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_searchbox_page_.FlushForTesting();
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   // Add a tab.
   tabs::TabInterface* tab = AddTab(GURL("https://example.com"));

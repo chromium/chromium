@@ -387,6 +387,9 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async addTabContext_(e: CustomEvent) {
     const {token} = await this.searchboxHandler_.addTabContext(e.detail.id);
+    if (!token) {
+      return;
+    }
 
     const attachment: ComposeboxFile = {
       uuid: token,

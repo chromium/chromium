@@ -116,6 +116,7 @@ void ContextualSearchboxHandler::AddTabContext(
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
