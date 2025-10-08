@@ -22,6 +22,7 @@ android_library("version_constants_java") {
   deps = [
     ":generate_version_constants",
     ":version_constants_bridge_jni_java",
+    "//base:resetters_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

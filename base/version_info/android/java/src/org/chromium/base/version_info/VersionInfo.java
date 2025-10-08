@@ -4,7 +4,9 @@
 
 package org.chromium.base.version_info;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A utility class for querying information about the current Chromium build. Intentionally doesn't
@@ -12,10 +14,15 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class VersionInfo {
+    private static @Nullable Boolean sIsOfficialBuildForTesting;
+    private static @Nullable Boolean sIsStableBuildForTesting;
+    private static @Nullable Boolean sIsLocalBuildForTesting;
+
     /**
      * @return Whether this build is a local build.
      */
     public static boolean isLocalBuild() {
+        if (sIsLocalBuildForTesting != null) return sIsLocalBuildForTesting;
         return VersionConstants.CHANNEL == Channel.DEFAULT;
     }
 
@@ -44,6 +51,7 @@ public class VersionInfo {
      * @return Whether this build is a stable build.
      */
     public static boolean isStableBuild() {
+        if (sIsStableBuildForTesting != null) return sIsStableBuildForTesting;
         return VersionConstants.CHANNEL == Channel.STABLE;
     }
 
@@ -67,6 +75,7 @@ public class VersionInfo {
      * @return Whether this is an official (i.e. non-development) build.
      */
     public static boolean isOfficialBuild() {
+        if (sIsOfficialBuildForTesting != null) return sIsOfficialBuildForTesting;
         return VersionConstants.IS_OFFICIAL_BUILD;
     }
 
@@ -89,5 +98,17 @@ public class VersionInfo {
      */
     public static int getBuildVersion() {
         return VersionConstants.PRODUCT_BUILD_VERSION;
+    }
+
+    public static void setOverridesForTesting(Boolean official, Boolean stable, Boolean local) {
+        sIsOfficialBuildForTesting = official;
+        sIsStableBuildForTesting = stable;
+        sIsLocalBuildForTesting = local;
+        ResettersForTesting.register(
+                () -> {
+                    sIsOfficialBuildForTesting = null;
+                    sIsStableBuildForTesting = null;
+                    sIsLocalBuildForTesting = null;
+                });
     }
 }
