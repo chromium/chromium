@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -103,7 +102,15 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void setupForGroupDrag() {
+        mInteractingTab = buildStripTab(TAB_ID1, 0);
+        mTabForInteractingView = (MockTab) mModel.getTabById(TAB_ID1);
         mInteractingGroupTitle = buildGroupTitle(GROUP_ID1, TAB_WIDTH);
+        mStripTabs =
+                new StripLayoutTab[] {
+                    buildStripTab(TAB_ID1, 0), buildStripTab(TAB_ID2, 0), buildStripTab(TAB_ID3, 0)
+                };
+
+        mockTabGroup(GROUP_ID1, TAB_ID1, mModel.getTabById(TAB_ID1));
     }
 
     @Test
@@ -410,19 +417,42 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
     }
 
-    @Test
-    public void testUpdateReorder_dragOutOfAndThenOntoStrip_tabSelection() {
-        startTabReorder();
+    private void doTestDragOutOfAndThenOntoStripSelection() {
         int startingIndex = mModel.index();
 
         // Update reorder - drag out of strip and fake next selection index.
-        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(1);
+        int expectedIndex = 2;
+        when(mStripUpdateDelegate.getNextIndexAfterClose(any())).thenReturn(expectedIndex);
         dragOutOfStrip();
-        assertNotEquals("Expected de-select on drag exit", startingIndex, mModel.index());
+        assertEquals(
+                "Expected to select the next available index on drag exit.",
+                expectedIndex,
+                mModel.index());
 
         // Stop reorder - verify the original index is re-selected.
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
-        assertEquals("Expected re-select on drag enter", startingIndex, mModel.index());
+        assertEquals(
+                "Expected to reselect the initial selected tab on drag enter.",
+                startingIndex,
+                mModel.index());
+    }
+
+    @Test
+    public void testUpdateReorder_dragOutOfAndThenOntoStrip_tabSelection() {
+        startTabReorder();
+        doTestDragOutOfAndThenOntoStripSelection();
+    }
+
+    @Test
+    public void testUpdateReorder_dragOutOfAndThenOntoStrip_multiTabSelection() {
+        startMultiTabReorder();
+        doTestDragOutOfAndThenOntoStripSelection();
+    }
+
+    @Test
+    public void testUpdateReorder_dragOutOfAndThenOntoStrip_groupSelection() {
+        startGroupReorder();
+        doTestDragOutOfAndThenOntoStripSelection();
     }
 
     @Test
