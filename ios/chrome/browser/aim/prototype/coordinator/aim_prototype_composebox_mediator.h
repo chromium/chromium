@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_COMPOSEBOX_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_COMPOSEBOX_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,8 +11,8 @@
 
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client_delegate.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_consumer.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 
 @protocol AIMPrototypeURLLoader;
@@ -21,13 +21,14 @@ class FaviconLoader;
 class GURL;
 class WebStateList;
 
-// Mediator for the AIM prototype.
-@interface AIMPrototypeMediator : NSObject <AIMOmniboxClientDelegate,
-                                            AIMPrototypeMutator,
-                                            ComposeboxFileUploadObserver,
-                                            LoadQueryCommands>
+// Mediator for the AIM prototype composebox.
+@interface AIMPrototypeComposeboxMediator
+    : NSObject <AIMOmniboxClientDelegate,
+                AIMPrototypeComposeboxMutator,
+                ComposeboxFileUploadObserver,
+                LoadQueryCommands>
 
-@property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
+@property(nonatomic, weak) id<AIMPrototypeComposeboxConsumer> consumer;
 @property(nonatomic, weak) id<AIMPrototypeURLLoader> URLLoader;
 
 - (instancetype)initWithComposeboxQueryController:
@@ -46,4 +47,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_COMPOSEBOX_MEDIATOR_H_

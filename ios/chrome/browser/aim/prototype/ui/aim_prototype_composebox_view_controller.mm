@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_view_controller.h"
 
 #import "base/cancelable_callback.h"
 #import "base/functional/bind.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item_cell.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item_view.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -80,10 +80,11 @@ const CGFloat kFadeViewWidth = 30.0f;
 const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }  // namespace
 
-@interface AIMPrototypeViewController () <UITextViewDelegate,
-                                          AIMInputItemCellDelegate,
-                                          UICollectionViewDelegate,
-                                          UICollectionViewDelegateFlowLayout>
+@interface AIMPrototypeComposeboxViewController () <
+    UITextViewDelegate,
+    AIMInputItemCellDelegate,
+    UICollectionViewDelegate,
+    UICollectionViewDelegateFlowLayout>
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
@@ -99,7 +100,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 @end
 
-@implementation AIMPrototypeViewController {
+@implementation AIMPrototypeComposeboxViewController {
   /// The collection view to display the selected images.
   UICollectionView* _carouselView;
   /// The diffable data source for the carousel view.
@@ -409,7 +410,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   }
 }
 
-#pragma mark - AIMPrototypeConsumer
+#pragma mark - AIMPrototypeComposeboxConsumer
 
 - (void)setItems:(NSArray<AIMInputItem*>*)items {
   NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* snapshot =
@@ -580,11 +581,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   // the mode was turned on or off.
   __weak __typeof__(self) weakSelf = self;
   _updateGlowCallback.Reset(base::BindOnce(^{
-    AIMPrototypeViewController* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf updateGlow];
+    [weakSelf updateGlow];
   }));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, _updateGlowCallback.callback(),

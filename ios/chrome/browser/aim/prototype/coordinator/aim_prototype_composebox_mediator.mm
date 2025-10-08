@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_mediator.h"
 
 #import <PDFKit/PDFKit.h>
 
@@ -113,7 +113,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 }  // namespace
 
-@implementation AIMPrototypeMediator {
+@implementation AIMPrototypeComposeboxMediator {
   // The ordered list of items for display.
   NSMutableArray<AIMInputItem*>* _items;
   // The C++ controller for this feature.
@@ -165,7 +165,7 @@ CreateInputDataFromAnnotatedPageContent(
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeImage];
   [_items addObject:item];
   [self updateConsumerItems];
-  const base::UnguessableToken& token = item.token;
+  base::UnguessableToken token = item.token;
 
   __weak __typeof(self) weakSelf = self;
   // Load the preview image.
@@ -189,7 +189,7 @@ CreateInputDataFromAnnotatedPageContent(
                 }];
 }
 
-- (void)setConsumer:(id<AIMPrototypeConsumer>)consumer {
+- (void)setConsumer:(id<AIMPrototypeComposeboxConsumer>)consumer {
   _consumer = consumer;
 
   if (!_webStateList) {
@@ -207,7 +207,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
   [_items addObject:item];
   [self updateConsumerItems];
-  const base::UnguessableToken& token = item.token;
+  base::UnguessableToken token = item.token;
 
   // Read the data in the background then call `onDataReadForItem`.
   __weak __typeof(self) weakSelf = self;
@@ -215,7 +215,7 @@ CreateInputDataFromAnnotatedPageContent(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadDataFromURL, PDFFileURL),
       base::BindPostTaskToCurrentDefault(base::BindOnce(^(NSData* data) {
-        AIMPrototypeMediator* strongSelf = weakSelf;
+        AIMPrototypeComposeboxMediator* strongSelf = weakSelf;
         if (!strongSelf) {
           return;
         }
@@ -225,7 +225,7 @@ CreateInputDataFromAnnotatedPageContent(
       })));
 }
 
-#pragma mark - AIMPrototypeMutator
+#pragma mark - AIMPrototypeComposeboxMutator
 
 - (void)removeItem:(AIMInputItem*)item {
   [_items removeObject:item];
@@ -324,7 +324,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Handles the loaded preview `image` for the item with the given `token`.
 - (void)didLoadPreviewImage:(UIImage*)previewImage
-           forItemWithToken:(const base::UnguessableToken&)token {
+           forItemWithToken:(base::UnguessableToken)token {
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -339,7 +339,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Handles the loaded favicon `image` for the item with the given `token`.
 - (void)didLoadFaviconIcon:(UIImage*)faviconImage
-          forItemWithToken:(const base::UnguessableToken&)token {
+          forItemWithToken:(base::UnguessableToken)token {
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -354,7 +354,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Handles the loaded full `image` for the item with the given `token`.
 - (void)didLoadFullImage:(UIImage*)image
-        forItemWithToken:(const base::UnguessableToken&)token {
+        forItemWithToken:(base::UnguessableToken)token {
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -377,7 +377,7 @@ CreateInputDataFromAnnotatedPageContent(
 // Called after the simulated image load delay for the item with the given
 // `token`. This simulates a network delay for development purposes.
 - (void)didFinishSimulatedLoadForImage:(UIImage*)image
-                             itemToken:(const base::UnguessableToken&)token {
+                             itemToken:(base::UnguessableToken)token {
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -411,8 +411,7 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 // Uploads the `image` for the item with the given `token`.
-- (void)uploadImage:(UIImage*)image
-          itemToken:(const base::UnguessableToken&)token {
+- (void)uploadImage:(UIImage*)image itemToken:(base::UnguessableToken)token {
   AIMInputItem* item = [self itemForToken:token];
   if (!item) {
     return;
@@ -464,7 +463,7 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   [_items addObject:item];
   [self updateConsumerItems];
-  __block const base::UnguessableToken& token = item.token;
+  __block base::UnguessableToken token = item.token;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::move(pageContextResponse.value());
@@ -500,7 +499,7 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)didRetrieveColorSnapshot:(UIImage*)image
                        inputData:(std::unique_ptr<lens::ContextualInputData>)
                                      input_data
-                           token:(const base::UnguessableToken&)token {
+                           token:(base::UnguessableToken)token {
   if (image) {
     NSData* data = UIImagePNGRepresentation(image);
     std::vector<uint8_t> image_vector_data([data length]);
@@ -520,7 +519,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Handles the read `data` from the given `url` for the item with the given
 // `token`. This is the callback for the asynchronous file read.
-- (void)onDataReadForItemWithToken:(const base::UnguessableToken&)token
+- (void)onDataReadForItemWithToken:(base::UnguessableToken)token
                            fromURL:(GURL)url
                           withData:(NSData*)data {
   AIMInputItem* item = [self itemForToken:token];
@@ -558,7 +557,7 @@ CreateInputDataFromAnnotatedPageContent(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GeneratePDFPreview, data),
       base::BindPostTaskToCurrentDefault(base::BindOnce(^(UIImage* preview) {
-        AIMPrototypeMediator* strongSelf = weakSelf;
+        AIMPrototypeComposeboxMediator* strongSelf = weakSelf;
         if (!strongSelf) {
           return;
         }

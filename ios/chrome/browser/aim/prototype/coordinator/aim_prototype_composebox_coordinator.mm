@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_coordinator.h"
 
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
@@ -10,9 +10,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_mediator.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
-#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
@@ -45,20 +45,21 @@ namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
-@interface AIMPrototypeCoordinator () <AIMPrototypeViewControllerDelegate,
-                                       LocationBarModelDelegateWebStateProvider,
-                                       LocationBarURLLoader,
-                                       PHPickerViewControllerDelegate,
-                                       UIDocumentPickerDelegate,
-                                       UIImagePickerControllerDelegate,
-                                       UINavigationControllerDelegate,
-                                       UIViewControllerTransitioningDelegate,
-                                       WebLocationBarDelegate>
+@interface AIMPrototypeComposeboxCoordinator () <
+    AIMPrototypeComposeboxViewControllerDelegate,
+    LocationBarModelDelegateWebStateProvider,
+    LocationBarURLLoader,
+    PHPickerViewControllerDelegate,
+    UIDocumentPickerDelegate,
+    UIImagePickerControllerDelegate,
+    UINavigationControllerDelegate,
+    UIViewControllerTransitioningDelegate,
+    WebLocationBarDelegate>
 @end
 
-@implementation AIMPrototypeCoordinator {
-  AIMPrototypeViewController* _viewController;
-  AIMPrototypeMediator* _mediator;
+@implementation AIMPrototypeComposeboxCoordinator {
+  AIMPrototypeComposeboxViewController* _viewController;
+  AIMPrototypeComposeboxMediator* _mediator;
   id<VoiceSearchController> _voiceSearchController;
   /// The prewarmed picker as it takes time to appear.
   PHPickerViewController* _picker;
@@ -92,7 +93,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)start {
-  _viewController = [[AIMPrototypeViewController alloc] init];
+  _viewController = [[AIMPrototypeComposeboxViewController alloc] init];
   _viewController.delegate = self;
 
   _voiceSearchController =
@@ -115,7 +116,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
-  _mediator = [[AIMPrototypeMediator alloc]
+  _mediator = [[AIMPrototypeComposeboxMediator alloc]
       initWithComposeboxQueryController:std::move(composeboxQueryController)
                            webStateList:self.browser->GetWebStateList()
                           faviconLoader:faviconLoader];
@@ -182,10 +183,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return _viewController;
 }
 
-#pragma mark - AIMPrototypeViewControllerDelegate
+#pragma mark - AIMPrototypeComposeboxViewControllerDelegate
 
 - (void)aimPrototypeViewControllerDidTapMicButton:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)composeboxViewController {
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList) {
     return;
@@ -199,16 +200,17 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)composeboxViewController {
   if (!_picker) {
-    [self aimPrototypeViewControllerMayShowGalleryPicker:viewController];
+    [self aimPrototypeViewControllerMayShowGalleryPicker:
+              composeboxViewController];
   }
   [_viewController presentViewController:_picker animated:YES completion:nil];
   _picker = nil;
 }
 
 - (void)aimPrototypeViewControllerDidTapCameraButton:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)composeboxViewController {
   if (![UIImagePickerController
           isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     // TODO(crbug.com/40280872): Show an error to the user.
@@ -221,7 +223,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)aimPrototypeViewControllerMayShowGalleryPicker:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)composeboxViewController {
   if (_picker) {
     return;
   }
@@ -234,7 +236,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)aimPrototypeViewControllerDidTapFileButton:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)composeboxViewController {
   UIDocumentPickerViewController* picker =
       [[UIDocumentPickerViewController alloc]
           initForOpeningContentTypes:@[ UTTypePDF ]];

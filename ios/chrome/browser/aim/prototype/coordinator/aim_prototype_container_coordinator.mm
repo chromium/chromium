@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_container_coordinator.h"
 
-#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_coordinator.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_navigation_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_container_view_controller.h"
@@ -25,8 +25,8 @@
 @end
 
 @implementation AIMPrototypeContainerCoordinator {
-  // The coordinator for the main AIM UI.
-  AIMPrototypeCoordinator* _aimCoordinator;
+  // The coordinator for the composebox.
+  AIMPrototypeComposeboxCoordinator* _aimComposeboxCoordinator;
   // The mediator for the web navigation.
   AIMPrototypeNavigationMediator* _navigationMediator;
   // The entrypoint that triggered the AIM prototype.
@@ -65,16 +65,17 @@
   _navigationMediator.consumer = _viewController;
   _navigationMediator.delegate = self;
 
-  _aimCoordinator = [[AIMPrototypeCoordinator alloc]
+  _aimComposeboxCoordinator = [[AIMPrototypeComposeboxCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       entrypoint:_entrypoint
                            query:_query
                        URLLoader:_navigationMediator];
-  _aimCoordinator.omniboxPopupPresenterDelegate = _viewController;
-  [_aimCoordinator start];
+  _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
+  [_aimComposeboxCoordinator start];
 
-  [_viewController addInputViewController:_aimCoordinator.inputViewController];
+  [_viewController
+      addInputViewController:_aimComposeboxCoordinator.inputViewController];
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -86,8 +87,8 @@
                                                                completion:nil];
   _viewController = nil;
 
-  [_aimCoordinator stop];
-  _aimCoordinator = nil;
+  [_aimComposeboxCoordinator stop];
+  _aimComposeboxCoordinator = nil;
 
   [_navigationMediator disconnect];
   _navigationMediator = nil;
@@ -100,7 +101,7 @@
                          presentingController:(UIViewController*)presenting
                              sourceController:(UIViewController*)source {
   AIMPrototypePresentAnimator* animator = [[AIMPrototypePresentAnimator alloc]
-      initWithContextProvider:_aimCoordinator.contextProvider];
+      initWithContextProvider:_aimComposeboxCoordinator.contextProvider];
   animator.toggleOnAIM = _entrypoint == AIMPrototypeEntrypoint::kNTPAIMButton;
   return animator;
 }
@@ -108,13 +109,13 @@
 - (id<UIViewControllerAnimatedTransitioning>)
     animationControllerForDismissedController:(UIViewController*)dismissed {
   return [[AIMPrototypeDismissAnimator alloc]
-      initWithContextProvider:_aimCoordinator.contextProvider];
+      initWithContextProvider:_aimComposeboxCoordinator.contextProvider];
 }
 
 #pragma mark - AIMPrototypeContainerViewControllerDelegate
 
 - (void)aimPrototypeContainerViewControllerDidTapCloseButton:
-    (AIMPrototypeViewController*)viewController {
+    (AIMPrototypeComposeboxViewController*)viewController {
   [self dismissAIMPrototype];
 }
 
