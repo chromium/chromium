@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelAction
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -159,6 +160,22 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                         stripViews, groupTitles, stripTabs, endX, deltaX, reorderType);
             }
         } else if (reorderType == ReorderType.DRAG_OUT_OF_STRIP) {
+            if (!mActiveSubStrategy.mInProgress) {
+                assumeNonNull(mViewBeingDragged);
+                // This is possible if reorder mode was delayed to show a context menu. The next
+                // tab selection requires some initial state, so temporarily start reorder mode
+                // here if needed.
+                mActiveSubStrategy.startReorderMode(
+                        stripViews,
+                        stripTabs,
+                        groupTitles,
+                        mViewBeingDragged,
+                        new PointF(endX, 0f));
+            }
+            int nextIndex = mActiveSubStrategy.getNextTabIndexOnDragExit();
+            if (nextIndex != TabModel.INVALID_TAB_INDEX) {
+                mModel.setIndex(nextIndex, TabSelectionType.FROM_USER);
+            }
             mActiveSubStrategy.stopReorderMode(stripViews, groupTitles);
         }
     }
@@ -221,7 +238,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean isTabInCollaboration(int tabId) {
-
         var profile = assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(profile);
@@ -304,9 +320,19 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         /** Called when the view tearing action has completed. */
         void onStopViewDragAction(
                 StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
-            // Clear the wrapped strategy's state if needed.
-            if (mInProgress) mWrappedStrategy.stopReorderMode(stripViews, groupTitles);
+            // Clear the wrapped strategy's state if needed. Intentionally not calling the
+            // SubStrategy implementation, as that also hides the dragged view.
+            if (mInProgress) {
+                mWrappedStrategy.stopReorderMode(stripViews, groupTitles);
+                mInProgress = false;
+            }
         }
+
+        /**
+         * Returns the index of the next tab to select when we drag out of the tab strip. {@link
+         * TabModel#INVALID_TAB_INDEX} if none should be selected.
+         */
+        abstract int getNextTabIndexOnDragExit();
     }
 
     private class TabReorderSubStrategy extends ReorderSubStrategy {
@@ -400,12 +426,26 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 }
                 mAnimationHost.finishAnimationsAndPushTabUpdates();
                 draggedTab.setIsDraggedOffStrip(false);
+
+                // Reselect the dragged tab.
+                Tab tab = mModel.getTabById(draggedTab.getTabId());
+                int index = mModel.indexOf(tab);
+                TabModelUtils.setIndex(mModel, index);
+
                 // Animate the tab translating back up onto the tab strip.
                 draggedTab.setWidth(0.f);
                 mStripUpdateDelegate.resizeTabStrip(
                         /* animate= */ true, draggedTab, /* animateTabAdded= */ true);
             }
             super.onStopViewDragAction(stripViews, groupTitles);
+        }
+
+        @Override
+        int getNextTabIndexOnDragExit() {
+            if (getInteractingView() instanceof StripLayoutTab stripTab) {
+                return mStripUpdateDelegate.getNextIndexAfterClose(stripTab.getTabId());
+            }
+            return TabModel.INVALID_TAB_INDEX;
         }
     }
 
@@ -537,9 +577,16 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                         /* animate= */ false,
                         /* tabToAnimate= */ null,
                         /* animateTabAdded= */ false);
+                // TODO(crbug.com/445152399) Re-select the dragged tab, if needed.
             }
             mViewsBeingDragged.clear();
             super.onStopViewDragAction(stripViews, groupTitles);
+        }
+
+        @Override
+        int getNextTabIndexOnDragExit() {
+            // TODO(crbug.com/445152399): Implement.
+            return TabModel.INVALID_TAB_INDEX;
         }
     }
 
@@ -583,9 +630,16 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                         /* animate= */ false,
                         /* tabToAnimate= */ null,
                         /* animateTabAdded= */ false);
+                // TODO(crbug.com/445152399) Re-select the dragged tab, if needed.
             }
             mViewsBeingDragged.clear();
             super.onStopViewDragAction(stripViews, groupTitles);
+        }
+
+        @Override
+        int getNextTabIndexOnDragExit() {
+            // TODO(crbug.com/445152399): Implement.
+            return TabModel.INVALID_TAB_INDEX;
         }
     }
 

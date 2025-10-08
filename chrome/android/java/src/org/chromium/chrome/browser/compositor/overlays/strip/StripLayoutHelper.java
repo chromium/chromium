@@ -2875,11 +2875,7 @@ public class StripLayoutHelper
         // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
         // closest collapsed tab, or opening the GTS if none exist).
         if (mModel != null && getSelectedTabId() == tab.getTabId()) {
-            int nextIndex =
-                    ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
-                            ? getNearbyExpandedTabIndexPreferAfter()
-                            : getNearbyExpandedTabIndexPreferBefore();
+            int nextIndex = getNextIndexAfterClose(tab.getTabId());
             if (nextIndex != TabModel.INVALID_TAB_INDEX) TabModelUtils.setIndex(mModel, nextIndex);
         }
     }
@@ -3870,6 +3866,24 @@ public class StripLayoutHelper
         if (tabGroupId != null && mTabGroupModelFilter.getTabGroupCollapsed(tabGroupId)) {
             mTabGroupModelFilter.deleteTabGroupCollapsed(tabGroupId);
         }
+    }
+
+    @Override
+    public int getNextIndexAfterClose(int id) {
+        int nearbyExpandedTabIndex = getNearbyExpandedTabIndex();
+        if (nearbyExpandedTabIndex != TabModel.INVALID_TAB_INDEX) return nearbyExpandedTabIndex;
+        assumeNonNull(mModel);
+        return mModel.indexOf(mModel.getNextTabIfClosed(id, /* uponExit= */ false));
+    }
+
+    /**
+     * Returns The index of the nearby expanded tab to the selected tab. Prioritizes tabs in a
+     * certain direction based on {@link ChromeFeatureList#TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE}.
+     */
+    private int getNearbyExpandedTabIndex() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
+                ? getNearbyExpandedTabIndexPreferAfter()
+                : getNearbyExpandedTabIndexPreferBefore();
     }
 
     /**
