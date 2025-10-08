@@ -6420,25 +6420,6 @@
             ]
         }
     ],
-    "ClientSideDetectionOnlyExtractVisualFeatures": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionOnlyExtractVisualFeatures"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [
