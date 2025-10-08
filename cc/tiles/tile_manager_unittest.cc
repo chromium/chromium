@@ -51,7 +51,6 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_set_raster_queue_all.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"

@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPixmap.h"
