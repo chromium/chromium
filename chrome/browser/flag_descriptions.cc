@@ -3284,6 +3284,15 @@ const char kPartitionedPopinsName[] = "Partitioned Popins";
 const char kPartitionedPopinsDescription[] =
     "Allows Partitioned Popins to be opened.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+const char kPasskeyUnlockErrorUiName[] = "Passkey Unlock Error UI";
+const char kPasskeyUnlockErrorUiDescription[] =
+    "Enables showing the passkey unlock error UI to passkey users in case when "
+    "their access to passkeys is “locked” and when they have an available user "
+    "verification mechanism (either a system UV or a GPM PIN).";
+#endif
+
 const char kPasswordFormClientsideClassifierName[] =
     "Clientside password form classifier.";
 const char kPasswordFormClientsideClassifierDescription[] =

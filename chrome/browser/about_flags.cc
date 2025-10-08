@@ -13277,6 +13277,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMigrateAccountManagerDelegateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kMigrateAccountManagerDelegate)},
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"passkey-unlock-error-ui", flag_descriptions::kPasskeyUnlockErrorUiName,
+     flag_descriptions::kPasskeyUnlockErrorUiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kPasskeyUnlockErrorUi)},
+#endif
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -9484,6 +9484,7 @@ from previous Chrome versions.
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
   <int value="-1673342139"
       label="ImageServiceOptimizationGuideSalientImages:enabled"/>
+  <int value="-1673019320" label="PasskeyUnlockErrorUi:enabled"/>
   <int value="-1672894860" label="AppLaunchShortcut:enabled"/>
   <int value="-1672894214"
       label="AutofillUpstreamAllowAdditionalEmailDomains:disabled"/>
@@ -17158,6 +17159,7 @@ from previous Chrome versions.
   <int value="1075637651" label="disable-tablet-splitview"/>
   <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1076335895" label="CrosPrivacyHubV0:enabled"/>
+  <int value="1076439757" label="PasskeyUnlockErrorUi:disabled"/>
   <int value="1076477581"
       label="GridTabSwitcherLandscapeAspectRatioPhones:disabled"/>
   <int value="1077140728" label="UseGMSCoreForBrandingInfo:disabled"/>
