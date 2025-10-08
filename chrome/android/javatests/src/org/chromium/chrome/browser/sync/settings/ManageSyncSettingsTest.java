@@ -63,6 +63,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -113,6 +114,7 @@ import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -1188,6 +1190,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/450272307
     public void testKeyboardNavigationToSignOutButton() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -1202,6 +1205,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/450272307
     public void testCentralAccountCardNotReceivingFocus() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
@@ -1212,6 +1216,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/450272307
     public void testBatchUploadCardNotReceivingFocus() {
         setupMockSyncService();
         doAnswer(
@@ -1246,6 +1251,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/450272307
     public void testIdentityErrorCardNotReceivingFocus() {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
