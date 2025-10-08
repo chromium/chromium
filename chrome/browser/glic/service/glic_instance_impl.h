@@ -44,6 +44,7 @@ class GlicInstanceImpl : public GlicInstance,
                          public BrowserListObserver,
                          public Host::InstanceDelegate,
                          public Host::Observer,
+                         public Host::InstanceInterfaceForMigration,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate {
  public:
@@ -146,6 +147,12 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void WillCloseFor(tabs::TabInterface* tab) override;
   void Attach(tabs::TabInterface* tab) override;
+  void NotifyPanelStateChanged() override;
+
+  // Host::InstanceInterface:
+  mojom::PanelState GetPanelState() override;
+  void AddStateObserver(PanelStateObserver* observer) override;
+  void RemoveStateObserver(PanelStateObserver* observer) override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
@@ -226,6 +233,8 @@ class GlicInstanceImpl : public GlicInstance,
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
+
+  base::ObserverList<PanelStateObserver> state_observers_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};

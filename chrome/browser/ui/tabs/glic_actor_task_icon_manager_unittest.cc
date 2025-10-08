@@ -7,6 +7,7 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -44,7 +45,8 @@ class GlicActorTaskIconManagerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());
     window_controller_ = std::make_unique<MockGlicWindowController>();
-    host_ = std::make_unique<Host>(profile_.get());
+    host_ = std::make_unique<Host>(profile_.get(), nullptr, nullptr,
+                                   glic::GlicKeyedService::Get(profile_.get()));
     manager_ = std::make_unique<GlicActorTaskIconManager>(
         profile_.get(), actor_service_.get(), *window_controller_.get());
   }

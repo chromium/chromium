@@ -46,8 +46,14 @@ void GlicInactiveFloatingUi::Close() {
   NOTIMPLEMENTED();
 }
 
-views::View* GlicInactiveFloatingUi::GetViewForTesting() {
+views::View* GlicInactiveFloatingUi::GetView() {
   return nullptr;
+}
+
+mojom::PanelState GlicInactiveFloatingUi::GetPanelState() const {
+  mojom::PanelState state;
+  state.kind = glic::mojom::PanelState::Kind::kHidden;
+  return state;
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicInactiveFloatingUi::CreateInactiveEmbedder()

@@ -109,7 +109,7 @@ GlicInstanceImpl::GlicInstanceImpl(
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
-      host_(profile_, this, this),
+      host_(profile_, this, this, this),
       sharing_manager_(
           std::make_unique<GlicActivePinnedFocusedTabManager>(
               profile,
@@ -289,6 +289,14 @@ void GlicInstanceImpl::PrepareForOpen() {
     contextual_cueing_service->PrepareToFetchContextualGlicZeroStateSuggestions(
         active_web_contents);
   }
+}
+
+void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
+  state_observers_.AddObserver(observer);
+}
+
+void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
+  state_observers_.RemoveObserver(observer);
 }
 
 void GlicInstanceImpl::UnbindTab(tabs::TabInterface* tab) {
@@ -473,17 +481,14 @@ void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
   active_embedder_key_ = new_key;
   NotifyStateChange();
-  host_.PanelStateChanged(
-      GetActiveEmbedder()->GetHostEmbedderDelegate()->GetPanelState());
+  NotifyPanelStateChanged();
 }
 
 void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
   if (active_embedder_key_.has_value()) {
     active_embedder_key_.reset();
     NotifyStateChange();
-    mojom::PanelState panel_state;
-    panel_state.kind = mojom::PanelState_Kind::kHidden;
-    host_.PanelStateChanged(panel_state);
+    NotifyPanelStateChanged();
   }
   return;
 }
@@ -596,6 +601,22 @@ void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
       embedder->Focus();
     }
   }
+}
+
+void GlicInstanceImpl::NotifyPanelStateChanged() {
+  state_observers_.Notify(
+      &PanelStateObserver::PanelStateChanged, GetPanelState(),
+      PanelStateContext{.attached_browser = nullptr, .glic_widget = nullptr});
+}
+
+mojom::PanelState GlicInstanceImpl::GetPanelState() {
+  auto* embedder = GetActiveEmbedder();
+  if (embedder) {
+    return embedder->GetPanelState();
+  }
+  mojom::PanelState panel_state;
+  panel_state.kind = mojom::PanelState_Kind::kHidden;
+  return panel_state;
 }
 
 }  // namespace glic

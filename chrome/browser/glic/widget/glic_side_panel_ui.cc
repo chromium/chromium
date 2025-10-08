@@ -55,7 +55,7 @@ Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
   return this;
 }
 
-const mojom::PanelState& GlicSidePanelUi::GetPanelState() const {
+mojom::PanelState GlicSidePanelUi::GetPanelState() const {
   return panel_state_;
 }
 
@@ -126,6 +126,7 @@ void GlicSidePanelUi::Show() {
     return;
   }
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
+  delegate_->NotifyPanelStateChanged();
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
@@ -136,6 +137,7 @@ void GlicSidePanelUi::Close() {
     return;
   }
   panel_state_.kind = mojom::PanelState_Kind::kHidden;
+  delegate_->NotifyPanelStateChanged();
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Close();
@@ -151,10 +153,9 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
       tab_, delegate_->host().webui_contents(), delegate_.get());
 }
 
-views::View* GlicSidePanelUi::GetViewForTesting() {
-  return tab_->GetTabFeatures()
-      ->glic_side_panel_coordinator()
-      ->GetViewForTesting();  // IN-TEST
+views::View* GlicSidePanelUi::GetView() {
+  return tab_ ? tab_->GetTabFeatures()->glic_side_panel_coordinator()->GetView()
+              : nullptr;
 }
 
 }  // namespace glic

@@ -57,20 +57,11 @@ enum class AttachChangeReason;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowController : public GlicInstance::UIDelegate {
+class GlicWindowController : public GlicInstance::UIDelegate,
+                             public Host::InstanceInterfaceForMigration {
  public:
-  struct PanelStateContext {
-    raw_ptr<Browser> attached_browser = nullptr;
-    raw_ptr<views::Widget> glic_widget = nullptr;
-  };
-
-  // Observes the state of the glic panel.
-  class StateObserver : public base::CheckedObserver {
-   public:
-    virtual void PanelStateChanged(const mojom::PanelState& panel_state,
-                                   const PanelStateContext& context) = 0;
-  };
-
+  using StateObserver = PanelStateObserver;
+  using PanelStateContext = ::glic::PanelStateContext;
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
@@ -121,11 +112,6 @@ class GlicWindowController : public GlicInstance::UIDelegate {
   // Displays a context menu when the user right clicks on the title bar.
   // This is probably Windows only.
   virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
-
-  virtual const mojom::PanelState& GetPanelState() const = 0;
-
-  virtual void AddStateObserver(StateObserver* observer) = 0;
-  virtual void RemoveStateObserver(StateObserver* observer) = 0;
 
   // Returns whether the views::Widget associated with the glic window is active
   // (e.g. will receive keyboard events).

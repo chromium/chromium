@@ -30,11 +30,11 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   bool IsShowing() const override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
-  views::View* GetViewForTesting() override;
   void Focus() override;
+  views::View* GetView() override;
+  mojom::PanelState GetPanelState() const override;
 
   // Host::EmbedderDelegate:
-  const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback) override;

@@ -408,8 +408,8 @@ export declare interface GlicBrowserHost {
    * microphone recording should stop, but any playing audio output can
    * continue.
    *
-   * Note that the Glic panel is inactive if it is attached to a browser window,
-   * and that browser window is not the current active window.
+   * For these purposes, a panel is considered active if it is open, even
+   * if the window containing the panel is not active.
    */
   panelActive(): ObservableValue<boolean>;
 

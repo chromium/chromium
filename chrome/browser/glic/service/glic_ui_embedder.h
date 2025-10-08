@@ -30,6 +30,8 @@ class GlicUiEmbedder {
     virtual Host& host() = 0;
     virtual void Attach(tabs::TabInterface* tab) = 0;
     virtual void Detach() = 0;
+    // Called after the value of GetPanelState() changes.
+    virtual void NotifyPanelStateChanged() = 0;
   };
 
   virtual ~GlicUiEmbedder() = default;
@@ -49,10 +51,14 @@ class GlicUiEmbedder {
   // Focus embedder's webcontents.
   virtual void Focus() = 0;
 
-  virtual views::View* GetViewForTesting() = 0;
+  // Returns the view, if there is one.
+  virtual views::View* GetView() = 0;
 
   // Creates the inactive version of this embedder.
   virtual std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const = 0;
+
+  // Returns the current panel state.
+  virtual mojom::PanelState GetPanelState() const = 0;
 };
 
 }  // namespace glic

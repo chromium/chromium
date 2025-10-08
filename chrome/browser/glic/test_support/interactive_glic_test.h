@@ -222,7 +222,7 @@ class InteractiveGlicTestT : public T {
         break;
       default:
         NOTREACHED();
-    };
+    }
     return steps;
   }
 
@@ -335,13 +335,8 @@ class InteractiveGlicTestT : public T {
   auto CloseGlic() {
     return Api::Do([&]() {
       if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-        GlicInstanceImpl* instance = GetGlicInstanceImpl();
-        if (!instance) {
-          return;
-        }
-        GlicUiEmbedder* embedder = instance->GetEmbedderForTab(
-            browser()->tab_strip_model()->GetTabAtIndex(0));
-        if (!embedder) {
+        GlicUiEmbedder* embedder = GetGlicUiEmbedder();
+        if (embedder) {
           embedder->Close();
         }
       } else {
@@ -592,7 +587,7 @@ class InteractiveGlicTestT : public T {
       if (!embedder) {
         return nullptr;
       }
-      return embedder->GetViewForTesting();
+      return embedder->GetView();
     }
     return window_controller().GetGlicView();
   }
@@ -603,7 +598,7 @@ class InteractiveGlicTestT : public T {
       if (!embedder) {
         return nullptr;
       }
-      auto* view = embedder->GetViewForTesting();
+      auto* view = embedder->GetView();
       if (!view) {
         return nullptr;
       }

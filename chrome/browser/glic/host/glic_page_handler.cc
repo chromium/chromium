@@ -147,7 +147,7 @@ glic::mojom::ActiveBrowserInfoPtr CreateActiveBrowserInfo(
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
-class ActiveStateCalculator : public GlicWindowController::StateObserver {
+class ActiveStateCalculator : public PanelStateObserver {
  public:
   // Observes changes to active state.
   class Observer : public base::CheckedObserver {
@@ -155,17 +155,12 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
     virtual void ActiveStateChanged(bool is_active) = 0;
   };
 
-  explicit ActiveStateCalculator(GlicWindowController* window_controller)
-      : window_controller_(window_controller) {
-    window_controller_->AddStateObserver(this);
-    PanelStateChanged(
-        window_controller_->GetPanelState(),
-        {.attached_browser = window_controller_->attached_browser(),
-         .glic_widget = nullptr});
+  explicit ActiveStateCalculator(Host* host) : host_(host) {
+    host_->AddPanelStateObserver(this);
+    PanelStateChanged(host_->GetPanelState(nullptr),
+                      {.attached_browser = nullptr, .glic_widget = nullptr});
   }
-  ~ActiveStateCalculator() override {
-    window_controller_->RemoveStateObserver(this);
-  }
+  ~ActiveStateCalculator() override { host_->RemovePanelStateObserver(this); }
 
   bool IsActive() const { return is_active_; }
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
@@ -174,9 +169,8 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   }
 
   // GlicWindowController::StateObserver implementation.
-  void PanelStateChanged(
-      const glic::mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override {
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state,
+                         const PanelStateContext& context) override {
     panel_state_kind_ = panel_state.kind;
     SetAttachedBrowser(context.attached_browser);
     PostRecalcAndNotify();
@@ -233,12 +227,12 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   }
 
   bool Calculate() {
+    if (panel_state_kind_ == glic::mojom::PanelState::Kind::kHidden) {
+      return false;
+    }
     // TODO(b:444463509): Implement better calculation.
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       return true;
-    }
-    if (panel_state_kind_ == glic::mojom::PanelState::Kind::kHidden) {
-      return false;
     }
     if (!attached_browser_) {
       return true;
@@ -253,7 +247,7 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   base::OneShotTimer calc_timer_;
   std::vector<base::CallbackListSubscription> attached_browser_subscriptions_;
 
-  raw_ptr<GlicWindowController> window_controller_;
+  raw_ptr<Host> host_;
   base::ObserverList<Observer> observers_;
   glic::mojom::PanelState::Kind panel_state_kind_;
   bool is_active_ = false;
@@ -565,7 +559,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         window_controller_(&glic_service_->window_controller()),
         pref_service_(profile_->GetPrefs()),
-        active_state_calculator_(&glic_service_->window_controller()),
+        active_state_calculator_(&page_handler_->host()),
         browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
         annotation_manager_(
@@ -1486,7 +1480,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().UnsetWebClient(this);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
-    window_controller_->RemoveStateObserver(this);
+    host().RemovePanelStateObserver(this);
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};

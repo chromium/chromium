@@ -300,7 +300,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     GlicKeyedService* glic_service,
     GlicEnabling* enabling)
     : profile_(profile),
-      host_(profile),
+      host_(profile, nullptr, this, glic_service),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling),
@@ -1337,7 +1337,7 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
   }
 }
 
-const mojom::PanelState& GlicWindowControllerImpl::GetPanelState() const {
+mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
   return panel_state_;
 }
 

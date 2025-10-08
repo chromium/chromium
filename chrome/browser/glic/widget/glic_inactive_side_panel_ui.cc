@@ -116,12 +116,18 @@ void GlicInactiveSidePanelUi::Close() {
   NOTIMPLEMENTED();
 }
 
-views::View* GlicInactiveSidePanelUi::GetViewForTesting() {
+views::View* GlicInactiveSidePanelUi::GetView() {
   return nullptr;
 }
 
 void GlicInactiveSidePanelUi::Focus() {
   // Do nothing. Inactive view doesn't have webcontents to set focus on.
+}
+
+mojom::PanelState GlicInactiveSidePanelUi::GetPanelState() const {
+  mojom::PanelState state;
+  state.kind = glic::mojom::PanelState::Kind::kHidden;
+  return state;
 }
 
 std::unique_ptr<GlicUiEmbedder>

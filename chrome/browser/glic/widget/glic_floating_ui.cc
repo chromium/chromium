@@ -35,7 +35,7 @@ Host::EmbedderDelegate* GlicFloatingUi::GetHostEmbedderDelegate() {
   return this;
 }
 
-const mojom::PanelState& GlicFloatingUi::GetPanelState() const {
+mojom::PanelState GlicFloatingUi::GetPanelState() const {
   return panel_state_;
 }
 
@@ -156,9 +156,8 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }
 
-views::View* GlicFloatingUi::GetViewForTesting() {
-  NOTIMPLEMENTED();
-  return nullptr;
+views::View* GlicFloatingUi::GetView() {
+  return GetGlicView();
 }
 
 void GlicFloatingUi::SwitchConversation(

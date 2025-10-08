@@ -214,7 +214,7 @@ void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
   NOTIMPLEMENTED();
 }
 
-const mojom::PanelState& GlicInstanceCoordinatorImpl::GetPanelState() const {
+mojom::PanelState GlicInstanceCoordinatorImpl::GetPanelState() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return panel_state_;

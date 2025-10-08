@@ -123,7 +123,6 @@ class GlicWindowControllerImpl
   void OnWidgetUserResizeEnded() override;
 
   // Host::EmbedderDelegate implementation
-  const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback) override;
@@ -138,6 +137,9 @@ class GlicWindowControllerImpl
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+
+  // InstanceInterface implementation.
+  mojom::PanelState GetPanelState() override;
 
   // display::DisplayObserver implementation
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -330,6 +332,7 @@ class GlicWindowControllerImpl
   void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const raw_ptr<Profile> profile_;
+  base::ObserverList<StateObserver> state_observers_;
   Host host_;
   std::unique_ptr<HostManager> host_manager_;
 
@@ -372,8 +375,6 @@ class GlicWindowControllerImpl
   // If State != kClosed, then the UI must either be associated with a browser
   // window, or standalone. That is tracked by this member.
   raw_ptr<Browser> attached_browser_ = nullptr;
-
-  base::ObserverList<StateObserver> state_observers_;
 
   // Used by web modals to listens for glic window events, e.g. size change or
   // window close.

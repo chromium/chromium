@@ -51,7 +51,7 @@ class MockGlicWindowController
   MOCK_METHOD(void, CloseWithReason, (views::Widget::ClosedReason), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));
   MOCK_METHOD(void, ShowTitleBarContextMenuAt, (gfx::Point), (override));
-  MOCK_METHOD(const mojom::PanelState&, GetPanelState, (), (const, override));
+  MOCK_METHOD(mojom::PanelState, GetPanelState, (), (override));
   MOCK_METHOD(void, AddStateObserver, (StateObserver*), (override));
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));
   MOCK_METHOD(bool, IsActive, (), (override));

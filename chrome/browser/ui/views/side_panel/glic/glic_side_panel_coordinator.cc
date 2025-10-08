@@ -158,7 +158,7 @@ void GlicSidePanelCoordinator::SetContentsView(
   glic_container_tracker_.view()->AddChildView(std::move(contents_view));
 }
 
-views::View* GlicSidePanelCoordinator::GetViewForTesting() {
+views::View* GlicSidePanelCoordinator::GetView() {
   return glic_container_tracker_.view();
 }
 

@@ -45,8 +45,9 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   bool IsShowing() const override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
-  views::View* GetViewForTesting() override;
   void Focus() override;
+  views::View* GetView() override;
+  mojom::PanelState GetPanelState() const override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;

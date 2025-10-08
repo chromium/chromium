@@ -470,7 +470,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testAllTestsAreRegistered) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
       CloseGlic());

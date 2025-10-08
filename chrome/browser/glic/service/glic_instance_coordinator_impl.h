@@ -84,7 +84,7 @@ class GlicInstanceCoordinatorImpl
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
 
-  const mojom::PanelState& GetPanelState() const override;
+  mojom::PanelState GetPanelState() override;
   bool IsShowing() const override;
 
   bool IsActive() override;
