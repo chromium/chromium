@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
@@ -80,8 +81,8 @@ void BaseSignalsCollector::GetSignal(SignalName signal_name,
 
 void BaseSignalsCollector::OnServiceDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/444460884): Add metrics for number of observers on
-  // disconnect.
+
+  LogSystemSignalCollectionDisconnect(pending_callbacks_.size());
   auto it = pending_callbacks_.begin();
   while (it != pending_callbacks_.end()) {
     base::OnceClosure cb = std::move(it->second);
@@ -102,7 +103,7 @@ void BaseSignalsCollector::RunPendingCallback(int callback_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = pending_callbacks_.find(callback_id);
   if (it == pending_callbacks_.end()) {
-    // TODO(crbug.com/444460884): Add metrics here too.
+    LogSystemSignalCollectionMissingPendingCallback();
     return;
   }
 
@@ -113,10 +114,6 @@ void BaseSignalsCollector::RunPendingCallback(int callback_id) {
 
 device_signals::mojom::SystemSignalsService*
 BaseSignalsCollector::GetService() {
-  if (!system_service_host_) {
-    return nullptr;
-  }
-
   return system_service_host_->GetService();
 }
 

@@ -1030,6 +1030,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount"
+    units="items" expires_after="2026-10-07">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the number of pending request that were remaining during a system
+    signals service disconnect.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceSignals.SystemSignalsService.MissingPendingCallback"
+    enum="Boolean" expires_after="2026-10-07">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures when the system signals service is running in another process.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.UserPermission"
     enum="DeviceSignalsUserPermission" expires_after="2026-02-10">
   <owner>seblalancette@chromium.org</owner>
