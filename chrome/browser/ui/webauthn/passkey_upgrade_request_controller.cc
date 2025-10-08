@@ -165,7 +165,11 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
     if (password_form.username_value != username_) {
       continue;
     }
-    if (password_form.date_last_used < min_last_used) {
+    // Consider multiple last use attributes for robustness. N.B.
+    // `date_last_used` is updated after successful form submission on
+    // Desktop, while `date_last_filled` is updated during form filling.
+    if (std::max({password_form.date_created, password_form.date_last_filled,
+                  password_form.date_last_used}) < min_last_used) {
       match_not_recent = true;
       continue;
     }
