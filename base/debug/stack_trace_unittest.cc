@@ -400,10 +400,12 @@ TEST_F(StackTraceTest, MAYBE_StackEnd) {
 
 #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
-#if !defined(ARCH_CPU_ARM_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
+// Division by zero raising SIGFPE is mostly a x86 specific thing.
 // On Arm architecture invalid math operations such as division by zero are not
 // trapped and do not trigger a SIGFPE.
-// Hence disable the test for Arm platforms.
+// On RISC-V architecture, division by zero does not trigger SIGFPE.
+// Hence enable the test only for x86 platform
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   // Values are volatile to prevent reordering of instructions, i.e. for
   // optimization. Reordering may lead to tests erroneously failing due to
@@ -415,7 +417,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   EXPECT_EXIT(result = nominator / denominator,
               ::testing::KilledBySignal(SIGFPE), "");
 }
-#endif  // !defined(ARCH_CPU_ARM_FAMILY)
+#endif  // defined(ARCH_CPU_X86_FAMILY)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
   // Pointee and pointer are volatile to prevent reordering of instructions,
