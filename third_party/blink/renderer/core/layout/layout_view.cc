@@ -918,6 +918,34 @@ void LayoutView::UpdateFromStyle() {
     SetHasBoxDecorationBackground(true);
 }
 
+void LayoutView::UpdateAfterLayout() {
+  NOT_DESTROYED();
+  LayoutBlockFlow::UpdateAfterLayout();
+  if (cached_scroll_dimensions_.has_value() && GetFrame()->Owner() &&
+      !GetFrame()->Owner()->IsDisplayNone() && !GetDocument().Printing()) {
+    auto* scrollable_area = GetScrollableArea();
+    CHECK(scrollable_area);
+    // Only restore scroll offset if the scroll dimensions match
+    if (scrollable_area->ScrollWidth() == cached_scroll_dimensions_->width &&
+        scrollable_area->ScrollHeight() == cached_scroll_dimensions_->height &&
+        scrollable_area->ScrollOrigin() == cached_scroll_dimensions_->origin) {
+      scrollable_area->SetScrollOffset(cached_scroll_dimensions_->offset,
+                                       mojom::blink::ScrollType::kProgrammatic,
+                                       cc::ScrollSourceType::kAbsoluteScroll);
+    }
+    cached_scroll_dimensions_.reset();
+  }
+}
+
+void LayoutView::CacheScrollDimensions() {
+  NOT_DESTROYED();
+  auto* scrollable_area = GetScrollableArea();
+  CHECK(scrollable_area);
+  cached_scroll_dimensions_.emplace(CachedScrollDimensions{
+      scrollable_area->ScrollWidth(), scrollable_area->ScrollHeight(),
+      scrollable_area->ScrollOrigin(), scrollable_area->GetScrollOffset()});
+}
+
 void LayoutView::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,

@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -336,6 +337,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
+  void CacheScrollDimensions();
+
  private:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
@@ -356,6 +359,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool CanHaveChildren() const override;
   void UpdateFromStyle() override;
+  void UpdateAfterLayout() override;
 
   // The CompositeBackgroundAttachmentFixed optimization doesn't apply to
   // LayoutView which paints background specially.
@@ -402,6 +406,17 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // calculated from style. kScrollbarAuto disables the override.
   mojom::blink::ScrollbarMode autosize_h_scrollbar_mode_;
   mojom::blink::ScrollbarMode autosize_v_scrollbar_mode_;
+
+  struct CachedScrollDimensions {
+    LayoutUnit width;
+    LayoutUnit height;
+    gfx::Point origin;
+    ScrollOffset offset;
+  };
+
+  // This is set when a frame becomes display:none and reset in the first layout
+  // after exiting that state.
+  std::optional<CachedScrollDimensions> cached_scroll_dimensions_;
 
   mutable PhysicalRect previous_background_rect_;
 };
