@@ -635,6 +635,28 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    const uint8_t* y_data,
+    const uint8_t* u_data,
+    const uint8_t* v_data,
+    base::TimeDelta timestamp) {
+  const VideoPixelFormat format = layout.format();
+  std::array<const uint8_t*, 3> data = {y_data, u_data, v_data};
+  std::array<base::span<const uint8_t>, 3> spans;
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    // TODO(crbug.com/338570700): Remove this function and migrate to the
+    // version accepting a span.
+    spans[plane] = UNSAFE_TODO(
+        base::span<const uint8_t>(data[plane], layout.planes()[plane].size));
+  }
+  return WrapExternalYuvDataWithLayout(layout, visible_rect, natural_size,
+                                       spans[0], spans[1], spans[2], timestamp);
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
+    const VideoFrameLayout& layout,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     base::span<const uint8_t> y_data,
     base::span<const uint8_t> u_data,
     base::span<const uint8_t> v_data,

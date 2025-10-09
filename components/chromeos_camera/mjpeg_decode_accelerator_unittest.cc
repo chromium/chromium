@@ -404,10 +404,7 @@ MjpegDecodeAcceleratorTestEnvironment::MapToVideoFrame(
     data[i] = static_cast<uint8_t*>(buffer->memory(i));
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::WrapExternalYuvDataWithLayout(
-          layout, visible_rect, visible_rect.size(),
-          UNSAFE_TODO(base::span(data[0], layout.planes()[0].size)),
-          UNSAFE_TODO(base::span(data[1], layout.planes()[1].size)),
-          UNSAFE_TODO(base::span(data[2], layout.planes()[2].size)),
+          layout, visible_rect, visible_rect.size(), data[0], data[1], data[2],
           base::TimeDelta());
   if (!frame) {
     LOG(ERROR) << "Failed to create VideoFrame";
