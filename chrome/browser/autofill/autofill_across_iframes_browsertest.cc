@@ -78,12 +78,17 @@ constexpr char kExp[] = "12/2035";
 constexpr char kCvc[] = "123";
 
 // Adds waiting capabilities to BrowserAutofillManager.
-class TestAutofillManager : public BrowserAutofillManager {
+class TestAutofillManager : public BrowserAutofillManager,
+                            public AutofillManager::Observer {
  public:
   explicit TestAutofillManager(ContentAutofillDriver* driver)
       : BrowserAutofillManager(driver) {
+    // TODO(crbug.com/447986303): Remove this LOG statement.
+    LOG(ERROR) << __func__ << " for "
+               << driver->render_frame_host()->GetFrameToken();
     test_api(test_api(*this).form_filler())
         .set_limit_before_refill(base::Hours(1));
+    manager_observation_.Observe(this);
   }
 
   static TestAutofillManager& GetForRenderFrameHost(
@@ -116,6 +121,30 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   std::optional<FormData> submitted_form() const { return submitted_form_; }
 
+  void OnFillOrPreviewForm(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const FillingPayload& filling_payload) override {
+    if (action_persistence != mojom::ActionPersistence::kFill) {
+      return;
+    }
+    LOG(ERROR) << __func__ << " form = " << form_id;
+    for (const FieldGlobalId& field_id : filled_field_ids) {
+      LOG(ERROR) << __func__ << " field = " << field_id;
+    }
+  }
+
+  void OnBeforeDidAutofillForm(AutofillManager& manager,
+                               FormGlobalId form) override {
+    LOG(ERROR) << __func__ << " " << form;
+  }
+  void OnAfterDidAutofillForm(AutofillManager& manager,
+                              FormGlobalId form) override {
+    LOG(ERROR) << __func__ << " " << form;
+  }
+
  private:
   TestAutofillManagerWaiter did_autofill_{
       *this,
@@ -124,6 +153,10 @@ class TestAutofillManager : public BrowserAutofillManager {
       *this,
       {AutofillManagerEvent::kFormSubmitted}};
   std::optional<FormData> submitted_form_;
+  // TODO(crbug.com/447986303): Remove `manager_observation_` and make this
+  // class no longer an AutofillManager::Observer.
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      manager_observation_{this};
 };
 
 // Fakes an Autofill on of a given form.
@@ -537,6 +570,18 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     EXPECT_EQ(3u, form.fields().size());  // The CVC field doesn't exist yet.
     TestAutofillManager& manager = main_autofill_manager();
     FillCard(main_frame(), form, trigger_field);
+    {
+      // TODO(crbug.com/447986303): Remove this block. Its sole purpose is
+      // to collect more information about flaky tests that hit a timeout in
+      // WaitForAutofill() below. The question is
+      const FormStructure* autofilled_form =
+          GetOrWaitForFormWithFocusableFields(4);
+      for (const auto& field : autofilled_form->fields()) {
+        LOG(ERROR) << field->global_id() << " has value " << field->value()
+                   << " and is " << (field->is_autofilled() ? "" : "not ")
+                   << "autofilled";
+      }
+    }
     // Now, after FillCard(), the form gets filled in the renderer (which
     // triggers three OnDidAutofillForm() events) and then changes.
     // The change triggers an OnFormsSeen() event, followed by a form
