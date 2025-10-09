@@ -1395,35 +1395,22 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
               base::FeatureList::IsEnabled(
                   features::kSecretPortalKeyProviderUseForEncryption)));
     }
-    if (base::FeatureList::IsEnabled(
-            features::kUseFreedesktopSecretKeyProvider)) {
-      const auto password_store =
-          cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
-      // Use a higher priority than the SecretPortalKeyProvider.
-      providers.emplace_back(
-          /*precedence=*/15u,
-          std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
-              password_store,
-              base::FeatureList::IsEnabled(
-                  features::kUseFreedesktopSecretKeyProviderForEncryption),
-              l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
-    }
+    const auto password_store =
+        cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
+    // Use a higher priority than the SecretPortalKeyProvider.
+    providers.emplace_back(
+        /*precedence=*/15u,
+        std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+            password_store, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME),
+            nullptr));
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // On Linux, this is used if the other key providers are disabled or not
   // available. On other POSIX systems, this is the only key provider.
-#if BUILDFLAG(IS_LINUX)
-  const bool use_posix_key_provider_for_encryption =
-      base::FeatureList::IsEnabled(
-          features::kUseFreedesktopSecretKeyProviderForEncryption);
-#else
-  const bool use_posix_key_provider_for_encryption = true;
-#endif  // BUILDFLAG(IS_LINUX)
   providers.emplace_back(
-      /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>(
-                             use_posix_key_provider_for_encryption));
+      /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)

@@ -54,13 +54,11 @@ class FreedesktopSecretKeyProviderCompatTest : public ::testing::Test {
     std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
     if (v11) {
       auto provider = std::make_unique<FreedesktopSecretKeyProvider>(
-          "gnome-libsecret",
-          /*use_for_encryption=*/true, "", nullptr);
+          "gnome-libsecret", "", nullptr);
       provider->secret_for_testing_ = kSecretKey;
       providers.emplace_back(0, std::move(provider));
     } else {
-      providers.emplace_back(0, std::make_unique<PosixKeyProvider>(
-                                    /*use_for_encryption=*/true));
+      providers.emplace_back(0, std::make_unique<PosixKeyProvider>());
     }
     OSCryptAsync factory(std::move(providers));
 

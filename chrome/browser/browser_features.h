@@ -43,7 +43,6 @@ BASE_DECLARE_FEATURE(kClearUserDataUponProfileDestruction);
 
 #if BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kDbusSecretPortal);
-BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProvider);
 #endif
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
@@ -94,7 +93,6 @@ BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
 
 #if BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
-BASE_DECLARE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);

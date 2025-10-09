@@ -75,11 +75,6 @@ BASE_FEATURE(kClearUserDataUponProfileDestruction,
 // `kSecretPortalKeyProviderUseForEncryption` is enabled, this flag cannot be
 // disabled without losing data.
 BASE_FEATURE(kDbusSecretPortal, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables usage of os_crypt_async::FreedesktopSecretKeyProvider, which is
-// compatible with the synchronous backend.
-BASE_FEATURE(kUseFreedesktopSecretKeyProvider,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Destroy profiles when their last browser window is closed, instead of when
@@ -209,11 +204,6 @@ BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
 // Otherwise, it will only decrypt existing data.
 BASE_FEATURE(kSecretPortalKeyProviderUseForEncryption,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If true, encrypt new data with the key provided by
-// FreedesktopSecretKeyProvider. Otherwise, it will only decrypt existing data.
-BASE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Enables migration of the network context data from `unsandboxed_data_path` to

@@ -11,7 +11,7 @@ namespace os_crypt_async {
 
 class PosixKeyProvider : public KeyProvider {
  public:
-  explicit PosixKeyProvider(bool use_for_encryption);
+  PosixKeyProvider();
 
   PosixKeyProvider(const PosixKeyProvider&) = delete;
   PosixKeyProvider& operator=(const PosixKeyProvider&) = delete;
@@ -22,9 +22,6 @@ class PosixKeyProvider : public KeyProvider {
   void GetKey(KeyCallback callback) override;
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
-
- private:
-  const bool use_for_encryption_;
 };
 
 }  // namespace os_crypt_async

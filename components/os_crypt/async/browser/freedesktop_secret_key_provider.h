@@ -81,7 +81,6 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   };
 
   FreedesktopSecretKeyProvider(const std::string& password_store,
-                               bool use_for_encryption,
                                const std::string& product_name,
                                scoped_refptr<dbus::Bus> bus);
   ~FreedesktopSecretKeyProvider() override;
@@ -227,7 +226,6 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   int32_t kwallet_handle_ = kKWalletInvalidHandle;
 
   const std::string password_store_;
-  const bool use_for_encryption_;
   const std::string product_name_;
   scoped_refptr<dbus::Bus> bus_;
   KeyCallback key_callback_;

@@ -23,8 +23,7 @@ constexpr auto kV10Key =
 
 }  // namespace
 
-PosixKeyProvider::PosixKeyProvider(bool use_for_encryption)
-    : use_for_encryption_(use_for_encryption) {}
+PosixKeyProvider::PosixKeyProvider() = default;
 
 PosixKeyProvider::~PosixKeyProvider() = default;
 
@@ -34,7 +33,7 @@ void PosixKeyProvider::GetKey(KeyCallback callback) {
 }
 
 bool PosixKeyProvider::UseForEncryption() {
-  return use_for_encryption_;
+  return true;
 }
 
 bool PosixKeyProvider::IsCompatibleWithOsCryptSync() {

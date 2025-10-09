@@ -269,8 +269,8 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
                    MatchArgs(DbusVoid()), _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  FreedesktopSecretKeyProvider provider(
-      "gnome-libsecret", /*use_for_encryption=*/true, kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
+                                        mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
@@ -485,8 +485,8 @@ TEST(FreedesktopSecretKeyProviderTest,
                    MatchArgs(DbusVoid()), _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  FreedesktopSecretKeyProvider provider(
-      "gnome-libsecret", /*use_for_encryption=*/true, kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider("gnome-libsecret", kProductName,
+                                        mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
@@ -596,8 +596,7 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
                    _))
       .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
 
-  FreedesktopSecretKeyProvider provider("kwallet5", /*use_for_encryption=*/true,
-                                        kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider("kwallet5", kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
@@ -701,8 +700,7 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
                    _))
       .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
 
-  FreedesktopSecretKeyProvider provider("kwallet6", /*use_for_encryption=*/true,
-                                        kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider("kwallet6", kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
