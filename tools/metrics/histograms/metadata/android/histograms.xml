@@ -2513,6 +2513,10 @@ chromium-metrics-reviews@google.com.
     A failure may be recorded after initialization succeeds (which itself
     records a sample) if reading the input hint fails. In this case only the
     first failure is recorded.
+
+    Note: This metric became randomly subsampled in M136 (136.0.7064.0) to
+    reduce overhead. The low data volume warning on the dashboard for this
+    transition can be ignored.
   </summary>
 </histogram>
 
