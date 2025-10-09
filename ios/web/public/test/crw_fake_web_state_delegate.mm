@@ -21,6 +21,7 @@
 @synthesize copyAllowedRequested = _copyAllowedRequested;
 @synthesize pasteAllowedRequested = _pasteAllowedRequested;
 @synthesize cutAllowedRequested = _cutAllowedRequested;
+@synthesize didFinishClipboardReadRequested = _didFinishClipboardReadRequested;
 @synthesize permissionsRequestHandled = _permissionsRequestHandled;
 @synthesize authenticationRequested = _authenticationRequested;
 @synthesize isAppLaunchingAllowedForWebStateReturnValue =
@@ -72,6 +73,11 @@
   _webState = webState;
   _cutAllowedRequested = YES;
   handler(YES);
+}
+
+- (void)webStateDidFinishClipboardRead:(web::WebState*)webState {
+  _webState = webState;
+  _didFinishClipboardReadRequested = YES;
 }
 
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:

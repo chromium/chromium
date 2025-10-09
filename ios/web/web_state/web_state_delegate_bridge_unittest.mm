@@ -255,4 +255,13 @@ TEST_F(WebStateDelegateBridgeTest, ShouldAllowCutWithNoDelegateMethod) {
   EXPECT_TRUE(callback_called);
 }
 
+// Tests `DidFinishClipboardRead` forwarding.
+TEST_F(WebStateDelegateBridgeTest, DidFinishClipboardRead) {
+  EXPECT_FALSE([delegate_ didFinishClipboardReadRequested]);
+  EXPECT_FALSE([delegate_ webState]);
+  bridge_->DidFinishClipboardRead(&fake_web_state_);
+  EXPECT_TRUE([delegate_ didFinishClipboardReadRequested]);
+  EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
+}
+
 }  // namespace web

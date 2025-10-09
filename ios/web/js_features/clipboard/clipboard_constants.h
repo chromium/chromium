@@ -15,6 +15,10 @@ inline constexpr char kReadCommand[] = "read";
 // `navigator.clipboard.writeText` is called.
 inline constexpr char kWriteCommand[] = "write";
 
+// The command sent from JavaScript when a paste event is detected.
+inline constexpr char kDidFinishClipboardReadCommand[] =
+    "didFinishClipboardRead";
+
 // The name of the script message handler.
 inline constexpr char kScriptMessageHandlerName[] = "ClipboardHandler";
 

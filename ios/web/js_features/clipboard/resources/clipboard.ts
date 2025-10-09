@@ -15,15 +15,9 @@
  * be rejected, and only then will the promise for B be settled.
  */
 
+import {sendDidFinishClipboardReadMessage} from '//ios/web/js_features/clipboard/resources/clipboard_util.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
-
-/**
- * The name of the message handler in the browser layer which will process
- * messages sent by this script. This corresponds to
- * ClipboardJavaScriptFeature.
- */
-const CLIPBOARD_HANDLER_NAME = 'ClipboardHandler';
 
 /**
  * The maximum number of clipboard requests that can be queued before the
@@ -99,13 +93,19 @@ function createClipboardOverride<T, A extends any[]>(
         // The new promise will be settled with the result of the original
         // function's promise.
         fulfill: () => {
-          originalFunction.apply(this, args).then(resolve, reject);
+          originalFunction.apply(this, args)
+              .then(resolve, reject)
+              .finally(() => {
+                if (command === 'read') {
+                  sendDidFinishClipboardReadMessage();
+                }
+              });
         },
         reject: reject,
       });
     });
 
-    sendWebKitMessage(CLIPBOARD_HANDLER_NAME, {
+    sendWebKitMessage('ClipboardHandler', {
       'frameId': gCrWeb.getFrameId(),
       'command': command,
       'requestId': requestId,

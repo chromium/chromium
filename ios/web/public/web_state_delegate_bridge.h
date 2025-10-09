@@ -59,6 +59,9 @@
 - (void)webState:(web::WebState*)webState
     shouldAllowCutWithDecisionHandler:(void (^)(BOOL))handler;
 
+// Called after the user or a script pasted content into the page.
+- (void)webStateDidFinishClipboardRead:(web::WebState*)webState;
+
 // Returns a pointer to a service to manage dialogs. May return null in which
 // case dialogs aren't shown.
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
@@ -136,6 +139,7 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
                         base::OnceCallback<void(bool)> callback) override;
   void ShouldAllowCut(WebState* source,
                       base::OnceCallback<void(bool)> callback) override;
+  void DidFinishClipboardRead(WebState* source) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;
   void HandlePermissionsDecisionRequest(

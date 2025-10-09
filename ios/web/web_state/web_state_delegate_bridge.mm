@@ -100,6 +100,13 @@ void WebStateDelegateBridge::ShouldAllowCut(
   }
 }
 
+void WebStateDelegateBridge::DidFinishClipboardRead(WebState* source) {
+  if ([delegate_
+          respondsToSelector:@selector(webStateDidFinishClipboardRead:)]) {
+    [delegate_ webStateDidFinishClipboardRead:source];
+  }
+}
+
 JavaScriptDialogPresenter* WebStateDelegateBridge::GetJavaScriptDialogPresenter(
     WebState* source) {
   SEL selector = @selector(javaScriptDialogPresenterForWebState:);

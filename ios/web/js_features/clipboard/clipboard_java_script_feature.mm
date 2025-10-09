@@ -15,7 +15,8 @@
 #import "ios/web/public/web_state_delegate.h"
 
 namespace {
-const char kScriptName[] = "clipboard";
+const char kClipboardScriptName[] = "clipboard";
+const char kPasteHandlerScriptName[] = "paste_handler";
 }  // namespace
 
 namespace web {
@@ -30,10 +31,16 @@ ClipboardJavaScriptFeature::ClipboardJavaScriptFeature()
     : JavaScriptFeature(
           ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
+               kClipboardScriptName,
+               FeatureScript::InjectionTime::kDocumentStart,
+               FeatureScript::TargetFrames::kAllFrames,
+               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
+           FeatureScript::CreateWithFilename(
+               kPasteHandlerScriptName,
+               FeatureScript::InjectionTime::kDocumentEnd,
+               FeatureScript::TargetFrames::kAllFrames,
+               FeatureScript::ReinjectionBehavior::
+                   kReinjectOnDocumentRecreation)},
           {java_script_features::GetBaseJavaScriptFeature()}) {}
 
 ClipboardJavaScriptFeature::~ClipboardJavaScriptFeature() = default;
@@ -46,17 +53,21 @@ ClipboardJavaScriptFeature::GetScriptMessageHandlerName() const {
 void ClipboardJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
+  // Expected `message.body` format:
+  // {
+  //   "command": "read"|"write"|"didFinishClipboardRead",
+  //   "requestId": <number>,  // Only for "read" and "write".
+  //   "frameId": <string>,
+  // }
   const base::Value::Dict* body = message.body()->GetIfDict();
   if (!body) {
     return;
   }
 
-  // In JavaScript, all numbers are doubles.
-  std::optional<double> request_id_double = body->FindDouble(kRequestIdKey);
-  if (!request_id_double) {
+  const std::string* command = body->FindString(kCommandKey);
+  if (!command) {
     return;
   }
-  int request_id = static_cast<int>(*request_id_double);
 
   const std::string* frame_id = body->FindString(kFrameIdKey);
   if (!frame_id) {
@@ -69,11 +80,26 @@ void ClipboardJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = body->FindString(kCommandKey);
-  if (!command) {
-    return;
+  if (*command == kDidFinishClipboardReadCommand) {
+    if (web_state->GetDelegate()) {
+      web_state->GetDelegate()->DidFinishClipboardRead(web_state);
+    }
+  } else if (*command == kReadCommand || *command == kWriteCommand) {
+    // In JavaScript, all numbers are doubles.
+    std::optional<double> request_id_double = body->FindDouble(kRequestIdKey);
+    if (!request_id_double) {
+      return;
+    }
+    int request_id = static_cast<int>(*request_id_double);
+    HandleClipboardRequest(web_state, web_frame, request_id, *command);
   }
+}
 
+void ClipboardJavaScriptFeature::HandleClipboardRequest(
+    WebState* web_state,
+    WebFrame* web_frame,
+    int request_id,
+    const std::string& command) {
   // Requests are allowed by default.
   if (!web_state->GetDelegate()) {
     ResolveClipboardRequest(request_id, web_frame->AsWeakPtr(),
@@ -93,9 +119,9 @@ void ClipboardJavaScriptFeature::ScriptMessageReceived(
   // are evaluated as "paste" actions. This approach is consistent with the
   // desktop implementation in
   // content/browser/renderer_host/clipboard_host_impl.cc.
-  if (*command == kWriteCommand) {
+  if (command == kWriteCommand) {
     web_state->GetDelegate()->ShouldAllowCopy(web_state, std::move(callback));
-  } else if (*command == kReadCommand) {
+  } else if (command == kReadCommand) {
     web_state->GetDelegate()->ShouldAllowPaste(web_state, std::move(callback));
   }
 }

@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("clipboard") {
   deps = [
     ":clipboard_js",
+    ":paste_handler_js",
     "//base",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -20,11 +22,24 @@ source_set("clipboard") {
   ]
 }
 
+compile_ts("clipboard_util_js") {
+  sources = [ "resources/clipboard_util.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
 optimize_ts("clipboard_js") {
   visibility = [ ":clipboard" ]
-
   sources = [ "resources/clipboard.ts" ]
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    ":clipboard_util_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+optimize_ts("paste_handler_js") {
+  visibility = [ ":clipboard" ]
+  sources = [ "resources/paste_handler.ts" ]
+  deps = [ ":clipboard_util_js" ]
 }
 
 source_set("unittests") {

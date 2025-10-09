@@ -44,6 +44,7 @@ class ClipboardJsTest : public web::JavascriptTest {
     AddGCrWebScript();
     AddCommonScript();
     AddUserScript(@"clipboard");
+    AddUserScript(@"paste_handler");
 
     ASSERT_TRUE(web::test::LoadHtml(web_view(), @"<html></html>",
                                     [NSURL URLWithString:kHttpsTestUrl]));
@@ -400,7 +401,7 @@ TEST_F(ClipboardJsTest, TestEvictionLogic) {
     }
     NSDictionary* message = base::apple::ObjCCastStrict<NSDictionary>(
         clipboard_handler_.lastReceivedScriptMessage.body);
-    return [message[@"requestId"] intValue] == 100;
+    return [message[base::SysUTF8ToNSString(kRequestIdKey)] intValue] == 100;
   }));
 
   // Verify that the oldest request (ID 0) was rejected with the correct error.
@@ -418,6 +419,45 @@ TEST_F(ClipboardJsTest, TestEvictionLogic) {
     return !GetTestStateResult("result100").empty();
   }));
   EXPECT_EQ("resolved", GetTestStateResult("result100"));
+}
+
+// Tests that a paste event sends a message to the browser.
+TEST_F(ClipboardJsTest, TestPasteEvent) {
+  // Simulate a paste event.
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(), @"document.dispatchEvent(new Event('paste'));");
+
+  // Verify that a message was sent to the native code.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return !!clipboard_handler_.lastReceivedScriptMessage;
+  }));
+  NSDictionary* message = base::apple::ObjCCastStrict<NSDictionary>(
+      clipboard_handler_.lastReceivedScriptMessage.body);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(kDidFinishClipboardReadCommand),
+              message[base::SysUTF8ToNSString(kCommandKey)]);
+}
+
+// Tests that a successful readText() sends a `didFinishClipboardRead`
+// notification.
+TEST_F(ClipboardJsTest, TestReadFulfillmentSendsNotification) {
+  // Set up the clipboard with text to read, then read it. This is necessary to
+  // test that the `didFinishClipboardRead` message is sent after a successful
+  // read operation.
+  WriteText("test");
+  ResolveRequest(/*request_id=*/0, /*is_allowed=*/true);
+  ReadText("readResult");
+  ResolveRequest(/*request_id=*/1, /*is_allowed=*/true);
+
+  // Verify that the `didFinishClipboardRead` message was sent.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    if (!clipboard_handler_.lastReceivedScriptMessage) {
+      return false;
+    }
+    NSDictionary* message = base::apple::ObjCCastStrict<NSDictionary>(
+        clipboard_handler_.lastReceivedScriptMessage.body);
+    return [base::SysUTF8ToNSString(kDidFinishClipboardReadCommand)
+        isEqualToString:message[base::SysUTF8ToNSString(kCommandKey)]];
+  }));
 }
 
 }  // namespace web

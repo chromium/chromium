@@ -75,6 +75,9 @@ class WebStateDelegate {
   virtual void ShouldAllowCut(WebState* source,
                               base::OnceCallback<void(bool)> callback);
 
+  // Called after the user or a script pasted content into the page.
+  virtual void DidFinishClipboardRead(WebState* source);
+
   // Returns a pointer to a service to manage dialogs. May return nullptr in
   // which case dialogs aren't shown.
   // TODO(crbug.com/40473860): Find better place for this method.

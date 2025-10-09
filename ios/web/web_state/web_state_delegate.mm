@@ -57,6 +57,8 @@ void WebStateDelegate::ShouldAllowCut(WebState* source,
   std::move(callback).Run(true);
 }
 
+void WebStateDelegate::DidFinishClipboardRead(WebState* source) {}
+
 JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(
     WebState*) {
   return nullptr;
