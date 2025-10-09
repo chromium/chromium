@@ -620,7 +620,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(iframe.content_attributes().is_ad_related());
-  EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
 }
@@ -648,7 +647,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
                         ->GetLastCommittedOrigin());
   EXPECT_TRUE(iframe.content_attributes().is_ad_related());
-  EXPECT_TRUE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
 }
@@ -667,7 +665,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(iframe.content_attributes().is_ad_related());
-  EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
 }
@@ -908,7 +905,6 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
-  EXPECT_FALSE(b_frame_data.likely_ad_frame());
 
   const auto& b_frame_root =
       ContentRootNodeForFrameActionableMode(b_frame.children_nodes()[0]);
@@ -927,7 +923,6 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
-  EXPECT_FALSE(c_frame_data.likely_ad_frame());
 
   const auto& c_frame_root =
       ContentRootNodeForFrameActionableMode(c_frame.children_nodes()[0]);
@@ -966,7 +961,6 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(same_site_frame.content_attributes().is_ad_related());
-  EXPECT_FALSE(same_site_frame_data.likely_ad_frame());
 
   const auto& same_site_frame_root = ContentRootNodeForFrameActionableMode(
       same_site_frame.children_nodes()[0]);
@@ -986,7 +980,6 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 
   // Ensure the frame data isn't populated and a redaction reason is included.
   EXPECT_FALSE(cross_site_frame.content_attributes().is_ad_related());
-  EXPECT_FALSE(cross_site_frame_data.likely_ad_frame());
   EXPECT_FALSE(cross_site_frame_data.has_frame_data());
   EXPECT_TRUE(cross_site_frame_data.has_redacted_frame_metadata());
   EXPECT_EQ(cross_site_frame_data.redacted_frame_metadata().reason(),
@@ -1042,7 +1035,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
   AssertValidOrigin(b_frame_data.frame_data().security_origin(),
                     fenced_frame_rfh->GetLastCommittedOrigin());
   EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
-  EXPECT_FALSE(b_frame_data.likely_ad_frame());
   EXPECT_EQ(b_frame.children_nodes().size(), 1);
   AssertHasText(b_frame.children_nodes()[0], "Non empty simple page\n\n");
   const auto& b_geometry = b_frame.content_attributes().geometry();

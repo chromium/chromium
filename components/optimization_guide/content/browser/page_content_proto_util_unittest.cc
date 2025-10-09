@@ -625,7 +625,6 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
   auto iframe_token = CreateFrameToken();
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
   iframe_data->frame_token = iframe_token.frame_token;
-  iframe_data->likely_ad_frame = true;
   auto frame_data = blink::mojom::AIPageContentFrameData::New();
   frame_data->frame_interaction_info =
       blink::mojom::AIPageContentFrameInteractionInfo::New();
@@ -693,7 +692,6 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
                                       .children_nodes(0)
                                       .content_attributes()
                                       .iframe_data();
-  EXPECT_TRUE(proto_iframe_data.likely_ad_frame());
   const auto& frame_interaction_info =
       proto_iframe_data.frame_data().frame_interaction_info();
   const auto& selection = frame_interaction_info.selection();

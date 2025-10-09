@@ -666,7 +666,6 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   EXPECT_EQ(iframe_attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_FALSE(iframe_attributes.iframe_data->likely_ad_frame);
   EXPECT_FALSE(iframe_attributes.is_ad_related);
 
   const auto& iframe_root = *iframe.children_nodes[0];
@@ -706,7 +705,6 @@ TEST_F(AIPageContentAgentTest, IFrameAds) {
 
   EXPECT_EQ(iframe_attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_TRUE(iframe_attributes.iframe_data->likely_ad_frame);
   EXPECT_TRUE(iframe_attributes.is_ad_related);
 }
 

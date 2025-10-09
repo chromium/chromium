@@ -1233,7 +1233,6 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 
   auto iframe_data = mojom::blink::AIPageContentIframeData::New();
   iframe_data->frame_token = frame.GetFrameToken();
-  iframe_data->likely_ad_frame = frame.IsAdFrame();
 
   content_node.content_attributes->iframe_data = std::move(iframe_data);
 

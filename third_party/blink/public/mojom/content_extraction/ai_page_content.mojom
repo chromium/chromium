@@ -363,10 +363,6 @@ union AIPageContentIframeContent {
 struct AIPageContentIframeData {
   blink.mojom.FrameToken frame_token;
 
-  // Indicates whether the iframe is likely to be an ad frame. This is set for
-  // both the root ad frame and its descendants.
-  bool likely_ad_frame;
-
   // Data common to all local frames (main and embedded). If this is a remote
   // frame, this metadata will be part of the AIPageContent pulled from the
   // local frame's renderer process.

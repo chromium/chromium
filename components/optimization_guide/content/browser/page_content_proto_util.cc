@@ -719,8 +719,6 @@ void ConvertRedactedIframeData(
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
     const blink::mojom::RedactedFrameMetadata& mojom_redacted_frame_metadata,
     optimization_guide::proto::IframeData* proto_iframe_data) {
-  proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
-
   ConvertRedactionReason(mojom_redacted_frame_metadata.reason,
                          proto_iframe_data->mutable_redacted_frame_metadata());
 }
@@ -874,8 +872,6 @@ class Converter {
       const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
       const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
       optimization_guide::proto::IframeData* proto_iframe_data) {
-    proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
-
     ConvertFrameData(render_frame_info, mojom_local_frame_data,
                      proto_iframe_data->mutable_frame_data(), *page_metadata_,
                      *frame_token_set_);
