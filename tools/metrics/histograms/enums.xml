@@ -14633,6 +14633,7 @@ from previous Chrome versions.
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
   <int value="175564245"
       label="ZeroCopyRBPPartialRasterWithGpuCompositor:disabled"/>
+  <int value="175884656" label="NtpRealboxNext:enabled"/>
   <int value="176284157" label="HistoryOptInEntryPoints:enabled"/>
   <int value="176329316" label="MediaAppImageMantisReimagine:disabled"/>
   <int value="176401620" label="TabGroupParityAndroid:enabled"/>
@@ -18665,6 +18666,7 @@ from previous Chrome versions.
       label="SupportMultipleServerRequestsForPixPayments:enabled"/>
   <int value="1604335827"
       label="AutofillUpstreamAllowAdditionalEmailDomains:enabled"/>
+  <int value="1604497846" label="NtpRealboxNext:disabled"/>
   <int value="1604893983" label="VizForWebView:disabled"/>
   <int value="1604914671" label="eol-reset-dismissed-prefs"/>
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>

@@ -188,22 +188,7 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     "ContextMenuMaxTabSuggestions",
     5);
 
-const base::FeatureParam<RealboxLayoutMode>::Option
-    kRealboxLayoutModeOptions[] = {
-        {RealboxLayoutMode::kDefault, kRealboxLayoutModeDefault},
-        {RealboxLayoutMode::kTall, kRealboxLayoutModeTall},
-        {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
-const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
-    &kNtpComposebox,
-    "RealboxLayoutMode",
-    RealboxLayoutMode::kDefault,
-    &kRealboxLayoutModeOptions);
-
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
-
-const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpComposebox,
-                                                    "CyclingPlaceholders",
-                                                    false);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
@@ -213,16 +198,53 @@ FeatureConfig& FeatureConfig::operator=(const FeatureConfig&) = default;
 FeatureConfig& FeatureConfig::operator=(FeatureConfig&&) = default;
 FeatureConfig::~FeatureConfig() = default;
 
+}  // namespace ntp_composebox
+
+namespace ntp_realbox {
+
+bool IsNtpRealboxNextEnabled(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  // The `AimEligibilityService` depends on the `TemplateURLService`. If the
+  // `TemplateURLService` does not exist for this profile, then the
+  // `AimEligibilityService` cannot be created.
+  if (!TemplateURLServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      AimEligibilityServiceFactory::GetForProfile(profile), kNtpRealboxNext);
+}
+
+BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
+                                                    "CyclingPlaceholders",
+                                                    false);
+
+const base::FeatureParam<RealboxLayoutMode>::Option
+    kRealboxLayoutModeOptions[] = {
+        {RealboxLayoutMode::kTall, kRealboxLayoutModeTall},
+        {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
+
+const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
+    &kNtpRealboxNext,
+    "RealboxLayoutMode",
+    RealboxLayoutMode::kTall,
+    &kRealboxLayoutModeOptions);
+
 std::string_view RealboxLayoutModeToString(
     RealboxLayoutMode realbox_layout_mode) {
   switch (realbox_layout_mode) {
-    case RealboxLayoutMode::kDefault:
-      return kRealboxLayoutModeDefault;
     case RealboxLayoutMode::kTall:
       return kRealboxLayoutModeTall;
     case RealboxLayoutMode::kCompact:
       return kRealboxLayoutModeCompact;
+    default:
+      NOTREACHED();
   }
 }
 
-}  // namespace ntp_composebox
+}  // namespace ntp_realbox

@@ -7339,6 +7339,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ntp-realbox-next",
+    "owners": [ "romanarora@chromium.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "ntp-realbox-pedals",
     "owners": [ "mahmadi@chromium.org", "mfacey@chromium.org" ],
     "expiry_milestone": 120

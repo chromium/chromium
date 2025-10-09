@@ -3376,6 +3376,9 @@ extern const char kNtpCalendarModuleDescription[];
 extern const char kNtpComposeboxName[];
 extern const char kNtpComposeboxDescription[];
 
+extern const char kNtpRealboxNextName[];
+extern const char kNtpRealboxNextDescription[];
+
 extern const char kNtpComposeboxUsesChromeComposeClientName[];
 extern const char kNtpComposeboxUsesChromeComposeClientDescription[];
 

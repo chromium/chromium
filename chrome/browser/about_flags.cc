@@ -1664,13 +1664,11 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowContextMenu", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTall[] = {
-    {"ShowContextMenu", "true"},
-    {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeTall},
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTall},
     {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
-    {"ShowContextMenu", "true"},
-    {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeCompact},
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
     {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
@@ -1708,10 +1706,6 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kComposeboxShowContextMenu), nullptr},
     {"- Show Contextual Input Menu and ZPS", kComposeboxShowContextMenuAndZps,
      std::size(kComposeboxShowContextMenuAndZps), nullptr},
-    {"- Show Next Realbox (Tall)", kShowNextRealboxTall,
-     std::size(kShowNextRealboxTall), nullptr},
-    {"- Show Next Realbox (Compact)", kShowNextRealboxCompact,
-     std::size(kShowNextRealboxCompact), nullptr},
     {"- Show Contextual Input Menu and ZPS 5 File Limit",
      kComposeboxShowContextMenuAndZpsMultiFile,
      std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},
@@ -1723,6 +1717,13 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kShowToolsAndModels), nullptr},
     {"- Show Create Image in Context Menu", kShowCreateImageTool,
      std::size(kShowCreateImageTool), nullptr},
+};
+
+const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
+    {"- Show Next Realbox (Tall)", kShowNextRealboxTall,
+     std::size(kShowNextRealboxTall), nullptr},
+    {"- Show Next Realbox (Compact)", kShowNextRealboxCompact,
+     std::size(kShowNextRealboxCompact), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
@@ -7558,6 +7559,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
                                     kNtpComposeboxVariations,
                                     "NtpComposebox")},
+
+    {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
+     flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_realbox::kNtpRealboxNext,
+                                    kNtpRealboxNextVariations,
+                                    "NtpRealboxNext")},
 
     {"composebox-uses-chrome-compose-client",
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientName,
