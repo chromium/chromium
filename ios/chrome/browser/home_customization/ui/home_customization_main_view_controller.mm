@@ -74,6 +74,8 @@
 @synthesize collectionView = _collectionView;
 @synthesize diffableDataSource = _diffableDataSource;
 @synthesize page = _page;
+@synthesize additionalViewWillTransitionToSizeHandler =
+    _additionalViewWillTransitionToSizeHandler;
 
 - (instancetype)init {
   self = [super init];
@@ -112,6 +114,14 @@
       "IOS.HomeCustomization.Background.RecentlyUsed.ClickCount",
       _recentBackgroundClickCount);
   [super viewWillDisappear:animated];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  if (_additionalViewWillTransitionToSizeHandler) {
+    _additionalViewWillTransitionToSizeHandler(size, coordinator);
+  }
 }
 
 #pragma mark - Private
@@ -225,8 +235,10 @@
         verticalListSectionForLayoutEnvironment:layoutEnvironment];
   } else if (sectionIndex == backgroundCustomizationIdentifier) {
     CHECK(IsNTPBackgroundCustomizationEnabled());
+    CGSize windowSize = self.view.window.bounds.size;
     return [_collectionConfigurator
-        backgroundCellSectionForLayoutEnvironment:layoutEnvironment];
+        backgroundCellSectionForLayoutEnvironment:layoutEnvironment
+                                       windowSize:windowSize];
   } else if (sectionIndex == enterpriseIdentifier) {
     return [_collectionConfigurator
         verticalListSectionForLayoutEnvironment:layoutEnvironment];
