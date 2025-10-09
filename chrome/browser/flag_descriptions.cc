@@ -4316,6 +4316,10 @@ const char kVideoPictureInPictureControlsUpdate2024Description[] =
     "Displays an updated UI for video picture-in-picture controls from its 2024"
     "UI update";
 
+const char kVidsAppPreinstallName[] = "Vids app preinstall";
+const char kVidsAppPreinstallDescription[] =
+    "Preinstalls the Vids app on ChromeOS.";
+
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "

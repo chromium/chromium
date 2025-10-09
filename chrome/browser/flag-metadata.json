@@ -10344,6 +10344,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "vids-app-preinstall",
+    "owners": [ "alancutter@chromium.org", "cros-ca-eng@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "view-transition-on-navigation",
     "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
     "expiry_milestone" : 130

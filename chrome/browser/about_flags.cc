@@ -13311,6 +13311,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasskeyUnlockErrorUiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kPasskeyUnlockErrorUi)},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"vids-app-preinstall", flag_descriptions::kVidsAppPreinstallName,
+     flag_descriptions::kVidsAppPreinstallDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kVidsAppPreinstall)},
+#endif
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

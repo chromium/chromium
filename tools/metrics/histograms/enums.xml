@@ -16369,6 +16369,7 @@ from previous Chrome versions.
       label="UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning:disabled"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>
   <int value="773952982" label="ReduceIPAddressChangeNotification:disabled"/>
+  <int value="774417826" label="VidsAppPreinstall:enabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="775373286" label="TabModelInitFixes:enabled"/>
@@ -19147,6 +19148,7 @@ from previous Chrome versions.
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>
   <int value="1765184717"
       label="HighlightManagedPrefDisclaimerAndroid:disabled"/>
+  <int value="1765591001" label="VidsAppPreinstall:disabled"/>
   <int value="1766048620" label="FedCmError:enabled"/>
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
   <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>

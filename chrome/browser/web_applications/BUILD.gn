@@ -596,6 +596,8 @@ source_set("web_applications") {
         "preinstalled_web_apps/messages_dogfood.h",
         "preinstalled_web_apps/notebook_lm.cc",
         "preinstalled_web_apps/notebook_lm.h",
+        "preinstalled_web_apps/vids.cc",
+        "preinstalled_web_apps/vids.h",
       ]
       deps += [ "//extensions/common:common_constants" ]
     }

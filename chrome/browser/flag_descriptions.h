@@ -2500,6 +2500,9 @@ extern const char kGroupPromoPrototypeCpaName[];
 extern const char kGroupPromoPrototypeCpaDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kVidsAppPreinstallName[];
+extern const char kVidsAppPreinstallDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
