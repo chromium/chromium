@@ -48,11 +48,6 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
-  RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
-                   "mocha.run()");
-}
-
 class ReadAnythingMochaParameterizedTest
     : public ReadAnythingMochaBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -260,6 +255,11 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",
       "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ReadAloudHighlight) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
+                   "mocha.run()");
 }
 
 INSTANTIATE_TEST_SUITE_P(
