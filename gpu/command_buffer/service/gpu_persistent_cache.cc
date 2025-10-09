@@ -5,22 +5,37 @@
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache.h"
 
 namespace gpu {
 
+// We have to enable lock tracking to allow PersistentCache to be used on
+// multiple threads/different sequences.
+#if DCHECK_IS_ON()
+#define SCOPED_LOCK(lock) \
+  base::AutoLock auto_lock(lock, base::subtle::LockTracking::kEnabled)
+#else
+#define SCOPED_LOCK(lock) base::AutoLock auto_lock(lock)
+#endif  // DCHECK_IS_ON()
+
+
 GpuPersistentCache::GpuPersistentCache() = default;
 
-GpuPersistentCache::~GpuPersistentCache() = default;
+GpuPersistentCache::~GpuPersistentCache() {
+  SCOPED_LOCK(lock_);
+  persistent_cache_.reset();
+}
 
 void GpuPersistentCache::InitializeCache(
     base::File db_file,
     base::File journal_file,
     base::UnsafeSharedMemoryRegion shared_lock) {
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   persistent_cache::BackendParams params;
   params.type = persistent_cache::BackendType::kSqlite;
   params.db_file = std::move(db_file);
@@ -37,7 +52,7 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     void* value,
                                     size_t value_size) {
   TRACE_EVENT0("gpu", "GpuPersistentCache::LoadData");
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   if (!persistent_cache_) {
     return 0;
   }
@@ -63,7 +78,7 @@ void GpuPersistentCache::StoreData(const void* key,
                                    const void* value,
                                    size_t value_size) {
   TRACE_EVENT0("gpu", "GpuPersistentCache::StoreData");
-  base::AutoLock auto_lock(lock_);
+  SCOPED_LOCK(lock_);
   if (!persistent_cache_) {
     return;
   }
