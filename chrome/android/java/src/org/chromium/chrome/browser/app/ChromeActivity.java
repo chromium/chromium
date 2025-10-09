@@ -1348,7 +1348,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @CallSuper
     public void flushPersistentState() {
-        mUmaActivityObserver.flushUmaSession();
+        boolean flushSession =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES, "flush_session", true);
+        if (flushSession) mUmaActivityObserver.flushUmaSession();
         ProfileManagerUtils.flushPersistentDataForAllProfiles();
     }
 
