@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_GUEST_CONTENTS_BROWSER_GUEST_CONTENTS_HOST_IMPL_H_
 #define COMPONENTS_GUEST_CONTENTS_BROWSER_GUEST_CONTENTS_HOST_IMPL_H_
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
@@ -20,8 +21,9 @@ namespace guest_contents {
 
 // Implements the mojom::GuestContentsHost interface available in the browser
 // process on a WebUIController.
-class GuestContentsHostImpl : public mojom::GuestContentsHost,
-                              public content::WebContentsObserver {
+class COMPONENT_EXPORT(GUEST_CONTENTS) GuestContentsHostImpl
+    : public mojom::GuestContentsHost,
+      public content::WebContentsObserver {
  public:
   // The binder function used by WebUIController to create an implementation of
   // mojom::GuestContentsHost for the outer WebContents.

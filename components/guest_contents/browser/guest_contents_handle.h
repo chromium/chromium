@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_GUEST_CONTENTS_BROWSER_GUEST_CONTENTS_HANDLE_H_
 #define COMPONENTS_GUEST_CONTENTS_BROWSER_GUEST_CONTENTS_HANDLE_H_
 
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -17,7 +18,7 @@ using GuestId = int;
 // A handle for a guest WebContents, uniquely identified by a GuestId. It
 // provides APIs for attaching and detaching the guest WebContents from the
 // outer WebContents. It has the same lifetime as the guest WebContents.
-class GuestContentsHandle
+class COMPONENT_EXPORT(GUEST_CONTENTS) GuestContentsHandle
     : public content::WebContentsUserData<GuestContentsHandle>,
       public content::WebContentsObserver {
  public:

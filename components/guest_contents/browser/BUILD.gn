@@ -6,7 +6,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_guest_contents)
 
-static_library("browser") {
+component("browser") {
+  defines = [ "IS_GUEST_CONTENTS_IMPL" ]
+
   sources = [
     "guest_contents_handle.cc",
     "guest_contents_handle.h",
