@@ -8,6 +8,9 @@
 #include "ipc/ipc_message_macros.h"
 #include "ui/latency/latency_info.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_ENUM_TRAITS_MAX_VALUE(ui::LatencyComponentType,
                           ui::LATENCY_COMPONENT_TYPE_LAST)
 

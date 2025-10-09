@@ -17,6 +17,9 @@
 #error BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) should be set.
 #endif
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_ENUM_TRAITS_VALIDATE(
     safe_browsing::ClientDownloadRequest_DownloadType,
     safe_browsing::ClientDownloadRequest_DownloadType_IsValid(value))

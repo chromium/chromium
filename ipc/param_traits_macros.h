@@ -8,6 +8,12 @@
 #include <string>
 #include <type_traits>
 
+// Files that want to export their traits should do
+//   #undef IPC_MESSAGE_EXPORT
+//   #define IPC_MESSAGE_EXPORT VISIBILITY_MACRO
+// immediately before using any of the macros below. Like the macros
+// themselves, this needs to happen outside of the include guard.
+
 // Traits generation for structs.
 #define IPC_STRUCT_TRAITS_BEGIN(struct_name)                 \
   namespace IPC {                                            \

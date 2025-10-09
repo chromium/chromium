@@ -10,6 +10,9 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "ipc/ipc_message_macros.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_ENUM_TRAITS_MAX_VALUE(OmniboxFocusState, OMNIBOX_FOCUS_STATE_LAST)
 
 IPC_ENUM_TRAITS_MAX_VALUE(OmniboxFocusChangeReason,

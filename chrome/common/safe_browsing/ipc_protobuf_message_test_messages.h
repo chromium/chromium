@@ -9,6 +9,9 @@
 #include "ipc/ipc_message_protobuf_utils.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_macros.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(SubMessage)
   IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_FUNDAMENTAL_MEMBER(foo)
 IPC_PROTOBUF_MESSAGE_TRAITS_END()

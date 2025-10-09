@@ -11,6 +11,9 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/param_traits_macros.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_ENUM_TRAITS_MAX_VALUE(version_info::Channel, version_info::Channel::STABLE)
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::FeatureSessionType,
                           extensions::mojom::FeatureSessionType::kMaxValue)

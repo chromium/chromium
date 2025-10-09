@@ -8,6 +8,9 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ipc/ipc_message_macros.h"
 
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
+
 IPC_ENUM_TRAITS_MAX_VALUE(ContentSettingsType,
                           static_cast<int32_t>(ContentSettingsType::kMaxValue))
 

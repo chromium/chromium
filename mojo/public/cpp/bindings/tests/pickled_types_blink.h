@@ -5,9 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_BLINK_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_BLINK_H_
 
-#include <stddef.h>
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_BLINK_INTERNAL
+#define MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_BLINK_INTERNAL
 
-#include <string>
+#include <stddef.h>
 
 #include "base/check_op.h"
 #include "ipc/ipc_message_macros.h"
@@ -79,6 +80,11 @@ struct ParamTraits<mojo::test::PickledStructBlink> {
 };
 
 }  // namespace IPC
+
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_BLINK_INTERNAL
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumBlink,
                           mojo::test::PickledEnumBlink::VALUE_1)
