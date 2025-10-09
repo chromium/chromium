@@ -105,10 +105,9 @@ VIDEOS = [
 ]
 
 HOST_TUNNEL_CMD = [
-    'sshpass',
-    '-p',
-    PASSWORD,
     'ssh',
+    '-i',
+    '~/.ssh/id_ed25519',
     '-L',
     f'{CHROMEDRIVER_PORT}:127.0.0.1:{CHROMEDRIVER_PORT}',
     f'{USERNAME}@{SENDER}',
@@ -172,8 +171,14 @@ def send_ssh_command(hostname, username, password, command, blocking=False):
     Returns:
         subprocess.CompletedProcess or subprocess.Popen: The process object.
     """
-    ssh_command = ['sshpass', '-p', password, 'ssh',
-                   f'{username}@{hostname}', command]
+    ssh_command = [
+        'ssh',
+        '-i',
+        '~/.ssh/id_ed25519',
+        f'{username}@{hostname}',
+        command
+    ]
+
     if blocking:
         process = subprocess.run(
             ssh_command,
