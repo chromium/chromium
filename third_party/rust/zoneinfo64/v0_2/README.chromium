@@ -2,7 +2,7 @@ Name: zoneinfo64
 URL: https://crates.io/crates/zoneinfo64
 Version: 0.2.0
 Revision: c1c377b49af283bdf89937b4f5ce516710e55a37
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/zoneinfo64-v0_2/LICENSE
 Shipped: yes

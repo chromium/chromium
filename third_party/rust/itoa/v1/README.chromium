@@ -2,7 +2,7 @@ Name: itoa
 URL: https://crates.io/crates/itoa
 Version: 1.0.15
 Revision: e2766b868e4ac1ae2bf5bea1ac43d4c0da23b899
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/itoa-v1/LICENSE-APACHE
 Shipped: yes

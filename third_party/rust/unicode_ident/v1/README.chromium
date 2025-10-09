@@ -2,7 +2,7 @@ Name: unicode-ident
 URL: https://crates.io/crates/unicode-ident
 Version: 1.0.19
 Revision: dc018bf1ca82d295f72a84e7ed432e5d2bcbe2fe
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0, Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/unicode-ident-v1/LICENSE-APACHE,//third_party/rust/chromium_crates_io/vendor/unicode-ident-v1/LICENSE-UNICODE
 Shipped: yes

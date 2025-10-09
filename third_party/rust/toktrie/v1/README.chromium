@@ -2,7 +2,7 @@ Name: toktrie
 URL: https://crates.io/crates/toktrie
 Version: 1.2.0
 Revision: c65e3c3244713b9ebcc204cc5676c8a4a57f78bf
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/toktrie-v1/LICENSE
 Shipped: yes

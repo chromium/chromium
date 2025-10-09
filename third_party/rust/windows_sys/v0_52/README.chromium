@@ -2,7 +2,7 @@ Name: windows-sys
 URL: https://crates.io/crates/windows-sys
 Version: 0.52.0
 Revision: 3a605cba064b26f2a198ac58085f8c8836f47c38
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/license-apache-2.0
 Shipped: yes
