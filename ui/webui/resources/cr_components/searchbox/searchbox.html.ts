@@ -39,43 +39,29 @@ ${this.realboxLayoutMode === 'TallTopContext' || this.realboxLayoutMode === 'Tal
       </cr-searchbox-thumbnail>
     </div>
   ` : ''}
-  ${this.searchboxChromeRefreshTheming ? html`
-    ${this.searchboxVoiceSearchEnabled_ ? html`
-      <div class="searchbox-icon-button-container voice">
-        <button id="voiceSearchButton" class="searchbox-icon-button"
-            @click="${this.onVoiceSearchClick_}"
-            title="${this.i18n('voiceSearchButtonLabel')}">
-        </button>
-      </div>
-    ` : ''}
-    ${this.searchboxLensSearchEnabled_ ? html`
-      <div class="searchbox-icon-button-container lens">
-        <button id="lensSearchButton" class="searchbox-icon-button"
-            @click="${this.onLensSearchClick_}"
-            title="${this.i18n('lensSearchButtonLabel')}">
-        </button>
-      </div>
-    ` : ''}
-  ` : ''}
 
-  ${!this.searchboxChromeRefreshTheming ? html`
-    ${this.searchboxVoiceSearchEnabled_ ? html`
+  ${this.searchboxVoiceSearchEnabled_ ? html`
+    <div class="searchbox-icon-button-container voice">
       <button id="voiceSearchButton" class="searchbox-icon-button"
           @click="${this.onVoiceSearchClick_}"
           title="${this.i18n('voiceSearchButtonLabel')}">
       </button>
-    ` : ''}
-    ${this.searchboxLensSearchEnabled_ ? html`
+    </div>
+  ` : ''}
+
+  ${this.searchboxLensSearchEnabled_ ? html`
+    <div class="searchbox-icon-button-container lens">
       <button id="lensSearchButton" class="searchbox-icon-button lens"
           @click="${this.onLensSearchClick_}"
           title="${this.i18n('lensSearchButtonLabel')}">
       </button>
-    ` : ''}
-    ${this.composeButtonEnabled ? html`
-      <cr-searchbox-compose-button id="composeButton"
-          @compose-click="${this.onComposeButtonClick_}">
-      </cr-searchbox-compose-button>
-    ` : ''}
+    </div>
+  ` : ''}
+
+  ${this.composeButtonEnabled ? html`
+    <cr-searchbox-compose-button id="composeButton"
+        @compose-click="${this.onComposeButtonClick_}">
+    </cr-searchbox-compose-button>
   ` : ''}
 
   ${this.ntpRealboxNextEnabled ? html`
