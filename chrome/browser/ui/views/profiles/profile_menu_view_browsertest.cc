@@ -1934,10 +1934,6 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   signin_util::EnableHistorySync(sync_service());
-
-  // Any (local/account storage) valid data type that is not
-  // `syncer::BOOKMARKS`, otherwise the bookmarks promo would have a higher
-  // priority.
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
                                                    /*item_count=*/5);
 
@@ -2016,8 +2012,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          switches::kSigninWindows10DepreciationStateBypassForTesting}),
     /*disabled_features=*/{}) {
-  secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(), &test_url_loader_factory_, "user@example.com");
+  AccountInfo primary_account =
+      secondary_account_helper::SignInUnconsentedAccount(
+          GetProfile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
   // Check that the setup was successful.
   ASSERT_FALSE(
@@ -2025,7 +2022,10 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // Bookmarks creates a different type of promo to be shown.
+  // Bookmarks with previously syncing account creates a different type of promo
+  // to be shown.
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kGoogleServicesLastSyncingGaiaId, primary_account.gaia.ToString());
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
 

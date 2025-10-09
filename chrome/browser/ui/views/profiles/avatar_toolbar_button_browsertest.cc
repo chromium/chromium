@@ -3039,9 +3039,15 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
     IN_PROC_BROWSER_TEST_F,
     AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
     ShowBatchUploadBookmarksPromo) {
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  const GaiaId primary_account_gaia_id =
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  ASSERT_FALSE(primary_account_gaia_id.empty());
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kGoogleServicesLastSyncingGaiaId,
+      primary_account_gaia_id.ToString());
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
 
@@ -3071,9 +3077,6 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
-  // Any (local/account storage) valid data type that is not
-  // `syncer::BOOKMARKS`, otherwise the bookmarks promo would have a higher
-  // priority.
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
                                                    /*item_count=*/5);
 
@@ -3140,9 +3143,15 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
     IN_PROC_BROWSER_TEST_F,
     AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
     NoPromoShownUntilSyncServiceIsInitialized) {
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  const GaiaId primary_account_gaia_id =
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  ASSERT_FALSE(primary_account_gaia_id.empty());
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+  browser()->profile()->GetPrefs()->SetString(
+      ::prefs::kGoogleServicesLastSyncingGaiaId,
+      primary_account_gaia_id.ToString());
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
   SetSyncServiceInitializedState(/*initialized=*/false);

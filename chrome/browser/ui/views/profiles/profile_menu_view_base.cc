@@ -311,7 +311,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
   constexpr int kBottomMarginWhenNoButton = 24;
-  constexpr int kSubtitleBottomMarginWithButton = 12;
+  constexpr int kSubtitleBottomMarginInfoBelow = 12;
   constexpr int kButtonBottomMargin = 28;
 
   // Vertical view structure when all elements are present. Square brackets []
@@ -325,8 +325,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // [kTitleTopMargin]
   // Label: Title
   // Optional:
+  //     Label: Email Subtitle (optional)
+  //     [kEmailSubtitleBottomMarginWithInfoBelow] (or
+  //     [kSubtitleBottomMarginInfoBelow])
   //     Label: Subtitle (optional)
-  //     [kSubtitleBottomMarginWithButton] (or [kBottomMarginWhenNoButton])
+  //     [kSubtitleBottomMarginWithButton] (or [kSubtitleBottomMarginInfoBelow])
   // Optional:
   //     Button: maybe with an image inside
   //     [kButtonBottomMargin]
@@ -401,9 +404,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .Build());
 
   // Title.
-  const bool has_subtitle = !params.subtitle.empty();
+  const bool has_any_subtitle =
+      !params.subtitle.empty() || !params.email_subtitle.empty();
   const bool has_button = !params.button_text.empty();
-  const int title_bottom_margin = has_subtitle ? 0 : kBottomMarginWhenNoButton;
+  const int title_bottom_margin =
+      has_any_subtitle ? 0 : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(params.title)
@@ -417,7 +422,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                                          kIdentityContainerHorizontalPadding))
           .SetEnabledColor(kColorProfileMenuIdentityInfoTitle)
           .Build());
-  if (!has_subtitle) {
+  if (!has_any_subtitle) {
     CHECK(!has_button);
     return;
   }
@@ -430,23 +435,47 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kGroup);
   identity_info_container_->GetViewAccessibility().SetName(
-      params.subtitle, ax::mojom::NameFrom::kAttribute);
+      !params.subtitle.empty() ? params.subtitle : params.email_subtitle,
+      ax::mojom::NameFrom::kAttribute);
 
-  const int subtitle_bottom_margin =
-      has_button ? kSubtitleBottomMarginWithButton : kBottomMarginWhenNoButton;
-  identity_info_container_->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(params.subtitle)
-          .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(views::style::STYLE_BODY_4)
-          .SetMultiLine(true)
-          .SetHandlesTooltips(false)
-          .SetProperty(views::kMarginsKey,
-                       gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
-                                         subtitle_bottom_margin,
-                                         kIdentityContainerHorizontalPadding))
-          .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
-          .Build());
+  const bool has_subtitle = !params.subtitle.empty();
+  if (!params.email_subtitle.empty()) {
+    const int email_subtitle_bottom_margin =
+        has_button || has_subtitle ? kSubtitleBottomMarginInfoBelow
+                                   : kBottomMarginWhenNoButton;
+    identity_info_container_->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(params.email_subtitle)
+            .SetTextContext(views::style::CONTEXT_LABEL)
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetHandlesTooltips(false)
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
+                                  email_subtitle_bottom_margin,
+                                  kIdentityContainerHorizontalPadding))
+            .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
+            .Build());
+  }
+
+  if (has_subtitle) {
+    const int subtitle_bottom_margin =
+        has_button ? kSubtitleBottomMarginInfoBelow : kBottomMarginWhenNoButton;
+    identity_info_container_->AddChildView(
+        views::Builder<views::Label>()
+            .SetText(params.subtitle)
+            .SetTextContext(views::style::CONTEXT_LABEL)
+            .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetMultiLine(true)
+            .SetHandlesTooltips(false)
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(0, kIdentityContainerHorizontalPadding,
+                                  subtitle_bottom_margin,
+                                  kIdentityContainerHorizontalPadding))
+            .SetEnabledColor(kColorProfileMenuIdentityInfoSubtitle)
+            .Build());
+  }
 
   if (!has_button) {
     return;

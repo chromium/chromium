@@ -993,7 +993,9 @@ class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
       ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
-    ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+    ASSERT_TRUE(!primary_account.IsEmpty());
     switch (promo_type) {
       case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
         SetHistorySyncPreferenceState(/*is_type_on=*/false);
@@ -1002,13 +1004,13 @@ class ComputeProfileMenuAvatarButtonPromoInfoBaseTest : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo:
         SetHistorySyncPreferenceState(/*is_type_on=*/true);
-        // Any (local/account storage) valid data type that is not
-        // `syncer::BOOKMARKS`, otherwise the bookmarks promo would have a
-        // higher priority (only for `kBatchUploadPromo`).
         batch_upload_test_helper_.SetReturnDescriptions(
             syncer::PASSWORDS, GetLocalDataCount(promo_type));
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+        profile()->GetPrefs()->SetString(
+            prefs::kGoogleServicesLastSyncingGaiaId,
+            primary_account.gaia.ToString());
         batch_upload_test_helper_.SetReturnDescriptions(
             syncer::BOOKMARKS, GetLocalDataCount(promo_type));
         break;

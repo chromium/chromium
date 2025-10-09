@@ -772,6 +772,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadPromo:
+            params.email_subtitle =
+                base::UTF8ToUTF16(primary_account_info.email);
             params.subtitle = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD);
             params.button_text = l10n_util::GetStringUTF16(
@@ -783,6 +785,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadBookmarksPromo:
+            params.email_subtitle =
+                base::UTF8ToUTF16(primary_account_info.email);
             params.subtitle = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP);
             params.button_text = l10n_util::GetStringUTF16(
@@ -794,6 +798,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadWindows10DepreciationPromo:
+            params.email_subtitle =
+                base::UTF8ToUTF16(primary_account_info.email);
             // Note: Sync promo does not explicitly mention "sync" but invites
             // the user to back-up their data. It is fine to be used here.
             params.subtitle = l10n_util::GetStringUTF16(
@@ -818,7 +824,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         if (base::FeatureList::IsEnabled(
                 syncer::kReplaceSyncPromosWithSignInPromos)) {
           // No button.
-          params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+          params.email_subtitle = base::UTF8ToUTF16(primary_account_info.email);
         } else {
           params.subtitle =
               l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
@@ -831,7 +837,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     case signin_util::SignedInState::kSyncing:
       // No button.
-      params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+      params.email_subtitle = base::UTF8ToUTF16(primary_account_info.email);
       break;
     case signin_util::SignedInState::kSignInPending:
       button_type = ActionableItem::kSigninReauthButton;
