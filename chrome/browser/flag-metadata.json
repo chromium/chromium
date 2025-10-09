@@ -2743,8 +2743,8 @@
   },
   {
     "name": "enable-accessibility-deprecate-type-announce",
-    "owners": ["mschillaci@google.com", "twellington@chromium.org", "zork@chromium.org", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 137
+    "owners": ["kyraseevers@chromium.org", "zork@chromium.org", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 155
   },
   {
     "name": "enable-accessibility-disable-touchpad",
