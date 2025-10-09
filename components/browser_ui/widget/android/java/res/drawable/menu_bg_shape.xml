@@ -10,8 +10,5 @@ found in the LICENSE file.
     android:shape="rectangle">
     <corners android:radius="?attr/popupBgCornerRadius" />
     <solid android:color="@macro/menu_bg_color"/>
-    <padding
-        android:top="@dimen/popup_bg_padding"
-        android:bottom="@dimen/popup_bg_padding" />
 </shape>
 <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml) -->

@@ -66,6 +66,7 @@ import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -236,7 +237,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
             GradientDrawable outlineDrawable = new GradientDrawable();
             outlineDrawable.setShape(GradientDrawable.RECTANGLE);
             outlineDrawable.setCornerRadius(
-                    mContentView.getResources().getDimension(R.dimen.popup_bg_corner_radius_24dp));
+                    AttrUtils.getDimensionPixelSize(
+                            mContentView.getContext(), R.attr.popupBgCornerRadius));
             mContentView.setBackground(outlineDrawable);
             mContentView.setClipToOutline(true);
         }

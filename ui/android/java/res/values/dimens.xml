@@ -81,10 +81,7 @@ found in the LICENSE file.
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
     <dimen name="popup_bg_corner_radius">4dp</dimen>
-    <!-- These should be used for Menus with 24dp corner radius. -->
     <dimen name="popup_bg_corner_radius_24dp">24dp</dimen>
-    <dimen name="popup_bg_padding">4dp</dimen>
-
     <dimen name="popup_bg_corner_radius_16dp">16dp</dimen>
 
     <!--
