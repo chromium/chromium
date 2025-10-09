@@ -457,6 +457,7 @@ source_set("unit_tests") {
     "power_observer_helper_unittest.cc",
     "reconfigurable_audio_bus_pool_unittest.cc",
     "simple_sources_unittest.cc",
+    "wav_audio_handler_unittest.cc",
   ]
 
   deps = [
@@ -511,7 +512,6 @@ source_set("unit_tests") {
     sources += [
       "flac_audio_handler_unittest.cc",
       "test_data.h",
-      "wav_audio_handler_unittest.cc",
     ]
   }
 
