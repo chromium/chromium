@@ -3,7 +3,13 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 
+#include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
+#include "components/autofill/core/browser/suggestions/one_time_passwords/one_time_password_suggestion_data.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 
 namespace autofill {
 namespace {
@@ -31,6 +37,79 @@ std::vector<Suggestion> BuildOtpSuggestions(
     suggestions.push_back(BuildOtpSuggestion(otp_value, field_id));
   }
   return suggestions;
+}
+
+OtpSuggestionGenerator::OtpSuggestionGenerator(OtpManager& otp_manager)
+    : otp_manager_(otp_manager) {}
+
+OtpSuggestionGenerator::~OtpSuggestionGenerator() = default;
+
+void OtpSuggestionGenerator::FetchSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
+    base::OnceCallback<
+        void(std::pair<SuggestionDataSource,
+                       std::vector<SuggestionGenerator::SuggestionData>>)>
+        callback) {
+  if (!form_structure || !trigger_autofill_field) {
+    std::move(callback).Run({SuggestionDataSource::kOneTimePassword, {}});
+    return;
+  }
+
+  if (!trigger_autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    std::move(callback).Run({SuggestionDataSource::kOneTimePassword, {}});
+    return;
+  }
+
+  otp_manager_->GetOtpSuggestions(
+      base::BindOnce(&OtpSuggestionGenerator::OnOtpReturned,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void OtpSuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+        all_suggestion_data,
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  auto it = all_suggestion_data.find(SuggestionDataSource::kOneTimePassword);
+  std::vector<SuggestionData> otp_suggestion_data =
+      it != all_suggestion_data.end() ? it->second
+                                      : std::vector<SuggestionData>();
+  if (otp_suggestion_data.empty()) {
+    std::move(callback).Run({FillingProduct::kOneTimePassword, {}});
+    return;
+  }
+
+  std::vector<std::string> one_time_passwords = base::ToVector(
+      std::move(otp_suggestion_data), [](SuggestionData& suggestion_data) {
+        return *std::get<OneTimePasswordSuggestionData>(
+            std::move(suggestion_data));
+      });
+
+  std::move(callback).Run(
+      {FillingProduct::kOneTimePassword,
+       BuildOtpSuggestions(one_time_passwords, trigger_field.global_id())});
+}
+
+void OtpSuggestionGenerator::OnOtpReturned(
+    base::OnceCallback<void(
+        std::pair<SuggestionDataSource,
+                  std::vector<SuggestionGenerator::SuggestionData>>)> callback,
+    std::vector<std::string> one_time_passwords) {
+  std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
+      base::ToVector(
+          std::move(one_time_passwords), [](std::string& one_time_password) {
+            return SuggestionGenerator::SuggestionData(
+                OneTimePasswordSuggestionData(std::move(one_time_password)));
+          });
+  std::move(callback).Run(
+      {SuggestionDataSource::kOneTimePassword, std::move(suggestion_data)});
 }
 
 }  // namespace autofill

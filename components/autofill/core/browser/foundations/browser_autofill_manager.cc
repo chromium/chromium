@@ -3575,6 +3575,11 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
               *password_delegate));
     }
   }
+  if (relevant_filling_products.contains(FillingProduct::kOneTimePassword) &&
+      otp_manager_) {
+    suggestion_generators_.push_back(
+        std::make_unique<OtpSuggestionGenerator>(*otp_manager_));
+  }
 }
 
 }  // namespace autofill

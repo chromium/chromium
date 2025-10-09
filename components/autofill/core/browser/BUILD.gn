@@ -679,6 +679,7 @@ static_library("browser") {
     "suggestions/compose_suggestion_generator.h",
     "suggestions/identity_credential_suggestion_utils.cc",
     "suggestions/identity_credential_suggestion_utils.h",
+    "suggestions/one_time_passwords/one_time_password_suggestion_data.h",
     "suggestions/one_time_passwords/otp_suggestion_generator.cc",
     "suggestions/one_time_passwords/otp_suggestion_generator.h",
     "suggestions/passkeys/hybrid_passkey_availability.h",
