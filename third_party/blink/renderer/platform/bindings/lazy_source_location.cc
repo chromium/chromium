@@ -47,44 +47,40 @@ LazySourceLocation::LazySourceLocation(const String& url) : url_(url) {}
 LazySourceLocation::LazySourceLocation(v8::Isolate* isolate,
                                        v8::Local<v8::String> url,
                                        int char_position)
-    : char_position_(char_position) {
-  url_.emplace<TraceWrapperV8Reference<v8::String>>(isolate, url);
-}
+    : v8_url_(isolate, url), char_position_(char_position) {}
 
 LazySourceLocation::LazySourceLocation(v8::Isolate* isolate,
                                        v8::Local<v8::String> url,
                                        int char_position,
                                        int line_number,
                                        int column_number)
-    : char_position_(char_position),
+    : v8_url_(isolate, url),
+      char_position_(char_position),
       line_number_(line_number),
-      column_number_(column_number) {
-  url_.emplace<TraceWrapperV8Reference<v8::String>>(isolate, url);
-}
+      column_number_(column_number) {}
 
 LazySourceLocation::~LazySourceLocation() = default;
 
 // The core method that handles the lazy conversion.
 // The URL string is converted from a V8 handle to a Blink string
 // only when this method is called for the first time.
-const String& LazySourceLocation::Url(v8::Isolate* isolate) const {
-  if (std::holds_alternative<TraceWrapperV8Reference<v8::String>>(url_)) {
-    const auto& persistent =
-        std::get<TraceWrapperV8Reference<v8::String>>(url_);
-    if (!persistent.IsEmpty()) {
-      url_ = ToCoreStringWithNullCheck(isolate, persistent.Get(isolate));
-    } else {
-      url_ = String();
-    }
+const String& LazySourceLocation::Url(v8::Isolate* isolate) {
+  if (!url_.IsNull()) {
+    return url_;
   }
 
-  return std::get<String>(url_);
+  if (!v8_url_.IsEmpty()) {
+    url_ = ToCoreStringWithNullCheck(isolate, v8_url_.Get(isolate));
+    // The V8 handle can now be cleared, allowing the V8 GC to collect it.
+    v8_url_.Clear();
+  } else {
+    url_ = String();
+  }
+  return url_;
 }
 
 void LazySourceLocation::Trace(Visitor* visitor) const {
-  if (std::holds_alternative<TraceWrapperV8Reference<v8::String>>(url_)) {
-    visitor->Trace(std::get<TraceWrapperV8Reference<v8::String>>(url_));
-  }
+  visitor->Trace(v8_url_);
 }
 
 }  // namespace blink

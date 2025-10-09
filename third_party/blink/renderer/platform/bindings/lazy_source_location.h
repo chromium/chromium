@@ -39,14 +39,15 @@ class PLATFORM_EXPORT LazySourceLocation final
 
   // This enables lazy conversion of script URLs for performance.
   static LazySourceLocation* FromCurrentStack(v8::Isolate* isolate);
-  const String& Url(v8::Isolate* isolate) const;
+  const String& Url(v8::Isolate* isolate);
   int CharPosition() const { return char_position_; }
   int LineNumber() const { return line_number_; }
   int ColumnNumber() const { return column_number_; }
   void Trace(Visitor* visitor) const;
 
  private:
-  mutable std::variant<String, TraceWrapperV8Reference<v8::String>> url_;
+  TraceWrapperV8Reference<v8::String> v8_url_;
+  String url_;
   int char_position_ = -1;
   int line_number_ = 0;
   int column_number_ = 0;
