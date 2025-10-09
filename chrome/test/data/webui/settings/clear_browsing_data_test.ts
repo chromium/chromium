@@ -11,6 +11,7 @@ import {ClearBrowsingDataBrowserProxyImpl, TimePeriod} from 'chrome://settings/l
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -555,8 +556,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     promiseResolver.resolve(
         {showHistoryNotice: true, showPasswordsNotice: false});
     await promiseResolver.promise;
-
-    flush();
+    await flushTasks();
     const notice1 =
         element.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
             '#historyNotice');
@@ -604,7 +604,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Yields to the message loop to allow the callback chain of the
     // Promise that was just resolved to execute before the
     // assertions.
-    flush();
+    await flushTasks();
     const notice1 = element.shadowRoot!
                         .querySelector<SettingsPasswordsDeletionDialogElement>(
                             '#passwordsNotice');
@@ -655,7 +655,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Yields to the message loop to allow the callback chain of the
     // Promise that was just resolved to execute before the
     // assertions.
-    flush();
+    await flushTasks();
     const notice1 =
         element.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
             '#historyNotice');
