@@ -480,6 +480,79 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(glowAnimationWrapper.classList.contains('play'));
   });
 
+  test('adding multiple context files opens composebox', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    realbox.composeButtonEnabled = true;
+    realbox.composeboxEnabled = true;
+    realbox.realboxLayoutMode = 'TallBottomContext';
+    realbox.ntpRealboxNextEnabled = true;
+    document.body.appendChild(realbox);
+    await microtasksFinished();
+    const contextElement =
+        realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    assertTrue(!!contextElement);
+
+    // Act & Assert.
+    // 1. Event with 1 file. `contextFilesCount_` is updated, but
+    // `open-composebox` is not fired.
+    assertEquals('0', realbox.getAttribute('context-files-count_'));
+    let openComposeboxFired = false;
+    realbox.addEventListener('open-composebox', () => {
+      openComposeboxFired = true;
+    });
+
+    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
+      detail: {files: 1},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('1', realbox.getAttribute('context-files-count_'));
+    assertFalse(openComposeboxFired);
+
+    // 2. Event with >1 file. `open-composebox` is fired.
+    const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
+    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
+      detail: {files: 2},
+      bubbles: true,
+      composed: true,
+    }));
+    await whenOpenComposeBox;
+    assertTrue(openComposeboxFired);
+
+    // 3. Event with same number of files. `open-composebox` is not fired.
+    openComposeboxFired = false;
+    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
+      detail: {files: 2},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertFalse(openComposeboxFired);
+
+    // 4. Event with >1 file. `open-composebox` is fired again since file
+    // count changed.
+    openComposeboxFired = false;
+    const whenOpenComposeBox2 = eventToPromise('open-composebox', realbox);
+    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
+      detail: {files: 3},
+      bubbles: true,
+      composed: true,
+    }));
+    await whenOpenComposeBox2;
+    assertTrue(openComposeboxFired);
+
+    // 5. Event with 0 files. `contextFilesCount_` is updated.
+    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
+      detail: {files: 0},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals('0', realbox.getAttribute('context-files-count_'));
+  });
 
   //============================================================================
   // Test Querying Autocomplete

@@ -410,7 +410,7 @@ cr-searchbox-icon {
   --cr-searchbox-input-padding-top_: 22px;
 }
 
-:host([realbox-layout-mode^='Tall'][has-context-files_]) {
+:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) {
   --cr-searchbox-dropdown-padding-top: 48px;
 }
 
@@ -445,8 +445,8 @@ cr-searchbox-icon {
   padding: 8px 12px;
 }
 
-:host([realbox-layout-mode^='Tall'][has-context-files_]) #voiceSearchButton,
-:host([realbox-layout-mode^='Tall'][has-context-files_]) #lensSearchButton {
+:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) #voiceSearchButton,
+:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) #lensSearchButton {
   display: none;
 }
 

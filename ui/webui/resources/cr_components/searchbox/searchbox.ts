@@ -378,8 +378,8 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
 
-      hasContextFiles_: {
-        type: Boolean,
+      contextFilesCount_: {
+        type: Number,
         reflect: true,
       },
     };
@@ -429,7 +429,7 @@ export class SearchboxElement extends SearchboxElementBase {
   protected accessor thumbnailUrl_: string = '';
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
-  protected accessor hasContextFiles_: boolean = false;
+  protected accessor contextFilesCount_: number = 0;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -583,7 +583,7 @@ export class SearchboxElement extends SearchboxElementBase {
     this.dropdownIsVisible = hasPrimaryMatches;
     // Do not show the dropdown if the input is non-empty and context files are
     // present.
-    if (result.input.length > 0 && this.hasContextFiles_) {
+    if (result.input.length > 0 && this.contextFilesCount_ > 0) {
       this.dropdownIsVisible = false;
     }
 
@@ -701,7 +701,7 @@ export class SearchboxElement extends SearchboxElementBase {
     // (even if the input is empty). When context files are present, requery
     // autocomplete only if the input is non-empty.
     if (inputValue.trim() || this.isLensSearchbox_ ||
-        (this.hasContextFiles_  && !inputValue.trim())) {
+        (this.contextFilesCount_ > 0 && !inputValue.trim())) {
       // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
       // mechanism via which inline autocompletion is shown in the searchbox.
@@ -1091,7 +1091,12 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   protected onContextFilesChanged_(e: CustomEvent<{files: number}>) {
-    this.hasContextFiles_ = e.detail.files > 0;
+    if (e.detail.files !== this.contextFilesCount_) {
+      this.contextFilesCount_ = e.detail.files;
+      if (e.detail.files > 1) {
+        this.dispatchEvent(new CustomEvent('open-composebox'));
+      }
+    }
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
