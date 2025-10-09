@@ -45,12 +45,14 @@ optimization_guide::proto::PageContext ToPageContext(
 
 PageContentExtractionService::PageContentExtractionService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
-    const base::FilePath& profile_path) {
-  if (base::FeatureList::IsEnabled(features::kPageContentCache)) {
-    page_content_cache_handler_ =
-        std::make_unique<PageContentCacheHandler>(os_crypt_async, profile_path);
-  }
-}
+    const base::FilePath& profile_path)
+    : is_page_content_cache_enabled_(
+          base::FeatureList::IsEnabled(features::kPageContentCache)),
+      page_content_cache_handler_(
+          is_page_content_cache_enabled_
+              ? std::make_unique<PageContentCacheHandler>(os_crypt_async,
+                                                          profile_path)
+              : nullptr) {}
 
 PageContentExtractionService::~PageContentExtractionService() {
   ClearAllUserData();
@@ -80,7 +82,7 @@ void PageContentExtractionService::OnPageContentExtracted(
     observer.OnPageContentExtracted(page, page_content);
   }
 
-  if (!page_content_cache_handler_) {
+  if (!is_page_content_cache_enabled_) {
     return;
   }
 
@@ -102,7 +104,7 @@ PageContentExtractionService::GetExtractedPageContentAndEligibilityForPage(
 }
 
 void PageContentExtractionService::OnTabClosed(int64_t tab_id) {
-  if (page_content_cache_handler_) {
+  if (is_page_content_cache_enabled_) {
     page_content_cache_handler_->OnTabClosed(tab_id);
   }
 }
@@ -111,7 +113,7 @@ void PageContentExtractionService::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents,
     content::Visibility visibility) {
-  if (page_content_cache_handler_) {
+  if (is_page_content_cache_enabled_) {
     std::optional<ExtractedPageContentResult> extracted_result =
         GetCachedContentsFromWebContents(web_contents);
     if (extracted_result) {
@@ -125,14 +127,14 @@ void PageContentExtractionService::OnVisibilityChanged(
 void PageContentExtractionService::OnNewNavigation(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents) {
-  if (page_content_cache_handler_) {
+  if (is_page_content_cache_enabled_) {
     page_content_cache_handler_->OnNewNavigation(
         tab_id, ToWebStateWrapper(web_contents));
   }
 }
 
 PageContentCache* PageContentExtractionService::GetPageContentCache() {
-  return page_content_cache_handler_
+  return is_page_content_cache_enabled_
              ? page_content_cache_handler_->page_content_cache()
              : nullptr;
 }

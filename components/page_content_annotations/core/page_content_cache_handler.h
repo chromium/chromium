@@ -58,7 +58,7 @@ class PageContentCacheHandler {
   PageContentCache* page_content_cache() { return page_content_cache_.get(); }
 
  private:
-  std::unique_ptr<PageContentCache> page_content_cache_;
+  const std::unique_ptr<PageContentCache> page_content_cache_;
 };
 
 }  // namespace page_content_annotations

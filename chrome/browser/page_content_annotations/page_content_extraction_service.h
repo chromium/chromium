@@ -89,7 +89,8 @@ class PageContentExtractionService : public KeyedService,
 
   base::ObserverList<Observer> observers_;
 
-  std::unique_ptr<PageContentCacheHandler> page_content_cache_handler_;
+  const bool is_page_content_cache_enabled_;
+  const std::unique_ptr<PageContentCacheHandler> page_content_cache_handler_;
 };
 
 }  // namespace page_content_annotations

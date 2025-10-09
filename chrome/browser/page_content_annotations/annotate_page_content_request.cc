@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notimplemented.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -61,10 +60,8 @@ std::optional<int64_t> GetTabId(content::WebContents* web_contents) {
   if (TabAndroid* tab = TabAndroid::FromWebContents(web_contents)) {
     return tab->GetAndroidId();
   }
-#else
-  // Implement an usable tab ID for other platforms.
-  NOTIMPLEMENTED();
 #endif
+  // TODO(440643544): Implement an usable tab ID for other platforms.
   return std::nullopt;
 }
 
