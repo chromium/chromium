@@ -14,7 +14,9 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
@@ -114,19 +116,18 @@ public class WebContentsState {
      *
      * @param profile The profile used for the tab.
      * @param title The title to display.
-     * @param url URL that is pending.
-     * @param referrerUrl URL for the referrer.
-     * @param referrerPolicy Policy for the referrer.
-     * @param initiatorOrigin Initiator of the navigation.
+     * @param loadUrlParams The load url params to use.
      * @return ByteBuffer that represents a state representing a single pending URL.
      */
     public static @Nullable WebContentsState createSingleNavigationWebContentsState(
-            Profile profile,
-            @Nullable String title,
-            String url,
-            @Nullable String referrerUrl,
-            int referrerPolicy,
-            @Nullable Origin initiatorOrigin) {
+            Profile profile, @Nullable String title, LoadUrlParams loadUrlParams) {
+        Referrer referrer = loadUrlParams.getReferrer();
+        String url = loadUrlParams.getUrl();
+        String referrerUrl = referrer != null ? referrer.getUrl() : null;
+        // Policy will be ignored for null referrer url, 0 is just a placeholder.
+        int referrerPolicy = referrer != null ? referrer.getPolicy() : 0;
+        Origin initiatorOrigin = loadUrlParams.getInitiatorOrigin();
+
         ByteBuffer buffer =
                 WebContentsStateJni.get()
                         .createSingleNavigationStateAsByteBuffer(
@@ -242,19 +243,18 @@ public class WebContentsState {
      *
      * @param profile The profile used for the tab.
      * @param title The title to display.
-     * @param url URL that is pending.
-     * @param referrerUrl URL for the referrer.
-     * @param referrerPolicy Policy for the referrer.
-     * @param initiatorOrigin Initiator of the navigation.
+     * @param loadUrlParams The load url params to use.
      * @return Whether the operation was successful.
      */
     public boolean appendPendingNavigation(
-            Profile profile,
-            @Nullable String title,
-            String url,
-            @Nullable String referrerUrl,
-            int referrerPolicy,
-            @Nullable Origin initiatorOrigin) {
+            Profile profile, @Nullable String title, LoadUrlParams loadUrlParams) {
+        Referrer referrer = loadUrlParams.getReferrer();
+        String url = loadUrlParams.getUrl();
+        String referrerUrl = referrer != null ? referrer.getUrl() : null;
+        // Policy will be ignored for null referrer url, 0 is just a placeholder.
+        int referrerPolicy = referrer != null ? referrer.getPolicy() : 0;
+        Origin initiatorOrigin = loadUrlParams.getInitiatorOrigin();
+
         ByteBuffer buffer =
                 WebContentsStateJni.get()
                         .appendPendingNavigation(

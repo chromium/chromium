@@ -102,7 +102,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -839,19 +838,10 @@ class TabImpl implements Tab {
     public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
         assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
         freeze();
-        Referrer referrer = params.getReferrer();
         assumeNonNull(mWebContentsState);
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
-        boolean success =
-                mWebContentsState.appendPendingNavigation(
-                        mProfile,
-                        title,
-                        params.getUrl(),
-                        referrer != null ? referrer.getUrl() : null,
-                        // Policy will be ignored for null referrer url, 0 is just a placeholder.
-                        referrer != null ? referrer.getPolicy() : 0,
-                        params.getInitiatorOrigin());
+        boolean success = mWebContentsState.appendPendingNavigation(mProfile, title, params);
 
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.FreezeAndAppendPendingNavigationResult", success);

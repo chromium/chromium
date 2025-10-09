@@ -8,7 +8,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.Referrer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,31 +59,40 @@ public class TabStateExtractor {
      *     out-of-memory).
      */
     public static @Nullable WebContentsState getWebContentsState(Tab tab) {
-        // The tab is still frozen we can just use the existing state.
+        LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
+
+        // Case 1: The tab is still frozen we can just use the existing state.
         if (tab.getWebContentsState() != null) {
+            assert pendingLoadParams == null;
             return tab.getWebContentsState();
         }
 
         // The tab is not frozen we need to create a new state. This may be null if buffer
         // allocation fails.
-        LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
-        if (pendingLoadParams == null) {
-            WebContents webContents = tab.getWebContents();
-            assert webContents != null;
-            return WebContentsState.getWebContentsStateFromWebContents(webContents);
+        WebContents webContents = tab.getWebContents();
+        WebContentsState webContentsState = null;
+        if (webContents != null) {
+            webContentsState = WebContentsState.getWebContentsStateFromWebContents(webContents);
         }
 
-        // The tab has a pending load and no WebContents or WebContentsState, we need to create a
-        // new state for the pending load.
-        Referrer referrer = pendingLoadParams.getReferrer();
+        // Case 2: We extracted a state from the WebContents and there is no pending load we can
+        // just use it.
+        if (pendingLoadParams == null) {
+            return webContentsState;
+        }
+
+        // Case 3: There was a pending load, and we have a state from the WebContents, we can append
+        // the pending load to the state and use it.
+        if (webContentsState != null) {
+            webContentsState.appendPendingNavigation(
+                    tab.getProfile(), tab.getTitle(), pendingLoadParams);
+            return webContentsState;
+        }
+
+        // Case 4: We have a pending load but no state from the WebContents, we can create a new
+        // state with just the pending load.
         return WebContentsState.createSingleNavigationWebContentsState(
-                tab.getProfile(),
-                tab.getTitle(),
-                pendingLoadParams.getUrl(),
-                referrer != null ? referrer.getUrl() : null,
-                // Policy will be ignored for null referrer url, 0 is just a placeholder.
-                referrer != null ? referrer.getPolicy() : 0,
-                pendingLoadParams.getInitiatorOrigin());
+                tab.getProfile(), tab.getTitle(), pendingLoadParams);
     }
 
     public static void setTabStateForTesting(int tabId, TabState tabState) {

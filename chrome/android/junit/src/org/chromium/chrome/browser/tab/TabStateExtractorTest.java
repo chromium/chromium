@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
@@ -58,6 +59,7 @@ public class TabStateExtractorTest {
     @Test
     @SmallTest
     public void testGetWebContentsState_notPending() {
+        doReturn(null).when(mTabMock).getWebContentsState();
         doReturn(null).when(mTabMock).getPendingLoadParams();
         doReturn(mWebContentsMock).when(mTabMock).getWebContents();
         doReturn(mByteBuffer)
@@ -77,9 +79,10 @@ public class TabStateExtractorTest {
         LoadUrlParams loadUrlParams = new LoadUrlParams(URL);
         loadUrlParams.setReferrer(new Referrer(REFERRER_URL, REFERRER_POLICY));
         loadUrlParams.setInitiatorOrigin(mMockOrigin);
+        doReturn(null).when(mTabMock).getWebContentsState();
+        doReturn(null).when(mTabMock).getWebContents();
         doReturn(loadUrlParams).when(mTabMock).getPendingLoadParams();
         doReturn(TITLE).when(mTabMock).getTitle();
-        doReturn(true).when(mTabMock).isIncognito();
         doReturn(mProfile).when(mTabMock).getProfile();
         doReturn(mByteBuffer)
                 .when(mWebContentsBridgeJni)
@@ -96,5 +99,65 @@ public class TabStateExtractorTest {
         assertNotNull(result);
         assertEquals(WebContentsState.CONTENTS_STATE_CURRENT_VERSION, result.version());
         assertEquals(mByteBuffer, result.buffer());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWebContentsState_frozen() {
+        WebContentsState webContentsState =
+                new WebContentsState(mByteBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        doReturn(webContentsState).when(mTabMock).getWebContentsState();
+
+        WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
+
+        assertEquals(webContentsState, result);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWebContentsState_null() {
+        doReturn(null).when(mTabMock).getWebContentsState();
+        doReturn(null).when(mTabMock).getWebContents();
+        doReturn(null).when(mTabMock).getPendingLoadParams();
+
+        WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
+
+        assertNull(result);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWebContentsState_pendingWithWebContents() {
+        ByteBuffer newByteBuffer = ByteBuffer.allocateDirect(2);
+        doReturn(null).when(mTabMock).getWebContentsState();
+        doReturn(mWebContentsMock).when(mTabMock).getWebContents();
+        doReturn(mByteBuffer)
+                .when(mWebContentsBridgeJni)
+                .getContentsStateAsByteBuffer(eq(mWebContentsMock));
+
+        LoadUrlParams loadUrlParams = new LoadUrlParams(URL);
+        loadUrlParams.setReferrer(new Referrer(REFERRER_URL, REFERRER_POLICY));
+        loadUrlParams.setInitiatorOrigin(mMockOrigin);
+        doReturn(loadUrlParams).when(mTabMock).getPendingLoadParams();
+        doReturn(TITLE).when(mTabMock).getTitle();
+        doReturn(mProfile).when(mTabMock).getProfile();
+
+        doReturn(newByteBuffer)
+                .when(mWebContentsBridgeJni)
+                .appendPendingNavigation(
+                        eq(mProfile),
+                        eq(mByteBuffer),
+                        eq(WebContentsState.CONTENTS_STATE_CURRENT_VERSION),
+                        eq(TITLE),
+                        eq(URL),
+                        eq(REFERRER_URL),
+                        eq(REFERRER_POLICY),
+                        eq(mMockOrigin));
+
+        WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
+
+        assertNotNull(result);
+        assertEquals(WebContentsState.CONTENTS_STATE_CURRENT_VERSION, result.version());
+        assertEquals(newByteBuffer, result.buffer());
     }
 }
