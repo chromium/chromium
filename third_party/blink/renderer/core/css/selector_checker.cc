@@ -949,9 +949,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
 
   // Disable :visited matching when we see the first link or try to match
   // anything else than an ancestor.
-  if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
-      (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
-                                     relation != CSSSelector::kChild))) {
+  if (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
+                                    relation != CSSSelector::kChild)) {
     DisallowMatchVisited(next_context);
   }
 

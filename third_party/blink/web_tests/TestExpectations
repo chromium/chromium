@@ -2928,7 +2928,6 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-004.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
 
-crbug.com/445726759 external/wpt/css/css-cascade/scope-visited.html [ Failure ]
 crbug.com/445726873 external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-001.html [ Failure ]
 crbug.com/445726873 external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-002.html [ Failure ]
 crbug.com/445726873 external/wpt/css/css-overflow/line-clamp/discard/discard-multicol-003.html [ Failure ]
