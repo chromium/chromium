@@ -8,12 +8,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,6 +30,7 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     : views::WebView(location_bar_view->profile()),
       location_bar_view_(location_bar_view),
       omnibox_popup_presenter_(presenter),
+      controller_(controller),
       include_location_bar_cutout_(include_location_bar_cutout) {
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
@@ -81,6 +85,16 @@ void OmniboxPopupWebUIContent::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
   omnibox_popup_presenter_->SetWidgetContentHeight(new_size.height());
+}
+
+bool OmniboxPopupWebUIContent::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+      event.windows_key_code == ui::VKEY_ESCAPE) {
+    return controller_->edit_model()->OnEscapeKeyPressed();
+  }
+  return false;
 }
 
 bool OmniboxPopupWebUIContent::IsHandlerReady() {

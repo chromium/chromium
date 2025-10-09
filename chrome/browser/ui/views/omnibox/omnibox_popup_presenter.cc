@@ -32,12 +32,11 @@
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
     : location_bar_view_(location_bar_view),
-      controller_(controller),
       include_location_bar_cutout_(
           !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
   owned_omnibox_popup_webui_content_ =
       std::make_unique<OmniboxPopupWebUIContent>(
-          this, location_bar_view_, controller_, include_location_bar_cutout_);
+          this, location_bar_view_, controller, include_location_bar_cutout_);
   location_bar_view_->AddObserver(this);
 }
 
@@ -64,6 +63,10 @@ void OmniboxPopupPresenter::Show() {
     params.parent = parent_widget->GetNativeView();
     params.context = parent_widget->GetNativeWindow();
 
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    }
+
     RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_.get());
 
     widget_->MakeCloseSynchronous(base::BindOnce(
@@ -75,10 +78,18 @@ void OmniboxPopupPresenter::Show() {
         include_location_bar_cutout_));
 
     widget_->SetVisibilityChangedAnimationsEnabled(false);
-    // On Show(), the widget height can not be 0 or else the compositor thinks
-    // the webview is hidden and will not calculate its preferred size.
+    // The widget height can not be 0 or else the compositor thinks the webview
+    // is hidden and will not calculate its preferred size.
     SetWidgetContentHeight(1);
-    widget_->ShowInactive();
+
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      widget_->Show();
+      if (auto* content = GetOmniboxPopupWebUIContent()) {
+        content->RequestFocus();
+      }
+    } else {
+      widget_->ShowInactive();
+    }
   }
 }
 
@@ -154,12 +165,16 @@ void OmniboxPopupPresenter::ReleaseWidget() {
 
 OmniboxPopupWebUIContent* OmniboxPopupPresenter::GetOmniboxPopupWebUIContent() {
   if (widget_) {
-    return views::AsViewClass<OmniboxPopupWebUIContent>(
-        views::AsViewClass<RoundedOmniboxResultsFrame>(
-            widget_->GetContentsView()));
+    auto* frame = views::AsViewClass<RoundedOmniboxResultsFrame>(
+        widget_->GetContentsView());
+    if (frame) {
+      return views::AsViewClass<OmniboxPopupWebUIContent>(frame->GetContents());
+    }
   }
+
   if (owned_omnibox_popup_webui_content_) {
     return owned_omnibox_popup_webui_content_.get();
   }
+
   return nullptr;
 }

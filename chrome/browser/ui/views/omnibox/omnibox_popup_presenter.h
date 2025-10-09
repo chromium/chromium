@@ -73,9 +73,6 @@ class OmniboxPopupPresenter : public views::ViewObserver {
   // being shown.
   std::unique_ptr<OmniboxPopupWebUIContent> owned_omnibox_popup_webui_content_;
 
-  // The controller for the Omnibox.
-  raw_ptr<OmniboxController> controller_ = nullptr;
-
   // The popup widget that contains this WebView. Created and closed by `this`;
   // owned and destroyed by the OS.
   std::unique_ptr<views::Widget> widget_;

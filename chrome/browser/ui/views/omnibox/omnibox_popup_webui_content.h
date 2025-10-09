@@ -46,10 +46,14 @@ class OmniboxPopupWebUIContent : public views::WebView {
   // content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   raw_ptr<OmniboxPopupPresenter> omnibox_popup_presenter_ = nullptr;
+  // The controller for the Omnibox.
+  raw_ptr<OmniboxController> controller_ = nullptr;
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_ = false;
