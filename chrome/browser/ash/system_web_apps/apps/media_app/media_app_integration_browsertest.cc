@@ -971,12 +971,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
       "console.error('YIKES', {data: 'something'}, new Error('deep error'));";
   EXPECT_EQ(true, ExecJs(web_ui, kConsoleError));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find(
-                "error_message=Unexpected%3A%20%22YIKES%22%0A%7B%22data%22%"
-                "3A%22something%22%7D%0AError%3A%20deep%20error"))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  // Endpoint doesn't decode `%0A` into newlines.
+  EXPECT_THAT(report.GetQueryParam("error_message").value_or(""),
+              ::testing::StartsWith(
+                  "Unexpected: \"YIKES\"%0A{\"data\":\"something\"}%0AError: "
+                  "deep error"));
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaApp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -988,11 +988,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   EXPECT_EQ(true, ExecJs(web_ui, kDomExceptionScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find("error_message=Unhandled%20rejection%3A"
-                              "%20%5BNotAFile%5D%20Not%20a%20file."))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"),
+            "Unhandled rejection: [NotAFile] Not a file.");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaApp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1005,10 +1003,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(true,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kDomExceptionScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find("error_message=Not%20a%20file."))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"), "Not a file.");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaAppMock");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1020,11 +1016,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   EXPECT_EQ(true, ExecJs(web_ui, kUnhandledRejectionScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find("error_message=Unhandled%20rejection%3A%20%5B"
-                              "FakeErrorName%5D%20fake_throw"))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"),
+            "Unhandled rejection: [FakeErrorName] fake_throw");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaApp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1037,9 +1031,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(
                       app, kUnhandledRejectionScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos, report.query.find("error_message=fake_throw"))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"), "fake_throw");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaAppMock");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1051,12 +1044,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   EXPECT_EQ(true, ExecJs(web_ui, kTypeErrorScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find(
-                "error_message=ErrorEvent%3A%20%5B%5D%20Uncaught%20TypeError%"
-                "3A%20event.notAFunction%20is%20not%20a%20function"))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"),
+            "ErrorEvent: [] Uncaught TypeError: event.notAFunction is not a "
+            "function");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaApp");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1069,10 +1060,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(true,
             MediaAppUiBrowserTest::EvalJsInAppFrame(app, kTypeErrorScript));
   auto report = endpoint.WaitForReport();
-  EXPECT_NE(std::string::npos,
-            report.query.find("event.notAFunction%20is%20not%20a%20function"))
-      << report.query;
-  EXPECT_NE(std::string::npos, report.query.find("prod=ChromeOS_MediaApp"));
+  EXPECT_EQ(report.GetQueryParam("error_message"),
+            "event.notAFunction is not a function");
+  EXPECT_EQ(report.GetQueryParam("prod"), "ChromeOS_MediaAppMock");
 }
 
 // End-to-end test to ensure that the MediaApp successfully registers as a file
