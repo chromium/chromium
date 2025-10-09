@@ -116,6 +116,39 @@ bool SiteIsolationPolicy::IsSitePerProcessOrStricter() {
 }
 
 // static
+SiteIsolationDisabledReason
+SiteIsolationPolicy::GetSiteIsolationDisabledReason() {
+  if (IsSitePerProcessOrStricter()) {
+    return SiteIsolationDisabledReason::kNotDisabled;
+  }
+
+  if (IsDisableSiteIsolationFlagPresent()) {
+    return SiteIsolationDisabledReason::kDisabledBySwitch;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Desktop platforms no longer support disabling Site Isolation by policy.
+  if (IsDisableSiteIsolationForPolicyFlagPresent()) {
+    return SiteIsolationDisabledReason::kDisabledByPolicy;
+  }
+#endif
+
+  if (GetContentClient() &&
+      GetContentClient()->browser()->ShouldDisableSiteIsolation(
+          SiteIsolationMode::kStrictSiteIsolation)) {
+    return SiteIsolationDisabledReason::kDisabledByEmbedder;
+  }
+
+  if (GetContentClient() &&
+      !GetContentClient()->browser()->ShouldEnableStrictSiteIsolation()) {
+    return SiteIsolationDisabledReason::kNotEnabledByDefault;
+  }
+
+  // If we get here, site isolation is not enabled, but we don't know why.
+  return SiteIsolationDisabledReason::kUnknownReason;
+}
+
+// static
 bool SiteIsolationPolicy::AreIsolatedOriginsEnabled() {
   // NOTE: Because it is possible for --isolate-origins to be isolating origins
   // at a finer-than-site granularity, we do not suppress --isolate-origins when

@@ -25010,6 +25010,20 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="SiteIsolationDisabledReason">
+  <summary>
+    The reason why site isolation is not enabled to the extent of
+    site-per-process or stricter.
+  </summary>
+  <int value="0" label="Not disabled"/>
+  <int value="1"
+      label="Disabled by command-line switch (--disable-site-isolation)"/>
+  <int value="2" label="Disabled by enterprise policy (Android only)"/>
+  <int value="3" label="Disabled by embedder (e.g. low memory)"/>
+  <int value="4" label="Not enabled by default on this configuration"/>
+  <int value="5" label="Unknown reason"/>
+</enum>
+
 <enum name="SmartChargingMessages">
   <int value="0" label="SerializeProtoError"/>
   <int value="1" label="WriteFileError"/>

@@ -927,6 +927,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.DisabledReason.AndroidDesktop"
+    enum="SiteIsolationDisabledReason" expires_after="2026-09-26">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wenz@chromium.org</owner>
+  <summary>
+    The reason why site isolation is not enabled to the extent of
+    site-per-process or stricter, on Android Desktop builds. Records a value of
+    'Not disabled' if the site isolation mode is site-per-process or stricter.
+    Recorded once shortly after browser startup, because the value does not
+    change at runtime.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
     expires_after="2026-04-05">
   <owner>wjmaclean@chromium.org</owner>
