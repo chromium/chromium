@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
@@ -43,8 +42,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.util.ReflectionHelpers;
@@ -57,7 +54,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinatorUnitTest.ShadowDisplayUtil;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -73,23 +69,9 @@ import java.util.List;
 
 /** Unit test for {@link AppHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30, shadows = ShadowDisplayUtil.class)
+@Config(sdk = 30)
 @LooperMode(Mode.PAUSED)
 public class AppHeaderCoordinatorUnitTest {
-    @Implements(DisplayUtil.class)
-    static class ShadowDisplayUtil {
-        private static boolean sIsOnDefaultDisplay;
-
-        private static void setOnDefaultDisplay(boolean isOnDefaultDisplay) {
-            sIsOnDefaultDisplay = isOnDefaultDisplay;
-        }
-
-        @Implementation
-        public static boolean isContextInDefaultDisplay(Context context) {
-            return sIsOnDefaultDisplay;
-        }
-    }
-
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
     private static final Rect WINDOW_RECT = new Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -126,7 +108,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        ShadowDisplayUtil.setOnDefaultDisplay(true);
+        DisplayUtil.setIsOnDefaultDisplayForTesting(true);
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
@@ -232,7 +214,7 @@ public class AppHeaderCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DesktopWindowHeuristicResult5",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
-        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
@@ -251,7 +233,7 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.DesktopWindowHeuristicResult5",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         // Assume external display support is enabled but denylisted for "samsung".
-        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
@@ -266,7 +248,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void enabledOnExternalDisplayForNonDenylistedOem() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "lenovo");
         // Assume external display support is enabled but denylisted for "samsung".
-        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
@@ -276,7 +258,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void enabledOnExternalDisplayWhenAllowed() {
-        ShadowDisplayUtil.setOnDefaultDisplay(false);
+        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();

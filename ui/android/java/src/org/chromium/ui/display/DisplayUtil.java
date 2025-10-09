@@ -46,9 +46,11 @@ public abstract class DisplayUtil {
             "android.software.car.display_compatibility";
     private static @Nullable Boolean sCarmaPhase1Version2ComplianceForTesting;
     private static @Nullable Boolean sIsDisplayCompatAppForTesting;
-    private static @Nullable Float sUiScalingFactorForAutomotiveOverride;
+    private static @Nullable Integer sSmallestScreenWidthForTesting;
+    private static @Nullable Boolean sIsOnDefaultDisplayForTesting;
+    private static @Nullable Float sUiScalingFactorForAutomotiveForTesting;
     // For XR environment.
-    private static @Nullable Float sUiScalingFactorForXrOverride;
+    private static @Nullable Float sUiScalingFactorForXrForTesting;
 
     /** Returns true if the device requires UI scaling. */
     public static boolean isUiScaled() {
@@ -57,12 +59,22 @@ public abstract class DisplayUtil {
 
     /** Change the UI scaling factor on automotive devices for testing. */
     public static void setUiScalingFactorForAutomotiveForTesting(float scalingFactor) {
-        sUiScalingFactorForAutomotiveOverride = scalingFactor;
+        sUiScalingFactorForAutomotiveForTesting = scalingFactor;
+    }
+
+    public static void setCurrentSmallestScreenWidthForTesting(int smallestScreenWidth) {
+        sSmallestScreenWidthForTesting = smallestScreenWidth;
+        ResettersForTesting.register(() -> sSmallestScreenWidthForTesting = null);
+    }
+
+    public static void setIsOnDefaultDisplayForTesting(boolean value) {
+        sIsOnDefaultDisplayForTesting = value;
+        ResettersForTesting.register(() -> sIsOnDefaultDisplayForTesting = null);
     }
 
     /** Reset the UI scaling factor on automotive devices to the default value. */
     public static void resetUiScalingFactorForAutomotiveForTesting() {
-        sUiScalingFactorForAutomotiveOverride = null;
+        sUiScalingFactorForAutomotiveForTesting = null;
     }
 
     /**
@@ -105,8 +117,8 @@ public abstract class DisplayUtil {
             return baseDensity;
         }
         float uiScalingFactor =
-                sUiScalingFactorForAutomotiveOverride != null
-                        ? sUiScalingFactorForAutomotiveOverride
+                sUiScalingFactorForAutomotiveForTesting != null
+                        ? sUiScalingFactorForAutomotiveForTesting
                         : getTargetScalingFactorForAutomotive(context);
         int rawScaledDensity = (int) (baseDensity * uiScalingFactor);
         // Round up to the nearest 20 to align with DisplayMetrics defined densities.
@@ -245,6 +257,9 @@ public abstract class DisplayUtil {
      * @return Smallest screen width in dp.
      */
     public static int getCurrentSmallestScreenWidth(Context context) {
+        if (sSmallestScreenWidthForTesting != null) {
+            return sSmallestScreenWidthForTesting;
+        }
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // Android T does not receive updated width upon foldable unfold from window context.
@@ -304,12 +319,12 @@ public abstract class DisplayUtil {
 
     /** Change the UI scaling factor on XR devices for testing. */
     static void setUiScalingFactorForXrForTesting(float scalingFactor) {
-        sUiScalingFactorForXrOverride = scalingFactor;
+        sUiScalingFactorForXrForTesting = scalingFactor;
     }
 
     /** Reset the UI scaling factor on XR devices to the default value. */
     static void resetUiScalingFactorForXrForTesting() {
-        sUiScalingFactorForXrOverride = null;
+        sUiScalingFactorForXrForTesting = null;
     }
 
     private static float getUiScalingFactorForXrFromResource(Context context) {
@@ -323,20 +338,20 @@ public abstract class DisplayUtil {
     public static float getCurrentUiScalingFactor(Context context) {
         if (!isUiScaled()) return 1;
         if (DeviceInfo.isAutomotive()) {
-            return sUiScalingFactorForAutomotiveOverride != null
-                    ? sUiScalingFactorForAutomotiveOverride
+            return sUiScalingFactorForAutomotiveForTesting != null
+                    ? sUiScalingFactorForAutomotiveForTesting
                     : getTargetScalingFactorForAutomotive(context);
         }
-        return sUiScalingFactorForXrOverride != null
-                ? sUiScalingFactorForXrOverride
+        return sUiScalingFactorForXrForTesting != null
+                ? sUiScalingFactorForXrForTesting
                 : getUiScalingFactorForXrFromResource(context);
     }
 
     /** Get the density base on the UI scaling factor on XR devices. */
     public static int getUiDensityForXr(Context context, int baseDensity) {
         float uiScalingFactor =
-                sUiScalingFactorForXrOverride != null
-                        ? sUiScalingFactorForXrOverride
+                sUiScalingFactorForXrForTesting != null
+                        ? sUiScalingFactorForXrForTesting
                         : getUiScalingFactorForXrFromResource(context);
         int rawScaledDensity = (int) (baseDensity * uiScalingFactor);
         // Round up to the nearest 10 to align with DisplayMetrics defined densities.
@@ -478,6 +493,9 @@ public abstract class DisplayUtil {
      *     otherwise.
      */
     public static boolean isContextInDefaultDisplay(Context context) {
+        if (sIsOnDefaultDisplayForTesting != null) {
+            return sIsOnDefaultDisplayForTesting;
+        }
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
         return display.getDisplayId() == Display.DEFAULT_DISPLAY;
     }

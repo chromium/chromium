@@ -67,7 +67,6 @@
 +org.chromium.ui.base.MimeTypeUtils
 +org.chromium.ui.display.DisplayAndroid
 +org.chromium.ui.display.DisplayAndroidManager
-+org.chromium.ui.display.DisplayUtil
 +org.chromium.ui.resources.dynamics.CaptureUtils
 +org.chromium.ui.insets.WindowInsetsUtils
 +org.chromium.ui.widget.AnchoredPopupWindow

@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroidManager;
-import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayUtil;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowTabUtils;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -94,8 +93,7 @@ import java.util.Map;
             ShadowSysUtils.class,
             ShadowDisplayAndroid.class,
             ShadowDisplayAndroidManager.class,
-            ShadowTabUtils.class,
-            ShadowDisplayUtil.class
+            ShadowTabUtils.class
         })
 public class RequestDesktopUtilsUnitTest {
 
@@ -163,20 +161,6 @@ public class RequestDesktopUtilsUnitTest {
         @Implementation
         public static boolean readRequestDesktopSiteContentSettings(Profile profile, GURL url) {
             return sIsContentSettingDesktop;
-        }
-    }
-
-    @Implements(DisplayUtil.class)
-    static class ShadowDisplayUtil {
-        private static int sSmallestScreenWidthDp;
-
-        public static void setCurrentSmallestScreenWidth(int smallestScreenWidthDp) {
-            sSmallestScreenWidthDp = smallestScreenWidthDp;
-        }
-
-        @Implementation
-        public static int getCurrentSmallestScreenWidth(Context context) {
-            return sSmallestScreenWidthDp;
         }
     }
 
@@ -271,7 +255,7 @@ public class RequestDesktopUtilsUnitTest {
         when(mDisplayAndroid.getYdpi()).thenReturn(276.5f);
         ShadowDisplayAndroidManager.setDisplay(mDisplay);
         when(mDisplay.getDisplayId()).thenReturn(Display.DEFAULT_DISPLAY);
-        ShadowDisplayUtil.setCurrentSmallestScreenWidth(800);
+        DisplayUtil.setCurrentSmallestScreenWidthForTesting(800);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         doAnswer(invocation -> mWindowSetting)
                 .when(mPrefService)
@@ -846,7 +830,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeDefaultEnableWindowSetting_PhoneSizedScreen() {
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
-        ShadowDisplayUtil.setCurrentSmallestScreenWidth(400);
+        DisplayUtil.setCurrentSmallestScreenWidthForTesting(400);
         RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertFalse(
                 "Desktop site window setting should not be default enabled when the smallest "
