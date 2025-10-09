@@ -132,6 +132,11 @@ public class ListMenuHost
         }
     }
 
+    /** Returns whether the popup menu is currently showing. */
+    public boolean isMenuShowing() {
+        return mPopupMenus.size() > 0;
+    }
+
     /** Shows a popupWindow built by ListMenuButton */
     public void showMenu() {
         if (!mView.isAttachedToWindow()) return;
@@ -182,6 +187,7 @@ public class ListMenuHost
                                 new ColorDrawable(Color.TRANSPARENT),
                                 () -> contentView,
                                 mDelegate.getRectProvider(mView))
+                        .setDismissOnScreenSizeChange(true)
                         .setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor)
                         .setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor)
                         .setMaxWidth(mMenuMaxWidth)

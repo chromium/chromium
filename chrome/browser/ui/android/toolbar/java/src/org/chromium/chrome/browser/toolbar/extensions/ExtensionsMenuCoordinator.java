@@ -147,7 +147,11 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                                         }
                                     });
                             if (mShouldShowMenuOnInit) {
-                                mExtensionsMenuButton.showMenu();
+                                if (mExtensionsMenuButton.getHost().isMenuShowing()) {
+                                    mExtensionsMenuButton.dismiss();
+                                } else {
+                                    mExtensionsMenuButton.showMenu();
+                                }
                                 mShouldShowMenuOnInit = false;
                             }
                         },
