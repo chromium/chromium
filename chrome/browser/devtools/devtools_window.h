@@ -301,6 +301,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       content::RenderFrameHost* new_frame);
 
   raw_ptr<content::WebContents> GetDevToolsWebContents();
+  bool IsDocked() { return is_docked_; }
 
  private:
   friend class DevToolsWindowTesting;

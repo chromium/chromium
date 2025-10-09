@@ -438,8 +438,10 @@ int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(
       DevToolsWindow::AsDevToolsWindow(developer_tools_web_contents);
   content::WebContents* inspected_web_contents =
       devtools_window->GetInspectedWebContents();
-  bool is_docked = inspected_web_contents->GetTopLevelNativeWindow() ==
-                   developer_tools_web_contents->GetTopLevelNativeWindow();
+  bool is_docked = devtools_window->IsDocked();
+  DCHECK_EQ(is_docked,
+            inspected_web_contents->GetTopLevelNativeWindow() ==
+                developer_tools_web_contents->GetTopLevelNativeWindow());
 
   content::WebContents* web_contents_to_use =
       is_docked ? inspected_web_contents : developer_tools_web_contents;
