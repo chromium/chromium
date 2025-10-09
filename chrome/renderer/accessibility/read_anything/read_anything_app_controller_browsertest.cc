@@ -250,11 +250,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return GetCurrentTextSegments(model().GetCurrentlyVisibleNodes());
   }
 
-  // std::vector<ui::AXNodeID> MoveToPreviousGranularityAndGetText() {
-  //   controller().MovePositionToPreviousGranularity();
-  //   return GetCurrentTextSegments();
-  // }
-
   std::vector<ReadAloudTextSegment> MoveToPreviousGranularityAndGetSegments() {
     controller().MovePositionToPreviousGranularity();
     return GetCurrentTextSegments(model().GetCurrentlyVisibleNodes());
@@ -310,14 +305,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures({},
                                           {features::kReadAnythingReadAloud});
-  }
-
-  void EnablePhraseHighlighting() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudPhraseHighlighting},
-        {});
   }
 
   void ExpectNodesMapToEntireText(std::vector<ReadAloudTextSegment> segments,
