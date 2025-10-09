@@ -51,44 +51,4 @@ const base::FeatureParam<int> kPasswordCheckSatWeight{
 const base::FeatureParam<int> kPasswordCheckSunWeight{
     &kSafetyHub, "password-check-sun-weight", 6};
 
-// Engagement limits Notification permissions module.
-const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsMinEnagementLimit{
-        &kSafetyHub, "min-engagement-notification-count", 0};
-const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsLowEnagementLimit{
-        &kSafetyHub, "low-engagement-notification-count", 4};
-
-const char kPasswordCheckNotificationIntervalName[] =
-    "password-check-notification-interval";
-const char kRevokedPermissionsNotificationIntervalName[] =
-    "revoked-permissions-notification-interval";
-const char kNotificationPermissionsNotificationIntervalName[] =
-    "notification-permissions-notification-interval";
-const char kSafeBrowsingNotificationIntervalName[] =
-    "safe-browsing-notification-interval";
-
-// Interval to show notification for compromised password in Safety Hub
-// notifications.
-const base::FeatureParam<base::TimeDelta> kPasswordCheckNotificationInterval{
-    &kSafetyHub, kPasswordCheckNotificationIntervalName, base::Days(0)};
-
-// Interval to show notification for revoked permissions in Safety Hub
-// notifications.
-const base::FeatureParam<base::TimeDelta>
-    kRevokedPermissionsNotificationInterval{
-        &kSafetyHub, kRevokedPermissionsNotificationIntervalName,
-        base::Days(10)};
-
-// Interval to show notification for notification permissions in Safety Hub
-// notifications.
-const base::FeatureParam<base::TimeDelta>
-    kNotificationPermissionsNotificationInterval{
-        &kSafetyHub, kNotificationPermissionsNotificationIntervalName,
-        base::Days(10)};
-
-// Interval to show notification for safe browsing in Safety Hub notifications.
-const base::FeatureParam<base::TimeDelta> kSafeBrowsingNotificationInterval{
-    &kSafetyHub, kSafeBrowsingNotificationIntervalName, base::Days(90)};
-
 }  // namespace safety_check::features

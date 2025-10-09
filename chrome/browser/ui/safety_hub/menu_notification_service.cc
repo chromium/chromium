@@ -23,14 +23,31 @@
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safety_check/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/password_status_check_result_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
+
+// Interval to show notification for compromised password in Safety Hub
+// notifications.
+const base::TimeDelta kPasswordCheckNotificationInterval = base::Days(0);
+
+// Interval to show notification for revoked permissions in Safety Hub
+// notifications.
+const base::TimeDelta kRevokedPermissionsNotificationInterval = base::Days(10);
+
+// Interval to show notification for notification permissions in Safety Hub
+// notifications.
+const base::TimeDelta kNotificationPermissionsNotificationInterval =
+    base::Days(10);
+
+// Interval to show notification for safe browsing in Safety Hub notifications.
+const base::TimeDelta kSafeBrowsingNotificationInterval = base::Days(90);
+
 SafetyHubModuleInfoElement::SafetyHubModuleInfoElement() = default;
 SafetyHubModuleInfoElement::~SafetyHubModuleInfoElement() = default;
 
@@ -72,8 +89,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
   // method is called, so it is safe to use |base::Unretained| here.
   SetInfoElement(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
-      MenuNotificationPriority::LOW,
-      safety_check::features::kRevokedPermissionsNotificationInterval.Get(),
+      MenuNotificationPriority::LOW, kRevokedPermissionsNotificationInterval,
       base::BindRepeating(&SafetyHubService::GetCachedResult,
                           base::Unretained(revoked_permissions_service)),
       stored_notifications);
@@ -86,19 +102,17 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     SetInfoElement(
         safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
         MenuNotificationPriority::LOW,
-        safety_check::features::kNotificationPermissionsNotificationInterval
-            .Get(),
+        kNotificationPermissionsNotificationInterval,
         base::BindRepeating(&SafetyHubService::GetCachedResult,
                             base::Unretained(notification_permissions_service)),
         stored_notifications);
   }
-  SetInfoElement(
-      safety_hub::SafetyHubModuleType::SAFE_BROWSING,
-      MenuNotificationPriority::MEDIUM,
-      safety_check::features::kSafeBrowsingNotificationInterval.Get(),
-      base::BindRepeating(&SafetyHubSafeBrowsingResult::GetResult,
-                          base::Unretained(pref_service)),
-      stored_notifications);
+  SetInfoElement(safety_hub::SafetyHubModuleType::SAFE_BROWSING,
+                 MenuNotificationPriority::MEDIUM,
+                 kSafeBrowsingNotificationInterval,
+                 base::BindRepeating(&SafetyHubSafeBrowsingResult::GetResult,
+                                     base::Unretained(pref_service)),
+                 stored_notifications);
 
 // Extensions are not available on Android, so we cannot fetch any information
 // about them. Passwords are handled by GMS Core on Android and our
@@ -119,8 +133,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                                "passwords");
     SetInfoElement(
         safety_hub::SafetyHubModuleType::PASSWORDS,
-        MenuNotificationPriority::HIGH,
-        safety_check::features::kPasswordCheckNotificationInterval.Get(),
+        MenuNotificationPriority::HIGH, kPasswordCheckNotificationInterval,
         base::BindRepeating(&PasswordStatusCheckService::GetCachedResult,
                             base::Unretained(password_check_service)),
         stored_notifications);
@@ -131,8 +144,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                                "passwords");
     SetInfoElement(
         safety_hub::SafetyHubModuleType::PASSWORDS,
-        MenuNotificationPriority::HIGH,
-        safety_check::features::kPasswordCheckNotificationInterval.Get(),
+        MenuNotificationPriority::HIGH, kPasswordCheckNotificationInterval,
         base::BindRepeating(&PasswordStatusCheckResultAndroid::GetResult,
                             base::Unretained(pref_service)),
         stored_notifications);

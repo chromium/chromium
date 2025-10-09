@@ -2098,9 +2098,6 @@ extern const char kMBIModeDescription[];
 extern const char kSafetyCheckUnusedSitePermissionsName[];
 extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 
-extern const char kSafetyHubName[];
-extern const char kSafetyHubDescription[];
-
 extern const char kSafetyHubDisruptiveNotificationRevocationName[];
 extern const char kSafetyHubDisruptiveNotificationRevocationDescription[];
 

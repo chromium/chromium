@@ -8908,14 +8908,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "safety-hub",
-    "owners": [
-      "sideyilmaz@chromium.org",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "safety-hub-android-survey",
     "owners": [
       "zalmashni@google.com",

@@ -39,7 +39,6 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Features.EnableFeatures({
-    ChromeFeatureList.SAFETY_HUB,
     ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
     ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE
 })

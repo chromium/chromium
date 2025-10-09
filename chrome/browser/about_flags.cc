@@ -3512,25 +3512,6 @@ const FeatureEntry::FeatureVariation
          std::size(kSafetyCheckUnusedSitePermissionsWithDelayParam), nullptr},
 };
 
-const FeatureEntry::FeatureParam kSafetyHub_NoDelay[] = {
-    {safety_check::features::kPasswordCheckNotificationIntervalName, "0d"},
-    {safety_check::features::kRevokedPermissionsNotificationIntervalName, "0d"},
-    {safety_check::features::kNotificationPermissionsNotificationIntervalName,
-     "0d"},
-    {safety_check::features::kSafeBrowsingNotificationIntervalName, "0d"}};
-const FeatureEntry::FeatureParam kSafetyHub_WithDelay[] = {
-    {safety_check::features::kPasswordCheckNotificationIntervalName, "0d"},
-    {safety_check::features::kRevokedPermissionsNotificationIntervalName, "5m"},
-    {safety_check::features::kNotificationPermissionsNotificationIntervalName,
-     "5m"},
-    {safety_check::features::kSafeBrowsingNotificationIntervalName, "5m"}};
-const FeatureEntry::FeatureVariation kSafetyHubVariations[] = {
-    {"for testing no delay", kSafetyHub_NoDelay, std::size(kSafetyHub_NoDelay),
-     nullptr},
-    {"for testing with delay", kSafetyHub_WithDelay,
-     std::size(kSafetyHub_WithDelay), nullptr},
-};
-
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
@@ -10135,13 +10116,6 @@ const FeatureEntry kFeatureEntries[] = {
          content_settings::features::kSafetyCheckUnusedSitePermissions,
          kSafetyCheckUnusedSitePermissionsVariations,
          "SafetyCheckUnusedSitePermissions")},
-
-    {"safety-hub", flag_descriptions::kSafetyHubName,
-     flag_descriptions::kSafetyHubDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(safety_check::features::kSafetyHub,
-                                    kSafetyHubVariations,
-                                    "SafetyHub")},
-
     {"permission-site-settings-radio-button",
      flag_descriptions::kPermissionSiteSettingsRadioButtonName,
      flag_descriptions::kPermissionSiteSettingsRadioButtonDescription, kOsAll,

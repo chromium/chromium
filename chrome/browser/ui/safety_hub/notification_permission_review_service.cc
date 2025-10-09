@@ -20,14 +20,16 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/safety_check/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 constexpr char kExcludedKey[] = "exempted";
+
+// Engagement limits notification permissions module.
+const int kMinEngagementNotificationLimit = 0;
+const int kLowEngagementNotificationLimit = 4;
 
 std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
 GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
@@ -256,20 +258,14 @@ bool NotificationPermissionsReviewService::
   // more than 3. Otherwise, the notification permission should not be added
   // to review list.
   double score = engagement_service_->GetScore(url);
-  int low_engagement_notification_limit =
-      safety_check::features::
-          kSafetyCheckNotificationPermissionsLowEnagementLimit.Get();
   bool is_low_engagement =
       !site_engagement::SiteEngagementService::IsEngagementAtLeast(
           score, blink::mojom::EngagementLevel::MEDIUM) &&
-      notification_count > low_engagement_notification_limit;
-  int min_engagement_notification_limit =
-      safety_check::features::
-          kSafetyCheckNotificationPermissionsMinEnagementLimit.Get();
+      notification_count > kLowEngagementNotificationLimit;
   bool is_minimal_engagement =
       !site_engagement::SiteEngagementService::IsEngagementAtLeast(
           score, blink::mojom::EngagementLevel::LOW) &&
-      notification_count > min_engagement_notification_limit;
+      notification_count > kMinEngagementNotificationLimit;
 
   return is_minimal_engagement || is_low_engagement;
 }

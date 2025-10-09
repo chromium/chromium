@@ -3677,10 +3677,6 @@ const char kSafetyCheckUnusedSitePermissionsDescription[] =
     "When enabled, adds the unused sites permission module to Safety Check on "
     "desktop. The module will be shown depending on the browser state.";
 
-const char kSafetyHubName[] = "Safety Check v2";
-const char kSafetyHubDescription[] =
-    "When enabled, Safety Check v2 will be visible in settings.";
-
 const char kSafetyHubDisruptiveNotificationRevocationName[] =
     "Safety Hub - Disruptive notification revocation";
 const char kSafetyHubDisruptiveNotificationRevocationDescription[] =
