@@ -2881,7 +2881,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CvcInfoBar.{AutofillSaveCreditCardPromptDestination}"
     enum="AutofillCreditCardInfoBar" expires_after="2026-06-01">
   <owner>yishuil@google.com</owner>
-  <owner>koulvipul@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
@@ -5140,7 +5140,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.PaymentMethods.CvcStorageIsEnabled.Startup"
     enum="BooleanEnabled" expires_after="2026-06-01">
-  <owner>koulvipul@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -5156,7 +5155,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.{ActionType}"
     enum="MandatoryReauthAuthEvent" expires_after="2026-06-01">
-  <owner>koulvipul@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the auth result when the user tries to {ActionType} and mandatory
@@ -5190,7 +5189,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.{Source}.{ChangingStatus}"
     enum="MandatoryReauthAuthEvent" expires_after="2026-06-01">
-  <owner>koulvipul@google.com</owner>
+  <owner>sujiezhu@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the users auth result during the {ChangingStatus} flow for the
@@ -6669,7 +6668,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.SaveCvcPromptOffer.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2026-06-01">
-  <owner>koulvipul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -6685,7 +6683,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.SaveCvcPromptResult.{AutofillSaveCreditCardPromptDestination}.{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-06-01">
-  <owner>koulvipul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
