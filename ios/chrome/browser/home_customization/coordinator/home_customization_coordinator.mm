@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
@@ -113,7 +114,9 @@ CGFloat const kSheetCornerRadius = 30;
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
-                                             FromBrowser(self.browser)];
+                                             FromBrowser(self.browser)
+                         shoppingService:commerce::ShoppingServiceFactory::
+                                             GetForProfile(self.profile)];
   _mediator.navigationDelegate = self;
 
   if (IsNTPBackgroundCustomizationEnabled() &&

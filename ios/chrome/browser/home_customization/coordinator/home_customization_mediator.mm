@@ -7,6 +7,7 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
@@ -29,15 +30,21 @@
   // Browser agent to be notified of Discover eligibility.
   raw_ptr<DiscoverFeedVisibilityBrowserAgent, DanglingUntriaged>
       _discoverFeedVisibilityBrowserAgent;
+  // ShoppingService used to determine ShopCard toggle
+  // eligibility.
+  raw_ptr<commerce::ShoppingService> _shoppingService;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
-                                           discoverFeedVisibilityBrowserAgent {
+    discoverFeedVisibilityBrowserAgent:
+        (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+                       shoppingService:
+                           (commerce::ShoppingService*)shoppingService {
   self = [super init];
   if (self) {
     _prefService = prefService;
     _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
+    _shoppingService = shoppingService;
   }
   return self;
 }
@@ -87,10 +94,11 @@
         {CustomizationToggleType::kTips,
          [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
   }
-  toggleMap.insert(
-      {CustomizationToggleType::kShopCard,
-       [self
-           isMagicStackCardEnabledForType:CustomizationToggleType::kShopCard]});
+  if (_shoppingService && _shoppingService->IsShoppingListEligible()) {
+    toggleMap.insert({CustomizationToggleType::kShopCard,
+                      [self isMagicStackCardEnabledForType:
+                                CustomizationToggleType::kShopCard]});
+  }
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 

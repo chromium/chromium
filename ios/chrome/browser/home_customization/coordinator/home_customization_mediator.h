@@ -16,6 +16,10 @@ class DiscoverFeedVisibilityBrowserAgent;
 @protocol HomeCustomizationNavigationDelegate;
 class PrefService;
 
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+
 // The mediator for the Home surface's customization menu.
 @interface HomeCustomizationMediator : NSObject <HomeCustomizationMutator>
 
@@ -23,7 +27,8 @@ class PrefService;
 - (instancetype)initWithPrefService:(PrefService*)prefService
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
-
+                       shoppingService:
+                           (commerce::ShoppingService*)shoppingService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

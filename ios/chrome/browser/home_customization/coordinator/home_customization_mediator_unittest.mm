@@ -57,7 +57,8 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
     mediator_ =
         [[HomeCustomizationMediator alloc] initWithPrefService:pref_service_
                             discoverFeedVisibilityBrowserAgent:
-                                discover_feed_visibility_browser_agent_];
+                                discover_feed_visibility_browser_agent_
+                                               shoppingService:nil];
   }
 
  protected:
