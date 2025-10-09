@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] PerformancePaintTiming interface: default toJSON operation on paintTiming
-  assert_true: property "id" should be present in the output of PerformancePaintTiming.prototype.toJSON() expected true got false
-Harness: the test ran to completion.
