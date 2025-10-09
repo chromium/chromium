@@ -737,10 +737,6 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["chromeos", "linux", "mac", "win"]
-  },
-  {
-    "channel": "dev",
-    "extension_types": ["extension"]
   }],
   "notifications": [{
     // The chrome.notifications functionality listed in notifications.idl is
