@@ -1296,6 +1296,7 @@ android_library("cronet_common_javatests") {
   sources = [
     "test/javatests/src/org/chromium/net/ContextInterceptor.java",
     "test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
+    "test/javatests/src/org/chromium/net/CronetTestFramework.java",
     "test/javatests/src/org/chromium/net/CronetTestRule.java",
     "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
     "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",

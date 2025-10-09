@@ -23,8 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.Proxy;

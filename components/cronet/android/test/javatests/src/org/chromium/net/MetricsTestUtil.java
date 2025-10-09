@@ -7,7 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 
 import java.util.ArrayDeque;
 import java.util.Date;

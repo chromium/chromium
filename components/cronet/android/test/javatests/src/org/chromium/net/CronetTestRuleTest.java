@@ -23,9 +23,9 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.BytesFlag;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.FloatFlag;
 import org.chromium.net.CronetTestRule.IgnoreFor;

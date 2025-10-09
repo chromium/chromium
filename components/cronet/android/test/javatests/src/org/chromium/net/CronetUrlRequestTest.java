@@ -34,7 +34,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;

@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.test.ServerCertificate;

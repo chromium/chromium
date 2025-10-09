@@ -18,8 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
