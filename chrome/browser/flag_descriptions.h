@@ -3959,9 +3959,6 @@ extern const char kEnableGesturePropertiesDBusServiceDescription[];
 extern const char kEnableInputEventLoggingName[];
 extern const char kEnableInputEventLoggingDescription[];
 
-extern const char kEnableKeyboardRewriterFixName[];
-extern const char kEnableKeyboardRewriterFixDescription[];
-
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
 

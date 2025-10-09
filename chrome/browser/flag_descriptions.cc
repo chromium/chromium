@@ -6900,10 +6900,6 @@ const char kEnableInputEventLoggingDescription[] =
     "will be included in feedback reports and system logs, so DO NOT ENTER "
     "SENSITIVE INFORMATION with this flag enabled.";
 
-const char kEnableKeyboardRewriterFixName[] = "Use new Keyboard Rewriter.";
-const char kEnableKeyboardRewriterFixDescription[] =
-    "Enable new Keyboard Rewriter.";
-
 const char kEnableKeyboardUsedPalmSuppressionName[] =
     "Use keyboard based palm suppression.";
 const char kEnableKeyboardUsedPalmSuppressionDescription[] =

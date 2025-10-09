@@ -596,9 +596,6 @@ BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
 // Enables setting the device hostname.
 BASE_FEATURE(kEnableHostnameSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable keyboard rewriter fix.
-BASE_FEATURE(kEnableKeyboardRewriterFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3057,10 +3054,6 @@ bool IsJupiterScreensaverEnabled() {
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
   return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
-}
-
-bool IsKeyboardRewriterFixEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKeyboardRewriterFix);
 }
 
 bool IsLanguagePacksInOobeEnabled() {

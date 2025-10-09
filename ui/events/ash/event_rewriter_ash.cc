@@ -1671,44 +1671,13 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
     return EVENT_REWRITE_DISCARD;
   }
 
-  // Records metric if the `key_event` is for a modifier key press event.
-  const bool should_record_modifier_key_press_metrics =
-      !(key_event.flags() & EF_IS_REPEAT) &&
-      key_event.type() == EventType::kKeyPressed &&
-      !ash::features::IsKeyboardRewriterFixEnabled();
-  if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedBeforeRemapping(*keyboard_capability_, device_id,
-                                            key_event.code());
-  }
-
   MutableKeyState state = {key_event.flags(), key_event.code(),
                            key_event.GetDomKey(), key_event.key_code()};
 
   // Do not rewrite an event sent by ui_controls::SendKeyPress(). See
   // crbug.com/136465.
   if (!(key_event.flags() & EF_FINAL)) {
-    if (!ash::features::IsKeyboardRewriterFixEnabled()) {
-      // If RewriteModifierKeys() returns true there should be no more
-      // processing done to the key event. It will only return true if the key
-      // event is rewritten to ALTGR. A false return is not an error.
-      if (RewriteModifierKeys(key_event, device_id, &state)) {
-        if (should_record_modifier_key_press_metrics) {
-          RecordModifierKeyPressedAfterRemapping(
-              *keyboard_capability_, device_id, state.code, key_event.code(),
-              state.key_code == VKEY_QUICK_INSERT);
-        }
-        // Early exit with completed event.
-        BuildRewrittenKeyEvent(key_event, state, rewritten_event);
-        return EVENT_REWRITE_REWRITTEN;
-      }
-    }
     RewriteNumPadKeys(key_event, &state);
-  }
-
-  if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
-                                           state.code, key_event.code(),
-                                           state.key_code == VKEY_QUICK_INSERT);
   }
 
   if (delegate_ &&
@@ -2064,18 +2033,9 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
 }
 
 int EventRewriterAsh::RewriteLocatedEvent(const Event& event) {
-  if (!delegate_) {
-    return event.flags();
-  }
-
-  if (ash::features::IsKeyboardRewriterFixEnabled()) {
-    // Return the events flags as modifiers should already be remapped via
-    // the KeyboardModifierEventRewriter.
-    return event.flags();
-  }
-
-  // Use the keyboard device_id for the last KeyEvent.
-  return GetRemappedModifierMasks(last_keyboard_device_id_, event.flags());
+  // Return the events flags as modifiers should already be remapped via
+  // the KeyboardModifierEventRewriter.
+  return event.flags();
 }
 
 int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
@@ -2128,191 +2088,63 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     return DiscardEvent(continuation);
   }
 
-  if (ash::features::IsKeyboardRewriterFixEnabled()) {
-    internal::PhysicalKey key = {
-        key_event.code(),
-        key_event.source_device_id(),
-    };
-    MutableKeyState key_state(rewritten_event ? rewritten_event->AsKeyEvent()
-                                              : &key_event);
-    auto it = pressed_physical_keys_.find(key);
-    bool is_rewritten_differently =
-        it != pressed_physical_keys_.end() &&
-        (it->second.code != key_state.code || it->second.key != key_state.key ||
-         it->second.key_code != key_state.key_code);
-
-    if (key_event.type() == EventType::kKeyPressed) {
-      // If a key press event for an already pressed key is rewritten in
-      // a different way, we send an release event, just before dispatching
-      // the (newly) rewritten pressed key, so that following stage can
-      // make pairs of key-pressed/-released events or rewritten ones.
-      if (is_rewritten_differently) {
-        auto dispatched_event = std::make_unique<KeyEvent>(
-            ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
-            key_event.flags() & ~it->second.flags, it->second.key,
-            key_event.time_stamp());
-        dispatched_event->set_source_device_id(key_event.source_device_id());
-        std::ignore = SendEvent(continuation, dispatched_event.get());
-      }
-      // Remember consumed flags on rewriting.
-      key_state.flags = key_event.flags() & ~key_state.flags;
-      pressed_physical_keys_.insert_or_assign(key, key_state);
-    } else {
-      if (is_rewritten_differently) {
-        // Restore the originally rewritten key under the current modifiers.
-        // Note that modifier flags cannot be restored (and that's why the
-        // key is rewritten differently), so here as a best effort just
-        // mask the consumed key from the current key event flags.
-        auto rewritten_key_event = std::make_unique<KeyEvent>(
-            ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
-            key_event.flags() & ~key_state.flags, it->second.key,
-            key_event.time_stamp());
-        rewritten_key_event->set_source_device_id(key_event.source_device_id());
-        rewritten_key_event->set_scan_code(key_event.scan_code());
-        rewritten_event = std::move(rewritten_key_event);
-        status = EventRewriteStatus::EVENT_REWRITE_REWRITTEN;
-      }
-      pressed_physical_keys_.erase(key);
-    }
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
-    }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
-  }
-
-  MutableKeyState current_key_state;
-  auto key_state_comparator =
-      [&current_key_state](
-          const std::pair<MutableKeyState, MutableKeyState>& key_state) {
-        return (current_key_state.code == key_state.first.code) &&
-               (current_key_state.key == key_state.first.key) &&
-               (current_key_state.key_code == key_state.first.key_code);
-      };
-
-  const int mapped_flag = ModifierDomKeyToEventFlag(key_event.GetDomKey());
+  internal::PhysicalKey key = {
+      key_event.code(),
+      key_event.source_device_id(),
+  };
+  MutableKeyState key_state(rewritten_event ? rewritten_event->AsKeyEvent()
+                                            : &key_event);
+  auto it = pressed_physical_keys_.find(key);
+  bool is_rewritten_differently =
+      it != pressed_physical_keys_.end() &&
+      (it->second.code != key_state.code || it->second.key != key_state.key ||
+       it->second.key_code != key_state.key_code);
 
   if (key_event.type() == EventType::kKeyPressed) {
-    current_key_state = MutableKeyState(
-        rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
-                        : &key_event);
-    MutableKeyState original_key_state(&key_event);
-    auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
-
-    // When a key is pressed, store |current_key_state| if it is not stored
-    // before.
-    if (iter == pressed_key_states_.end()) {
-      pressed_key_states_.emplace_back(current_key_state, original_key_state);
+    // If a key press event for an already pressed key is rewritten in
+    // a different way, we send an release event, just before dispatching
+    // the (newly) rewritten pressed key, so that following stage can
+    // make pairs of key-pressed/-released events or rewritten ones.
+    if (is_rewritten_differently) {
+      auto dispatched_event = std::make_unique<KeyEvent>(
+          ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
+          key_event.flags() & ~it->second.flags, it->second.key,
+          key_event.time_stamp());
+      dispatched_event->set_source_device_id(key_event.source_device_id());
+      std::ignore = SendEvent(continuation, dispatched_event.get());
     }
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
+    // Remember consumed flags on rewriting.
+    key_state.flags = key_event.flags() & ~key_state.flags;
+    pressed_physical_keys_.insert_or_assign(key, key_state);
+  } else {
+    if (is_rewritten_differently) {
+      // Restore the originally rewritten key under the current modifiers.
+      // Note that modifier flags cannot be restored (and that's why the
+      // key is rewritten differently), so here as a best effort just
+      // mask the consumed key from the current key event flags.
+      auto rewritten_key_event = std::make_unique<KeyEvent>(
+          ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
+          key_event.flags() & ~key_state.flags, it->second.key,
+          key_event.time_stamp());
+      rewritten_key_event->set_source_device_id(key_event.source_device_id());
+      rewritten_key_event->set_scan_code(key_event.scan_code());
+      rewritten_event = std::move(rewritten_key_event);
+      status = EventRewriteStatus::EVENT_REWRITE_REWRITTEN;
     }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
+    pressed_physical_keys_.erase(key);
   }
 
-  DCHECK_EQ(key_event.type(), EventType::kKeyReleased);
-
-  if (mapped_flag != EF_NONE) {
-    // The released key is a modifier
-
-    DomKey::Base current_key = key_event.GetDomKey();
-    auto key_state_iter = pressed_key_states_.begin();
-    int event_flags =
-        rewritten_event ? rewritten_event->flags() : key_event.flags();
-    Event::Properties properties =
-        (rewritten_event && rewritten_event->properties())
-            ? *rewritten_event->properties()
-            : Event::Properties();
-    rewritten_event.reset();
-
-    // Iterate the keys being pressed. Release the key events which satisfy one
-    // of the following conditions:
-    // (1) the key event's original key code (before key event rewriting if
-    // any) is the same with the key to be released.
-    // (2) the key event is rewritten and its original flags are influenced by
-    // the key to be released.
-    // Example: Press the Launcher button, Press the Up Arrow button, Release
-    // the Launcher button. When Launcher is released: the key event whose key
-    // code is Launcher should be released because it satisfies the condition 1;
-    // the key event whose key code is PageUp should be released because it
-    // satisfies the condition 2.
-    EventDispatchDetails details;
-    while (key_state_iter != pressed_key_states_.end() &&
-           !details.dispatcher_destroyed) {
-      const bool is_rewritten =
-          (key_state_iter->first.key != key_state_iter->second.key);
-      const bool flag_affected = key_state_iter->second.flags & mapped_flag;
-      const bool should_release = key_state_iter->second.key == current_key ||
-                                  (flag_affected && is_rewritten);
-
-      if (should_release) {
-        // If the key should be released, create a key event for it.
-        auto dispatched_event = std::make_unique<KeyEvent>(
-            key_event.type(), key_state_iter->first.key_code,
-            key_state_iter->first.code, event_flags, key_state_iter->first.key,
-            key_event.time_stamp());
-        dispatched_event->set_scan_code(key_event.scan_code());
-        dispatched_event->set_source_device_id(key_event.source_device_id());
-        if (!properties.empty()) {
-          dispatched_event->SetProperties(properties);
-        }
-        details = SendEvent(continuation, dispatched_event.get());
-
-        key_state_iter = pressed_key_states_.erase(key_state_iter);
-        continue;
-      }
-      key_state_iter++;
-    }
-    return details;
+  if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
+    return SendEvent(continuation, &key_event);
   }
 
-  // The released key is not a modifier
-
-  current_key_state = MutableKeyState(
-      rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
-                      : &key_event);
-  auto iter = std::ranges::find_if(pressed_key_states_, key_state_comparator);
-  if (iter != pressed_key_states_.end()) {
-    pressed_key_states_.erase(iter);
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
-    }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
+  EventDispatchDetails details = SendEvent(continuation, rewritten_event.get());
+  if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
+      !details.dispatcher_destroyed) {
+    return SendStickyKeysReleaseEvents(std::move(rewritten_event),
+                                       continuation);
   }
-
-  // Event rewriting may create a meaningless key event.
-  // For example: press the Up Arrow button, press the Launcher button,
-  // release the Up Arrow. When the Up Arrow button is released, key event
-  // rewriting happens. However, the rewritten event is not among
-  // |pressed_key_states_|. So it should be blocked and the original event
-  // should be propagated.
-  return SendEvent(continuation, &key_event);
+  return details;
 }
 
 // New CrOS keyboards differ from previous Chrome OS keyboards in a few
