@@ -116,6 +116,10 @@ constexpr base::FeatureParam<base::MemoryPressureLevel>
                                      base::MEMORY_PRESSURE_LEVEL_MODERATE,
                                      &kMemoryPressureLevelOptions);
 
+// "enabled_for_cache_response" parameter.
+constexpr base::FeatureParam<bool>
+    kEnabledForCacheresponse(&kSlopBucket, "enabled_for_cache_response", true);
+
 }  // namespace
 
 // This class encapsulates the runtime configuration of SlopBucket. When
@@ -134,6 +138,9 @@ class SlopBucket::Configuration {
   size_t max_chunks_total() const { return max_chunks_total_; }
   base::MemoryPressureLevel memory_pressure_disable_level() const {
     return memory_pressure_disable_level_;
+  }
+  bool enabled_for_cache_response() const {
+    return enabled_for_cache_response_;
   }
 
  private:
@@ -187,6 +194,8 @@ class SlopBucket::Configuration {
           "max_chunks_total is less than max_chunks_per_request");
     }
     memory_pressure_disable_level_ = kMemoryPressureDisableLevelParam.Get();
+
+    enabled_for_cache_response_ = kEnabledForCacheresponse.Get();
   }
 
   void DisableWithWarning(const char* warning) {
@@ -209,6 +218,8 @@ class SlopBucket::Configuration {
 
   base::MemoryPressureLevel memory_pressure_disable_level_ =
       kDefaultMemoryPressureDisableLevel;
+
+  bool enabled_for_cache_response_ = true;
 };
 
 // SlopBucketManager tracks global state for SlopBuckets. It is thread-hostile.
@@ -267,6 +278,10 @@ class SlopBucket::Manager {
 
   size_t chunk_size() const { return configuration_.chunk_size(); }
   size_t min_buffer_size() const { return configuration_.min_buffer_size(); }
+
+  bool enabled_for_cache_response() const {
+    return configuration_.enabled_for_cache_response();
+  }
 
   scoped_refptr<ChunkIOBuffer> RequestChunk(size_t existing_chunks) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -511,6 +526,16 @@ std::unique_ptr<SlopBucket> SlopBucket::RequestSlopBucket(
     DVLOG(1) << "Refused to create SlopBucket for request to '"
              << for_request->url() << "' with priority "
              << net::RequestPriorityToString(priority);
+    return nullptr;
+  }
+
+  using CacheEntryStatus = net::HttpResponseInfo::CacheEntryStatus;
+  const CacheEntryStatus& cache_entry_status =
+      for_request->response_info().cache_entry_status;
+  const bool is_response_from_cache =
+      cache_entry_status == CacheEntryStatus::ENTRY_USED ||
+      cache_entry_status == CacheEntryStatus::ENTRY_VALIDATED;
+  if (is_response_from_cache && !manager.enabled_for_cache_response()) {
     return nullptr;
   }
 

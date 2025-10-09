@@ -8279,11 +8279,30 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-02-09">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the proportion of writes when URLLoader was blocked by
-    MOJO_RESULT_SHOULD_WAIT where the renderer process seems to be busy. Lower
-    is better. Logged every time a URLLoader completes a load.
+    MOJO_RESULT_SHOULD_WAIT where the renderer process seems to be busy. Logged
+    every time a URLLoader completes a load.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.URLLoader.SlopBucket.ProportionOfWritesBlockedByMojo.{CacheEntryStatus}"
+    units="%" expires_after="2026-02-09">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the proportion of writes when URLLoader was blocked by
+    MOJO_RESULT_SHOULD_WAIT where the renderer process seems to be busy. Logged
+    every time a URLLoader completes a load and only when SlopBucket is actually
+    used and response cache type is {CacheEntryStatus}.
+  </summary>
+  <token key="CacheEntryStatus">
+    <variant name="All"/>
+    <variant name="NoCache"/>
+  </token>
 </histogram>
 
 <histogram name="Net.URLLoaderThrottle.OnReceiveResponseTime" units="ms"

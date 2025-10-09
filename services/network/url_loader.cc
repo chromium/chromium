@@ -1533,6 +1533,7 @@ void URLLoader::ReadMore() {
         bool should_wait = true;
         if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_) {
           slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
+          was_slop_bucket_enabled_ = true;
         }
         if (slop_bucket_ && !slop_bucket_->read_in_progress() &&
             !slop_bucket_->IsComplete()) {
@@ -1948,10 +1949,25 @@ void URLLoader::NotifyCompleted(int error_code) {
                                    total_received, 50, 10 * 1000 * 1000, 50);
     mojo_begin_write_count_for_uma_ =
         std::max(mojo_begin_write_count_for_uma_, 1);
+    const int proportion = mojo_blocked_write_count_for_uma_ * 100 /
+                           mojo_begin_write_count_for_uma_;
     base::UmaHistogramPercentage(
-        "Net.URLLoader.ProportionOfWritesBlockedByMojo",
-        mojo_blocked_write_count_for_uma_ * 100 /
-            mojo_begin_write_count_for_uma_);
+        "Net.URLLoader.ProportionOfWritesBlockedByMojo", proportion);
+    if (was_slop_bucket_enabled_) {
+      base::UmaHistogramPercentage(
+          "Net.URLLoader.SlopBucket.ProportionOfWritesBlockedByMojo.All",
+          proportion);
+
+      using CacheEntryStatus = net::HttpResponseInfo::CacheEntryStatus;
+      const CacheEntryStatus& cache_entry_status =
+          url_request_->response_info().cache_entry_status;
+      if (cache_entry_status != CacheEntryStatus::ENTRY_USED &&
+          cache_entry_status != CacheEntryStatus::ENTRY_VALIDATED) {
+        base::UmaHistogramPercentage(
+            "Net.URLLoader.SlopBucket.ProportionOfWritesBlockedByMojo.NoCache",
+            proportion);
+      }
+    }
   }
 
   if (total_sent > 0) {

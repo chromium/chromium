@@ -762,6 +762,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Internal counters to record UMA for SlopBucket.
   int mojo_begin_write_count_for_uma_ = 0;
   int mojo_blocked_write_count_for_uma_ = 0;
+  bool was_slop_bucket_enabled_ = false;
 
   // For decoding a small part of the response body to check its type (for ORB
   // and MIME sniffing) when the response might be compressed and client-side
