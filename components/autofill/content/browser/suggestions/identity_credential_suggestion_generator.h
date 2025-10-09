@@ -69,6 +69,14 @@ class IdentityCredentialSuggestionGenerator : public SuggestionGenerator {
   // Provides a `AutofillSource`. Derived from `WebContents` in
   // practice and mocked in tests.
   base::RepeatingCallback<content::webid::AutofillSource*()> source_;
+
+  // The field type of `trigger_autofill_field` in `FetchSuggestionData()`.
+  // Since suggestion generation can be asynchronous, we want to preserve the
+  // same field type between Fetch and Generation phase. This should most of the
+  // time be the same as the type found by looking at
+  // `trigger_autofill_field.Type().GetIdentityCredentialType()` in
+  // GenerateSuggestions().
+  FieldType trigger_field_type_;
 };
 
 }  // namespace autofill

@@ -149,14 +149,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, UnsupportedFieldType) {
         return result;
       }));
 
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kEmail};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+  EXPECT_CALL(mock, GetAutofillSuggestions).Times(0);
 
   test_api(form()).SetFieldTypes({UNKNOWN_TYPE});
   std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(

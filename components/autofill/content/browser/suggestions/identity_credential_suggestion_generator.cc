@@ -6,8 +6,10 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/webid/autofill_source.h"
@@ -45,56 +47,53 @@ std::map<FieldType, std::u16string> CreateFederatedProfileFields(
   return fields;
 }
 
-std::optional<Suggestion> CreateVerifiedEmailSuggestion(
-    IdentityCredential& credential) {
-  if (!credential.fields.contains(EMAIL_ADDRESS)) {
-    return std::nullopt;
+Suggestion CreateIdentityCredentialSuggestion(
+    const IdentityCredential& credential,
+    FieldType field_type) {
+  CHECK(field_type == PASSWORD || credential.fields.contains(field_type));
+  Suggestion suggestion(SuggestionType::kIdentityCredential);
+  suggestion.payload = Suggestion::IdentityCredentialPayload(
+      credential.idp_config_url, credential.account_id, credential.fields);
+
+  switch (field_type) {
+    case EMAIL_ADDRESS:
+      suggestion.main_text =
+          Suggestion::Text(credential.fields.at(EMAIL_ADDRESS));
+      suggestion.icon = Suggestion::Icon::kEmail;
+      suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_MINOR_TEXT,
+          credential.idp_for_display));
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_EMAIL_LABEL))});
+      break;
+    case PASSWORD:
+      suggestion.main_text = Suggestion::Text(credential.main_text);
+      suggestion.custom_icon = credential.custom_icon;
+      // TODO(crbug.com/410421491): support more context.
+      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+          credential.idp_for_display))});
+      break;
+    case NAME_FULL:
+    case PHONE_HOME_WHOLE_NUMBER:
+      suggestion.main_text = Suggestion::Text(credential.fields.at(field_type));
+      suggestion.icon = Suggestion::Icon::kAccount;
+      suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_IDENTITY_CREDENTIAL_PROVIDED_MINOR_TEXT,
+          credential.idp_for_display));
+      break;
+    case NAME_FIRST:
+    case UNKNOWN_TYPE:
+      // We should not reach this case since an early return in
+      // `IdentityCredentialSuggestionGenerator::FetchSuggestionData()` should
+      // prevent this.
+      // TODO(crbug.com/380367784): Add support for suggestions on NAME_FIRST
+      // fields.
+    default:
+      // The given `field_type` must be one of the IdentityCredential types
+      // in the co-domain of AutofillType::GetIdentityCredentialType().
+      NOTREACHED();
   }
-
-  Suggestion suggestion(SuggestionType::kIdentityCredential);
-  suggestion.main_text = Suggestion::Text(credential.fields[EMAIL_ADDRESS]);
-  suggestion.icon = Suggestion::Icon::kEmail;
-  suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_MINOR_TEXT,
-      credential.idp_for_display));
-  suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_EMAIL_LABEL))});
-  suggestion.payload = Suggestion::IdentityCredentialPayload(
-      credential.idp_config_url, credential.account_id, credential.fields);
-
-  return suggestion;
-}
-
-Suggestion CreatePasswordSuggestion(IdentityCredential& credential) {
-  Suggestion suggestion(SuggestionType::kIdentityCredential);
-
-  suggestion.main_text = Suggestion::Text(credential.main_text);
-  suggestion.custom_icon = credential.custom_icon;
-  // TODO(crbug.com/410421491): support more context.
-  suggestion.labels.push_back({Suggestion::Text(
-      l10n_util::GetStringFUTF16(IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
-                                 credential.idp_for_display))});
-  suggestion.payload = Suggestion::IdentityCredentialPayload(
-      credential.idp_config_url, credential.account_id, credential.fields);
-
-  return suggestion;
-}
-
-std::optional<Suggestion> CreateProvidedFieldSuggestion(
-    IdentityCredential& credential,
-    const FieldType& field_type) {
-  if (!credential.fields.contains(field_type)) {
-    return std::nullopt;
-  }
-
-  Suggestion suggestion(SuggestionType::kIdentityCredential);
-  suggestion.main_text = Suggestion::Text(credential.fields[field_type]);
-  suggestion.icon = Suggestion::Icon::kAccount;
-  suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_IDENTITY_CREDENTIAL_PROVIDED_MINOR_TEXT,
-      credential.idp_for_display));
-  suggestion.payload = Suggestion::IdentityCredentialPayload(
-      credential.idp_config_url, credential.account_id, credential.fields);
 
   return suggestion;
 }
@@ -157,6 +156,16 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
+  trigger_field_type_ =
+      trigger_autofill_field->Type().GetIdentityCredentialType();
+
+  // TODO(crbug.com/380367784): Add support for suggestions on NAME_FIRST
+  // fields.
+  if (trigger_field_type_ == UNKNOWN_TYPE ||
+      trigger_field_type_ == NAME_FIRST) {
+    callback({SuggestionDataSource::kIdentityCredential, {}});
+    return;
+  }
 
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
@@ -186,11 +195,15 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     if (!delegated && !is_returning_credential) {
       continue;
     }
-    suggestion_data.emplace_back(IdentityCredential(
-        account->identity_provider->idp_metadata.config_url, account->id,
-        base::UTF8ToUTF16(account->identity_provider->idp_for_display),
-        base::UTF8ToUTF16(account->email),
-        CreateFederatedProfileFields(account), account->decoded_picture));
+    if (IdentityCredential credentials(
+            account->identity_provider->idp_metadata.config_url, account->id,
+            base::UTF8ToUTF16(account->identity_provider->idp_for_display),
+            base::UTF8ToUTF16(account->email),
+            CreateFederatedProfileFields(account), account->decoded_picture);
+        trigger_field_type_ == PASSWORD ||
+        credentials.fields.contains(trigger_field_type_)) {
+      suggestion_data.push_back(std::move(credentials));
+    }
   }
   callback(
       {SuggestionDataSource::kIdentityCredential, std::move(suggestion_data)});
@@ -223,47 +236,12 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
         return std::get<IdentityCredential>(std::move(suggestion_data));
       });
 
-  std::vector<Suggestion> suggestions;
-  for (IdentityCredential& credential : credentials) {
-    switch (trigger_autofill_field->Type().GetIdentityCredentialType()) {
-      case EMAIL_ADDRESS: {
-        if (std::optional<Suggestion> suggestion =
-                CreateVerifiedEmailSuggestion(credential);
-            suggestion) {
-          suggestions.emplace_back(std::move(*suggestion));
-        }
-        break;
-      }
-      case NAME_FULL:
-        [[fallthrough]];  // Intentional fall through.
-      case PHONE_HOME_WHOLE_NUMBER: {
-        if (std::optional<Suggestion> suggestion =
-                CreateProvidedFieldSuggestion(
-                    credential,
-                    trigger_autofill_field->Type().GetIdentityCredentialType());
-            suggestion) {
-          suggestions.emplace_back(std::move(*suggestion));
-        }
-        break;
-      }
-      case PASSWORD: {
-        suggestions.emplace_back(CreatePasswordSuggestion(credential));
-        break;
-      }
-      case UNKNOWN_TYPE: {
-        // Unsupported field type.
-        callback({FillingProduct::kIdentityCredential, {}});
-        return;
-      }
-      default: {
-        // The given `field_type` must be one of the Identity Credentials types
-        // in the co-domain of AutofillType::GetIdentityCredentialType().
-        NOTREACHED();
-      }
-    }
-  }
-
-  callback({FillingProduct::kIdentityCredential, std::move(suggestions)});
+  callback(
+      {FillingProduct::kIdentityCredential,
+       base::ToVector(credentials, [&](const IdentityCredential& credential) {
+         return CreateIdentityCredentialSuggestion(credential,
+                                                   trigger_field_type_);
+       })});
 }
 
 }  // namespace autofill

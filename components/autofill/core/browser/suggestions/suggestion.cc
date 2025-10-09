@@ -273,7 +273,7 @@ Suggestion::IdentityCredentialPayload::IdentityCredentialPayload() = default;
 Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(
     GURL configURL,
     std::string account_id,
-    std::map<FieldType, std::u16string>& fields)
+    const std::map<FieldType, std::u16string>& fields)
     : config_url(std::move(configURL)),
       account_id(std::move(account_id)),
       fields(fields) {}
