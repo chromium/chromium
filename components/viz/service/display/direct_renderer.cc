@@ -252,10 +252,10 @@ void DirectRenderer::DrawFrame(
 
   gfx::ColorSpace frame_color_space =
       RenderPassColorSpace(current_frame()->root_render_pass);
-  SharedImageFormat frame_si_format = GetSharedImageFormat(
-      current_frame()->display_color_spaces.GetOutputBufferFormat(
+  SharedImageFormat frame_si_format =
+      current_frame()->display_color_spaces.GetOutputFormat(
           current_frame()->root_render_pass->content_color_usage,
-          current_frame()->root_render_pass->has_transparent_background));
+          current_frame()->root_render_pass->has_transparent_background);
   gfx::Size surface_resource_size =
       CalculateSizeForOutputSurface(device_viewport_size);
 #if BUILDFLAG(IS_WIN)

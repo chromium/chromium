@@ -208,9 +208,8 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
   const auto& display_color_spaces = directive_.display_color_spaces();
   bool has_transparent_background = render_pass.has_transparent_background;
 
-  auto image_format =
-      GetSharedImageFormat(display_color_spaces.GetOutputBufferFormat(
-          content_color_usage, has_transparent_background));
+  auto image_format = display_color_spaces.GetOutputFormat(
+      content_color_usage, has_transparent_background);
   auto color_space =
       display_color_spaces.GetRasterAndCompositeColorSpace(content_color_usage);
 
