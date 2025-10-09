@@ -167,6 +167,10 @@ h1 {
   margin-top: inherit;
 }
 
+.visibility-hidden {
+  visibility: hidden;
+}
+
 @media (prefers-color-scheme: dark) {
   .dialog-illustration {
    content: url(./images/avatar_surrounding_illustration_dark.svg);

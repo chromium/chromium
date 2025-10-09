@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/features.h"
@@ -30,7 +31,17 @@ const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
     "history-sync-optin-app", "#acceptButton"};
 const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
     "history-sync-optin-app", "#rejectButton"};
-}  // namespace
+
+// Simulates the account capabilities that make the user eligible for the
+// history sync opt-in, so that the UI is preconfigured to show the opt-in
+// without any delay and wait-ui. Otherwise, UI should be presenting some sort
+// of loading UI and clicking reject or accept buttons should not be available.
+void MakeHistorySyncOptinEligible(signin::IdentityTestEnvironment& environment,
+                                  AccountInfo& account_info) {
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(true);
+  environment.UpdateAccountInfoForAccount(account_info);
+}
 
 // Tests that the history sync optin is displayed from promo entry points.
 class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
@@ -77,8 +88,9 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
         std::unique_ptr<ProcessDiceHeaderDelegateImpl>
             process_dice_header_delegate_impl =
                 ProcessDiceHeaderDelegateImpl::Create(active_contents);
-        CoreAccountInfo account_info =
+        AccountInfo account_info =
             identity_test_env()->MakeAccountAvailable(kMainEmail);
+        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
         // Mock processing an ENABLE SYNC header as part of the sign-in.
         // This also signs in the user.
         process_dice_header_delegate_impl->EnableSync(account_info);
@@ -120,6 +132,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
+        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -166,6 +179,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
+        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -253,3 +267,5 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
             0);
 }
+
+}  // namespace
