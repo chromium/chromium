@@ -4693,6 +4693,12 @@ const char kAndroidAnimatedProgressBarInVizDescription[] =
     "Hides the android progress bar and enables animating load progress "
     "updates for the composited progress bar in viz.";
 
+const char kAndroidContextMenuDuplicateTabsName[] =
+    "Android context menu duplicate tabs";
+const char kAndroidContextMenuDuplicateTabsDescription[] =
+    "Adds a new context menu option allowing users to duplicate the"
+    "selected tabs";
+
 const char kAndroidDesktopWebPrefsLargeDisplaysName[] =
     "Android Desktop WebPrefs for Large Displays";
 const char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =

@@ -2722,6 +2722,9 @@ extern const char kAndroidAnimatedProgressBarInBrowserDescription[];
 extern const char kAndroidAnimatedProgressBarInVizName[];
 extern const char kAndroidAnimatedProgressBarInVizDescription[];
 
+extern const char kAndroidContextMenuDuplicateTabsName[];
+extern const char kAndroidContextMenuDuplicateTabsDescription[];
+
 extern const char kAndroidTabGroupsColorUpdateGM3Name[];
 extern const char kAndroidTabGroupsColorUpdateGM3Description[];
 
