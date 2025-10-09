@@ -59,7 +59,7 @@ public class EdgeToEdgeManager {
     })
     public @interface BackupNavbarInsetsSource {
         int NO_APPLICABLE_BACKUP = 0;
-        int TAPPABLE_ELEMENT = 1;
+        @Deprecated int TAPPABLE_ELEMENT = 1;
         int MANDATORY_SYSTEM_GESTURES = 2;
         int FILTERED_EXPLICITLY_DISABLED = 3;
         int FILTERED_WEAKER_SIGNALS = 4;
@@ -173,7 +173,6 @@ public class EdgeToEdgeManager {
             WindowInsetsCompat windowInsets,
             @BackupNavbarInsetsCallSite String callSite,
             EdgeToEdgeFieldTrial useBackupNavbarInsetsFieldTrial,
-            boolean canUseTappableElementInsets,
             boolean canUseMandatoryGesturesInsets) {
         if (!useBackupNavbarInsetsFieldTrial.isEnabledForManufacturerVersion()) {
             recordBackupNavbarInsetsHistogram(
@@ -181,22 +180,7 @@ public class EdgeToEdgeManager {
             return null;
         }
 
-        // Check clearer signals, like the tappable element, first.
-
-        Insets tappableInsets = windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
-        // A single non-zero tappable inset is most likely the navigation bar, even if the
-        // navigation bar insets are missing for some reason. Tappable elements are strong
-        // signals for the presence of tappable system bars, and are used to distinguish between
-        // gesture and tappable navigation, and thus should be a reliable signal for detecting a
-        // navigation bar, even if the navigation bar inset is missing for some reason.
-        // The top inset should be ignored, as that would correspond to the status bar.
-        if (WindowInsetsUtils.hasOneNonZeroInsetExcludingTop(tappableInsets)
-                && canUseTappableElementInsets) {
-            recordBackupNavbarInsetsHistogram(callSite, BackupNavbarInsetsSource.TAPPABLE_ELEMENT);
-            return Insets.of(tappableInsets.left, 0, tappableInsets.right, tappableInsets.bottom);
-        }
-
-        // Restrict less clear signals, like the system gestures, if non-zero navigation bar insets
+        // Restrict weak signals, like the system gestures, if non-zero navigation bar insets
         // have previously been seen during the session for this Activity / window.
         if (hasSeenNonZeroNavigationBarInsets) {
             recordBackupNavbarInsetsHistogram(

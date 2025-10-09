@@ -51,7 +51,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
 
     private final boolean mUseBackupNavbarInsetsEnabled;
     private final @Nullable EdgeToEdgeFieldTrial mUseBackupNavbarInsetsFieldTrial;
-    private final boolean mCanUseTappableElementInsets;
     private final boolean mCanUseMandatoryGesturesInsets;
 
     /**
@@ -65,8 +64,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
      *     seem to be missing.
      * @param useBackupNavbarInsetsFieldTrial The EdgeToEdgeFieldTrial to use to verify if backup
      *     insets are allowed on devices by the current manufacturer.
-     * @param canUseTappableElementInsets Whether tappable element insets can be used as backup
-     *     navbar insets.
      * @param canUseMandatoryGesturesInsets Whether mandatory system gesture insets can be used as
      *     backup navbar insets.
      */
@@ -75,13 +72,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
             @Nullable InsetObserver insetObserver,
             boolean useBackupNavbarInsetsEnabled,
             @Nullable EdgeToEdgeFieldTrial useBackupNavbarInsetsFieldTrial,
-            boolean canUseTappableElementInsets,
             boolean canUseMandatoryGesturesInsets) {
         mContext = context;
         mInsetObserver = insetObserver;
         mUseBackupNavbarInsetsEnabled = useBackupNavbarInsetsEnabled;
         mUseBackupNavbarInsetsFieldTrial = useBackupNavbarInsetsFieldTrial;
-        mCanUseTappableElementInsets = canUseTappableElementInsets;
         mCanUseMandatoryGesturesInsets = canUseMandatoryGesturesInsets;
     }
 
@@ -101,7 +96,6 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
                 insetObserver,
                 /* useBackupNavbarInsetsEnabled= */ false,
                 /* useBackupNavbarInsetsFieldTrial= */ null,
-                /* canUseTappableElementInsets= */ false,
                 /* canUseMandatoryGesturesInsets= */ false);
     }
 
@@ -202,31 +196,38 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
 
     private Insets getNavigationBarInsets(WindowInsetsCompat windowInsets) {
         Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
+        Insets tappableInsets = windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        Insets nonTopTappableInsets =
+                Insets.of(tappableInsets.left, 0, tappableInsets.right, tappableInsets.bottom);
+        Insets navBarAndTappableInsets = Insets.max(navBarInsets, nonTopTappableInsets);
 
-        if (!mUseBackupNavbarInsetsEnabled) return navBarInsets;
-        if (mInsetObserver == null || mUseBackupNavbarInsetsFieldTrial == null) return navBarInsets;
+        if (!mUseBackupNavbarInsetsEnabled) return navBarAndTappableInsets;
+        if (mInsetObserver == null || mUseBackupNavbarInsetsFieldTrial == null) {
+            return navBarAndTappableInsets;
+        }
 
-        if (navBarInsets.left == 0 && navBarInsets.right == 0 && navBarInsets.bottom == 0) {
+        if (navBarAndTappableInsets.left == 0
+                && navBarAndTappableInsets.right == 0
+                && navBarAndTappableInsets.bottom == 0) {
             @Nullable Insets backupNavbarInsets =
                     EdgeToEdgeManager.getBackupNavbarInsets(
                             mInsetObserver.hasSeenNonZeroNavigationBarInsets(),
                             windowInsets,
                             BackupNavbarInsetsCallSite.EDGE_TO_EDGE_LAYOUT,
                             mUseBackupNavbarInsetsFieldTrial,
-                            mCanUseTappableElementInsets,
                             mCanUseMandatoryGesturesInsets);
             // If applicable, apply backup navbar insets to the left, right, and bottom (not the
             // top, as that's always the status bar).
             if (backupNavbarInsets != null) {
-                navBarInsets =
+                navBarAndTappableInsets =
                         Insets.of(
                                 backupNavbarInsets.left,
-                                navBarInsets.top,
+                                navBarAndTappableInsets.top,
                                 backupNavbarInsets.right,
                                 backupNavbarInsets.bottom);
             }
         }
-        return navBarInsets;
+        return navBarAndTappableInsets;
     }
 
     /** Returns the edge-to-edge layout view. */

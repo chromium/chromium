@@ -273,7 +273,7 @@ public class EdgeToEdgeLayoutUnitTest {
                 new WindowInsetsCompat.Builder()
                         .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
                         .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
-                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, 0))
                         .setInsets(
                                 MANDATORY_SYSTEM_GESTURES,
                                 Insets.of(0, STATUS_BAR_SIZE, 0, NAV_BAR_SIZE))
@@ -1023,7 +1023,6 @@ public class EdgeToEdgeLayoutUnitTest {
                         insetObserver,
                         /* useBackupNavbarInsetsEnabled= */ useBackupNavbarInsets,
                         /* useBackupNavbarInsetsFieldTrial= */ mUseBackupNavbarFieldTrial,
-                        /* canUseTappableElementInsets= */ true,
                         /* canUseMandatoryGesturesInsets= */ true);
         mEdgeToEdgeLayout =
                 (EdgeToEdgeBaseLayout)

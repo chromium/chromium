@@ -1613,10 +1613,6 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "e2e_backup_navbar_insets_oem_list", "");
 
-    public static final BooleanCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsUseTappable =
-            newBooleanCachedFeatureParam(
-                    EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "use_tappable_element", true);
-
     public static final BooleanCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsUseGestures =
             newBooleanCachedFeatureParam(
                     EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "use_gesture_insets", false);
@@ -1795,7 +1791,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsOemList,
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
-                    sEdgeToEdgeUseBackupNavbarInsetsUseTappable,
                     sLoadNativeEarlyConcurrentLoad,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,

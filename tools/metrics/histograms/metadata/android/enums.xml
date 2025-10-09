@@ -825,7 +825,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="BackupNavbarInsetsSource">
   <int value="0" label="None"/>
-  <int value="1" label="Tappable Element"/>
+  <int value="1" label="Tappable Element (Deprecated)"/>
   <int value="2" label="Mandatory system gestures"/>
   <int value="3" label="Filtered explicitly disabled"/>
   <int value="4" label="Filtered weaker signals"/>

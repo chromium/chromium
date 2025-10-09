@@ -1127,21 +1127,19 @@ public class EdgeToEdgeControllerTest {
                         .expectNoRecords(
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController")
                         .build()) {
-            when(mInsetObserver.getLastRawWindowInsets())
-                    .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
-            mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
+            when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WINDOW_INSETS);
+            mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
         }
-        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
                 "The controller should be using the system bar insets.",
-                Insets.of(0, TOP_INSET, 0, BOTTOM_INSET),
+                Insets.of(0, TOP_INSET, 0, 0),
                 mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting());
         changeObserver.verify(
-                "The system bars are providing a bottom inset and the controller should be drawing"
-                        + " toEdge.",
+                "The system bars are providing a bottom inset and the controller should be"
+                        + " drawing toEdge.",
                 BOTTOM_INSET,
-                /* isDrawingToEdge= */ false,
+                /* isDrawingToEdge= */ true,
                 /* isPageOptInToEdge= */ false);
 
         try (var watcher =
@@ -1150,9 +1148,9 @@ public class EdgeToEdgeControllerTest {
                                 "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController")
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
-                    .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
+                    .thenReturn(GESTURE_NAV_INSETS_MISSING_NAVBAR);
             mEdgeToEdgeControllerImpl.handleWindowInsets(
-                    mViewMock, SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
+                    mViewMock, GESTURE_NAV_INSETS_MISSING_NAVBAR);
         }
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertEquals(
@@ -1169,10 +1167,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS,
-        ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS
-    })
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS)
     public void handleWindowInsets_useTappableElementForBackupInsets() {
         TestChangeObserver changeObserver = new TestChangeObserver();
         mEdgeToEdgeControllerImpl.registerObserver(changeObserver);
@@ -1204,9 +1199,8 @@ public class EdgeToEdgeControllerTest {
 
         try (var watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController",
-                                EdgeToEdgeManager.BackupNavbarInsetsSource.TAPPABLE_ELEMENT)
+                        .expectNoRecords(
+                                "Android.EdgeToEdge.BackupNavbarInsets.EdgeToEdgeController")
                         .build()) {
             when(mInsetObserver.getLastRawWindowInsets())
                     .thenReturn(SYSTEM_BARS_WITH_TAPPABLE_MISSING_NAVBAR);
