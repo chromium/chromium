@@ -4121,6 +4121,10 @@
       status: "test",
     },
     {
+      name: "ReportLayoutShiftRectsInCssPixels",
+      status: "experimental",
+    },
+    {
       name: "RequestMainFrameAfterFirstVideoFrame",
       status: "experimental",
     },
