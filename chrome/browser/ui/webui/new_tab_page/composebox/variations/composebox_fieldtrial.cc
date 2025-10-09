@@ -179,6 +179,10 @@ const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,
                                                    "ShowToolsAndModels",
                                                    false);
 
+const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
+                                                    "ShowCreateImageTool",
+                                                    false);
+
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
     "ContextMenuMaxTabSuggestions",
