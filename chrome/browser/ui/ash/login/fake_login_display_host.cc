@@ -33,7 +33,8 @@ FakeLoginDisplayHost::FakeLoginDisplayHost(PrefService* local_state)
     : wizard_context_(std::make_unique<WizardContext>()),
       oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
           local_state ? local_state
-                      : TestingBrowserProcess::GetGlobal()->local_state())) {
+                      : TestingBrowserProcess::GetGlobal()->local_state(),
+          /*metrics_service=*/nullptr)) {
   // Only one SessionManager can be instantiated at a time. Check to see if one
   // has already been instantiated before creating one.
   if (!session_manager::SessionManager::Get()) {

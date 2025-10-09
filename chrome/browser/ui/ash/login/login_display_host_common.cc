@@ -240,7 +240,9 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>(
           base::PassKey<LoginDisplayHostCommon>(),
           base::BindRepeating(
-              []() { return g_browser_process->local_state(); }))) {
+              []() { return g_browser_process->local_state(); }),
+          base::BindRepeating(
+              []() { return g_browser_process->metrics_service(); }))) {
   if (features::IsOobeCrosEventsEnabled()) {
     oobe_cros_events_metrics_ =
         std::make_unique<OobeCrosEventsMetrics>(oobe_metrics_helper_.get());

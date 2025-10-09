@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
@@ -145,10 +144,11 @@ std::string GetOnboardingTypeSuffix(PrefService& local_state) {
                              : kUmaFirstOnboardingSuffix;
 }
 
-std::string GetMetricsClientID(PrefService& local_state) {
+std::string GetMetricsClientID(PrefService& local_state,
+                               metrics::MetricsService* metrics_service) {
   std::string client_id;
-  if (g_browser_process->metrics_service()) {
-    client_id = g_browser_process->metrics_service()->GetClientId();
+  if (metrics_service) {
+    client_id = metrics_service->GetClientId();
   }
 
   // Early in OOBE `metrics_service()->GetClientId()` will return an empty
@@ -164,10 +164,16 @@ std::string GetMetricsClientID(PrefService& local_state) {
 
 }  // namespace
 
-OobeMetricsHelper::OobeMetricsHelper(PrefService* local_state)
+OobeMetricsHelper::OobeMetricsHelper(PrefService* local_state,
+                                     metrics::MetricsService* metrics_service)
     : local_state_getter_(base::BindRepeating(
           [](PrefService* local_state) { return local_state; },
-          local_state)) {
+          local_state)),
+      metrics_service_getter_(base::BindRepeating(
+          [](metrics::MetricsService* metrics_service) {
+            return metrics_service;
+          },
+          metrics_service)) {
   CHECK(local_state);
 
   Initialize();
@@ -175,8 +181,10 @@ OobeMetricsHelper::OobeMetricsHelper(PrefService* local_state)
 
 OobeMetricsHelper::OobeMetricsHelper(
     base::PassKey<LoginDisplayHostCommon>,
-    LocalStateGetterCallback local_state_getter)
-    : local_state_getter_(std::move(local_state_getter)) {
+    LocalStateGetterCallback local_state_getter,
+    MetricsServiceGetterCallback metrics_service_getter)
+    : local_state_getter_(std::move(local_state_getter)),
+      metrics_service_getter_(std::move(metrics_service_getter)) {
   Initialize();
 }
 
@@ -273,11 +281,12 @@ void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
   base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
 
   PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
 
   // Store the metrics client ID to be later compared to the metrics
   // client ID at the end of OOBE.
   local_state.SetString(prefs::kOobeMetricsClientIdAtOobeStart,
-                        GetMetricsClientID(local_state));
+                        GetMetricsClientID(local_state, metrics_service));
 
   // With pre-consent metrics feature, the consent status before first user sign
   // in is set to true. OobeMetricsHelper needs to record the consent status
@@ -345,6 +354,7 @@ void OobeMetricsHelper::RecordOnboadingComplete(
   }
 
   PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
+  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
 
   if (!oobe_start_time.is_null()) {
     // Record `True` to report the `Completed` bucket.
@@ -361,7 +371,7 @@ void OobeMetricsHelper::RecordOnboadingComplete(
           kUmaOobeMetricsClientIdReset2,
           OobeMetricsClientIdResetState::kInitialIDMissing);
     } else {
-      std::string current_id = GetMetricsClientID(local_state);
+      std::string current_id = GetMetricsClientID(local_state, metrics_service);
       if (current_id.empty()) {
         base::UmaHistogramEnumeration(
             kUmaOobeMetricsClientIdReset2,
