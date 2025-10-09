@@ -71,11 +71,11 @@ Section .pak.nontranslated: 0 bytes from 0 symbols.
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 bytes are unaccounted for.
-* Padding accounts for 33902635 bytes (37.5%)
+Section .other: has 100.0% of 90351129 bytes accounted for from 20 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 85910629 bytes (95.1%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
-* 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (62.5%).
+* 19 placeholders exist (symbols that start with **). Accounts for 4440500 bytes (4.9%).
 * 0 symbols have shared ownership.
 .data@0(size_without_padding=101768,padding=0,full_name=** ELF Section: .data,object_path=,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro@0(size_without_padding=1065224,padding=0,full_name=** ELF Section: .data.rel.ro,object_path=,source_path=,flags={},num_aliases=1,component=)
@@ -93,6 +93,7 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 by
 .text@2a2220(size_without_padding=264,padding=0,full_name=aliasedWithOutlinedFunction(),object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .text@2a2328(size_without_padding=35897728,padding=0,full_name=** .text (unattributed),object_path=,source_path=base/allocator/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 .bss@0(size_without_padding=1300456,padding=0,full_name=** ELF Section: .bss,object_path=,source_path=,flags={},num_aliases=1,component=)
+.part.end@0(size_without_padding=16,padding=0,full_name=** ELF Section: .part.end,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=1536456,padding=0,full_name=** ELF Section: .ARM.exidx,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=183632,padding=0,full_name=** ELF Section: .ARM.extab,object_path=,source_path=,flags={},num_aliases=1,component=)
@@ -108,11 +109,8 @@ Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 by
 .other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .init_array,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=19,padding=0,full_name=** ELF Section: .interp,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=36,padding=0,full_name=** ELF Section: .note.gnu.build-id,object_path=,source_path=,flags={},num_aliases=1,component=)
-.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .note.gnu.gold-version,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=4244,padding=0,full_name=** ELF Section: .plt,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=2655384,padding=0,full_name=** ELF Section: .rel.dyn,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=2816,padding=0,full_name=** ELF Section: .rel.plt,object_path=,source_path=,flags={},num_aliases=1,component=)
 .other@0(size_without_padding=436,padding=0,full_name=** ELF Section: .shstrtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-.other@0(size_without_padding=34841854,padding=0,full_name=** ELF Section: .strtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=0,padding=85910629,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
