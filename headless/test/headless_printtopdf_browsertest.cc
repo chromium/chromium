@@ -9,9 +9,12 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
@@ -35,6 +38,13 @@
 #include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
+
+namespace {
+
+static const base::FilePath kTestDataDir(
+    FILE_PATH_LITERAL("headless/test/data"));
+
+}  // namespace
 
 class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
@@ -514,381 +524,9 @@ class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFDisableLazyLoading);
 
-const char kExpectedStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "H1",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "P",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "L",
-      "~children": [ {
-         "type": "LI",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "LI",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   }, {
-      "type": "Div",
-      "~children": [ {
-         "type": "Link",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   }, {
-      "type": "Table",
-      "~children": [ {
-         "type": "TR",
-         "~children": [ {
-            "attributes": [ {
-               "O": "Table",
-               "Scope": "Column"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "attributes": [ {
-               "O": "Table",
-               "Scope": "Column"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      }, {
-         "type": "TR",
-         "~children": [ {
-            "attributes": [ {
-               "Headers": [ "TH" ],
-               "O": "Table"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "attributes": [ {
-               "Headers": [ "TH" ],
-               "O": "Table"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      } ]
-   }, {
-      "type": "H2",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "Div",
-      "~children": [ {
-         "alt": "Car at the beach",
-         "type": "Figure"
-      } ]
-   }, {
-      "lang": "fr",
-      "type": "P",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedFigureOnlyStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Figure",
-      "~children": [ {
-         "alt": "Sample SVG image",
-         "type": "Figure"
-      }, {
-         "type": "NonStruct",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedFigureRoleOnlyStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "alt": "Text that describes the figure.",
-      "type": "Figure",
-      "~children": [ {
-         "alt": "Sample SVG image",
-         "type": "Figure"
-      }, {
-         "type": "P",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedImageOnlyStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Div",
-      "~children": [ {
-         "alt": "Sample SVG image",
-         "type": "Figure"
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedImageRoleOnlyStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "alt": "That cat is so cute",
-      "type": "Figure",
-      "~children": [ {
-         "type": "P",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedEmphasisStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Div",
-      "~children": [ {
-         "type": "NonStruct"
-      }, {
-         "type": "Em",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "NonStruct"
-      }, {
-         "type": "Em",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "NonStruct"
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedStrongStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Div",
-      "~children": [ {
-         "type": "NonStruct"
-      }, {
-         "type": "Strong",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "NonStruct"
-      }, {
-         "type": "Strong",
-         "~children": [ {
-            "type": "NonStruct"
-         } ]
-      }, {
-         "type": "NonStruct"
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedAsideStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Aside",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   }, {
-      "type": "Aside",
-      "~children": [ {
-         "type": "NonStruct"
-      } ]
-   } ]
-}
-)";
-
-const char kExpectedTableStructTreeJSON[] = R"({
-   "lang": "en",
-   "type": "Document",
-   "~children": [ {
-      "type": "Table",
-      "~children": [ {
-         "type": "TR",
-         "~children": [ {
-            "attributes": [ {
-               "O": "Table",
-               "Scope": "Column"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "attributes": [ {
-               "O": "Table",
-               "Scope": "Column"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TH",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      }, {
-         "type": "TR",
-         "~children": [ {
-            "attributes": [ {
-               "Headers": [ "TH" ],
-               "O": "Table"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         }, {
-            "attributes": [ {
-               "Headers": [ "TH" ],
-               "O": "Table"
-            }, {
-               "O": "Table",
-               "RowSpan": 1.0
-            }, {
-               "ColSpan": 1.0,
-               "O": "Table"
-            } ],
-            "type": "TD",
-            "~children": [ {
-               "type": "NonStruct"
-            } ]
-         } ]
-      } ]
-   } ]
-}
-)";
-
-struct TaggedPDFTestData {
-  const char* url;
-  const char* expected_json;
-};
-
-// TaggedPDFTestData is used in a parameterized test. In order to more easily
-// identify failing tests or run specific test, add a comment with the index
-// into the array for each new entries.
-constexpr TaggedPDFTestData kTaggedPDFTestData[] = {
-    // Test 0
-    {"/structured_doc.html", kExpectedStructTreeJSON},
-    // Test 1
-    {"/structured_doc_only_figure.html", kExpectedFigureOnlyStructTreeJSON},
-    // Test 2
-    {"/structured_doc_only_figure_role.html",
-     kExpectedFigureRoleOnlyStructTreeJSON},
-    // Test 3
-    {"/structured_doc_only_image.html", kExpectedImageOnlyStructTreeJSON},
-    // Test 4
-    {"/structured_doc_only_image_role.html",
-     kExpectedImageRoleOnlyStructTreeJSON},
-    // Test 5
-    {"/structured_doc_emphasis.html", kExpectedEmphasisStructTreeJSON},
-    // Test 6
-    {"/structured_doc_strong.html", kExpectedStrongStructTreeJSON},
-    // Test 7
-    {"/structured_doc_aside.html", kExpectedAsideStructTreeJSON},
-    // Test 8
-    {"/structured_doc_grid.html", kExpectedTableStructTreeJSON},
-    // Test 9
-    {"/structured_doc_table.html", kExpectedTableStructTreeJSON},
-    // Test 10
-    {"/structured_doc_treegrid.html", kExpectedTableStructTreeJSON},
-};
-
-class HeadlessTaggedPDFBrowserTest
-    : public HeadlessPDFBrowserTestBase,
-      public ::testing::WithParamInterface<TaggedPDFTestData> {
+class HeadlessTaggedPDFBrowserTest : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return GetParam().url; }
+  const char* GetUrl() override { return url_.c_str(); }
 
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
@@ -906,26 +544,92 @@ class HeadlessTaggedPDFBrowserTest
     // Map Windows line endings to Unix by removing '\r'.
     base::RemoveChars(json, "\r", &json);
 
-    EXPECT_EQ(GetParam().expected_json, json);
+    base::FilePath expectation_file;
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                                 &expectation_file));
+    expectation_file =
+        expectation_file.Append(kTestDataDir).AppendASCII(url_.substr(1));
+
+    expectation_file =
+        expectation_file.ReplaceExtension(FILE_PATH_LITERAL(".txt"));
+    expectation_file =
+        expectation_file.InsertBeforeExtension(FILE_PATH_LITERAL("_expected"));
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    if (ShouldUpdateExpectations()) {
+      LOG(INFO) << "Updating expectations at " << expectation_file;
+      CHECK(base::WriteFile(expectation_file, json));
+    }
+
+    std::string expected_json = "";
+    if (!base::ReadFileToString(expectation_file, &expected_json)) {
+      ADD_FAILURE() << "Unable to read expectations at " << expectation_file;
+    }
+    EXPECT_EQ(expected_json, json);
   }
+
+  void RunTaggedPDFTest(std::string url) {
+    url_ = url;
+    RunTest();
+  }
+
+ private:
+  std::string url_;
 };
 
-HEADLESS_DEVTOOLED_TEST_P(HeadlessTaggedPDFBrowserTest);
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Aside) {
+  RunTaggedPDFTest("/structured_doc_aside.html");
+}
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HeadlessTaggedPDFBrowserTest,
-                         ::testing::ValuesIn(kTaggedPDFTestData));
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Doc) {
+  RunTaggedPDFTest("/structured_doc.html");
+}
 
-class HeadlessTaggedPDFDisabledBrowserTest
-    : public HeadlessPDFBrowserTestBase,
-      public ::testing::WithParamInterface<TaggedPDFTestData> {
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Emphasis) {
+  RunTaggedPDFTest("/structured_doc_emphasis.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Figure) {
+  RunTaggedPDFTest("/structured_doc_only_figure.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, FigureRole) {
+  RunTaggedPDFTest("/structured_doc_only_figure_role.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Grid) {
+  RunTaggedPDFTest("/structured_doc_grid.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Image) {
+  RunTaggedPDFTest("/structured_doc_only_image.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, ImageRole) {
+  RunTaggedPDFTest("/structured_doc_only_image_role.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Strong) {
+  RunTaggedPDFTest("/structured_doc_strong.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Table) {
+  RunTaggedPDFTest("/structured_doc_table.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Treegrid) {
+  RunTaggedPDFTest("/structured_doc_treegrid.html");
+}
+
+class HeadlessTaggedPDFDisabledBrowserTest : public HeadlessPDFBrowserTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessPDFBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisablePDFTagging);
   }
 
-  const char* GetUrl() override { return GetParam().url; }
+  const char* GetUrl() override { return "/structured_doc.html"; }
 
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
@@ -935,11 +639,7 @@ class HeadlessTaggedPDFDisabledBrowserTest
   }
 };
 
-HEADLESS_DEVTOOLED_TEST_P(HeadlessTaggedPDFDisabledBrowserTest);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HeadlessTaggedPDFDisabledBrowserTest,
-                         ::testing::ValuesIn(kTaggedPDFTestData));
+HEADLESS_DEVTOOLED_TEST_F(HeadlessTaggedPDFDisabledBrowserTest);
 
 class HeadlessGenerateTaggedPDFBrowserTest
     : public HeadlessPDFBrowserTestBase,

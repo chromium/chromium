@@ -32,7 +32,6 @@
 namespace headless {
 
 namespace switches {
-static const char kResetResults[] = "reset-results";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
 }  // namespace switches
 
@@ -181,8 +180,7 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath expectation_path = GetTestExpectationFilePath();
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kResetResults)) {
+  if (ShouldUpdateExpectations()) {
     LOG(INFO) << "Updating expectations at " << expectation_path;
     bool succcess = base::WriteFile(expectation_path, test_result);
     CHECK(succcess);

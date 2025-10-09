@@ -1,0 +1,74 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "Table",
+      "~children": [ {
+         "type": "TR",
+         "~children": [ {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      }, {
+         "type": "TR",
+         "~children": [ {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      } ]
+   } ]
+}

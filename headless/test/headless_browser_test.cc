@@ -36,6 +36,10 @@
 
 namespace headless {
 
+namespace {
+inline constexpr char kResetResults[] = "reset-results";
+}  // namespace
+
 HeadlessBrowserTest::HeadlessBrowserTest() {
 #if BUILDFLAG(IS_MAC)
   // On Mac the source root is not set properly. We override it by assuming
@@ -140,6 +144,10 @@ void HeadlessBrowserTest::RunAsynchronousTest() {
 
 void HeadlessBrowserTest::FinishAsynchronousTest() {
   run_loop_->Quit();
+}
+
+bool HeadlessBrowserTest::ShouldUpdateExpectations() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kResetResults);
 }
 
 }  // namespace headless
