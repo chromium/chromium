@@ -6284,6 +6284,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5672" label="ContextMenuEventDefaultPrevented"/>
   <int value="5673" label="SmartCardEstablishContext"/>
   <int value="5674" label="SmartCardConnect"/>
+  <int value="5675" label="NavigatorCPUPerformance"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

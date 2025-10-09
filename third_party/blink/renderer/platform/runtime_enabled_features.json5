@@ -1176,6 +1176,13 @@
       name: "CorsRFC1918",
     },
     {
+      // CPU Performance API, work in progress.
+      // https://chromestatus.com/feature/5189864286978048
+      // https://github.com/explainers-by-googlers/cpu-performance
+      name: "CpuPerformance",
+      status: "experimental"
+    },
+    {
       name: "CrashReportingStorageAPI",
       status: "experimental",
       base_feature_status: "enabled",

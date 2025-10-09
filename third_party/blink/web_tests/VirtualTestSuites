@@ -339,6 +339,25 @@
     "expires": "never"
   },
   {
+    "prefix": "cpu-performance",
+    "owners": [
+      "nikolaos@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/cpu-performance"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=CpuPerformance"
+    ],
+    "expires": "Dec 31, 2025"
+  },
+  {
     "prefix": "cross-partition-blob-url",
     "platforms": [
       "Linux"

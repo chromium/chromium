@@ -6768,6 +6768,7 @@ interface Navigator
     getter contacts
     getter cookieDeprecationLabel
     getter cookieEnabled
+    getter cpuPerformance
     getter credentials
     getter deprecatedRunAdAuctionEnforcesKAnonymity
     getter deviceMemory

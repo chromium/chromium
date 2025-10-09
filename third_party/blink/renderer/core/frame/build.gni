@@ -132,6 +132,8 @@ blink_core_sources_frame = [
   "navigator.h",
   "navigator_concurrent_hardware.cc",
   "navigator_concurrent_hardware.h",
+  "navigator_cpu_performance.cc",
+  "navigator_cpu_performance.h",
   "navigator_device_memory.cc",
   "navigator_device_memory.h",
   "navigator_id.cc",

@@ -317,6 +317,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/frame/navigator_automation_information.idl",
   "//third_party/blink/renderer/core/frame/navigator_concurrent_hardware.idl",
   "//third_party/blink/renderer/core/frame/navigator_cookies.idl",
+  "//third_party/blink/renderer/core/frame/navigator_cpu_performance.idl",
   "//third_party/blink/renderer/core/frame/navigator_device_memory.idl",
   "//third_party/blink/renderer/core/frame/navigator_id.idl",
   "//third_party/blink/renderer/core/frame/navigator_language.idl",

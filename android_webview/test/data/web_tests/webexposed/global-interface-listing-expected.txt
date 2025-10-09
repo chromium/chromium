@@ -6497,6 +6497,7 @@ interface Navigator
     getter connection
     getter contacts
     getter cookieEnabled
+    getter cpuPerformance
     getter credentials
     getter deviceMemory
     getter doNotTrack
