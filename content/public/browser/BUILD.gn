@@ -136,6 +136,7 @@ source_set("browser_sources") {
     "cors_origin_pattern_setter.cc",
     "cors_origin_pattern_setter.h",
     "cross_device_request_info.h",
+    "cross_process_frame_connector_base.h",
     "dedicated_worker_creator.h",
     "dedicated_worker_service.h",
     "desktop_capture.cc",

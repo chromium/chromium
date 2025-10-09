@@ -1806,7 +1806,6 @@ source_set("browser") {
     "renderer_host/cookie_utils.h",
     "renderer_host/cross_process_frame_connector.cc",
     "renderer_host/cross_process_frame_connector.h",
-    "renderer_host/cross_process_frame_connector_base.h",
     "renderer_host/data_transfer_util.cc",
     "renderer_host/data_transfer_util.h",
     "renderer_host/debug_urls.cc",
