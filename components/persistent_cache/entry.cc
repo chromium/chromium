@@ -12,11 +12,4 @@ size_t Entry::GetContentSize() const {
   return GetContentSpan().size();
 }
 
-size_t Entry::CopyContentTo(base::span<uint8_t> content) const {
-  size_t resulting_size = std::min(content.size(), GetContentSpan().size());
-  content.subspan(size_t(0), resulting_size)
-      .copy_from(GetContentSpan().subspan(size_t(0), resulting_size));
-  return resulting_size;
-}
-
 }  // namespace persistent_cache

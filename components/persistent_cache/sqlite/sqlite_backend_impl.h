@@ -22,6 +22,8 @@
 
 namespace persistent_cache {
 
+class SqliteEntryImpl;
+
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  public:
   using Passkey = base::PassKey<SqliteBackendImpl>;
@@ -46,7 +48,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   std::optional<BackendParams> ExportReadWriteParams() override;
 
  private:
+  friend class SqliteEntryImpl;
+
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
+
+  // Releases the resources used by `statement`, which originated from a prior
+  // call to `Find`.
+  void FinalizeStatement(std::unique_ptr<sql::Statement> statement);
 
   std::optional<BackendParams> ExportParams(bool read_write);
 

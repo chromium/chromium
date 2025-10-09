@@ -115,10 +115,12 @@ std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
   CHECK_GT(key.length(), 0ull);
   TRACE_EVENT0("persistent_cache", "Find");
 
-  sql::Statement stm = sql::Statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT content, input_signature, write_timestamp "
-      "FROM entries WHERE key = ?"));
+  auto statement_owned =
+      std::make_unique<sql::Statement>(db_->GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT content, input_signature, write_timestamp "
+          "FROM entries WHERE key = ?"));
+  auto& stm = *statement_owned;
   stm.BindString(0, key);
 
   DCHECK(stm.is_valid());
@@ -133,11 +135,12 @@ std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
     return nullptr;
   }
 
-  EntryMetadata metadata;
-  metadata.input_signature = stm.ColumnInt64(1);
-  metadata.write_timestamp = stm.ColumnInt64(2);
-
-  return SqliteEntryImpl::MakeUnique(Passkey(), stm.ColumnString(0), metadata);
+  return SqliteEntryImpl::MakeUnique(
+      Passkey(), *this, std::move(statement_owned), stm.ColumnBlob(0),
+      EntryMetadata{
+          .input_signature = stm.ColumnInt64(1),
+          .write_timestamp = stm.ColumnInt64(2),
+      });
 }
 
 void SqliteBackendImpl::Insert(std::string_view key,
@@ -184,6 +187,12 @@ std::optional<BackendParams> SqliteBackendImpl::ExportReadOnlyParams() {
 
 std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
   return ExportParams(/*read_write=*/true);
+}
+
+void SqliteBackendImpl::FinalizeStatement(
+    std::unique_ptr<sql::Statement> statement) {
+  base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
+  statement.reset();
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportParams(bool read_write) {

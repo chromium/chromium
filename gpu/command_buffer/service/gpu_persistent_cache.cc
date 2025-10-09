@@ -77,9 +77,11 @@ size_t GpuPersistentCache::LoadData(const void* key,
     return 0;
   }
 
-  if (value_size > 0) {
-    return entry->CopyContentTo(
-        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value), value_size)));
+  if (size_t bytes_copied = std::min(value_size, entry->GetContentSize());
+      bytes_copied > 0) {
+    UNSAFE_TODO(base::span(static_cast<uint8_t*>(value), value_size))
+        .first(bytes_copied)
+        .copy_from_nonoverlapping(entry->GetContentSpan().first(bytes_copied));
   }
 
   return entry->GetContentSize();
