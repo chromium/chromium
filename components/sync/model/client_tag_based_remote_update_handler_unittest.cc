@@ -505,6 +505,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ASSERT_EQ(0U, ProcessorEntityCount());
   UpdateResponseData update = GeneratePrefUpdate("", "");
   ASSERT_TRUE(bridge()->SupportsGetStorageKey());
+  ASSERT_TRUE(bridge()->GetStorageKey(update.entity).empty());
+  ASSERT_FALSE(bridge()->IsEntityDataValid(update.entity));
   // Bridge will generate an empty storage key.
   ProcessSingleUpdate(std::move(update));
   // Update should be filtered out.

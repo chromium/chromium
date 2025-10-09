@@ -201,17 +201,17 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  // TODO(crbug.com/40889096): Remove the storage key check as storage keys
-  // should not be empty after IsEntityDataValid() has been implemented by all
-  // bridges.
-  if (!data.is_deleted() && (!bridge_->IsEntityDataValid(data) ||
-                             (bridge_->SupportsGetStorageKey() &&
-                              bridge_->GetStorageKey(data).empty()))) {
+  if (!data.is_deleted() && !bridge_->IsEntityDataValid(data)) {
     DLOG(WARNING) << "Received invalid remote update."
                   << " client_tag_hash: " << client_tag_hash << " for "
                   << DataTypeToDebugString(type_);
     return nullptr;
   }
+
+  // Valid entities (other than deletions) must have non-empty storage keys.
+  CHECK(data.is_deleted() || !bridge_->SupportsGetStorageKey() ||
+        !bridge_->GetStorageKey(data).empty())
+      << DataTypeToDebugString(type_);
 
   // Cache update encryption_key_name and is_deleted in case `update` will be
   // moved away into ResolveConflict().

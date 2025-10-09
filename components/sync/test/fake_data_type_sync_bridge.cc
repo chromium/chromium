@@ -399,7 +399,8 @@ FakeDataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 bool FakeDataTypeSyncBridge::IsEntityDataValid(
     const EntityData& entity_data) const {
   return invalid_remote_updates_.find(entity_data.client_tag_hash) ==
-         invalid_remote_updates_.end();
+             invalid_remote_updates_.end() &&
+         (!SupportsGetStorageKey() || !GetStorageKey(entity_data).empty());
 }
 
 void FakeDataTypeSyncBridge::SetConflictResolution(
