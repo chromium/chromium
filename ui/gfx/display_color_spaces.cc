@@ -180,7 +180,7 @@ ColorSpace DisplayColorSpaces::GetScreenInfoColorSpace() const {
 void DisplayColorSpaces::ToStrings(
     std::vector<std::string>* out_names,
     std::vector<gfx::ColorSpace>* out_color_spaces,
-    std::vector<gfx::BufferFormat>* out_buffer_formats) const {
+    std::vector<viz::SharedImageFormat>* out_formats) const {
   // The names of the configurations.
   std::array<const char*, kConfigCount> config_names = {
       "sRGB/no-alpha", "sRGB/alpha",   "WCG/no-alpha",
@@ -235,7 +235,7 @@ void DisplayColorSpaces::ToStrings(
 
     // Add an entry, and continue with the interval [j, j).
     out_names->push_back(name);
-    out_buffer_formats->push_back(buffer_formats_[i]);
+    out_formats->push_back(viz::GetSharedImageFormat(buffer_formats_[i]));
     out_color_spaces->push_back(color_spaces_[i]);
     i = j;
   };

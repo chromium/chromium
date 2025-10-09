@@ -382,8 +382,8 @@ base::Value::List GetDisplayInfo() {
     {
       std::vector<std::string> names;
       std::vector<gfx::ColorSpace> color_spaces;
-      std::vector<gfx::BufferFormat> buffer_formats;
-      display_color_spaces.ToStrings(&names, &color_spaces, &buffer_formats);
+      std::vector<viz::SharedImageFormat> formats;
+      display_color_spaces.ToStrings(&names, &color_spaces, &formats);
       for (size_t i = 0; i < names.size(); ++i) {
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Color space (%s)", names[i].c_str()),
@@ -393,7 +393,7 @@ base::Value::List GetDisplayInfo() {
                 .ToString()));
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Buffer format (%s)", names[i].c_str()),
-            gfx::BufferFormatToString(buffer_formats[i])));
+            formats[i].ToString()));
       }
     }
     display_info.Append(display::BuildGpuInfoEntry(

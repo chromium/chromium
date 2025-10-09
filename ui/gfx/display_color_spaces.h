@@ -128,10 +128,10 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   // Output as a vector of strings. This is a helper function for printing in
   // about:gpu. All output vectors will be the same length. Each entry will be
-  // the configuration name, its buffer format, and its color space.
+  // the configuration name, its format, and its color space.
   void ToStrings(std::vector<std::string>* out_names,
                  std::vector<gfx::ColorSpace>* out_color_spaces,
-                 std::vector<gfx::BufferFormat>* out_buffer_formats) const;
+                 std::vector<viz::SharedImageFormat>* out_formats) const;
 
   bool operator==(const DisplayColorSpaces& other) const;
 
