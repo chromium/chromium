@@ -746,14 +746,10 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), params.name);
   if (prop_id > CSSPropertyID::kInvalid) {
     UpdatePresentationAttributeStyle(prop_id, params.name, params.new_value);
-    SynchronizeAttributeInShadowInstances(params.name, params.new_value);
-    return;
   }
-
-  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    // TODO(crbug.com/40550039): breaks CSS animations/transitions because the
-    // tree is re-created. We need to copy the attribute instead.
-    InvalidateInstances();
+  if (prop_id > CSSPropertyID::kInvalid ||
+      RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    SynchronizeAttributeInShadowInstances(params.name, params.new_value);
   }
 }
 
@@ -1219,8 +1215,6 @@ SMILTimeContainer* SVGElement::GetTimeContainer() const {
   return ownerSVGElement()->TimeContainer();
 }
 
-// TODO: When implementing <use> scoping rules this may need to be applied more
-// widely. (crbug.com/40550039)
 void SVGElement::SynchronizeAttributeInShadowInstances(
     const QualifiedName& name,
     const AtomicString& value) {
