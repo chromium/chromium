@@ -48,6 +48,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Allows all blocked popups for the current site.
 - (void)allowBlockedPopups;
 
+// Returns whether price tracking is available for the current page.
+- (BOOL)isPriceTrackingAvailable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

@@ -165,6 +165,10 @@ const CGFloat kFeatureRowIconSize = 20;
 
       return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
     }
+    case PageActionMenuPriceTracking: {
+      // TODO(crbug.com/447143165): Add price tracking detection.
+      return NO;
+    }
   }
 }
 
@@ -220,6 +224,7 @@ const CGFloat kFeatureRowIconSize = 20;
       break;
     case PageActionMenuTranslate:
     case PageActionMenuPopupBlocker:
+    case PageActionMenuPriceTracking:
       CHECK(false)
           << "revokePermission called with non-permission feature type: "
           << featureType;
@@ -299,6 +304,19 @@ const CGFloat kFeatureRowIconSize = 20;
                  actionType:PageActionMenuToggleAction];
     micFeature.toggleState = YES;
     [features addObject:micFeature];
+  }
+  // Price tracking feature.
+  if ([self isFeatureAvailable:PageActionMenuPriceTracking]) {
+    PageActionMenuFeature* priceTrackingFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuPriceTracking
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_PRICE_TRACKING_LABEL)
+                       icon:CustomSymbolWithPointSize(kDownTrendSymbol,
+                                                      kFeatureRowIconSize)
+                 actionType:PageActionMenuButtonAction];
+    priceTrackingFeature.actionText =
+        l10n_util::GetNSString(IDS_IOS_AI_HUB_PRICE_TRACKING_BUTTON_LABEL);
+    [features addObject:priceTrackingFeature];
   }
 
   return features;
@@ -393,6 +411,12 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   return translate_client->GetTranslateManager()
       ->GetLanguageState()
       ->current_language();
+}
+
+// Returns true if price tracking is currently active for the page.
+- (BOOL)isPriceTrackingAvailable {
+  // TODO(crbug.com/447143165): Implement price tracking detection.
+  return NO;
 }
 
 @end

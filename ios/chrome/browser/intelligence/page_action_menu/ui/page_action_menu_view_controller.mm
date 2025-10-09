@@ -963,6 +963,9 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
     case PageActionMenuPopupBlocker:
       [self.mutator allowBlockedPopups];
       break;
+    case PageActionMenuPriceTracking:
+      // TODO(crbug.com/447143165): Handle price tracking action.
+      break;
     default:
       break;
   }
