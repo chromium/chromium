@@ -312,7 +312,7 @@ suite('ChooserExceptionList', function() {
     assertEquals(ChooserType.USB_DEVICES, chooserType);
     assertEquals(0, testElement.chooserExceptions.length);
     const emptyListMessage = testElement.shadowRoot!.querySelector<HTMLElement>(
-        '#empty-list-message')!;
+        '#emptyListMessage')!;
     assertFalse(emptyListMessage.hidden);
     assertEquals('No USB devices found', emptyListMessage.textContent!.trim());
   });

@@ -20,7 +20,7 @@ suite('SoundPage', function() {
 
   function getToggleElement(): SettingsToggleButtonElement {
     const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#block-autoplay-setting');
+        '#blockAutoplaySetting');
     assertTrue(!!toggle);
     return toggle;
   }
