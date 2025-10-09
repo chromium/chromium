@@ -475,35 +475,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
                   @"Profile should have been updated.");
 }
 
-// Ensures that the profile is saved to Chrome after submitting and editing the
-// form.
-- (void)testUserData_LocalEdit {
-  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
-                           @"are loaded dynamically on input.");
-  }
-
-  // Fill and submit the form.
-  [self fillPresidentProfileAndShowSaveModal];
-
-  // Edit the profile.
-  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
-      performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                   IDS_IOS_AUTOFILL_CITY)]
-      performAction:grey_replaceText(@"New York")];
-
-  // Save the profile.
-  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Ensure profile is saved locally.
-  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
-                  @"Profile should have been saved.");
-}
-
 // Ensures that the profile is saved to Account after submitting the form.
 - (void)testUserData_AccountSave {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
@@ -563,11 +534,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // Ensures that the profile is saved to Account after submitting and editing the
 // form.
 - (void)testUserData_AccountEdit {
-  if ([AutofillAppInterface isDynamicallyLoadFieldsOnInputEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the fields "
-                           @"are loaded dynamically on input.");
-  }
-
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [self fillPresidentProfileAndShowSaveModal];
@@ -576,9 +542,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                   IDS_IOS_AUTOFILL_CITY)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(@"City")]
       performAction:grey_replaceText(@"New York")];
 
   id<GREYMatcher> footerMatcher = grey_text(
