@@ -1006,7 +1006,7 @@ std::unique_ptr<VideoImageRepresentation> D3DImageBacking::ProduceVideo(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VideoDevice device) {
-  if (texture_d3d11_device_ != device && !dxgi_shared_handle_state_) {
+  if (texture_d3d11_device_ != device) {
     // Readback is the only option for a caller cannot create a representation
     // for this shared image.  When the caller cannot use a shared device
     // (GL/Ganesh) create a copy since this is much more efficient than forcing
