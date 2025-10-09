@@ -1209,12 +1209,13 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.MagicStack.StateOnStartup"
-    enum="BooleanEnabled" expires_after="2025-10-26">
+    enum="BooleanEnabled" expires_after="2026-04-05">
   <owner>fsenra@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
-    Captures whether the Safety Hub Magic Stack module is enabled. Recorded when
-    the SafetyHubMagicStackBuilder is created on browser start up. Android-only.
+    Captures the user preference for whether the Safety Hub Magic Stack module
+    is enabled. Recorded when the SafetyHubMagicStackBuilder is created on
+    browser start up. Android-only.
   </summary>
 </histogram>
 
