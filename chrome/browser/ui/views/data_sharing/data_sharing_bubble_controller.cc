@@ -151,7 +151,8 @@ void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
 
   views::Widget* widget = bubble_view_->GetWidget();
   CHECK(widget);
-  bubble_widget_observation_.Observe(widget);
+  widget->MakeCloseSynchronous(base::BindOnce(
+      &DataSharingBubbleController::OnWidgetClosing, base::Unretained(this)));
 }
 
 void DataSharingBubbleController::Close() {
@@ -190,8 +191,8 @@ void DataSharingBubbleController::OnUrlReadyToShare(GURL url) {
   }
 }
 
-void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
-  bubble_widget_observation_.Reset();
+void DataSharingBubbleController::OnWidgetClosing(
+    views::Widget::ClosedReason closed_reason) {
   if (on_share_link_requested_callback_) {
     std::move(on_share_link_requested_callback_)
         .Run(collaboration::CollaborationControllerDelegate::Outcome::kCancel,
