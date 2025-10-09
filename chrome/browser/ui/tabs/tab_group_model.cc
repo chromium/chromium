@@ -29,7 +29,6 @@ void TabGroupModel::AddTabGroup(TabGroup* group, base::PassKey<TabStripModel>) {
   group_ids_.emplace_back(group->id());
   groups_[group->id()] = group;
   group_ids_by_activity_.emplace_front(group->id());
-  ids_map_[group->id()] = group_ids_by_activity_.begin();
 }
 
 bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
@@ -46,8 +45,7 @@ void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id,
   CHECK(ContainsTabGroup(id));
   std::erase(group_ids_, id);
   groups_.erase(id);
-  group_ids_by_activity_.erase(ids_map_[id]);
-  ids_map_.erase(id);
+  group_ids_by_activity_.remove(id);
 }
 
 std::vector<tab_groups::TabGroupId> TabGroupModel::ListTabGroups() const {
@@ -63,7 +61,8 @@ std::optional<tab_groups::TabGroupId> TabGroupModel::GetMostRecentTabGroupId()
   }
 }
 
-void TabGroupModel::OnTabGroupActivated(const tab_groups::TabGroupId& id) {
+void TabGroupModel::OnTabGroupActivated(const tab_groups::TabGroupId& id,
+                                        base::PassKey<TabStripModel>) {
   // This group was activated so we have to  push it to the front
   CHECK(ContainsTabGroup(id));
 
@@ -71,9 +70,8 @@ void TabGroupModel::OnTabGroupActivated(const tab_groups::TabGroupId& id) {
     return;
   }
 
-  group_ids_by_activity_.erase(ids_map_[id]);
+  group_ids_by_activity_.remove(id);
   group_ids_by_activity_.emplace_front(id);
-  ids_map_[id] = group_ids_by_activity_.begin();
 }
 
 tab_groups::TabGroupColorId TabGroupModel::GetNextColor(

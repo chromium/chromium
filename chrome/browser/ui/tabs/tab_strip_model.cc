@@ -4983,7 +4983,8 @@ void TabStripModel::OnActiveTabChanged(
   int reason = selection.reason;
 
   if (new_tab->GetGroup()) {
-    group_model_->OnTabGroupActivated(*(new_tab->GetGroup()));
+    group_model_->OnTabGroupActivated(*(new_tab->GetGroup()),
+                                      base::PassKey<TabStripModel>());
   }
 
   if (old_tab) {

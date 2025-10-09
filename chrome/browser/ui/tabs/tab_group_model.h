@@ -62,7 +62,8 @@ class TabGroupModel {
   // tab. Returns std::nullopt if there are no groups.
   std::optional<tab_groups::TabGroupId> GetMostRecentTabGroupId() const;
 
-  void OnTabGroupActivated(const tab_groups::TabGroupId& id);
+  void OnTabGroupActivated(const tab_groups::TabGroupId& id,
+                           base::PassKey<TabStripModel>);
 
  private:
   std::map<tab_groups::TabGroupId, raw_ptr<TabGroup>> groups_;
@@ -73,9 +74,6 @@ class TabGroupModel {
 
   // Container of groups ordered according to when they had the active tab.
   std::list<tab_groups::TabGroupId> group_ids_by_activity_;
-  // Used to make removing elements from |group_ids_by_activity_| efficient.
-  std::map<tab_groups::TabGroupId, std::list<tab_groups::TabGroupId>::iterator>
-      ids_map_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_MODEL_H_
