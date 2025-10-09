@@ -131,7 +131,7 @@ class WebStateList::WebStateWrapper {
  private:
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
-  raw_ptr<const TabGroup, DanglingUntriaged> group_ = nullptr;
+  raw_ptr<const TabGroup> group_ = nullptr;
   bool should_reset_opener_ = false;
 };
 

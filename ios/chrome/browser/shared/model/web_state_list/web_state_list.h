@@ -66,7 +66,7 @@ class WebStateList {
     InsertionParams& operator=(InsertionParams&&);
 
     WebStateOpener opener;
-    raw_ptr<const TabGroup, DanglingUntriaged> in_group = nullptr;
+    raw_ptr<const TabGroup> in_group = nullptr;
     int desired_index = kInvalidIndex;
     bool inherit_opener = false;
     bool activate = false;

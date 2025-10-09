@@ -186,7 +186,7 @@ class WebStateListChangeDetach final : public WebStateListChange {
 
  private:
   raw_ptr<web::WebState> detached_web_state_;
-  raw_ptr<const TabGroup, DanglingUntriaged> group_;
+  raw_ptr<const TabGroup> group_;
   const int detached_from_index_;
   const DetachReason detach_reason_;
 };

@@ -66,7 +66,7 @@ class BrowserUserData : public base::SupportsUserData::Data {
   }
 
   // The owning Browser.
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<Browser> browser_;
 
  private:
   // Default factory for T that invoke T's constructor. Can be overloaded

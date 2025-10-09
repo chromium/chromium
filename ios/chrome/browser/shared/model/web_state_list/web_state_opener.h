@@ -15,7 +15,7 @@ class WebState;
 struct WebStateOpener {
   // WebState responsible for the creation of the new WebState. May be null if
   // the WebState has no opener.
-  raw_ptr<web::WebState, DanglingUntriaged> opener;
+  raw_ptr<web::WebState> opener;
 
   // Recorded value of the `opener` last committed navigation index when the
   // WebState was open. Value is undefined if `opener` is null.
