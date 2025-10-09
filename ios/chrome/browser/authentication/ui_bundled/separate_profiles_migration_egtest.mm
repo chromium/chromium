@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/containers/flat_set.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
@@ -89,14 +90,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -107,12 +108,12 @@
 
   // Verify that the managed account was moved into a separate profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 1u,
+    GREYAssertEqual(accountsInProfile.size(), 1u,
                     @"Post-migration, only the personal account should be in "
                     @"the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
   }
 }
@@ -132,14 +133,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -151,26 +152,26 @@
   // Verify that the managed account remained in the personal profile, since it
   // is the primary account.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual(accountsInProfile.size(), 2u,
                     @"Post-migration, both accounts should still be in the "
                     @"personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
   // After signout, the managed account should be moved into a separate profile.
   [SigninEarlGreyUI signOutWithClearDataConfirmation:YES];
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 1u,
+    GREYAssertEqual(accountsInProfile.size(), 1u,
                     @"After signout, only the personal account should remain "
                     @"in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
   }
 }
@@ -193,14 +194,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -220,14 +221,14 @@
   // Verify that the managed account remained in the personal profile, since it
   // is the primary account.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual(accountsInProfile.size(), 2u,
                     @"Post-migration, both accounts should still be in the "
                     @"personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -250,14 +251,14 @@
 
   // Verify that the managed account remained in the personal profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual(accountsInProfile.size(), 2u,
                     @"Post-migration, both accounts should still be in the "
                     @"personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -289,14 +290,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -332,14 +333,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -359,14 +360,14 @@
   // Verify that the managed account remained in the personal profile, since it
   // is the primary account.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual(accountsInProfile.size(), 2u,
                     @"Post-migration, both accounts should still be in the "
                     @"personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -410,14 +411,14 @@
 
   // Check preconditions: Both accounts exist in the profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 2u,
+        accountsInProfile.size(), 2u,
         @"Pre-migration, both accounts should be in the personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
   }
 
@@ -433,14 +434,14 @@
   // Verify that the managed account remained in the personal profile, since it
   // is the primary account.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual(accountsInProfile.size(), 2u,
                     @"Post-migration, both accounts should still be in the "
                     @"personal profile");
-    GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(personalIdentity.gaiaId),
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
     GREYAssert([[ChromeEarlGrey currentProfileName]
                    isEqualToString:originalPersonalProfile],
@@ -470,13 +471,13 @@
   // Verify that the managed account is now in the converted-to-managed personal
   // profile.
   {
-    NSSet<NSString*>* accountsInProfile =
+    const base::flat_set<GaiaId> accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
     GREYAssertEqual(
-        [accountsInProfile count], 1u,
+        accountsInProfile.size(), 1u,
         @"Post-migration, the personal account should be in a new personal "
         @"profile, only the managed account is in the current managed profile");
-    GREYAssert([accountsInProfile containsObject:managedIdentity.gaiaID],
+    GREYAssert(accountsInProfile.contains(managedIdentity.gaiaId),
                @"Managed account should match");
     GREYAssert([[ChromeEarlGrey currentProfileName]
                    isEqualToString:originalPersonalProfile],

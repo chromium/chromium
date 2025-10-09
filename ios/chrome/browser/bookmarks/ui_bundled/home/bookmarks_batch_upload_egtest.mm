@@ -158,8 +158,9 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 - (void)setUp {
   [super setUp];
   // Add last syncing account.
-  [ChromeEarlGrey setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+  [ChromeEarlGrey
+      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
+         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
   // Reset pref to offer upload sync left-behind bookamrks.
   [ChromeEarlGrey
       setBoolValue:false

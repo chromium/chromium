@@ -237,14 +237,14 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       [ChromeEarlGrey userDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
   GREYAssertEqual(1, value.integerValue, @"Failed to increase %@ pref",
                   kSigninPromoViewDisplayCountKey);
-  NSArray* gaiaIds = [ChromeEarlGrey
+  NSArray<NSString*>* gaiaIds = [ChromeEarlGrey
       userDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
   // It is not possible to do `GREYAssertEqualObjects(expectedGaiaIds, gaiaIds),
   // since gaiaIds is EDOObject type (the object is in Chrome app).
   GREYAssertEqual(1UL, gaiaIds.count, @"Expect to have only one gaia id %@",
                   gaiaIds);
-  GREYAssertEqualObjects([FakeSystemIdentity fakeIdentity1].gaiaID, gaiaIds[0],
-                         @"Wrong gaia id in %@",
+  GREYAssertEqualObjects([FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString(),
+                         gaiaIds[0], @"Wrong gaia id in %@",
                          kLastShownAccountGaiaIdVersionKey);
 }
 

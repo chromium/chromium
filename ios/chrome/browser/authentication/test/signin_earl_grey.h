@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/flat_set.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "google_apis/gaia/core_account_id.h"
@@ -14,6 +15,7 @@
 
 @class ExpectedSigninHistograms;
 
+class GaiaId;
 @protocol GREYMatcher;
 @class FakeSystemIdentity;
 
@@ -70,10 +72,10 @@ class GURL;
 
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
-- (NSString*)primaryAccountGaiaID;
+- (const GaiaId)primaryAccountGaiaID;
 
 // Returns the gaia IDs of all accounts in the current profile.
-- (NSSet<NSString*>*)accountsInProfileGaiaIDs;
+- (const base::flat_set<GaiaId>)accountsInProfileGaiaIDs;
 
 // Checks that no identity is signed in.
 - (BOOL)isSignedOut;

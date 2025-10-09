@@ -139,14 +139,14 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   if (!enableHistorySync) {
     [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     ConditionBlock condition = ^bool {
-      return [[SigninEarlGrey primaryAccountGaiaID]
-          isEqualToString:fakeIdentity.gaiaID];
+      return [SigninEarlGrey primaryAccountGaiaID] == fakeIdentity.gaiaId;
     };
     BOOL isSigned = base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForActionTimeout, condition);
     GREYAssert(isSigned,
                @"Signed in failed. Expected: %@, Currently signed: %@",
-               fakeIdentity.gaiaID, [SigninEarlGrey primaryAccountGaiaID]);
+               fakeIdentity.gaiaId.ToNSString(),
+               [SigninEarlGrey primaryAccountGaiaID].ToNSString());
     return;
   }
 

@@ -339,8 +339,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // manager.
 - (void)testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload {
   // Add last syncing account to mimic signing out without clearing data.
-  [ChromeEarlGrey setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
+  [ChromeEarlGrey
+      setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaId.ToNSString()
+         forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   OpenReadingList();
   [SigninEarlGreyUI

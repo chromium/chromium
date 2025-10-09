@@ -111,7 +111,7 @@ using chrome_test_util::PrimarySignInButton;
   // kGoogleServicesLastSyncingGaiaId.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaID
+  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaId.ToNSString()
                      forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   [BookmarkEarlGrey

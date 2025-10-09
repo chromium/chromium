@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/test/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -72,12 +73,17 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                                            accountId.ToString())];
 }
 
-- (NSString*)primaryAccountGaiaID {
-  return [SigninEarlGreyAppInterface primaryAccountGaiaID];
+- (const GaiaId)primaryAccountGaiaID {
+  return GaiaId([SigninEarlGreyAppInterface primaryAccountGaiaID]);
 }
 
-- (NSSet<NSString*>*)accountsInProfileGaiaIDs {
-  return [SigninEarlGreyAppInterface accountsInProfileGaiaIDs];
+- (const base::flat_set<GaiaId>)accountsInProfileGaiaIDs {
+  base::flat_set<GaiaId> set;
+  for (NSString* gaiaId :
+       [SigninEarlGreyAppInterface accountsInProfileGaiaIDs]) {
+    set.insert(GaiaId(gaiaId));
+  }
+  return set;
 }
 
 - (BOOL)isSignedOut {

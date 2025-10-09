@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "google_apis/gaia/core_account_id.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
