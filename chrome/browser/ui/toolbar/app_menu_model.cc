@@ -622,9 +622,8 @@ bool ProfileSubMenuModel::BuildSyncSection() {
 
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const std::optional<AvatarSyncErrorType> error =
-      GetAvatarSyncErrorType(profile_);
-  if (error.has_value()) {
+  const AvatarSyncErrorType error = GetAvatarSyncErrorType(profile_);
+  if (error != AvatarSyncErrorType::kNone) {
     if (error == AvatarSyncErrorType::kSyncPaused) {
       if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         // If sync is paused the menu item will be specific to the paused error.

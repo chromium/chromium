@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
-  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+  EXPECT_EQ(GetAvatarSyncErrorType(GetProfile(0)), AvatarSyncErrorType::kNone);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -1537,7 +1537,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
-  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+  EXPECT_EQ(GetAvatarSyncErrorType(GetProfile(0)), AvatarSyncErrorType::kNone);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -1903,7 +1903,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Verify the profile-menu error string is empty.
-  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+  EXPECT_EQ(GetAvatarSyncErrorType(GetProfile(0)), AvatarSyncErrorType::kNone);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   histogram_tester.ExpectUniqueSample(
@@ -2305,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // PASSWORDS should become active and the error should disappear.
   EXPECT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
-  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+  EXPECT_EQ(GetAvatarSyncErrorType(GetProfile(0)), AvatarSyncErrorType::kNone);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2353,7 +2353,7 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 
   // The error should have disappeared.
-  EXPECT_FALSE(GetAvatarSyncErrorType(GetProfile(0)).has_value());
+  EXPECT_EQ(GetAvatarSyncErrorType(GetProfile(0)), AvatarSyncErrorType::kNone);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultRecoverabilityDegradedOnStartup",

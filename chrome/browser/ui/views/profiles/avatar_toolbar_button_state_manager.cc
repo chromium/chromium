@@ -1221,22 +1221,22 @@ class SyncErrorBaseStateProvider : public StateProvider,
  private:
   // Computes the current avatar error.
   static std::optional<AvatarError> GetAvatarError(Profile* profile) {
-    std::optional<AvatarSyncErrorType> error_type =
-        ::GetAvatarSyncErrorType(profile);
+    AvatarSyncErrorType error_type = ::GetAvatarSyncErrorType(profile);
     const syncer::SyncService* service =
         SyncServiceFactory::GetForProfile(profile);
 
     // Avoid returning AvatarSyncErrorType::kSyncPaused in case of no sync
     // consent, as the signin-pending state is handled by
     // SigninPendingStateProvider.
-    if (!error_type || (error_type == AvatarSyncErrorType::kSyncPaused &&
-                        !service->HasSyncConsent())) {
+    if (error_type == AvatarSyncErrorType::kNone ||
+        (error_type == AvatarSyncErrorType::kSyncPaused &&
+         !service->HasSyncConsent())) {
       return std::nullopt;
     }
 
     CHECK(service);
 
-    return AvatarError{error_type.value(), service->GetAccountInfo().email};
+    return AvatarError{error_type, service->GetAccountInfo().email};
   }
 
   // syncer::SyncServiceObserver:

@@ -54,8 +54,10 @@ enum class SyncStatusActionType {
   kConfirmSyncSettings,
 };
 
-// Sync errors that should be exposed to the user through the avatar button.
+// Sync errors that should be exposed to the user through the avatar button, or
+// kNone if no error.
 enum AvatarSyncErrorType {
+  kNone,
   // Unrecoverable error for regular users.
   kUnrecoverableError,
   // Sync paused (e.g. persistent authentication error).
@@ -106,20 +108,21 @@ SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 SyncStatusLabels GetSyncStatusLabelsForSettings(
     const syncer::SyncService* service);
 
+// `error` must not be `kNone`.
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(Profile* profile,
                                                      AvatarSyncErrorType error);
 
 // Gets the error in the sync machinery (if any) that should be exposed to the
-// user through the titlebar avatar button. If std::nullopt is returned, this
-// does NOT mean sync-the-feature/sync-the-transport is enabled, simply that
-// there's no error. Furthermore, an error may be returned even if only
+// user through the titlebar avatar button. If kNone is returned, this does
+// NOT mean sync-the-feature/sync-the-transport is enabled, simply that there's
+// no error. Furthermore, an error may be returned even if only
 // sync-the-transport is running. One such case is when the user wishes to run
 // an encrypted data type on transport mode and must first go through a reauth.
-std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
+AvatarSyncErrorType GetAvatarSyncErrorType(Profile* profile);
 
-// When |error| is present, this returns the string to be shown both as the
-// tooltip of the avatar button, and in the profile menu body (the menu opened
-// by clicking the avatar button).
+// This returns the string to be shown both as the tooltip of the avatar button,
+// and in the profile menu body (the menu opened by clicking the avatar button).
+// `error` must not be `kNone`.
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
                                              const std::string& user_email);
 #endif

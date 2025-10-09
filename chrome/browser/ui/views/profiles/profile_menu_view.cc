@@ -150,6 +150,8 @@ std::u16string GetSyncErrorButtonText(Profile* profile,
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
+    case AvatarSyncErrorType::kNone:
+      NOTREACHED();
   }
 }
 
@@ -388,6 +390,8 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
       chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
       break;
+    case AvatarSyncErrorType::kNone:
+      NOTREACHED();
   }
 }
 
@@ -610,8 +614,7 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 ProfileMenuViewBase::IdentitySectionParams
 ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
-  const std::optional<AvatarSyncErrorType> error =
-      GetAvatarSyncErrorType(&profile());
+  const AvatarSyncErrorType error = GetAvatarSyncErrorType(&profile());
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
   const CoreAccountInfo primary_account_info =
@@ -671,15 +674,15 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   // Avoid reacting to AvatarSyncErrorType::kSyncPaused in case of no sync
   // consent, as kSignInPending is handled differently below.
-  if (error.has_value() &&
-      (error.value() != AvatarSyncErrorType::kSyncPaused ||
+  if (error != AvatarSyncErrorType::kNone &&
+      (error != AvatarSyncErrorType::kSyncPaused ||
        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
     params.subtitle =
-        GetAvatarSyncErrorDescription(*error, primary_account_info.email);
-    params.button_text = GetSyncErrorButtonText(&profile(), error.value());
+        GetAvatarSyncErrorDescription(error, primary_account_info.email);
+    params.button_text = GetSyncErrorButtonText(&profile(), error);
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
-                            base::Unretained(this), error.value());
+                            base::Unretained(this), error);
     params.has_dotted_ring = true;
     return params;
   }
