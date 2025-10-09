@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_tab_picker_mediator.h"
 
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 
 @implementation AimPrototypeTabPickerMediator {
@@ -22,8 +24,21 @@
   return self;
 }
 
+- (void)setBrowser:(Browser*)browser {
+  [super setBrowser:browser];
+
+  if (self.webStateList) {
+    [_gridConsumer populateItems:CreateItems(self.webStateList)
+          selectedItemIdentifier:nil];
+  }
+}
+
 - (id<TabCollectionConsumer>)gridConsumer {
   return _gridConsumer;
+}
+
+- (void)configureToolbarsButtons {
+  // NO-OP
 }
 
 @end

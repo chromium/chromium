@@ -330,8 +330,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                   image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                                    kSymbolActionPointSize)
              identifier:nil
-                handler:^(UIAction* action){
-                    // TODO(crbug.com/449132967): Display the tab picker.
+                handler:^(UIAction* action) {
+                  [weakSelf handleAttachTabs];
                 }];
     [menuItems addObject:selectTabsAction];
   }
@@ -553,6 +553,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 #pragma mark - Private
+
+- (void)handleAttachTabs {
+  [self.delegate aimPrototypeViewControllerDidTapAttachTabsButton:self];
+}
 
 - (void)updateCarouselFade {
   CGFloat contentOffsetX = _carouselView.contentOffset.x;

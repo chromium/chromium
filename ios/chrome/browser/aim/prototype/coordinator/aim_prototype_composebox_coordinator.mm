@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_mediator.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_tab_picker_coordinator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -75,6 +76,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   std::unique_ptr<WebLocationBarImpl> _locationBar;
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
+  AimPrototypeTabPickerCoordinator* _tabPickerCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -95,6 +97,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)start {
   _viewController = [[AIMPrototypeComposeboxViewController alloc] init];
   _viewController.delegate = self;
+
+  _tabPickerCoordinator = [[AimPrototypeTabPickerCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
 
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
@@ -159,6 +165,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)stop {
+  if (_tabPickerCoordinator.started) {
+    [_tabPickerCoordinator stop];
+  }
   _viewController.mutator = nil;
   _viewController = nil;
   _picker = nil;
@@ -243,6 +252,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   picker.allowsMultipleSelection = NO;
   picker.delegate = self;
   [_viewController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)aimPrototypeViewControllerDidTapAttachTabsButton:
+    (AIMPrototypeComposeboxViewController*)viewController {
+  [_tabPickerCoordinator start];
 }
 
 #pragma mark - PHPickerViewControllerDelegate

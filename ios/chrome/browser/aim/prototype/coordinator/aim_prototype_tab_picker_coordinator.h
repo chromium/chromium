@@ -10,6 +10,9 @@
 // The tab picker coordinator for AIM.
 @interface AimPrototypeTabPickerCoordinator : ChromeCoordinator
 
+// Returns `YES` if the coordinator is started.
+@property(nonatomic, readonly) BOOL started;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_TAB_PICKER_COORDINATOR_H_

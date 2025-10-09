@@ -27,6 +27,8 @@
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
 - (void)aimPrototypeViewControllerDidTapFileButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+- (void)aimPrototypeViewControllerDidTapAttachTabsButton:
+    (AIMPrototypeComposeboxViewController*)composeboxViewController;
 @end
 
 // View controller for the AIM prototype composebox.

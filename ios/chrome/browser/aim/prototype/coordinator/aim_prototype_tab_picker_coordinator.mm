@@ -9,6 +9,13 @@
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 
+@interface AimPrototypeTabPickerCoordinator ()
+
+// Returns `YES` if the coordinator is started.
+@property(nonatomic, assign) BOOL started;
+
+@end
+
 @implementation AimPrototypeTabPickerCoordinator {
   /// The tab picker mediator.
   AimPrototypeTabPickerMediator* _mediator;
@@ -20,12 +27,20 @@
   _viewController = [[AimPrototypeTabPickerViewController alloc] init];
   _mediator = [[AimPrototypeTabPickerMediator alloc]
       initWithGridConsumer:_viewController.gridViewController];
+  _mediator.browser = self.browser;
+  _viewController.gridViewController.snapshotAndfaviconDataSource = _mediator;
+  _viewController.gridViewController.mutator = _mediator;
+  _viewController.gridViewController.gridProvider = _mediator;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
+  self.started = YES;
 }
 
 - (void)stop {
+  if (!self.started) {
+    return;
+  }
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   [_mediator disconnect];
   _mediator = nil;

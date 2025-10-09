@@ -30,5 +30,6 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_mediator.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h",
   "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h",
-  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 ]
