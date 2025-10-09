@@ -33,6 +33,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Valid">Display ID was not empty and unique</int>
 </enum>
 
+<!-- LINT.IfChange(InstallerDownloaderFailureReason) -->
+
+<enum name="InstallerDownloaderFailureReason">
+  <int value="0" label="Interrupted">The download was interrupted.</int>
+  <int value="1" label="Cancelled">The download was cancelled.</int>
+  <int value="2" label="Destroyed">
+    The download item was destroyed before completion.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/win/installer_downloader/installer_downloader_model_impl.cc:InstallerDownloaderFailureReason) -->
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>

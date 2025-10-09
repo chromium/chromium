@@ -186,6 +186,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.InstallerDownloader.FailureReason"
+    enum="InstallerDownloaderFailureReason" expires_after="2026-03-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the reason why an installer download failed after it had already
+    started. This is recorded when the download enters a terminal state other
+    than COMPLETE.
+  </summary>
+</histogram>
+
 <histogram name="Windows.InstallerDownloader.InfobarShown" enum="Boolean"
     expires_after="2026-03-01">
   <owner>koretadaniel@chromium.org</owner>
@@ -194,6 +205,18 @@ chromium-metrics-reviews@google.com.
     Logged once per browser session when the Installer Downloader infobar is
     displayed for the first time. Always true, since the metric records how
     often the prompt surfaces.
+  </summary>
+</histogram>
+
+<histogram name="Windows.InstallerDownloader.InterruptReason"
+    enum="InterruptReason" expires_after="2026-03-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the download interrupt reason when an installer download fails to
+    start. This is recorded when the DownloadManager returns an interrupt reason
+    other than NONE, which can happen for a wide variety of reasons including
+    network errors, file errors, or server issues.
   </summary>
 </histogram>
 

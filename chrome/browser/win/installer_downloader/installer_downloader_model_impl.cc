@@ -30,6 +30,33 @@
 
 namespace installer_downloader {
 
+namespace {
+
+// Indicates that the download reason why a download failed.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue
+// should be updated. Keep in sync with the
+// InstallerDownloaderFailureReason UMA enum defined in
+// //tools/metrics/histograms/metadata/windows/enums.xml.
+//
+// LINT.IfChange(InstallerDownloaderFailureReason)
+enum class InstallerDownloaderFailureReason {
+  kInterrupted = 0,
+  kCancelled = 1,
+  kDestroyed = 2,
+
+  kMaxValue = kDestroyed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:InstallerDownloaderFailureReason)
+
+void RecordDownloadFailureReason(InstallerDownloaderFailureReason reason) {
+  base::UmaHistogramEnumeration("Windows.InstallerDownloader.FailureReason",
+                                reason);
+}
+
+}  // namespace
+
 class InstallerDownloaderObserver final
     : public download::DownloadItem::Observer {
  public:
@@ -49,7 +76,8 @@ class InstallerDownloaderObserver final
   void OnDownloadUpdated(download::DownloadItem* item) override {
     CHECK_EQ(observation_.GetSource(), item);
 
-    switch (item->GetState()) {
+    const auto state = item->GetState();
+    switch (state) {
       case download::DownloadItem::COMPLETE:
         // Did DownloadManager keep exactly the path we requested?
         base::UmaHistogramBoolean(
@@ -64,6 +92,10 @@ class InstallerDownloaderObserver final
         break;
       case download::DownloadItem::INTERRUPTED:
       case download::DownloadItem::CANCELLED:
+        RecordDownloadFailureReason(
+            state == download::DownloadItem::INTERRUPTED
+                ? InstallerDownloaderFailureReason::kInterrupted
+                : InstallerDownloaderFailureReason::kCancelled);
         // `this` is deleted by `completion_callback_`, so nothing below this
         // point may access it.
         std::move(completion_callback_).Run(/*succeeded=*/false);
@@ -75,6 +107,7 @@ class InstallerDownloaderObserver final
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {
     CHECK_EQ(observation_.GetSource(), item);
+    RecordDownloadFailureReason(InstallerDownloaderFailureReason::kDestroyed);
     std::move(completion_callback_).Run(/*succeeded=*/false);
   }
 
@@ -195,6 +228,10 @@ void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(
   // If `reason` is anything other than NONE (or we never got a DownloadItem)
   // will be treated as a failure.
   if (reason != download::DOWNLOAD_INTERRUPT_REASON_NONE || !item) {
+    // Records the interrupt reason to a sparse histogram. This is preferred for
+    // enums with many possible values, where not all may be emitted.
+    base::UmaHistogramSparse("Windows.InstallerDownloader.InterruptReason",
+                             static_cast<int>(reason));
     std::move(completion_callback).Run(/*succeeded=*/false);
     return;
   }
