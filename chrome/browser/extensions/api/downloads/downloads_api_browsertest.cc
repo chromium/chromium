@@ -111,24 +111,15 @@ namespace errors = download_extension_errors;
 namespace extensions {
 namespace downloads = api::downloads;
 
-// TODO(crbug.com/405219117): Enable more tests on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 namespace {
 
 const char kFirstDownloadUrl[] = "/download1";
 const char kSecondDownloadUrl[] = "/download2";
 const int kDownloadSize = 1024 * 10;
 
-void OnFileDeleted(bool success) {}
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Comparator that orders download items by their ID. Can be used with
-// std::sort.
-struct DownloadIdComparator {
-  bool operator() (DownloadItem* first, DownloadItem* second) {
-    return first->GetId() < second->GetId();
-  }
-};
+void OnFileDeleted(bool success) {}
 
 bool IsDownloadExternallyRemoved(download::DownloadItem* item) {
   return item->GetFileExternallyRemoved();
@@ -143,6 +134,16 @@ void OnOpenPromptCreated(download::DownloadItem* item,
       base::BindOnce(&DownloadOpenPrompt::AcceptConfirmationDialogForTesting,
                      base::Unretained(prompt)));
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Comparator that orders download items by their ID. Can be used with
+// std::sort.
+struct DownloadIdComparator {
+  bool operator()(DownloadItem* first, DownloadItem* second) {
+    return first->GetId() < second->GetId();
+  }
+};
 
 class DownloadsEventsListener : public EventRouter::TestObserver {
  public:
@@ -374,11 +375,18 @@ class DownloadExtensionTest : public ExtensionApiTest {
     second_extension_ = LoadExtensionInternal(name, false);
   }
 
+  Profile* current_profile() { return current_profile_; }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  Browser* current_browser() { return current_browser_; }
+
   content::RenderProcessHost* AddFilenameDeterminer() {
     ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutSecondsForTesting(
         2);
     // TODO(crbug.com/405219117): Add special navigation for Android here as
-    // NavigateToURLInNewTab() does not take a browser/profile.
+    // the call to chrome::AddSelectedTabWithURL() requires current_browser()
+    // but our usual replacement NavigateToURLInNewTab() does not take a browser
+    // or profile.
     content::WebContents* tab = chrome::AddSelectedTabWithURL(
         current_browser(), extension_->GetResourceURL("empty.html"),
         ui::PAGE_TRANSITION_LINK);
@@ -388,15 +396,13 @@ class DownloadExtensionTest : public ExtensionApiTest {
                            GetExtensionId());
     return tab->GetPrimaryMainFrame()->GetProcess();
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   void RemoveFilenameDeterminer(content::RenderProcessHost* host) {
     EventRouter::Get(current_profile())
         ->RemoveEventListener(downloads::OnDeterminingFilename::kEventName,
                               host, GetExtensionId());
   }
-
-  Browser* current_browser() { return current_browser_; }
-  Profile* current_profile() { return current_profile_; }
 
   // InProcessBrowserTest
   void SetUpOnMainThread() override {
@@ -432,18 +438,25 @@ class DownloadExtensionTest : public ExtensionApiTest {
     second_extension_ = nullptr;
     current_profile_ = nullptr;
     incognito_profile_ = nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     current_browser_ = nullptr;
     incognito_browser_ = nullptr;
+#endif
     ExtensionApiTest::TearDownOnMainThread();
   }
 
   void GoOnTheRecord() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     current_browser_ = browser();
-    current_profile_ = current_browser_->profile();
+#endif
+    current_profile_ = profile();
     if (events_listener_.get())
       events_listener_->UpdateProfile(current_profile());
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/405219117): Support incognito. This may require support for
+  // CreateBrowserWindow() with incognito profiles on Android.
   void GoOffTheRecord() {
     if (!incognito_browser_) {
       incognito_browser_ = CreateIncognitoBrowser();
@@ -458,6 +471,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     if (events_listener_.get())
       events_listener_->UpdateProfile(current_profile());
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   bool WaitFor(const std::string& event_name, const std::string& json_args) {
     return events_listener_->WaitFor(current_profile(), event_name, json_args);
@@ -489,10 +503,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return extension_->url().spec();
   }
   content::StoragePartitionConfig GetExtensionStoragePartitionConfig() {
-    return browser()
-        ->profile()
-        ->GetDownloadManager()
-        ->GetStoragePartitionConfigForSiteUrl(extension_->url());
+    return profile()->GetDownloadManager()->GetStoragePartitionConfigForSiteUrl(
+        extension_->url());
   }
   std::string GetExtensionId() {
     return extension_->id();
@@ -805,8 +817,10 @@ class DownloadExtensionTest : public ExtensionApiTest {
   raw_ptr<const Extension> second_extension_ = nullptr;
   raw_ptr<Profile> current_profile_ = nullptr;
   raw_ptr<Profile> incognito_profile_ = nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   raw_ptr<Browser> current_browser_ = nullptr;
   raw_ptr<Browser> incognito_browser_ = nullptr;
+#endif
   std::unique_ptr<DownloadsEventsListener> events_listener_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;
@@ -964,6 +978,10 @@ class HTML5FileWriter {
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// The open dialog is not yet implemented on desktop Android. Also, Java-side
+// org.chromium.ui.permissions.ContextualNotificationPermissionRequester may
+// need to be initialized in android_browsertests for this test to pass.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   platform_util::internal::DisableShellOperationsForTesting();
 
@@ -1028,6 +1046,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   EXPECT_TRUE(download_item->GetOpened());
 }
 
+// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_PauseResumeCancelErase) {
   DownloadItem* download_item = CreateFirstSlowTestDownload();
@@ -1119,6 +1138,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result_list[0].is_int());
   EXPECT_EQ(id, result_list[0].GetInt());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Open_Remove_Open) {
@@ -1162,8 +1182,11 @@ scoped_refptr<ExtensionFunction> MockedGetFileIconFunction(
   return function;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Test downloads.getFileIcon() on in-progress, finished, cancelled and deleted
 // download items.
+// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_FileIcon_Active) {
   DownloadItem* download_item = CreateFirstSlowTestDownload();
@@ -1250,6 +1273,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_STREQ(errors::kInvalidId,
                error.c_str());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that we can acquire file icons for history downloads regardless of
 // whether they exist or not.  If the file doesn't exist we should receive a
@@ -1287,6 +1311,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
     EXPECT_STREQ("hello", result_string.c_str());
   }
 }
+
+// TODO(crbug.com/405219117): Enable more tests on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test passing the empty query to search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
@@ -4586,8 +4613,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsApiTest, DownloadsApiTest) {
   ASSERT_TRUE(RunExtensionTest("downloads")) << message_;
 }
 
-// TODO(crbug.com/405219117): Enable more tests on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST(ExtensionDetermineDownloadFilenameInternal,
      ExtensionDetermineDownloadFilenameInternal) {
   std::string winner_id;
@@ -4638,6 +4663,5 @@ TEST(ExtensionDetermineDownloadFilenameInternal,
             warnings.begin()->warning_type());
   EXPECT_EQ("incumbent", warnings.begin()->extension_id());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
