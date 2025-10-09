@@ -238,9 +238,21 @@ void VpnService::SendPacket(const std::string& extension_id,
                             const std::vector<char>& data,
                             SuccessCallback success,
                             FailureCallback failure) {
-  GetVpnServiceForExtension(extension_id)
-      ->SendPacket(std::vector<uint8_t>(data.begin(), data.end()),
-                   AdaptCallback(std::move(success), std::move(failure)));
+  if (!OwnsActiveConfiguration(extension_id)) {
+    RunFailureCallback(std::move(failure), /*error_name=*/{},
+                       "Unauthorized access.");
+    return;
+  }
+
+  if (data.empty()) {
+    RunFailureCallback(std::move(failure), /*error_name=*/{},
+                       "Can't send an empty packet.");
+    return;
+  }
+
+  ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
+      GetActiveConfigurationObjectPath(extension_id).value(), data,
+      std::move(success), std::move(failure));
 }
 
 void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,

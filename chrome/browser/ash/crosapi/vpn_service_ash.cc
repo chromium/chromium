@@ -258,27 +258,6 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
               weak_factory_.GetWeakPtr(), std::move(failure)));
 }
 
-void VpnServiceForExtensionAsh::SendPacket(const std::vector<uint8_t>& data,
-                                           SendPacketCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  if (data.empty()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Can't send an empty packet.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
-      active_configuration_->object_path(),
-      std::vector<char>(data.begin(), data.end()), std::move(success),
-      std::move(failure));
-}
-
 void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
     bool connection_success,
     NotifyConnectionStateChangedCallback callback) {

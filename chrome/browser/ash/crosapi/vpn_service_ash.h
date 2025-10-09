@@ -79,8 +79,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
                            CreateConfigurationCallback) override;
   void DestroyConfiguration(const std::string& configuration_name,
                             DestroyConfigurationCallback) override;
-  void SendPacket(const std::vector<uint8_t>& data,
-                  SendPacketCallback) override;
   void NotifyConnectionStateChanged(
       bool connection_success,
       NotifyConnectionStateChangedCallback) override;

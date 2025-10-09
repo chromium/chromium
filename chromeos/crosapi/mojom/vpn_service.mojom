@@ -72,11 +72,7 @@ interface VpnServiceForExtension {
 
   // SetParameters@2 was removed.
 
-  // Sends an IP packet contained in |data| to the active VPN configuration
-  // after verifying that it belongs to the extension.
-  // See chrome.vpnProvider.sendPacket(...)
-  SendPacket@3(array<uint8> data)
-      => (VpnErrorResponse? error);
+  // SendPacket@3 was removed.
 
   // Notifies new connection state to the active VPN configuration after
   // verifying that it belongs to the extension.
