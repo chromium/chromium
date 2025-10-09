@@ -19,7 +19,6 @@ android_aidl("js_sandbox_aidl") {
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateClient.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateSyncCallback.aidl",
     "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
-    "src/main/stableAidl/org/chromium/android_webview/js_sandbox/common/IMessagePort.aidl",
   ]
 }
 
@@ -32,18 +31,10 @@ android_library("js_sandbox_aidl_java") {
 android_library("javascriptengine_common_java") {
   sources = [
     "src/main/java/androidx/javascriptengine/common/LengthLimitExceededException.java",
-    "src/main/java/androidx/javascriptengine/common/MessagePortInternal.java",
-    "src/main/java/androidx/javascriptengine/common/SequencedExecutor.java",
     "src/main/java/androidx/javascriptengine/common/Utils.java",
   ]
 
-  deps = [
-    ":js_sandbox_aidl_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_guava_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
-  ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 android_library("javascriptengine_java") {
@@ -64,10 +55,6 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/JavaScriptIsolate.java",
     "src/main/java/androidx/javascriptengine/JavaScriptSandbox.java",
     "src/main/java/androidx/javascriptengine/MemoryLimitExceededException.java",
-    "src/main/java/androidx/javascriptengine/Message.java",
-    "src/main/java/androidx/javascriptengine/MessagePort.java",
-    "src/main/java/androidx/javascriptengine/MessagePortClient.java",
-    "src/main/java/androidx/javascriptengine/MessageTypeMismatchException.java",
     "src/main/java/androidx/javascriptengine/SandboxDeadException.java",
     "src/main/java/androidx/javascriptengine/SandboxUnsupportedException.java",
     "src/main/java/androidx/javascriptengine/StreamingFailedException.java",

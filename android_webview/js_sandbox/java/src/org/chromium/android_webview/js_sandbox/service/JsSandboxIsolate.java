@@ -19,7 +19,6 @@ import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
-import org.chromium.android_webview.js_sandbox.common.IMessagePort;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -255,11 +254,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
     public static void initializeEnvironment() {
         JsSandboxIsolateJni.get().initializeEnvironment();
-    }
-
-    @Override
-    public IMessagePort provideMessagePort(String name, IMessagePort port) {
-        throw new UnsupportedOperationException();
     }
 
     @NativeMethods
