@@ -349,17 +349,6 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
     bool block_third_party_cookies) {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   should_reload_ = true;
-  // TODO(crbug.com/430893360): Clean up TP exception logic after IPP experiment
-  // ends.
-  if (is_incognito_profile_ &&
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionContentSettingIn3pcUx)) {
-    if (block_third_party_cookies) {
-      tracking_protection_settings_->RemoveTrackingProtectionException(url);
-    } else {
-      tracking_protection_settings_->AddTrackingProtectionException(url);
-    }
-  }
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);

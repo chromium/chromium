@@ -109,9 +109,6 @@ BASE_FEATURE(kIpProtectionUx, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kActUserBypassUx, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionContentSettingIn3pcUx,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
