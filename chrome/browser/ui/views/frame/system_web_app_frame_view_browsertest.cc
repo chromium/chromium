@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserMigrationTest,
-                       HideFileSystemAccessPageActionMigrationEnabled) {
+                       HideFileSystemAccessPageActionsMigrationEnabled) {
   HideFileSystemAccessPageAction();
 }
 

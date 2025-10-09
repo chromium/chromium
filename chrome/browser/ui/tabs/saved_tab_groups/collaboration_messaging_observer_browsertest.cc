@@ -164,7 +164,7 @@ class CollaborationMessagingObserverBrowserTest
     }
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
-    CHECK_EQ(IsPageActionMigrationEnabled(),
+    CHECK_EQ(IsPageActionsMigrationEnabled(),
              GetParam().page_actions_migration_enabled);
   }
   ~CollaborationMessagingObserverBrowserTest() override = default;
@@ -214,7 +214,7 @@ class CollaborationMessagingObserverBrowserTest
     }
   }
 
-  bool IsPageActionMigrationEnabled() const {
+  bool IsPageActionsMigrationEnabled() const {
     return IsPageActionMigrated(PageActionIconType::kCollaborationMessaging);
   }
 

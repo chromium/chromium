@@ -97,12 +97,12 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
     }
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
-    CHECK_EQ(IsPageActionMigrationEnabled(),
+    CHECK_EQ(IsPageActionsMigrationEnabled(),
              GetParam().page_actions_migration_enabled);
   }
 
  protected:
-  bool IsPageActionMigrationEnabled() {
+  bool IsPageActionsMigrationEnabled() {
     return IsPageActionMigrated(PageActionIconType::kCollaborationMessaging);
   }
 
@@ -110,7 +110,7 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
 
   auto WaitForPageActionToShow() {
     MultiStep steps;
-    if (IsPageActionMigrationEnabled()) {
+    if (IsPageActionsMigrationEnabled()) {
       steps +=
           WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
     } else {
@@ -121,7 +121,7 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
 
   auto CheckLabelText(const std::u16string expected_string) {
     MultiStep steps;
-    if (IsPageActionMigrationEnabled()) {
+    if (IsPageActionsMigrationEnabled()) {
       steps +=
           WaitForPageActionChipVisible(kActionShowCollaborationRecentActivity);
     }

@@ -424,22 +424,22 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_FALSE(geolocation_icon.GetVisible());
 }
 
-class LocationBarViewPageActionMigrationTest
+class LocationBarViewPageActionsMigrationTest
     : public LocationBarViewBrowserTest {
  public:
-  LocationBarViewPageActionMigrationTest() {
+  LocationBarViewPageActionsMigrationTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kPageActionsMigration,
           {{::features::kPageActionsMigrationLensOverlay.name, "true"}}},
          {lens::features::kLensOverlayOmniboxEntryPoint, {}}},
         {omnibox::kAiModeOmniboxEntryPoint});
   }
-  ~LocationBarViewPageActionMigrationTest() override = default;
+  ~LocationBarViewPageActionsMigrationTest() override = default;
 
-  LocationBarViewPageActionMigrationTest(
-      const LocationBarViewPageActionMigrationTest&) = delete;
-  LocationBarViewPageActionMigrationTest& operator=(
-      const LocationBarViewPageActionMigrationTest&) = delete;
+  LocationBarViewPageActionsMigrationTest(
+      const LocationBarViewPageActionsMigrationTest&) = delete;
+  LocationBarViewPageActionsMigrationTest& operator=(
+      const LocationBarViewPageActionsMigrationTest&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -456,7 +456,7 @@ class LocationBarViewPageActionMigrationTest
 
 // Tests that shifting focus from the omnibox will focus the migrated page
 // actions first, followed by the legacy page actions.
-IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
+IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionsMigrationTest,
                        MAYBE_LocationBarFocusOrder) {
   actions::ActionItem* const lens_action =
       actions::ActionManager::Get().FindAction(
