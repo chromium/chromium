@@ -721,7 +721,9 @@ void BrowserTestBase::SetUp() {
 
     // Waits for Java to finish initialization, then we can run the test.
     loop.Run();
+  }
 
+  {
     // The BrowserMainLoop startup tasks will call DisallowUnresponsiveTasks().
     // So when we run the ProxyRunTestOnMainThreadLoop() we no longer can block,
     // but tests should be allowed to. So we undo that blocking inside here.
@@ -731,6 +733,17 @@ void BrowserTestBase::SetUp() {
     // be inside a posted task, or it would prevent NonNestable tasks from
     // running inside tests.
     std::move(content_main_params.ui_task).Run();
+  }
+
+  {
+    // We need to finish the Activity before this function returns because
+    // otherwise we will crash when finishing the Activity as too much
+    // infrastructure has been torn down.
+    base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    testing::android::RunActivityTeardownCallback();
+    WaitUntilActivityTeardownIsFinished(loop.QuitClosure(),
+                                        TestTimeouts::action_max_timeout());
+    loop.Run();
   }
 
   {
@@ -826,7 +839,26 @@ void BrowserTestBase::WaitUntilJavaIsReady(
                      base::Unretained(this), std::move(quit_closure),
                      wait_retry_left - retry_interval),
       retry_interval);
-  return;
+}
+
+void BrowserTestBase::WaitUntilActivityTeardownIsFinished(
+    base::OnceClosure quit_closure,
+    const base::TimeDelta& wait_retry_left) {
+  CHECK_GE(wait_retry_left.InMilliseconds(), 0)
+      << "WaitUntilActivityTeardownIsFinished() timed out.";
+
+  if (testing::android::JavaActivityTeardownCompleteForBrowserTests()) {
+    std::move(quit_closure).Run();
+    return;
+  }
+
+  base::TimeDelta retry_interval = base::Milliseconds(100);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserTestBase::WaitUntilActivityTeardownIsFinished,
+                     base::Unretained(this), std::move(quit_closure),
+                     wait_retry_left - retry_interval),
+      retry_interval);
 }
 #endif
 

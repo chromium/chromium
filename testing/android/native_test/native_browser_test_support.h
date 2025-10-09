@@ -15,6 +15,15 @@ namespace android {
 // once they are done.
 bool JavaAsyncStartupTasksCompleteForBrowserTests();
 
+// Asks the Android test harness to tear down the Activity the tests are
+// running in. Will cause JavaActivityTeardownCompleteForBrowserTests to
+// eventually return true.
+void RunActivityTeardownCallback();
+
+// Returns true when Activity teardown is complete, as triggered by
+// RunActivityTeardownCallback.
+bool JavaActivityTeardownCompleteForBrowserTests();
+
 }  // namespace android
 }  // namespace testing
 

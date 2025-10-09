@@ -155,8 +155,14 @@ void FakeServerHttpPostProvider::HandleCommandOnFakeServerThread(
     std::string* response) {
   DCHECK(fake_server_task_runner_->RunsTasksInCurrentSequence());
 
-  if (!fake_server_ || aborted_) {
-    // Command explicitly aborted or server destroyed.
+  if (!fake_server_) {
+    // Server destroyed.
+    Abort();
+  }
+
+  if (aborted_) {
+    // Command explicitly aborted. |synchronous_post_completion_| has already
+    // been signalled by the FakeServerHttpPostProvider::Abort call.
     return;
   }
 

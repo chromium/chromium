@@ -277,6 +277,10 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         Intent i = new Intent(Intent.ACTION_MAIN);
         i.setComponent(new ComponentName(getContext().getPackageName(), mNativeTestActivity));
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Work around a framework issue where sometimes if we start an Activity too quickly after
+        // killing the Activity's old process the Activity launches into the old task and fails
+        // to come to the foreground.
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.putExtras(mTransparentArguments);
         if (mShards != null && !mShards.isEmpty()) {
             ShardMetadata shardMetadata = mShards.remove();

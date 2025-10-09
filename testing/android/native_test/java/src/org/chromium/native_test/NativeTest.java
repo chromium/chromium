@@ -182,7 +182,6 @@ public class NativeTest {
                         activity.getApplicationContext(),
                         UrlUtils.getIsolatedTestRoot());
         Log.i(TAG, "test run finished with command line flags: %s", commandLineFlags);
-        activity.finish();
         mReporter.testRunFinished(Process.myPid());
     }
 

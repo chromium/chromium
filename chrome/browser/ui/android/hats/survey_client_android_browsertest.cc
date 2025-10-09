@@ -90,7 +90,7 @@ class SurveyClientAndroidBrowserTest : public AndroidBrowserTest {
         window_android());
   }
 
-  void TearDown() override {
+  void PostRunTestOnMainThread() override {
     messages_test_helper_.ResetMessageDispatcherForTesting();
   }
 
