@@ -433,6 +433,9 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
     if (result == Result::FILE_ENCRYPTED) {
       request->set_is_content_encrypted(true);
     }
+    if (result == Result::FILE_TOO_LARGE) {
+      request->set_is_content_too_large(true);
+    }
   }
 
   if (!request->IsAuthRequest() && data.size == 0) {
@@ -619,10 +622,17 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
     *response.add_results() = std::move(tag_and_result.second);
   }
 
-  // Set `result` to be unknown, if the request is terminated with incomplete
+  // Set `result` to be INCOMPLETE_RESPONSE, if the request is terminated with incomplete
   // response.
-  Result result = ResponseIsComplete(request_id) ? Result::SUCCESS
-                                                 : Result::INCOMPLETE_RESPONSE;
+  Result result = Result::SUCCESS;
+  if (!ResponseIsComplete(request_id)) {
+    result = Result::INCOMPLETE_RESPONSE;
+  } else if (request->is_content_too_large()) {
+    result = Result::FILE_TOO_LARGE;
+  } else if (request->is_content_encrypted()) {
+    result = Result::FILE_ENCRYPTED;
+  }
+
   FinishRequest(request, result, std::move(response));
 }
 

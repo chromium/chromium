@@ -194,6 +194,7 @@ class BinaryUploadService : public KeyedService {
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
     void set_require_metadata_verdict(bool require_metadata_verdict);
     void set_is_content_encrypted(bool is_content_encrypted);
+    void set_is_content_too_large(bool is_content_too_large);
     void set_blocking(bool blocking);
     void add_local_ips(const std::string& ip_address);
     void set_referrer_chain(const google::protobuf::RepeatedPtrField<
@@ -220,6 +221,8 @@ class BinaryUploadService : public KeyedService {
     base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
     bool blocking() const;
+    bool is_content_encrypted() const;
+    bool is_content_too_large() const;
 
     // Called when beginning to try upload.
     void StartRequest();
@@ -259,6 +262,8 @@ class BinaryUploadService : public KeyedService {
     std::string access_token_;
 
     bool image_paste_ = false;
+
+    bool is_content_too_large_ = false;
   };
 
   // A class to encapsulate the a request acknowledgement. This class will

@@ -266,6 +266,11 @@ void BinaryUploadService::Request::set_is_content_encrypted(
   content_analysis_request_.set_is_content_encrypted(is_content_encrypted);
 }
 
+void BinaryUploadService::Request::set_is_content_too_large(
+    bool is_content_too_large) {
+  is_content_too_large_ = is_content_too_large;
+}
+
 void BinaryUploadService::Request::set_blocking(bool blocking) {
   content_analysis_request_.set_blocking(blocking);
 }
@@ -380,6 +385,14 @@ bool BinaryUploadService::Request::image_paste() const {
 
 void BinaryUploadService::Request::set_image_paste(bool image_paste) {
   image_paste_ = image_paste;
+}
+
+bool BinaryUploadService::Request::is_content_too_large() const {
+  return is_content_too_large_;
+}
+
+bool BinaryUploadService::Request::is_content_encrypted() const {
+  return content_analysis_request_.is_content_encrypted();
 }
 
 void BinaryUploadService::Request::StartRequest() {
