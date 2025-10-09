@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -51,6 +52,12 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 @end
 
 @implementation SupervisedUserIncognitoModeTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kEnableNTPViewHierarchyRepair);
+  return config;
+}
 
 - (void)setupAndRegisterHistogramTester {
   chrome_test_util::GREYAssertErrorNil(

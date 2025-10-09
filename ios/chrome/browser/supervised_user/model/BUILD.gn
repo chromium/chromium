@@ -154,6 +154,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
     "//ios/chrome/browser/policy/model:policy_util",
