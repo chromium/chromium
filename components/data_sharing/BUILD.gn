@@ -15,6 +15,7 @@ group("unit_tests") {
 
   deps = [
     "//components/data_sharing/internal:unit_tests",
+    "//components/data_sharing/migration/internal:unit_tests",
     "//components/data_sharing/public:unit_tests",
   ]
 

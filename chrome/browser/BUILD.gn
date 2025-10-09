@@ -2171,6 +2171,7 @@ static_library("browser") {
     "//components/custom_handlers",
     "//components/data_sharing/internal",
     "//components/data_sharing/internal:personal_collaboration_data_internal",
+    "//components/data_sharing/migration/internal",
     "//components/data_sharing/public",
     "//components/data_sharing/public:personal_collaboration_data",
     "//components/device_event_log",

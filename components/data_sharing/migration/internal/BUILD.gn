@@ -9,11 +9,31 @@ proto_library("migration_state_proto") {
 }
 
 source_set("internal") {
+  defines = [ "IS_DATA_SHARING_MIGRATION_IMPL=1" ]
+
   sources = [
     "base_migratable_sync_service.cc",
     "migratable_sync_service_coordinator_impl.cc",
     "migratable_sync_service_coordinator_impl.h",
+    "migration_state_database.h",
+    "migration_state_database_impl.cc",
+    "migration_state_database_impl.h",
   ]
 
-  deps = [ "//components/data_sharing/migration/public" ]
+  deps = [
+    ":migration_state_proto",
+    "//base",
+    "//components/data_sharing/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "migration_state_database_impl_unittest.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }
