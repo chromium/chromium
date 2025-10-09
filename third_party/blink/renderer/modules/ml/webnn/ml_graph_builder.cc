@@ -2792,6 +2792,15 @@ MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
           ending_padding, BlinkPaddingModeToComponent(options->mode().AsEnum()),
           label));
 
+  // Pad becomes a no-op if input is a scalar and the paddings are all empty.
+  if (input->Rank() == 0) {
+    return BuildElementWiseUnaryOperator(
+        ml_context_->GetProperties(), this, exception_state,
+        blink_mojom::ElementWiseUnary::Kind::kIdentity,
+        ml_context_->GetProperties().data_type_limits.identity_input, input,
+        options);
+  }
+
   base::expected<webnn::MLNumber, String> pad_value =
       ToMLNumberAsType(*options->value(), input->DataType());
   if (!pad_value.has_value()) {
@@ -3151,6 +3160,16 @@ MLOperand* MLGraphBuilder::slice(MLOperand* input,
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateSliceAndInferOutput(ml_context_->GetProperties(),
                                          input->Descriptor(), attributes));
+
+  // Slice becomes a no-op if the input is a scalar and starts, sizes, strides
+  // are all empty.
+  if (input->Rank() == 0) {
+    return BuildElementWiseUnaryOperator(
+        ml_context_->GetProperties(), this, exception_state,
+        blink_mojom::ElementWiseUnary::Kind::kIdentity,
+        ml_context_->GetProperties().data_type_limits.identity_input, input,
+        options);
+  }
 
   auto* slice = MakeGarbageCollected<MLSliceOperator>(this, starts, sizes,
                                                       strides, options);

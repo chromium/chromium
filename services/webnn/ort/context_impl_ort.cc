@@ -252,7 +252,7 @@ ContextProperties ContextImplOrt::GetContextProperties(
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*matmul_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*pad_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*average_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*l2_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*max_pool2d_input=*/{kInts8Float16To32, {3, 8}},
@@ -303,7 +303,7 @@ ContextProperties ContextImplOrt::GetContextProperties(
        /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*slice_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxNonScalarRank},
        /*softplus_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*split_input=*/

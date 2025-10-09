@@ -502,9 +502,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*arg_min_max_output=*/
        {DataTypeConstraint::kInt32To64, SupportedRanks::UpTo(8)},
        // BatchNormalization is emulated by sub, mul, add and div ops that only
-       // support max rank up to 5.
+       // support max rank up to 5. Because `SerializeBatchNormalization()`
+       // emulation code accesses input size along axis, input cannot be a
+       // scalar:
+       // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=3556;drc=7b1dd7749fbb05ea8469492fe5c03c27fef75e38
        /*batch_normalization_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::NonScalarUpTo(5)},
        /*batch_normalization_mean=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/
@@ -512,7 +515,10 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // Polyfilled using MIN and MAX.
        /*clamp_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
-       /*concat_inputs=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
+       // Scalar is not supported:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/concatenation.h;l=38;drc=31b46e86a93151ca1192009863818d4eaf5df831
+       /*concat_inputs=*/
+       {kAllDataTypesExceptUint4, SupportedRanks::NonScalarUpTo(8)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/conv.cc
        /*conv2d_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
@@ -620,8 +626,10 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*elu_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(5)},
        /*expand_input=*/
        {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(8)},
+       // Scalar is not supported:
+       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/gather.h;l=43;drc=49db932a0bdfca060c3e8b0d063a7e8c9f5d2fa5
        /*gather_input=*/
-       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(8)},
+       {kFloat16To32AndInt8To64AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*gather_indices=*/
        {DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
         SupportedRanks::UpTo(8)},
