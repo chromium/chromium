@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: containing-block: horizontal-tb / rtl
+  assert_equals: Checking offsetLeft expected 75 but got 225
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: containing-block: vertical-lr / rtl
+  assert_equals: Checking offsetTop expected 70 but got 210
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: containing-block: vertical-rl / ltr
+  assert_equals: Checking offsetLeft expected 75 but got 225
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: containing-block: vertical-rl / rtl
+  assert_equals: Checking offsetLeft expected 75 but got 225
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: self: horizontal-tb / rtl
+  assert_equals: Checking offsetLeft expected 225 but got 75
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: self: vertical-lr / rtl
+  assert_equals: Checking offsetTop expected 210 but got 70
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: self: vertical-rl / ltr
+  assert_equals: Checking offsetLeft expected 225 but got 75
+[FAIL] Offsets for: self-x-start self-y-start with writing-mode / direction: self: vertical-rl / rtl
+  assert_equals: Checking offsetLeft expected 225 but got 75
+Harness: the test ran to completion.
+

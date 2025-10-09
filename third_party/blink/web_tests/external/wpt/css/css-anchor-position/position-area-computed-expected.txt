@@ -1,0 +1,404 @@
+This is a testharness.js-based test.
+Found 200 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property position-area value 'self-x-start'
+  assert_true: 'self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end'
+  assert_true: 'self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start'
+  assert_true: 'span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end'
+  assert_true: 'span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start'
+  assert_true: 'self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end'
+  assert_true: 'self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start'
+  assert_true: 'span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end'
+  assert_true: 'span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'left self-y-start'
+  assert_true: 'left self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start left'
+  assert_true: 'self-y-start left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'left self-y-end'
+  assert_true: 'left self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end left'
+  assert_true: 'self-y-end left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'left span-self-y-start'
+  assert_true: 'left span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start left'
+  assert_true: 'span-self-y-start left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'left span-self-y-end'
+  assert_true: 'left span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end left'
+  assert_true: 'span-self-y-end left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'right self-y-start'
+  assert_true: 'right self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start right'
+  assert_true: 'self-y-start right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'right self-y-end'
+  assert_true: 'right self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end right'
+  assert_true: 'self-y-end right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'right span-self-y-start'
+  assert_true: 'right span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start right'
+  assert_true: 'span-self-y-start right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'right span-self-y-end'
+  assert_true: 'right span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end right'
+  assert_true: 'span-self-y-end right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-left self-y-start'
+  assert_true: 'span-left self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-left'
+  assert_true: 'self-y-start span-left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-left self-y-end'
+  assert_true: 'span-left self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-left'
+  assert_true: 'self-y-end span-left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-left span-self-y-start'
+  assert_true: 'span-left span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-left'
+  assert_true: 'span-self-y-start span-left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-left span-self-y-end'
+  assert_true: 'span-left span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-left'
+  assert_true: 'span-self-y-end span-left' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-right self-y-start'
+  assert_true: 'span-right self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-right'
+  assert_true: 'self-y-start span-right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-right self-y-end'
+  assert_true: 'span-right self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-right'
+  assert_true: 'self-y-end span-right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-right span-self-y-start'
+  assert_true: 'span-right span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-right'
+  assert_true: 'span-self-y-start span-right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-right span-self-y-end'
+  assert_true: 'span-right span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-right'
+  assert_true: 'span-self-y-end span-right' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-start self-y-start'
+  assert_true: 'x-start self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start x-start'
+  assert_true: 'self-y-start x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-start self-y-end'
+  assert_true: 'x-start self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end x-start'
+  assert_true: 'self-y-end x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-start span-self-y-start'
+  assert_true: 'x-start span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start x-start'
+  assert_true: 'span-self-y-start x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-start span-self-y-end'
+  assert_true: 'x-start span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end x-start'
+  assert_true: 'span-self-y-end x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-end self-y-start'
+  assert_true: 'x-end self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start x-end'
+  assert_true: 'self-y-start x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-end self-y-end'
+  assert_true: 'x-end self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end x-end'
+  assert_true: 'self-y-end x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-end span-self-y-start'
+  assert_true: 'x-end span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start x-end'
+  assert_true: 'span-self-y-start x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'x-end span-self-y-end'
+  assert_true: 'x-end span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end x-end'
+  assert_true: 'span-self-y-end x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-start self-y-start'
+  assert_true: 'span-x-start self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-x-start'
+  assert_true: 'self-y-start span-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-start self-y-end'
+  assert_true: 'span-x-start self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-x-start'
+  assert_true: 'self-y-end span-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-start span-self-y-start'
+  assert_true: 'span-x-start span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-x-start'
+  assert_true: 'span-self-y-start span-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-start span-self-y-end'
+  assert_true: 'span-x-start span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-x-start'
+  assert_true: 'span-self-y-end span-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-end self-y-start'
+  assert_true: 'span-x-end self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-x-end'
+  assert_true: 'self-y-start span-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-end self-y-end'
+  assert_true: 'span-x-end self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-x-end'
+  assert_true: 'self-y-end span-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-end span-self-y-start'
+  assert_true: 'span-x-end span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-x-end'
+  assert_true: 'span-self-y-start span-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-x-end span-self-y-end'
+  assert_true: 'span-x-end span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-x-end'
+  assert_true: 'span-self-y-end span-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start top'
+  assert_true: 'self-x-start top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'top self-x-start'
+  assert_true: 'top self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start bottom'
+  assert_true: 'self-x-start bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'bottom self-x-start'
+  assert_true: 'bottom self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-top'
+  assert_true: 'self-x-start span-top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-top self-x-start'
+  assert_true: 'span-top self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-bottom'
+  assert_true: 'self-x-start span-bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-bottom self-x-start'
+  assert_true: 'span-bottom self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start y-start'
+  assert_true: 'self-x-start y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-start self-x-start'
+  assert_true: 'y-start self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start y-end'
+  assert_true: 'self-x-start y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-end self-x-start'
+  assert_true: 'y-end self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-y-start'
+  assert_true: 'self-x-start span-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-start self-x-start'
+  assert_true: 'span-y-start self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-y-end'
+  assert_true: 'self-x-start span-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-end self-x-start'
+  assert_true: 'span-y-end self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start self-y-start'
+  assert_true: 'self-x-start self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start self-x-start'
+  assert_true: 'self-y-start self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start self-y-end'
+  assert_true: 'self-x-start self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end self-x-start'
+  assert_true: 'self-y-end self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-self-y-start'
+  assert_true: 'self-x-start span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start self-x-start'
+  assert_true: 'span-self-y-start self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-self-y-end'
+  assert_true: 'self-x-start span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end self-x-start'
+  assert_true: 'span-self-y-end self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end top'
+  assert_true: 'self-x-end top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'top self-x-end'
+  assert_true: 'top self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end bottom'
+  assert_true: 'self-x-end bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'bottom self-x-end'
+  assert_true: 'bottom self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-top'
+  assert_true: 'self-x-end span-top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-top self-x-end'
+  assert_true: 'span-top self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-bottom'
+  assert_true: 'self-x-end span-bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-bottom self-x-end'
+  assert_true: 'span-bottom self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end y-start'
+  assert_true: 'self-x-end y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-start self-x-end'
+  assert_true: 'y-start self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end y-end'
+  assert_true: 'self-x-end y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-end self-x-end'
+  assert_true: 'y-end self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-y-start'
+  assert_true: 'self-x-end span-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-start self-x-end'
+  assert_true: 'span-y-start self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-y-end'
+  assert_true: 'self-x-end span-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-end self-x-end'
+  assert_true: 'span-y-end self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end self-y-start'
+  assert_true: 'self-x-end self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start self-x-end'
+  assert_true: 'self-y-start self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end self-y-end'
+  assert_true: 'self-x-end self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end self-x-end'
+  assert_true: 'self-y-end self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-self-y-start'
+  assert_true: 'self-x-end span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start self-x-end'
+  assert_true: 'span-self-y-start self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-self-y-end'
+  assert_true: 'self-x-end span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end self-x-end'
+  assert_true: 'span-self-y-end self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start top'
+  assert_true: 'span-self-x-start top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'top span-self-x-start'
+  assert_true: 'top span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start bottom'
+  assert_true: 'span-self-x-start bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'bottom span-self-x-start'
+  assert_true: 'bottom span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-top'
+  assert_true: 'span-self-x-start span-top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-top span-self-x-start'
+  assert_true: 'span-top span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-bottom'
+  assert_true: 'span-self-x-start span-bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-bottom span-self-x-start'
+  assert_true: 'span-bottom span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start y-start'
+  assert_true: 'span-self-x-start y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-start span-self-x-start'
+  assert_true: 'y-start span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start y-end'
+  assert_true: 'span-self-x-start y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-end span-self-x-start'
+  assert_true: 'y-end span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-y-start'
+  assert_true: 'span-self-x-start span-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-start span-self-x-start'
+  assert_true: 'span-y-start span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-y-end'
+  assert_true: 'span-self-x-start span-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-end span-self-x-start'
+  assert_true: 'span-y-end span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start self-y-start'
+  assert_true: 'span-self-x-start self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-self-x-start'
+  assert_true: 'self-y-start span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start self-y-end'
+  assert_true: 'span-self-x-start self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-self-x-start'
+  assert_true: 'self-y-end span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-self-y-start'
+  assert_true: 'span-self-x-start span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-self-x-start'
+  assert_true: 'span-self-y-start span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-self-y-end'
+  assert_true: 'span-self-x-start span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-self-x-start'
+  assert_true: 'span-self-y-end span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end top'
+  assert_true: 'span-self-x-end top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'top span-self-x-end'
+  assert_true: 'top span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end bottom'
+  assert_true: 'span-self-x-end bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'bottom span-self-x-end'
+  assert_true: 'bottom span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-top'
+  assert_true: 'span-self-x-end span-top' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-top span-self-x-end'
+  assert_true: 'span-top span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-bottom'
+  assert_true: 'span-self-x-end span-bottom' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-bottom span-self-x-end'
+  assert_true: 'span-bottom span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end y-start'
+  assert_true: 'span-self-x-end y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-start span-self-x-end'
+  assert_true: 'y-start span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end y-end'
+  assert_true: 'span-self-x-end y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'y-end span-self-x-end'
+  assert_true: 'y-end span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-y-start'
+  assert_true: 'span-self-x-end span-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-start span-self-x-end'
+  assert_true: 'span-y-start span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-y-end'
+  assert_true: 'span-self-x-end span-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-y-end span-self-x-end'
+  assert_true: 'span-y-end span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end self-y-start'
+  assert_true: 'span-self-x-end self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-self-x-end'
+  assert_true: 'self-y-start span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end self-y-end'
+  assert_true: 'span-self-x-end self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-self-x-end'
+  assert_true: 'self-y-end span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-self-y-start'
+  assert_true: 'span-self-x-end span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-self-x-end'
+  assert_true: 'span-self-y-start span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-self-y-end'
+  assert_true: 'span-self-x-end span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-self-x-end'
+  assert_true: 'span-self-y-end span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start span-all'
+  assert_true: 'self-x-start span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all self-x-start'
+  assert_true: 'span-all self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-start center'
+  assert_true: 'self-x-start center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center self-x-start'
+  assert_true: 'center self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end span-all'
+  assert_true: 'self-x-end span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all self-x-end'
+  assert_true: 'span-all self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-x-end center'
+  assert_true: 'self-x-end center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center self-x-end'
+  assert_true: 'center self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start span-all'
+  assert_true: 'span-self-x-start span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all span-self-x-start'
+  assert_true: 'span-all span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-start center'
+  assert_true: 'span-self-x-start center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center span-self-x-start'
+  assert_true: 'center span-self-x-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end span-all'
+  assert_true: 'span-self-x-end span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all span-self-x-end'
+  assert_true: 'span-all span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-x-end center'
+  assert_true: 'span-self-x-end center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center span-self-x-end'
+  assert_true: 'center span-self-x-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all self-y-start'
+  assert_true: 'span-all self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start span-all'
+  assert_true: 'self-y-start span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center self-y-start'
+  assert_true: 'center self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-start center'
+  assert_true: 'self-y-start center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all self-y-end'
+  assert_true: 'span-all self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end span-all'
+  assert_true: 'self-y-end span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center self-y-end'
+  assert_true: 'center self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'self-y-end center'
+  assert_true: 'self-y-end center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all span-self-y-start'
+  assert_true: 'span-all span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start span-all'
+  assert_true: 'span-self-y-start span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center span-self-y-start'
+  assert_true: 'center span-self-y-start' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-start center'
+  assert_true: 'span-self-y-start center' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-all span-self-y-end'
+  assert_true: 'span-all span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end span-all'
+  assert_true: 'span-self-y-end span-all' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'center span-self-y-end'
+  assert_true: 'center span-self-y-end' is a supported value for position-area. expected true got false
+[FAIL] Property position-area value 'span-self-y-end center'
+  assert_true: 'span-self-y-end center' is a supported value for position-area. expected true got false
+Harness: the test ran to completion.
+

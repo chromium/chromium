@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] flip-block flip-inline, position-area:self-x-start self-y-start, ltr horizontal-tb
+  assert_equals: expected "self-x-end self-y-end" but got "none"
+[FAIL] flip-block flip-inline, position-area:span-self-x-start span-self-y-start, ltr horizontal-tb
+  assert_equals: expected "span-self-x-end span-self-y-end" but got "none"
+Harness: the test ran to completion.
+

@@ -1,5 +1,19 @@
 This is a testharness.js-based test.
 [FAIL] SanitizerConfig dataAttributes field.
   assert_false: expected false got true
+[FAIL] SanitizerConfig, normalization: elements: ["div"]
+  assert_equals: expected "{\\"name\\":\\"div\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"div\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\"}"
+[FAIL] SanitizerConfig, normalization: elements: [{"name":"b"}]
+  assert_equals: expected "{\\"name\\":\\"b\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"b\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\"}"
+[FAIL] SanitizerConfig, normalization: elements: [{"name":"b","namespace":null}]
+  assert_equals: expected "{\\"name\\":\\"b\\",\\"namespace\\":null,\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"b\\",\\"namespace\\":null}"
+[FAIL] SanitizerConfig, normalization: elements: [{"name":"b","namespace":""}]
+  assert_equals: expected "{\\"name\\":\\"b\\",\\"namespace\\":null,\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"b\\",\\"namespace\\":null}"
+[FAIL] SanitizerConfig, normalization: elements: [{"name":"p","namespace":"http://www.w3.org/1999/xhtml"}]
+  assert_equals: expected "{\\"name\\":\\"p\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"p\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\"}"
+[FAIL] SanitizerConfig, normalization: elements: [{"name":"bla","namespace":"http://fantasy.org/namespace"}]
+  assert_equals: expected "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://fantasy.org/namespace\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://fantasy.org/namespace\\"}"
+[FAIL] Test elements addition.
+  assert_equals: expected "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\",\\"removeAttributes\\":[]}" but got "{\\"name\\":\\"bla\\",\\"namespace\\":\\"http://www.w3.org/1999/xhtml\\"}"
 Harness: the test ran to completion.
 

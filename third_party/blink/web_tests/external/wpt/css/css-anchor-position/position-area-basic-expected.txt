@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Offsets for: self-y-start self-x-start
+  assert_equals: Check expected offsetLeft expected 0 but got 250
+[FAIL] Offsets for: self-y-start center
+  assert_equals: Check expected offsetLeft expected 100 but got 250
+[FAIL] Offsets for: self-y-start self-x-end
+  assert_equals: Check expected offsetTop expected 0 but got 225
+[FAIL] Offsets for: center self-x-start
+  assert_equals: Check expected offsetLeft expected 0 but got 250
+[FAIL] Offsets for: center self-x-end
+  assert_equals: Check expected offsetTop expected 150 but got 225
+[FAIL] Offsets for: self-y-end self-x-start
+  assert_equals: Check expected offsetLeft expected 0 but got 250
+[FAIL] Offsets for: self-y-end center
+  assert_equals: Check expected offsetLeft expected 100 but got 250
+[FAIL] Offsets for: span-self-y-start span-self-x-end
+  assert_equals: Check expected offsetLeft expected 100 but got 250
+Harness: the test ran to completion.
+

@@ -2953,6 +2953,21 @@ external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-
 external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
+external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
+external/wpt/css/css-anchor-position/position-area-overflow-icb-002.html [ Failure ]
+external/wpt/css/css-overflow/overflow-clip-margin-border-radius.html [ Failure ]
+external/wpt/css/css-writing-modes/text-shadow-sideways-001.html [ Failure ]
+[ Win ] external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect [ Pass Timeout ]
+external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect3 [ Skip Timeout ]
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/global.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/network_conditions_offline.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
+virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-visibility-no-overflow-scroll-002.html [ Failure ]
+virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
+virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/position-area-overflow-icb-002.html [ Failure ]
 crbug.com/448843863 [ Win11-arm64 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
 crbug.com/448843863 [ Mac14 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
 crbug.com/448843863 [ Win10.20h2 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
@@ -5057,8 +5072,8 @@ crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decomp
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-buffersource.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-constructor-error.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-constructor-error.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-correct-input.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
-crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-correct-input.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-correct-input.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-correct-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-empty-input.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-empty-input.tentative.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/compression/decompression-split-chunk.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
@@ -9534,7 +9549,7 @@ crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.ht
 crbug.com/424474086 external/wpt/css/css-view-transitions/scoped/callback-order.tentative.html [ Failure Pass ]
 
 # DCHECK starting simultaneous outer + inner transitions with snapshot capture
-crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Timeout Pass ]
+crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Pass Timeout ]
 
 # Gardener 2025-06-03
 crbug.com/422174062 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure Pass ]

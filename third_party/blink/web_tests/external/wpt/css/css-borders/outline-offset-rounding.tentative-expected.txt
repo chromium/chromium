@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] 0.1px
+  assert_equals: expected "1px" but got "0.09375px"
+[FAIL] -0.1px
+  assert_equals: expected "-1px" but got "-0.109375px"
+[FAIL] 0.25px
+  assert_equals: expected "1px" but got "0.25px"
+[FAIL] -0.25px
+  assert_equals: expected "-1px" but got "-0.25px"
+[FAIL] 0.5px
+  assert_equals: expected "1px" but got "0.5px"
+[FAIL] -0.5px
+  assert_equals: expected "-1px" but got "-0.5px"
+[FAIL] 0.9px
+  assert_equals: expected "1px" but got "0.890625px"
+[FAIL] -0.9px
+  assert_equals: expected "-1px" but got "-0.90625px"
+[FAIL] 1.25px
+  assert_equals: expected "1px" but got "1.25px"
+[FAIL] -1.25px
+  assert_equals: expected "-1px" but got "-1.25px"
+[FAIL] 1.5px
+  assert_equals: expected "1px" but got "1.5px"
+[FAIL] -1.5px
+  assert_equals: expected "-1px" but got "-1.5px"
+[FAIL] 2.75px
+  assert_equals: expected "2px" but got "2.75px"
+[FAIL] -2.75px
+  assert_equals: expected "-2px" but got "-2.75px"
+Harness: the test ran to completion.
+

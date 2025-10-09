@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] reloading a page created from form submission results in formData of null, not the original form data
+  assert_equals: expected Element node <form id="form" action="/common/blank.html?1" method="pos... but got null
+Harness: the test ran to completion.
+
