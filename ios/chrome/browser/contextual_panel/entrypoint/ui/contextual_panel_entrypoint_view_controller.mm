@@ -136,10 +136,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   [self activateInitialConstraints];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withAction:@selector(updateLabelFont)];
-  }
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(updateLabelFont)];
 
   // TODO(crbug.com/361110974): Have bubbles gracefully handle orientation
   // changes without needing to dismiss here.
@@ -683,22 +681,5 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
-
-#pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateLabelFont];
-  }
-}
-#endif
 
 @end

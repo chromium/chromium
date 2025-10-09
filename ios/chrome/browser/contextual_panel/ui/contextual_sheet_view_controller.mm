@@ -68,12 +68,10 @@ const CGFloat kTopCornerRadius = 10;
       kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
   self.view.clipsToBounds = YES;
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -120,17 +118,6 @@ const CGFloat kTopCornerRadius = 10;
       [self.view.heightAnchor constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 // Returns the calculated detent of the medium height sheet. If the content
 // height is less than the default medium detent, use that instead of the

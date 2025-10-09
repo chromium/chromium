@@ -103,28 +103,13 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                                        titleText:titleText];
     [self.view setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits =
-          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(selectAnimationForCurrentStyle)];
-    }
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(selectAnimationForCurrentStyle)];
   }
   return self;
 }
-
-#pragma mark - UIViewController
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self selectAnimationForCurrentStyle];
-}
-#endif
 
 #pragma mark - Private
 
