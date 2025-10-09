@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -28,16 +27,6 @@
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -45,7 +34,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -61,14 +49,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/profile_waiter.h"
-#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
@@ -78,6 +65,24 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -96,10 +101,6 @@ const web_package::SignedWebBundleId kWebBundleId2 =
 
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 constexpr std::string kPinnedVersion = "1.0.0";
-
-constexpr char kUserMail[] = "dla@example.com";
-constexpr char kDisplayName[] = "display name";
-
 constexpr char kOrphanedBundleDirectory[] = "6zsr4hjoudsu6ihf";
 
 using policy::DeveloperToolsPolicyHandler;
@@ -107,31 +108,47 @@ using policy::DeveloperToolsPolicyHandler;
 using UpdateDiscoveryTaskFuture =
     base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kUserMail[] = "dla@example.com";
+constexpr char kDisplayName[] = "display name";
+
 void WaitForProfile() {
   ProfileWaiter waiter;
   waiter.WaitForProfileAdded();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-class IsolatedWebAppPolicyManagerAshBrowserTestBase
-    : public ash::LoginManagerTest {
+#if BUILDFLAG(IS_CHROMEOS)
+using IsolatedWebAppPolicyManagerTestHarness = ash::LoginManagerTest;
+#else
+using IsolatedWebAppPolicyManagerTestHarness =
+    web_app::IsolatedWebAppBrowserTestHarness;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+class IsolatedWebAppPolicyManagerBrowserTestBase
+    : public IsolatedWebAppPolicyManagerTestHarness {
  public:
-  IsolatedWebAppPolicyManagerAshBrowserTestBase(
-      const IsolatedWebAppPolicyManagerAshBrowserTestBase&) = delete;
-  IsolatedWebAppPolicyManagerAshBrowserTestBase& operator=(
-      const IsolatedWebAppPolicyManagerAshBrowserTestBase&) = delete;
+  IsolatedWebAppPolicyManagerBrowserTestBase(
+      const IsolatedWebAppPolicyManagerBrowserTestBase&) = delete;
+  IsolatedWebAppPolicyManagerBrowserTestBase& operator=(
+      const IsolatedWebAppPolicyManagerBrowserTestBase&) = delete;
 
  protected:
-  explicit IsolatedWebAppPolicyManagerAshBrowserTestBase(bool is_user_session)
+  explicit IsolatedWebAppPolicyManagerBrowserTestBase(bool is_user_session)
       : is_user_session_(is_user_session) {
+#if BUILDFLAG(IS_CHROMEOS)
     if (is_user_session_) {
       login_manager_mixin_.AppendRegularUsers(1);
     }
+#else
+    EXPECT_TRUE(is_user_session_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void SetUpOnMainThread() override {
-    ash::LoginManagerTest::SetUpOnMainThread();
+    IsolatedWebAppPolicyManagerTestHarness::SetUpOnMainThread();
     AddInitialBundles();
   }
 
@@ -139,7 +156,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     // Each session start, IWA cache manager checks for the updates. Wait for
     // this result to avoid crashes in tests.
     WaitForInitialUpdateDiscoveryTasksToFinish();
-    ash::LoginManagerTest::TearDownOnMainThread();
+    IsolatedWebAppPolicyManagerTestHarness::TearDownOnMainThread();
   }
 
   void WaitForInitialUpdateDiscoveryTasksToFinish() {
@@ -178,14 +195,16 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
         std::vector<UpdateChannel>{kBetaChannel});
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ash::LoginManagerTest::SetUpCommandLine(command_line);
+    IsolatedWebAppPolicyManagerTestHarness::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetUpInProcessBrowserTestFixture() override {
-    ash::LoginManagerTest::SetUpInProcessBrowserTestFixture();
+    IsolatedWebAppPolicyManagerTestHarness::SetUpInProcessBrowserTestFixture();
 
     if (is_user_session_) {
       policy_provider_.SetDefaultReturns(
@@ -194,13 +213,18 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
       policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
           &policy_provider_);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       // Turning on device local account.
       device_policy()->policy_data().set_public_key_version(1);
       policy::DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
           &device_local_account_policy_, kUserMail, kDisplayName);
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void UploadAndInstallDeviceLocalAccountPolicy() {
     // Build device local account policy.
     device_local_account_policy_.SetDefaultSigningKey();
@@ -213,30 +237,47 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     session_manager_client()->set_device_local_account_policy(
         kUserMail, device_local_account_policy_.GetBlob());
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  void AddUser(bool set_iwa_policy_on_login = false) {
-    if (is_user_session_) {
-      // No user needs to be created: for user sessions the user was already
-      // added in the constructor (technical constraint).
-      if (set_iwa_policy_on_login) {
-        SetPolicyWithOneApp();
-      }
-    } else {
+  void AddUser() {
+    if (!is_user_session_) {
+#if BUILDFLAG(IS_CHROMEOS)
       AddManagedGuestSessionToDevicePolicy();
-      if (set_iwa_policy_on_login) {
-        AddDeviceLocalAccountIwaPolicy();
-      }
-      UploadAndInstallDeviceLocalAccountPolicy();
-      WaitForPolicy();
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
+    // No user needs to be created for user session: the user was already
+    // added in the constructor (technical constraint).
   }
 
+  void WaitForUserAdded() {
+    if (is_user_session_) {
+      return;
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    UploadAndInstallDeviceLocalAccountPolicy();
+    WaitForPolicy();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void InstallOneApp() {
+    if (is_user_session_) {
+      SetPolicyWithOneApp();
+      return;
+    }
+    AddDeviceLocalAccountIwaPolicy();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
   void AddManagedGuestSessionToDevicePolicy() {
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kUserMail);
     RefreshDevicePolicy();
     policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // This policy is active at the moment of login.
   void AddDeviceLocalAccountIwaPolicy() {
@@ -305,21 +346,28 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
 
   // Returns a profile which can be used for testing.
   Profile* GetProfileForTest() {
+#if BUILDFLAG(IS_CHROMEOS)
     // Any profile can be used here since this test does not test multi profile.
     return ProfileManager::GetActiveUserProfile();
+#else
+    return profile();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void WaitForPolicy() {
+#if BUILDFLAG(IS_CHROMEOS)
     // Wait for the display name becoming available as that indicates
     // device-local account policy is fully loaded, which is a prerequisite for
     // successful login.
     policy::DictionaryLocalStateValueWaiter("UserDisplayName", kDisplayName,
                                             account_id_.GetUserEmail())
         .Wait();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void StartLogin(const std::vector<webapps::AppId>&
                       wait_for_initial_update_for_apps = {}) {
+#if BUILDFLAG(IS_CHROMEOS)
     if (is_user_session_) {
       LoginUser(login_manager_mixin_.users()[0].account_id);
     } else {
@@ -339,6 +387,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
         CreateInitialDiscoveryUpdateWaiters(wait_for_initial_update_for_apps);
       }
     }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void CreateInitialDiscoveryUpdateWaiters(const webapps::AppId& app_id) {
@@ -362,6 +411,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   }
 
   void WaitForSessionStart() {
+#if BUILDFLAG(IS_CHROMEOS)
     if (session_manager::SessionManager::Get()->IsSessionStarted()) {
       return;
     }
@@ -370,8 +420,10 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
           ->SkipPostLoginScreensForTesting();
     }
     ash::test::WaitForPrimaryUserSessionStart();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void RefreshDevicePolicy() { policy_helper_.RefreshDevicePolicy(); }
 
   policy::DevicePolicyBuilder* device_policy() {
@@ -381,6 +433,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   ash::FakeSessionManagerClient* session_manager_client() {
     return ash::FakeSessionManagerClient::Get();
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   WebAppProvider& provider() {
     CHECK(GetProfileForTest());
@@ -389,38 +442,50 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     return *provider;
   }
 
-  const AccountId account_id_ =
-      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kUserMail,
-          policy::DeviceLocalAccountType::kPublicSession));
   policy::UserPolicyBuilder device_local_account_policy_;
   const bool is_user_session_;
 
  private:
+#if BUILDFLAG(IS_CHROMEOS)
+  const AccountId account_id_ =
+      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
+          kUserMail,
+          policy::DeviceLocalAccountType::kPublicSession));
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
-  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::vector<UpdateDiscoveryTaskFuture> initial_discovery_update_futures_;
   std::vector<std::unique_ptr<UpdateDiscoveryTaskResultWaiter>>
       initial_discovery_update_waiters_;
 };
 
-class IsolatedWebAppPolicyManagerAshBrowserTest
-    : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
+class IsolatedWebAppPolicyManagerBrowserTest
+    : public IsolatedWebAppPolicyManagerBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  IsolatedWebAppPolicyManagerAshBrowserTest()
-      : IsolatedWebAppPolicyManagerAshBrowserTestBase(GetParam()) {}
-  IsolatedWebAppPolicyManagerAshBrowserTest(
-      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
-  IsolatedWebAppPolicyManagerAshBrowserTest& operator=(
-      const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
+  IsolatedWebAppPolicyManagerBrowserTest()
+      : IsolatedWebAppPolicyManagerBrowserTestBase(GetParam()) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+#if !BUILDFLAG(IS_CHROMEOS)
+            features::kIsolatedWebApps,
+#endif  // BUILDFLAG(IS_CHROMEOS),
+            features::kIsolatedWebAppManagedAllowlist},
+        /*disabled_features=*/
+        {});
+  }
+  IsolatedWebAppPolicyManagerBrowserTest(
+      const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
+  IsolatedWebAppPolicyManagerBrowserTest& operator=(
+      const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
 
   void SetIwaAllowlist(
       const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
@@ -431,8 +496,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppManagedAllowlist};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Override the pre-install component directory and its alternative directory
   // so that the component update will not find the pre-installed key
@@ -443,13 +507,14 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        InstallIsolatedWebAppOnLogin) {
-  // The policy set in AddUser involves force installation of kWebBundleId1 app
-  AddUser(/*set_iwa_policy_on_login=*/true);
+  AddUser();
   SetIwaAllowlist({kWebBundleId1});
+  InstallOneApp();
+  WaitForUserAdded();
 
-  // Log in in the managed guest session.
+  // Log in to the session.
   ASSERT_NO_FATAL_FAILURE(StartLogin({kAppId1}));
   WaitForSessionStart();
 
@@ -464,37 +529,45 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1).GetString(), "7.0.6");
 }
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        AppNotInAllowlistNotInstalled) {
-  // The policy set in AddUser involves force installation of kWebBundleId1 app
-  AddUser(/*set_iwa_policy_on_login=*/true);
-
-  // Empty the allowlist, so the app install is not allowed
+  AddUser();
+  // Empty the allowlist, so the app install is not allowed.
   SetIwaAllowlist(/*managed_allowlist=*/{});
+
   EXPECT_FALSE(
       IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
           kWebBundleId1.id()));
 
-  base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
-      future;
+  base::RunLoop run_loop;
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
-      future.GetRepeatingCallback());
+      // We don't use a TestFuture here as the installer may retry the
+      // installation and call the callback twice before the parameters can be
+      // consumed with `Take`.
+      base::BindLambdaForTesting([&](web_package::SignedWebBundleId bundle_id,
+                                     IwaInstallerResult install_result) {
+        EXPECT_EQ(bundle_id, kWebBundleId1);
+        EXPECT_EQ(install_result.type(),
+                  IwaInstallerResultType::kErrorAppNotInAllowlist);
+        run_loop.Quit();
+      }));
+
+  InstallOneApp();
+  WaitForUserAdded();
 
   ASSERT_NO_FATAL_FAILURE(StartLogin({}));
   WaitForSessionStart();
 
-  auto [web_bundle_id, result] = future.Take();
-  EXPECT_EQ(web_bundle_id, kWebBundleId1);
-  EXPECT_EQ(result.type(), IwaInstallerResultType::kErrorAppNotInAllowlist);
+  run_loop.Run();
 
   EXPECT_THAT(provider().registrar_unsafe().GetAppById(kAppId1),
               testing::IsNull());
 }
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       PolicyUpdate) {
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest, PolicyUpdate) {
   AddUser();
   SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
+  WaitForUserAdded();
 
   // Log in in the managed guest session.
   // There no IWA policy set at the moment of login.
@@ -528,10 +601,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        InstallUpdateChannelVersion) {
   AddUser();
   SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
+  WaitForUserAdded();
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
@@ -561,10 +635,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        InstallIsolatedWebAppAtPinnedVersion) {
   AddUser();
   SetIwaAllowlist({kWebBundleId1});
+  WaitForUserAdded();
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
@@ -583,10 +658,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
             *IwaVersion::Create(kPinnedVersion));
 }
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        PolicyDeleteAndReinstall) {
   AddUser();
   SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
+  WaitForUserAdded();
 
   // Log in to the managed guest session. There is no IWA policy set at the
   // moment of login.
@@ -652,19 +728,24 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(
     /***/,
-    IsolatedWebAppPolicyManagerAshBrowserTest,
+    IsolatedWebAppPolicyManagerBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS)
     // Controls whether or not to test in a user session (true) or in a managed
     // guest session (false).
-    testing::Bool());
+    testing::Bool()
+#else
+    testing::ValuesIn({true})
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
 
 class IsolatedWebAppDevToolsTestWithPolicy
-    : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
+    : public IsolatedWebAppPolicyManagerBrowserTestBase,
       public testing::WithParamInterface<
           std::tuple<bool, DeveloperToolsPolicyHandler::Availability>> {
  public:
   IsolatedWebAppDevToolsTestWithPolicy()
-      : IsolatedWebAppPolicyManagerAshBrowserTestBase(
-            std::get<bool>(GetParam())) {}
+      : IsolatedWebAppPolicyManagerBrowserTestBase(std::get<bool>(GetParam())) {
+  }
 
   void SetDevToolsAvailability() {
     GetProfileForTest()->GetPrefs()->SetInteger(
@@ -681,6 +762,7 @@ class IsolatedWebAppDevToolsTestWithPolicy
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
                        DisabledForForceInstalledIwas) {
   AddUser();
+  WaitForUserAdded();
 
   // Log in to the managed guest session. There is no IWA policy set at the
   // moment of login.
@@ -716,7 +798,11 @@ INSTANTIATE_TEST_SUITE_P(
     /***/,
     IsolatedWebAppDevToolsTestWithPolicy,
     testing::Combine(
-        testing::Bool(),
+#if BUILDFLAG(IS_CHROMEOS)
+        /*is_user_session=*/testing::Bool(),
+#else
+        /*is_user_session=*/testing::ValuesIn({true}),
+#endif  // BUILDFLAG(IS_CHROMEOS)
         testing::Values(
             DeveloperToolsPolicyHandler::Availability::kAllowed,
             DeveloperToolsPolicyHandler::Availability::
@@ -724,22 +810,34 @@ INSTANTIATE_TEST_SUITE_P(
             DeveloperToolsPolicyHandler::Availability::kDisallowed)));
 
 class CleanupOrphanedBundlesTest
-    : public IsolatedWebAppPolicyManagerAshBrowserTestBase,
+    : public IsolatedWebAppPolicyManagerBrowserTestBase,
       public ProfileManagerObserver,
       public testing::WithParamInterface<bool> {
  public:
   CleanupOrphanedBundlesTest()
-      : IsolatedWebAppPolicyManagerAshBrowserTestBase(
-            /*is_user_session=*/GetParam()) {}
+      : IsolatedWebAppPolicyManagerBrowserTestBase(
+            /*is_user_session=*/GetParam()) {
+    IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting();
+  }
 
   void SetUpOnMainThread() override {
-    IsolatedWebAppPolicyManagerAshBrowserTestBase::SetUpOnMainThread();
+    IsolatedWebAppPolicyManagerBrowserTestBase::SetUpOnMainThread();
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
   }
 
   void TearDownOnMainThread() override {
-    IsolatedWebAppPolicyManagerAshBrowserTestBase::TearDownOnMainThread();
+    IsolatedWebAppPolicyManagerBrowserTestBase::TearDownOnMainThread();
     last_simulate_orphaned_bundle_profile_ = nullptr;
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    Profile* profile = Profile::FromBrowserContext(context);
+    last_simulate_orphaned_bundle_profile_ = profile;
+    SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
+    ASSERT_TRUE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
+    IsolatedWebAppPolicyManagerBrowserTestBase::
+        SetUpBrowserContextKeyedServices(context);
   }
 
   void SimulateOrphanedBundle(Profile* profile,
@@ -748,10 +846,10 @@ class CleanupOrphanedBundlesTest
     auto base_path = CHECK_DEREF(profile)
                          .GetPath()
                          .Append(kIwaDirName)
-                         .Append(bundle_directory);
+                         .AppendASCII(bundle_directory);
     ASSERT_TRUE(base::CreateDirectory(base_path));
-    ASSERT_TRUE(
-        base::WriteFile(base_path.Append("main.swbn"), "Sample content"));
+    ASSERT_TRUE(base::WriteFile(
+        base_path.Append(FILE_PATH_LITERAL("main.swbn")), "Sample content"));
   }
 
   bool CheckBundleDirectoryExists(Profile* profile,
@@ -760,14 +858,7 @@ class CleanupOrphanedBundlesTest
     return base::DirectoryExists(CHECK_DEREF(profile)
                                      .GetPath()
                                      .Append(kIwaDirName)
-                                     .Append(bundle_directory));
-  }
-
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override {
-    last_simulate_orphaned_bundle_profile_ = profile;
-    SimulateOrphanedBundle(profile, kOrphanedBundleDirectory);
-    ASSERT_TRUE(CheckBundleDirectoryExists(profile, kOrphanedBundleDirectory));
+                                     .AppendASCII(bundle_directory));
   }
 
   void OnProfileManagerDestroying() override {
@@ -782,9 +873,8 @@ class CleanupOrphanedBundlesTest
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
                        CleanUpSuccessfulOnSessionStart) {
-  IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting();
-
-  AddUser(/*set_iwa_policy_on_login=*/false);
+  AddUser();
+  WaitForUserAdded();
 
   // Login to the session.
   ASSERT_NO_FATAL_FAILURE(StartLogin());
@@ -802,7 +892,13 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
 INSTANTIATE_TEST_SUITE_P(
     /***/,
     CleanupOrphanedBundlesTest,
+#if BUILDFLAG(IS_CHROMEOS)
     // Is a user session (true) or a managed guest session (false).
-    testing::Bool());
+    testing::Bool()
+#else
+    // We only test user sessions outside of ChromeOS.
+    testing::ValuesIn({true})
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
 
 }  // namespace web_app
