@@ -109,11 +109,8 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   std::vector<ResourceId> resource_ids_to_transfer;
   resource_ids_to_transfer.push_back(resource_id);
   std::vector<TransferableResource> list;
-
-  CHECK(child_context_provider);
-  child_resource_provider->PrepareSendToParent(
-      resource_ids_to_transfer, &list,
-      child_context_provider->SharedImageInterface());
+  child_resource_provider->PrepareSendToParent(resource_ids_to_transfer, &list,
+                                               child_context_provider);
   parent_resource_provider->ReceiveFromChild(child_id, list);
 
   // Delete it in the child so it won't be leaked, and will be released once

@@ -478,8 +478,8 @@ void SerializeUIResourceRequest(
     viz::ResourceId resource_id = host_impl.ResourceIdForUIResource(uid);
     bool opaque = host_impl.IsUIResourceOpaque(uid);
     ids.push_back(resource_id);
-    host_impl.resource_provider()->PrepareSendToParent(
-        ids, &resources, context_provider.SharedImageInterface());
+    host_impl.resource_provider()->PrepareSendToParent(ids, &resources,
+                                                       &context_provider);
     CHECK_EQ(resources.size(), ids.size());
 
     auto& request = update.ui_resource_requests.emplace_back(
@@ -504,8 +504,7 @@ viz::mojom::TileResourcePtr SerializeTileResource(
   const auto& draw_info = tile.draw_info();
   std::vector<viz::ResourceId> ids(1, draw_info.resource_id_for_export());
   std::vector<viz::TransferableResource> resources;
-  resource_provider.PrepareSendToParent(
-      ids, &resources, context_provider.SharedImageInterface());
+  resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
   CHECK_EQ(resources.size(), 1u);
 
   auto wire = viz::mojom::TileResource::New();
@@ -663,8 +662,7 @@ void SerializeHudLayerExtra(HeadsUpDisplayLayerImpl& layer,
   if (resource_id != viz::kInvalidResourceId) {
     std::vector<viz::ResourceId> ids = {resource_id};
     std::vector<viz::TransferableResource> resources;
-    resource_provider.PrepareSendToParent(
-        ids, &resources, context_provider.SharedImageInterface());
+    resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
     CHECK_EQ(resources.size(), 1u);
     extra->transferable_resource = resources[0];
     extra->uv_top_left = gfx::PointF();
@@ -693,8 +691,7 @@ void SerializeTextureLayerExtra(TextureLayerImpl& layer,
     if (layer.resource_id() != viz::kInvalidResourceId) {
       std::vector<viz::ResourceId> ids(1, layer.resource_id());
       std::vector<viz::TransferableResource> resources;
-      resource_provider.PrepareSendToParent(
-          ids, &resources, context_provider.SharedImageInterface());
+      resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
       CHECK_EQ(resources.size(), 1u);
       extra->transferable_resource = resources[0];
     } else {

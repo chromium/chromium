@@ -11,11 +11,8 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/service/display/display_resource_provider.h"
 
-namespace viz {
-class RasterContextProvider;
-}
-
 namespace cc {
+
 // Transfer resources to the parent and return the child to parent map.
 const std::
     unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>&
