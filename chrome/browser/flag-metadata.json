@@ -2772,6 +2772,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-accessibility-labeledby",
+    "owners": [ "lucasradaelli@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "enable-accessibility-magnifier-follows-chromevox",
     "owners": [ "aldietz@google.com", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 146

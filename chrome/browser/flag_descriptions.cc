@@ -4652,6 +4652,13 @@ const char kProofreaderAPIForGeminiNanoDescription[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
+const char kEnableAccessibilityLabeledByName[] =
+    "Enable Accessibility LabeledBy";
+const char kEnableAccessibilityLabeledByDescription[] =
+    "Enables the experimental support for aria-labelledby list format for "
+    "relationships in "
+    "the accessibility tree for android.";
+
 const char kAAudioPerStreamDeviceSelectionName[] =
     "AAudio per-stream device selection";
 const char kAAudioPerStreamDeviceSelectionDescription[] =

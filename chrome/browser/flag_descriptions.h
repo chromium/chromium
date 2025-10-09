@@ -2702,6 +2702,8 @@ extern const char kAAudioPerStreamDeviceSelectionDescription[];
 
 extern const char kAccessibilityDeprecateTypeAnnounceName[];
 extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
+extern const char kEnableAccessibilityLabeledByDescription[];
+extern const char kEnableAccessibilityLabeledByName[];
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
 extern const char kAccessibilityPopulateSupplementalDescriptionApiName[];
