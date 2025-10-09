@@ -9,6 +9,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.PRICE_TRACKING;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -384,6 +385,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             CustomTabToolbar toolbar = findViewById(R.id.toolbar);
             toolbar.maybeRecordHistogramForAdaptiveToolbarButtonFallbackUi(PRICE_INSIGHTS);
             return true;
+        } else if (id == R.id.enable_price_tracking_menu_id) {
+            CustomTabToolbar toolbar = findViewById(R.id.toolbar);
+            toolbar.maybeRecordHistogramForAdaptiveToolbarButtonFallbackUi(PRICE_TRACKING);
+            // Let the flow proceed to superclass for processing the action.
         } else if (id == R.id.open_history_menu_id) {
             // The menu is visible only when the app-specific history is enabled. Assert that.
             assert HistoryManager.isAppSpecificHistoryEnabled();
