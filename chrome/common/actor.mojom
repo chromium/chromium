@@ -329,6 +329,9 @@ enum ActionResultCode {
   // The key down event for one of the chars was suppressed by Blink.
   kTypeKeyDownSuppressed = 704,
 
+  // The text to type is not valid UTF-8 string.
+  kTypeInvalidTextEncoding = 705,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

@@ -74,6 +74,30 @@ class ActorTypeToolBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Basic test of the TypeTool - ensure typed string containing composition
+// characters is entered into an input box.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputCompositionCharacters) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string typed_string =
+      "Acute: ÁÉÍÓÚÝáéíóúý. Grave: ÀÈÌÒÙàèìòù. Umlaut: ÄËÏÖÜŸäëïöüÿ. "
+      "Tilde: ÃÑÕãñõ. Circumflex: ÂÊÎÔÛâêîôû. Cedilla: Çç.";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Basic test of the TypeTool - ensure typed string is entered into an input
 // box.
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_TextInput) {
@@ -213,6 +237,36 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_Events) {
       "keydown,input,keyup,"
       // b
       "keydown,input,keyup,"
+      // enter (causes submit to "click")
+      "keydown,click,keyup",
+      EvalJs(web_contents(), "getStableEventLog()"));
+}
+
+// Ensure type tool sends the expected events to an input box.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_EventsForDeadKey) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string typed_string = "Áñ";
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(
+      // Á
+      "keydown,keyup,keydown,input,keyup,"
+      // ñ
+      "keydown,keyup,keydown,input,keyup,"
       // enter (causes submit to "click")
       "keydown,click,keyup",
       EvalJs(web_contents(), "getStableEventLog()"));

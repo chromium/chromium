@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <int value="702" label="TypeUnsupportedCharacters"/>
   <int value="703" label="TypeFailedMappingCharToKey"/>
   <int value="704" label="TypeKeyDownSuppressed"/>
+  <int value="705" label="TypeInvalidTextEncoding"/>
   <int value="800" label="HistoryNoNavigationsCreated"/>
   <int value="801" label="HistoryCancelledBeforeStart"/>
   <int value="802" label="HistoryNoBackEntries"/>

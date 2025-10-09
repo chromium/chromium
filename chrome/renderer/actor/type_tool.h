@@ -59,9 +59,9 @@ class TypeTool : public ToolBase {
     std::string dom_key;
     int modifiers = blink::WebInputEvent::kNoModifiers;
     // Text character for kChar event
-    char text = '\0';
+    char16_t text = u'\0';
     // Text without modifiers
-    char unmodified_text = '\0';
+    char16_t unmodified_text = u'\0';
   };
 
   struct TargetAndKeys {
@@ -80,7 +80,7 @@ class TypeTool : public ToolBase {
   ValidatedResult Validate() const;
 
   KeyParams GetEnterKeyParams() const;
-  std::optional<KeyParams> GetKeyParamsForChar(char c) const;
+  std::optional<KeyParams> GetKeyParamsForChar(char16_t c) const;
   blink::WebInputEventResult CreateAndDispatchKeyEvent(
       blink::WebInputEvent::Type type,
       KeyParams key_params);

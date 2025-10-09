@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
@@ -118,6 +119,86 @@ const absl::flat_hash_map<char, KeyInfo>& GetKeyInfoMap() {
   return *key_info_map;
 }
 
+// Structure to hold the mapping for dead key compositions.
+struct Composition {
+  char16_t dead_key;
+  char16_t second_key;
+};
+
+// Function to provide access to the composition map.
+const absl::flat_hash_map<char16_t, Composition>& GetCompositionMap() {
+  static const base::NoDestructor<absl::flat_hash_map<char16_t, Composition>>
+      composition_map([] {
+        absl::flat_hash_map<char16_t, Composition> map_data = {
+            // Acute Accent (')
+            {u'á', {'\'', 'a'}},
+            {u'é', {'\'', 'e'}},
+            {u'í', {'\'', 'i'}},
+            {u'ó', {'\'', 'o'}},
+            {u'ú', {'\'', 'u'}},
+            {u'ý', {'\'', 'y'}},
+            {u'Á', {'\'', 'A'}},
+            {u'É', {'\'', 'E'}},
+            {u'Í', {'\'', 'I'}},
+            {u'Ó', {'\'', 'O'}},
+            {u'Ú', {'\'', 'U'}},
+            {u'Ý', {'\'', 'Y'}},
+
+            // Grave Accent (`)
+            {u'à', {'`', 'a'}},
+            {u'è', {'`', 'e'}},
+            {u'ì', {'`', 'i'}},
+            {u'ò', {'`', 'o'}},
+            {u'ù', {'`', 'u'}},
+            {u'À', {'`', 'A'}},
+            {u'È', {'`', 'E'}},
+            {u'Ì', {'`', 'I'}},
+            {u'Ò', {'`', 'O'}},
+            {u'Ù', {'`', 'U'}},
+
+            // Diaeresis / Umlaut (")
+            {u'ä', {'"', 'a'}},
+            {u'ë', {'"', 'e'}},
+            {u'ï', {'"', 'i'}},
+            {u'ö', {'"', 'o'}},
+            {u'ü', {'"', 'u'}},
+            {u'ÿ', {'"', 'y'}},
+            {u'Ä', {'"', 'A'}},
+            {u'Ë', {'"', 'E'}},
+            {u'Ï', {'"', 'I'}},
+            {u'Ö', {'"', 'O'}},
+            {u'Ü', {'"', 'U'}},
+            {u'Ÿ', {'"', 'Y'}},
+
+            // Tilde (~)
+            {u'ã', {'~', 'a'}},
+            {u'ñ', {'~', 'n'}},
+            {u'õ', {'~', 'o'}},
+            {u'Ã', {'~', 'A'}},
+            {u'Ñ', {'~', 'N'}},
+            {u'Õ', {'~', 'O'}},
+
+            // Circumflex (^)
+            {u'â', {'^', 'a'}},
+            {u'ê', {'^', 'e'}},
+            {u'î', {'^', 'i'}},
+            {u'ô', {'^', 'o'}},
+            {u'û', {'^', 'u'}},
+            {u'Â', {'^', 'A'}},
+            {u'Ê', {'^', 'E'}},
+            {u'Î', {'^', 'I'}},
+            {u'Ô', {'^', 'O'}},
+            {u'Û', {'^', 'U'}},
+
+            // Cedilla (')
+            {u'ç', {'\'', 'c'}},
+            {u'Ç', {'\'', 'C'}},
+        };
+        return map_data;
+      }());
+  return *composition_map;
+}
+
 bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
   // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
   // we'll have to implement the different insertion modes.
@@ -170,37 +251,47 @@ TypeTool::KeyParams TypeTool::GetEnterKeyParams() const {
   return params;
 }
 
-std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) const {
+std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(
+    char16_t c) const {
+  // This function only supports ASCII characters. Non-ASCII characters are
+  // handled by composition in the Validate() function.
+  if (c > 0x7F) {
+    return std::nullopt;
+  }
+
   TypeTool::KeyParams params;
   // Basic conversion assuming simple case.
   params.text = c;
   params.unmodified_text = c;
-  params.dom_key = std::string(1, c);
+
+  char ascii_char = static_cast<char>(c);
+  params.dom_key = std::string(1, ascii_char);
 
   // ASCII Lowercase letters
-  if (base::IsAsciiLower(c)) {
-    params.windows_key_code = ui::VKEY_A + (c - 'a');
+  if (base::IsAsciiLower(ascii_char)) {
+    params.windows_key_code = ui::VKEY_A + (ascii_char - 'a');
     // dom_key and unmodified_text already set correctly
-    params.dom_code = base::StrCat({"Key", {base::ToUpperASCII(c)}});
-  } else if (c >= 'A' && c <= 'Z') {
+    params.dom_code = base::StrCat({"Key", {base::ToUpperASCII(ascii_char)}});
+  } else if (base::IsAsciiUpper(ascii_char)) {
     // ASCII Uppercase letters
-    params.windows_key_code = ui::VKEY_A + (c - 'A');
-    params.dom_code = base::StrCat({"Key", {c}});
+    params.windows_key_code = ui::VKEY_A + (ascii_char - 'A');
+    params.dom_code = base::StrCat({"Key", {ascii_char}});
     // dom_key is already set correctly (it's the uppercase char)
     // Unmodified is lowercase
-    params.unmodified_text = base::ToLowerASCII(c);
+    params.unmodified_text = base::ToLowerASCII(ascii_char);
     params.modifiers = WebInputEvent::kShiftKey;
-  } else if (c >= '0' && c <= '9') {
+  } else if (base::IsAsciiDigit(ascii_char)) {
     // ASCII Digits
-    params.windows_key_code = ui::VKEY_0 + (c - '0');
+    params.windows_key_code = ui::VKEY_0 + (ascii_char - '0');
     // dom_key and unmodified is already set correctly
-    params.dom_code = base::StrCat({"Digit", {c}});
+    params.dom_code = base::StrCat({"Digit", {ascii_char}});
   } else {
     // Symbols and Punctuation (US QWERTY layout assumed)
     const absl::flat_hash_map<char, KeyInfo>& key_info_map = GetKeyInfoMap();
-    auto it = key_info_map.find(c);
+    auto it = key_info_map.find(ascii_char);
     if (it == key_info_map.end()) {
-      ACTOR_LOG() << "Character cannot be mapped directly to key event: " << c;
+      ACTOR_LOG() << "Character cannot be mapped directly to key event: "
+                  << ascii_char;
       return std::nullopt;
     }
 
@@ -281,11 +372,13 @@ mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
                       absl::StrFormat("Suppressed char[%s]", params.dom_key));
   }
 
-  WebInputEventResult char_result =
-      CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
-  if (char_result == WebInputEventResult::kHandledSuppressed) {
-    ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
-                << " suppressed.";
+  if (params.dom_key != "Dead") {
+    WebInputEventResult char_result =
+        CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+    if (char_result == WebInputEventResult::kHandledSuppressed) {
+      ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
+                  << " suppressed.";
+    }
   }
 
   WebInputEventResult up_result =
@@ -518,28 +611,65 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   }
 
   // Perform typing specific validation.
-  if (!base::IsStringASCII(action_->text)) {
-    // TODO(crbug.com/409032824): Add support beyond ASCII.
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kTypeUnsupportedCharacters));
+  std::u16string text_to_type;
+  if (!base::UTF8ToUTF16(action_->text.c_str(), action_->text.length(),
+                         &text_to_type)) {
+    return base::unexpected(MakeResult(
+        mojom::ActionResultCode::kTypeInvalidTextEncoding,
+        /*requires_page_stabilization=*/false, "Invalid UTF-8 in input text"));
   }
 
   std::vector<KeyParams> key_sequence;
-  key_sequence.reserve(action_->text.length() +
-                       (action_->follow_by_enter ? 1 : 0));
-  // Validate all characters in text.
-  for (char c : action_->text) {
+  const absl::flat_hash_map<char16_t, Composition>& composition_map =
+      GetCompositionMap();
+
+  for (char16_t c : text_to_type) {
+    // Handle simple ASCII character
     std::optional<KeyParams> params = GetKeyParamsForChar(c);
-    if (!params.has_value()) {
-      journal_->Log(task_id_, "TypeTool::Validate::FailedToMap",
-                    JournalDetailsBuilder().Add("char", c).Build());
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kTypeFailedMappingCharToKey,
-                     /*requires_page_stabilization=*/false,
-                     absl::StrFormat("Failed on char[%c]", c)));
+    if (params.has_value()) {
+      key_sequence.push_back(params.value());
+      continue;
     }
-    key_sequence.push_back(params.value());
+
+    // Handle characters requiring composition (dead key)
+    auto comp_it = composition_map.find(c);
+    if (comp_it != composition_map.end()) {
+      const Composition& composition = comp_it->second;
+      std::optional<KeyParams> dead_key_params =
+          GetKeyParamsForChar(composition.dead_key);
+      if (!dead_key_params.has_value()) {
+        return base::unexpected(MakeResult(
+            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
+            /*requires_page_stabilization=*/false,
+            absl::StrFormat("Failed to map dead key for char U+%X", c)));
+      }
+      dead_key_params->unmodified_text = 0;
+      dead_key_params->text = 0;
+      dead_key_params->dom_key = "Dead";
+      key_sequence.push_back(dead_key_params.value());
+
+      std::optional<KeyParams> base_key_params =
+          GetKeyParamsForChar(composition.second_key);
+      if (!base_key_params.has_value()) {
+        return base::unexpected(MakeResult(
+            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
+            /*requires_page_stabilization=*/false,
+            absl::StrFormat("Failed to map base key for char U+%X", c)));
+      }
+      base_key_params->text = c;
+      base_key_params->unmodified_text = c;
+      base_key_params->dom_key = base::UTF16ToUTF8(std::u16string(1, c));
+      key_sequence.push_back(base_key_params.value());
+      continue;
+    }
+
+    // The character beyond ASCII and dead key composition is unsupported.
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kTypeUnsupportedCharacters,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("Unsupported character U+%X", c)));
   }
+
   if (action_->follow_by_enter) {
     key_sequence.push_back(GetEnterKeyParams());
   }
