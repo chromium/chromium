@@ -513,11 +513,11 @@ class WebStateList {
   // The WebStateList groups delegate.
   raw_ptr<WebStateListGroupsDelegate> groups_delegate_ = nullptr;
 
-  // Wrappers to the WebStates hosted by the WebStateList.
-  std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
-
   // The current set of groups.
   std::set<std::unique_ptr<TabGroup>, base::UniquePtrComparator> groups_;
+
+  // Wrappers to the WebStates hosted by the WebStateList.
+  std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;
