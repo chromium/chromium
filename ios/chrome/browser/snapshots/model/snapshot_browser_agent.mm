@@ -11,15 +11,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_util.h"
 
 namespace {
-
-// Name of the directory containing the tab snapshots.
-const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 
 // Converts `snapshot_id` to a SnapshotIDWrapper.
 SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
@@ -61,7 +59,7 @@ void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
 
   snapshot_storage_ = CreateSnapshotStorage(browser_->GetProfile()
                                                 ->GetStatePath()
-                                                .Append(kSnapshots)
+                                                .Append(kSnapshotsDirName)
                                                 .Append(identifier));
 }
 

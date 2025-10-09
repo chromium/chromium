@@ -26,6 +26,7 @@ source_set("model") {
     "snapshot_tab_helper.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     ":model_common",
     ":model_swift",
@@ -107,6 +108,19 @@ swift_source_set("model_swift") {
   public_deps = [ "//base" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("test_utils") {
   testonly = true
   sources = [
@@ -132,6 +146,7 @@ source_set("unit_tests") {
     "snapshot_tab_helper_unittest.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     ":model",
     ":model_common",
@@ -172,13 +187,4 @@ source_set("eg2_tests") {
     "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = []
 }

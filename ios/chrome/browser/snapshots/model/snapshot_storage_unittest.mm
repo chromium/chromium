@@ -10,6 +10,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
@@ -44,7 +45,6 @@ const NSUInteger kSnapshotPixelSize = 8;
 const NSUInteger kSnapshotCacheSize = 3;
 
 // Constants used to construct path to test the storage migration.
-const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
 
 // Converts `snapshot_id` into a SnapshotIDWrapper.
@@ -401,7 +401,7 @@ TEST_P(SnapshotStorageTest, CreateStorage) {
   const base::FilePath root = scoped_temp_directory_.GetPath();
 
   const base::FilePath storage_path =
-      root.Append(kSnapshots).Append(kIdentifier);
+      root.Append(kSnapshotsDirName).Append(kIdentifier);
 
   NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
   id<SnapshotStorage> storage =

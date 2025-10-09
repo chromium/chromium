@@ -19,15 +19,12 @@
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 
 // The etension used for all snapshot images.
 constexpr std::string_view kSnapshotImageExtension = ".jpg";
 // The label appended to the snapshot filename for grey snapshot images.
 constexpr std::string_view kGreySnapshotImageIdentifier = "Grey";
-
-// The path, relative to the profile directory, where snapshots are stored.
-const base::FilePath::CharType kSnapshotsPath[] =
-    FILE_PATH_LITERAL("Snapshots");
 
 // The path, relative to the application's Library directory, to WebKit's
 // storage location for website local data .
@@ -239,7 +236,7 @@ void LogApplicationSupportDirectorySize(
 
 void LogAverageSnapshotSizes(base::FilePath profile_path,
                              scoped_refptr<base::SequencedTaskRunner>) {
-  base::FilePath snapshots_storage_dir = profile_path.Append(kSnapshotsPath);
+  base::FilePath snapshots_storage_dir = profile_path.Append(kSnapshotsDirName);
 
   DirectorySnapshotDetails grey_snapshot_details =
       CalculateImageMetricsInRoot(/*grey_only=*/true, snapshots_storage_dir);

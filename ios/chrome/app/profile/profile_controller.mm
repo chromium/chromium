@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -171,7 +172,7 @@ void PurgeDataForSessions(const SessionIds& session_ids,
   const std::array<base::FilePath::StringViewType, 3> directories = {
       kLegacySessionsDirname,
       kSessionRestorationDirname,
-      FILE_PATH_LITERAL("Snapshots"),
+      kSnapshotsDirName,
   };
 
   for (const base::FilePath& storage_path : storage_paths) {

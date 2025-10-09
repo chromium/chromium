@@ -85,6 +85,7 @@ source_set("profile_controller") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/snapshots/model:constants",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web_state_list/model:session_metrics",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
@@ -124,6 +125,7 @@ source_set("application_storage_metrics") {
     "//components/optimization_guide/core:features",
     "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/snapshots/model:constants",
   ]
 }
 
