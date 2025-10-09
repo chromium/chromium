@@ -78,6 +78,20 @@ if (is_win) {
   }
 }
 
+if (is_posix && !is_apple) {
+  source_set("posix_key_provider") {
+    sources = [
+      "posix_key_provider.cc",
+      "posix_key_provider.h",
+    ]
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+    ]
+  }
+}
+
 if (is_linux && use_dbus) {
   source_set("secret_portal_key_provider") {
     sources = [
@@ -99,14 +113,13 @@ if (is_linux && use_dbus) {
 
   source_set("freedesktop_secret_key_provider") {
     sources = [
-      "fallback_linux_key_provider.cc",
-      "fallback_linux_key_provider.h",
       "freedesktop_secret_key_provider.cc",
       "freedesktop_secret_key_provider.h",
     ]
 
     deps = [
       ":key_provider_interface",
+      ":posix_key_provider",
       "//base",
       "//components/dbus",
       "//components/os_crypt/async/common",
@@ -182,6 +195,7 @@ source_set("unit_tests") {
     ]
     deps += [
       ":freedesktop_secret_key_provider",
+      ":posix_key_provider",
       ":secret_portal_key_provider",
       "//components/dbus",
       "//components/prefs:test_support",

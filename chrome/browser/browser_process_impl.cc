@@ -259,10 +259,13 @@ void OnLocalStatePrefsLoaded();
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_features.h"
-#include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
 #include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1404,14 +1407,24 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
               base::FeatureList::IsEnabled(
                   features::kUseFreedesktopSecretKeyProviderForEncryption),
               l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
-      providers.emplace_back(
-          /*precedence=*/5u,
-          std::make_unique<os_crypt_async::FallbackLinuxKeyProvider>(
-              base::FeatureList::IsEnabled(
-                  features::kUseFreedesktopSecretKeyProviderForEncryption)));
     }
   }
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+  // On Linux, this is used if the other key providers are disabled or not
+  // available. On other POSIX systems, this is the only key provider.
+#if BUILDFLAG(IS_LINUX)
+  const bool use_posix_key_provider_for_encryption =
+      base::FeatureList::IsEnabled(
+          features::kUseFreedesktopSecretKeyProviderForEncryption);
+#else
+  const bool use_posix_key_provider_for_encryption = true;
+#endif  // BUILDFLAG(IS_LINUX)
+  providers.emplace_back(
+      /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>(
+                             use_posix_key_provider_for_encryption));
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kUseKeychainKeyProvider)) {

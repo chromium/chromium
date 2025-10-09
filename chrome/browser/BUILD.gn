@@ -7137,6 +7137,9 @@ static_library("browser") {
       "shutdown_signal_handlers_posix.cc",
       "shutdown_signal_handlers_posix.h",
     ]
+    if (!is_mac) {
+      deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
+    }
   }
 
   if (is_win || is_linux || is_chromeos) {

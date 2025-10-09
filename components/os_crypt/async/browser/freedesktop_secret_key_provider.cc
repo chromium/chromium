@@ -275,7 +275,7 @@ void FreedesktopSecretKeyProvider::GetKey(KeyCallback callback) {
   default_collection_proxy_ = nullptr;
 
   if (password_store_ == "basic") {
-    // Use FallbackLinuxKeyProvider.
+    // Use PosixKeyProvider.
     FinalizeFailure(InitStatus::kDisabled, ErrorDetail::kNone);
   } else if (password_store_ == "gnome-libsecret") {
     InitializeFreedesktopSecretService();

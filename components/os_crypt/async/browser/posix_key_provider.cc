@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 
 #include <array>
 #include <utility>
@@ -23,22 +23,26 @@ constexpr auto kV10Key =
 
 }  // namespace
 
-FallbackLinuxKeyProvider::FallbackLinuxKeyProvider(bool use_for_encryption)
+PosixKeyProvider::PosixKeyProvider(bool use_for_encryption)
     : use_for_encryption_(use_for_encryption) {}
 
-FallbackLinuxKeyProvider::~FallbackLinuxKeyProvider() = default;
+PosixKeyProvider::~PosixKeyProvider() = default;
 
-void FallbackLinuxKeyProvider::GetKey(KeyCallback callback) {
+void PosixKeyProvider::GetKey(KeyCallback callback) {
   Encryptor::Key key(kV10Key, mojom::Algorithm::kAES128CBC);
   std::move(callback).Run(kEncryptionTag, std::move(key));
 }
 
-bool FallbackLinuxKeyProvider::UseForEncryption() {
+bool PosixKeyProvider::UseForEncryption() {
   return use_for_encryption_;
 }
 
-bool FallbackLinuxKeyProvider::IsCompatibleWithOsCryptSync() {
+bool PosixKeyProvider::IsCompatibleWithOsCryptSync() {
+#if BUILDFLAG(IS_LINUX)
   return false;
+#else
+  return true;
+#endif
 }
 
 }  // namespace os_crypt_async

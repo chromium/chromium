@@ -13,9 +13,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
 #include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +59,7 @@ class FreedesktopSecretKeyProviderCompatTest : public ::testing::Test {
       provider->secret_for_testing_ = kSecretKey;
       providers.emplace_back(0, std::move(provider));
     } else {
-      providers.emplace_back(0, std::make_unique<FallbackLinuxKeyProvider>(
+      providers.emplace_back(0, std::make_unique<PosixKeyProvider>(
                                     /*use_for_encryption=*/true));
     }
     OSCryptAsync factory(std::move(providers));
