@@ -416,14 +416,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_GlicSubpage) {
           "runMochaSuite('GlicSubpage Default')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, YourSavedInfoPage) {
-  RunTest("settings/your_saved_info_page_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, YourSavedInfoPageIndex) {
-  RunTest("settings/your_saved_info_page_index_test.js", "mocha.run()");
-}
-
 class SettingsGlicSubpageLearnMoreTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubpageLearnMoreTest() {
@@ -1731,3 +1723,17 @@ IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, MetricsBrowser) {
   RunTest("settings/translate_page_metrics_test_browser.js", "mocha.run()");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+using YourSavedInfoTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoAccount) {
+  RunTest("settings/your_saved_info_account_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPage) {
+  RunTest("settings/your_saved_info_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPageIndex) {
+  RunTest("settings/your_saved_info_page_index_test.js", "mocha.run()");
+}

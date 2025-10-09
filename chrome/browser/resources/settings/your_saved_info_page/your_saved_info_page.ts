@@ -7,6 +7,7 @@
  * 'settings-your-saved-info-page' is the entry point for users to see
  * and manage their saved info.
  */
+import './account_card_element.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
