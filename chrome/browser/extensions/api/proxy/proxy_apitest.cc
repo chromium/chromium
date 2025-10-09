@@ -197,16 +197,13 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
   ExpectNoSettings(pref_service);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that proxy settings corresponding to an extension take effect again
 // on browser restart, when the extension is removed from the policy blocklist.
-// TODO(crbug.com/431085489): enable proxy api tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnPolicyBlocklist) {
   PrefService* pref_service = profile()->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_DIRECT, kNoServer, kNoBypass, kNoPac,
                    pref_service);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests auto-detect settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyAutoSettings) {
