@@ -742,8 +742,12 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     for (size_t i = 0; i < layout_->planes().size(); i++)
       data[i] = buf + layout_->planes()[i].offset;
 
+    // TODO(crbug.com/40285824): spanify this usage.
     auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
+        *layout_, visible_rect_, natural_size_,
+        UNSAFE_TODO(base::span(data[0], layout_->planes()[0].size)),
+        UNSAFE_TODO(base::span(data[1], layout_->planes()[1].size)),
+        UNSAFE_TODO(base::span(data[2], layout_->planes()[2].size)),
         frame_timestamp);
     DCHECK(frame);
     frame->BackWithOwnedSharedMemory(std::move(dup_region), std::move(mapping));
@@ -833,11 +837,18 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
     frame_data[i] = const_cast<uint8_t*>(src_frame.plane_addrs[i]);
   }
 
+  // TODO(crbug.com/40285824): spanify this usage.
   scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
           video_->FrameLayout(), video_->VisibleRect(),
-          video_->VisibleRect().size(), frame_data[0], frame_data[1],
-          frame_data[2], base::TimeTicks::Now().since_origin());
+          video_->VisibleRect().size(),
+          UNSAFE_TODO(base::span(frame_data[0],
+                                 video_->FrameLayout().planes()[0].size)),
+          UNSAFE_TODO(base::span(frame_data[1],
+                                 video_->FrameLayout().planes()[1].size)),
+          UNSAFE_TODO(base::span(frame_data[2],
+                                 video_->FrameLayout().planes()[2].size)),
+          base::TimeTicks::Now().since_origin());
   video_frame->AddDestructionObserver(
       base::DoNothingWithBoundArgs(std::move(src_frame)));
   return video_frame;

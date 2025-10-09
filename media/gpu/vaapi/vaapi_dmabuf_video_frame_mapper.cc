@@ -82,9 +82,13 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
     VLOGF(1) << "Failed to create VideoFrameLayout for VAImage";
     return nullptr;
   }
+  // TODO(crbug.com/40285824): spanify this usage.
   auto video_frame = VideoFrame::WrapExternalYuvDataWithLayout(
       *mapped_layout, src_video_frame->visible_rect(),
-      src_video_frame->visible_rect().size(), addrs[0], addrs[1], addrs[2],
+      src_video_frame->visible_rect().size(),
+      UNSAFE_TODO(base::span(addrs[0], mapped_layout->planes()[0].size)),
+      UNSAFE_TODO(base::span(addrs[1], mapped_layout->planes()[1].size)),
+      UNSAFE_TODO(base::span(addrs[2], mapped_layout->planes()[2].size)),
       src_video_frame->timestamp());
   if (!video_frame)
     return nullptr;
