@@ -224,8 +224,7 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate(
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents_);
   if (infobar_manager) {
-    auto* delegate = PageInfoInfoBarDelegate::Create(infobar_manager);
-    delegate->set_reload_type(reload_type);
+    PageInfoInfoBarDelegate::Create(infobar_manager, reload_type);
     return true;
   }
   return false;
