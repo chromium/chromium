@@ -17165,6 +17165,35 @@
             ]
         }
     ],
+    "OnDeviceNotificationContentDetectionModelv2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSyntheticOnly",
+                    "params": {
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "70",
+                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
+                    },
+                    "enable_features": [
+                        "ShowWarningsForSuspiciousNotifications"
+                    ]
+                },
+                {
+                    "name": "EnabledRawAndSynthetic",
+                    "params": {
+                        "ShowWarningsForSuspiciousNotificationsScoreThreshold": "80",
+                        "ShowWarningsForSuspiciousNotificationsShouldSwapButtons": "false"
+                    },
+                    "enable_features": [
+                        "ShowWarningsForSuspiciousNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceStorage": [
         {
             "platforms": [
