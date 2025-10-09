@@ -495,9 +495,8 @@ TEST_P(DisplayChangeObserverTest, InvalidDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(
-      DisplaySnapshot::PrimaryFormat(),
-      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
+  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+            display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
   const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
@@ -528,9 +527,8 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(
-      DisplaySnapshot::PrimaryFormat(),
-      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
+  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+            display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
   const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
@@ -561,9 +559,8 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(
-      DisplaySnapshot::PrimaryFormat(),
-      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
+  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+            display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
   const auto color_space = display_color_spaces.GetRasterAndCompositeColorSpace(
@@ -609,17 +606,15 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   EXPECT_TRUE(display_color_spaces.SupportsHDR());
 
   // Ensure that all spaces be HDR10, and have headroom of 3x (609/203).
-  EXPECT_EQ(
-      gfx::BufferFormat::RGBA_1010102,
-      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kSRGB,
+  EXPECT_EQ(viz::SinglePlaneFormat::kRGBA_1010102,
+            display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
   EXPECT_EQ(
       gfx::ColorSpace::CreateHDR10(),
       display_color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
                                                /*needs_alpha=*/true));
-  EXPECT_EQ(
-      gfx::BufferFormat::RGBA_1010102,
-      display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kHDR,
+  EXPECT_EQ(viz::SinglePlaneFormat::kRGBA_1010102,
+            display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kHDR,
                                                  /*needs_alpha=*/true));
   EXPECT_EQ(
       gfx::ColorSpace::CreateHDR10(),

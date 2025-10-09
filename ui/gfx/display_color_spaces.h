@@ -78,8 +78,6 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // Retrieve parameters for a specific usage and alpha.
   ColorSpace GetOutputColorSpace(ContentColorUsage color_usage,
                                  bool needs_alpha) const;
-  BufferFormat GetOutputBufferFormat(ContentColorUsage color_usage,
-                                     bool needs_alpha) const;
   viz::SharedImageFormat GetOutputFormat(ContentColorUsage color_usage,
                                          bool needs_alpha) const;
 

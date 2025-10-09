@@ -113,17 +113,11 @@ ColorSpace DisplayColorSpaces::GetOutputColorSpace(
   return color_spaces_[GetIndex(color_usage, needs_alpha)];
 }
 
-BufferFormat DisplayColorSpaces::GetOutputBufferFormat(
-    ContentColorUsage color_usage,
-    bool needs_alpha) const {
-  return buffer_formats_[GetIndex(color_usage, needs_alpha)];
-}
-
 viz::SharedImageFormat DisplayColorSpaces::GetOutputFormat(
     ContentColorUsage color_usage,
     bool needs_alpha) const {
   return viz::GetSharedImageFormat(
-      GetOutputBufferFormat(color_usage, needs_alpha));
+      buffer_formats_[GetIndex(color_usage, needs_alpha)]);
 }
 
 ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
