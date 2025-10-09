@@ -21,9 +21,6 @@ namespace {
 NSString* const kRegularTabTitlePrefix = @"RegularTab";
 NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageDuration + base::Seconds(1);
-
 }  // namespace
 
 // Creates a regular tab with `title` using `test_server`.
@@ -77,34 +74,8 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
 
   // Wait for the snackbar to appear.
   id<GREYMatcher> snackbar_matcher = chrome_test_util::SnackbarViewMatcher();
-  ConditionBlock wait_for_appearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  if (!wait_for_appearance()) {
-    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                   kSnackbarDisappearanceTimeout, wait_for_appearance),
-               @"Snackbar did not appear.");
-  }
-
-  // Tap the snackbar to make it disappear. (It used to be that snackbars all
-  // disappeared after a delay, but not anymore: snackbars with an action now
-  // stay on-screen until interacted with).
+  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbar_matcher];
+  // Tap the snackbar to make it disappear.
   [[EarlGrey selectElementWithMatcher:snackbar_matcher]
       performAction:grey_tap()];
-
-  // Wait for the snackbar to disappear.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_nil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
-             @"Snackbar did not disappear.");
 }

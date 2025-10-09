@@ -56,9 +56,6 @@ NSString* const kCountryForSelection = @"Germany";
 
 constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageDuration + base::Seconds(1);
-
 const DisplayStringIDToExpectedResult kExpectedFields[] = {
     {IDS_IOS_AUTOFILL_FULLNAME, @"John H. Doe"},
     {IDS_IOS_AUTOFILL_COMPANY_NAME, @"Underworld"},
@@ -829,29 +826,11 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [[EarlGrey selectElementWithMatcher:MigrateToAccountButton()]
       performAction:grey_tap()];
   // Wait for the snackbar to appear.
-  id<GREYMatcher> snackbar_matcher = chrome_test_util::SnackbarViewMatcher();
-  ConditionBlock wait_for_appearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarAppearanceTimeout, wait_for_appearance),
-             @"Snackbar did not appear.");
-
-  // Wait for the snackbar to disappear.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_nil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
-             @"Snackbar did not disappear.");
+  id<GREYMatcher> snackbarMatcher = chrome_test_util::SnackbarViewMatcher();
+  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbarMatcher];
+  // Tap the snackbar to make it disappear.
+  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+      performAction:grey_tap()];
 
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]

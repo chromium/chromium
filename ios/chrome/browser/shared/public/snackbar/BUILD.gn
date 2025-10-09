@@ -10,8 +10,8 @@ source_set("snackbar") {
     "snackbar_message_action.mm",
   ]
   deps = [
-    ":constants",
     "//base",
+    "//ios/chrome/app:tests_hook",
   ]
   frameworks = [ "Foundation.framework" ]
 }

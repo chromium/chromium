@@ -46,5 +46,6 @@ source_set("hooks") {
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
   ]
 }

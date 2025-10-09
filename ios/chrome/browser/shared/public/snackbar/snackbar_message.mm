@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 
 @implementation SnackbarMessage
@@ -14,7 +14,7 @@
   self = [super init];
   if (self) {
     _title = [title copy];
-    _duration = kSnackbarMessageDuration.InSeconds();
+    _duration = tests_hook::GetSnackbarMessageDuration().InSeconds();
   }
   return self;
 }

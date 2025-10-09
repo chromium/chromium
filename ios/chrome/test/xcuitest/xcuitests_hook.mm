@@ -8,6 +8,7 @@
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 
 namespace tests_hook {
 
@@ -153,6 +154,10 @@ void WipeProfileIfRequested(int argc, char* argv[]) {
 base::TimeDelta
 GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
   return base::Seconds(0);
+}
+
+base::TimeDelta GetSnackbarMessageDuration() {
+  return kSnackbarMessageDuration;
 }
 
 }  // namespace tests_hook

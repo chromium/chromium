@@ -216,6 +216,9 @@ void WipeProfileIfRequested(int argc, char* argv[]);
 base::TimeDelta
 GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
 
+// Returns the default value for the snackbar message duration.
+base::TimeDelta GetSnackbarMessageDuration();
+
 }  // namespace tests_hook
 
 #endif  // IOS_CHROME_APP_TESTS_HOOK_H_

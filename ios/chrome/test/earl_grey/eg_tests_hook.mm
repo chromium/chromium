@@ -399,4 +399,10 @@ GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
   return base::Seconds(2);
 }
 
+base::TimeDelta GetSnackbarMessageDuration() {
+  // Makes the snackbar duration longer for EGTests to make sure there is time
+  // detect it, and avoid flakiness.
+  return base::Seconds(30);
+}
+
 }  // namespace tests_hook

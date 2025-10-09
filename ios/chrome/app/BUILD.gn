@@ -177,6 +177,7 @@ source_set("tests_fake_hook") {
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
   ]
 }
 
@@ -191,6 +192,7 @@ source_set("perf_tests_hook") {
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }

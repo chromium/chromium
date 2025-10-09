@@ -350,6 +350,11 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   // Close the second group.
   [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForGroupCellAtIndex(1)]
       performAction:grey_tap()];
+  // Tap the snackbar to make it disappear.
+  id<GREYMatcher> snackbarMatcher = chrome_test_util::SnackbarViewMatcher();
+  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+      performAction:grey_tap()];
+
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
       assertWithMatcher:grey_nil()];
 

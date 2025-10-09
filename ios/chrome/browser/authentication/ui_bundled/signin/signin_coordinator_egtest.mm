@@ -948,6 +948,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                  grey_accessibilityID(
                      kConsistencySigninPrimaryButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
+  // Wait for the snackbar to appear.
+  id<GREYMatcher> snackbarMatcher = chrome_test_util::SnackbarViewMatcher();
+  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbarMatcher];
+  // Tap the snackbar to make it disappear.
+  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
