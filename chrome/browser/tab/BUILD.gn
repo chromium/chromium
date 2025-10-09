@@ -201,6 +201,7 @@ source_set("tab") {
     "collection_storage_observer.h",
     "collection_storage_package.h",
     "collection_structure_tracker.h",
+    "payload.h",
     "storage_id_mapping.h",
     "storage_package.h",
     "tab_state_storage_backend.h",

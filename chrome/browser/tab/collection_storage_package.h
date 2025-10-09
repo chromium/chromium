@@ -15,7 +15,9 @@ namespace tabs {
 // A StoragePackage implementation for TabCollection data.
 class CollectionStoragePackage : public StoragePackage {
  public:
-  explicit CollectionStoragePackage(tabs_pb::Children children);
+  // The `metadata` represents the subtype-specific data that should be stored.
+  CollectionStoragePackage(std::unique_ptr<Payload> metadata,
+                           tabs_pb::Children children);
   ~CollectionStoragePackage() override;
 
   CollectionStoragePackage(const CollectionStoragePackage&) = delete;
@@ -26,6 +28,7 @@ class CollectionStoragePackage : public StoragePackage {
   std::string SerializeChildren() const override;
 
  private:
+  std::unique_ptr<Payload> metadata_;
   tabs_pb::Children children_;
 };
 

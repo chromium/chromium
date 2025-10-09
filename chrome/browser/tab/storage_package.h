@@ -7,17 +7,13 @@
 
 #include <string>
 
+#include "chrome/browser/tab/payload.h"
+
 namespace tabs {
 
 // Interface for a package of data that can be serialized for storage.
-class StoragePackage {
+class StoragePackage : public Payload {
  public:
-  virtual ~StoragePackage() = default;
-
-  // Serializes the data contained within this package into a string payload for
-  // storage.
-  virtual std::string SerializePayload() const = 0;
-
   // Serializes the identity and order of the direct children of the tab
   // collection represented by this package into a string payload for storage.
   virtual std::string SerializeChildren() const = 0;

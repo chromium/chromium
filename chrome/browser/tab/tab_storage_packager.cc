@@ -9,6 +9,7 @@
 
 #include "base/token.h"
 #include "chrome/browser/tab/collection_storage_package.h"
+#include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
@@ -36,6 +37,13 @@ class ChildProcessor : public DirectChildWalker::Processor {
   raw_ref<StorageIdMapping> mapping_;
 };
 
+// An empty payload of data.
+class EmptyPayload : public Payload {
+ public:
+  EmptyPayload() = default;
+  std ::string SerializePayload() const override { return ""; }
+};
+
 TabStoragePackager::TabStoragePackager() = default;
 TabStoragePackager::~TabStoragePackager() = default;
 
@@ -50,7 +58,8 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
 
   // TODO(https://crbug.com/448875689): Fill this package with collection
   // specific data.
-  return std::make_unique<CollectionStoragePackage>(std::move(children_proto));
+  return std::make_unique<CollectionStoragePackage>(
+      std::make_unique<EmptyPayload>(), std::move(children_proto));
 }
 
 }  // namespace tabs
