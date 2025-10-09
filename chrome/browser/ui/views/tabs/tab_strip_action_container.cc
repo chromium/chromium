@@ -1099,10 +1099,12 @@ void TabStripActionContainer::SetGlicShowState(bool show) {
   }
 }
 
-void TabStripActionContainer::SetGlicIcon(const gfx::VectorIcon& icon) {
+void TabStripActionContainer::SetGlicDetached(bool detached) {
+#if BUILDFLAG(ENABLE_GLIC)
   if (glic_button_) {
-    glic_button_->SetVectorIcon(icon);
+    glic_button_->SetGlicDetached(detached);
   }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void TabStripActionContainer::DidBecomeActive(BrowserWindowInterface* browser) {

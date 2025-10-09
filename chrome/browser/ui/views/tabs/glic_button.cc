@@ -234,6 +234,18 @@ void GlicButton::RestoreDefaultLabel() {
   pending_text_ = GetLabelText();
 }
 
+void GlicButton::SetGlicDetached(bool detached) {
+  if (EntrypointVariationsEnabled()) {
+    // TODO(crbug.com/450117879): Determine whether this icon update is still needed and
+    // implement it for the revamped GlicButton if so.
+    return;
+  }
+
+  SetVectorIcon(GlicVectorIconManager::GetVectorIcon(
+      detached ? IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON
+               : IDR_GLIC_BUTTON_VECTOR_ICON));
+}
+
 void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
   UpdateTooltipText();
 }
