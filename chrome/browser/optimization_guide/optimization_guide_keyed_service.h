@@ -224,6 +224,15 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationType optimization_type,
       const std::optional<optimization_guide::OptimizationMetadata>& metadata);
 
+  // Adds hints for a URL for the given optimization types to the optimization
+  // guide. For testing purposes only. This will flush any callbacks for |url|
+  // that were registered via |CanApplyOptimization|. If no applicable callbacks
+  // were registered, this will just add the hint for later use.
+  void AddHintWithMultipleOptimizationsForTesting(
+      const GURL& url,
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types);
+
   // Adds hints for a URL with provided metadata to the optimization guide.
   // Hints added via this method will work for `CanApplyOptimizationOnDemand`
   // calls. For testing purposes only.

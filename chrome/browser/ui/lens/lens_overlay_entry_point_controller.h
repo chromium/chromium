@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_url_matcher.h"
@@ -125,6 +126,11 @@ class LensOverlayEntryPointController : public FullscreenObserver,
 
   // URL matcher for entrypoints with EDU promos.
   std::unique_ptr<LensUrlMatcher> edu_url_matcher_;
+
+  // Optimization guide decider used for determining EDU action chip
+  // eligibility.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_{nullptr};
 };
 
 }  // namespace lens

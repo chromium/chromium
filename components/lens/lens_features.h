@@ -154,6 +154,10 @@ BASE_DECLARE_FEATURE(kLensVideoCitations);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
 
+// Enables using the optimization filter for triggering the action chip.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -995,6 +999,11 @@ extern bool IsLensUpdatedFeedbackEnabled();
 // The timeout for showing the feedback toast in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensUpdatedFeedbackToastTimeoutMs();
+
+// Whether to enable using the optimization filter for triggering the action
+// chip.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayOptimizationFilterEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

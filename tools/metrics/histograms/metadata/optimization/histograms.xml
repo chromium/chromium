@@ -399,6 +399,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IBANAutofillBlocked"
       summary="This optimization provides information for whether a page
                should be blocked for IBAN autofill feature."/>
+  <variant name="LensOverlayEduActionChipAllowlist"
+      summary="Allowlist for the Lens Overlay EDU action chip"/>
+  <variant name="LensOverlayEduActionChipBlocklist"
+      summary="Blocklist for the Lens Overlay EDU action chip"/>
   <variant name="LinkPerformance"
       summary="Provides aggregated performance information for links on the
                page"/>

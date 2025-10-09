@@ -784,6 +784,8 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="103" label="BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM"/>
   <int value="104" label="BUY_NOW_PAY_LATER_BLOCKLIST_ZIP"/>
   <int value="105" label="BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA"/>
+  <int value="106" label="LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST"/>
+  <int value="107" label="LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

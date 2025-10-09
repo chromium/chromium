@@ -512,6 +512,14 @@ void OptimizationGuideKeyedService::AddHintForTesting(
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 
+void OptimizationGuideKeyedService::AddHintWithMultipleOptimizationsForTesting(
+    const GURL& url,
+    const std::vector<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+  hints_manager_->AddHintWithMultipleOptimizationsForTesting(  // IN-TEST
+      url, optimization_types);
+}
+
 void OptimizationGuideKeyedService::AddOnDemandHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,

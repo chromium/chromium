@@ -1983,6 +1983,23 @@ void HintsManager::AddHintForTesting(
   PrepareToInvokeRegisteredCallbacks(url);
 }
 
+void HintsManager::AddHintWithMultipleOptimizationsForTesting(
+    const GURL& url,
+    const std::vector<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+  std::unique_ptr<proto::Hint> hint = std::make_unique<proto::Hint>();
+  hint->set_key(url.spec());
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("*");
+  for (proto::OptimizationType optimization_type : optimization_types) {
+    proto::Optimization* optimization =
+        page_hint->add_allowlisted_optimizations();
+    optimization->set_optimization_type(optimization_type);
+  }
+  hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
+  PrepareToInvokeRegisteredCallbacks(url);
+}
+
 void HintsManager::AddOnDemandHintForTesting(
     const GURL& url,
     proto::OptimizationType optimization_type,

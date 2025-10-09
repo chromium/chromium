@@ -198,6 +198,10 @@ std::string GetStringNameForOptimizationType(
       return "SharedCreditCardFlatRateBenefitBlocklist";
     case proto::OptimizationType::WALLETABLE_PASS_DETECTION_ALLOWLIST:
       return "WalletablePassDetectionAllowlist";
+    case proto::OptimizationType::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST:
+      return "LensOverlayEduActionChipBlocklist";
+    case proto::OptimizationType::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST:
+      return "LensOverlayEduActionChipAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

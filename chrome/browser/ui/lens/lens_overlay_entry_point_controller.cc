@@ -10,6 +10,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -111,6 +112,19 @@ void LensOverlayEntryPointController::Initialize(
       lens::features::GetLensOverlayEduUrlPathMatchBlockFilters(),
       lens::features::GetLensOverlayEduUrlForceAllowedMatchPatterns(),
       lens::features::GetLensOverlayEduHashedDomainBlockFilters());
+
+  if (lens::features::IsLensOverlayOptimizationFilterEnabled()) {
+    optimization_guide_decider_ =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser_window_interface_->GetProfile());
+    if (optimization_guide_decider_) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          {optimization_guide::proto::OptimizationType::
+               LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
+           optimization_guide::proto::OptimizationType::
+               LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST});
+    }
+  }
 }
 
 LensOverlayEntryPointController::~LensOverlayEntryPointController() {
@@ -199,6 +213,23 @@ bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) const {
   if (!IsEnabled()) {
     return false;
   }
+
+  if (optimization_guide_decider_) {
+    bool allowed_by_allowlist =
+        optimization_guide_decider_->CanApplyOptimization(
+            url,
+            optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST,
+            /*optimization_metadata=*/nullptr) ==
+        optimization_guide::OptimizationGuideDecision::kTrue;
+    bool allowed_by_blocklist =
+        optimization_guide_decider_->CanApplyOptimization(
+            url,
+            optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+            /*optimization_metadata=*/nullptr) ==
+        optimization_guide::OptimizationGuideDecision::kTrue;
+    return allowed_by_allowlist && allowed_by_blocklist;
+  }
+
   return edu_url_matcher_->IsMatch(url);
 }
 

@@ -349,6 +349,11 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page should be blocked
   // for the buy now pay later flow with Klarna.
   BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA = 105;
+
+  // Blocklist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST = 106;
+  // Allowlist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST = 107;
 }
 
 // Presents semantics for how page load URLs should be matched.
