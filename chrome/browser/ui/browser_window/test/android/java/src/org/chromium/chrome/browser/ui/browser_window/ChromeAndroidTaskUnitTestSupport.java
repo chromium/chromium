@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -369,11 +370,30 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockWindow.getInsetsController()).thenReturn(mockWindowInsetsController);
         when(mockActivity.getWindow()).thenReturn(mockWindow);
 
-        // Config current WindowMetrics.
+        mockCurrentWindowMetrics(mockWindowManager, currentWindowBoundsInPx);
+        mockMaxWindowMetrics(mockWindowManager, fullScreenWindowBoundsInPx, maxTappableInsetsInPx);
+
+        // Connect mock WindowManager to mock Activity.
+        when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
+    }
+
+    @RequiresApi(api = VERSION_CODES.R)
+    static void mockCurrentWindowMetrics(
+            WindowManager mockWindowManager, Rect currentWindowBoundsInPx) {
+        assert mockingDetails(mockWindowManager).isMock();
+
         var currentWindowMetrics = mock(WindowMetrics.class);
         when(currentWindowMetrics.getBounds()).thenReturn(currentWindowBoundsInPx);
+        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(currentWindowMetrics);
+    }
 
-        // Config max WindowMetrics.
+    @RequiresApi(api = VERSION_CODES.R)
+    static void mockMaxWindowMetrics(
+            WindowManager mockWindowManager,
+            Rect fullScreenWindowBoundsInPx,
+            Insets maxTappableInsetsInPx) {
+        assert mockingDetails(mockWindowManager).isMock();
+
         var maxWindowInsets = mock(WindowInsets.class);
         when(maxWindowInsets.isVisible(WindowInsets.Type.statusBars())).thenReturn(true);
         when(maxWindowInsets.getInsets(WindowInsets.Type.tappableElement()))
@@ -381,12 +401,6 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var maxWindowMetrics = mock(WindowMetrics.class);
         when(maxWindowMetrics.getBounds()).thenReturn(fullScreenWindowBoundsInPx);
         when(maxWindowMetrics.getWindowInsets()).thenReturn(maxWindowInsets);
-
-        // Connect current & max WindowMetrics to WindowManager.
-        when(mockWindowManager.getCurrentWindowMetrics()).thenReturn(currentWindowMetrics);
         when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(maxWindowMetrics);
-
-        // Connect mock WindowManager to mock Activity.
-        when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
     }
 }

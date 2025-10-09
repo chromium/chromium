@@ -22,6 +22,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX;
+import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -749,7 +751,7 @@ public class ChromeAndroidTaskImplUnitTest {
         var capturedBounds = boundsCaptor.getValue();
         assertEquals(
                 "Not moving to target bound",
-                ChromeAndroidTaskUnitTestSupport.DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
+                DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
                 capturedBounds);
     }
 
@@ -781,8 +783,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Rect expectedBoundsInDp =
                 DisplayUtil.scaleToEnclosingRect(
-                        ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
-                        1.0f / dipScale);
+                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
         assertEquals(expectedBoundsInDp, boundsInDp);
     }
 
@@ -812,8 +813,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // 6. Assert
         Rect expectedBoundsInDp =
                 DisplayUtil.scaleToEnclosingRect(
-                        ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
-                        1.0f / dipScale);
+                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
         assertEquals(
                 "restored bounds should be the current bounds in dp",
                 expectedBoundsInDp,
@@ -833,7 +833,10 @@ public class ChromeAndroidTaskImplUnitTest {
         when(displayAndroid.getDipScale()).thenReturn(dipScale);
 
         // Act.
-        Rect newBoundsInDp = new Rect(10, 20, 800, 600);
+        Rect newBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
+        newBoundsInDp.offset(/* dx= */ 10, /* dy= */ 10);
         chromeAndroidTask.setBoundsInDp(newBoundsInDp);
 
         // Assert.
@@ -843,6 +846,34 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Bounds passed to moveTaskTo() should be in pixels",
                 expectedNewBoundsInPx,
+                boundsCaptor.getValue());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void setBoundsInDp_clampBoundsThatAreTooLarge() {
+        // Arrange
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var displayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        float dipScale = 2.0f;
+        when(displayAndroid.getDipScale()).thenReturn(dipScale);
+
+        // Act: set new bounds that are larger than the maximized bounds.
+        Rect newBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
+        newBoundsInDp.offset(/* dx= */ 0, /* dy= */ 500);
+        chromeAndroidTask.setBoundsInDp(newBoundsInDp);
+
+        // Assert
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(
+                "Bounds that are too large should be clamped to the maximized bounds",
+                DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
                 boundsCaptor.getValue());
     }
 
@@ -865,7 +896,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         assertEquals(
                 "restored bounds should be set to the current bounds",
-                ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
+                DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
                 chromeAndroidTask.getRestoredBoundsInPxForTesting());
 
         // Act
@@ -877,9 +908,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         var capturedBounds = boundsCaptor.getValue();
         assertEquals(
-                "Not moving to target bound",
-                ChromeAndroidTaskUnitTestSupport.DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
-                capturedBounds);
+                "Not moving to target bound", DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, capturedBounds);
     }
 
     @Test
@@ -1413,9 +1442,7 @@ public class ChromeAndroidTaskImplUnitTest {
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
         verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
         var capturedBounds = boundsCaptor.getValue();
-        assertEquals(
-                ChromeAndroidTaskUnitTestSupport.DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
-                capturedBounds);
+        assertEquals(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, capturedBounds);
     }
 
     @Test
@@ -1507,21 +1534,25 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
-        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+
         // Arrange: Setup display parameters.
         var displayAndroid =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
         float dipScale = 2.0f;
         when(displayAndroid.getDipScale()).thenReturn(dipScale);
+
         // Arrange: Request SET_BOUNDS on a pending task.
-        Rect pendingBoundsInDp = new Rect(10, 20, 800, 600);
+        Rect pendingBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
+        pendingBoundsInDp.offset(/* dx= */ 10, /* dy= */ 10);
         chromeAndroidTask.setBoundsInDp(pendingBoundsInDp);
-        // Arrange: Setup WindowAndroid.
-        var activityWindowAndroid =
-                chromeAndroidTaskWithMockDeps
-                        .mActivityWindowAndroidMocks
-                        .mMockActivityWindowAndroid;
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(

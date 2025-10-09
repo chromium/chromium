@@ -160,6 +160,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowEnumerator.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraints.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
@@ -203,6 +204,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridgeUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraintsUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManagerUnitTest.java",

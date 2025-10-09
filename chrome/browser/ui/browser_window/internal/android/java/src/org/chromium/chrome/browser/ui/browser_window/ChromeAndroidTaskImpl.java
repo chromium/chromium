@@ -18,7 +18,6 @@ import android.os.Build.VERSION_CODES;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
-import android.view.WindowManager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.RequiresApi;
@@ -856,8 +855,10 @@ final class ChromeAndroidTaskImpl
         if (activity == null) return false;
         if (activity.isInMultiWindowMode()) {
             // Desktop windowing mode is also a multi-window mode.
-            return getCurrentBoundsInPxLocked(activityWindowAndroid)
-                    .equals(getMaxBoundsInPx(activity.getWindowManager()));
+            Rect maxBoundsInPx =
+                    ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(
+                            activity.getWindowManager());
+            return getCurrentBoundsInPxLocked(activityWindowAndroid).equals(maxBoundsInPx);
         } else {
             // In non-multi-window mode, Chrome is maximized by default.
             return true;
@@ -963,8 +964,9 @@ final class ChromeAndroidTaskImpl
         if (isRestoredInternalLocked(activityWindowAndroid)) {
             mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activityWindowAndroid);
         }
-        Rect maximizedBounds = getMaxBoundsInPx(activity.getWindowManager());
-        setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), maximizedBounds);
+        Rect maxBoundsInPx =
+                ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(activity.getWindowManager());
+        setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), maxBoundsInPx);
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
@@ -1001,19 +1003,9 @@ final class ChromeAndroidTaskImpl
         Rect boundsInPx =
                 DisplayUtil.scaleToEnclosingRect(
                         boundsInDp, activityWindowAndroid.getDisplay().getDipScale());
-        setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), boundsInPx);
-    }
-
-    @RequiresApi(api = VERSION_CODES.R)
-    private static Rect getMaxBoundsInPx(WindowManager windowManager) {
-        var insets =
-                windowManager
-                        .getMaximumWindowMetrics()
-                        .getWindowInsets()
-                        .getInsets(WindowInsets.Type.tappableElement());
-        var fullscreenBounds = windowManager.getMaximumWindowMetrics().getBounds();
-        return new Rect(
-                0, insets.top, fullscreenBounds.right, fullscreenBounds.bottom - insets.bottom);
+        Rect adjustedBoundsInPx =
+                ChromeAndroidTaskBoundsConstraints.apply(boundsInPx, activity.getWindowManager());
+        setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), adjustedBoundsInPx);
     }
 
     @Nullable Rect getRestoredBoundsInPxForTesting() {
