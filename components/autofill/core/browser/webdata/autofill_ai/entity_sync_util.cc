@@ -184,24 +184,36 @@ sync_pb::AutofillValuableSpecifics GetVehicleInformationSpecifics(
     const EntityInstance& entity) {
   using enum AttributeTypeName;
   CHECK_EQ(entity.type().name(), EntityTypeName::kVehicle);
-  auto get_value = [&](AttributeTypeName attribute_type_name) {
-    return base::UTF16ToUTF8(
-        entity.attribute(AttributeType(attribute_type_name))
-            ->GetCompleteRawInfo());
-  };
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id(*entity.guid());
   specifics.set_is_editable(!entity.are_attributes_read_only());
 
   sync_pb::VehicleRegistration& vehicle =
       *specifics.mutable_vehicle_registration();
-  vehicle.set_vehicle_make(get_value(kVehicleMake));
-  vehicle.set_vehicle_model(get_value(kVehicleModel));
-  vehicle.set_vehicle_year(get_value(kVehicleYear));
-  vehicle.set_vehicle_identification_number(get_value(kVehicleVin));
-  vehicle.set_vehicle_license_plate(get_value(kVehiclePlateNumber));
-  vehicle.set_license_plate_region(get_value(kVehiclePlateState));
-  vehicle.set_owner_name(get_value(kVehicleOwner));
+  auto set_vehicle_field =
+      [&](AttributeTypeName attribute_type_name,
+          void (sync_pb::VehicleRegistration::*setter)(const std::string&)) {
+        if (base::optional_ref<const AttributeInstance> attribute =
+                entity.attribute(AttributeType(attribute_type_name))) {
+          (vehicle.*setter)(base::UTF16ToUTF8(attribute->GetCompleteRawInfo()));
+        }
+      };
+
+  set_vehicle_field(kVehicleMake,
+                    &sync_pb::VehicleRegistration::set_vehicle_make);
+  set_vehicle_field(kVehicleModel,
+                    &sync_pb::VehicleRegistration::set_vehicle_model);
+  set_vehicle_field(kVehicleYear,
+                    &sync_pb::VehicleRegistration::set_vehicle_year);
+  set_vehicle_field(
+      kVehicleVin,
+      &sync_pb::VehicleRegistration::set_vehicle_identification_number);
+  set_vehicle_field(kVehiclePlateNumber,
+                    &sync_pb::VehicleRegistration::set_vehicle_license_plate);
+  set_vehicle_field(kVehiclePlateState,
+                    &sync_pb::VehicleRegistration::set_license_plate_region);
+  set_vehicle_field(kVehicleOwner,
+                    &sync_pb::VehicleRegistration::set_owner_name);
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       SerializeChromeValuablesMetadata(entity);
