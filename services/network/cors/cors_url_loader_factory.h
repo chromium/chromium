@@ -160,6 +160,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
       ResourceRequest& resource_request) const;
 
+  // Returns whether this factory is used in the multi-network CCT workflow.
+  bool IsMultiNetworkCCTWorkFlow() const;
+
   template <class T>
   void OnLoaderCreated(
       std::unique_ptr<T> loader,
