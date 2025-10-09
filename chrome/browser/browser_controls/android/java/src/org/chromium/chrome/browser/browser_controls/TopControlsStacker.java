@@ -26,6 +26,8 @@ import java.util.Map;
  */
 @NullMarked
 public class TopControlsStacker implements BrowserControlsStateProvider.Observer {
+    public static final int INVALID_HEIGHT = -1;
+
     private static final String TAG = "TopControlsStacker";
 
     /** Enums that defines the types of top controls. */
@@ -266,6 +268,34 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (mScrollingDisabled) {
             requestLayerUpdate(false);
         }
+    }
+
+    /**
+     * Calculates the total height of the UI from the specified layer to the top of the screen.
+     *
+     * <p>This method computes the cumulative height of all visible layers starting from the top
+     * most layer until the specified layer **(exclusive)**.
+     *
+     * <p><b>Warning:</b> The height returned might not be accurate during {@link
+     * #recalculateLayerSizes()}, so it should not be used to determine a layer's attribute.
+     *
+     * @param stopLayer the layer in the stack order to stop at.
+     * @return the total height of the visible UI from the specified layer to the top, or {@link
+     *     #INVALID_HEIGHT} if the layer type is invalid.
+     */
+    public int getHeightFromLayerToTop(@TopControlType int stopLayer) {
+        int height = 0;
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+
+            if (type == stopLayer) {
+                return height;
+            } else if (layer != null) {
+                height += layer.getTopControlHeight();
+            }
+        }
+
+        return INVALID_HEIGHT;
     }
 
     // BrowserControlsStateProvider.Observer implementation:

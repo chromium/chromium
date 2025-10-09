@@ -63,11 +63,13 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -303,6 +305,7 @@ public class ToolbarManager
     private final AppMenuDelegate mAppMenuDelegate;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BottomControlsStacker mBottomControlsStacker;
+    private final TopControlsStacker mTopControlsStacker;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
@@ -819,6 +822,7 @@ public class ToolbarManager
         mWindowAndroid = windowAndroid;
         mCompositorViewHolder = compositorViewHolder;
         mBottomControlsStacker = bottomControlsStacker;
+        mTopControlsStacker = topControlsStacker;
         mBrowserControlsSizer = controlsSizer;
         mFullscreenManager = fullscreenManager;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
@@ -2349,6 +2353,28 @@ public class ToolbarManager
                                             progressBarContainerY - controlContainerY,
                                             0,
                                             mControlContainer.getHeight());
+
+                    if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+                        // TODO(peilinwang) update these calculations and move them to the stackers
+                        // when the progress bar gets decoupled from the toolbar and when top
+                        // stacker is complete.
+                        int toolbarPosition = mToolbarPositionSupplier.get();
+                        if (toolbarPosition == ControlsPosition.TOP) {
+                            yOffset =
+                                    mTopControlsStacker.getHeightFromLayerToTop(
+                                                    TopControlType.PROGRESS_BAR)
+                                            - mTopControlsStacker.getHeightFromLayerToTop(
+                                                    TopControlType.TOOLBAR);
+                        } else if (toolbarPosition == ControlsPosition.BOTTOM) {
+                            yOffset =
+                                    -(mBottomControlsStacker.getHeightFromLayerToBottom(
+                                                            LayerType.PROGRESS_BAR)
+                                                    - mBottomControlsStacker
+                                                            .getHeightFromLayerToBottom(
+                                                                    LayerType.BOTTOM_TOOLBAR))
+                                            - mProgressBarContainer.getHeight();
+                        }
+                    }
                     drawingInfo.progressBarRect.offset(0, yOffset);
                     drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
                 };
