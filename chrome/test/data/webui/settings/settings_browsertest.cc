@@ -1087,7 +1087,14 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
           "runMochaSuite('MsbbCardNavigations')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncCardNavigations) {
+// TODO : crbug.com/450541173 - Reenable when test is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncCardNavigations DISABLED_HistorySyncCardNavigations
+#else
+#define MAYBE_HistorySyncCardNavigations HistorySyncCardNavigations
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       MAYBE_HistorySyncCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('HistorySyncCardNavigations')");
 }
