@@ -282,10 +282,8 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
   auto resource_id = quad_list.front()->resource_id;
   if (resource_id != viz::kInvalidResourceId) {
     std::vector<viz::TransferableResource> resource_list;
-    CHECK(context_provider_);
-    client_resource_provider_.PrepareSendToParent(
-        {resource_id}, &resource_list,
-        context_provider_->SharedImageInterface());
+    client_resource_provider_.PrepareSendToParent({resource_id}, &resource_list,
+                                                  context_provider_.get());
     compositor_frame.resource_list = std::move(resource_list);
   }
 

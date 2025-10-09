@@ -240,7 +240,7 @@ gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
 void ClientResourceProvider::PrepareSendToParent(
     const std::vector<ResourceId>& export_ids,
     std::vector<TransferableResource>* list,
-    gpu::SharedImageInterface* shared_image_interface) {
+    RasterContextProvider* context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This function goes through the array multiple times, store the resources
@@ -262,8 +262,10 @@ void ClientResourceProvider::PrepareSendToParent(
                !imported_resource->resource.sync_token().verified_flush();
       };
 
-  if (shared_image_interface) {
-    shared_image_interface->VerifySyncTokens(
+  if (context_provider) {
+    CHECK(context_provider->SharedImageInterface());
+
+    context_provider->SharedImageInterface()->VerifySyncTokens(
         imports, [](ImportedResource* imported) {
           return can_verify_resource(imported)
                      ? &imported->resource.mutable_sync_token()

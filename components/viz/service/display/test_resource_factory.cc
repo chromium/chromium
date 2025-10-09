@@ -83,10 +83,8 @@ ResourceId TestResourceFactory::CreateResource(
   resource_ids_to_transfer.push_back(resource_id);
   std::vector<TransferableResource> list;
 
-  CHECK(client_context_provider_);
   client_resource_provider_->PrepareSendToParent(
-      resource_ids_to_transfer, &list,
-      client_context_provider_->SharedImageInterface());
+      resource_ids_to_transfer, &list, client_context_provider_.get());
   display_resource_provider_->ReceiveFromChild(child_id, list);
 
   // Delete it in the child so it won't be leaked, and will be released once
