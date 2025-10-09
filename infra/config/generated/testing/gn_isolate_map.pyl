@@ -1337,21 +1337,6 @@
       "../../mojo/public/tools/run_all_python_unittests.py",
     ],
   },
-  "mojo_rust": {
-    "label": "//mojo/public/rust:mojo_rust",
-    "type": "additional_compile_target",
-    "skip_usage_check": True,
-  },
-  "mojo_rust_integration_unittests": {
-    "label": "//mojo/public/rust:mojo_rust_integration_unittests",
-    "type": "console_test_launcher",
-    "skip_usage_check": True,
-  },
-  "mojo_rust_unittests": {
-    "label": "//mojo/public/rust:mojo_rust_unittests",
-    "type": "console_test_launcher",
-    "skip_usage_check": True,
-  },
   "mojo_test_apk": {
     "label": "//mojo/public/java/system:mojo_test_apk",
     "type": "console_test_launcher",

@@ -6411,8 +6411,6 @@ targets.bundle(
     name = "rust_common_gtests",
     targets = [
         "base_unittests",
-        "mojo_rust_integration_unittests",
-        "mojo_rust_unittests",
         "rust_gtest_interop_unittests",
         "test_cpp_including_rust_unittests",
         "test_serde_json_lenient",

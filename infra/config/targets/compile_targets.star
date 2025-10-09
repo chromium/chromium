@@ -321,15 +321,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "mojo_rust",
-    # Since we can't build rust tests on Android now, add this for build
-    # coverage.
-    label = "//mojo/public/rust:mojo_rust",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
-targets.compile_target(
     name = "check_chrome_static_initializers",
     label = "//chrome/android:check_chrome_static_initializers",
     # All references have been moved to starlark

@@ -1,7 +1,6 @@
 {
   "android-rust-arm64-dbg": {
     "additional_compile_targets": [
-      "mojo_rust",
       "rust_build_tests"
     ],
     "gtest_tests": [
@@ -24,46 +23,6 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//mojo/public/rust:mojo_rust_integration_unittests",
-        "module_scheme": "gtest",
-        "name": "mojo_rust_integration_unittests",
-        "swarming": {
-          "dimensions": {
-            "device_os": "QQ1A.191205.008",
-            "device_os_flavor": "google",
-            "device_type": "walleye",
-            "os": "Android",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "mojo_rust_integration_unittests",
-        "test_id_prefix": "ninja://mojo/public/rust:mojo_rust_integration_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//mojo/public/rust:mojo_rust_unittests",
-        "module_scheme": "gtest",
-        "name": "mojo_rust_unittests",
-        "swarming": {
-          "dimensions": {
-            "device_os": "QQ1A.191205.008",
-            "device_os_flavor": "google",
-            "device_type": "walleye",
-            "os": "Android",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "mojo_rust_unittests",
-        "test_id_prefix": "ninja://mojo/public/rust:mojo_rust_unittests/"
       },
       {
         "merge": {

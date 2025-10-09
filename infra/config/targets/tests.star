@@ -1855,14 +1855,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
-    name = "mojo_rust_integration_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "mojo_rust_unittests",
-)
-
-targets.tests.gtest_test(
     name = "mojo_test_apk",
 )
 

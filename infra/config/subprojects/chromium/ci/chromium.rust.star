@@ -76,7 +76,6 @@ ci.builder(
             # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         ],
         additional_compile_targets = [
-            "mojo_rust",
             "rust_build_tests",
         ],
         mixins = [
@@ -125,7 +124,6 @@ ci.builder(
             # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         ],
         additional_compile_targets = [
-            "mojo_rust",
             "rust_build_tests",
         ],
         mixins = [
@@ -175,7 +173,6 @@ ci.builder(
             # TODO(crbug.com/40201737): Cover `rust_native_tests` here.
         ],
         additional_compile_targets = [
-            "mojo_rust",
             "rust_build_tests",
         ],
         mixins = [
@@ -216,9 +213,6 @@ ci.builder(
             "rust_native_tests",
         ],
         additional_compile_targets = [
-            "mojo_rust",
-            "mojo_rust_integration_unittests",
-            "mojo_rust_unittests",
             "rust_build_tests",
         ],
         mixins = [
@@ -262,9 +256,6 @@ ci.builder(
             "rust_native_tests",
         ],
         additional_compile_targets = [
-            "mojo_rust",
-            "mojo_rust_integration_unittests",
-            "mojo_rust_unittests",
             "rust_build_tests",
         ],
         mixins = [
@@ -305,9 +296,6 @@ ci.builder(
             "rust_native_tests",
         ],
         additional_compile_targets = [
-            "mojo_rust",
-            "mojo_rust_integration_unittests",
-            "mojo_rust_unittests",
             "rust_build_tests",
         ],
         mixins = [
@@ -350,9 +338,6 @@ ci.builder(
             "rust_native_tests",
         ],
         additional_compile_targets = [
-            "mojo_rust",
-            "mojo_rust_integration_unittests",
-            "mojo_rust_unittests",
             "rust_build_tests",
         ],
         mixins = [
@@ -396,9 +381,6 @@ ci.builder(
             "rust_native_tests",
         ],
         additional_compile_targets = [
-            "mojo_rust",
-            "mojo_rust_integration_unittests",
-            "mojo_rust_unittests",
             "rust_build_tests",
         ],
         mixins = [

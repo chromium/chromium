@@ -1706,22 +1706,6 @@ targets.binaries.script(
 )
 
 targets.binaries.console_test_launcher(
-    name = "mojo_rust_integration_unittests",
-    label = "//mojo/public/rust:mojo_rust_integration_unittests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
-    name = "mojo_rust_unittests",
-    label = "//mojo/public/rust:mojo_rust_unittests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
     name = "mojo_test_apk",
     label = "//mojo/public/java/system:mojo_test_apk",
     # All references have been moved to starlark
