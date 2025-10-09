@@ -50,7 +50,7 @@ constexpr std::string_view kMetadataContentType =
     "Content-Type: application/json; charset=UTF-8";
 constexpr std::string_view kParentFolderUrl =
     "https://www.googleapis.com/drive/v3beta/files";
-constexpr std::string_view kSuggestedFolderName = "Saved From Chrome";
+constexpr std::string_view kSuggestedFolderName = "Saved from Chrome";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("save_to_drive", R"(
