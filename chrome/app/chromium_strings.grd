@@ -2431,7 +2431,7 @@ Chromium is unable to recover your settings.
         Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
-        Chromium runs faster and features that use JavaScript should work as designed (recommended)
+        Chromium runs faster and features that use JavaScript should work as designed
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
         Reduces performance but makes Chromium more resistant to attacks

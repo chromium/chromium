@@ -2452,7 +2452,7 @@ Google Chrome is unable to recover your settings.
         Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
-        Chrome runs faster and features that use JavaScript should work as designed (recommended)
+        Chrome runs faster and features that use JavaScript should work as designed
       </message>
       <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the JavaScript optimizer content setting.">
         Reduces performance but makes Chrome more resistant to attacks
