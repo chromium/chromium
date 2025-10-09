@@ -2049,13 +2049,8 @@ void LensOverlayController::RenderProcessExited(
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
   // Ignore the event if the overlay is not backgrounded.
   if (state_ != State::kBackground) {
-    // TODO(crbug.com/404941800): This is a temporary DCHECK. This should be a
-    // CHECK and the if statement above should be removed once the root cause
-    // causing the CHECK(state_ == State::kBackground) to fail is found and
-    // fixed.
-    DCHECK(state_ == State::kBackground)
-        << "State should be kBackground but is instead "
-        << static_cast<int>(state_);
+    // If the side panel is open without the overlay, exit early to avoid
+    // showing the overlay.
     return;
   }
 
