@@ -67,11 +67,22 @@ struct PortId;
 // to the opener's renderer, where it is delivered via DeliverMessage().
 //
 // This concludes the one-time message flow.
+//
+// For managing the callbacks that are called in response to replies from
+// listeners, this class delegates to a `OneTimeMessageCallbackManager`.
+//
+// This object is owned by the `NativeRendererMessagingService`, and has its
+// lifetime bound to it.
 class OneTimeMessageHandler {
  public:
-  // A unique identifier for a message response callback
-  // (`OneTimeMessageCallback`).
+  // A unique identifier that identifies which C++ callback is associated with
+  // which `v8:Function` when the function is called for a message response.
   using CallbackID = base::UnguessableToken;
+
+  // A multi-use callback that is bound to a v8 function and is called when the
+  // v8 function is called in the context.
+  using OneTimeMessageCallback =
+      base::OnceCallback<void(gin::Arguments* arguments)>;
 
   explicit OneTimeMessageHandler(
       NativeExtensionBindingsSystem* bindings_system);
@@ -131,12 +142,32 @@ class OneTimeMessageHandler {
                   const PortId& port_id,
                   const std::string& error_message);
 
-  // Gets the number of pending callbacks for the `port_id` on the associated
-  // per context data for testing purposes.
+  // See OneTimeMessageCallbackManager::GetPendingCallbackCountForTesting().
   int GetPendingCallbackCountForTest(ScriptContext* script_context,
-                                     PortId port_id);
+                                     const PortId& port_id);
 
  private:
+  class OneTimeMessageCallbackManager;
+
+  // Creates a callback to handle a reply from a message listener.
+  std::unique_ptr<OneTimeMessageCallback> CreateMessageResponseCallback(
+      const PortId& port_id);
+
+  // Creates a callback to handle a rejected promise from a message listener.
+  std::unique_ptr<OneTimeMessageCallback> CreatePromiseRejectedCallback(
+      const PortId& port_id);
+
+  // Creates a callback to be called after an event is dispatched.
+  std::unique_ptr<OneTimeMessageCallback> CreateEventDispatchCallback(
+      const PortId& port_id);
+
+  // Close the message port because all possible message response callbacks have
+  // been collected and can no longer be called in v8. Doesn't close the channel
+  // because another receiver may reply.
+  void OnAllCallbacksCollected(ScriptContext* script_context,
+                               v8::Local<v8::Context> context,
+                               const PortId& port_id);
+
   // Helper methods to deliver a message to an opener/receiver.
   bool DeliverMessageToReceiver(ScriptContext* script_context,
                                 const Message& message,
@@ -155,54 +186,18 @@ class OneTimeMessageHandler {
   // `close_channel` is false. If `close_channel` is true, then we request the
   // entire channel to close. `error` can be provided to provide an error to the
   // message sender when closing the channel.
-  void CloseReceiverMessagePortOrChannel(
-      ScriptContext* script_context,
-      const PortId& port_id,
-      bool close_channel,
-      std::optional<std::string> error,
-      NativeRendererMessagingService* messaging_service);
+  void CloseReceiverMessagePortOrChannel(ScriptContext* script_context,
+                                         const PortId& port_id,
+                                         bool close_channel,
+                                         std::optional<std::string> error);
 
   // Triggered when a receiver responds to a message.
   void OnOneTimeMessageResponse(const PortId& port_id,
                                 gin::Arguments* arguments);
 
-  // Creates a JS function that calls `PromiseRejectedResponse()` to handle when
-  // listeners return promises that reject.
-  v8::Local<v8::Function> CreatePromiseRejectedFunction(
-      v8::Isolate* isolate,
-      v8::Local<v8::Context> context,
-      const PortId& port_id);
-
   // Triggered when a receiver's returned promise rejects.
   void PromiseRejectedResponse(const PortId& port_id,
                                gin::Arguments* arguments);
-
-  using OneTimeMessageCallback =
-      base::OnceCallback<void(gin::Arguments* arguments)>;
-
-  // Helper method for creating delayed callbacks that can be called as a result
-  // of message listener behavior.
-  // `cleanup_on_collection` true means that, if `context` is still valid when
-  // the v8::Function that is created to call `callback` is garbage collected by
-  // v8, we'll remove `callback` from
-  // `GetPerContextData<OneTimeMessageContextData>::pending_receiver_callbacks`
-  // and close the message port.
-  v8::Local<v8::Function> CreateDelayedOneTimeMessageCallback(
-      v8::Isolate* isolate,
-      v8::Local<v8::Context> context,
-      const PortId& port_id,
-      std::unique_ptr<OneTimeMessageCallback> callback,
-      ScriptContext* script_context,
-      bool close_port_on_collection);
-
-  // Triggered when the callback for replying is garbage collected. Used to
-  // clean up data that was stored for the callback and for closing the
-  // associated message port. `callback_id` is the ID of the associated
-  // OneTimeMessageCallback, needed for finding and erasing it from the
-  // OneTimeMessageContextData.
-  void OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,
-                                                const PortId& port_id,
-                                                CallbackID callback_id);
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
@@ -215,12 +210,19 @@ class OneTimeMessageHandler {
   bool CheckAndHandleAsyncListenerReply(
       v8::Isolate* isolate,
       v8::Local<v8::Context> context,
+      ScriptContext& script_context,
       v8::Local<v8::Value> result,
       const PortId& port_id,
       v8::Local<v8::Function> promise_resolved_function);
 
+  // The messaging service of the associated bindings system used to close the
+  // messaging port and/or channel.
+  NativeRendererMessagingService* messaging_service();
+
   // The associated bindings system. Outlives this object.
   const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
+
+  std::unique_ptr<OneTimeMessageCallbackManager> callback_manager_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
 };
