@@ -8972,7 +8972,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "safety-hub-unused-permission-revocation-for-all-surfaces",
