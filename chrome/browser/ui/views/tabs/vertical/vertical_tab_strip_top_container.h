@@ -16,6 +16,8 @@ namespace views {
 class ActionViewController;
 }  // namespace views
 
+// Top container of the vertical tab strip, manages the collapse and tab search
+// buttons, accounting for space that might be needed for caption buttons.
 class VerticalTabStripTopContainer : public views::View,
                                      public views::LayoutDelegate {
   METADATA_HEADER(VerticalTabStripTopContainer, views::View)

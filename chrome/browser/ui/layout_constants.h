@@ -178,6 +178,10 @@ enum LayoutConstant {
   // content.
   VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,
 
+  // The horiziontal padding between the two buttons in the bottom container of
+  // the vertical tab strip when it is uncollapsed.
+  VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING,
+
   // The size of the app menu button in a web app browser window.
   WEB_APP_MENU_BUTTON_SIZE,
 

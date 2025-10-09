@@ -489,6 +489,22 @@ void BrowserActions::InitializeBrowserActions() {
   }
 
   root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::NewTab(bwi->GetBrowserForMigrationOnly());
+              },
+              bwi))
+          .SetActionId(kActionNewTab)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NEW_TAB)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NEW_TAB)))
+          .SetImage(ui::ImageModel::FromVectorIcon(kAddIcon, ui::kColorIcon))
+          .Build());
+
+  root_action_item_->AddChild(
       ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,

@@ -102,4 +102,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfacePrimary};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       ui::kColorSysOnSurfacePrimaryInactive};
+
+  // Vertical Tabstrip Button colors.
+  mixer[kColorVerticalTabStripBottomButtonBackground] = {
+      ui::kColorSysHeaderContainer};
 }

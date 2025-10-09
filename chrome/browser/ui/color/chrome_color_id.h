@@ -934,6 +934,8 @@
   E_CPONLY(kColorToolbarTextDisabledDefault) \
   E_CPONLY(kColorToolbarTopSeparatorFrameActive) \
   E_CPONLY(kColorToolbarTopSeparatorFrameInactive) \
+  /* Vertical Tabs colors. */ \
+  E_CPONLY(kColorVerticalTabStripBottomButtonBackground) \
   /* WebAuthn colors. */ \
   E_CPONLY(kColorWebAuthnHoverButtonForeground) \
   E_CPONLY(kColorWebAuthnHoverButtonForegroundDisabled) \

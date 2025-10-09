@@ -15,6 +15,7 @@
 class RootTabCollectionNode;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
+class VerticalTabStripBottomContainer;
 class VerticalTabStripTopContainer;
 
 namespace tabs {
@@ -81,7 +82,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
   raw_ptr<VerticalTabStripView> tab_strip_view_ = nullptr;
-  raw_ptr<views::View> segmented_button_ = nullptr;
+  raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
   std::unique_ptr<RootTabCollectionNode> root_node_;

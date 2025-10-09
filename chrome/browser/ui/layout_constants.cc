@@ -136,6 +136,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 8;
     case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
       return 12;
+    case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:
+      return 4;
     default:
       break;
   }

@@ -27,7 +27,7 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
               kVerticalTabStripTopContainerElementId);
 }
 
-inline VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
+VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 
 // TODO(crbug.com/445528000): Update height calculation after child components
 // are added

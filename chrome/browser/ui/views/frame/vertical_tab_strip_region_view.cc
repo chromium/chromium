@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,7 +61,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
   top_button_separator_->SetColorId(kColorTabDividerFrameActive);
 
-  segmented_button_ = AddChildView(std::make_unique<views::View>());
+  bottom_button_container_ =
+      AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
+          state_controller, root_action_item));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
