@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -41,8 +42,8 @@ class HelpBubbleHandlerBase
   HelpBubbleHandlerBase(const HelpBubbleHandlerBase&) = delete;
   HelpBubbleHandlerBase(const std::vector<ui::ElementIdentifier>& identifiers,
                         ui::ElementContext context);
+  HelpBubbleHandlerBase& operator=(const HelpBubbleHandlerBase&) = delete;
   ~HelpBubbleHandlerBase() override;
-  void operator=(const HelpBubbleHandlerBase&) = delete;
 
   // Returns the context. Currently this is tied to the WebUIController and not
   // the browser that holds it, as (at least for tab contents) the owning
@@ -70,9 +71,9 @@ class HelpBubbleHandlerBase
   class ClientProvider {
    public:
     ClientProvider() = default;
-    ClientProvider(const ClientProvider& other) = delete;
+    ClientProvider(const ClientProvider&) = delete;
+    ClientProvider& operator=(const ClientProvider&) = delete;
     virtual ~ClientProvider() = default;
-    void operator=(const ClientProvider& other) = delete;
 
     // Returns the client. Should always return a valid value.
     virtual help_bubble::mojom::HelpBubbleClient* GetClient() = 0;
@@ -84,8 +85,8 @@ class HelpBubbleHandlerBase
    public:
     VisibilityProvider() = default;
     VisibilityProvider(const VisibilityProvider& other) = delete;
+    VisibilityProvider& operator=(const VisibilityProvider&) = delete;
     virtual ~VisibilityProvider() = default;
-    void operator=(const VisibilityProvider& other) = delete;
 
     void set_handler(HelpBubbleHandlerBase* handler) { handler_ = handler; }
 
@@ -104,7 +105,7 @@ class HelpBubbleHandlerBase
     void SetLastKnownVisibility(std::optional<bool> visible);
 
    private:
-    raw_ptr<HelpBubbleHandlerBase> handler_;
+    raw_ptr<HelpBubbleHandlerBase> handler_ = nullptr;
   };
 
   HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
@@ -173,8 +174,8 @@ class HelpBubbleHandlerBase
   //    to query for visibility
   std::optional<bool> web_contents_visibility_;
 
-  std::unique_ptr<ClientProvider> client_provider_;
-  std::unique_ptr<VisibilityProvider> visibility_provider_;
+  const std::unique_ptr<ClientProvider> client_provider_;
+  const std::unique_ptr<VisibilityProvider> visibility_provider_;
   const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
 
