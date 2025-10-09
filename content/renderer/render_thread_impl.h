@@ -433,8 +433,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnRendererBackgrounded();
   void OnRendererForegrounded();
 
-  void OnSyncMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
-
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
 
@@ -526,10 +524,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   HistogramCustomizer histogram_customizer_;
 
-  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
   std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
-      sync_memory_pressure_listener_registration_;
+      memory_pressure_listener_registration_;
 
   std::unique_ptr<viz::Gpu> gpu_;
 

@@ -592,19 +592,14 @@ void RenderThreadImpl::Init() {
   // been initialized by the Zygote before this instance became a Renderer.
   media::InitializeMediaLibrary();
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kRenderThreadImpl,
-          base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
-                              base::Unretained(this)));
   // In tests or in single-process mode, the render thread does not live on the
   // main thread of the process, so we can't register a sync listener.
   if (base::SingleThreadTaskRunner::GetMainThreadDefault()
           ->BelongsToCurrentThread()) {
-    sync_memory_pressure_listener_registration_ =
+    memory_pressure_listener_registration_ =
         std::make_unique<base::SyncMemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kRenderThreadImpl,
-            base::BindRepeating(&RenderThreadImpl::OnSyncMemoryPressure,
+            base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
                                 base::Unretained(this)));
   }
 
@@ -1553,30 +1548,6 @@ void RenderThreadImpl::PurgeResourceCache(PurgeResourceCacheCallback callback) {
   std::move(callback).Run();
 }
 
-void RenderThreadImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  TRACE_EVENT(
-      "memory", "RenderThreadImpl::OnMemoryPressure",
-      [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_memory_pressure_notification();
-        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
-            memory_pressure_level));
-      });
-  if (blink_platform_impl_)
-    blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    discardable_memory_allocator_->ReleaseFreeMemory();
-
-    // Do not call into blink if it is not initialized.
-    if (blink_platform_impl_) {
-      // Purge Skia font cache, resource cache, and image filter.
-      SkGraphics::PurgeAllCaches();
-      blink::WebMemoryPressureListener::OnPurgeMemory();
-    }
-  }
-}
-
 scoped_refptr<base::SequencedTaskRunner>
 RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
@@ -1707,8 +1678,17 @@ void RenderThreadImpl::OnRendererForegrounded() {
   process_foregrounded_count_++;
 }
 
-void RenderThreadImpl::OnSyncMemoryPressure(
+void RenderThreadImpl::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  TRACE_EVENT(
+      "memory", "RenderThreadImpl::OnMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
+            memory_pressure_level));
+      });
+
   v8::MemoryPressureLevel v8_memory_pressure_level =
       static_cast<v8::MemoryPressureLevel>(memory_pressure_level);
 
@@ -1723,6 +1703,20 @@ void RenderThreadImpl::OnSyncMemoryPressure(
   if (base::FeatureList::IsEnabled(
           features::kForwardMemoryPressureToBlinkIsolates)) {
     blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
+  }
+
+  if (blink_platform_impl_) {
+    blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
+  }
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    discardable_memory_allocator_->ReleaseFreeMemory();
+
+    // Do not call into blink if it is not initialized.
+    if (blink_platform_impl_) {
+      // Purge Skia font cache, resource cache, and image filter.
+      SkGraphics::PurgeAllCaches();
+      blink::WebMemoryPressureListener::OnPurgeMemory();
+    }
   }
 }
 
