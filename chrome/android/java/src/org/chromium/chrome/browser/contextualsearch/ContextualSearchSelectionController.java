@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -22,6 +23,7 @@ import org.chromium.ui.touch_selection.SelectionEventType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,6 +64,7 @@ public class ContextualSearchSelectionController {
 
     // Max selection length must be limited or the entire request URL can go past the 2K limit.
     private static final int MAX_SELECTION_LENGTH = 1000;
+    private static @Nullable Consumer<String> sHandleSelectionForTesting;
 
     private final Activity mActivity;
     private final ContextualSearchSelectionHandler mHandler;
@@ -136,6 +139,11 @@ public class ContextualSearchSelectionController {
             mTapTimeNanoseconds = System.nanoTime();
             mWasSelectionEmptyBeforeTap = TextUtils.isEmpty(mSelectedText);
         }
+    }
+
+    public static void setHandleSelectionForTesting(Consumer<String> consumer) {
+        sHandleSelectionForTesting = consumer;
+        ResettersForTesting.register(() -> sHandleSelectionForTesting = null);
     }
 
     /**
@@ -352,10 +360,15 @@ public class ContextualSearchSelectionController {
     /**
      * Re-enables selection modification handling and invokes
      * ContextualSearchSelectionHandler.handleSelection().
+     *
      * @param selection The text that was selected.
      * @param type The type of selection made by the user.
      */
     private void handleSelection(String selection, @SelectionType int type) {
+        if (sHandleSelectionForTesting != null) {
+            sHandleSelectionForTesting.accept(selection);
+            return;
+        }
         boolean isValidSelection = validateSelectionSuppression(selection);
         mHandler.handleSelection(selection, isValidSelection, type, mX, mY);
     }
