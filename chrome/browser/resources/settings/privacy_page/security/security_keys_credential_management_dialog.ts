@@ -14,9 +14,9 @@ import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../settings_shared.css.js';
-import '../site_favicon.js';
-import '../i18n_setup.js';
+import '../../settings_shared.css.js';
+import '../../site_favicon.js';
+import '../../i18n_setup.js';
 import './security_keys_pin_field.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';

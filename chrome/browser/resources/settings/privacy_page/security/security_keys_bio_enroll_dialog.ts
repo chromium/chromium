@@ -16,9 +16,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../settings_shared.css.js';
-import '../site_favicon.js';
-import '../i18n_setup.js';
+import '../../settings_shared.css.js';
+import '../../site_favicon.js';
+import '../../i18n_setup.js';
 import './fingerprint_icons.html.js';
 import './fingerprint_progress_arc.js';
 

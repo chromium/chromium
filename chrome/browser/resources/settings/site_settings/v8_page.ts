@@ -14,7 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SafeBrowsingSetting} from '../privacy_page/security_page.js';
+import {SafeBrowsingSetting} from '../privacy_page/security/security_page.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSettingsTypes, JavascriptOptimizerSetting} from './constants.js';
