@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_WIDGET_CONTEXT_H_
-#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_WIDGET_CONTEXT_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_URL_CONTEXT_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_URL_CONTEXT_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -14,8 +14,8 @@ enum class AccountSwitchType {
   kSignOut,
 };
 
-// Context information for an URL coming from widgets.
-@interface WidgetContext : NSObject
+// Context information for an URL with a request to switch account.
+@interface URLContext : NSObject
 - (instancetype)initWithContext:(UIOpenURLContext*)context
                          gaiaID:(NSString*)gaiaID
                            type:(AccountSwitchType)type;
@@ -26,4 +26,4 @@ enum class AccountSwitchType {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_WIDGET_CONTEXT_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_URL_CONTEXT_H_

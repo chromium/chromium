@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/coordinator/scene/widget_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 
-@implementation WidgetContext
+@implementation URLContext
 
 - (instancetype)initWithContext:(UIOpenURLContext*)context
                          gaiaID:(NSString*)gaiaID

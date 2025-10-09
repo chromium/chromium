@@ -37,7 +37,7 @@ source_set("scene_state_header") {
   public_deps = [
     ":scene_activation_level",
     ":scene_state_observer",
-    ":widget_context",
+    ":url_context",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
@@ -294,10 +294,10 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("widget_context") {
+source_set("url_context") {
   sources = [
-    "widget_context.h",
-    "widget_context.mm",
+    "url_context.h",
+    "url_context.mm",
   ]
   deps = []
   frameworks = [ "UIKit.framework" ]

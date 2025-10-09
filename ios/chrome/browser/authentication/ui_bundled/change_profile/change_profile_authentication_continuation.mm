@@ -55,8 +55,8 @@ void SignoutAndOpenContexts(Browser* browser,
       base::CallbackToBlock(std::move(completion)));
 }
 
-// Sign in profile to open widget context.
-void SigninForContext(WidgetContext* context,
+// Sign in profile to open the context.
+void SigninForContext(URLContext* context,
                       NSSet<UIOpenURLContext*>* contexts,
                       BOOL openURL,
                       AuthenticationService* authentication_service,
@@ -89,7 +89,7 @@ void SigninForContext(WidgetContext* context,
 }
 
 // Implementation of the continuation that starts the sign-in or sign-out flow.
-void ChangeProfileAuthenticationContinuation(WidgetContext* context,
+void ChangeProfileAuthenticationContinuation(URLContext* context,
                                              NSSet<UIOpenURLContext*>* contexts,
                                              BOOL openURL,
                                              SceneState* scene_state,
@@ -143,7 +143,7 @@ void ChangeProfileAuthenticationContinuation(WidgetContext* context,
 }  // namespace
 
 ChangeProfileContinuation CreateChangeProfileAuthenticationContinuation(
-    WidgetContext* context,
+    URLContext* context,
     NSSet<UIOpenURLContext*>* contexts,
     BOOL openURL) {
   return base::BindOnce(&ChangeProfileAuthenticationContinuation, context,

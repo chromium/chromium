@@ -139,7 +139,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/widget_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -697,7 +697,7 @@ void OnListFamilyMembersResponse(
   BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
   if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
-    WidgetContext* context = [self findContextRequiringAccountChange:contexts];
+    URLContext* context = [self findContextRequiringAccountChange:contexts];
     // Perform profile switching if needed.
     if ([self changeProfileForContext:context contexts:contexts openURL:NO]) {
       return YES;
@@ -971,7 +971,7 @@ void OnListFamilyMembersResponse(
 
   if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
-    WidgetContext* context = [self findContextRequiringAccountChange:contexts];
+    URLContext* context = [self findContextRequiringAccountChange:contexts];
     // Perform profile switching if needed.
     if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
       // Don't open the URLs if the profile was changed.
@@ -983,7 +983,7 @@ void OnListFamilyMembersResponse(
 }
 
 // Returns YES if a profile change was triggered.
-- (BOOL)changeProfileForContext:(WidgetContext*)context
+- (BOOL)changeProfileForContext:(URLContext*)context
                        contexts:(NSSet<UIOpenURLContext*>*)contexts
                         openURL:(BOOL)openURL {
   if (!context) {
@@ -1071,7 +1071,7 @@ void OnListFamilyMembersResponse(
                          @"/%s", app_group::kChromeAppGroupXCallbackCommand]];
 }
 
-- (WidgetContext*)findContextRequiringAccountChange:
+- (URLContext*)findContextRequiringAccountChange:
     (NSSet<UIOpenURLContext*>*)URLContexts {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
@@ -1100,16 +1100,15 @@ void OnListFamilyMembersResponse(
     }
 
     if ([newGaiaID isEqualToString:app_group::kNoAccount] && gaiaInApp.length) {
-      return
-          [[WidgetContext alloc] initWithContext:context
+      return [[URLContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
                                             type:AccountSwitchType::kSignOut];
     }
     if (![newGaiaID isEqualToString:gaiaInApp] &&
         ![newGaiaID isEqualToString:app_group::kNoAccount]) {
-      return [[WidgetContext alloc] initWithContext:context
-                                             gaiaID:newGaiaID
-                                               type:AccountSwitchType::kSignIn];
+      return [[URLContext alloc] initWithContext:context
+                                          gaiaID:newGaiaID
+                                            type:AccountSwitchType::kSignIn];
     }
   }
   return nil;
