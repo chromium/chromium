@@ -7,12 +7,10 @@
 #include <memory>
 #include <tuple>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -50,14 +48,6 @@ constexpr char kUserGaiaId[] = "1234567890";
 class ArcLockedFullscreenManagerTest
     : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
-  ArcLockedFullscreenManagerTest() {
-    // Force the test to mute ARC audio instead of adopting the deprecated flow
-    // that disables ARC. The deprecated flow is already tested with ARC session
-    // manager browser tests.
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
@@ -125,7 +115,6 @@ class ArcLockedFullscreenManagerTest
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
 
   std::unique_ptr<user_manager::UserManagerImpl> user_manager_;

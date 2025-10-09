@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -38,33 +37,16 @@ void ArcLockedFullscreenManager::UpdateForLockedFullscreenMode(bool locked) {
   }
 
   // Disable ARC audio when in locked fullscreen mode (or enable them if
-  // unlocked) as long as the `BocaOnTaskMuteArcAudio` feature flag is enabled.
-  // This eliminates the need for disabling critical ARC apps.
-  if (ash::features::IsBocaOnTaskMuteArcAudioEnabled()) {
-    mute_audio_requested_ = locked;
-    if (arc_session_manager->state() != ArcSessionManager::State::ACTIVE) {
-      // ARC is not up, so delay the mute/unmute operation.
-      if (!arc_session_manager_observation_.IsObserving()) {
-        arc_session_manager_observation_.Observe(arc_session_manager);
-      }
-      return;
+  // unlocked). This eliminates the need for disabling critical ARC apps.
+  mute_audio_requested_ = locked;
+  if (arc_session_manager->state() != ArcSessionManager::State::ACTIVE) {
+    // ARC is not up, so delay the mute/unmute operation.
+    if (!arc_session_manager_observation_.IsObserving()) {
+      arc_session_manager_observation_.Observe(arc_session_manager);
     }
-    MuteOrUnmuteArcAudio();
     return;
   }
-
-  // Fall back to the deprecated flow that disables ARC to prepare for locked
-  // fullscreen mode otherwise.
-  // TODO - crbug.com/400483081: Remove deprecated flow.
-  if (locked) {
-    // Disable ARC, preserve data.
-    arc_session_manager->RequestDisable();
-  } else {
-    // Re-enable ARC if needed.
-    if (arc::IsArcPlayStoreEnabledForProfile(profile_.get())) {
-      arc_session_manager->RequestEnable();
-    }
-  }
+  MuteOrUnmuteArcAudio();
 }
 
 void ArcLockedFullscreenManager::OnArcStarted() {

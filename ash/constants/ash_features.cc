@@ -174,9 +174,6 @@ constexpr base::FeatureParam<base::TimeDelta>
 // Enables or disables locked quiz migration to leverage the OnTask SWA.
 BASE_FEATURE(kBocaOnTaskLockedQuizMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
-BASE_FEATURE(kBocaOnTaskMuteArcAudio, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2475,10 +2472,6 @@ bool IsBocaCustomPollingEnabled() {
 
 bool IsBocaOnTaskLockedQuizMigrationEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskLockedQuizMigration);
-}
-
-bool IsBocaOnTaskMuteArcAudioEnabled() {
-  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
 }
 
 bool IsBocaOnTaskPodEnabled() {

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -18,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -239,49 +237,13 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }
 
-class ArcSessionManagerLockedFullscreenTest : public ArcSessionManagerTest {
- protected:
-  ArcSessionManagerLockedFullscreenTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ArcSessionManagerLockedFullscreenTest,
-                       ArcDisabledInLockedFullscreen) {
-  EnableArc();
-  ASSERT_EQ(ArcSessionManager::State::ACTIVE,
-            ArcSessionManager::Get()->state());
-
-  // ARC should be disabled in locked fullscreen.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
-  ASSERT_EQ(ArcSessionManager::State::STOPPED,
-            ArcSessionManager::Get()->state());
-
-  // ARC should not remain disabled once we exit this mode.
-  ash::UnpinWindow(browser()->window()->GetNativeWindow());
-  EXPECT_NE(ArcSessionManager::State::STOPPED,
-            ArcSessionManager::Get()->state());
-}
-
 // TODO - crbug.com/401589420: Move audio tests to the
 // //c/b/ash/arc/locked_fullscreen folder.
 class ArcSessionManagerLockedFullscreenWithMuteAudioTest
     : public ArcSessionManagerTest,
       public ::testing::WithParamInterface<bool> {
  protected:
-  ArcSessionManagerLockedFullscreenWithMuteAudioTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
   bool IsMuteArcVMAudioSuccess() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
