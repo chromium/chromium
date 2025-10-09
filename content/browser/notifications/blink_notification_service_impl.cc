@@ -42,6 +42,8 @@ const char kBadMessageInvalidNotificationActionButtons[] =
     "match the number of actions.";
 const char kBadMessageNonPersistentNotificationFromServiceWorker[] =
     "Received a non-persistent notification from a service worker.";
+const char kBadMessageEmptyNotificationToken[] =
+    "Received an empty notification token.";
 
 bool FilterByTag(const std::string& filter_tag,
                  const NotificationDatabaseData& database_data) {
@@ -175,6 +177,12 @@ void BlinkNotificationServiceImpl::DisplayNonPersistentNotification(
   if (!IsValidForNonPersistentNotification())
     return;
 
+  if (token.empty()) {
+    receiver_.ReportBadMessage(kBadMessageEmptyNotificationToken);
+    OnConnectionError();
+    return;
+  }
+
   base::UmaHistogramBoolean(
       "Notifications.NonPersistentNotificationThirdPartyCount",
       storage_key_if_3psp_enabled.IsThirdPartyContext());
@@ -207,6 +215,12 @@ void BlinkNotificationServiceImpl::CloseNonPersistentNotification(
 
   if (!IsValidForNonPersistentNotification())
     return;
+
+  if (token.empty()) {
+    receiver_.ReportBadMessage(kBadMessageEmptyNotificationToken);
+    OnConnectionError();
+    return;
+  }
 
   std::string notification_id =
       notification_context_->notification_id_generator()
