@@ -356,6 +356,7 @@ CGFloat const kSheetCornerRadius = 30;
   // open so the user can't choose a new background from the main menu while in
   // the process of dismissing the picker views.
   self.mainViewController.backgroundCustomizationUserInteractionEnabled = NO;
+  self.currentPageViewController.view.accessibilityElementsHidden = YES;
 }
 
 - (void)dismissBackgroundPicker {
@@ -366,6 +367,8 @@ CGFloat const kSheetCornerRadius = 30;
   // Reenable interaction when the picker is canceled, as the main menu is now
   // active again.
   self.mainViewController.backgroundCustomizationUserInteractionEnabled = YES;
+  self.currentPageViewController.view.accessibilityElementsHidden = NO;
+
   [self dismissBackgroundPickerActionSheet];
 }
 
