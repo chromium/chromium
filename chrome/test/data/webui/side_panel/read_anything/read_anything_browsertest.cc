@@ -53,10 +53,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
-  RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
-}
-
 class ReadAnythingMochaParameterizedTest
     : public ReadAnythingMochaBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -79,6 +75,10 @@ class ReadAnythingMochaParameterizedTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, Speech) {
+  RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
+}
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, NodeStore) {
   RunSidePanelTest("side_panel/read_anything/node_store_test.js",

@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-te
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {createAndSetVoices, emitEvent, mockMetrics, setupBasicSpeech, stubAnimationFrame} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Speech', () => {
@@ -195,6 +195,7 @@ suite('Speech', () => {
         baseTree: any, anchorId: number, anchorOffset: number, focusId: number,
         focusOffset: number, isBackward: boolean = false): void {
       mockTimer.install();
+      stubAnimationFrame();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -235,8 +236,9 @@ suite('Speech', () => {
       assertEquals('None', selection.type);
     });
 
-    test('in middle of node, play from beginning of node', () => {
+    test('in middle of node, play from beginning of node', async() => {
       selectAndPlay(axTree, 5, 10, 5, 20);
+      await microtasksFinished();
       assertEquals(paragraph2[0], getSpokenText());
     });
 
@@ -312,7 +314,8 @@ suite('Speech', () => {
     });
   });
 
-  test('next granularity plays from there', () => {
+  test('next granularity plays from there', async () => {
+    await microtasksFinished();
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
     assertEquals(paragraph1[1], getSpokenText());
   });
