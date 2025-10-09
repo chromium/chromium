@@ -12,6 +12,8 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/common/chrome_features.h"
 
 namespace glic {
@@ -21,7 +23,6 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
   return {features::kGlicMultiInstanceFloatyWidth.Get(),
           features::kGlicMultiInstanceFloatyHeight.Get()};
 }
-
 // end static
 
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
@@ -39,9 +40,16 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
     : profile_(profile), delegate_(delegate) {
   CreateAndSetupWidget(initial_bounds);
   panel_state_.kind = mojom::PanelState_Kind::kDetached;
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  tracker->OnPictureInPictureWidgetOpened(glic_widget_.get());
 }
 
-GlicFloatingUi::~GlicFloatingUi() = default;
+GlicFloatingUi::~GlicFloatingUi() {
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  tracker->RemovePictureInPictureWidget(glic_widget_.get());
+}
 
 Host::EmbedderDelegate* GlicFloatingUi::GetHostEmbedderDelegate() {
   return this;
@@ -64,7 +72,7 @@ GlicView* GlicFloatingUi::GetGlicView() const {
 
 void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
   glic_widget_ = GlicWidget::Create(profile_, initial_bounds, nullptr, true);
-  // TODO: Setup Hotkeys and AccessibilityText
+  // TODO: Setup Hotkeys and AccessibilityText.
 
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #if BUILDFLAG(IS_MAC)
@@ -107,7 +115,7 @@ void GlicFloatingUi::Attach() {
 }
 
 void GlicFloatingUi::Detach() {
-  // Floaty UI is already detached
+  // Floaty UI is already detached.
   NOTREACHED();
 }
 
@@ -124,7 +132,6 @@ void GlicFloatingUi::Show() {
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
   // TODO: Setup resize and drag
-  // SetDraggableAreasAndWatchForMouseEvents();
 }
 
 void GlicFloatingUi::Close() {

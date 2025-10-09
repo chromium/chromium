@@ -62,11 +62,6 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
   void CreateAndSetupWidget(gfx::Rect initial_bounds);
-  // void SetDraggingAreasAndWatchForMouseEvents();
-
-  // Used to monitor key and mouse events from native window.
-  // class WindowEventObserver;
-  // std::unique_ptr<WindowEventObserver> window_event_observer_;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
