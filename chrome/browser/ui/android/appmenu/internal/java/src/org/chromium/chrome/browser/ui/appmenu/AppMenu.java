@@ -46,6 +46,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -308,17 +309,14 @@ class AppMenu implements OnKeyListener {
                         anchorView.getRootView().getLayoutDirection());
         mPopup.setContentView(contentView);
 
-        try {
-            mPopup.showAtLocation(
-                    anchorView.getRootView(),
-                    Gravity.NO_GRAVITY,
-                    popupPosition[0],
-                    popupPosition[1]);
-        } catch (WindowManager.BadTokenException e) {
-            // Intentionally ignore BadTokenException. This can happen in a real edge case where
-            // parent.getWindowToken is not valid. See http://crbug.com/826052 &
-            // https://crbug.com/1105831.
-            return;
+        // Post the show call to handle keyboard click events.
+        if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
+            anchorView.post(
+                    () -> {
+                        showPopup(anchorView, popupPosition);
+                    });
+        } else {
+            showPopup(anchorView, popupPosition);
         }
 
         mSelectedItemBeforeDismiss = false;
@@ -676,5 +674,21 @@ class AppMenu implements OnKeyListener {
      */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         sExceptionReporter = reporter;
+    }
+
+    private void showPopup(View anchorView, int[] popupPosition) {
+        if (mPopup == null) return;
+        try {
+            mPopup.showAtLocation(
+                    anchorView.getRootView(),
+                    Gravity.NO_GRAVITY,
+                    popupPosition[0],
+                    popupPosition[1]);
+        } catch (WindowManager.BadTokenException e) {
+            // Intentionally ignore BadTokenException. This can happen in a real
+            // edge case where parent.getWindowToken is not valid. See
+            // http://crbug.com/826052 & https://crbug.com/1105831.
+            return;
+        }
     }
 }

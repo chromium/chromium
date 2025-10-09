@@ -63,10 +63,23 @@ public class ChromePageInfo {
 
     /**
      * Show page info dialog.
+     *
      * @param tab Tab object containing the page whose information to be displayed.
      * @param pageInfoHighlight Providing the highlight row info related to this dialog.
      */
     public void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight) {
+        show(tab, pageInfoHighlight, null);
+    }
+
+    /**
+     * Show page info dialog.
+     *
+     * @param tab Tab object containing the page whose information to be displayed.
+     * @param pageInfoHighlight Providing the highlight row info related to this dialog.
+     * @param packageName The package name of the web app to show page info of.
+     */
+    public void show(
+            Tab tab, ChromePageInfoHighlight pageInfoHighlight, @Nullable String packageName) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null || !ProfileManager.isInitialized()) return;
 
@@ -96,7 +109,8 @@ public class ChromePageInfo {
                         mStoreInfoActionHandlerSupplier,
                         mEphemeralTabCoordinatorSupplier,
                         pageInfoHighlight,
-                        mTabCreator),
+                        mTabCreator,
+                        packageName),
                 pageInfoHighlight,
                 dialogPosition);
     }

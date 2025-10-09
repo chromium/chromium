@@ -1662,6 +1662,7 @@ public class PageInfoViewTest {
                                     null,
                                     null,
                                     ChromePageInfoHighlight.noHighlight(),
+                                    null,
                                     null) {
                                 @Override
                                 public boolean isShowingPaintPreviewPage() {
@@ -1698,6 +1699,7 @@ public class PageInfoViewTest {
                                     null,
                                     null,
                                     ChromePageInfoHighlight.noHighlight(),
+                                    null,
                                     null) {
                                 @Override
                                 public @PdfPageType int getPdfPageType() {
@@ -1734,6 +1736,7 @@ public class PageInfoViewTest {
                                     null,
                                     null,
                                     ChromePageInfoHighlight.noHighlight(),
+                                    null,
                                     null) {
                                 @Override
                                 public @PdfPageType int getPdfPageType() {
@@ -1773,6 +1776,7 @@ public class PageInfoViewTest {
                                     null,
                                     null,
                                     ChromePageInfoHighlight.noHighlight(),
+                                    null,
                                     null) {
                                 @Override
                                 public @PdfPageType int getPdfPageType() {

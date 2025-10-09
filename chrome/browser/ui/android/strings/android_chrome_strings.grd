@@ -5332,6 +5332,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- WebAPK/TWA related strings -->
+      <message name="IDS_APP_INFO_SETTINGS" desc="Label for 3-dot menu item that opens Android's settings to view information about the current app. Info is short for information.">
+        More app info
+      </message>
       <message name="IDS_TWA_RUNNING_IN_CHROME" desc="Message on a snackbar indicating that the current Activity may use Chrome data (the rest of the app may not be).">
         Running in Chrome
       </message>

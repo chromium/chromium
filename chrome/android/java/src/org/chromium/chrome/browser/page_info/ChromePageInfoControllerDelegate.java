@@ -8,10 +8,13 @@ import static org.chromium.components.browser_ui.site_settings.SingleWebsiteSett
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
@@ -56,6 +59,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
+import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
@@ -93,6 +97,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private final OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
     private @Nullable String mOfflinePageCreationDate;
     private final @Nullable TabCreator mTabCreator;
+    private final @Nullable String mPackageName;
 
     static final String FEEDBACK_REPORT_TYPE =
             "com.google.chrome.browser.page_info.USER_INITIATED_FEEDBACK_REPORT";
@@ -105,7 +110,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
             @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromePageInfoHighlight pageInfoHighlight,
-            @Nullable TabCreator tabCreator) {
+            @Nullable TabCreator tabCreator,
+            @Nullable String packageName) {
         super(
                 new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 /* isSiteSettingsAvailable= */ SiteSettingsHelper.isSiteSettingsAvailable(
@@ -120,6 +126,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
         mPageInfoHighlight = pageInfoHighlight;
         mTabCreator = tabCreator;
+        mPackageName = packageName;
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
@@ -339,6 +346,15 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                             mWebContents,
                             mProfile));
         }
+
+        if (mPackageName != null) {
+            var appInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            PageInfoRowView.ViewParams rowParams =
+                    getAppInfoRowParams(mainController, appInfoRow, mPackageName);
+            appInfoRow.setParams(rowParams);
+            rowWrapper.addView(appInfoRow);
+        }
+
         return controllers;
     }
 
@@ -414,5 +430,29 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public boolean allThirdPartyCookiesBlockedTrackingProtection() {
         return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)
                 || isIncognito();
+    }
+
+    private PageInfoRowView.ViewParams getAppInfoRowParams(
+            PageInfoMainController mainController, PageInfoRowView appInfoRow, String packageName) {
+        Resources resources = appInfoRow.getContext().getResources();
+        PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
+
+        rowParams.title = resources.getString(R.string.app_info_settings);
+        rowParams.visible = rowParams.title != null;
+        rowParams.iconResId = R.drawable.settings_cog;
+        rowParams.decreaseIconSize = true;
+        rowParams.clickCallback =
+                () -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    ((PageInfoController) mainController)
+                            .runAfterDismiss(
+                                    () -> {
+                                        intent.setData(Uri.parse("package:" + packageName));
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mainController.getActivity().startActivity(intent);
+                                    });
+                };
+
+        return rowParams;
     }
 }

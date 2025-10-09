@@ -173,6 +173,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         /* storeInfoActionHandlerSupplier= */ null,
                         /* ephemeralTabCoordinatorSupplier= */ null,
                         ChromePageInfoHighlight.noHighlight(),
+                        null,
                         null),
                 ChromePageInfoHighlight.noHighlight(),
                 Gravity.TOP);
