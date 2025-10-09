@@ -70,7 +70,6 @@
 +org.chromium.ui.display.DisplayAndroidManager
 +org.chromium.ui.display.DisplayUtil
 +org.chromium.ui.resources.dynamics.CaptureUtils
-+org.chromium.ui.util.ColorUtils
 +org.chromium.ui.insets.WindowInsetsUtils
 +org.chromium.ui.widget.AnchoredPopupWindow
 +org.chromium.webapk.shell_apk.LaunchHostBrowserSelector

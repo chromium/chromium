@@ -34,16 +34,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
-import org.chromium.ui.shadows.ShadowColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Instrumentation tests for PWA Restore bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowColorUtils.class})
+@Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
@@ -70,7 +68,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
 
     @After
     public void tearDown() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
     }
 
     private static Bitmap createBitmap(int color) {

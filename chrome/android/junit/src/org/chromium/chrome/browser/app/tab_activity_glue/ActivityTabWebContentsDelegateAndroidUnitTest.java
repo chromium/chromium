@@ -56,7 +56,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
-import org.chromium.ui.shadows.ShadowColorUtils;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -66,7 +66,7 @@ import java.util.function.Supplier;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowColorUtils.class, ShadowWebContentsDarkModeController.class})
+@Config(shadows = {ShadowWebContentsDarkModeController.class})
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures({
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
@@ -190,12 +190,12 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     public void testIsNightMode() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         Assert.assertTrue(
                 "#isNightModeEnabled is false.",
                 mTabWebContentsDelegateAndroid.isNightModeEnabled());
 
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
         Assert.assertFalse(
                 "isNightModeEnabled is true.", mTabWebContentsDelegateAndroid.isNightModeEnabled());
     }
@@ -223,27 +223,27 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     public void testForceDarkWebContent_LightTheme() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
         assertForceDarkEnabledForWebContents(false);
     }
 
     @Test
     public void testForceDarkWebContent_DarkTheme_GlobalSettingDisabled() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = false;
         assertForceDarkEnabledForWebContents(false);
     }
 
     @Test
     public void testForceDarkWebContent_DarkTheme_GlobalSettingEnabled() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = true;
         assertForceDarkEnabledForWebContents(true);
     }
 
     @Test
     public void testForceDarkWebContent_DarkTheme_DisabledForUrl() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         ShadowWebContentsDarkModeController.sGlobalSettingsEnabled = true;
         ShadowWebContentsDarkModeController.sBlockedUrl = mUrl1;
         assertForceDarkEnabledForWebContents(false);

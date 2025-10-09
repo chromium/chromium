@@ -639,7 +639,6 @@ robolectric_library("ui_junit_test_support") {
     "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResources.java",
     "junit/src/org/chromium/ui/shadows/ShadowAsyncLayoutInflater.java",
-    "junit/src/org/chromium/ui/shadows/ShadowColorUtils.java",
   ]
   deps = [
     ":ui_java",

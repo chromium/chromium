@@ -32,14 +32,12 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.ui.shadows.ShadowColorUtils;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link WebContentsDarkModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowColorUtils.class})
+@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class WebContentsDarkModeControllerUnitTest {
 
@@ -96,12 +94,12 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @After
     public void tearDown() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
     }
 
     @Test
     public void testFeatureEnabled() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         mIsGlobalSettingsEnabled = true;
         Assert.assertTrue(
                 "Feature should be enabled, if both global settings and night mode enabled.",
@@ -111,7 +109,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @Test
     public void testFeatureEnabled_LightMode() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
         mIsGlobalSettingsEnabled = true;
         Assert.assertFalse(
                 "Feature should be disabled when not in night mode.",
@@ -121,7 +119,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @Test
     public void testFeatureEnabled_NoUserSettings() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         mIsGlobalSettingsEnabled = false;
         Assert.assertFalse(
                 "Feature should be disabled when global settings disabled.",
@@ -179,7 +177,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @Test
     public void testGetEnableStateForUrl_Enabled() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         mIsGlobalSettingsEnabled = true;
         mIsAutoDarkEnabledForUrlContentSettingValue = ContentSetting.ALLOW;
         assertEnabledState(mMockGurl, true);
@@ -187,7 +185,7 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @Test
     public void testGetEnableStateForUrl_Disabled() {
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         mIsGlobalSettingsEnabled = true;
         mIsAutoDarkEnabledForUrlContentSettingValue = ContentSetting.BLOCK;
         assertEnabledState(mMockGurl, false);

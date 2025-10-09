@@ -58,15 +58,13 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.ui.shadows.ShadowColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.io.File;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowColorUtils.class})
+@Config(manifest = Config.NONE)
 public class NtpCustomizationUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
@@ -84,7 +82,7 @@ public class NtpCustomizationUtilsUnitTest {
     public void tearDown() {
         // Clean up preferences to not affect other tests.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
     }
 
     @Test
@@ -448,7 +446,7 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Test
     public void testSetTintForDefaultGoogleLogo() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
         NtpCustomizationConfigManager customizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
 
@@ -465,7 +463,7 @@ public class NtpCustomizationUtilsUnitTest {
         verify(mDrawable).setTint(eq(Color.WHITE));
 
         // Test cases in dark mode:
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         clearInvocations(mDrawable);
 
         // Verifies that color white is set for customized background images.
@@ -485,7 +483,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSetTintForDefaultGoogleLogo_chromeColor() {
-        ShadowColorUtils.sInNightMode = false;
+        ColorUtils.setInNightModeForTesting(false);
         NtpCustomizationConfigManager customizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
 
@@ -513,7 +511,7 @@ public class NtpCustomizationUtilsUnitTest {
         verify(mDrawable).setTint(eq(primaryColor));
 
         // Test cases in dark mode:
-        ShadowColorUtils.sInNightMode = true;
+        ColorUtils.setInNightModeForTesting(true);
         clearInvocations(mDrawable);
 
         // Verifies that the saved primary color is set for customized color themes.
