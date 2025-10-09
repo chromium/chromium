@@ -199,6 +199,9 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5671188105328420281">Vinkkejä Chromiumin käyttöön</translation>
 <translation id="5688047395118852662">Tässä kortissa on ehdotuksia Chromiumin hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
+<translation id="5731004036450828399">Jotta voit pitää avainkoodit turvassa, sinun on ensin luotava palautuksen PIN-koodi.
+
+        Avainkoodit tallennetaan Salasanoihin, joten voit käyttää niitä Chromiumissa millä tahansa laitteella.</translation>
 <translation id="584550191241316896">Kirjautuneena Chromiumiin</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5889847953983052353">Kun se on päällä:
@@ -265,6 +268,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7285031092584344905">Käytä Chromium-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Salasana tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Tämä avainkoodi tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Avaa Chromium</translation>
 <translation id="7531461704633548377">Chromiumista</translation>
 <translation id="7554983317097061001">Chromium-vinkki: Siirrä Chromium alapalkkiin</translation>
@@ -298,6 +302,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8254729934443216898">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromiumista.</translation>
 <translation id="8293572045658095405">Olet Chromiumin incognito-tilassa</translation>
 <translation id="830951810931292870">Avaa syötetyt URL-osoitteet Chromiumin incognito-tilassa.</translation>
+<translation id="8385503371191508165">Aloita avainkoodien tallentaminen Salasanoilla</translation>
 <translation id="8390323835464055390">Kirjaudu sisään minka tahansa sovelluksen tallennetuilla salasanoilla ja avainkoodeilla käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="8409374867500149834">Käytössäsi on Chromiumin vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}}</translation>

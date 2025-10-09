@@ -199,6 +199,9 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="5671188105328420281">Sugerencias de Chromium</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
+<translation id="5731004036450828399">Para proteger tus llaves de acceso, primero deberás crear un PIN de recuperación.
+
+        Las llaves de acceso se guardan en el Administrador de contraseñas, lo que te permite usarlas en Chromium en cualquier dispositivo.</translation>
 <translation id="584550191241316896">Accediste a Chromium</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5889847953983052353">Cuando se activa:
@@ -265,6 +268,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7285031092584344905">Accede a tus contraseñas de Chromium y más en otras apps.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">La contraseña se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Esta llave de acceso se guardará en el Administrador de contraseñas para <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Abre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Sugerencia para Chromium: Mueve Chromium al Dock</translation>
@@ -298,6 +302,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8254729934443216898">Explora nuevas funciones que te ayudarán a aprovechar Chromium al máximo.</translation>
 <translation id="8293572045658095405">Estás en el modo Incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre las URLs ingresadas en Chromium en modo Incógnito.</translation>
+<translation id="8385503371191508165">Comienza a guardar llaves de acceso con el Administrador de contraseñas</translation>
 <translation id="8390323835464055390">Accede con tus contraseñas y llaves de acceso guardadas desde cualquier app con Autocompletar en Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>

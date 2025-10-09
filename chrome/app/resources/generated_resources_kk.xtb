@@ -1634,6 +1634,7 @@
 <translation id="2102495993840063010">Android қолданбалары</translation>
 <translation id="2104166991923847969">Хотспотты автоматты түрде өшіру</translation>
 <translation id="2105809836724866556">"<ph name="MODULE_TITLE" />" жасырылды.</translation>
+<translation id="2106439768713835453">Қолданба аудиосын да бөлісу</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> бұрын тексерілді.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефон нөмірі}other{# телефон нөмірі}}</translation>
 <translation id="2109384632594340939">профиль суреті</translation>
@@ -1773,6 +1774,7 @@
 <translation id="2204034823255629767">Барлық тергендеріңізді оқу және өзгерту</translation>
 <translation id="2204168219363024184">Бұл кіру кілтін Google Password Manager-мен жасау үшін жеке басыңызды растаңыз</translation>
 <translation id="2204387456724731099">Таңдалған мәтін аударылмады</translation>
+<translation id="2204613850236199029">Ақпарат өшірілді</translation>
 <translation id="2207116775853792104">Бұл кеңейтімді сақтау</translation>
 <translation id="2209841631181508629">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> сіздің <ph name="FIELDS_STRING" /> деректеріңізді осы сайтпен бөліседі. Сайттың <ph name="BEGIN_LINK" />қызмет көрсету шарттарын<ph name="END_LINK" /> қараңыз.</translation>
 <translation id="2210462644007531147">Орнату аяқталмады.</translation>
@@ -3867,6 +3869,7 @@
 <translation id="3656328935986149999">Курсор жылдамдығы</translation>
 <translation id="3656701180077048004">Перне басылғаннан кейін кідіріспен іске қосылады.</translation>
 <translation id="3658871634334445293">TrackPoint жылдамдатуы</translation>
+<translation id="3659483399659250379">Қойынды және т.б. қосу</translation>
 <translation id="3659929705630080526">Рұқсат кодын енгізгенде тым көп қателестіңіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="3661106764436337772">Жылдам әрі сенімділікпен жазыңыз</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 бұрыннан бар құпия сөз табылды}other{{NUM_PASSWORDS} бұрыннан бар құпия сөз табылды}}</translation>
@@ -5399,6 +5402,7 @@
 <translation id="4707337002099455863">Әрдайым барлық сайтта</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> жүйесінен шығу</translation>
 <translation id="4708892882822652439">Қойынды дыбысына да рұқсат беру</translation>
+<translation id="4710347732286177840">Қосымша сұрауға арналған экран аймағын таңдау</translation>
 <translation id="4711638718396952945">Параметрлерді қалпына келтіру</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Барлық терезені жапқан кезде жою</translation>
@@ -10891,7 +10895,6 @@
 <translation id="8549127125482561383">Сұрауларды көрсету жолы</translation>
 <translation id="8549316893834449916">Chromebook құрылғысына кіруге Gmail, Drive, YouTube, т.б. үшін қолданатын Google аккаунтыңызды пайдаланыңыз.</translation>
 <translation id="8550239873869577759">Күдікті файл жүктеп алынды.</translation>
-<translation id="8551246044333727813">Атыңызды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="USERNAME" />)<ph name="END_LINK" /> өзгертуге болады.</translation>
 <translation id="8551388862522347954">Лицензиялар</translation>
 <translation id="8551588720239073785">Күн және уақыт параметрлері</translation>
 <translation id="8551647092888540776">Офлайн режимде <ph name="FILE_NAMES" /> файлын ашу мүмкін емес</translation>

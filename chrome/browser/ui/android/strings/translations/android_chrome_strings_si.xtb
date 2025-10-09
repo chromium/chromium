@@ -390,6 +390,7 @@
 <translation id="2834884592945939112">සැකසීම්, Google ගිණුම් දෝෂය</translation>
 <translation id="2838367486340230368">පෞද්ගලිකත්ව මාර්ගෝපදේශ පැහැදිලි කිරීම අර්ධ උසකින් විවෘත වේ</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> අනුගමනය කිරීමෙන් ඉවත් විය</translation>
+<translation id="2839604041336226596"><ph name="TAB_TITLE" />, බහු-තේරූ ඇමිණූ පටිත්ත</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{අප්‍රකට ටැබ <ph name="TAB_COUNT_ONE" />ක් වසනු ඇත}one{අප්‍රකට ටැබ <ph name="TAB_COUNT_MANY" />ක් වසනු ඇත}other{අප්‍රකට ටැබ <ph name="TAB_COUNT_MANY" />ක් වසනු ඇත}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{දින 1කට පෙර පරීක්ෂා කරන ලදි}one{දින #කට පෙර පරීක්ෂා කරන ලදි}other{දින #කට පෙර පරීක්ෂා කරන ලදි}}</translation>
 <translation id="2842985007712546952">මූලික ෆෝල්ඩරය</translation>
@@ -506,7 +507,6 @@
 <translation id="3334729583274622784">ගොනු දිගුව වෙනස් කරන්නේද?</translation>
 <translation id="333863344734218290">අනාරක්ෂිත පොදු සහ පෞද්ගලික අඩවි සඳහා ඔබට අනතුරු අඟවයි</translation>
 <translation id="3341262203274374114">අනුගමනය කිරීමෙන් ඉවත් වීමට නොහැකිය. යම් දෙයක් වැරදිණි.</translation>
-<translation id="3351165113450806415">ස්වයිප් කිරීමට නව ක්‍රමයක්</translation>
 <translation id="3359667936385849800">ඔබේ වත්මන් සේවා සැපයුම්කරු භාවිත කරන්න</translation>
 <translation id="3373701465337594448">ක්‍රියාත්මක වූ විට, ඔබේ රුචිකත්වයන් අනුමාන කරන ඔබ පිවිසෙන අඩවි ලැයිස්තුවක් මෙහි දිස් වේ</translation>
 <translation id="3384347053049321195">රූපය බෙදා ගන්න</translation>
@@ -699,6 +699,7 @@
 <translation id="4285846616383034558">කුකීස්, කෑෂය, සහ අනෙකුත් අඩවි දත්ත</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
+<translation id="4298161202289999785"><ph name="TAB_TITLE" />, බහු-තේරූ අප්‍රකට පටිත්ත</translation>
 <translation id="4298388696830689168">සබැඳි කළ වෙබ් අඩවි</translation>
 <translation id="4300632303535881174">පෙර පිටුවට යන්න</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1139,6 +1140,7 @@
 උදාහරණයක් ලෙස, සමහර වෙබ් අඩවි, ඔබ පිවිසී ඇති අනෙකුත් වෙබ් අඩවි මත පදනම්ව නොමැති වෙළඳ දැන්වීම් පෙන්වමින් මෙම ඉල්ලීමට ප්‍රතිචාර දැක්විය හැකිය. බොහෝ වෙබ් අඩවි තවමත් ඔබේ බ්‍රවුස් කළ දත්ත රැස් කිරීම සහ භාවිත කිරීම කරනු ඇත — උදාහරණ ලෙස, ආරක්ෂාව වැඩිදියුණු කිරීමට, අන්තර්ගතය, වෙළඳ දැන්වීම් සහ නිර්දේශ සැපයීමට, වාර්තා කිරීමේ සංඛ්‍යාලේඛන උත්පාදනයට.</translation>
 <translation id="6247557882553405851">Google මුරපද කළමනාකරු</translation>
 <translation id="6248988683584659830">සැකසුම් සොයන්න</translation>
+<translation id="6250847299079540062"><ph name="TAB_TITLE" />, බහු-තේරූ ඇමිණූ අප්‍රකට පටිත්ත</translation>
 <translation id="6251449557817521191">මෙතැනින් ඔබේ Chrome ඉතිහාසය බලන්න</translation>
 <translation id="6254139308321626268">ඔබ PDF ගොනුවක් බලමින් සිටී</translation>
 <translation id="6255809143828972562">Chrome වෙතින් මෙවලම් සමගින්, ඔබට සුරක්ෂිතව බ්‍රවුස් කර පාලනයේ සිටිය හැක</translation>
@@ -1182,6 +1184,7 @@
 <translation id="6410883413783534063">එකවර විවිධ පිටුවලට පිවිසීමට ටැබ් විවෘත කරන්න</translation>
 <translation id="6411009031428071896">සංග්‍රහයට සවන් දෙන්න</translation>
 <translation id="6411219469806822692">ඉහළට යාමට නොහැකිය. පිටුවේ තවදුරටත් ඉහළින් ආරම්භ කිරීමට උත්සාහ කරන්න.</translation>
+<translation id="6412215853589222273"><ph name="TAB_TITLE" />, බහු-තේරූ පටිත්ත</translation>
 <translation id="641643625718530986">මුද්‍රණය කරන්න...</translation>
 <translation id="6433501201775827830">ඔබේ සෙවුම් එන්ජිම තෝරා ගන්න</translation>
 <translation id="6434309073475700221">ඉවත ලන්න</translation>
@@ -1625,7 +1628,6 @@
 <translation id="8221985041778490865">බ්‍රවුස් කිරීමේ දත්ත මැකීම</translation>
 <translation id="8223642481677794647">සංග්‍රහ කාඩ්පත් මෙනුව</translation>
 <translation id="82296173028782770">සෙවීම් විමසුම සංස්කරණය කරන්න: <ph name="SEARCH_QUERY" /></translation>
-<translation id="8236063039629122676">දැන්, ඔබ ගිය පෙර පිටු බැලීමට දකුණට ස්වයිප් කිරීමෙන් ඔබව පසුපසට ගෙන යන අතර වමට ස්වයිප් කිරීමෙන් ඔබව ඉදිරියට ගෙන යයි</translation>
 <translation id="8236097722223016103">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="8243077599929149377">ඔබේ පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="8244387390464017490">නව පටිති පිටුව අභිරුචිකරණය කරන්න</translation>

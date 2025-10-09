@@ -198,6 +198,9 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="5671188105328420281">Tipy pro Chromium</translation>
 <translation id="5688047395118852662">Tato karta zobrazuje návrhy, jak Chromium využít na maximum.</translation>
 <translation id="5700709190537129682">Chromium nemůže zkontrolovat hesla</translation>
+<translation id="5731004036450828399">Aby byly přístupové klíče v bezpečí, musíte si nejdříve vytvořit kód PIN pro obnovení.
+
+        Přístupové klíče se ukládají do Správce hesel, který umožňuje používat je v Chromiu na libovolném zařízení.</translation>
 <translation id="584550191241316896">Jste přihlášeni do prohlížeče Chromium</translation>
 <translation id="5862307444128926510">Vítejte v prohlížeči Chromium</translation>
 <translation id="5889847953983052353">Když je tato funkce zapnutá:
@@ -264,6 +267,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7285031092584344905">Získejte přístup ke svým heslům v prohlížeči Chromium a k dalším funkcím v jiných aplikacích.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Heslo bude uloženo do Správce hesel pro účet <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Tento přístupový klíč se uloží do Správce hesel pro účet <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Otevřete Chromium</translation>
 <translation id="7531461704633548377">Z prohlížeče Chromium</translation>
 <translation id="7554983317097061001">Tip pro Chromium: Přesuňte Chromium do Docku</translation>
@@ -297,6 +301,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8254729934443216898">Prozkoumejte nové funkce, které vám pomohou využít Chromium na maximum.</translation>
 <translation id="8293572045658095405">Jste v anonymním režimu prohlížeče Chromium</translation>
 <translation id="830951810931292870">Otevře zadané adresy URL v prohlížeči Chromium v anonymním režimu.</translation>
+<translation id="8385503371191508165">Začněte si ukládat přístupové klíče pomocí Správce hesel</translation>
 <translation id="8390323835464055390">S automatickým vyplňováním přes Chromium se můžete pomocí uložených hesel a přístupových klíčů přihlašovat z libovolné aplikace</translation>
 <translation id="8409374867500149834">Máte nejsilnější zabezpečení prohlížeče Chromium proti škodlivým webům</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{K tomuto dochází, když Chromium {THRESHOLD} minutu nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}few{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}many{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}other{K tomuto dochází, když Chromium {THRESHOLD} minut nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}}</translation>

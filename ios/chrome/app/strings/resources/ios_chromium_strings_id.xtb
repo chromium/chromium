@@ -199,6 +199,9 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="5671188105328420281">Tips untuk Chromium</translation>
 <translation id="5688047395118852662">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chromium.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat memeriksa sandi Anda</translation>
+<translation id="5731004036450828399">Agar kunci sandi Anda tetap aman, Anda harus membuat PIN pemulihan terlebih dahulu.
+
+        Kunci sandi disimpan di Pengelola Sandi, yang memungkinkan Anda menggunakannya di Chromium di perangkat mana pun.</translation>
 <translation id="584550191241316896">Login ke Chromium</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5889847953983052353">Jika aktif:
@@ -265,6 +268,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="7285031092584344905">Akses sandi Chromium Anda dan data lainnya di berbagai aplikasi lain.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Sandi Anda akan disimpan ke Pengelola Sandi untuk <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Kunci sandi ini akan disimpan ke Pengelola Sandi untuk <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Buka Chromium</translation>
 <translation id="7531461704633548377">Dari Chromium</translation>
 <translation id="7554983317097061001">Tips Chromium: Pindahkan Chromium ke dok</translation>
@@ -298,6 +302,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8254729934443216898">Pelajari beragam fitur baru yang membantu Anda mengoptimalkan penggunaan Chromium.</translation>
 <translation id="8293572045658095405">Anda sedang dalam mode Samaran Chromium</translation>
 <translation id="830951810931292870">Membuka URL yang dimasukkan di Chromium dalam mode Samaran.</translation>
+<translation id="8385503371191508165">Mulai menyimpan kunci sandi dengan Pengelola Sandi</translation>
 <translation id="8390323835464055390">Login dengan sandi &amp; kunci sandi tersimpan dari aplikasi apa pun menggunakan Chromium untuk Isi Otomatis</translation>
 <translation id="8409374867500149834">Anda memiliki keamanan terkuat Chromium terhadap situs berbahaya</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>

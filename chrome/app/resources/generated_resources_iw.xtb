@@ -1785,6 +1785,7 @@
 <translation id="2204034823255629767">לקרוא ולשנות את כל מה שהקלדת</translation>
 <translation id="2204168219363024184">‏כדי ליצור את מפתח הגישה הזה באמצעות מנהל הסיסמאות של Google, עליך לאמת את הזהות שלך</translation>
 <translation id="2204387456724731099">לא ניתן היה לתרגם את הבחירה הזו</translation>
+<translation id="2204613850236199029">הפרטים הוסרו</translation>
 <translation id="2207116775853792104">אני רוצה להשאיר את התוסף הזה</translation>
 <translation id="2209841631181508629">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="2210462644007531147">אי אפשר להשלים את ההתקנה</translation>
@@ -3273,7 +3274,7 @@
 <translation id="3239373508713281971">מגבלת הזמן של <ph name="APP_NAME" /> הוסרה</translation>
 <translation id="3240299564104448052">נראה שאין חיבור לאינטרנט.</translation>
 <translation id="3240426699337459095">הקישור הועתק</translation>
-<translation id="3240718227457961717">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את ההיסטוריה ואת הכרטיסיות עם <ph name="ACCOUNT_EMAIL" />. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="3240718227457961717">‏כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את ההיסטוריה ואת הכרטיסיות עם <ph name="ACCOUNT_EMAIL" />. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="3241638166094654466">תאים בכל שורה:</translation>
 <translation id="3241680850019875542">יש לבחור את ספריית הבסיס של התוסף שיש לארוז. כדי לעדכן תוסף, יש לבחור גם את קובץ המפתח הפרטי שבו ניתן להשתמש שוב.</translation>
 <translation id="3241810535741601486">השינוי הזה הוא קבוע ואי אפשר לבטל אותו. העדכונים המורחבים יחולו על כל המשתמשים במכשיר הזה. <ph name="LINK_START" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -6292,7 +6293,7 @@
 <translation id="5327248766486351172">שם</translation>
 <translation id="5327570636534774768">המכשיר הזה מסומן כמנוהל על ידי דומיין אחר. צריך לבטל את ניהול התצורה שלו מהדומיין הזה לפני ההגדרה של מצב ההדגמה.</translation>
 <translation id="5327912693242073631">תכונות שצריכות התראות לא יפעלו</translation>
-<translation id="5328551442597731838">רוצה לראות כרטיסיות ממכשירים אחרים?</translation>
+<translation id="5328551442597731838">כרטיסיות ממכשירים אחרים</translation>
 <translation id="532943162177641444">יש ללחוץ על ההודעה בטלפון <ph name="PHONE_NAME" /> כדי להגדיר את הנקודה לשיתוף אינטרנט בנייד שבה המכשיר הזה יכול להשתמש.</translation>
 <translation id="5329858601952122676">&amp;מחיקה</translation>
 <translation id="5331568967879689647">‏אפליקציית מערכת של ChromeOS</translation>
@@ -6571,7 +6572,7 @@
 <translation id="5521078259930077036">האם זהו דף הבית שציפית לראות?</translation>
 <translation id="5522156646677899028">התוסף הזה מכיל נקודת תורפה חמורה באבטחה.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{מנהל המערכת שלך התקין תוסף}one{מנהל המערכת שלך התקין # תוספים}two{מנהל המערכת שלך התקין # תוספים}other{מנהל המערכת שלך התקין # תוספים}}</translation>
-<translation id="5523203511530504754">פתיחת קישורים של <ph name="PROTOCOL_SCHEME" /> ב-<ph name="APP_NAME" /></translation>
+<translation id="5523203511530504754">פתיחת קישורים של <ph name="PROTOCOL_SCHEME" /> באפליקציית <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">אתרים שמוסיפים לרשימה תמיד נשארים פעילים ושמורים בזיכרון</translation>
 <translation id="5523558474028191231">שם יכול לכלול אותיות, ספרות ותווים מיוחדים, והוא חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
 <translation id="5526745900034778153">צריך להיכנס מחדש כדי להמשיך את הסנכרון</translation>
@@ -7630,7 +7631,7 @@
 <translation id="6274089201566806618">מתבצע חיבור אל <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274108044476515407">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK1" />מודעות שאתרים מציעים<ph name="LINK_END1" />, ל<ph name="BEGIN_LINK2" />הגדרות קובצי ה-Cookie<ph name="LINK_END2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="LINK_END3" /></translation>
 <translation id="6274202259872570803">הקלטת מסך</translation>
-<translation id="627581157848786026">רוצה לראות כרטיסיות ממכשירים אחרים?</translation>
+<translation id="627581157848786026">כרטיסיות ממכשירים אחרים</translation>
 <translation id="6276210637549544171">‏לשרת ה-proxy ‏<ph name="PROXY_SERVER" /> נדרשים שם משתמש וסיסמה.</translation>
 <translation id="6277105963844135994">תם הזמן הקצוב לתפוגה של הרשת</translation>
 <translation id="6277518330158259200">צ&amp;ילום מסך</translation>
@@ -10923,7 +10924,6 @@
 <translation id="8549127125482561383">איך להציג בקשות</translation>
 <translation id="8549316893834449916">‏הכניסה אל Chromebook תתבצע באמצעות חשבון Google שלך – אותו חשבון שמשמש אותך ב-Gmail, ב-Drive, ב-YouTube ועוד.</translation>
 <translation id="8550239873869577759">בוצעה הורדה של קובץ חשוד</translation>
-<translation id="8551246044333727813">‏אפשר לערוך את השם <ph name="BEGIN_LINK" />בחשבון <ph name="USERNAME" /> ב-Google<ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">רישיונות</translation>
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8551647092888540776">לא ניתן לפתוח את <ph name="FILE_NAMES" /> במצב אופליין</translation>

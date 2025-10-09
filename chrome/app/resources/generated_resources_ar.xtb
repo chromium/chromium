@@ -1642,6 +1642,7 @@
 <translation id="2102495993840063010">‏تطبيقات Android</translation>
 <translation id="2104166991923847969">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
+<translation id="2106439768713835453">مشاركة صوت التطبيق أيضًا</translation>
 <translation id="2108204112555497972">تمّ التحقُّق قبل <ph name="NUM_DAYS_HOURS_MINUTES" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="2109384632594340939">صورة الملف الشخصي</translation>
@@ -1781,6 +1782,7 @@
 <translation id="2204034823255629767">قراءة وتغيير أي شيء تكتبه</translation>
 <translation id="2204168219363024184">‏لإنشاء مفتاح المرور هذا باستخدام "مدير كلمات المرور في Google"، يجب إثبات هويتك</translation>
 <translation id="2204387456724731099">تعذَّرت ترجمة هذا النص المحدد.</translation>
+<translation id="2204613850236199029">تمت إزالة المعلومات</translation>
 <translation id="2207116775853792104">إبقاء هذه الإضافة</translation>
 <translation id="2209841631181508629">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="2210462644007531147">تعذّر إكمال التثبيت</translation>
@@ -3877,6 +3879,7 @@
 <translation id="3656328935986149999">سرعة المؤشر</translation>
 <translation id="3656701180077048004">تضيف هذه الميزة مدةً بين وقت الضغط على مفتاح ووقت تفعيله</translation>
 <translation id="3658871634334445293">‏تسارع TrackPoint</translation>
+<translation id="3659483399659250379">إضافة علامة تبويب والمزيد</translation>
 <translation id="3659929705630080526">لقد أدخلت رمز دخول غير صحيح عدّة مرات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{تم العثور على كلمة مرور حالية واحدة}zero{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}two{تم العثور على كلمتَي مرور حاليتَين ({NUM_PASSWORDS})}few{تم العثور على {NUM_PASSWORDS} كلمات مرور حالية}many{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}other{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}}</translation>
@@ -5407,6 +5410,7 @@
 <translation id="4707337002099455863">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">السماح أيضًا بمشاركة صوت علامة التبويب</translation>
+<translation id="4710347732286177840">تحديد جزء من الشاشة لطرح أسئلة المتابعة</translation>
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">حذف البيانات عند إغلاق جميع النوافذ</translation>
@@ -10916,7 +10920,6 @@
 <translation id="8549127125482561383">كيفية عرض الطلبات</translation>
 <translation id="8549316893834449916">‏يجب أن تستخدم حسابك على Google لتسجيل الدخول إلى جهاز Chromebook، وهو الحساب نفسه الذي تستخدمه على Gmail وDrive وYouTube وغيرها من المنتجات.</translation>
 <translation id="8550239873869577759">تم تنزيل ملف مُريب.</translation>
-<translation id="8551246044333727813">‏يمكنك تعديل اسمك <ph name="BEGIN_LINK" />في حسابك على Google ‏(<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">التراخيص</translation>
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>
 <translation id="8551647092888540776">لا يمكن فتح "<ph name="FILE_NAMES" />" بلا اتصال بالإنترنت</translation>

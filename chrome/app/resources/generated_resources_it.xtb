@@ -1000,6 +1000,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="166278006618318542">Algoritmo chiave pubblica del soggetto</translation>
 <translation id="1662801900924515589">App <ph name="APP" /> installata</translation>
 <translation id="1663698992894057019">Esegui l'upgrade a un nuovo Chromebook per avere la versione di sicurezza e software più recente</translation>
+<translation id="1664497218584335032">Il sito web vuole aprire questo link in un'app.</translation>
 <translation id="166454475160289583">Non autorizzati a eseguire l'override dell'input della tastiera</translation>
 <translation id="1665328953287874063">Usa una password o un PIN per sbloccare il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Espressionismo</translation>
@@ -1636,6 +1637,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2102495993840063010">App Android</translation>
 <translation id="2104166991923847969">Disattiva hotspot automaticamente</translation>
 <translation id="2105809836724866556">Modulo nascosto: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Condividi anche l'audio dell'applicazione</translation>
 <translation id="2108204112555497972">Eseguito <ph name="NUM_DAYS_HOURS_MINUTES" /> fa</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="2109384632594340939">immagine del profilo</translation>
@@ -3872,6 +3874,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3656328935986149999">Velocità del cursore</translation>
 <translation id="3656701180077048004">Aggiunge un ritardo tra il momento in cui premi un tasto e la sua attivazione</translation>
 <translation id="3658871634334445293">Accelerazione TrackPoint</translation>
+<translation id="3659483399659250379">Aggiungi una scheda e altro</translation>
 <translation id="3659929705630080526">Hai inserito troppe volte un codice di accesso errato. Riprova più tardi.</translation>
 <translation id="3661106764436337772">Scrivi più velocemente e con maggiore sicurezza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 password esistente trovata}other{{NUM_PASSWORDS} password esistenti trovate}}</translation>
@@ -5404,6 +5407,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4707337002099455863">Sempre su tutti i siti</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Consenti anche audio scheda</translation>
+<translation id="4710347732286177840">Seleziona la regione dello schermo per la domanda aggiuntiva</translation>
 <translation id="4711638718396952945">Ripristina impostazioni</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Elimina alla chiusura di tutte le finestre</translation>
@@ -6552,10 +6556,12 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5517304475148761050">L'app richiede l'accesso al Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Apri sempre i link <ph name="PROTOCOL_SCHEME" /> in questa app</translation>
 <translation id="5520605865175417976">Rimuovi azione <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">È la pagina iniziale prevista?</translation>
 <translation id="5522156646677899028">Questa estensione contiene una grave vulnerabilità di sicurezza.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Il tuo amministratore ha installato un'estensione}other{Il tuo amministratore ha installato # estensioni}}</translation>
+<translation id="5523203511530504754">Apri i link <ph name="PROTOCOL_SCHEME" /> in <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti</translation>
 <translation id="5523558474028191231">Il nome può contenere lettere, numeri e caratteri speciali e non può superare i <ph name="MAX_CHARACTER_COUNT" /> caratteri</translation>
 <translation id="5526745900034778153">Accedi nuovamente per riprendere la sincronizzazione</translation>
@@ -9583,6 +9589,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7663859337051362114">Aggiungi profilo eSIM</translation>
 <translation id="76641554187607347">Nessuna tastiera collegata</translation>
 <translation id="7664442418269614729">Usa questa carta sul tuo iPhone</translation>
+<translation id="7664822217939981459">Scegli un'app per aprire il link <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Riserva dimensioni</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
 <translation id="7665445336029073980">Cronologia dei download completa</translation>
@@ -10897,7 +10904,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8549127125482561383">Come mostrare le richieste</translation>
 <translation id="8549316893834449916">Utilizzerai il tuo Account Google per accedere al Chromebook: lo stesso che usi per accedere a Gmail, Drive, YouTube e altro ancora.</translation>
 <translation id="8550239873869577759">File scaricato sospetto</translation>
-<translation id="8551246044333727813">Puoi modificare il tuo nome nel tuo <ph name="BEGIN_LINK" />Account Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenze</translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
 <translation id="8551647092888540776">Impossibile aprire <ph name="FILE_NAMES" /> quando offline</translation>
@@ -11205,6 +11211,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8750786237117206586">Gestisci le impostazioni audio di ChromeOS Flex</translation>
 <translation id="8751034568832412184">Scuola</translation>
 <translation id="8751329102746373229">Dal tuo amministratore</translation>
+<translation id="875242763254084885">Il sito <ph name="ORIGIN" /> vuole aprire questo link in un'app.</translation>
 <translation id="8752451679755290210">Passa automaticamente da un elemento all'altro</translation>
 <translation id="8753948258138515839">L'app File consente di accedere rapidamente ai file salvati su Google Drive, nell'unità di archiviazione esterna o sul tuo dispositivo ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Quando esegui <ph name="PRODUCT_NAME" /> in un ambiente desktop supportato, vengono utilizzate le impostazioni proxy del sistema. Tuttavia, il tuo sistema non è supportato o si è verificato un problema durante l'avvio della tua configurazione di sistema.&lt;/p&gt;

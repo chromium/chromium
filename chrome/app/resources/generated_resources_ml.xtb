@@ -1634,6 +1634,7 @@
 <translation id="2102495993840063010">Android ആപ്‌സ്</translation>
 <translation id="2104166991923847969">ഹോട്ട്‌സ്പോട്ട് സ്വയമേവ ഓഫാക്കുക</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> മറച്ചിരിക്കുന്നു</translation>
+<translation id="2106439768713835453">ആപ്പിന്റെ ഓഡിയോയും പങ്കിടുക</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> മുമ്പ് പരിശോധിച്ചു</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="2109384632594340939">പ്രൊഫൈൽ ചിത്രം</translation>
@@ -1773,6 +1774,7 @@
 <translation id="2204034823255629767">നിങ്ങൾ ടൈപ്പുചെയ്യുന്നവയെല്ലാം വായിക്കുക, മാറ്റുക</translation>
 <translation id="2204168219363024184">Google Password Manager ഉപയോഗിച്ച് ഈ പാസ്‌കീ സൃഷ്‌ടിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="2204387456724731099">ഈ സെലക്ഷൻ വിവർത്തനം ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="2204613850236199029">വിവരം നീക്കം ചെയ്‌തു</translation>
 <translation id="2207116775853792104">ഈ വിപുലീകരണം നിലനിർത്തുക</translation>
 <translation id="2209841631181508629">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK" />സേവന നിബന്ധനകൾ<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="2210462644007531147">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയാക്കാനായില്ല</translation>
@@ -3869,6 +3871,7 @@
 <translation id="3656328935986149999">കഴ്‌സർ വേഗത</translation>
 <translation id="3656701180077048004">നിങ്ങൾ ഒരു കീ അമർത്തുന്നതിന്റെയും അത് സജീവമാകുന്നതിന്റെയും ഇടയ്ക്ക് ഒരു കാലതാമസം ചേർക്കുന്നു</translation>
 <translation id="3658871634334445293">TrackPoint ആക്സിലറേഷൻ</translation>
+<translation id="3659483399659250379">ടാബും മറ്റും ചേർക്കുക</translation>
 <translation id="3659929705630080526">നിങ്ങൾ നിരവധി തവണ തെറ്റായ ആക്‌സസ് കോഡ് നൽകി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3661106764436337772">കൂടുതൽ ആത്മവിശ്വാസത്തോടെ വേഗത്തിൽ എഴുതൂ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{നിലവിലുള്ള ഒരു പാസ്‌വേഡ് കണ്ടെത്തി}other{നിലവിലുള്ള {NUM_PASSWORDS} പാസ്‌വേഡുകൾ കണ്ടെത്തി}}</translation>
@@ -5400,6 +5403,7 @@
 <translation id="4707337002099455863">എപ്പോഴും എല്ലാ സൈറ്റിലും</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> പുറത്തുകടക്കുക</translation>
 <translation id="4708892882822652439">ടാബിൽ നിന്നുള്ള ഓഡിയോയും അനുവദിക്കുക</translation>
+<translation id="4710347732286177840">ഫോളോ അപ്പ് ചെയ്യുന്നതിനായി സ്ക്രീനിലെ ഒരു നിർദ്ദിഷ്ട ഇടം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4711638718396952945">ക്രമീകരണങ്ങൾ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">നിങ്ങൾ എല്ലാ വിൻഡോകളും അടയ്‌ക്കുമ്പോൾ ഇല്ലാതാക്കുക</translation>
@@ -10899,7 +10903,6 @@
 <translation id="8549127125482561383">അഭ്യർത്ഥനകൾ എങ്ങനെ കാണിക്കാം</translation>
 <translation id="8549316893834449916">Chromebook-ലേക്ക് സെെൻ ഇൻ ചെയ്യാൻ, Gmail, Drive, YouTube തുടങ്ങിയവയ്ക്ക് ഉപയോഗിക്കുന്ന അതേ Google Account നിങ്ങൾ ഉപയോഗിക്കും.</translation>
 <translation id="8550239873869577759">സംശയാസ്പദമായ ഫയൽ ഡൗൺലോഡ് ചെയ്തു</translation>
-<translation id="8551246044333727813"><ph name="BEGIN_LINK" /><ph name="USERNAME" /> എന്ന Google Account-ലെ<ph name="END_LINK" /> പേര് നിങ്ങൾക്ക് എഡിറ്റ് ചെയ്യാം.</translation>
 <translation id="8551388862522347954">ലൈസന്‍സുകള്‍</translation>
 <translation id="8551588720239073785">തീയതി, സമയ ക്രമീകരണം</translation>
 <translation id="8551647092888540776">ഓഫ്‌ലൈനായിരിക്കുമ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>

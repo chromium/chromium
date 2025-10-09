@@ -199,9 +199,9 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5671188105328420281">Savjeti za Chromium</translation>
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
-<translation id="5731004036450828399">Da biste zaštitili pristupne ključeve, najprije morate izraditi PIN za oporavak.
+<translation id="5731004036450828399">Da zaštitite pristupne ključeve, prvo morate kreirati PIN za oporavak.
 
-        Pristupni ključevi spremaju se u Upravitelj zaporki, što vam omogućuje da ih upotrebljavate u Chromiumu na bilo kojem uređaju.</translation>
+        Pristupni ključevi se pohranjuju na Upravitelju lozinki, što vam omogućava da ih koristite u Chromiumu na bilo kojem uređaju.</translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5889847953983052353">Kada je uključeno:
@@ -268,7 +268,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7285031092584344905">Pristupajte lozinkama u Chromiumu i ostalom u drugim aplikacijama.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Vaša lozinka će se sačuvati u Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
-<translation id="7434848749522628428">Ovaj pristupni ključ spremit će se u Upravitelj zaporki za račun <ph name="USER_EMAIL" /></translation>
+<translation id="7434848749522628428">Pristupni ključ će se sačuvati na Upravitelju lozinki za <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Otvorite Chromium</translation>
 <translation id="7531461704633548377">Iz Chromiuma</translation>
 <translation id="7554983317097061001">Savjet za Chromium: premjestite Chromium na donju traku</translation>
@@ -302,7 +302,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8254729934443216898">Istražite nove funkcije koje će vam pomoći da iskoristite sve prednosti Chromiuma.</translation>
 <translation id="8293572045658095405">U anonimnom ste načinu rada u Chromiumu</translation>
 <translation id="830951810931292870">Otvara unesene URL-ove u Chromiumu u anonimnom načinu rada.</translation>
-<translation id="8385503371191508165">Počnite spremati pristupne ključeve pomoću Upravitelja zaporki</translation>
+<translation id="8385503371191508165">Počnite pohranjivati pristupne ključeve putem Upravitelja lozinki</translation>
 <translation id="8390323835464055390">Prijavljujte se putem sačuvanih lozinki i pristupnih ključeva iz bilo koje aplikacije koristeći Chromium za automatsko popunjavanje</translation>
 <translation id="8409374867500149834">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Podaci sačuvani samo na ovom uređaju dok ste bili prijavljeni će se izbrisati. Ovo može uključivati historiju i lozinke.}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Podaci sačuvani samo na ovom uređaju dok ste bili prijavljeni će se izbrisati. Ovo može uključivati historiju i lozinke.}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute. Podaci sačuvani samo na ovom uređaju dok ste bili prijavljeni će se izbrisati. Ovo može uključivati historiju i lozinke.}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta. Podaci sačuvani samo na ovom uređaju dok ste bili prijavljeni će se izbrisati. Ovo može uključivati historiju i lozinke.}}</translation>

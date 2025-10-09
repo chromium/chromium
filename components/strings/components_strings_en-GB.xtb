@@ -320,7 +320,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Furnished Rentals</translation>
 <translation id="1527263332363067270">Waiting for connection…</translation>
-<translation id="1528311629279578926">The connection is blocked because it was initiated by a public page to connect to devices or servers on your private network. Reload this page to allow the connection.</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">The site that you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
 <translation id="1532118530259321453">This page says</translation>
@@ -1411,7 +1410,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3325662270238538525">Recent file access and modifications, including file names, digital fingerprints of the file content, download source and metadata</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Not eligible for virtual card</translation>
-<translation id="3336044043987989409">Press the reload button to allow connection to devices or servers on your private network.</translation>
 <translation id="3338095232262050444">Secure</translation>
 <translation id="333839153442689579">High-Intensity Interval Training</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
@@ -3147,6 +3145,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6189351761800074311">Your text and page content are sent to Google, but will not be used to improve AI.
     <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Override some keys on your keyboard, like Esc</translation>
+<translation id="6192524964213419211">Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6195418151868446719">Consumer electronics</translation>

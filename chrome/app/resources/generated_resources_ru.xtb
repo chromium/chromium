@@ -2203,7 +2203,7 @@
 <translation id="2483698983806594329">Скачан непроверенный файл</translation>
 <translation id="2484574361686148760">Обновить информацию о клиентах Wi-Fi Direct</translation>
 <translation id="2484743711056182585">Удалить разрешение</translation>
-<translation id="2484909293434545162">Если сайт использует файлы cookie, информация о нем будет показана здесь</translation>
+<translation id="2484909293434545162">Если сайт использует файлы cookie, он появится здесь</translation>
 <translation id="2485394160472549611">Персональные рекомендации</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2485681265915754872">Условия использования Google Play</translation>
@@ -10911,7 +10911,6 @@
 <translation id="8549127125482561383">Показ запросов</translation>
 <translation id="8549316893834449916">Это тот же аккаунт, что и в других сервисах Google, таких как Gmail, Диск или YouTube.</translation>
 <translation id="8550239873869577759">Скачан подозрительный файл</translation>
-<translation id="8551246044333727813">Вы можете изменить имя <ph name="BEGIN_LINK" />в аккаунте Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Лицензии</translation>
 <translation id="8551588720239073785">Настройки даты и времени</translation>
 <translation id="8551647092888540776">Невозможно открыть файл "<ph name="FILE_NAMES" />" в офлайн-режиме</translation>

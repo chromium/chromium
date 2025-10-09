@@ -1000,6 +1000,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="166278006618318542">Algoritme de clau pública del subjecte</translation>
 <translation id="1662801900924515589">S'ha instal·lat <ph name="APP" /></translation>
 <translation id="1663698992894057019">Actualitza a un Chromebook nou per gaudir de la seguretat i el programari més recents</translation>
+<translation id="1664497218584335032">El lloc web vol obrir aquest enllaç en una aplicació.</translation>
 <translation id="166454475160289583">Sense permís per anul·lar l'entrada del teclat</translation>
 <translation id="1665328953287874063">Utilitza una contrasenya o un PIN per desbloquejar el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionisme</translation>
@@ -1775,6 +1776,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2204034823255629767">Llegir i canviar tot el que s'escrigui</translation>
 <translation id="2204168219363024184">Per crear aquesta clau d'accés amb el gestor de contrasenyes de Google, verifica la teva identitat</translation>
 <translation id="2204387456724731099">Aquesta selecció no s'ha pogut traduir</translation>
+<translation id="2204613850236199029">S'ha suprimit la informació</translation>
 <translation id="2207116775853792104">Conserva aquesta extensió</translation>
 <translation id="2209841631181508629">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web. Consulta les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" /> d'aquest lloc web.</translation>
 <translation id="2210462644007531147">No s'ha pogut completar la instal·lació</translation>
@@ -6548,10 +6550,12 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5517304475148761050">Aquesta aplicació requereix accés a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Obre sempre els enllaços de <ph name="PROTOCOL_SCHEME" /> en aquesta aplicació</translation>
 <translation id="5520605865175417976">Suprimeix l'acció <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Aquesta pàgina d'inici és la que esperàveu?</translation>
 <translation id="5522156646677899028">Aquesta extensió conté una vulnerabilitat de seguretat greu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{L'administrador ha instal·lat una extensió}other{L'administrador ha instal·lat # extensions}}</translation>
+<translation id="5523203511530504754">Obre els enllaços de <ph name="PROTOCOL_SCHEME" /> a <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Els llocs web que afegeixis estaran sempre actius i no se n'alliberarà memòria</translation>
 <translation id="5523558474028191231">El nom pot incloure lletres, números i caràcters especials, i pot tenir com a màxim <ph name="MAX_CHARACTER_COUNT" /> caràcters</translation>
 <translation id="5526745900034778153">Torna a iniciar la sessió per reprendre la sincronització</translation>
@@ -9580,6 +9584,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7663859337051362114">Afegeix un perfil d'eSIM</translation>
 <translation id="76641554187607347">No hi ha cap teclat connectat</translation>
 <translation id="7664442418269614729">Utilitza aquesta targeta a l'iPhone</translation>
+<translation id="7664822217939981459">Tria una aplicació per obrir l'enllaç de <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Reserva la mida</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="7665445336029073980">Historial de baixades complet</translation>
@@ -10895,7 +10900,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8549127125482561383">Com s'han de mostrar les sol·licituds</translation>
 <translation id="8549316893834449916">Utilitzaràs el teu Compte de Google per iniciar la sessió al Chromebook. És el mateix compte que fas servir per a Gmail, Drive i YouTube, entre d'altres.</translation>
 <translation id="8550239873869577759">S'ha baixat el fitxer sospitós</translation>
-<translation id="8551246044333727813">Pots editar el teu nom al teu <ph name="BEGIN_LINK" />Compte de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8551647092888540776">No es pot obrir <ph name="FILE_NAMES" /> sense connexió</translation>
@@ -11203,6 +11207,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8750786237117206586">Gestiona la configuració d'àudio de ChromeOS Flex</translation>
 <translation id="8751034568832412184">Centre educatiu</translation>
 <translation id="8751329102746373229">De l'administrador</translation>
+<translation id="875242763254084885">El lloc web <ph name="ORIGIN" /> vol obrir aquest enllaç en una aplicació.</translation>
 <translation id="8752451679755290210">Mou d'un element a un altre automàticament</translation>
 <translation id="8753948258138515839">L'aplicació Fitxers permet accedir ràpidament als fitxers desats a Google Drive, a l'emmagatzematge extern o al dispositiu ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Quan <ph name="PRODUCT_NAME" /> s'executa en un entorn d'escriptori compatible, s'utilitza la configuració del servidor intermediari del sistema. No obstant això, o bé el vostre sistema no és compatible o bé s'ha produït un problema en iniciar la configuració del sistema.&lt;/p&gt;

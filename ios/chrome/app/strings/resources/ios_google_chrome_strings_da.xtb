@@ -86,6 +86,9 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2940565985148833945">Tip til Chrome: Søg med Lens</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Føj bogmærker til Chrome</translation>
+<translation id="3027236223714901838">For at beskytte dine adgangsnøgler skal du først oprette en pinkode til gendannelse.
+
+        Adgangsnøgler gemmes i Google Adgangskodeadministrator, så du kan bruge dem i Chrome på alle enheder.</translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
 <translation id="3042447686908081308">Importér til Chrome</translation>
 <translation id="3051521853355903257">Administrer adgangskoder i Chrome</translation>

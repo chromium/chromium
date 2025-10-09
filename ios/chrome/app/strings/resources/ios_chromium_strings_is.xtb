@@ -199,6 +199,9 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5671188105328420281">Ábendingar fyrir Chromium</translation>
 <translation id="5688047395118852662">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chromium til fulls.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
+<translation id="5731004036450828399">Þú þarft að byrja á því að búa til PIN-númer fyrir endurheimt til að gæta að öryggi aðgangslyklanna þinna.
+
+        Aðgangslyklar eru vistaðir í Aðgangsorðastjórnun, sem gerir þér kleift að nota þá í Chromium í hvaða tæki sem er.</translation>
 <translation id="584550191241316896">Innskráning í Chromium virk</translation>
 <translation id="5862307444128926510">Velkomin(n) í Chromium</translation>
 <translation id="5889847953983052353">Þegar kveikt er á þessu:
@@ -265,6 +268,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7285031092584344905">Nálgastu Chromium-aðgangsorðin þín og fleira í öðrum forritum.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Aðgangsorðið verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Þessi aðgangslykill verður vistaður í Aðgangsorðastjórnun fyrir <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Opna Chromium</translation>
 <translation id="7531461704633548377">Úr Chromium</translation>
 <translation id="7554983317097061001">Ábending frá Chromium: Færðu Chromium á stikuna</translation>
@@ -298,6 +302,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8254729934443216898">Kannaðu nýja eiginleika sem hjálpa þér að fá sem mest út úr Chromium.</translation>
 <translation id="8293572045658095405">Þú ert að nota Chromium í huliðsstillingu</translation>
 <translation id="830951810931292870">Opnar vefslóðir sem eru slegnar inn í Chromium í huliðsstillingu</translation>
+<translation id="8385503371191508165">Byrjaðu að vista aðgangslykla með Aðgangsorðastjórnun</translation>
 <translation id="8390323835464055390">Skráðu þig inn með vistuðu aðgangsorðunum og aðgangslyklunum þínum úr hvaða forriti sem er með því að nota Chromium fyrir sjálfvirka útfyllingu</translation>
 <translation id="8409374867500149834">Þú ert með öflugustu öryggisráðstafanir Chromium gegn skaðlegum vefsvæðum</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútur. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}}</translation>

@@ -390,6 +390,7 @@
 <translation id="2834884592945939112">Կարգավորումներ, Google հաշվի սխալ</translation>
 <translation id="2838367486340230368">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են կիսով չափ</translation>
 <translation id="2839327205551510876">«<ph name="SITE_NAME" />» կայքի բաժանորդագրությունը չեղարկվեց</translation>
+<translation id="2839604041336226596">«<ph name="TAB_TITLE" />» ամրացված ներդիր, ընտրվածներից մեկը</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ինկոգնիտո ներդիր կփակվի}one{<ph name="TAB_COUNT_MANY" /> ինկոգնիտո ներդիր կփակվի}other{<ph name="TAB_COUNT_MANY" /> ինկոգնիտո ներդիր կփակվի}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ստուգվել է 1 օր առաջ}one{Ստուգվել է # օր առաջ}other{Ստուգվել է # օր առաջ}}</translation>
 <translation id="2842985007712546952">Վերադաս պանակ</translation>
@@ -506,7 +507,6 @@
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="333863344734218290">Նախազգուշացնում է ձեզ ոչ ապահով հրապարակային և անձնական կայքերի մասին</translation>
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
-<translation id="3351165113450806415">Թերթելու նոր եղանակ</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
 <translation id="3373701465337594448">Եթե գործառույթը միացված է, այստեղ կցուցադրվի ձեզ հետաքրքրող կայքերի ցանկը</translation>
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
@@ -699,6 +699,7 @@
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
+<translation id="4298161202289999785">«<ph name="TAB_TITLE" />» ինկոգնիտո ներդիր, ընտրվածներից մեկը</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
 <translation id="4300632303535881174">Անցնել նախորդ էջ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1139,6 +1140,7 @@
 Օրինակ, որոշ վեբկայքեր կարող են այս հարցմանը պատասխանել՝ ներկայացնելով գովազդ, որը հիմնված չէ ձեր այցելությունների վրա: Շատ վեբկայքեր կշարունակեն հավաքել և օգտագործել ձեր այցելությունների պատմությունը: Այն կարող է օգտագործվել, օրինակ, անվտանգությունը բարելավելու, բովանդակություն, գովազդ և խորհուրդներ տրամադրելու և վիճակագրական տվյալներ հավաքելու նպատակով:</translation>
 <translation id="6247557882553405851">Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="6248988683584659830">Որոնման կարգավորումներ</translation>
+<translation id="6250847299079540062">«<ph name="TAB_TITLE" />» ամրացված ինկոգնիտո ներդիր, ընտրվածներից մեկը</translation>
 <translation id="6251449557817521191">Դիտեք Chrome-ի պատմությունն այստեղ</translation>
 <translation id="6254139308321626268">Դուք PDF ֆայլ եք դիտում</translation>
 <translation id="6255809143828972562">Chrome-ի գործիքների միջոցով դուք կարող եք ապահով դիտարկել և կառավարել կարգավորումները</translation>
@@ -1182,6 +1184,7 @@
 <translation id="6410883413783534063">Միաժամանակ մի քանի էջեր այցելելու համար ներդիրներ բացեք</translation>
 <translation id="6411009031428071896">Լսել ֆիդը</translation>
 <translation id="6411219469806822692">Հնարավոր չէ ավելի վերևից նշել։ Փորձեք նշել էջի վերևից։</translation>
+<translation id="6412215853589222273">«<ph name="TAB_TITLE" />» ներդիր, ընտրվածներից մեկը</translation>
 <translation id="641643625718530986">Տպել…</translation>
 <translation id="6433501201775827830">Ընտրեք որոնիչը</translation>
 <translation id="6434309073475700221">Հրաժարվել</translation>
@@ -1625,7 +1628,6 @@
 <translation id="8221985041778490865">Այցելությունների պատմության ջնջում</translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
 <translation id="82296173028782770">Փոփոխել որոնման «<ph name="SEARCH_QUERY" />» հարցումը</translation>
-<translation id="8236063039629122676">Այժմ թերթելով աջ՝ դուք հետ կգնաք՝ ձեր այցելած նախորդ էջերը տեսնելու համար, և թերթելով ձախ՝ կանցնեք առաջ</translation>
 <translation id="8236097722223016103">Ավելացնել էջանիշներում</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
 <translation id="8244387390464017490">Անհատականացրեք նոր ներդիրի էջը</translation>

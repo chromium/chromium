@@ -1644,6 +1644,7 @@
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2104166991923847969">خاموش شدن خودکار نقطه اتصال</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پنهان شده است</translation>
+<translation id="2106439768713835453">صدای برنامه نیز هم‌رسانی شود</translation>
 <translation id="2108204112555497972">‫<ph name="NUM_DAYS_HOURS_MINUTES" /> ثانیه پیش بررسی شد</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
 <translation id="2109384632594340939">عکس نمایه</translation>
@@ -1783,6 +1784,7 @@
 <translation id="2204034823255629767">خواندن و تغییر هر موردی که تایپ می‌کنید</translation>
 <translation id="2204168219363024184">‏برای ایجاد این گذرکلید با «مدیر گذرواژه Google»، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="2204387456724731099">این نوشتار انتخابی را نمی‌توان ترجمه کرد</translation>
+<translation id="2204613850236199029">اطلاعات برداشته شد</translation>
 <translation id="2207116775853792104">نگه داشتن این افزونه</translation>
 <translation id="2209841631181508629">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK" />شرایط خدمات<ph name="END_LINK" /> این سایت را بررسی کنید.</translation>
 <translation id="2210462644007531147">نصب کامل نشد</translation>
@@ -3882,6 +3884,7 @@
 <translation id="3656328935986149999">سرعت مکان‌نما</translation>
 <translation id="3656701180077048004">بین زمان فشردن کلید و زمان فعال شدن آن تأخیری اضافه می‌کند</translation>
 <translation id="3658871634334445293">‏شتاب TrackPoint</translation>
+<translation id="3659483399659250379">افزودن زبانه و موارد دیگر</translation>
 <translation id="3659929705630080526">کد دسترسی نادرستی را چند بار وارد کرده‌اید. بعداً دوباره امتحان کنید</translation>
 <translation id="3661106764436337772">سریع‌تر و با اطمینان بیشتر بنویسید</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{یک گذرواژه موجود پیدا شد}one{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}other{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}}</translation>
@@ -5414,6 +5417,7 @@
 <translation id="4707337002099455863">همیشه در همه سایت‌ها روشن باشد</translation>
 <translation id="4708849949179781599">خروج از <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">صدای زبانه نیز مجاز شود</translation>
+<translation id="4710347732286177840">انتخاب بخشی از صفحه برای پرسش‌های تعقیبی</translation>
 <translation id="4711638718396952945">بازیابی تنظیمات</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">حذف با بستن همه پنجره‌ها</translation>
@@ -10916,7 +10920,6 @@
 <translation id="8549127125482561383">نحوه نمایش درخواست‌ها</translation>
 <translation id="8549316893834449916">‏برای ورود به سیستم در Chromebook از «حساب Google» استفاده خواهید کرد – همان حسابی که برای Gmail،‏ Drive، ‏YouTube، و غیره از آن استفاده می‌کنید.</translation>
 <translation id="8550239873869577759">فایل مشکوکی بارگیری شده است</translation>
-<translation id="8551246044333727813">‏می‌توانید نامتان را در <ph name="BEGIN_LINK" />«حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> ویرایش کنید.</translation>
 <translation id="8551388862522347954">مجوزها</translation>
 <translation id="8551588720239073785">تنظیمات ساعت و تاریخ</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> در حالت آفلاین باز نمی‌شود</translation>

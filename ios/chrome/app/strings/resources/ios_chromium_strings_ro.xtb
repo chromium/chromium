@@ -199,6 +199,9 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5671188105328420281">Sfaturi Chromium</translation>
 <translation id="5688047395118852662">Acest card afișează sugestii privind modul în care poți profita la maximum de Chromium.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
+<translation id="5731004036450828399">Pentru a păstra cheile de acces în siguranță, mai întâi trebuie să creezi un PIN de recuperare.
+
+        Cheile de acces sunt salvate în Managerul de parole, astfel că poți să le folosești în Chromium pe orice dispozitiv.</translation>
 <translation id="584550191241316896">Te-ai conectat la Chromium</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5889847953983052353">Când opțiunea este activă:
@@ -265,6 +268,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7285031092584344905">Accesează parolele Chromium și multe altele în alte aplicații.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Parola se va salva în Managerul de parole pentru <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Cheia de acces se va salva în Managerul de parole pentru <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Deschide Chromium</translation>
 <translation id="7531461704633548377">Din Chromium</translation>
 <translation id="7554983317097061001">Sfat pentru Chromium: mută Chromium în bara de andocare</translation>
@@ -298,6 +302,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8254729934443216898">Explorează noile funcții care te ajută să profiți din plin de Chromium.</translation>
 <translation id="8293572045658095405">Ești în modul incognito în Chromium</translation>
 <translation id="830951810931292870">Deschide adresele URL introduse în Chromium în modul incognito.</translation>
+<translation id="8385503371191508165">Începe să salvezi chei de acces cu Managerul de parole</translation>
 <translation id="8390323835464055390">Conectează-te cu parolele și cheile de acces salvate din orice aplicație folosind Chromium pentru completare automată</translation>
 <translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aceasta ar putea include istoricul și parolele.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}}</translation>

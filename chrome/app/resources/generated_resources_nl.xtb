@@ -1637,6 +1637,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2104166991923847969">Hotspot automatisch uitzetten</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is verborgen</translation>
+<translation id="2106439768713835453">App-audio ook delen</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> geleden gecheckt</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefoonnummer}other{# telefoonnummers}}</translation>
 <translation id="2109384632594340939">profielfoto</translation>
@@ -3871,6 +3872,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3656328935986149999">Cursorsnelheid</translation>
 <translation id="3656701180077048004">Voegt een vertraging toe tussen het moment waarop je een toets indrukt en het moment waarop deze wordt geactiveerd</translation>
 <translation id="3658871634334445293">TrackPoint-versnelling</translation>
+<translation id="3659483399659250379">Tabblad toevoegen en meer</translation>
 <translation id="3659929705630080526">Je hebt te vaak een onjuiste toegangscode opgegeven. Probeer het later opnieuw.</translation>
 <translation id="3661106764436337772">Schrijf sneller en met meer vertrouwen</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 bestaand wachtwoord gevonden}other{{NUM_PASSWORDS} bestaande wachtwoorden gevonden}}</translation>
@@ -5402,6 +5404,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4707337002099455863">Altijd op alle sites</translation>
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Tabbladaudio ook toestaan</translation>
+<translation id="4710347732286177840">Selecteer een gedeelte van het scherm voor een follow-up</translation>
 <translation id="4711638718396952945">Instellingen herstellen</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Verwijderen als je alle vensters sluit</translation>
@@ -10896,7 +10899,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8549127125482561383">Hoe verzoeken tonen</translation>
 <translation id="8549316893834449916">Je gebruikt je Google-account om in te loggen op je Chromebook. Dit is hetzelfde account dat je gebruikt voor Gmail, Drive, YouTube en meer.</translation>
 <translation id="8550239873869577759">Verdacht bestand gedownload</translation>
-<translation id="8551246044333727813">Je kunt je naam bewerken in je <ph name="BEGIN_LINK" />Google-account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenties</translation>
 <translation id="8551588720239073785">Instellingen voor datum en tijd</translation>
 <translation id="8551647092888540776">Kan <ph name="FILE_NAMES" /> niet openen als je offline bent</translation>

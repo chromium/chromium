@@ -1001,6 +1001,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="166278006618318542">Algoritm cu cheie publică pentru subiect</translation>
 <translation id="1662801900924515589">Aplicația <ph name="APP" /> a fost instalată</translation>
 <translation id="1663698992894057019">Fă upgrade la un Chromebook nou pentru cea mai recentă securitate și cel mai recent software</translation>
+<translation id="1664497218584335032">Site-ul dorește să deschidă acest link într-o aplicație.</translation>
 <translation id="166454475160289583">Nu permite modificarea intrărilor de la tastatură</translation>
 <translation id="1665328953287874063">Folosește o parolă sau un cod PIN pentru a debloca dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expresionism</translation>
@@ -1776,6 +1777,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2204034823255629767">Citește și modifică orice date introduse</translation>
 <translation id="2204168219363024184">Ca să creezi cheia de acces cu Managerul de parole Google, confirmă-ți identitatea</translation>
 <translation id="2204387456724731099">Textul selectat nu a putut fi tradus</translation>
+<translation id="2204613850236199029">Informațiile au fost eliminate</translation>
 <translation id="2207116775853792104">Păstrează extensia</translation>
 <translation id="2209841631181508629">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la <ph name="FIELDS_STRING" />. Consultă <ph name="BEGIN_LINK" />termenii și condițiile<ph name="END_LINK" /> acestui site.</translation>
 <translation id="2210462644007531147">Instalarea nu a putut fi finalizată</translation>
@@ -6550,10 +6552,12 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5517304475148761050">Aplicația necesită acces la Magazinul Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Deschide întotdeauna linkurile <ph name="PROTOCOL_SCHEME" /> în această aplicație</translation>
 <translation id="5520605865175417976">Elimină acțiunea <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Aceasta este pagina de pornire la care vă așteptați?</translation>
 <translation id="5522156646677899028">Această extensie conține o vulnerabilitate gravă a securității.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratorul a instalat o extensie}few{Administratorul a instalat # extensii}other{Administratorul a instalat # de extensii}}</translation>
+<translation id="5523203511530504754">Deschide linkurile <ph name="PROTOCOL_SCHEME" /> în <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Site-urile pe care le adaugi vor rămâne întotdeauna active și nu vor elibera memorie</translation>
 <translation id="5523558474028191231">Numele poate să conțină litere, cifre și caractere speciale și trebuie să aibă maximum <ph name="MAX_CHARACTER_COUNT" /> caractere</translation>
 <translation id="5526745900034778153">Conectează-te din nou pentru a relua sincronizarea</translation>
@@ -9586,6 +9590,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7663859337051362114">Adaugă un profil eSIM</translation>
 <translation id="76641554187607347">Nicio tastatură conectată</translation>
 <translation id="7664442418269614729">Folosește acest card pe iPhone</translation>
+<translation id="7664822217939981459">Alege o aplicație pentru a deschide linkul <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Rezervă o dimensiune</translation>
 <translation id="7665369617277396874">Adaugă un cont</translation>
 <translation id="7665445336029073980">Istoricul complet al descărcărilor</translation>
@@ -10900,7 +10905,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8549127125482561383">Cum să afișezi solicitări</translation>
 <translation id="8549316893834449916">Vei folosi Contul Google ca să te conectezi la Chromebook; e același cont pe care îl folosești pentru Gmail, Drive, YouTube și altele.</translation>
 <translation id="8550239873869577759">S-a descărcat un fișier suspect</translation>
-<translation id="8551246044333727813">Poți să-ți editezi numele în <ph name="BEGIN_LINK" />Contul Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licențe</translation>
 <translation id="8551588720239073785">Setări de dată și oră</translation>
 <translation id="8551647092888540776">Nu poți deschide <ph name="FILE_NAMES" /> când ești offline</translation>
@@ -11208,6 +11212,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8750786237117206586">Gestionează setările audio pentru ChromeOS Flex</translation>
 <translation id="8751034568832412184">Școală</translation>
 <translation id="8751329102746373229">De la administrator</translation>
+<translation id="875242763254084885">Site-ul <ph name="ORIGIN" /> dorește să deschidă acest link într-o aplicație.</translation>
 <translation id="8752451679755290210">Treci automat de la un element la altul</translation>
 <translation id="8753948258138515839">Aplicația Fișiere oferă acces rapid la fișierele pe care le-ai salvat în Google Drive, în spațiul de stocare extern sau pe dispozitivul cu sistemul de operare Chrome Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Când rulezi <ph name="PRODUCT_NAME" /> într-un mediu de desktop acceptat, vor fi utilizate setările de proxy ale sistemului. Cu toate acestea, fie sistemul nu este acceptat, fie a existat o problemă la lansarea configurației sistemului.&lt;/p&gt;

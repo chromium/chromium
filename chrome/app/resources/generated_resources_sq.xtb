@@ -997,6 +997,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="166278006618318542">Algoritmi i çelësit publik të subjektit</translation>
 <translation id="1662801900924515589"><ph name="APP" /> u instalua</translation>
 <translation id="1663698992894057019">Përmirësoje me një pajisje të re Chromebook për sigurinë dhe softuerët më të fundit</translation>
+<translation id="1664497218584335032">Uebsajti dëshiron ta hapë këtë lidhje në një aplikacion.</translation>
 <translation id="166454475160289583">Nuk lejohen që të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="1665328953287874063">Përdor një fjalëkalim ose kod PIN për ta shkyçur pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Ekspresionizëm</translation>
@@ -1305,7 +1306,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1880618477732738742">Ndrysho dhe jep qasje te veçoritë e tilla si vendndodhja gjeografike, mikrofoni, kamera, kukit etj. për të gjitha uebsajtet dhe shtesat e tua, duke përfshirë këtë shtesë.</translation>
 <translation id="1881445033931614352">Struktura e tastierës</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Artikull}other{# artikuj}}</translation>
-<translation id="188177382966899059">Kërkimi i thelluar</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Cilësimi aktual i dukshmërisë është "Disa kontakte"</translation>
 <translation id="1884705339276589024">Ndrysho madhësinë e diskut të Linux</translation>
 <translation id="1885066963699478692">Skedarët XML që po përdoren për të caktuar politikat.</translation>
@@ -1772,6 +1773,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2204034823255629767">Lexo dhe ndrysho gjithçka që shkruan</translation>
 <translation id="2204168219363024184">Për të krijuar këtë çelës kalimi me "Menaxherin e fjalëkalimeve të Google", verifiko që je ti</translation>
 <translation id="2204387456724731099">Kjo zgjedhje nuk mund të përkthehej</translation>
+<translation id="2204613850236199029">Informacionet u hoqën</translation>
 <translation id="2207116775853792104">Mbaje këtë shtesë</translation>
 <translation id="2209841631181508629">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt. Shiko <ph name="BEGIN_LINK" />kushtet e shërbimit<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="2210462644007531147">Instalimi nuk mund të përfundohej</translation>
@@ -6546,10 +6548,12 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5517304475148761050">Ky aplikacion kërkon qasje te "Dyqani i Play"</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Hapi gjithmonë lidhjet <ph name="PROTOCOL_SCHEME" /> në këtë aplikacion</translation>
 <translation id="5520605865175417976">Hiq veprimin "<ph name="ACTION_TO_REMOVE" />"</translation>
 <translation id="5521078259930077036">A është kjo faqja kryesore që prisje?</translation>
 <translation id="5522156646677899028">Kjo shtesë përmban një dobësi serioze sigurie.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Një shtesë është instaluar nga administratori yt}other{# shtesa janë instaluar nga administratori yt}}</translation>
+<translation id="5523203511530504754">Hap lidhjet <ph name="PROTOCOL_SCHEME" /> në <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Sajtet që shton do të qëndrojnë gjithmonë aktive dhe memoria nuk do të lirohet nga to</translation>
 <translation id="5523558474028191231">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta dhe duhet të ketë <ph name="MAX_CHARACTER_COUNT" /> karaktere ose më pak</translation>
 <translation id="5526745900034778153">Identifikohu sërish për të rifilluar sinkronizimin</translation>
@@ -9579,6 +9583,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7663859337051362114">Shto profil karte eSIM</translation>
 <translation id="76641554187607347">Nuk është lidhur asnjë tastierë</translation>
 <translation id="7664442418269614729">Përdore këtë kartë në iPhone</translation>
+<translation id="7664822217939981459">Zgjidh një aplikacion për të hapur lidhjen <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Rezervo madhësinë</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="7665445336029073980">Historiku i plotë i shkarkimeve</translation>
@@ -10892,7 +10897,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8549127125482561383">Si të shfaqësh kërkesat</translation>
 <translation id="8549316893834449916">Për t'u identifikuar në pajisjen tënde Chromebook do të përdorësh "Llogarinë tënde të Google", të njëjtën llogari që përdor për Gmail, "Diskun", YouTube etj.</translation>
 <translation id="8550239873869577759">U shkarkua një skedar i dyshimtë</translation>
-<translation id="8551246044333727813">Mund të modifikosh emrin tënd në <ph name="BEGIN_LINK" />"Llogarinë tënde të Google" <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licencat</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> nuk mund të hapet kur je offline</translation>
@@ -11200,6 +11204,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8750786237117206586">Menaxho cilësimet e audios për ChromeOS Flex</translation>
 <translation id="8751034568832412184">Shkollë</translation>
 <translation id="8751329102746373229">Nga administratori yt</translation>
+<translation id="875242763254084885">Sajti <ph name="ORIGIN" /> dëshiron të hapë këtë lidhje në një aplikacion</translation>
 <translation id="8752451679755290210">Kalo automatikisht mes artikujve</translation>
 <translation id="8753948258138515839">Aplikacioni "Skedarët" siguron qasje të shpejtë te skedarët që ke ruajtur në "Diskun e Google", në hapësirën ruajtëse të jashtme ose në pajisjen tënde Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kur <ph name="PRODUCT_NAME" /> ekzekutohet në një mjedis të mbështetur për desktop, do të përdoren cilësimet e përfaqësuesit të sistemit. Megjithatë, sistemi yt nuk mbështetet ose pati një problem në nisjen e konfigurimit të sistemit.&lt;/p&gt;

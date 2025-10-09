@@ -392,7 +392,7 @@
 <translation id="125097549534200450">清除</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">正在掃描行動數據網路…</translation>
-<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
@@ -1000,6 +1000,7 @@
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="1662801900924515589">「<ph name="APP" />」安裝成功</translation>
 <translation id="1663698992894057019">如要收到最新的安全性和軟體更新，請改用新款 Chromebook</translation>
+<translation id="1664497218584335032">網站想使用應用程式開啟這個連結。</translation>
 <translation id="166454475160289583">禁止覆寫鍵盤輸入內容</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 碼解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表現主義</translation>
@@ -1775,6 +1776,7 @@
 <translation id="2204034823255629767">讀取及變更你輸入的任何設定</translation>
 <translation id="2204168219363024184">如要使用 Google 密碼管理工具建立這個密碼金鑰，請驗證身分</translation>
 <translation id="2204387456724731099">無法翻譯這個選取的項目</translation>
+<translation id="2204613850236199029">這項資訊已移除</translation>
 <translation id="2207116775853792104">保留這項擴充功能</translation>
 <translation id="2209841631181508629">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。詳情請參閱這個網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
@@ -6543,10 +6545,12 @@
 <translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">一律使用這個應用程式開啟 <ph name="PROTOCOL_SCHEME" /> 連結</translation>
 <translation id="5520605865175417976">移除<ph name="ACTION_TO_REMOVE" />的動作</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{你的系統管理員已安裝擴充功能}other{你的系統管理員已安裝 # 個擴充功能}}</translation>
+<translation id="5523203511530504754">使用「<ph name="APP_NAME" />」開啟 <ph name="PROTOCOL_SCHEME" /> 連結</translation>
 <translation id="5523532775593636291">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以包含字母、數字和特殊字元，且不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="5526745900034778153">如要繼續同步處理，請重新登入</translation>
@@ -7466,7 +7470,7 @@
 <translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6185151644843671709">已儲存密碼金鑰並建立 PIN 碼</translation>
-<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="6186177419203903310">這麼做會啟用系統中所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
@@ -9572,6 +9576,7 @@
 <translation id="7663859337051362114">新增 eSIM 設定檔</translation>
 <translation id="76641554187607347">未連接任何鍵盤</translation>
 <translation id="7664442418269614729">在 iPhone 使用這張卡片</translation>
+<translation id="7664822217939981459">選擇開啟 <ph name="PROTOCOL_SCHEME" /> 連結的應用程式</translation>
 <translation id="7665082356120621510">預留大小</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="7665445336029073980">完整下載記錄</translation>
@@ -10222,7 +10227,7 @@
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
-<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
 <translation id="8090513782447872344">你可以日後隨時返回查看</translation>
 <translation id="8090686009202681725">使用 AI 建立主題</translation>
@@ -10886,7 +10891,6 @@
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8549316893834449916">你將使用 Google 帳戶登入 Chromebook，Google 帳戶是你用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8550239873869577759">下載的檔案很可疑</translation>
-<translation id="8551246044333727813">你可以前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="USERNAME" />)<ph name="END_LINK" /> 編輯姓名。</translation>
 <translation id="8551388862522347954">授權</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8551647092888540776">離線時無法開啟「<ph name="FILE_NAMES" />」</translation>
@@ -11194,6 +11198,7 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自系統管理員的憑證</translation>
+<translation id="875242763254084885">網站 <ph name="ORIGIN" /> 想使用應用程式開啟這個連結。</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
@@ -11273,7 +11278,7 @@
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
 <translation id="8811923271770626905">這項擴充功能可能會在背景執行</translation>
-<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
@@ -11317,7 +11322,7 @@
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
-<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {ITEM_COUNT} 個項目只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {ITEM_COUNT} 個項目只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>

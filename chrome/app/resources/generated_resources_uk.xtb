@@ -1789,6 +1789,7 @@
 <translation id="2204034823255629767">Читати й змінювати весь введений вами текст</translation>
 <translation id="2204168219363024184">Щоб створити цей ключ доступу за допомогою Google Менеджера паролів, підтвердьте свою особу</translation>
 <translation id="2204387456724731099">Не вдалося перекласти вибраний текст</translation>
+<translation id="2204613850236199029">Інформацію видалено</translation>
 <translation id="2207116775853792104">Зберегти розширення</translation>
 <translation id="2209841631181508629">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть цьому сайту таку інформацію: <ph name="FIELDS_STRING" />. Перегляньте <ph name="BEGIN_LINK" />Умови використання<ph name="END_LINK" /> цього сайту.</translation>
 <translation id="2210462644007531147">Не вдалося завершити встановлення</translation>
@@ -10920,7 +10921,6 @@
 <translation id="8549127125482561383">Як показувати запити</translation>
 <translation id="8549316893834449916">Входьте на Chromebook через обліковий запис Google, який ви також використовуєте для інших сервісів, зокрема Gmail, Диск, YouTube тощо.</translation>
 <translation id="8550239873869577759">Завантажено підозрілий файл</translation>
-<translation id="8551246044333727813">Ви можете змінити ім’я <ph name="BEGIN_LINK" />в обліковому записі Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Ліцензії</translation>
 <translation id="8551588720239073785">Налаштування дати й часу</translation>
 <translation id="8551647092888540776">Неможливо відкрити файл "<ph name="FILE_NAMES" />" у режимі офлайн</translation>

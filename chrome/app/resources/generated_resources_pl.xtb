@@ -1638,6 +1638,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2102495993840063010">Aplikacje na Androida</translation>
 <translation id="2104166991923847969">Automatycznie wyłącz hotspot</translation>
 <translation id="2105809836724866556">Sekcja <ph name="MODULE_TITLE" /> jest ukryta</translation>
+<translation id="2106439768713835453">Udostępnij też dźwięk z aplikacji</translation>
 <translation id="2108204112555497972">Sprawdzano <ph name="NUM_DAYS_HOURS_MINUTES" /> temu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="2109384632594340939">zdjęcie profilowe</translation>
@@ -3855,6 +3856,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3656328935986149999">Szybkość kursora</translation>
 <translation id="3656701180077048004">Dodaje opóźnienie między naciśnięciem klawisza a jego aktywacją</translation>
 <translation id="3658871634334445293">Przyspieszenie TrackPointa</translation>
+<translation id="3659483399659250379">Dodaj kartę i inne elementy</translation>
 <translation id="3659929705630080526">Zbyt wiele razy podano nieprawidłowy kod dostępu. Spróbuj ponownie później.</translation>
 <translation id="3661106764436337772">Pisz szybciej i z większą pewnością</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Znaleziono 1 istniejące hasło}few{Znaleziono {NUM_PASSWORDS} istniejące hasła}many{Znaleziono {NUM_PASSWORDS} istniejących haseł}other{Znaleziono {NUM_PASSWORDS} istniejącego hasła}}</translation>
@@ -5385,6 +5387,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4707337002099455863">Zawsze na wszystkich stronach</translation>
 <translation id="4708849949179781599">Zamknij przeglądarkę <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Zezwalaj też na dźwięk na karcie</translation>
+<translation id="4710347732286177840">Wybierz obszar ekranu do kontynuacji</translation>
 <translation id="4711638718396952945">Przywróć ustawienia</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Usuń w momencie zamknięcia wszystkich okien</translation>
@@ -10883,7 +10886,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8549127125482561383">Jak wyświetlać żądania</translation>
 <translation id="8549316893834449916">Do logowania się na Chromebooku będziesz używać swojego konta Google – tego samego co w Gmailu, na Dysku, w YouTube i w innych usługach Google.</translation>
 <translation id="8550239873869577759">Pobrano podejrzany plik</translation>
-<translation id="8551246044333727813">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licencje</translation>
 <translation id="8551588720239073785">Ustawienia daty i godziny</translation>
 <translation id="8551647092888540776">Nie można otworzyć pliku <ph name="FILE_NAMES" /> w trybie offline</translation>

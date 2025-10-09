@@ -320,7 +320,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1521655867290435174">Google izklājlapas</translation>
 <translation id="1524669537550112617">Mēbelētu nekustamo īpašumu īre</translation>
 <translation id="1527263332363067270">Tiek gaidīta savienojuma izveide...</translation>
-<translation id="1528311629279578926">Savienojums ir bloķēts, jo tas tika uzsākts publiskā lapā, lai izveidotu savienojumu ar ierīcēm vai serveriem jūsu privātajā tīklā. Atkārtoti ielādējiet šo lapu, lai atļautu savienojumu.</translation>
 <translation id="1529789484829130889">8. paplāte</translation>
 <translation id="1530707389502320859">Vietne, ko tikko mēģinājāt apmeklēt, šķiet viltota. Uzbrucēji dažkārt atdarina vietnes, veicot nelielas un grūti pamanāmas izmaiņas vietrādī URL.</translation>
 <translation id="1532118530259321453">Šajā lapā ir rakstīts</translation>
@@ -1411,7 +1410,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3325662270238538525">Nesena piekļuve failiem un to izmaiņas, tostarp failu nosaukumi, faila satura digitālie ciparnospiedumi, lejupielādes avots un metadati</translation>
 <translation id="3329013043687509092">Piesātinājums</translation>
 <translation id="3333762389743153920">Neatbilst virtuālajai kartei</translation>
-<translation id="3336044043987989409">Nospiediet atkārtotas ielādes pogu, lai atļautu savienojumu ar ierīcēm vai serveriem jūsu privātajā tīklā.</translation>
 <translation id="3338095232262050444">Droši</translation>
 <translation id="333839153442689579">Augstas intensitātes intervālu treniņš</translation>
 <translation id="3339446062576134663">Mākonis (Ash)</translation>
@@ -1455,6 +1453,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="340924996148642843">Salīdzināšana pašlaik nav pieejama</translation>
 <translation id="3409896703495473338">Pārvaldīt drošības iestatījumus</translation>
 <translation id="3411091017011773343">Augšupielādēt pēc <ph name="HOURS" /> h</translation>
+<translation id="341134412449102894">Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="3413466783792948876">Ja izmantojat publisku tīklu, visdrošāk ir apmeklēt šo vietni vēlāk. Uzticamā tīklā, piemēram, mājas vai darba Wi-Fi tīklā, risks ir mazāks.</translation>
 <translation id="3414275587143250384">Izkliedētā skaitļošana un mākoņdatošana</translation>
 <translation id="3414952576877147120">Lielums:</translation>
@@ -3144,6 +3143,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6189351761800074311">Jūsu teksts un lapas saturs tiek nosūtīts uzņēmumam Google, taču netiks izmantots, lai uzlabotu MI.
     <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6190518157737269631">Ignorēt noteiktus tastatūras taustiņus, piemēram, atsoļa taustiņu</translation>
+<translation id="6192524964213419211">Saglabājiet savu informāciju, lai ātrāk veiktu darbu Google produktos. Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Skatiet visus savus izsekotos produktus šeit</translation>
 <translation id="6195371403461054755">Ģeoloģija</translation>
 <translation id="6195418151868446719">Patēriņa elektronika</translation>

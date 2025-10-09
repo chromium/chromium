@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Совети за Chromium</translation>
 <translation id="5688047395118852662">Картичкава ви прикажува предлози за тоа како да го извлечете максимумот од Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може да ги провери вашите лозинки</translation>
+<translation id="5731004036450828399">За да ги заштитите криптографските клучеви, прво ќе треба да создадете PIN за враќање.
+
+        Криптографските клучеви се зачувуваат во Password Manager, што ви овозможува да ги користите во Chromium на кој било уред.</translation>
 <translation id="584550191241316896">Најавени сте на Chromium</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5889847953983052353">Кога е вклучено:
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">Пристапувајте до вашите лозинки и друго на Chromium на други апликации.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Лозинката ќе се зачува во „Управникот со лозинки“ за <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Криптографскиов клуч за <ph name="USER_EMAIL" /> ќе се зачува во Password Manager</translation>
 <translation id="7504829997542308412">Отворете го Chromium</translation>
 <translation id="7531461704633548377">Од Chromium</translation>
 <translation id="7554983317097061001">Совет за Chromium: преместете го Chromium на докот</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">Истражете ги новите функции што ќе ви помогнат да извлечете максимум од Chromium.</translation>
 <translation id="8293572045658095405">Користите режим „Инкогнито“ во Chromium</translation>
 <translation id="830951810931292870">Ги отвора внесените URL-адреси во Chromium во „Инкогнито“.</translation>
+<translation id="8385503371191508165">Започнете да ги зачувувате криптографските клучеви со Password Manager</translation>
 <translation id="8390323835464055390">Најавувајте се со зачуваните лозинки и криптографски клучеви од која било апликација користејќи Chromium for AutoFill</translation>
 <translation id="8409374867500149834">Ја имате најсилната безбедност на Chromium против штетни веб-сајтови</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Ова се случува кога Chromium не се користи {THRESHOLD} минута. Податоците зачувани само на овој уред додека сте биле најавени ќе се избришат. Тоа би можело да опфати историја и лозинки.}one{Ова се случува кога Chromium не се користи {THRESHOLD} минута. Податоците зачувани само на овој уред додека сте биле најавени ќе се избришат. Тоа би можело да опфати историја и лозинки.}other{Ова се случува кога Chromium не се користи {THRESHOLD} минути. Податоците зачувани само на овој уред додека сте биле најавени ќе се избришат. Тоа би можело да опфати историја и лозинки.}}</translation>

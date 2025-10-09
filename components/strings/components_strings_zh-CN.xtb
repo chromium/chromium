@@ -320,7 +320,6 @@
 <translation id="1521655867290435174">Google 表格</translation>
 <translation id="1524669537550112617">带家具的房屋租赁</translation>
 <translation id="1527263332363067270">正在等待建立连接…</translation>
-<translation id="1528311629279578926">此连接已被禁止，因为它是由某个公共网页为连接至您专用网络上的设备或服务器而发起的。请重新加载此页面以允许连接。</translation>
 <translation id="1529789484829130889">纸匣 8</translation>
 <translation id="1530707389502320859">您刚才尝试访问的网站貌似为虚假网站。攻击者有时会对网址做些令人难以发现的细微更改来仿冒网站。</translation>
 <translation id="1532118530259321453">此网页显示</translation>
@@ -1409,7 +1408,6 @@
 <translation id="3325662270238538525">近期文件访问和修改活动，包括文件名、文件内容的数字指纹、下载来源和元数据</translation>
 <translation id="3329013043687509092">饱和度</translation>
 <translation id="3333762389743153920">无法用作虚拟卡</translation>
-<translation id="3336044043987989409">建议您按“重新加载”按钮以允许连接到您的专用网络上的设备或服务器。</translation>
 <translation id="3338095232262050444">安全</translation>
 <translation id="333839153442689579">高强度间歇训练</translation>
 <translation id="3339446062576134663">云端 (Ash)</translation>
@@ -1453,6 +1451,7 @@
 <translation id="340924996148642843">目前无法使用比较功能</translation>
 <translation id="3409896703495473338">管理安全设置</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小时后上传</translation>
+<translation id="341134412449102894">您的信息已保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3413466783792948876">如果您使用的是公共网络，安全起见，建议您稍后再访问此网站。使用您信任的网络（例如家中或单位的 Wi-Fi）可以降低风险。</translation>
 <translation id="3414275587143250384">分布式计算与云计算</translation>
 <translation id="3414952576877147120">大小：</translation>
@@ -3141,6 +3140,7 @@
 <translation id="6189351761800074311">您的文本和网页内容会发送给 Google，但不会用于改进 AI。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">替换键盘上的某些键（例如 Esc 键）</translation>
+<translation id="6192524964213419211">保存您的信息，即可在各项 Google 产品中更快地完成操作。您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6195418151868446719">消费类电子产品</translation>

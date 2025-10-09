@@ -999,6 +999,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="166278006618318542">Algoritmo de clave pública de entidade</translation>
 <translation id="1662801900924515589">Instalouse a aplicación <ph name="APP" /></translation>
 <translation id="1663698992894057019">Consigue un Chromebook novo que conte coa seguranza e o software máis recentes</translation>
+<translation id="1664497218584335032">O sitio web quere abrir esta ligazón nunha aplicación.</translation>
 <translation id="166454475160289583">Permiso denegado para ignorar a entrada do teclado</translation>
 <translation id="1665328953287874063">Usa un contrasinal ou un PIN para desbloquear o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1665859804801131136">Expresionista</translation>
@@ -1774,6 +1775,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2204034823255629767">Ler e modificar todo o que escribas</translation>
 <translation id="2204168219363024184">Para crear esta clave de acceso co xestor de contrasinais de Google, verifica a túa identidade</translation>
 <translation id="2204387456724731099">Non se puido traducir o texto seleccionado</translation>
+<translation id="2204613850236199029">Quitouse a información</translation>
 <translation id="2207116775853792104">Manter esta extensión</translation>
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta as <ph name="BEGIN_LINK" />condicións de servizo<ph name="END_LINK" /> do sitio.</translation>
 <translation id="2210462644007531147">Non puido completarse a instalación</translation>
@@ -6554,10 +6556,12 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5517304475148761050">Esta aplicación require acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Abrir sempre as ligazóns <ph name="PROTOCOL_SCHEME" /> nesta aplicación</translation>
 <translation id="5520605865175417976">Quitar a acción <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">É esta a páxina de inicio que esperabas?</translation>
 <translation id="5522156646677899028">Esta extensión contén unha vulnerabilidade de seguranza grave.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{O administrador instalou 1 extensión}other{O administrador instalou # extensións}}</translation>
+<translation id="5523203511530504754">Abre as ligazóns <ph name="PROTOCOL_SCHEME" /> en <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526745900034778153">Volve iniciar sesión para retomar a sincronización</translation>
@@ -9584,6 +9588,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7663859337051362114">Engadir perfil de eSIM</translation>
 <translation id="76641554187607347">Non hai ningún teclado conectado</translation>
 <translation id="7664442418269614729">Usa esta tarxeta no teu iPhone</translation>
+<translation id="7664822217939981459">Escolle unha aplicación para abrir a ligazón <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Reservar tamaño</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="7665445336029073980">Historial de descargas completo</translation>
@@ -10897,7 +10902,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8549127125482561383">Como mostrar solicitudes</translation>
 <translation id="8549316893834449916">Usarás a túa Conta de Google (a mesma que utilizas para Gmail, Drive ou YouTube, entre outros servizos) para iniciar sesión no Chromebook.</translation>
 <translation id="8550239873869577759">Ficheiros sospeitoso descargado</translation>
-<translation id="8551246044333727813">Podes editar o teu nome na túa <ph name="BEGIN_LINK" />Conta de Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenzas</translation>
 <translation id="8551588720239073785">Configuración de data e hora</translation>
 <translation id="8551647092888540776">Non se pode abrir <ph name="FILE_NAMES" /> cando estás sen conexión</translation>
@@ -11205,6 +11209,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8750786237117206586">Xestionar a configuración de audio de ChromeOS Flex</translation>
 <translation id="8751034568832412184">Centro educativo</translation>
 <translation id="8751329102746373229">Da persoa administradora</translation>
+<translation id="875242763254084885">O sitio <ph name="ORIGIN" /> quere abrir esta ligazón nunha aplicación.</translation>
 <translation id="8752451679755290210">Desprázate polos distintos elementos de forma automática</translation>
 <translation id="8753948258138515839">A aplicación Ficheiros permite acceder rapidamente aos ficheiros que gardases en Google Drive, no almacenamento externo ou no dispositivo Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Cando se execute <ph name="PRODUCT_NAME" /> nun contorno de escritorio compatible, utilizarase a configuración do proxy do sistema. Non obstante, ou o sistema non é compatible ou se produciu un problema ao iniciar a configuración do sistema.&lt;/p&gt;

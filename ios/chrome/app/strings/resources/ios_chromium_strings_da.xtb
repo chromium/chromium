@@ -199,6 +199,9 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="5671188105328420281">Tips til Chromium</translation>
 <translation id="5688047395118852662">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
+<translation id="5731004036450828399">For at beskytte dine adgangsnøgler skal du først oprette en pinkode til gendannelse.
+
+        Adgangsnøgler gemmes i Adgangskodeadministrator, så du kan bruge dem i Chromium på alle enheder.</translation>
 <translation id="584550191241316896">Logget ind i Chromium</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5889847953983052353">Ved aktivering:
@@ -265,6 +268,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7285031092584344905">Få adgang til dine Chromium-adgangskoder og meget mere i andre apps.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Din adgangskode gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Denne adgangsnøgle gemmes i Adgangskodeadministrator for <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Åbn Chromium</translation>
 <translation id="7531461704633548377">Fra Chromium</translation>
 <translation id="7554983317097061001">Tip til Chromium: Flyt Chromium til docken</translation>
@@ -298,6 +302,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8254729934443216898">Se nye funktioner, der hjælper dig med at få mest muligt ud af Chromium.</translation>
 <translation id="8293572045658095405">Du er i inkognitotilstand i Chromium</translation>
 <translation id="830951810931292870">Åbner de angivne webadresser i Chromium i inkognitotilstand.</translation>
+<translation id="8385503371191508165">Begynd at gemme adgangsnøgler med Adgangskodeadministrator</translation>
 <translation id="8390323835464055390">Log ind med dine gemte adgangskoder og adgangsnøgler fra en hvilken som helst app ved hjælp af Autofyld i Chromium</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}}</translation>

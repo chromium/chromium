@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium ඉඟි</translation>
 <translation id="5688047395118852662">මෙම කාඩ්පත ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ගන්නා ආකාරය පිළිබඳ යෝජනා පෙන්වයි.</translation>
 <translation id="5700709190537129682">Chromium හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැකිය</translation>
+<translation id="5731004036450828399">ඔබේ මුරයතුරු ආරක්ෂිතව තබා ගැනීමට, ඔබ ප්‍රථමයෙන් ප්‍රතිසාධන PIN එකක් සෑදීමට අවශ්‍ය වනු ඇත.
+
+        මුරයතුරු මුරපද කළමනාකරු තුළ සුරකින අතර, එමඟින් ඔබට ඒවා ඕනෑම උපාංගයක Chromium හි භාවිතා කිරීමට ඉඩ දෙයි.</translation>
 <translation id="584550191241316896">Chromium වෙත පුරනය වී ඇත</translation>
 <translation id="5862307444128926510">Chromium වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="5889847953983052353">සක්‍රීය වූ විට:
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">අනෙකුත් යෙදුම් හරහා ඔබේ Chromium මුරපද සහ තවත් දේ වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">ඔබගේ මුරපදය <ph name="EMAIL" /> සඳහා වන මුරපද කළමනාකරු වෙත සුරකිනු ඇත.</translation>
+<translation id="7434848749522628428">මෙම මුරයතුර <ph name="USER_EMAIL" /> සඳහා වන මුරපද කළමනාකරු වෙත සුරකිනු ලැබේ</translation>
 <translation id="7504829997542308412">Chromium විවෘත කරන්න</translation>
 <translation id="7531461704633548377">Chromium වෙතින්</translation>
 <translation id="7554983317097061001">Chromium ඉඟිය: Chromium ඩොකය වෙත ගෙන යන්න</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">ඔබට Chromium වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට උදවු වන නව විශේෂාංග ගවේෂණය කරන්න.</translation>
 <translation id="8293572045658095405">ඔබ Chromium අප්‍රසිද්ධව සිටී</translation>
 <translation id="830951810931292870">අප්‍රසිද්ධ තුළ Chromium හි ආදානය කළ URLs විවෘත කරයි.</translation>
+<translation id="8385503371191508165">මුරපද කළමනාකරු සමග මුරයතුරු සුරැකීම පටන් ගන්න</translation>
 <translation id="8390323835464055390">ස්වයං පිරවීම සඳහා Chromium භාවිතයෙන් ඕනෑම යෙදුමකින් ඔබේ සුරකින ලද මුරපද සහ මුරයතුරු සමගින් පුරන්න</translation>
 <translation id="8409374867500149834">ඔබට හානිකර වෙබ් අඩවිවලට එරෙහිව Chromium හි ශක්තිමත්ම ආරක්ෂාව ඇත</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{මෙය Chromium {THRESHOLD} විනාඩියක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}one{මෙය Chromium විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}other{මෙය Chromium විනාඩි {THRESHOLD} ක් භාවිත නොකරන විට සිදු වෙයි. ඔබ පුරන වී සිටි විට මෙම උපාංගයට පමණක් සුරකින ලද දත්ත මකනු ලැබේ. මෙයට ඉතිහාසය සහ මුරපද ඇතුළු විය හැක.}}</translation>

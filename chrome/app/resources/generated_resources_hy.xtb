@@ -1002,6 +1002,7 @@
 <translation id="166278006618318542">Առարկայի հանրային բանալու ալգորիթմ</translation>
 <translation id="1662801900924515589"><ph name="APP" /> հավելվածը տեղադրվեց</translation>
 <translation id="1663698992894057019">Ձեռք բերեք Chromebook-ի նոր մոդելը՝ անվտանգության և ծրագրային թարմացումներ ստանալու համար</translation>
+<translation id="1664497218584335032">Կայքն ուզում է բացել այս հղումը հավելվածում։</translation>
 <translation id="166454475160289583">Կայքեր, որոնց թույլատրված չէ փոխարինել ստեղները</translation>
 <translation id="1665328953287874063">Օգտագործեք գաղտնաբառ կամ PIN կոդ՝ ձեր սարքը (<ph name="DEVICE_TYPE" />) ապակողպելու համար</translation>
 <translation id="1665859804801131136">Էքսպրեսիոնիզմ</translation>
@@ -1777,6 +1778,7 @@
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
 <translation id="2204168219363024184">Մուտքի բանալին Google գաղտնաբառերի կառավարչում ստեղծելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="2204387456724731099">Չհաջողվեց թարգմանել ընտրված տեքստը</translation>
+<translation id="2204613850236199029">Տեղեկությունը հեռացվել է</translation>
 <translation id="2207116775853792104">Չհեռացնել ընդլայնումը</translation>
 <translation id="2209841631181508629">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK" />օգտագործման պայմաններին<ph name="END_LINK" />։</translation>
 <translation id="2210462644007531147">Չհաջողվեց ավարտել տեղադրումը</translation>
@@ -6549,10 +6551,12 @@
 <translation id="5517304475148761050">Այս հավելվածը պահանջում է Play Խանութ մտնելու թույլտվություն</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Միշտ բացել <ph name="PROTOCOL_SCHEME" /> հաղորդակարգով հղումներն այս հավելվածում</translation>
 <translation id="5520605865175417976">Հեռացնել գործողությունը <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Սա՞ է ձեր սպասած գլխավոր էջը:</translation>
 <translation id="5522156646677899028">Այս ընդլայնումը պարունակում է անվտանգության լուրջ վտանգ:</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ձեր ադմինիստատորը տեղադրել է ընդլայնում}one{Ձեր ադմինիստրատորը տեղադրել է # ընդլայնում}other{Ձեր ադմինիստրատորը տեղադրել է # ընդլայնում}}</translation>
+<translation id="5523203511530504754">Բացե՞լ <ph name="PROTOCOL_SCHEME" /> հաղորդակարգով հղումները <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="5523532775593636291">Կայքերը, որոնք ավելացնում եք, միշտ կլինեն ակտիվ, և հիշողությունը չի ազատվի դրանցից</translation>
 <translation id="5523558474028191231">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ, և այն պետք է պարունակի առավելագույնը <ph name="MAX_CHARACTER_COUNT" /> նիշ</translation>
 <translation id="5526745900034778153">Նորից մուտք գործեք՝ համաժամացումը վերսկսելու համար</translation>
@@ -9581,6 +9585,7 @@
 <translation id="7663859337051362114">Ավելացնել eSIM պրոֆիլ</translation>
 <translation id="76641554187607347">Միացված ստեղնաշար չկա</translation>
 <translation id="7664442418269614729">Օգտագործեք այս քարտը ձեր iPhone-ում</translation>
+<translation id="7664822217939981459">Ընտրեք հավելված՝ <ph name="PROTOCOL_SCHEME" /> հաղորդակարգով հղումը բացելու համար</translation>
 <translation id="7665082356120621510">Պահպանել չափը</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="7665445336029073980">Ներբեռնումների ամբողջ պատմությունը</translation>
@@ -10894,7 +10899,6 @@
 <translation id="8549127125482561383">Ինչպես ցույց տալ հարցումները</translation>
 <translation id="8549316893834449916">Chromebook մուտք կգործեք նույն Google հաշվով, որն օգտագործում եք Gmail, Drive, YouTube և այլ ծառայություններում։</translation>
 <translation id="8550239873869577759">Ներբեռնվել է կասկածելի ֆայլ</translation>
-<translation id="8551246044333727813">Դուք կարող եք փոփոխել ձեր անունը <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="8551388862522347954">Լիցենզիաներ</translation>
 <translation id="8551588720239073785">Ամսաթվի և ժամի կարգավորումներ</translation>
 <translation id="8551647092888540776">Անցանց ռեժիմում հնարավոր չէ բացել <ph name="FILE_NAMES" /> ֆայլերը</translation>
@@ -11202,6 +11206,7 @@
 <translation id="8750786237117206586">Կառավարել ChromeOS Flex-ի ձայնի կարգավորումները</translation>
 <translation id="8751034568832412184">Ուսումնական</translation>
 <translation id="8751329102746373229">Ձեր ադմինիստրատորի կողմից</translation>
+<translation id="875242763254084885">Այս կայքը (<ph name="ORIGIN" />) ուզում է բացել այս հղումը հավելվածում։</translation>
 <translation id="8752451679755290210">Ավտոմատ անցեք մեկ տարրից մյուսին</translation>
 <translation id="8753948258138515839">«Ֆայլեր» հավելվածի օգնությամբ դուք կարող եք արագ բացել ձեր ֆայլերը, որոնք պահել եք Google Drive-ում, արտաքին կրիչի վրա կամ ChromeOS Flex սարքում։</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" />-ը աջակցվող աշխատասեղանի միջավայրում գործարկելիս՝ կօգտագործվեն պրոքսի-սերվերի համակարգի կարգավորումները: Սակայն, կամ ձեր համակարգը չի աջակցվում, կամ համակարգի կազմաձևումները չի հաջողվում գործարկել:&lt;/p&gt;

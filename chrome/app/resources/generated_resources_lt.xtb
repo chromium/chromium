@@ -1650,6 +1650,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2102495993840063010">„Android“ programos</translation>
 <translation id="2104166991923847969">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
 <translation id="2105809836724866556">Paslėpta: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Taip pat bendrinti programos garso įrašą</translation>
 <translation id="2108204112555497972">Tikrinta prieš <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefono numeris}one{# telefono numeris}few{# telefono numeriai}many{# telefono numerio}other{# telefono numerių}}</translation>
 <translation id="2109384632594340939">profilio nuotrauką</translation>
@@ -3889,6 +3890,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3656328935986149999">Žymeklio greitis</translation>
 <translation id="3656701180077048004">Pridedama delsa tarp klavišo paspaudimo ir jo suaktyvinimo</translation>
 <translation id="3658871634334445293">„TrackPoint“ spartinimas</translation>
+<translation id="3659483399659250379">Pridėkite skirtuką ir kt.</translation>
 <translation id="3659929705630080526">Per daug kartų įvedėte netinkamą prieigos kodą. Vėliau bandykite dar kartą</translation>
 <translation id="3661106764436337772">Rašykite greičiau ir užtikrinčiau</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Rastas vienas esamas slaptažodis}one{Rastas {NUM_PASSWORDS} esamas slaptažodis}few{Rasti {NUM_PASSWORDS} esami slaptažodžiai}many{Rasta {NUM_PASSWORDS} esamo slaptažodžio}other{Rasta {NUM_PASSWORDS} esamų slaptažodžių}}</translation>
@@ -5421,6 +5423,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4707337002099455863">Visada visose svetainėse</translation>
 <translation id="4708849949179781599">Baigti darbą su „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="4708892882822652439">Taip pat leisti skirtuko garsą</translation>
+<translation id="4710347732286177840">Pasirinkti ekrano sritį, kurią norima stebėti</translation>
 <translation id="4711638718396952945">Atkurti nustatymus</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Ištrinti uždarius visus langus</translation>
@@ -10928,7 +10931,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8549127125482561383">Kaip rodyti užklausas</translation>
 <translation id="8549316893834449916">Prie „Chromebook“ prisijunkite naudodami „Google“ paskyrą – tą pačią, kurią naudodami jungiatės prie „Gmail“, Disko, „YouTube“ ir kitur.</translation>
 <translation id="8550239873869577759">Atsisiųstas įtartinas failas</translation>
-<translation id="8551246044333727813">Galite redaguoti vardą <ph name="BEGIN_LINK" />„Google“ paskyroje <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licencijos</translation>
 <translation id="8551588720239073785">Datos ir laiko nustatymai</translation>
 <translation id="8551647092888540776">Negalima atidaryti „<ph name="FILE_NAMES" />“ failų neprisijungus</translation>

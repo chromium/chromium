@@ -390,6 +390,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2834884592945939112">설정, Google 계정 오류</translation>
 <translation id="2838367486340230368">개인 정보 보호 가이드 설명이 절반 높이로 열림</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> 팔로우 해제함</translation>
+<translation id="2839604041336226596"><ph name="TAB_TITLE" />, 여러 개 선택된 탭 고정</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
@@ -506,7 +507,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="333863344734218290">안전하지 않은 공개 및 비공개 사이트에 대해 경고 표시</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
-<translation id="3351165113450806415">새로운 스와이프 방식</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
 <translation id="3373701465337594448">이 설정을 사용하면 내 관심분야를 추측하는 내가 방문한 사이트 목록이 여기에 표시됩니다.</translation>
 <translation id="3384347053049321195">이미지 공유</translation>
@@ -699,6 +699,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4285846616383034558">쿠키, 캐시, 기타 사이트 데이터</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android 설정에서 화면 잠금 사용 설정하기<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">새 시크릿 탭</translation>
+<translation id="4298161202289999785"><ph name="TAB_TITLE" />, 여러 개 선택된 시크릿 탭</translation>
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4300632303535881174">이전 페이지로 이동</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1139,6 +1140,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6248988683584659830">설정 검색</translation>
+<translation id="6250847299079540062"><ph name="TAB_TITLE" />, 여러 개 선택된 시크릿 탭 고정</translation>
 <translation id="6251449557817521191">여기에서 Chrome 방문 기록 보기</translation>
 <translation id="6254139308321626268">PDF 파일을 보는 중</translation>
 <translation id="6255809143828972562">Chrome의 도구로 안전하게 탐색하고 제어할 수 있습니다</translation>
@@ -1182,6 +1184,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6410883413783534063">탭을 열어 동시에 여러 페이지를 방문할 수 있습니다.</translation>
 <translation id="6411009031428071896">피드 듣기</translation>
 <translation id="6411219469806822692">더 이상 위로 올라갈 수 없습니다. 페이지 더 위쪽에서 시작해 보세요.</translation>
+<translation id="6412215853589222273"><ph name="TAB_TITLE" />, 여러 개 선택된 탭</translation>
 <translation id="641643625718530986">인쇄…</translation>
 <translation id="6433501201775827830">검색엔진 선택</translation>
 <translation id="6434309073475700221">삭제</translation>
@@ -1378,6 +1381,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7177873915659574692">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7182051712900867547">다른 계정 사용</translation>
+<translation id="7182520625618447753">주소 표시줄 위치를 상단 또는 하단으로 전환하여 탐색 환경을 맞춤설정하세요.</translation>
 <translation id="7183517696921903380">앱 필터 시트가 열렸습니다.</translation>
 <translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />님을 차단하시겠습니까?</translation>
@@ -1625,7 +1629,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8221985041778490865">인터넷 사용 기록 삭제 중</translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="82296173028782770">검색어 수정: <ph name="SEARCH_QUERY" /></translation>
-<translation id="8236063039629122676">이제 오른쪽으로 스와이프하면 이전에 방문한 페이지로 이동하고, 왼쪽으로 스와이프하면 다음 페이지로 이동합니다.</translation>
 <translation id="8236097722223016103">북마크에 추가</translation>
 <translation id="8243077599929149377">사용자 이름 추가</translation>
 <translation id="8244387390464017490">새 탭 페이지 맞춤설정</translation>

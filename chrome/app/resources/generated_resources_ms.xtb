@@ -1647,6 +1647,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2102495993840063010">Apl Android</translation>
 <translation id="2104166991923847969">Matikan tempat liputan secara automatik</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> disembunyikan</translation>
+<translation id="2106439768713835453">Turut berkongsi audio aplikasi</translation>
 <translation id="2108204112555497972">Diperiksa <ph name="NUM_DAYS_HOURS_MINUTES" /> lalu</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Nombor telefon}other{# nombor telefon}}</translation>
 <translation id="2109384632594340939">gambar profil</translation>
@@ -3886,6 +3887,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3656328935986149999">Kelajuan kursor</translation>
 <translation id="3656701180077048004">Tambahkan lengah antara apabila anda menekan kekunci dengan apabila kekunci diaktifkan</translation>
 <translation id="3658871634334445293">Pemecutan TrackPoint</translation>
+<translation id="3659483399659250379">Tambahkan tab dan pelbagai lagi</translation>
 <translation id="3659929705630080526">Anda telah memasukkan kod akses yang salah terlalu banyak kali. Cuba sebentar lagi</translation>
 <translation id="3661106764436337772">Menulis dengan lebih cepat dan yakin</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 kata laluan sedia ada ditemukan}other{{NUM_PASSWORDS} kata laluan sedia ada ditemukan}}</translation>
@@ -5418,6 +5420,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4707337002099455863">Sentiasa pada Semua Laman</translation>
 <translation id="4708849949179781599">Keluar dari <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Benarkan audio tab juga</translation>
+<translation id="4710347732286177840">Pilih kawasan skrin untuk susulan</translation>
 <translation id="4711638718396952945">Pulihkan tetapan</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Padamkan apabila anda menutup semua tetingkap</translation>
@@ -10919,7 +10922,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8549127125482561383">Cara memaparkan permintaan</translation>
 <translation id="8549316893834449916">Anda akan menggunakan Google Account anda untuk mendaftar masuk ke Chromebook anda – akaun sama yang anda gunakan untuk Gmail, Drive, YouTube dan banyak lagi.</translation>
 <translation id="8550239873869577759">Fail mencurigakan dimuat turun</translation>
-<translation id="8551246044333727813">Anda boleh mengedit nama anda dalam <ph name="BEGIN_LINK" />Google Account anda <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Lesen</translation>
 <translation id="8551588720239073785">Tetapan tarikh dan masa</translation>
 <translation id="8551647092888540776">Tidak dapat membuka <ph name="FILE_NAMES" /> semasa di luar talian</translation>

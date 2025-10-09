@@ -1786,6 +1786,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2204034823255629767">Läsa och ändra allt som du skriver</translation>
 <translation id="2204168219363024184">Verifiera din identitet om du vill skapa den här nyckeln med Google Lösenordshantering</translation>
 <translation id="2204387456724731099">Det gick inte att översätta urvalet</translation>
+<translation id="2204613850236199029">Informationen har tagits bort</translation>
 <translation id="2207116775853792104">Behåll det här tillägget</translation>
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Det gick inte att slutföra installationen</translation>
@@ -10917,7 +10918,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8549127125482561383">Så här visar du begäranden</translation>
 <translation id="8549316893834449916">Du loggar in på Chromebook med ditt Google-konto – samma konto som du använder för Gmail, Drive, YouTube med mera.</translation>
 <translation id="8550239873869577759">Laddade ned misstänkt fil</translation>
-<translation id="8551246044333727813">Du kan redigera ditt namn i <ph name="BEGIN_LINK" />Google-kontot <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenser</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>
 <translation id="8551647092888540776">Det går inte att öppna <ph name="FILE_NAMES" /> när du är offline</translation>

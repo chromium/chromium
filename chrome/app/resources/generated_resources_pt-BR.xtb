@@ -1787,6 +1787,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2204034823255629767">Ler e alterar tudo o que você digitar</translation>
 <translation id="2204168219363024184">Para criar esta chave de acesso com o Gerenciador de senhas do Google, confirme sua identidade</translation>
 <translation id="2204387456724731099">Não foi possível traduzir o texto selecionado</translation>
+<translation id="2204613850236199029">Informações removidas</translation>
 <translation id="2207116775853792104">Manter extensão</translation>
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Veja os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" /> desse site.</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
@@ -8276,7 +8277,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
-<translation id="6738180164164974883">Permitir a definição de cookies de terceiros</translation>
+<translation id="6738180164164974883">Permitir cookies de terceiros</translation>
 <translation id="6738430949033571771">Verificando a conta…</translation>
 <translation id="6739266861259291931">Redefinir para o idioma do dispositivo</translation>
 <translation id="6739923123728562974">Mostrar atalho na área de trabalho</translation>
@@ -10042,7 +10043,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7952708427581814389">Os sites podem pedir para acessar texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauração concluída</translation>
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
-<translation id="7953236668995583915">Atualize a página para aplicar as configurações atualizadas ao site</translation>
+<translation id="7953236668995583915">Recarregue esta página para aplicar as configurações atualizadas ao site.</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>
@@ -10921,7 +10922,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8549127125482561383">Como mostrar solicitações</translation>
 <translation id="8549316893834449916">Para fazer login no Chromebook, você usará a mesma Conta do Google usada no Gmail, Drive, YouTube e outros serviços.</translation>
 <translation id="8550239873869577759">O download do arquivo suspeito foi concluído</translation>
-<translation id="8551246044333727813">Você pode editar seu nome na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8551588720239073785">Configurações de data e hora</translation>
 <translation id="8551647092888540776">Não é possível abrir o arquivo <ph name="FILE_NAMES" /> quando o dispositivo está off-line</translation>

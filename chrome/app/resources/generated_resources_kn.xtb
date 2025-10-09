@@ -1640,6 +1640,7 @@
 <translation id="2102495993840063010">Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="2104166991923847969">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ಮರೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2106439768713835453">ಆ್ಯಪ್ ಆಡಿಯೋವನ್ನು ಸಹ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ಸಮಯದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ಫೋನ್ ಸಂಖ್ಯೆ}one{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}other{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}}</translation>
 <translation id="2109384632594340939">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
@@ -1779,6 +1780,7 @@
 <translation id="2204034823255629767">ನೀವು ಟೈಪ್‌ ಮಾಡುವ ಯಾವುದನ್ನಾದರೂ ಓದಿ ಮತ್ತು ಬದಲಿಸಿ</translation>
 <translation id="2204168219363024184">Google Password Manager ಜೊತೆಗೆ ಈ ಪಾಸ್‌ಕೀಯನ್ನು ರಚಿಸಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಬೇಕು</translation>
 <translation id="2204387456724731099">ಆಯ್ಕೆಮಾಡಲಾದ ಈ ಭಾಗವನ್ನು ಅನುವಾದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="2204613850236199029">ಮಾಹಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2207116775853792104">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2209841631181508629">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ <ph name="FIELDS_STRING" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="2210462644007531147">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -3876,6 +3878,7 @@
 <translation id="3656328935986149999">ಕರ್ಸರ್ ವೇಗ</translation>
 <translation id="3656701180077048004">ಕೀಲಿಯನ್ನು ಒತ್ತಿದಾಗಿನಿಂದ ಅದು ಸಕ್ರಿಯಗೊಳ್ಳುವವರೆಗೆ ವಿಳಂಬ ಸಮಯವನ್ನು ಸೇರಿಸುತ್ತದೆ</translation>
 <translation id="3658871634334445293">TrackPoint ವೇಗವರ್ಧಕ</translation>
+<translation id="3659483399659250379">ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="3659929705630080526">ನೀವು ಹಲವಾರು ಬಾರಿ ತಪ್ಪಾದ ಆ್ಯಕ್ಸೆಸ್ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3661106764436337772">ವೇಗವಾಗಿ ಮತ್ತು ಹೆಚ್ಚು ವಿಶ್ವಾಸದಿಂದ ಬರೆಯಿರಿ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್ ಕಂಡುಬಂದಿದೆ}one{{NUM_PASSWORDS} ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿವೆ}other{{NUM_PASSWORDS} ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿವೆ}}</translation>
@@ -5409,6 +5412,7 @@
 <translation id="4707337002099455863">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="4708892882822652439">ಟ್ಯಾಬ್ ಆಡಿಯೊವನ್ನು ಸಹ ಅನುಮತಿಸಿ</translation>
+<translation id="4710347732286177840">ಫಾಲೋ ಅಪ್‌ಗಾಗಿ ಸ್ಕ್ರೀನ್‌ನ ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4711638718396952945">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪುನಃಸ್ಥಾಪಿಸು</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದಾಗ ಅಳಿಸಿ</translation>
@@ -10908,7 +10912,6 @@
 <translation id="8549127125482561383">ವಿನಂತಿಗಳನ್ನು ತೋರಿಸುವುದು ಹೇಗೆ</translation>
 <translation id="8549316893834449916">ನೀವು Gmail, Drive, YouTube ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳಿಗೆ ಬಳಸುವ ಅದೇ ಖಾತೆಯನ್ನು ನಿಮ್ಮ Chromebook ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಬಳಸುತ್ತೀರಿ.</translation>
 <translation id="8550239873869577759">ಅನುಮಾನಾಸ್ಪದ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="8551246044333727813">ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆ <ph name="USERNAME" /><ph name="END_LINK" /> ನಲ್ಲಿ ನಿಮ್ಮ ಹೆಸರನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8551388862522347954">ಪರವಾನಗಿಗಳು</translation>
 <translation id="8551588720239073785">ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8551647092888540776">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ <ph name="FILE_NAMES" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>

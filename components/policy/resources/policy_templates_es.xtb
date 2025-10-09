@@ -637,6 +637,7 @@ La reautenticación online puede solicitarse por varios motivos, como cuando se 
 <translation id="1438739959477268107">Configuración predeterminada de la generación de claves</translation>
 <translation id="1440408958042020947">Permite que los usuarios que hayan aceptado usar la función Mi teléfono accedan a través de esta función a fotos y vídeos recientes hechos con su teléfono.</translation>
 <translation id="1443532790824582949">Habilitar el teclado virtual táctil</translation>
+<translation id="1447252610864877219">Permite que la aplicación Gemini realice acciones en páginas web.</translation>
 <translation id="1449083855104537880">Si se le asigna el valor "true" a esta política, se incluyen las opciones de accesibilidad en el menú de la bandeja del sistema. Si se le asigna el valor "false", las opciones no aparecen en el menú.
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, las opciones de accesibilidad no se incluyen en el menú, pero los usuarios pueden hacerlas aparecer desde la página de configuración.
@@ -1306,6 +1307,18 @@ Si se le asigna el valor False, no se recogerá información que pueda usarse pa
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="1878535132109943599">Si esta política se habilita, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />
+solo mostrarán advertencias en <ph name="CHROME_DEVTOOLS_NAME" /> debido a un error en la comprobación de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si se inhabilita esta política o no se define, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán la gestión predeterminada de estas solicitudes.
+
+Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Esta política de empresa es temporal y se eliminará a partir de la versión M146.
+
+A largo plazo, la política <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> se podrá usar para añadir a una lista de permitidos patrones de URL a los que se debe conceder automáticamente el permiso de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Ten en cuenta que si se habilita la política <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" />, prevalecerá sobre esta política.</translation>
 <translation id="187961648719201562">Eliminar archivos locales (compatible desde la versión 137)</translation>
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
@@ -7052,6 +7065,7 @@ En las plataformas de escritorio, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAM
 <translation id="5774856474228476867">URL de búsqueda del proveedor de búsquedas predeterminadas</translation>
 <translation id="5775235485119094648">Carga la batería mientras está dentro de un intervalo determinado.</translation>
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio</translation>
+<translation id="5776508475264864949">No permite que la aplicación Gemini realice acciones en páginas web.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
 <translation id="5790763087505467169">Reducir las notificaciones de inicio automático de las sesiones de invitado administradas</translation>
 <translation id="5794205610250307906">Esta política controla si el navegador usa el almacenamiento en búfer adaptable para Web Audio, lo que puede reducir los fallos de audio, pero también puede aumentar la latencia en una cantidad variable.
@@ -7631,6 +7645,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si a la política se le asigna el valor <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valor 3), se avisará al usuario cuando el permiso de fuentes locales se pida de forma predeterminada. Si los usuarios dan permiso, se ampliará la capacidad de los sitios para ver información sobre fuentes locales.
 
       Si la política no se establece, se aplicará el comportamiento predeterminado, que consiste en avisar al usuario, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="6203014458380972093">Inhabilitar temporalmente las restricciones en las solicitudes a endpoints de red local</translation>
 <translation id="6203715554101884845">Si se define esta política, podrás añadir una lista con URLs que especifiquen qué sitios obtendrán permiso automáticamente para acceder a un dispositivo HID con los IDs de proveedor y producto facilitados en la pantalla de inicio de sesión. Cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" /> para ser válido. De lo contrario, el elemento se ignorará. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> debe tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y puede tener un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política referida a todos los dispositivos con el ID de proveedor especificado. Un elemento que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no se considerará válido y se ignorará.
 
 Si no se define esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
@@ -9454,6 +9469,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Impedir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta conservar los tokens de inicio de sesión para que el usuario no tenga que volver a iniciar sesión.</translation>
+<translation id="7331098674887251788">Permite que las integraciones de la aplicación Gemini actúen directamente en páginas web</translation>
 <translation id="7331387825106440104">No implementar obligatoriamente restricciones en las anclas de confianza añadidas de forma local</translation>
 <translation id="7331962793961469250">Si se establece en "true", las promociones de aplicaciones de Chrome Web Store no aparecerán en la página Nueva pestaña.
 
@@ -10262,6 +10278,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Widgets Glanceables en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Habilitar los informes de Android</translation>
+<translation id="798671159602573821">Especifica si se deben inhabilitar (temporalmente) las restricciones de acceso a la red local</translation>
 <translation id="7990280274626154329">Habilitar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
@@ -10590,6 +10607,15 @@ Consulta la sección 5.2 del RFC 8828 (https://tools.ietf.org/html/rfc8828.html#
       Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>
 <translation id="82530263956734297">ID de extensiones excluidas de la lista de bloqueados</translation>
 <translation id="8254749125469750814">No validar si una extensión se puede instalar o no con un servicio en la nube.</translation>
+<translation id="825509998103089977">Controla si la app Gemini puede realizar acciones en las páginas web en nombre del usuario.
+
+0/sin definir = la app Gemini puede realizar acciones en las páginas web.
+
+1 = la app Gemini no puede realizar acciones en las páginas web.
+
+Esta política no tiene efecto cuando la app Gemini está inhabilitada. Por ejemplo, la app Gemini se puede inhabilitar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información, consulta https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Esta política está obsoleta y no se admite. Usa <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> en su lugar.</translation>
 <translation id="8256688113167012935">Permite controlar el nombre de la cuenta que <ph name="PRODUCT_OS_NAME" /> muestra en la pantalla de inicio de sesión para la cuenta local del dispositivo correspondiente.
 

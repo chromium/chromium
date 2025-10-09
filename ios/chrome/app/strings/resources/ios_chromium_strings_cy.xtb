@@ -199,6 +199,9 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chromium yn eich cy
 <translation id="5671188105328420281">Awgrymiadau Chromium</translation>
 <translation id="5688047395118852662">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
+<translation id="5731004036450828399">Er mwyn cadw'ch codau pas yn ddiogel, yn gyntaf bydd angen i chi greu PIN adfer.
+
+        Mae codau pas yn cael eu cadw yn y Rheolwr Cyfrineiriau, sy'n caniatáu i chi eu defnyddio yn Chromium ar unrhyw ddyfais.</translation>
 <translation id="584550191241316896">Wedi mewngofnodi i Chromium</translation>
 <translation id="5862307444128926510">Croeso i Chromium</translation>
 <translation id="5889847953983052353">Pan fydd ymlaen:
@@ -265,6 +268,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7285031092584344905">Cyrchwch eich cyfrineiriau Chromium a rhagor ar draws apiau eraill.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Bydd eich cyfrinair yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Bydd y cod pas hwn yn cael ei gadw i'r Rheolwr Cyfrineiriau ar gyfer <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Agor Chromium</translation>
 <translation id="7531461704633548377">O Chromium</translation>
 <translation id="7554983317097061001">Awgrym Chromium: Symudwch Chromium i'r doc</translation>
@@ -298,6 +302,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8254729934443216898">Archwiliwch nodweddion newydd sy'n eich helpu i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="8293572045658095405">Rydych yn y modd Anhysbys Chromium</translation>
 <translation id="830951810931292870">Yn agor y cyfeiriadau URL sydd wedi'u mewnbynnu yn Chromium yn y modd Anhysbys.</translation>
+<translation id="8385503371191508165">Dechrau cadw cyfrineiriau gyda'r Rheolwr Cyfrineiriau</translation>
 <translation id="8390323835464055390">Mewngofnodwch gyda'ch cyfrineiriau a'ch codau pas sydd wedi'u cadw o unrhyw ap gan ddefnyddio Chromium ar gyfer Awtolenwi</translation>
 <translation id="8409374867500149834">Mae gennych ddiogelwch cryfaf Chromium yn erbyn gwefannau niweidiol</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}zero{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}two{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}few{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}many{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}other{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}}</translation>

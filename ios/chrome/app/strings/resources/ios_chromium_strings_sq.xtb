@@ -199,6 +199,9 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="5671188105328420281">Këshilla për Chromium</translation>
 <translation id="5688047395118852662">Kjo kartë të shfaq sugjerime se si të përfitosh sa më shumë nga Chromium.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
+<translation id="5731004036450828399">Për t'i mbajtur të sigurt çelësat e tu të kalimit, në fillim duhet të krijosh një kod PIN për rikuperimin.
+
+        Çelësat e kalimit ruhen te "Menaxheri i fjalëkalimeve", i cili të lejon që t'i përdorësh në Chromium në çdo pajisje.</translation>
 <translation id="584550191241316896">Identifikuar në Chromium</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5889847953983052353">Kur aktivizohet:
@@ -264,6 +267,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7285031092584344905">Qasu te fjalëkalimet e tua të Chromium etj. nëpër aplikacione të tjera.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Fjalëkalimi yt do të ruhet në "Menaxherin e fjalëkalimeve" për <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Ky çelës kalimi do të ruhet te "Menaxheri i fjalëkalimeve" për <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Hap Chromium</translation>
 <translation id="7531461704633548377">Nga Chromium</translation>
 <translation id="7554983317097061001">Këshillë për Chromium: Zhvendose Chromium te stacioni</translation>
@@ -297,6 +301,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8254729934443216898">Eksploro veçori të reja që të ndihmojnë të përfitosh sa më shumë nga Chromium.</translation>
 <translation id="8293572045658095405">Je në modalitetin "I fshehtë" të Chromium</translation>
 <translation id="830951810931292870">Hap URL-të e futura në Chromium në modalitetin "I fshehtë".</translation>
+<translation id="8385503371191508165">Fillo të ruash çelësat e kalimit me "Menaxherin e fjalëkalimeve"</translation>
 <translation id="8390323835464055390">Identifikohu me çelësat e kalimit dhe fjalëkalimet e ruajtura nga çdo aplikacion duke përdorur Chromium për "Plotësimin automatik"</translation>
 <translation id="8409374867500149834">Ti ke sigurinë më të fortë të Chromium kundër sajteve të dëmshme të uebit</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë. Të dhënat e ruajtura vetëm në këtë pajisje ndërkohë që ishte identifikuar do të fshihen. Kjo mund të përfshijë historikun dhe fjalëkalimet.}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta. Të dhënat e ruajtura vetëm në këtë pajisje ndërkohë që ishte identifikuar do të fshihen. Kjo mund të përfshijë historikun dhe fjalëkalimet.}}</translation>

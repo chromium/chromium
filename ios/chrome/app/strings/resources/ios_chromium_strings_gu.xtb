@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium વિશે ટિપ</translation>
 <translation id="5688047395118852662">આ કાર્ડ તમને Chromiumનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
 <translation id="5700709190537129682">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
+<translation id="5731004036450828399">તમારી પાસકી સલામત રાખવા માટે, સૌથી પહેલાં તમારે કોઈ રિકવરી પિન બનાવવો જરૂરી છે.
+
+        Password Managerમાં પાસકી સાચવવામાં આવે છે, જે તમને કોઈપણ ડિવાઇસ પર Chromiumમાં તેનો ઉપયોગ કરવાની સુવિધા આપે છે.</translation>
 <translation id="584550191241316896">Chromiumમાં સાઇન ઇન કર્યું</translation>
 <translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
 <translation id="5889847953983052353">જ્યારે ચાલુ હોય:
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">અન્ય ઍપ માટેના Chromiumના તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતોને ઍક્સેસ કરો.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
+<translation id="7434848749522628428"><ph name="USER_EMAIL" /> માટે આ પાસકી Password Managerમાં સાચવવામાં આવશે</translation>
 <translation id="7504829997542308412">Chromium ખોલો</translation>
 <translation id="7531461704633548377">Chromiumમાંથી</translation>
 <translation id="7554983317097061001">Chromium વિશે ટિપ: Chromiumને ડૉક પર ખસેડો</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">Chromiumનો સૌથી વધુ લાભ મેળવવામાં તમારી સહાય કરે એવી નવી સુવિધાઓ વિશે શોધખોળ કરો.</translation>
 <translation id="8293572045658095405">તમે Chromiumના છૂપા મોડમાં છે</translation>
 <translation id="830951810931292870">ઇનપુટ કરેલા URLsને Chromiumમાં છૂપા મોડમાં ખોલે છે.</translation>
+<translation id="8385503371191508165">Password Manager વડે પાસકી સાચવવાનું શરૂ કરો</translation>
 <translation id="8390323835464055390">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromiumનો ઉપયોગ કરીને કોઈપણ ઍપમાંથી તમારા સાચવેલા પાસવર્ડ અને પાસકી વડે સાઇન ઇન કરો</translation>
 <translation id="8409374867500149834">નુકસાનકારક વેબસાઇટ સામે તમે Chromiumની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}}</translation>

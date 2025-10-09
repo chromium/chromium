@@ -1001,6 +1001,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="166278006618318542">Subjekti avaliku võtme algoritm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> on installitud</translation>
 <translation id="1663698992894057019">Parima turvalisuse ja uusima tarkvara saamiseks hankige uus Chromebook</translation>
+<translation id="1664497218584335032">Veebisait soovib avada selle lingi rakenduses.</translation>
 <translation id="166454475160289583">Klaviatuurisisendi alistamine pole lubatud</translation>
 <translation id="1665328953287874063">Kasutage seadme <ph name="DEVICE_TYPE" /> avamiseks parooli või PIN-koodi</translation>
 <translation id="1665859804801131136">Ekspressionism</translation>
@@ -6557,10 +6558,12 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5517304475148761050">See rakendus nõuab juurdepääsu Play poele</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Ava protokolli <ph name="PROTOCOL_SCHEME" /> lingid alati selles rakenduses.</translation>
 <translation id="5520605865175417976">Toimingu <ph name="ACTION_TO_REMOVE" /> eemaldamine</translation>
 <translation id="5521078259930077036">Kas see on avaleht, mida ootasite?</translation>
 <translation id="5522156646677899028">See laiendus sisaldab tõsist turvaauku.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administraator installis laienduse}other{Administraator installis # laiendust}}</translation>
+<translation id="5523203511530504754">Avage protokolli <ph name="PROTOCOL_SCHEME" /> lingid rakenduses <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Teie lisatud saidid püsivad alati aktiivsena ja nende arvelt mälu ei vabastata</translation>
 <translation id="5523558474028191231">Nimi võib sisaldada tähti, numbreid ja erimärke ning tohib olla kuni <ph name="MAX_CHARACTER_COUNT" /> tähemärki pikk</translation>
 <translation id="5526745900034778153">Sünkroonimise jätkamiseks logige uuesti sisse</translation>
@@ -9591,6 +9594,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7663859337051362114">eSIM-i profiili lisamine</translation>
 <translation id="76641554187607347">Klaviatuur pole ühendatud</translation>
 <translation id="7664442418269614729">Kasutage seda kaarti oma iPhone'is</translation>
+<translation id="7664822217939981459">Valige rakendus, milles protokolli <ph name="PROTOCOL_SCHEME" /> link avada</translation>
 <translation id="7665082356120621510">Säilita maht</translation>
 <translation id="7665369617277396874">Konto lisamine</translation>
 <translation id="7665445336029073980">Allalaadimiste täielik ajalugu</translation>
@@ -10905,7 +10909,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8549127125482561383">Kuidas taotlusi kuvada?</translation>
 <translation id="8549316893834449916">Chromebooki sisselogimiseks kasutate oma Google'i kontot – sama kontot, mida kasutate Gmaili, Drive'i, YouTube'i ja muude jaoks.</translation>
 <translation id="8550239873869577759">Laaditi alla kahtlane fail</translation>
-<translation id="8551246044333727813">Nime saate muuta <ph name="BEGIN_LINK" />Google’i kontol <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Litsentsid</translation>
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8551647092888540776">Faili <ph name="FILE_NAMES" /> ei saa võrguühenduseta avada</translation>
@@ -11213,6 +11216,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8750786237117206586">ChromeOS Flexi heliseadete haldamine</translation>
 <translation id="8751034568832412184">Kool</translation>
 <translation id="8751329102746373229">Teie administraatorilt</translation>
+<translation id="875242763254084885">Sait <ph name="ORIGIN" /> soovib avada selle lingi rakenduses.</translation>
 <translation id="8752451679755290210">Üksuste vahel automaatselt liikumine</translation>
 <translation id="8753948258138515839">Rakendusega Failid saate kiirjuurdepääsu Google Drive'i, välisesse salvestusseadmesse või Chrome OS Flexi seadmesse salvestatud failidele.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kui toodet <ph name="PRODUCT_NAME" /> käitatakse toetatud töölaua keskkonnas, kasutatakse süsteemi puhverserveri seadeid. Kuid teie süsteemi ei toetata või tekkis probleem süsteemi konfiguratsiooni käivitamisel.&lt;/p&gt;

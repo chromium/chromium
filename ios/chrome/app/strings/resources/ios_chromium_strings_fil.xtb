@@ -199,6 +199,9 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5671188105328420281">Mga Tip sa Chromium</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
+<translation id="5731004036450828399">Para mapanatiling ligtas ang iyong mga passkey, kakailanganin mo munang gumawa ng PIN sa pag-recover.
+
+        Sine-save ang mga passkey sa Password Manager, na nagbibigay-daan sa iyong gamitin ang mga ito sa Chromium sa anumang device.</translation>
 <translation id="584550191241316896">Naka-sign in sa Chromium</translation>
 <translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
 <translation id="5889847953983052353">Kapag naka-on:
@@ -265,6 +268,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7285031092584344905">I-access ang iyong mga password sa Chromium at higit pa sa iba pang app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Ise-save ang iyong password sa Password Manager para sa <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Ise-save ang passkey na ito sa Password Manager para sa <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Buksan ang Chromium</translation>
 <translation id="7531461704633548377">Mula sa Chromium</translation>
 <translation id="7554983317097061001">Tip sa Chromium: Ilipat ang Chromium sa dock</translation>
@@ -298,6 +302,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8254729934443216898">Mag-explore ng mga bagong feature na makakatulong sa iyong masulit ang Chromium.</translation>
 <translation id="8293572045658095405">Nasa Incognito ka sa Chromium</translation>
 <translation id="830951810931292870">Bubuksan ang mga in-input na URL sa Chromium sa Incognito.</translation>
+<translation id="8385503371191508165">Simulan ang pag-save ng mga passkey gamit ang Password Manager</translation>
 <translation id="8390323835464055390">Mag-sign in sa pamamagitan ng iyong mga naka-save na password at passkey mula sa anumang app gamit ang Chromium para sa AutoFill</translation>
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}}</translation>

@@ -86,6 +86,9 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="2940565985148833945">Chrome-Tipp: Mit Lens suchen</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
 <translation id="2986402782150919988">Lesezeichen in Chrome hinzufügen</translation>
+<translation id="3027236223714901838">Damit deine Passkeys geschützt sind, musst du zuerst eine PIN zur Wiederherstellung erstellen.
+
+        Passkeys werden im Google Passwortmanager gespeichert, sodass du sie auf beliebigen Geräten in Chrome verwenden kannst.</translation>
 <translation id="3030414234702425231">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="3042447686908081308">In Chrome importieren</translation>
 <translation id="3051521853355903257">Passwörter in Chrome verwalten</translation>
@@ -316,7 +319,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="855027533751209304">Chrome-Tipp: Suchen, was du siehst</translation>
 <translation id="8558480467877843976">Du kannst jetzt Chrome jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
-<translation id="8610372330814566250">Safari-Passwörter, ‑Verlauf, ‑Lesezeichen und ‑Kreditkarten in Chrome verwenden</translation>
+<translation id="8610372330814566250">In Safari gespeicherte Passwörter, Verlauf, Lesezeichen und Kreditkarten in Chrome verwenden</translation>
 <translation id="8630122478628016441">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="8673726683583791503">Mit Google Lens einkaufen</translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>

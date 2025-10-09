@@ -1001,6 +1001,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="166278006618318542">Voorwerp se publieke sleutel-algoritme</translation>
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleer</translation>
 <translation id="1663698992894057019">Gradeer op na ’n nuwe Chromebook vir die jongste sekuriteit en sagteware</translation>
+<translation id="1664497218584335032">Die webwerf wil hierdie skakel in ’n app oopmaak.</translation>
 <translation id="166454475160289583">Mag nie jou sleutelbordinvoer ignoreer nie</translation>
 <translation id="1665328953287874063">Gebruik ’n wagwoord of PIN om jou <ph name="DEVICE_TYPE" /> te ontsluit</translation>
 <translation id="1665859804801131136">Ekspressionisme</translation>
@@ -1785,6 +1786,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2204034823255629767">Lees en verander enigiets wat jy invoer</translation>
 <translation id="2204168219363024184">Om hierdie toegangsleutel met Google Wagwoordbestuurder te skep, moet jy verifieer dat dit jy is</translation>
 <translation id="2204387456724731099">Hierdie keuse kon nie vertaal word nie</translation>
+<translation id="2204613850236199029">Inligting is verwyder</translation>
 <translation id="2207116775853792104">Hou hierdie uitbreiding</translation>
 <translation id="2209841631181508629">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou <ph name="FIELDS_STRING" /> met hierdie werf deel. Sien hierdie werf se <ph name="BEGIN_LINK" />diensbepalings<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Kon nie installering voltooi nie</translation>
@@ -6565,10 +6567,12 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5517304475148761050">Hierdie app moet toegang tot die Play Winkel hê</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Maak altyd <ph name="PROTOCOL_SCHEME" />-skakels in hierdie app oop</translation>
 <translation id="5520605865175417976">Verwyder handeling <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
 <translation id="5522156646677899028">Die uitbreiding bevat 'n ernstige sekuriteitswakheid.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is deur jou administrateur geïnstalleer}other{# uitbreidings is deur jou administrateur geïnstalleer}}</translation>
+<translation id="5523203511530504754">Maak <ph name="PROTOCOL_SCHEME" />-skakels in <ph name="APP_NAME" /> oop</translation>
 <translation id="5523532775593636291">Werwe wat jy byvoeg, sal altyd aktief bly en geheue sal nie van hulle af beskikbaar gemaak word nie</translation>
 <translation id="5523558474028191231">Name kan letters, syfers en spesiale karakters gebruik en moet <ph name="MAX_CHARACTER_COUNT" /> of minder karakters wees</translation>
 <translation id="5526745900034778153">Meld weer aan om sinkronisering te hervat</translation>
@@ -9599,6 +9603,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7663859337051362114">Voeg e-SIM-profiel by</translation>
 <translation id="76641554187607347">Geen sleutelbord is gekoppel nie</translation>
 <translation id="7664442418269614729">Gebruik hierdie kaart op jou iPhone</translation>
+<translation id="7664822217939981459">Kies ’n app om die <ph name="PROTOCOL_SCHEME" />-skakel oop te maak</translation>
 <translation id="7665082356120621510">Reserveer grootte</translation>
 <translation id="7665369617277396874">Voeg rekening by</translation>
 <translation id="7665445336029073980">Volledige aflaaigeskiedenis</translation>
@@ -10912,7 +10917,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8549127125482561383">Hoe om versoeke te wys</translation>
 <translation id="8549316893834449916">Jy sal jou Google-rekening gebruik om by jou Chromebook aan te meld – dieselfde rekening as wat jy vir Gmail, Drive, YouTube en meer gebruik.</translation>
 <translation id="8550239873869577759">Verdagte lêer afgelaai</translation>
-<translation id="8551246044333727813">Jy kan jou naam in jou <ph name="BEGIN_LINK" />Google-rekening <ph name="USERNAME" /><ph name="END_LINK" /> wysig.</translation>
 <translation id="8551388862522347954">Lisensies</translation>
 <translation id="8551588720239073785">Datum- en tydinstellings</translation>
 <translation id="8551647092888540776">Kan nie <ph name="FILE_NAMES" /> oopmaak wanneer stelsel vanlyn is nie</translation>
@@ -11220,6 +11224,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8750786237117206586">Bestuur ChromeOS Flex-oudio-instellings</translation>
 <translation id="8751034568832412184">Skool</translation>
 <translation id="8751329102746373229">Van jou administrateur af</translation>
+<translation id="875242763254084885">Die werf <ph name="ORIGIN" /> wil hierdie skakel in ’n app oopmaak.</translation>
 <translation id="8752451679755290210">Beweeg outomaties tussen items</translation>
 <translation id="8753948258138515839">Die Lêers-app bied vinnige toegang tot lêers wat jy op Google Drive, eksterne berging of jou Chrome OS Flex-toestel gestoor het.</translation>
 <translation id="8754200782896249056">&lt;p&gt;As <ph name="PRODUCT_NAME" /> in 'n gesteunde werkskermomgewing gebruik word, sal die stelsel se instaanbedienerinstellings gebruik word. Jou stelsel word egter óf nie gesteun nie, óf jou stelselopstelling kon nie begin word nie.&lt;/p&gt;

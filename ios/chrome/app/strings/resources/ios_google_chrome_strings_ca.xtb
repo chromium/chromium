@@ -86,6 +86,9 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="2940565985148833945">Consell de Chrome: cerca amb Lens</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Afegeix adreces d'interès a Chrome</translation>
+<translation id="3027236223714901838">Per protegir les teves claus d'accés, primer hauràs de crear un PIN de recuperació.
+
+        Les claus d'accés es desen al gestor de contrasenyes de Google, que et permet utilitzar-les a Chrome en qualsevol dispositiu.</translation>
 <translation id="3030414234702425231">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="3042447686908081308">Importa a Chrome</translation>
 <translation id="3051521853355903257">Gestiona les contrasenyes a Chrome</translation>

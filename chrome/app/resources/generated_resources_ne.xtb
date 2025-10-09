@@ -1777,6 +1777,7 @@
 <translation id="2204034823255629767">तपाईंले टाइप गर्नुहुने कुनैपनि कुरालाई पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="2204168219363024184">Google पासवर्ड म्यानेजर प्रयोग गरी यो पासकी बनाउन आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="2204387456724731099">चयन गरिएको यो टेक्स्ट अनुवाद गर्न सकिँदैन</translation>
+<translation id="2204613850236199029">जानकारी हटाइयो</translation>
 <translation id="2207116775853792104">यो एक्स्टेन्सन राखिरहनुहोस्</translation>
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ। यो साइटका <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" /> हेर्नुहोस्।</translation>
 <translation id="2210462644007531147">इन्स्टल गर्ने प्रक्रिया पूरा गर्न सकिएन</translation>
@@ -10900,7 +10901,6 @@
 <translation id="8549127125482561383">अनुरोधहरू देखाउने तरिका</translation>
 <translation id="8549316893834449916">तपाईंले आफ्नो Chromebook मा साइन इन गर्न आफूले Gmail, Drive, YouTube तथा अन्य एपहरूमा प्रयोग गरेकै Google खाता प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="8550239873869577759">शङ्कास्पद फाइल डाउनलोड गरियो</translation>
-<translation id="8551246044333727813">तपाईं आफ्नो <ph name="BEGIN_LINK" />Google खाता <ph name="USERNAME" /><ph name="END_LINK" /> मा सेभ गरिएको नाम बदल्न सक्नुहुन्छ।</translation>
 <translation id="8551388862522347954">लाइसेन्सहरू</translation>
 <translation id="8551588720239073785">मिति र समयसम्बन्धी सेटिङ</translation>
 <translation id="8551647092888540776">अफलाइन भएका बेला <ph name="FILE_NAMES" /> खोल्न सकिँदैन</translation>

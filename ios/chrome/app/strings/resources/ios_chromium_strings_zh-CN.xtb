@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium 提示</translation>
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
+<translation id="5731004036450828399">为确保通行密钥安全，您首先需要创建恢复 PIN 码。
+
+        通行密钥会保存在密码管理工具中，您可以在任何安装了 Chromium 的设备上使用它们。</translation>
 <translation id="584550191241316896">已登录 Chromium</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5889847953983052353">处于开启状态时：
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">在其他应用中使用 Chromium 中保存的密码和其他信息。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">系统会将您的密码保存到 <ph name="EMAIL" /> 的密码管理工具中。</translation>
+<translation id="7434848749522628428">此通行密钥将保存到 <ph name="USER_EMAIL" /> 的密码管理工具中</translation>
 <translation id="7504829997542308412">打开 Chromium</translation>
 <translation id="7531461704633548377">来自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：将 Chromium 移至程序坞</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">探索可帮助您充分利用 Chromium 的新功能。</translation>
 <translation id="8293572045658095405">您正在使用 Chromium 无痕模式</translation>
 <translation id="830951810931292870">在 Chromium 中以无痕模式打开输入的网址。</translation>
+<translation id="8385503371191508165">开始使用密码管理工具保存通行密钥</translation>
 <translation id="8390323835464055390">通过 Chromium 的自动填充功能，使用任意应用中已保存的密码和通行密钥登录</translation>
 <translation id="8409374867500149834">Chromium 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}}</translation>

@@ -86,6 +86,9 @@ Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andme
 <translation id="2940565985148833945">Chrome'i nõuanne: otsige Lensiga</translation>
 <translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Järjehoidjate lisamine Chrome'i</translation>
+<translation id="3027236223714901838">Oma pääsuvõtme turvalisuse tagamiseks peate esmalt looma taastekoodi.
+
+        Pääsuvõtmed salvestatakse Google'i paroolihaldurisse, mis võimaldab teil neid Chrome'is kasutada mis tahes seadmes.</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
 <translation id="3042447686908081308">Impordi Chrome'i</translation>
 <translation id="3051521853355903257">Paroolide haldamine Chrome'is</translation>

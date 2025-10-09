@@ -1002,6 +1002,7 @@
 <translation id="166278006618318542">Алгоритам на јавен клуч на субјект</translation>
 <translation id="1662801900924515589"><ph name="APP" /> е инсталирана</translation>
 <translation id="1663698992894057019">Надградете на нов Chromebook за да ги добиете најновите безбедносни и софтверски ажурирања.</translation>
+<translation id="1664497218584335032">Вебсајтот сака да го отвори линков во апликација.</translation>
 <translation id="166454475160289583">Сајтови што немаат дозвола да го отфрлаат внесувањето преку тастатурата</translation>
 <translation id="1665328953287874063">Користете лозинка или PIN за да го отклучувате вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Експресионизам</translation>
@@ -1786,6 +1787,7 @@
 <translation id="2204034823255629767">Прочитајте го и променете го напишаниот текст</translation>
 <translation id="2204168219363024184">За да го создадете овој криптографски клуч со Google Password Manager, потврдете го вашиот идентитет</translation>
 <translation id="2204387456724731099">Не може да се преведе избраното</translation>
+<translation id="2204613850236199029">Податоците се отстранети</translation>
 <translation id="2207116775853792104">Задржи ја екстензијава</translation>
 <translation id="2209841631181508629">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ги <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" /> на сајтов.</translation>
 <translation id="2210462644007531147">Инсталацијата не можеше да се заврши</translation>
@@ -6566,10 +6568,12 @@
 <translation id="5517304475148761050">Апликацијава бара пристап до Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Секогаш отворај ги линковите <ph name="PROTOCOL_SCHEME" /> во оваа апликација</translation>
 <translation id="5520605865175417976">Отстрани го дејството „<ph name="ACTION_TO_REMOVE" />“</translation>
 <translation id="5521078259930077036">Дали е ова почетната страница што ја очекувавте?</translation>
 <translation id="5522156646677899028">Наставката содржи сериозни слаби страни на безбедноста.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Администраторот инсталирал екстензија}one{Администраторот инсталирал # екстензија}other{Администраторот инсталирал # екстензии}}</translation>
+<translation id="5523203511530504754">Отворајте ги линковите <ph name="PROTOCOL_SCHEME" /> во <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Сајтовите што ќе ги додадете секогаш ќе бидат активни и на нив нема да се ослободува меморија</translation>
 <translation id="5523558474028191231">Името може да содржи букви, бројки и специјални знаци и мора да има <ph name="MAX_CHARACTER_COUNT" /> знака или помалку</translation>
 <translation id="5526745900034778153">Најавете се повторно за да продолжите со синхронизацијата</translation>
@@ -9601,6 +9605,7 @@
 <translation id="7663859337051362114">Додајте профил на eSIM</translation>
 <translation id="76641554187607347">Не е поврзана тастатура</translation>
 <translation id="7664442418269614729">Користете ја картичкава на вашиот iPhone</translation>
+<translation id="7664822217939981459">Изберете апликација за да го отворите линкот <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Резервирај големина</translation>
 <translation id="7665369617277396874">Додајте сметка</translation>
 <translation id="7665445336029073980">Целосна историја на преземања</translation>
@@ -10917,7 +10922,6 @@
 <translation id="8549127125482561383">Како се прикажуваат барања</translation>
 <translation id="8549316893834449916">Ќе ја користите својата сметка на Google за да се најавите на Chromebook. Тоа е истата сметка што ја користите за Gmail, Drive, YouTube и друго.</translation>
 <translation id="8550239873869577759">Преземена е сомнителна датотека</translation>
-<translation id="8551246044333727813">Може да го измените вашето име во вашата <ph name="BEGIN_LINK" />сметка на Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Лиценци</translation>
 <translation id="8551588720239073785">Поставки за датум и време</translation>
 <translation id="8551647092888540776">Не може да се отвори <ph name="FILE_NAMES" /> кога сте офлајн</translation>
@@ -11225,6 +11229,7 @@
 <translation id="8750786237117206586">Управувајте со поставките за аудио на ChromeOS Flex</translation>
 <translation id="8751034568832412184">Училиште</translation>
 <translation id="8751329102746373229">Од администраторот</translation>
+<translation id="875242763254084885">Сајтот <ph name="ORIGIN" /> сака да го отвори линков во апликација.</translation>
 <translation id="8752451679755290210">Автоматски преместувајте се од ставка на ставка</translation>
 <translation id="8753948258138515839">Апликацијата Датотеки овозможува брз пристап до датотеки што сте ги зачувале на Google Drive, надворешен склад или уред со ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Кога <ph name="PRODUCT_NAME" /> работи во поддржана околина за работна површина, ќе се користат поставките за прокси на системот. Меѓутоа, или системот не е поддржан или имаше проблем при стартувањето на системската конфигурација.&lt;/p&gt;

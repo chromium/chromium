@@ -1001,6 +1001,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="166278006618318542">Kohteen julkisen avaimen algoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> asennettu</translation>
 <translation id="1663698992894057019">Päivitä uuteen Chromebookiin, niin saat uusimmat ohjelmistot ja tietoturvaominaisuudet</translation>
+<translation id="1664497218584335032">Sivusto haluaa avata linkin sovelluksessa.</translation>
 <translation id="166454475160289583">Näppäimistösyötön ohittaminen ei ole sallittu</translation>
 <translation id="1665328953287874063">Avaa <ph name="DEVICE_TYPE" /> salasanalla tai PIN-koodilla</translation>
 <translation id="1665859804801131136">Ekspressionismi</translation>
@@ -1784,6 +1785,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2204034823255629767">Lukea ja muuttaa kaikkea kirjoittamaasi</translation>
 <translation id="2204168219363024184">Todenna henkilöllisyytesi, jotta voit luoda avainkoodin Google Salasanoilla</translation>
 <translation id="2204387456724731099">Valintaa ei voitu kääntää</translation>
+<translation id="2204613850236199029">Tiedot poistettu</translation>
 <translation id="2207116775853792104">Säilytä tämä laajennus</translation>
 <translation id="2209841631181508629">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa <ph name="FIELDS_STRING" /> tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK" />käyttöehtoihin<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Asennus ei onnistunut</translation>
@@ -6561,10 +6563,12 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5517304475148761050">Sovellus edellyttää pääsyä Play Kauppaan</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Avaa <ph name="PROTOCOL_SCHEME" />‑linkit aina tässä sovelluksessa</translation>
 <translation id="5520605865175417976">Poisteta toiminto <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Onko tämä haluamasi etusivu?</translation>
 <translation id="5522156646677899028">Tämä laajennus sisältää vakavan tietosuoja-aukon.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Järjestelmänvalvojasi on asentanut laajennuksen}other{Järjestelmänvalvojasi on asentanut # laajennusta}}</translation>
+<translation id="5523203511530504754">Avaa <ph name="PROTOCOL_SCHEME" />-linkit täällä: <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Lisäämäsi sivustot pysyvät aina aktiivisina, eikä niistä vapauteta muistia</translation>
 <translation id="5523558474028191231">Nimessä voi olla kirjaimia, numeroita ja erikoismerkkejä, ja se voi sisältää enintään <ph name="MAX_CHARACTER_COUNT" /> merkkiä</translation>
 <translation id="5526745900034778153">Jatka synkronointia kirjautumalla sisään</translation>
@@ -8840,7 +8844,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7132886488919643383">Käytä Googlen tekoälyä saadaksesi apua lukemiseen, kirjoittamiseen ja luomiseen</translation>
 <translation id="7134098520442464001">Pienennä tekstiä</translation>
 <translation id="7134951043985383439">Vaarallinen tiedosto ladattu</translation>
-<translation id="7135729336746831607">Otetaanko Bluetooth käyttöön?</translation>
+<translation id="7135729336746831607">Laitetaanko Bluetooth päälle?</translation>
 <translation id="7136694880210472378">Aseta oletukseksi</translation>
 <translation id="7137277889990479760">Jatka käyttäjänä <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka sivustot ja asennetut sovellukset ovat tallentaneet</translation>
@@ -9595,6 +9599,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7663859337051362114">Lisää eSIM-profiili</translation>
 <translation id="76641554187607347">Ei yhdistettyä näppäimistöä</translation>
 <translation id="7664442418269614729">Käytä tätä korttia iPhonella</translation>
+<translation id="7664822217939981459">Valitse sovellus, jolla haluat avata <ph name="PROTOCOL_SCHEME" />-linkin</translation>
 <translation id="7665082356120621510">Varaa koko</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="7665445336029073980">Koko lataushistoria</translation>
@@ -10909,7 +10914,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8549127125482561383">Miten pyyntöjä näytetään</translation>
 <translation id="8549316893834449916">Google-tiliä käytetään Chromebookille kirjautumiseen. Käytät samaa tiliä myös esim. Gmailissa, Drivessa ja YouTubessa.</translation>
 <translation id="8550239873869577759">Epäilyttävä tiedosto ladattu</translation>
-<translation id="8551246044333727813">Voit muokata nimeäsi <ph name="BEGIN_LINK" />Google-tilillä <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Käyttöoikeudet</translation>
 <translation id="8551588720239073785">Aika- ja päivämääräasetukset</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> ei avaudu offline-tilassa</translation>
@@ -11217,6 +11221,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8750786237117206586">Muokkaa ChromeOS Flexin audioasetuksia</translation>
 <translation id="8751034568832412184">Koulu</translation>
 <translation id="8751329102746373229">Järjestelmänvalvojalta</translation>
+<translation id="875242763254084885">Sivusto <ph name="ORIGIN" /> haluaa avata tämän linkin sovelluksessa.</translation>
 <translation id="8752451679755290210">Siirry kohteiden välillä automaattisesti</translation>
 <translation id="8753948258138515839">Tiedostot-sovelluksen kautta pääset käyttämään nopeasti Google Driveen, ulkoiseen tallennustilaan tai ChromeOS Flexiä käyttävälle laitteellesi tallennettuja tiedostoja.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kun tuotetta <ph name="PRODUCT_NAME" /> käytetään tuetussa työpöytäympäristössä, järjestelmän välityspalvelinasetukset ovat käytössä. Joko järjestelmäsi ei ole tuettu tai järjestelmän määrityksiä käynnistettäessä tapahtui virhe.&lt;/p&gt;

@@ -1000,6 +1000,7 @@
 <translation id="166278006618318542">ကာယကံရှင် အများဆိုင်ရာ သော့ ပြဿနာဖြေရှင်းနည်း</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ထည့်သွင်းပြီးပါပြီ</translation>
 <translation id="1663698992894057019">နောက်ဆုံးထုတ် လုံခြုံရေးနှင့် ဆော့ဖ်ဝဲအတွက် Chromebook အသစ် ရယူပါ</translation>
+<translation id="1664497218584335032">ဝဘ်ဆိုက်သည် ဤလင့်ခ်ကို အက်ပ်တစ်ခုတွင် ဖွင့်လိုသည်။</translation>
 <translation id="166454475160289583">သင့်ကီးဘုတ်၏ ဖြည့်သွင်းချက်ကို အစားထိုးရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="1665328953287874063">သင့် <ph name="DEVICE_TYPE" /> ကို ဖွင့်ရန် စကားဝှက် (သို့) ပင်နံပါတ် သုံးပါ</translation>
 <translation id="1665859804801131136">သရုပ်ဖော်ချက်</translation>
@@ -1783,6 +1784,7 @@
 <translation id="2204034823255629767">သင် တိုက်ရိုက်သမျှကို ဖတ်ရန် နှင့် ပြောင်းလဲရန်</translation>
 <translation id="2204168219363024184">Google Password Manager ဖြင့် ဤလျှို့ဝှက်ကီး ပြုလုပ်ရန် ၎င်းသည် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="2204387456724731099">ဤရွေးချယ်မှုကို ဘာသာပြန်၍မရပါ</translation>
+<translation id="2204613850236199029">အချက်အလက်ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="2207116775853792104">ဤနောက်ဆက်တွဲကို ဆက်ထားရန်</translation>
 <translation id="2209841631181508629">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့် <ph name="FIELDS_STRING" /> ကို ဤဝဘ်ဆိုက်နှင့် မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK" /> ကိုကြည့်ပါ။</translation>
 <translation id="2210462644007531147">အပြီးသတ်ထည့်သွင်း၍ မရပါ</translation>
@@ -6563,10 +6565,12 @@
 <translation id="5517304475148761050">ဤအက်ပ်က 'Play စတိုး' သို့ ဝင်သုံးခွင့် လိုအပ်သည်</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> လင့်ခ်များကို ဤအက်ပ်တွင် အမြဲဖွင့်ခြင်း</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> လုပ်ဆောင်ချက်ကို ဖယ်ရှားရန်</translation>
 <translation id="5521078259930077036">သင် စောင့်နေခဲ့သည်မှာ ဒီပင်မ စာမျက်နှာလား?</translation>
 <translation id="5522156646677899028">ဒီတိုးချဲ့မှု ထဲတွင် လေးနက်သည့် လုံခြုံရေး ထိပျက်လွယ်မှု တစ်ခု ပါရှိသည်။</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{သင်၏စီမံခန့်ခွဲသူက နောက်ဆက်တွဲကို ထည့်သွင်းလိုက်သည်။}other{သင်၏စီမံခန့်ခွဲသူက နောက်ဆက်တွဲ # ခုကို ထည့်သွင်းလိုက်သည်။}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> လင့်ခ်များကို <ph name="APP_NAME" /> တွင် ဖွင့်ပါ</translation>
 <translation id="5523532775593636291">သင်ထည့်သည့် ဝဘ်ဆိုက်များသည် အမြဲပွင့်နေမည်ဖြစ်ပြီး ၎င်းတို့၏ မှတ်ဉာဏ်ကို ရှင်းမည်မဟုတ်ပါ</translation>
 <translation id="5523558474028191231">အမည်တွင် အက္ခရာများ၊ နံပါတ်များနှင့် အထူးစာလုံးများ သုံးနိုင်ပြီး စာလုံးရေ <ph name="MAX_CHARACTER_COUNT" /> လုံး (သို့) ၎င်းထက်နည်းရမည်</translation>
 <translation id="5526745900034778153">စင့်ခ်ဆက်လုပ်ရန် ထပ်မံ၍ လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -9594,6 +9598,7 @@
 <translation id="7663859337051362114">eSIM ပရိုဖိုင် ထည့်ရန်</translation>
 <translation id="76641554187607347">ကီးဘုတ် ချိတ်ဆက်မထားပါ</translation>
 <translation id="7664442418269614729">သင့် iPhone တွင် ဤကတ်ကို သုံးပါ</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> လင့်ခ်ကို ဖွင့်ရန် အက်ပ်ရွေးပါ</translation>
 <translation id="7665082356120621510">ဖယ်ထားရန်</translation>
 <translation id="7665369617277396874">အကောင့် ထည့်ရန်</translation>
 <translation id="7665445336029073980">ဒေါင်းလုဒ်မှတ်တမ်း အပြည့်အစုံ</translation>
@@ -10907,7 +10912,6 @@
 <translation id="8549127125482561383">တောင်းဆိုချက်များ ပြနည်း</translation>
 <translation id="8549316893834449916">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်ရန် Gmail၊ Drive၊ YouTube နှင့် အခြားအရာများအတွက် အသုံးပြုသော သင်၏ Google Account ကို အသုံးပြုရမည်။</translation>
 <translation id="8550239873869577759">သံသယဖြစ်ဖွယ်ဖိုင်ကို ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
-<translation id="8551246044333727813">သင့်အမည်ကို သင်၏ <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" /> တွင် ပြင်နိုင်သည်။</translation>
 <translation id="8551388862522347954">လိုင်စင်များ</translation>
 <translation id="8551588720239073785">ရက်စွဲနှင့် အချိန်ဆက်တင်များ</translation>
 <translation id="8551647092888540776">အော့ဖ်လိုင်းဖြစ်နေစဉ် <ph name="FILE_NAMES" /> ကိုဖွင့်၍မရပါ</translation>
@@ -11215,6 +11219,7 @@
 <translation id="8750786237117206586">ChromeOS Flex အသံဆက်တင်များကို စီမံရန်</translation>
 <translation id="8751034568832412184">ကျောင်း</translation>
 <translation id="8751329102746373229">သင်၏ စီမံခန့်ခွဲသူထံမှ</translation>
+<translation id="875242763254084885">ဝဘ်ဆိုက် <ph name="ORIGIN" /> သည် ဤလင့်ခ်ကို အက်ပ်တစ်ခုတွင် ဖွင့်လိုသည်။</translation>
 <translation id="8752451679755290210">အကြောင်းအရာများအကြား အလိုအလျောက်ရွှေ့ခြင်း</translation>
 <translation id="8753948258138515839">Files အက်ပ်က သင် Google Drive တွင် သိမ်းထားသော ဖိုင်များ၊ ပြင်ပသိုလှောင်ခန်း (သို့) သင့် ChromeOS Flex စက်များကို အမြန်သုံးခွင့်ပေးသည်။</translation>
 <translation id="8754200782896249056">&lt;p&gt; ပံ့ပိုးထားသော အလုပ်ခုံပတ်ဝန်းကျင်တွင် <ph name="PRODUCT_NAME" /> အား လည်ပတ်စဉ်၊ စနစ်ပရောက်စီ ကြိုတင်ချိန်ညှိချက်များကို အသုံးပြုပါမည်။ သို့သော်၊ သင့်စနစ်အား မပံ့ပိုးခြင်း သို့မဟုတ် သင့်စနစ် ပြုပြင်မှုအားဖွင့်ရန် ပြဿနာတက်နေခြင်း တစ်ခုခုဖြစ်နိုင်ပါသည်။&lt;/p&gt;

@@ -1647,6 +1647,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">「<ph name="MODULE_TITLE" />」已隱藏</translation>
+<translation id="2106439768713835453">同時分享應用程式音訊</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="2109384632594340939">個人檔案相片</translation>
@@ -3883,6 +3884,7 @@
 <translation id="3656328935986149999">游標速度</translation>
 <translation id="3656701180077048004">在按下按鍵與啟動按鍵間加入延遲時間</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659483399659250379">加入分頁和其他項目</translation>
 <translation id="3659929705630080526">您輸入不正確存取碼的次數過多。請稍後再試</translation>
 <translation id="3661106764436337772">更有自信地快速編寫</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 個現有密碼}other{找到 {NUM_PASSWORDS} 個現有密碼}}</translation>
@@ -5412,6 +5414,7 @@
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">同時允許分頁音訊</translation>
+<translation id="4710347732286177840">選擇要跟進查詢嘅畫面區域</translation>
 <translation id="4711638718396952945">還原設定</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
@@ -6424,7 +6427,7 @@
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全形</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
-<translation id="5431318178759467895">顏色</translation>
+<translation id="5431318178759467895">彩色</translation>
 <translation id="5432145523462851548">喺資料夾入面顯示 <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">如要分享音訊，請改為分享分頁</translation>
 <translation id="5432872710261597882">㩒一下鍾意就可以俾正評。</translation>
@@ -10904,7 +10907,6 @@
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8549316893834449916">您將使用 Google 帳戶登入 Chromebook，Google 帳戶是您用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8550239873869577759">下載咗可疑嘅檔案</translation>
-<translation id="8551246044333727813">你可以在<ph name="BEGIN_LINK" />Google 帳戶 <ph name="USERNAME" /><ph name="END_LINK" /> 中編輯名稱。</translation>
 <translation id="8551388862522347954">授權</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8551647092888540776">離線時無法開啟「<ph name="FILE_NAMES" />」</translation>

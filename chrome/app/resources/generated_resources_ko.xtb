@@ -1001,6 +1001,7 @@
 <translation id="166278006618318542">대상 공개 키 알고리즘</translation>
 <translation id="1662801900924515589"><ph name="APP" /> 설치됨</translation>
 <translation id="1663698992894057019">최신 Chromebook으로 업그레이드하여 최신 보안 및 소프트웨어 사용하기</translation>
+<translation id="1664497218584335032">웹사이트가 이 링크를 앱에서 열려고 합니다.</translation>
 <translation id="166454475160289583">키보드 입력 재정의 허용되지 않음</translation>
 <translation id="1665328953287874063">비밀번호 또는 PIN을 사용하여 <ph name="DEVICE_TYPE" /> 잠금 해제하기</translation>
 <translation id="1665859804801131136">표현주의</translation>
@@ -1647,6 +1648,7 @@
 <translation id="2102495993840063010">Android 앱</translation>
 <translation id="2104166991923847969">자동으로 핫스팟 사용 중지</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> 숨겨짐</translation>
+<translation id="2106439768713835453">애플리케이션 오디오도 공유</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> 전에 확인됨</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{전화번호}other{전화번호 #개}}</translation>
 <translation id="2109384632594340939">프로필 사진</translation>
@@ -1786,6 +1788,7 @@
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="2204168219363024184">Google 비밀번호 관리자로 이 패스키를 만들려면 본인임을 인증하세요</translation>
 <translation id="2204387456724731099">선택 항목을 번역할 수 없습니다</translation>
+<translation id="2204613850236199029">정보 삭제됨</translation>
 <translation id="2207116775853792104">이 확장 프로그램 유지</translation>
 <translation id="2209841631181508629">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
@@ -3886,6 +3889,7 @@
 <translation id="3656328935986149999">커서 속도</translation>
 <translation id="3656701180077048004">키를 누르는 시점과 활성화되는 시점 사이에 지연 시간을 추가합니다.</translation>
 <translation id="3658871634334445293">TrackPoint 가속</translation>
+<translation id="3659483399659250379">탭 등 배경 정보 추가</translation>
 <translation id="3659929705630080526">잘못된 액세스 코드를 너무 여러 번 입력했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="3661106764436337772">더 빠르고 자신 있게 작성하기</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{기존 비밀번호 1개 찾음}other{기존 비밀번호 {NUM_PASSWORDS}개 찾음}}</translation>
@@ -5417,6 +5421,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4707337002099455863">항상 모든 사이트에서 사용</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4708892882822652439">탭 오디오도 허용</translation>
+<translation id="4710347732286177840">화면의 영역을 선택해 후속 질문하기</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">모든 창을 닫으면 삭제</translation>
@@ -6566,10 +6571,12 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">항상 이 앱에서 <ph name="PROTOCOL_SCHEME" /> 링크 열기</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> 작업을 삭제하시겠습니까?</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
 <translation id="5522156646677899028">이 확장 프로그램에는 보안이 심각하게 취약한 요소가 있습니다.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{관리자가 확장 프로그램 1개를 설치함}other{관리자가 확장 프로그램 #개를 설치함}}</translation>
+<translation id="5523203511530504754"><ph name="APP_NAME" />에서 <ph name="PROTOCOL_SCHEME" /> 링크 열기</translation>
 <translation id="5523532775593636291">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다.</translation>
 <translation id="5523558474028191231">이름은 문자, 숫자, 특수문자를 포함할 수 있고 <ph name="MAX_CHARACTER_COUNT" />자 미만(영문 기준)이어야 합니다</translation>
 <translation id="5526745900034778153">다시 로그인하여 동기화 재개</translation>
@@ -9599,6 +9606,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7663859337051362114">eSIM 프로필 추가</translation>
 <translation id="76641554187607347">연결된 키보드 없음</translation>
 <translation id="7664442418269614729">iPhone에서 이 카드 사용하기</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> 링크를 열 앱 선택</translation>
 <translation id="7665082356120621510">용량 예약</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="7665445336029073980">전체 다운로드 기록</translation>
@@ -10914,7 +10922,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8549127125482561383">요청 표시 방법</translation>
 <translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8550239873869577759">의심스러운 파일이 다운로드됨</translation>
-<translation id="8551246044333727813"><ph name="BEGIN_LINK" />Google 계정(<ph name="USERNAME" />)<ph name="END_LINK" />에서 이름을 수정할 수 있습니다.</translation>
 <translation id="8551388862522347954">라이선스</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8551647092888540776">오프라인 상태에서 <ph name="FILE_NAMES" /> 파일을 열 수 없음</translation>
@@ -11222,6 +11229,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8750786237117206586">ChromeOS Flex 오디오 설정 관리</translation>
 <translation id="8751034568832412184">학교</translation>
 <translation id="8751329102746373229">관리자 제공 인증서</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> 사이트가 이 링크를 앱에서 열려고 합니다.</translation>
 <translation id="8752451679755290210">항목 간 자동 이동</translation>
 <translation id="8753948258138515839">파일 앱을 사용하면 Google 드라이브, 외부 저장소, ChromeOS Flex 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="8754200782896249056">&lt;p&gt;지원되는 데스크톱 환경에서 <ph name="PRODUCT_NAME" />을(를) 실행하는 경우 시스템 프록시 설정이 사용됩니다.  하지만 시스템이 지원되지 않거나 시스템 설정을 실행하는 데 문제가 있었습니다.&lt;/p&gt;

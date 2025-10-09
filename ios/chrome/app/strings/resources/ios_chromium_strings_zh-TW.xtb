@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium 提示</translation>
 <translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
+<translation id="5731004036450828399">請先建立復原 PIN 碼，確保密碼金鑰安全。
+
+        密碼金鑰會儲存在密碼管理工具，你可以用於任何裝置的 Chromium。</translation>
 <translation id="584550191241316896">已登入 Chromium</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5889847953983052353">開啟時：
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">在其他應用程式中使用你的 Chromium 密碼和其他資訊。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中。</translation>
+<translation id="7434848749522628428">這個密碼金鑰會儲存到 <ph name="USER_EMAIL" /> 的密碼管理工具</translation>
 <translation id="7504829997542308412">開啟 Chromium</translation>
 <translation id="7531461704633548377">來自 Chromium</translation>
 <translation id="7554983317097061001">Chromium 提示：將 Chromium 移至 Dock</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">瞭解新功能，充分發揮 Chromium 的效用。</translation>
 <translation id="8293572045658095405">目前使用 Chromium 無痕模式</translation>
 <translation id="830951810931292870">在 Chromium 中以無痕模式開啟輸入的網址。</translation>
+<translation id="8385503371191508165">開始使用密碼管理工具儲存密碼金鑰</translation>
 <translation id="8390323835464055390">使用 Chromium 做為自動填寫來源，可從任何應用程式使用已儲存的密碼和通行密鑰登入</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>

@@ -86,6 +86,9 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="2940565985148833945">Suggerimento per Chrome: Cerca con Lens</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Aggiungi preferiti a Chrome</translation>
+<translation id="3027236223714901838">Per proteggere le tue passkey, devi prima creare un PIN di recupero.
+
+        Le passkey vengono salvate in Gestore delle password di Google, che ti consente di usarle in Chrome su qualsiasi dispositivo.</translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="3042447686908081308">Importa in Chrome</translation>
 <translation id="3051521853355903257">Gestisci le password in Chrome</translation>

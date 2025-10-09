@@ -86,6 +86,9 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="2940565985148833945">Tip pre Chrome: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Pridanie záložiek do Chromu</translation>
+<translation id="3027236223714901838">Ak chcete, aby boli vaše prístupové kľúče v bezpečí, musíte najprv vytvoriť kód PIN na obnovenie.
+
+        Prístupové kľúče sa ukladajú do Správcu hesiel Google, takže ich môžete používať v Chrome v ľubovoľnom zariadení.</translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="3042447686908081308">Importovať do Chromu</translation>
 <translation id="3051521853355903257">Správa hesiel v Chrome</translation>

@@ -1637,6 +1637,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2104166991923847969">Desativar a zona Wi-Fi automaticamente</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
+<translation id="2106439768713835453">Partilhar também o áudio da aplicação</translation>
 <translation id="2108204112555497972">Última verificação há <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}other{# números de telefone}}</translation>
 <translation id="2109384632594340939">imagem do perfil</translation>
@@ -3874,6 +3875,7 @@ Quer pará-lo?</translation>
 <translation id="3656328935986149999">Velocidade do cursor</translation>
 <translation id="3656701180077048004">Adiciona um atraso entre o momento em que pressiona uma tecla e o momento em que esta é ativada</translation>
 <translation id="3658871634334445293">Aceleração do TrackPoint</translation>
+<translation id="3659483399659250379">Adicione um separador e muito mais</translation>
 <translation id="3659929705630080526">Introduziu um código de acesso incorreto demasiadas vezes. Tente mais tarde</translation>
 <translation id="3661106764436337772">Escreva mais rápido e com mais confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 palavra-passe existente encontrada}other{{NUM_PASSWORDS} palavras-passe existentes encontradas}}</translation>
@@ -5406,6 +5408,7 @@ Quer pará-lo?</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Sair do <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Permitir também o áudio do separador</translation>
+<translation id="4710347732286177840">Selecionar a região do ecrã do seguimento</translation>
 <translation id="4711638718396952945">Restaurar definições</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eliminar quando fecha todas as janelas</translation>
@@ -10907,7 +10910,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8549127125482561383">Como mostrar pedidos</translation>
 <translation id="8549316893834449916">Utilize a sua Conta Google para iniciar sessão no seu Chromebook, isto é, a mesma conta que utiliza para o Gmail, o Drive, o YouTube e muito mais.</translation>
 <translation id="8550239873869577759">Ficheiro suspeito transferido</translation>
-<translation id="8551246044333727813">Pode editar o seu nome na sua <ph name="BEGIN_LINK" />Conta Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licenças</translation>
 <translation id="8551588720239073785">Definições de data e hora</translation>
 <translation id="8551647092888540776">Não é possível abrir <ph name="FILE_NAMES" /> quando está offline</translation>

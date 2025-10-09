@@ -1635,6 +1635,7 @@
 <translation id="2102495993840063010">Android апликације</translation>
 <translation id="2104166991923847969">Аутоматски искључи хотспот</translation>
 <translation id="2105809836724866556">Скривено: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Дели и звук апликације</translation>
 <translation id="2108204112555497972">Проверено пре <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Број телефона}one{# број телефона}few{# броја телефона}other{# бројева телефона}}</translation>
 <translation id="2109384632594340939">слика профила</translation>
@@ -3871,6 +3872,7 @@
 <translation id="3656328935986149999">Брзина курсора</translation>
 <translation id="3656701180077048004">Додаје кашњење између притискања тастера и његовог активирања</translation>
 <translation id="3658871634334445293">Убрзање TrackPoint-а</translation>
+<translation id="3659483399659250379">Додајте картицу и друго</translation>
 <translation id="3659929705630080526">Превише пута сте унели нетачан приступни кôд. Пробајте поново касније.</translation>
 <translation id="3661106764436337772">Пишите брже и сигурније</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Пронађена је 1 постојећа лозинка}one{Пронађена је {NUM_PASSWORDS} постојећа лозинка}few{Пронађене су {NUM_PASSWORDS} постојеће лозинке}other{Пронађено је {NUM_PASSWORDS} постојећих лозинки}}</translation>
@@ -5403,6 +5405,7 @@
 <translation id="4707337002099455863">Увек на свим сајтовима</translation>
 <translation id="4708849949179781599">Затвори <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Дозволи и звук картице</translation>
+<translation id="4710347732286177840">Изабери регион екрана за додатне информације</translation>
 <translation id="4711638718396952945">Врати подешавања</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Избриши када затворим све прозоре</translation>
@@ -10906,7 +10909,6 @@
 <translation id="8549127125482561383">Како да прегледате захтеве</translation>
 <translation id="8549316893834449916">За пријављивање на Chromebook ћете користити Google налог – исти који користите и за Gmail, Диск, YouTube и друго.</translation>
 <translation id="8550239873869577759">Преузет је сумњиви фајл</translation>
-<translation id="8551246044333727813">Можете да измените име на <ph name="BEGIN_LINK" />Google налогу <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Лиценце</translation>
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> не може да се отвори када сте офлајн</translation>

@@ -86,6 +86,9 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="2940565985148833945">Consejo de Chrome: busca con Lens</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Añadir marcadores a Chrome</translation>
+<translation id="3027236223714901838">Para proteger tus llaves de acceso, primero debes crear un PIN de recuperación.
+
+        Las llaves de acceso se guardan en el Gestor de contraseñas de Google, lo que te permite usarlas en Chrome en cualquier dispositivo.</translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="3042447686908081308">Importar a Chrome</translation>
 <translation id="3051521853355903257">Gestionar contraseñas en Chrome</translation>

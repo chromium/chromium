@@ -634,6 +634,7 @@ Une réauthentification en ligne peut être requise pour plusieurs raisons (par 
 <translation id="1438739959477268107">Paramètre de génération de clé par défaut</translation>
 <translation id="1440408958042020947">Permet aux utilisateurs ayant activé Phone Hub d'accéder aux photos et vidéos récentes prises sur leur téléphone</translation>
 <translation id="1443532790824582949">Activer le clavier virtuel tactile</translation>
+<translation id="1447252610864877219">Autoriser l'appli Gemini à effectuer des actions sur les pages Web.</translation>
 <translation id="1449083855104537880">Définissez cette règle sur "True" pour afficher les options d'accessibilité dans le menu de la barre d'état système. Si vous définissez cette règle sur "False", ces options ne s'affichent pas dans le menu.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si elle n'est pas définie, les options d'accessibilité ne s'affichent pas dans le menu, mais les utilisateurs peuvent activer l'affichage via la page "Paramètres".
@@ -1305,6 +1306,17 @@ Si cette règle est définie sur "False", aucune information pouvant servir à i
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="1878535132109943599">Si cette règle est activée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> n'afficheront des avertissements dans <ph name="CHROME_DEVTOOLS_NAME" /> qu'en cas d'échec des vérifications <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Cette règle d'entreprise est temporaire et sera supprimée après M146.
+
+À long terme, la règle <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> peut être utilisée pour ajouter à la liste d'autorisation les formats d'URL auxquels l'autorisation <ph name="LOCAL_NETWORK_ACCESS" /> doit être automatiquement accordée.
+
+Notez que si la règle <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" /> est activée, elle prévaut sur cette règle.</translation>
 <translation id="187961648719201562">Supprimer les fichiers locaux existants (pris en charge depuis la version 137)</translation>
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
@@ -7024,6 +7036,7 @@ Sur les plates-formes de bureau, le téléchargement du modèle peut également 
 <translation id="5774856474228476867">URL de recherche du moteur de recherche par défaut</translation>
 <translation id="5775235485119094648">Recharge de la batterie tant que le niveau de charge défini n'est pas atteint.</translation>
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
+<translation id="5776508475264864949">Interdire à l'appli Gemini d'effectuer des actions sur les pages Web.</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
 <translation id="5794205610250307906">Cette règle contrôle si le navigateur utilise la mise en mémoire tampon adaptative pour Web Audio. Cela peut réduire les problèmes audio, mais aussi augmenter la latence de façon variable.
@@ -7603,6 +7616,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si cette règle est définie sur <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valeur 3), l'utilisateur reçoit par défaut une invite lorsque l'autorisation d'utiliser des polices locales est demandée. Si les utilisateurs accordent l'autorisation, cela étend la capacité des sites à voir les informations sur les polices locales.
 
       Si cette règle n'est pas configurée, le comportement par défaut (invite envoyée à l'utilisateur) s'applique. Les utilisateurs peuvent toutefois modifier ce paramètre.</translation>
+<translation id="6203014458380972093">Désactiver temporairement les restrictions sur les requêtes à des points de terminaison du réseau local</translation>
 <translation id="6203715554101884845">Cette règle permet de lister les URL indiquant quels sites sont automatiquement autorisés à accéder à un appareil HID à l'aide des ID de fournisseur et de produit indiqués sur l'écran de connexion. Pour être valide, chaque élément listé doit comporter les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> sous peine d'être ignoré. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> doit avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et peut avoir un champ <ph name="PRODUCT_ID_FIELD_NAME" />. Si le champ <ph name="PRODUCT_ID_FIELD_NAME" /> est omis, une règle est créée, laquelle établit une correspondance avec n'importe quel appareil ayant l'ID de fournisseur spécifié. Un élément qui a un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" />, n'est pas valide et est ignoré.
 
 Si cette règle n'est pas configurée, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
@@ -9408,6 +9422,7 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLI
 <translation id="7323896582714668701">Paramètres de ligne de commande supplémentaires pour <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Empêcher Chrome de bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7326394567531622570">Semblable à l'option "Nettoyer" (valeur 2), celle-ci essaie de conserver les jetons de connexion pour éviter à l'utilisateur de devoir se reconnecter.</translation>
+<translation id="7331098674887251788">Autorise les intégrations de l'appli Gemini à agir directement sur les pages Web</translation>
 <translation id="7331387825106440104">Ne pas appliquer de contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="7331962793961469250">Si cette option est définie sur "True", les publicités pour les applications Chrome Web Store ne s'affichent pas sur la page Nouvel onglet.
 
@@ -10209,6 +10224,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Activer la création de rapports Android</translation>
+<translation id="798671159602573821">Indique si les restrictions d'accès au réseau local doivent être (temporairement) désactivées</translation>
 <translation id="7990280274626154329">Activer <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 

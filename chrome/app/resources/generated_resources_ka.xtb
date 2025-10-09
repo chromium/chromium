@@ -1637,6 +1637,7 @@
 <translation id="2102495993840063010">Android-ის აპები</translation>
 <translation id="2104166991923847969">უსადენო ქსელის ავტოგამორთვა</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> დამალულია</translation>
+<translation id="2106439768713835453">გაზიარდეს აპლიკაციის აუდიოც</translation>
 <translation id="2108204112555497972">შემოწმებიდან გავიდა <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="2109384632594340939">პროფილის სურათი</translation>
@@ -1776,6 +1777,7 @@
 <translation id="2204034823255629767">თქვენს მიერ ნებისმიერი აკრეფილი ტექსტის წაკითხვა და შეცვლა</translation>
 <translation id="2204168219363024184">ამ წვდომის გასაღების Google პაროლების მმართველში შესაქმნელად უნდა დაადასტუროთ თქვენი ვინაობა</translation>
 <translation id="2204387456724731099">არჩეული ტექსტის თარგმნა ვერ მოხერხდა</translation>
+<translation id="2204613850236199029">ინფორმაცია ამოიშალა</translation>
 <translation id="2207116775853792104">ამ გაფართოების შენარჩუნება</translation>
 <translation id="2209841631181508629">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის მიერ ამ საიტთან გაზიარდება <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">ინსტალაცია ვერ შესრულდა</translation>
@@ -3872,6 +3874,7 @@
 <translation id="3656328935986149999">კურსორის სიჩქარე</translation>
 <translation id="3656701180077048004">დაამატებს კლავიშის დაჭერიდან მის გააქტიურებამდე დაყოვნების დროს</translation>
 <translation id="3658871634334445293">TrackPoint-ის აჩქარება</translation>
+<translation id="3659483399659250379">ჩანართის ან სხვა რამის დამატება</translation>
 <translation id="3659929705630080526">წვდომის არასწორი კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ცადეთ მოგვიანებით</translation>
 <translation id="3661106764436337772">წერეთ უფრო სწრაფად და თავდაჯერებულად</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{მოიძებნა 1 არსებული პაროლი}other{მოიძებნა {NUM_PASSWORDS} არსებული პაროლი}}</translation>
@@ -5404,6 +5407,7 @@
 <translation id="4707337002099455863">ყოველთვის ყველა საიტზე</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">ასევე, დაუშვით ჩანართის აუდიო</translation>
+<translation id="4710347732286177840">აირჩიეთ ეკრანის რეგიონი შემდგომი მოთხოვნისთვის</translation>
 <translation id="4711638718396952945">პარამეტრების აღდგენა</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">წაშლა თქვენ მიერ ყველა ფანჯრის დახურვისას</translation>
@@ -10901,7 +10905,6 @@
 <translation id="8549127125482561383">მოთხოვნების ჩვენების წესი</translation>
 <translation id="8549316893834449916">Chromebook-ში შესასვლელად გამოიყენეთ თქვენი Google ანგარიში, რომლითაც Gmail-ისთვის, Drive-ისთვის, YouTube-ისა თუ სხვა პლატფორმებისთვის სარგებლობთ.</translation>
 <translation id="8550239873869577759">ჩამოტვირთულია საეჭვო ფაილი</translation>
-<translation id="8551246044333727813">თქვენი სახელის რედაქტირება შეგიძლიათ <ph name="BEGIN_LINK" />თქვენს Google ანგარიშში <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">ლიცენზიები</translation>
 <translation id="8551588720239073785">თარიღისა და დროის პარამეტრები</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> ვერ გაიხსნება ხაზგარეშე რეჟიმში</translation>

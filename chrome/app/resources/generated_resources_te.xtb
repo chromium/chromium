@@ -1784,6 +1784,7 @@
 <translation id="2204034823255629767">మీరు టైప్ చేసేదాన్ని చదవడం మరియు మార్చడం</translation>
 <translation id="2204168219363024184">ఈ పాస్-కీని Google Password Managerతో క్రియేట్ చేయడానికి, మీ గుర్తింపును వెరిఫై చేయండి</translation>
 <translation id="2204387456724731099">ఈ ఎంపికను అనువదించడం సాధ్యపడలేదు</translation>
+<translation id="2204613850236199029">సమాచారం తీసివేయబడింది</translation>
 <translation id="2207116775853792104">ఈ ఎక్స్‌టెన్షన్‌ను అలాగే ఉంచండి</translation>
 <translation id="2209841631181508629">కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో మీ <ph name="FIELDS_STRING" />‌ను షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK" />సర్వీస్ నియమాలను<ph name="END_LINK" /> చూడండి.</translation>
 <translation id="2210462644007531147">ఇన్‌స్టాలేషన్‌ను పూర్తి చేయడం సాధ్యపడలేదు</translation>
@@ -10911,7 +10912,6 @@
 <translation id="8549127125482561383">రిక్వెస్ట్‌లను ఎలా చూపాలి</translation>
 <translation id="8549316893834449916">మీ Chromebookకు సైన్ ఇన్ చేయడానికి మీరు మీ Google ఖాతాను ఉపయోగిస్తారు – Gmail, Drive, YouTube మరిన్నింటి కోసం మీరు ఉపయోగించే అదే ఖాతా.</translation>
 <translation id="8550239873869577759">అనుమానాస్పదమైన ఫైల్‌ను డౌన్‌లోడ్ చేశారు</translation>
-<translation id="8551246044333727813">మీ <ph name="BEGIN_LINK" />Google ఖాతా <ph name="USERNAME" /><ph name="END_LINK" />లో మీ పేరును మీరు ఎడిట్ చేయలేరు.</translation>
 <translation id="8551388862522347954">లైసెన్స్‌లు</translation>
 <translation id="8551588720239073785">తేదీ, సమయం సెట్టింగ్‌లు</translation>
 <translation id="8551647092888540776">ఆఫ్‌లైన్‌లో ఉన్నప్పుడు <ph name="FILE_NAMES" />‌ను తెరవడం సాధ్యపడదు</translation>

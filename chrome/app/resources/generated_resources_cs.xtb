@@ -1002,6 +1002,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="166278006618318542">Algoritmus veřejného klíče subjektu</translation>
 <translation id="1662801900924515589">Aplikace <ph name="APP" /> je nainstalována</translation>
 <translation id="1663698992894057019">Pokud chcete mít nejnovější zabezpečení a software, upgradujte na nový Chromebook</translation>
+<translation id="1664497218584335032">Web chce tento odkaz otevřít v aplikaci.</translation>
 <translation id="166454475160289583">Zákaz přepisovat vstup z klávesnice</translation>
 <translation id="1665328953287874063">Odemykejte svůj <ph name="DEVICE_TYPE" /> heslem nebo kódem PIN</translation>
 <translation id="1665859804801131136">Expresionismus</translation>
@@ -1777,6 +1778,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2204034823255629767">Číst a upravovat vše, co napíšete</translation>
 <translation id="2204168219363024184">Pokud pomocí Správce hesel Google chcete vytvořit tento přístupový klíč, ověřte, že jste to vy</translation>
 <translation id="2204387456724731099">Výběr se nepodařilo přeložit</translation>
+<translation id="2204613850236199029">Informace byly odstraněny</translation>
 <translation id="2207116775853792104">Toto rozšíření ponechat</translation>
 <translation id="2209841631181508629">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="2210462644007531147">Instalaci se nepodařilo dokončit</translation>
@@ -6549,10 +6551,12 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5517304475148761050">Tato aplikace vyžaduje přístup do Obchodu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Odkazy <ph name="PROTOCOL_SCHEME" /> vždy otevírat v této aplikaci</translation>
 <translation id="5520605865175417976">Odstranit akci <ph name="ACTION_TO_REMOVE" /></translation>
 <translation id="5521078259930077036">Je toto domovská stránka, kterou jste očekávali?</translation>
 <translation id="5522156646677899028">Toto rozšíření představuje závažné bezpečnostní riziko.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrátor nainstaloval rozšíření}few{Administrátor nainstaloval # rozšíření}many{Administrátor nainstaloval # rozšíření}other{Administrátor nainstaloval # rozšíření}}</translation>
+<translation id="5523203511530504754">Odkazy <ph name="PROTOCOL_SCHEME" /> otevírat v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Weby, které přidáte, zůstanou vždy aktivní a neuvolní se z nich paměť</translation>
 <translation id="5523558474028191231">Název smí obsahovat písmena, číslice a zvláštní znaky a smí obsahovat maximálně <ph name="MAX_CHARACTER_COUNT" /> znaků</translation>
 <translation id="5526745900034778153">Chcete-li obnovit synchronizaci, znovu se přihlaste</translation>
@@ -9583,6 +9587,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7663859337051362114">Přidat profil eSIM</translation>
 <translation id="76641554187607347">Není připojena žádná klávesnice</translation>
 <translation id="7664442418269614729">Používejte tuhle kartu na svém iPhonu</translation>
+<translation id="7664822217939981459">Vyberte aplikaci, ve které chcete odkaz <ph name="PROTOCOL_SCHEME" /> otevřít</translation>
 <translation id="7665082356120621510">Rezervovat</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="7665445336029073980">Úplná historie stahování</translation>
@@ -10897,7 +10902,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8549127125482561383">Způsob zobrazování žádostí</translation>
 <translation id="8549316893834449916">K přihlašování do Chromebooku budete používat účet Google – ten samý, který používáte pro Gmail, Disk, YouTube a další služby.</translation>
 <translation id="8550239873869577759">Byl stažen podezřelý soubor</translation>
-<translation id="8551246044333727813">Své jméno můžete upravit ve svém <ph name="BEGIN_LINK" />účtu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8551588720239073785">Nastavení data a času</translation>
 <translation id="8551647092888540776">Soubory <ph name="FILE_NAMES" /> nelze otevřít offline</translation>
@@ -11204,6 +11208,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8750786237117206586">Správa nastavení zvuku ChromeOS Flex</translation>
 <translation id="8751034568832412184">Škola</translation>
 <translation id="8751329102746373229">Od vašeho administrátora</translation>
+<translation id="875242763254084885">Web <ph name="ORIGIN" /> chce tento odkaz otevřít v aplikaci.</translation>
 <translation id="8752451679755290210">Přecházet mezi položkami automaticky</translation>
 <translation id="8753948258138515839">Aplikace Soubory umožňuje rychlý přístup k souborům, které jste uložili na Disk Google, externí úložiště nebo zařízení se systémem ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Při spuštění aplikace <ph name="PRODUCT_NAME" /> v podporovaném počítačovém prostředí se použijí systémová nastavení proxy serveru. Váš systém však buď není podporován, nebo došlo k problému se spuštěním konfigurace systému.&lt;/p&gt;

@@ -639,6 +639,7 @@ Người dùng có thể phải xác thực lại trực tuyến vì một số 
 <translation id="1438739959477268107">Cài đặt tạo khóa mặc định</translation>
 <translation id="1440408958042020947">Cho phép người dùng đã chọn tham gia Trung tâm điều khiển điện thoại truy cập ảnh và video mới chụp/quay trên điện thoại của họ</translation>
 <translation id="1443532790824582949">Bật bàn phím ảo cảm ứng</translation>
+<translation id="1447252610864877219">Cho phép ứng dụng Gemini thực hiện hành động trên các trang web.</translation>
 <translation id="1449083855104537880">Khi bạn đặt chính sách này thành True, các tùy chọn hỗ trợ tiếp cận sẽ hiển thị trong trình đơn ở khay hệ thống. Nếu bạn đặt chính sách này thành False, thì các tùy chọn sẽ không xuất hiện trong trình đơn.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì các tùy chọn hỗ trợ tiếp cận sẽ không xuất hiện trong trình đơn, nhưng người dùng có thể chọn hiển thị các tùy chọn này thông qua trang Cài đặt.
@@ -7156,6 +7157,7 @@ Trên nền tảng máy tính, bạn cũng có thể tắt tính năng tải mô
 <translation id="5774856474228476867">URL tìm kiếm nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="5775235485119094648">Sạc pin khi thiết bị ở trong phạm vi cố định.</translation>
 <translation id="5776485039795852974">Hỏi mỗi lần trang web muốn hiển thị thông báo trên màn hình</translation>
+<translation id="5776508475264864949">Không cho phép ứng dụng Gemini thực hiện hành động trên các trang web.</translation>
 <translation id="5783009211970309878">In đầu trang và chân trang</translation>
 <translation id="5790763087505467169">Hạn chế các thông báo tự động chạy phiên khách được quản lý</translation>
 <translation id="5794205610250307906">Chính sách này kiểm soát việc trình duyệt có sử dụng vùng đệm thích ứng cho
@@ -9601,6 +9603,7 @@ Chính sách này sẽ thay thế chính sách <ph name="WINDOW_PLACEMENT_BLOCKE
 <translation id="7323896582714668701">Tham số dòng lệnh bổ sung cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Không cho phép Chrome chặn các thao tác di chuyển đến những giao thức bên ngoài nằm bên trong iframe hộp cát</translation>
 <translation id="7326394567531622570">Tương tự như Wipe (giá trị 2) nhưng cố gắng giữ lại mã đăng nhập để người dùng không phải đăng nhập lại.</translation>
+<translation id="7331098674887251788">Cho phép tích hợp ứng dụng Gemini để trực tiếp thực hiện hành động trên các trang web</translation>
 <translation id="7331387825106440104">Không thực thi các quy tắc ràng buộc trong các neo tin cậy được thêm cục bộ</translation>
 <translation id="7331962793961469250">Khi được đặt thành True, kết quả thăng hạng của các ứng dụng trong Cửa hàng Chrome trực tuyến sẽ không xuất hiện trên trang thẻ mới.
 

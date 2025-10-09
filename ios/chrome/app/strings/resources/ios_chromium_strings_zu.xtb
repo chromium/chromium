@@ -199,6 +199,9 @@ Ukuze ushintshe lawa masethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chromium
 <translation id="5671188105328420281">Amathiphu e-Chromium</translation>
 <translation id="5688047395118852662">Leli khadi likubonisa iziphakamiso zokuthi ungathola kanjani okuningi ku-Chromium.</translation>
 <translation id="5700709190537129682">I-Chromium ayikwazi ukuhlola iphasiwedi yakho</translation>
+<translation id="5731004036450828399">Ukuze ugcine okhiye bokudlula bakho bephephile, kuzodingeka usungule iphinikhodi yokuthola kuqala.
+
+        Okhiye bokudlula balondolozwa eSiphathini Sephasiwedi, okukuvumela ukuthi ubasebenzise ku-Chromium kunoma iyiphi idivayisi.</translation>
 <translation id="584550191241316896">Ungene ngemvume ku-Chromium</translation>
 <translation id="5862307444128926510">Siyakwamukela ku-Chromium</translation>
 <translation id="5889847953983052353">Uma ivuliwe:
@@ -265,6 +268,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="7285031092584344905">Finyelela amaphasiwedi akho e-Chromium nokunye okwengeziwe kuwo wonke amanye ama-app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Iphasiwedi yakho izolondolozwa ku-Password Manager ye-<ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Lo khiye wokudlula uzolondolozwa Esiphathini Sephasiwedi ka-<ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Vula iChromium</translation>
 <translation id="7531461704633548377">Ukusuka kuChromium</translation>
 <translation id="7554983317097061001">Ithiphu yeChromium: Hambisa iChromium kudokhi</translation>
@@ -298,6 +302,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="8254729934443216898">Hlola izakhi ezintsha ezikusiza ukuthi uthole okuningi ku-Chromium.</translation>
 <translation id="8293572045658095405">UkuChromium Incognito</translation>
 <translation id="830951810931292870">Ivula ama-URL afakiwe ku-Chromium nge-Incognito.</translation>
+<translation id="8385503371191508165">Qala ukulondoloza okhiye bokudlula ngeSiphathi Sephasiwedi</translation>
 <translation id="8390323835464055390">Ngena ngemvume ngamaphasiwedi nezikhiye zakho zokudlula ezilondoloziwe kunoma iyiphi i-app usebenzisa iChromium Ezigcwaliselayo</translation>
 <translation id="8409374867500149834">Unokuvikeleka okuqine kakhulu kwe-Chromium ngokumelene namawebhusayithi ayingozi</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho iChromium ingasetshenziswa umzuzu ongu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}one{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}other{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}}</translation>

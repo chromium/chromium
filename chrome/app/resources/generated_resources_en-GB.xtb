@@ -1647,6 +1647,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2102495993840063010">Android apps</translation>
 <translation id="2104166991923847969">Turn off hotspot automatically</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> hidden</translation>
+<translation id="2106439768713835453">Also share application audio</translation>
 <translation id="2108204112555497972">Checked <ph name="NUM_DAYS_HOURS_MINUTES" /> ago</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
 <translation id="2109384632594340939">profile picture</translation>
@@ -1786,6 +1787,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2204034823255629767">Read and change anything that you type</translation>
 <translation id="2204168219363024184">To create this passkey with Google Password Manager, verify that it's you</translation>
 <translation id="2204387456724731099">This selection couldn't be translated</translation>
+<translation id="2204613850236199029">Info removed</translation>
 <translation id="2207116775853792104">Keep this extension</translation>
 <translation id="2209841631181508629">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site. See this site's <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
@@ -3885,6 +3887,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3656328935986149999">Cursor speed</translation>
 <translation id="3656701180077048004">Adds a delay between when you press a key and when it activates</translation>
 <translation id="3658871634334445293">TrackPoint acceleration</translation>
+<translation id="3659483399659250379">Add a tab and more</translation>
 <translation id="3659929705630080526">You have entered an incorrect access code too many times. Try again later</translation>
 <translation id="3661106764436337772">Write faster and with more confidence</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 existing password found}other{{NUM_PASSWORDS} existing passwords found}}</translation>
@@ -4953,7 +4956,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4378556263712303865">Device requisition</translation>
 <translation id="4378589147979399051">Control your mouse cursor with your primary keyboard</translation>
-<translation id="4379097572583973456">A site can also embed content from other sites, for example images, ads and text. These other sites can also save data.</translation>
+<translation id="4379097572583973456">A site can also embed content from other sites, for example, images, ads and text. These other sites can also save data.</translation>
 <translation id="4379281552162875326">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Entered full screen</translation>
@@ -5417,6 +5420,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4707337002099455863">Always on All Sites</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Also allow tab audio</translation>
+<translation id="4710347732286177840">Select region of screen for follow-up</translation>
 <translation id="4711638718396952945">Restore settings</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Delete when you close all windows</translation>
@@ -10917,7 +10921,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8549127125482561383">How to show requests</translation>
 <translation id="8549316893834449916">You’ll use your Google Account to sign in to your Chromebook – the same account that you use for Gmail, Drive, YouTube and more.</translation>
 <translation id="8550239873869577759">Downloaded suspicious file</translation>
-<translation id="8551246044333727813">You can edit your name in your <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
 <translation id="8551647092888540776">Can't open <ph name="FILE_NAMES" /> when offline</translation>

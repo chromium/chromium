@@ -86,6 +86,9 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="2940565985148833945">Chrome İpucu: Lens ile Arama Yapın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
 <translation id="2986402782150919988">Chrome'a yer işareti ekle</translation>
+<translation id="3027236223714901838">Geçiş anahtarlarınızın güvenliğini sağlamak için önce bir kurtarma PIN'i oluşturmanız gerekir.
+
+        Geçiş anahtarları Google Şifre Yöneticisi'ne kaydedildiği için bu anahtarları herhangi bir cihazdayken Chrome'da kullanabilirsiniz.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chrome verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="3042447686908081308">Chrome'a aktar</translation>
 <translation id="3051521853355903257">Chrome'daki şifreleri yönet</translation>

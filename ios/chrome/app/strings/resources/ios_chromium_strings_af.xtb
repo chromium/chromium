@@ -199,6 +199,9 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5671188105328420281">Chromium-wenke</translation>
 <translation id="5688047395118852662">Hierdie kaart wys vir jou voorstelle oor hoe jy Chromium ten beste kan benut.</translation>
 <translation id="5700709190537129682">Chromium kan nie jou wagwoorde nagaan nie</translation>
+<translation id="5731004036450828399">Om jou toegangsleutels veilig te hou, sal jy eers ’n terugstel-PIN moet skep.
+
+        Toegangsleutels word in Wagwoordbestuurder gestoor, so jy kan hulle op enige toestel in Chromium gebruik.</translation>
 <translation id="584550191241316896">Aangemeld by Chromium</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
 <translation id="5889847953983052353">Wanneer dit aan is:
@@ -265,6 +268,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7285031092584344905">Kry toegang tot jou Chromium-wagwoorde en meer van ander apps af.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Jou wagwoord sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word.</translation>
+<translation id="7434848749522628428">Hierdie toegangsleutel sal in Google Wagwoordbestuurder vir <ph name="USER_EMAIL" /> gestoor word</translation>
 <translation id="7504829997542308412">Maak Chromium oop</translation>
 <translation id="7531461704633548377">Vanaf Chromium</translation>
 <translation id="7554983317097061001">Chromium-wenk: Skuif Chromium na die dok toe</translation>
@@ -298,6 +302,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8254729934443216898">Verken nuwe kenmerke wat jou help om die meeste uit Chromium te kry.</translation>
 <translation id="8293572045658095405">Jy is in Chromium Incognito</translation>
 <translation id="830951810931292870">Maak die URL’e wat by Chromium ingevoer word in Incognitomodus oop.</translation>
+<translation id="8385503371191508165">Begin om toegangsleutels met Wagwoordbestuurder te stoor</translation>
 <translation id="8390323835464055390">Meld aan met jou gestoorde wagwoorde en toegangsleutels vanaf enige app wat Chromium vir Outovul gebruik</translation>
 <translation id="8409374867500149834">Jy het Chromium se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>

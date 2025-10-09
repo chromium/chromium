@@ -199,6 +199,9 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="5671188105328420281">Suggerimenti per Chromium</translation>
 <translation id="5688047395118852662">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chromium.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
+<translation id="5731004036450828399">Per proteggere le tue passkey, devi prima creare un PIN di recupero.
+
+        Le passkey vengono salvate in Gestore delle password, che ti consente di usarle in Chromium su qualsiasi dispositivo.</translation>
 <translation id="584550191241316896">Accesso a Chromium eseguito</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5889847953983052353">Quando la funzionalità è attiva:
@@ -265,6 +268,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7285031092584344905">Accedi alle tue password di Chromium e ad altri dati in altre app.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">La tua password verrà salvata in Gestore delle password per <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Questa passkey verrà salvata nel Gestore delle password per: <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Apri Chromium</translation>
 <translation id="7531461704633548377">Da Chromium</translation>
 <translation id="7554983317097061001">Suggerimento per Chromium: sposta Chromium nel dock</translation>
@@ -298,6 +302,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8254729934443216898">Esplora le nuove funzionalità che ti aiutano a usare al meglio Chromium.</translation>
 <translation id="8293572045658095405">Stai utilizzando la modalità di navigazione in incognito di Chromium</translation>
 <translation id="830951810931292870">Apre gli URL inseriti in Chromium in incognito.</translation>
+<translation id="8385503371191508165">Inizia a salvare le passkey con Gestore delle password</translation>
 <translation id="8390323835464055390">Accedi con le tue password e passkey salvate da qualsiasi app utilizzando Chromium per la compilazione automatica</translation>
 <translation id="8409374867500149834">Disponi della misura di sicurezza più efficace di Chromium contro siti web pericolosi</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}}</translation>

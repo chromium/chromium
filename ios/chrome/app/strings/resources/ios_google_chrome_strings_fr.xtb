@@ -86,6 +86,9 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="2940565985148833945">Astuce Chrome : recherchez avec Lens</translation>
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Ajouter des favoris dans Chrome</translation>
+<translation id="3027236223714901838">Pour protéger vos clés d'accès, vous devez d'abord créer un code de récupération.
+
+        Les clés d'accès sont enregistrées dans le Gestionnaire de mots de passe de Google, ce qui vous permet de les utiliser dans Chrome sur n'importe quel appareil.</translation>
 <translation id="3030414234702425231">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="3042447686908081308">Importer dans Chrome</translation>
 <translation id="3051521853355903257">Gérer les mots de passe dans Chrome</translation>

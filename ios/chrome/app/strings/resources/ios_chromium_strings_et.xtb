@@ -199,6 +199,9 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5671188105328420281">Chromiumi nõuanded</translation>
 <translation id="5688047395118852662">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chromiumi parimal moel kasutada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
+<translation id="5731004036450828399">Oma pääsuvõtme turvalisuse tagamiseks peate esmalt looma taastekoodi.
+
+        Pääsuvõtmed salvestatakse paroolihaldurisse, mis võimaldab teil neid Chromiumis kasutada mis tahes seadmes.</translation>
 <translation id="584550191241316896">Chromiumi sisselogitud</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5889847953983052353">Sisselülitamise korral
@@ -265,6 +268,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7285031092584344905">Pääsete muudes rakendustes juurde oma Chromiumi paroolidele ja muule teabele.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Teie parool salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
+<translation id="7434848749522628428">See pääsuvõti salvestatakse konto <ph name="USER_EMAIL" /> paroolihaldurisse.</translation>
 <translation id="7504829997542308412">Avage Chromium</translation>
 <translation id="7531461704633548377">Chromiumilt</translation>
 <translation id="7554983317097061001">Chromiumi nõuanne: teisaldage Chromium dokki</translation>
@@ -298,6 +302,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8254729934443216898">Avastage uusi funktsioone, mis aitavad teil Chromiumi parimal moel kasutada.</translation>
 <translation id="8293572045658095405">Olete Chromiumi inkognito režiimis</translation>
 <translation id="830951810931292870">Avab sisestatud URL-id Google Chromiumis inkognito režiimis.</translation>
+<translation id="8385503371191508165">Hakake pääsuvõtmeid salvestama paroolihalduri abil</translation>
 <translation id="8390323835464055390">Logige mis tahes rakenduses sisse oma salvestatud paroolide ja pääsuvõtmetega, kasutades funktsiooni Chromium automaattäite jaoks</translation>
 <translation id="8409374867500149834">Teil on Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}}</translation>

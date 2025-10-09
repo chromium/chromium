@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium ଟିପ୍ସ</translation>
 <translation id="5688047395118852662">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା କିପରି ପାଇବେ ସେ ବିଷୟରେ ଏହି କାର୍ଡ ଆପଣଙ୍କୁ ପରାମର୍ଶ ଦେଖାଏ।</translation>
 <translation id="5700709190537129682">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
+<translation id="5731004036450828399">ଆପଣଙ୍କ ପାସକୀଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣ ପ୍ରଥମେ ଏକ ରିକଭରି PIN ତିଆରି କରିବା ଆବଶ୍ୟକ।
+
+        Password Managerରେ ପାସକୀଗୁଡ଼ିକୁ ସେଭ କରାଯାଏ, ଯାହା ଆପଣଙ୍କୁ ସେଗୁଡ଼ିକୁ ଯେ କୌଣସି ଡିଭାଇସରେ Chromiumରେ ବ୍ୟବହାର କରିବାକୁ ଦିଏ।</translation>
 <translation id="584550191241316896">Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
 <translation id="5889847953983052353">ଚାଲୁ ଥିବା ସମୟରେ:
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">ଅନ୍ୟ ସମସ୍ତ ଆପ୍ସରେ ଆପଣଙ୍କ Chromium ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" />ର ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ ହୋଇଯିବ।</translation>
+<translation id="7434848749522628428">ଏହି ପାସକୀ <ph name="USER_EMAIL" /> ପାଇଁ Password Managerରେ ସେଭ କରାଯିବ</translation>
 <translation id="7504829997542308412">Chromium ଖୋଲନ୍ତୁ</translation>
 <translation id="7531461704633548377">Chromiumରୁ</translation>
 <translation id="7554983317097061001">Chromium ଟିପ: Chromiumକୁ ଡକକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">Chromiumରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରୁଥିବା ନୂଆ ଫିଚରଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ।</translation>
 <translation id="8293572045658095405">ଆପଣ Chromium ଇନକଗ୍ନିଟୋରେ ଅଛନ୍ତି</translation>
 <translation id="830951810931292870">ଇନପୁଟ କରାଯାଇଥିବା URLଗୁଡ଼ିକୁ Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଖୋଲା ଯାଇଥାଏ।</translation>
+<translation id="8385503371191508165">Password Manager ମାଧ୍ୟମରେ ପାସକୀଗୁଡ଼ିକୁ ସେଭ କରିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="8390323835464055390">ଅଟୋଫିଲ ପାଇଁ Chromium ବ୍ୟବହାର କରି ଯେ କୌଣସି ଆପରୁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="8409374867500149834">କ୍ଷତିକାରକ ୱେବସାଇଟରୁ ରକ୍ଷା ପାଇବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଅଛି</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଥିବା ଡାଟା ଡିଲିଟ ହୋଇଯିବ। ଏଥିରେ ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଥିବା ଡାଟା ଡିଲିଟ ହୋଇଯିବ। ଏଥିରେ ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>

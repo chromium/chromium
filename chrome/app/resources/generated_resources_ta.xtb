@@ -1647,6 +1647,7 @@
 <translation id="2102495993840063010">Android ஆப்ஸ்</translation>
 <translation id="2104166991923847969">ஹாட்ஸ்பாட்டைத் தானாக ஆஃப் செய்</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> மறைக்கப்பட்டன</translation>
+<translation id="2106439768713835453">ஆப்ஸ் ஆடியோவையும் பகிர்</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> முன்பு சரிபார்க்கப்பட்டது</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ஃபோன் எண்}other{# ஃபோன் எண்கள்}}</translation>
 <translation id="2109384632594340939">சுயவிவரப் படம்</translation>
@@ -3886,6 +3887,7 @@
 <translation id="3656328935986149999">கர்சர் வேகம்</translation>
 <translation id="3656701180077048004">பட்டனை நீங்கள் அழுத்தும் நேரத்திற்கும் அது செயல்படுத்தப்படும் நேரத்திற்கும் இடையே தாமதத்தைச் சேர்க்கும்</translation>
 <translation id="3658871634334445293">TrackPoint ஆக்ஸிலரேஷன்</translation>
+<translation id="3659483399659250379">பக்கம் மற்றும் பலவற்றைச் சேர்</translation>
 <translation id="3659929705630080526">தவறான அணுகல் குறியீட்டைப் பலமுறை டைப் செய்துள்ளீர்கள். பிறகு முயலவும்</translation>
 <translation id="3661106764436337772">விரைவாகவும் கூடுதல் நம்பிக்கையுடனும் எழுதுங்கள்</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ஒரு கடவுச்சொல் ஏற்கெனவே உள்ளது}other{{NUM_PASSWORDS} கடவுச்சொற்கள் ஏற்கெனவே உள்ளன}}</translation>
@@ -5418,6 +5420,7 @@
 <translation id="4707337002099455863">அனைத்துத் தளங்களுக்கும் எப்போதும் அனுமதி</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
 <translation id="4708892882822652439">பிரிவின் ஆடியோவையும் அனுமதி</translation>
+<translation id="4710347732286177840">ஃபாலோ-அப்பிற்குத் திரையின் பகுதியைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4711638718396952945">அமைப்புகளை மீட்டெடு</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">சாளரங்கள் அனைத்தையும் மூடும்போது நீக்கு</translation>
@@ -10919,7 +10922,6 @@
 <translation id="8549127125482561383">கோரிக்கைகளை எப்படிக் காட்ட வேண்டும்?</translation>
 <translation id="8549316893834449916">நீங்கள் Gmail, Drive, YouTube மற்றும் பல தயாரிப்புகளில் பயன்படுத்தும் அதே Google கணக்கை Chromebookகில் உள்நுழையப் பயன்படுத்தலாம்.</translation>
 <translation id="8550239873869577759">சந்தேகத்திற்குரிய ஃபைல் பதிவிறக்கப்பட்டது</translation>
-<translation id="8551246044333727813"><ph name="BEGIN_LINK" />உங்கள் <ph name="USERNAME" /> Google கணக்கில்<ph name="END_LINK" /> பெயரை மாற்றலாம்.</translation>
 <translation id="8551388862522347954">உரிமங்கள்</translation>
 <translation id="8551588720239073785">தேதி &amp; நேர அமைப்புகள்</translation>
 <translation id="8551647092888540776">ஆஃப்லைனில் <ph name="FILE_NAMES" /> ஐத் திறக்க முடியாது</translation>

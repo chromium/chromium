@@ -998,6 +998,7 @@
 <translation id="166278006618318542">Алгоритъм на публичен ключ на субект</translation>
 <translation id="1662801900924515589">Приложението <ph name="APP" /> е инсталирано</translation>
 <translation id="1663698992894057019">Надстройте до нов Chromebook за достъп до най-новите функции за сигурност и софтуер</translation>
+<translation id="1664497218584335032">Уебсайтът иска да отвори тази връзка в приложение.</translation>
 <translation id="166454475160289583">Няма разрешение да отменя въведеното с клавиатурата</translation>
 <translation id="1665328953287874063">Използвайте парола или ПИН код, за да отключите своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Експресионизъм</translation>
@@ -1642,6 +1643,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2104166991923847969">Автоматично изключване на точката за достъп</translation>
 <translation id="2105809836724866556">„<ph name="MODULE_TITLE" />“ бе скрито</translation>
+<translation id="2106439768713835453">Споделяне и на звука от приложението</translation>
 <translation id="2108204112555497972">Проверено преди <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонен номер}other{# телефонни номера}}</translation>
 <translation id="2109384632594340939">снимка на потребителския профил</translation>
@@ -3881,6 +3883,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3656328935986149999">Скорост на курсора</translation>
 <translation id="3656701180077048004">Добавя забавяне между натискането на даден клавиш и активирането му</translation>
 <translation id="3658871634334445293">Ускоряване на TrackPoint</translation>
+<translation id="3659483399659250379">Добавяне на раздел и др.</translation>
 <translation id="3659929705630080526">Въведохте неправилен код за достъп твърде много пъти. Опитайте отново по-късно</translation>
 <translation id="3661106764436337772">Пишете по-бързо и уверено</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Открита е 1 съществуваща парола}other{Открити са {NUM_PASSWORDS} съществуващи пароли}}</translation>
@@ -5414,6 +5417,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4707337002099455863">Винаги на всички сайтове</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Да се разреши и звукът от разделите</translation>
+<translation id="4710347732286177840">Изберете област на екрана за последваща заявка</translation>
 <translation id="4711638718396952945">Възстановяване на настройките</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Изтриване при затваряне на всички прозорци</translation>
@@ -6563,10 +6567,12 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5517304475148761050">Това приложение изисква достъп до Google Play Магазин</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Връзките от типа <ph name="PROTOCOL_SCHEME" /> винаги да се отварят в това приложение</translation>
 <translation id="5520605865175417976">Премахване на действието „<ph name="ACTION_TO_REMOVE" />“</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
 <translation id="5522156646677899028">Това разширение съдържа сериозна уязвимост в сигурността.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Разширение бе инсталирано от администратора ви}other{# разширения бяха инсталирани от администратора ви}}</translation>
+<translation id="5523203511530504754">Отваряне на връзките от типа <ph name="PROTOCOL_SCHEME" /> в приложението <ph name="APP_NAME" /></translation>
 <translation id="5523532775593636291">Добавените от вас сайтове винаги ще остават активни и паметта, която използват, няма да се освобождава</translation>
 <translation id="5523558474028191231">За името могат да се използват букви, цифри и специални знаци, като то не бива да е по-дълго от <ph name="MAX_CHARACTER_COUNT" /> знака</translation>
 <translation id="5526745900034778153">Влезте отново в профила си, за да възобновите синхронизирането</translation>
@@ -9598,6 +9604,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7663859337051362114">Добавяне на потребителски профил на електронна SIM карта</translation>
 <translation id="76641554187607347">Няма свързана клавиатура</translation>
 <translation id="7664442418269614729">Използване на тази карта на вашия iPhone</translation>
+<translation id="7664822217939981459">Изберете приложение, в което да се отвори връзката от типа <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7665082356120621510">Запазване на място</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="7665445336029073980">Пълна история на изтеглянията</translation>
@@ -10912,7 +10919,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8549127125482561383">Как да се показват заявките</translation>
 <translation id="8549316893834449916">За вход в Chromebook ще използвате профила си в Google, същия, с който работите в Gmail, Диск, YouTube и др.</translation>
 <translation id="8550239873869577759">Изтеглен бе подозрителен файл</translation>
-<translation id="8551246044333727813">Можете да редактирате името си в <ph name="BEGIN_LINK" />профила си в Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Лицензи</translation>
 <translation id="8551588720239073785">Настройки за дата и час</translation>
 <translation id="8551647092888540776"><ph name="FILE_NAMES" /> не може да се отвори, когато сте офлайн</translation>
@@ -11220,6 +11226,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8750786237117206586">Управление на настройките за звука на ChromeOS Flex</translation>
 <translation id="8751034568832412184">Училище</translation>
 <translation id="8751329102746373229">От администратора ви</translation>
+<translation id="875242763254084885">Сайтът <ph name="ORIGIN" /> иска да отвори тази връзка в приложение.</translation>
 <translation id="8752451679755290210">Автоматично придвижване между елементите</translation>
 <translation id="8753948258138515839">Приложението „Файлове“ предоставя бърз достъп до файловете, които сте запазили в Google Диск, във външно хранилище или на устройството си с ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Когато изпълнявате <ph name="PRODUCT_NAME" /> в поддържана среда на компютър, ще се използват системните настройки за прокси сървър. Но системата ви или не се поддържа, или е възникнал проблем при стартирането на системната конфигурация.&lt;/p&gt;

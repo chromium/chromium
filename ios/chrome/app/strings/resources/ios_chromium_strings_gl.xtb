@@ -199,6 +199,9 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="5671188105328420281">Consellos de Chromium</translation>
 <translation id="5688047395118852662">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chromium.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
+<translation id="5731004036450828399">Para protexer as túas claves de acceso, primeiro tes que crear un PIN de recuperación.
+
+        As claves de acceso están gardadas no teu xestor de contrasinais, que che permitirá usalas en Chromium desde calquera dispositivo.</translation>
 <translation id="584550191241316896">Tes a sesión iniciada en Chromium</translation>
 <translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
 <translation id="5889847953983052353">Cando esta opción está activada:
@@ -265,6 +268,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="7285031092584344905">Accede aos teus contrasinais de Chromium e moito máis noutras aplicacións.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">O teu contrasinal gardarase no xestor de contrasinais para <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Esta clave de acceso gardarase no xestor de contrasinais para a conta <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Abre Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Consello de Chromium: Move Chromium á barra de aplicacións</translation>
@@ -298,6 +302,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8254729934443216898">Explora novas funcións que che axudarán a tirar o máximo proveito de Chromium.</translation>
 <translation id="8293572045658095405">Estás no modo incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre os URL introducidos en Chromium no modo de incógnito.</translation>
+<translation id="8385503371191508165">Empeza a gardar claves de acceso co xestor de contrasinais</translation>
 <translation id="8390323835464055390">Usa Chromium para autocompletar os contrasinais e as claves de acceso gardadas e iniciar sesión en calquera aplicación</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}}</translation>

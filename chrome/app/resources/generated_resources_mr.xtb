@@ -1001,6 +1001,7 @@
 <translation id="166278006618318542">विषय सार्वजनिक की अल्गोरिदम</translation>
 <translation id="1662801900924515589"><ph name="APP" /> इंस्टॉल केले</translation>
 <translation id="1663698992894057019">नवीनतम सुरक्षेसाठी आणि सॉफ्टवेअरसाठी नवीन Chromebook वर अपग्रेड करा</translation>
+<translation id="1664497218584335032">वेबसाइटला ही लिंक अ‍ॅपमध्ये उघडायची आहे.</translation>
 <translation id="166454475160289583">तुमचे कीबोर्ड इनपुट ओव्हरराइड करण्याची अनुमती नाही</translation>
 <translation id="1665328953287874063">तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी पासवर्ड किंवा पिन वापरा</translation>
 <translation id="1665859804801131136">एक्स्प्रेशनिझम</translation>
@@ -1646,6 +1647,7 @@
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
 <translation id="2104166991923847969">हॉटस्पॉट आपोआप बंद करा</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> लपवले आहे</translation>
+<translation id="2106439768713835453">तसेच, अ‍ॅप्लिकेशनचा ऑडिओ शेअर करा</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> पूर्वी तपासलेले</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
 <translation id="2109384632594340939">प्रोफाइल फोटो</translation>
@@ -3885,6 +3887,7 @@
 <translation id="3656328935986149999">कर्सरचा वेग</translation>
 <translation id="3656701180077048004">तुम्ही की प्रेस करता आणि अ‍ॅक्टिव्हेट होते यांदरम्यान विलंब जोडते</translation>
 <translation id="3658871634334445293">TrackPoint अ‍ॅक्सिलरेशन</translation>
+<translation id="3659483399659250379">टॅब आणि आणखी बरेच काही जोडा</translation>
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{एक सद्य पासवर्ड आढळला आहे}other{{NUM_PASSWORDS} सद्य पासवर्ड आढळले आहेत}}</translation>
@@ -5415,6 +5418,7 @@
 <translation id="4707337002099455863">सर्व साइटना नेहमी अनुमती द्या</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> मधून बाहेर या</translation>
 <translation id="4708892882822652439">टॅब ऑडिओलादेखील अनुमती द्या</translation>
+<translation id="4710347732286177840">फॉलो अपसाठी स्क्रीनचा प्रदेश निवडा</translation>
 <translation id="4711638718396952945">सेटिंग्ज पुनर्संचयित करा</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">तुम्ही सर्व विंडो बंद करता, तेव्हा हटवा</translation>
@@ -6564,10 +6568,12 @@
 <translation id="5517304475148761050">या ॲपला Play स्टोअर चा ॲक्सेस आवश्यक आहे</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" /> लिंक नेहमी या अ‍ॅपमध्ये उघडा</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> ही कृती काढून टाका</translation>
 <translation id="5521078259930077036">तुम्ही अपेक्षा करत होता हे तेच होमपेज आहे?</translation>
 <translation id="5522156646677899028">या विस्‍तारामध्‍ये एक गंभीर सुरक्षा भेद्यता आहे.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने एक्स्टेंशन इंस्टॉल केले आहे}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने # एक्स्टेंशन इंस्टॉल केली आहेत}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" /> लिंक <ph name="APP_NAME" /> मध्ये उघडा</translation>
 <translation id="5523532775593636291">तुम्ही जोडलेल्या साइट नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांच्याकडून मेमरी मोकळी केली जाणार नाही</translation>
 <translation id="5523558474028191231">नावामध्ये अक्षरे, अंक व विशेष वर्ण आणि <ph name="MAX_CHARACTER_COUNT" /> किंवा त्याहून कमी वर्ण वापरू शकता</translation>
 <translation id="5526745900034778153">सिंक पुन्हा पुढे सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
@@ -9601,6 +9607,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7663859337051362114">eSIM प्रोफाइल जोडा</translation>
 <translation id="76641554187607347">कीबोर्ड कनेक्ट केलेला नाही</translation>
 <translation id="7664442418269614729">तुमच्या iPhone वर हे कार्ड वापरा</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" /> लिंक उघडण्यासाठी अ‍ॅप निवडा</translation>
 <translation id="7665082356120621510">आकार आरक्षित करा</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="7665445336029073980">पूर्ण डाउनलोड इतिहास</translation>
@@ -10915,7 +10922,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8549127125482561383">विनंत्या कशा दाखवायच्या</translation>
 <translation id="8549316893834449916">तुमच्या Chromebook मध्ये साइन इन करण्यासाठी तुम्ही तुमचे Google खाते वापराल – जे तुम्ही Gmail, Drive, YouTube आणि बर्‍याच गोष्टींसाठी वापरता.</translation>
 <translation id="8550239873869577759">संशयास्पद फाइल डाउनलोड केली आहे</translation>
-<translation id="8551246044333727813">तुम्ही तुमच्या <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google खाते<ph name="END_LINK" /> मध्ये तुमचे नाव संपादित करू शकता.</translation>
 <translation id="8551388862522347954">परवाने</translation>
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
 <translation id="8551647092888540776">ऑफलाइन असताना <ph name="FILE_NAMES" /> उघडू शकत नाही</translation>
@@ -11223,6 +11229,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8750786237117206586">ChromeOS Flex ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="8751034568832412184">शाळा</translation>
 <translation id="8751329102746373229">तुमच्या अ‍ॅडमिनिस्ट्रेटरकडील</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> साइटला ही लिंक अ‍ॅपमध्ये उघडायची आहे.</translation>
 <translation id="8752451679755290210">आयटमदरम्यान आपोआप नेव्हिगेट करा</translation>
 <translation id="8753948258138515839">Files अ‍ॅप हे तुम्ही Google Drive, बाह्य स्टोरेज किंवा तुमच्या ChromeOS Flex डिव्हाइसवर सेव्ह केलेल्या फाइलचा झटपट अ‍ॅक्सेस पुरवते.</translation>
 <translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालवताना, सिस्टीम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टीमला सपोर्ट नाही नसते किंवा तुमचे सिस्टीम कॉन्फिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;

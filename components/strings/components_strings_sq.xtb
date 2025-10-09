@@ -320,7 +320,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1521655867290435174">Fletët e Google</translation>
 <translation id="1524669537550112617">Ambiente të mobiluara me qira</translation>
 <translation id="1527263332363067270">Në pritje të lidhjes...</translation>
-<translation id="1528311629279578926">Lidhja është bllokuar sepse ajo është nisur nga një faqe publike për t'u lidhur me pajisjet ose serverët në rrjetin tënd privat. Ringarkoje këtë faqe për të lejuar lidhjen.</translation>
 <translation id="1529789484829130889">Tabakaja 8</translation>
 <translation id="1530707389502320859">Sajti ku sapo u përpoqe të hyje duket i rremë. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
 <translation id="1532118530259321453">Kjo faqe thotë</translation>
@@ -1411,7 +1410,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3325662270238538525">Qasjen dhe modifikimet e skedarëve së fundi, duke përfshirë emrat e skedarëve, gjurmët dixhitale të gishtave për përmbajtjet e skedarëve, burimet e shkarkimit dhe metadatat</translation>
 <translation id="3329013043687509092">Ngopje</translation>
 <translation id="3333762389743153920">Nuk është e përshtatshme për kartë virtuale</translation>
-<translation id="3336044043987989409">Shtyp butonin e ringarkimit për të lejuar lidhjen me pajisjet ose serverët në rrjetin tënd privat.</translation>
 <translation id="3338095232262050444">E sigurt</translation>
 <translation id="333839153442689579">Stërvitje me intervale me intensitet të lartë</translation>
 <translation id="3339446062576134663">Reja kompjuterike (Ash)</translation>
@@ -1455,6 +1453,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="340924996148642843">Krahasimi nuk ofrohet për momentin</translation>
 <translation id="3409896703495473338">Menaxho cilësimet e sigurisë</translation>
 <translation id="3411091017011773343">Ngarko për <ph name="HOURS" /> orë</translation>
+<translation id="341134412449102894">Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Është më e sigurt që ta vizitosh këtë sajt më vonë nëse po përdor një rrjet publik. Ka më pak rrezik nga një rrjet i besuar, si p.sh. rrjeti Wi-Fi i shtëpisë ose i punës.</translation>
 <translation id="3414275587143250384">Shërbimet kompjuterike të shpërndara dhe në renë kompjuterike</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
@@ -3145,6 +3144,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6189351761800074311">Teksti yt dhe përmbajtja e faqes dërgohen te Google, por nuk do të përdoren për të përmirësuar IA-në.
     <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Zëvendëso disa teste në tastierën tënde, si p.sh. Esc</translation>
+<translation id="6192524964213419211">Ruaj informacionet e tua për t'i bërë gjërat më shpejt nëpër produktet e Google. Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Shiko të gjitha produktet e tua të monitoruara këtu</translation>
 <translation id="6195371403461054755">Gjeologjia</translation>
 <translation id="6195418151868446719">Pajisje elektronike për konsumatorët</translation>

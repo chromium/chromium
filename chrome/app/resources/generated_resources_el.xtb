@@ -1647,6 +1647,7 @@
 <translation id="2102495993840063010">Εφαρμογές Android</translation>
 <translation id="2104166991923847969">Αυτόματη απενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="2105809836724866556">Απόκρυψη <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Να γίνει επίσης κοινοποίηση του ήχου εφαρμογής</translation>
 <translation id="2108204112555497972">Ελέγχθηκε πριν από <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Αριθμός τηλεφώνου}other{# αριθμοί τηλεφώνου}}</translation>
 <translation id="2109384632594340939">φωτογραφία προφίλ</translation>
@@ -3886,6 +3887,7 @@
 <translation id="3656328935986149999">Ταχύτητα δείκτη</translation>
 <translation id="3656701180077048004">Προσθέτει μια καθυστέρηση μεταξύ του πατήματος ενός πλήκτρου και της ενεργοποίησής του</translation>
 <translation id="3658871634334445293">Επιτάχυνση TrackPoint</translation>
+<translation id="3659483399659250379">Προσθήκη καρτέλας και άλλων</translation>
 <translation id="3659929705630080526">Έχετε εισαγάγει εσφαλμένο κωδικό πρόσβασης πάρα πολλές φορές. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Βρέθηκε ένας υπάρχων κωδικός πρόσβασης}other{Βρέθηκαν {NUM_PASSWORDS} υπάρχοντες κωδικοί πρόσβασης}}</translation>
@@ -5418,6 +5420,7 @@
 <translation id="4707337002099455863">Πάντα σε όλους τους ιστοτόπους</translation>
 <translation id="4708849949179781599">Έξοδος από το <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Να επιτρέπεται επίσης ο ήχος της καρτέλας</translation>
+<translation id="4710347732286177840">Επιλέξτε περιοχή της οθόνης για παρακολούθηση</translation>
 <translation id="4711638718396952945">Επαναφορά ρυθμίσεων</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Διαγραφή όταν κλείνετε όλα τα παράθυρα</translation>
@@ -10919,7 +10922,6 @@
 <translation id="8549127125482561383">Πώς να εμφανίζονται τα αιτήματα</translation>
 <translation id="8549316893834449916">Θα χρησιμοποιείτε τον Λογαριασμό σας Google για να συνδεθείτε στο Chromebook. Είναι ο ίδιος λογαριασμός που χρησιμοποιείτε για το Gmail, το Drive, το YouTube κ.α.</translation>
 <translation id="8550239873869577759">Έγινε λήψη ύποπτου αρχείου</translation>
-<translation id="8551246044333727813">Μπορείτε να επεξεργαστείτε το όνομά σας <ph name="BEGIN_LINK" />στον Λογαριασμό σας Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Άδειες</translation>
 <translation id="8551588720239073785">Ρυθμίσεις ημερομηνίας και ώρας</translation>
 <translation id="8551647092888540776">Δεν είναι δυνατό το άνοιγμα αρχείων <ph name="FILE_NAMES" /> εκτός σύνδεσης</translation>

@@ -199,6 +199,9 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="5671188105328420281">Chromium-i buruzko aholkuak</translation>
 <translation id="5688047395118852662">Txartel horretan, Chromium-i ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
+<translation id="5731004036450828399">Sarbide-gakoak babestuta mantentzeko, kontua berreskuratzeko PIN bat sortu beharko duzu.
+
+        Sarbide-gakoak Pasahitz-kudeatzailea zerbitzuan gordetzen dira. Hari esker, edozein gailutan erabili ahalko dituzu Chromium-en.</translation>
 <translation id="584550191241316896">Chromium-en saioa hasita daukazu</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5889847953983052353">Aktibatuta dagoenean:
@@ -265,6 +268,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7285031092584344905">Erabili Chromium-eko pasahitzak eta gainerako informazioa beste aplikazioetan.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" /> kontuko pasahitza Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="7434848749522628428">Sarbide-gakoa <ph name="USER_EMAIL" /> kontuari dagokion Pasahitz-kudeatzailea zerbitzuan gordeko da</translation>
 <translation id="7504829997542308412">Ireki Chromium.</translation>
 <translation id="7531461704633548377">Chromium-etik</translation>
 <translation id="7554983317097061001">Chromium-i buruzko aholkua: eraman Chromium zintara</translation>
@@ -298,6 +302,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8254729934443216898">Arakatu Chromium-i etekinik handiena ateratzen laguntzen dizuten eginbide berriak.</translation>
 <translation id="8293572045658095405">Chromium-en ezkutuko moduan zaude</translation>
 <translation id="830951810931292870">Idatzitako URLak Chromium-en ezkutuko moduan irekitzen ditu.</translation>
+<translation id="8385503371191508165">Hasi sarbide-gakoak Pasahitz-kudeatzailea zerbitzuan gordetzen</translation>
 <translation id="8390323835464055390">Erabili gordetako pasahitz eta sarbide-gakoak edozein aplikaziotatik saioa hasteko, betetze automatikorako Chromium erabilita</translation>
 <translation id="8409374867500149834">Chromium-en segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>

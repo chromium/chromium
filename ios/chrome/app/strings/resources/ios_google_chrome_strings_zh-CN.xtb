@@ -86,6 +86,9 @@
 <translation id="2940565985148833945">Chrome 提示：使用智能镜头搜索</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">将书签添加到 Chrome</translation>
+<translation id="3027236223714901838">为确保通行密钥安全，您首先需要创建恢复 PIN 码。
+
+        这些通行密钥会保存在 Google 密码管理工具中，您可以在任何安装了 Chrome 的设备上使用它们。</translation>
 <translation id="3030414234702425231">由于您正要退出的账号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 账号中。</translation>
 <translation id="3042447686908081308">导入到 Chrome</translation>
 <translation id="3051521853355903257">在 Chrome 中管理密码</translation>

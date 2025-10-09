@@ -198,6 +198,9 @@
 <translation id="5671188105328420281">የChromium ጠቃሚ ምክሮች</translation>
 <translation id="5688047395118852662">ይህ ካርድ እንዴት ከChromium ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
 <translation id="5700709190537129682">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
+<translation id="5731004036450828399">የይለፍ ቁልፎችዎን ደህንነት ለመጠበቅ መጀመሪያ የመልሶ ማግኛ ፒን መፍጠር ያስፈልግዎታል።
+
+        የይለፍ ቃሎች በይለፍ ቃል አስተዳዳሪ ውስጥ ይቀመጣሉ፣ ይህም በማንኛውም መሣሪያ ላይ በChromium ውስጥ እንዲጠቀሙባቸው ያስችልዎታል።</translation>
 <translation id="584550191241316896">ወደ Chromium ገብተዋል</translation>
 <translation id="5862307444128926510">ወደ Chromium እንኳን በደህና መጡ</translation>
 <translation id="5889847953983052353">ሲበራ፦
@@ -264,6 +267,7 @@
 <translation id="7285031092584344905">የእርስዎን የChromium የይለፍ ቃላት እና ሌሎችንም በሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
+<translation id="7434848749522628428">ይህ የይለፍ ቁልፍ የይለፍ ቃል አስተዳዳሪ ላይ ለ<ph name="USER_EMAIL" /> ይቀመጣል።</translation>
 <translation id="7504829997542308412">Chromium ይክፈቱ</translation>
 <translation id="7531461704633548377">ከChromium</translation>
 <translation id="7554983317097061001">Chromium ጠቃሚ ምክር፦ Chromium ወደ መትከያው ያንቀሳቅሱ</translation>
@@ -297,6 +301,7 @@
 <translation id="8254729934443216898">ከChromium ማግኘት የሚቻለውን ሁሉ ለማግኘት የሚያግዙዎትን አዳዲስ ባህሪያት ያስሱ።</translation>
 <translation id="8293572045658095405">Chromium ማንነት የማያሳውቅ ውስጥ ነዎት</translation>
 <translation id="830951810931292870">የገቡትን ዩአርኤልዎች ማንነት በማያሳውቅ Chromium ውስጥ ይከፍታል።</translation>
+<translation id="8385503371191508165">የይለፍ ቁልፎችን በይለፍ ቃል አስተዳዳሪ ማስቀመጥ ይጀምሩ</translation>
 <translation id="8390323835464055390">ለራስ-ሙላ Chromium በመጠቀም በእርስዎ የተቀመጡ የይለፍ ቃላት እና የይለፍ ቁልፎች ከማንኛውም መተግበሪያ በመለያ ይግቡ</translation>
 <translation id="8409374867500149834">ከጎጂ ድር ጣቢያዎች የሚከላከል የChromium በጣም ጠንካራ ጥበቃ አለዎት</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}}</translation>

@@ -320,7 +320,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1521655867290435174">Google Blaaie</translation>
 <translation id="1524669537550112617">Gemeubileerde huurplekke</translation>
 <translation id="1527263332363067270">Wag tans vir verbinding …</translation>
-<translation id="1528311629279578926">Die verbinding is geblokkeer omdat dit deur ’n publieke bladsy geïnisieer is om aan toestelle of bedieners in jou privaat netwerk te koppel. Herlaai hierdie bladsy om die verbinding toe te laat.</translation>
 <translation id="1529789484829130889">Laai 8</translation>
 <translation id="1530707389502320859">Die werf wat jy so pas probeer besoek het, lyk vals. Aanvallers boots soms werwe na deur klein veranderinge wat moeilik sigbaar is aan die URL te maak.</translation>
 <translation id="1532118530259321453">Hierdie bladsy sê</translation>
@@ -1411,7 +1410,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3325662270238538525">Onlangse lêertoegang en wysigings, onder meer lêername, digitale vingerafdrukke van die lêerinhoud, aflaaibron en metadata</translation>
 <translation id="3329013043687509092">Versadiging</translation>
 <translation id="3333762389743153920">Kwalifiseer nie vir virtuele kaart nie</translation>
-<translation id="3336044043987989409">Druk die herlaaiknoppie om die verbinding met toestelle of bedieners in jou privaat netwerk toe te laat.</translation>
 <translation id="3338095232262050444">Veilig</translation>
 <translation id="333839153442689579">Intervaloefening teen hoë intensiteit</translation>
 <translation id="3339446062576134663">Wolk (Ash)</translation>
@@ -1455,6 +1453,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="340924996148642843">Vergelyk is nie tans beskikbaar nie.</translation>
 <translation id="3409896703495473338">Bestuur sekuriteitinstellings</translation>
 <translation id="3411091017011773343">Laai op oor <ph name="HOURS" /> uur</translation>
+<translation id="341134412449102894">Jou inligting is in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gestoor vir <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">As jy 'n publieke netwerk gebruik, is dit veiliger om later hierdie werf te besoek. Daar is minder risiko met ’n vertroude netwerk, soos die wi-fi by jou huis of werk.</translation>
 <translation id="3414275587143250384">Verspreide en wolkverwerking</translation>
 <translation id="3414952576877147120">Grootte:</translation>
@@ -3146,6 +3145,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6189351761800074311">Jou teks- en bladsyinhoud word na Google toe gestuur. maar sal nie gebruik word om KI te verbeter nie.
     <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Stel sekere sleutels op jou sleutelbord tersyde, soos Esc</translation>
+<translation id="6192524964213419211">Stoor jou inligting om dinge vinniger in Google-produkte gedoen te kry. Jou inligting is in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gestoor vir <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Sien al jou nagespoorde produkte hier</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Verbruikerselektronika</translation>

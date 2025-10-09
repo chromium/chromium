@@ -995,6 +995,7 @@
 <translation id="166278006618318542">证书持有者公共密钥算法</translation>
 <translation id="1662801900924515589">已安装“<ph name="APP" />”</translation>
 <translation id="1663698992894057019">要想获得最新安全功能和软件，请改用新款 Chromebook</translation>
+<translation id="1664497218584335032">该网站想在应用中打开此链接。</translation>
 <translation id="166454475160289583">不允许替换键盘输入</translation>
 <translation id="1665328953287874063">使用密码或 PIN 码解锁您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表现主义</translation>
@@ -1768,6 +1769,7 @@
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="2204168219363024184">如要使用 Google 密码管理工具创建此通行密钥，请验证您的身份</translation>
 <translation id="2204387456724731099">无法翻译所选内容</translation>
+<translation id="2204613850236199029">已移除信息</translation>
 <translation id="2207116775853792104">保留此扩展程序</translation>
 <translation id="2209841631181508629">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
@@ -6539,10 +6541,12 @@
 <translation id="5517304475148761050">此应用需要获得对 Play 商店的访问权限</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">始终在此应用中打开 <ph name="PROTOCOL_SCHEME" /> 链接</translation>
 <translation id="5520605865175417976">移除操作“<ph name="ACTION_TO_REMOVE" />”</translation>
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{您的管理员已安装了 1 个扩展程序}other{您的管理员已安装了 # 个扩展程序}}</translation>
+<translation id="5523203511530504754">在“<ph name="APP_NAME" />”中打开 <ph name="PROTOCOL_SCHEME" /> 链接</translation>
 <translation id="5523532775593636291">您添加的网站将始终保持活跃状态，且系统不会释放它们占用的内存</translation>
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
@@ -9570,6 +9574,7 @@
 <translation id="7663859337051362114">添加 eSIM 卡配置文件</translation>
 <translation id="76641554187607347">未连接任何键盘</translation>
 <translation id="7664442418269614729">在 iPhone 上使用此卡</translation>
+<translation id="7664822217939981459">选择一款用来打开 <ph name="PROTOCOL_SCHEME" /> 链接的应用</translation>
 <translation id="7665082356120621510">预留大小</translation>
 <translation id="7665369617277396874">添加账号</translation>
 <translation id="7665445336029073980">完整的下载记录</translation>
@@ -10884,7 +10889,6 @@
 <translation id="8549127125482561383">如何显示请求</translation>
 <translation id="8549316893834449916">您将使用自己的 Google 账号登录 Chromebook - 此账号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的账号相同。</translation>
 <translation id="8550239873869577759">下载的文件可疑</translation>
-<translation id="8551246044333727813">您可以在 <ph name="BEGIN_LINK" />Google 账号 (<ph name="USERNAME" />)<ph name="END_LINK" /> 中修改姓名。</translation>
 <translation id="8551388862522347954">许可</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8551647092888540776">离线时无法打开<ph name="FILE_NAMES" /></translation>
@@ -11192,6 +11196,7 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音频设置</translation>
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">来自您的管理员</translation>
+<translation id="875242763254084885">网站 <ph name="ORIGIN" /> 想在应用中打开此链接。</translation>
 <translation id="8752451679755290210">自动在各项内容之间移动</translation>
 <translation id="8753948258138515839">通过“文件”应用，您可以快速访问自己保存在 Google 云端硬盘、外部存储空间或 ChromeOS Flex 设备上的文件。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支持的桌面环境中运行<ph name="PRODUCT_NAME" />时，将使用系统代理设置。但您的系统不受支持，或启动系统配置时出现问题。&lt;/p&gt;

@@ -1787,6 +1787,7 @@
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="2204168219363024184">Google Password Manager की मदद से इस पासकी को बनाने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="2204387456724731099">चुने गए टेक्स्ट का अनुवाद नहीं किया जा सकता</translation>
+<translation id="2204613850236199029">जानकारी हटाई गई</translation>
 <translation id="2207116775853792104">इस एक्सटेंशन को रखें</translation>
 <translation id="2209841631181508629">जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका <ph name="FIELDS_STRING" /> शेयर करेगा. इस साइट की <ph name="BEGIN_LINK" />सेवा की शर्तें<ph name="END_LINK" /> देखें.</translation>
 <translation id="2210462644007531147">इंस्टॉल नहीं किया जा सका</translation>
@@ -10916,7 +10917,6 @@
 <translation id="8549127125482561383">अनुरोध दिखाने का तरीका</translation>
 <translation id="8549316893834449916">आप Chromebook में साइन इन करने के लिए, Google खाते का इस्तेमाल करेंगे. यह वही खाता है जिसे आप Gmail, Drive, YouTube वगैरह के लिए इस्तेमाल करते हैं.</translation>
 <translation id="8550239873869577759">संदिग्ध फ़ाइल डाउनलोड की गई</translation>
-<translation id="8551246044333727813"><ph name="BEGIN_LINK" />अपने Google खाते<ph name="USERNAME" /><ph name="END_LINK" /> पर जाकर, अपना नाम बदला जा सकता है.</translation>
 <translation id="8551388862522347954">लाइसेंस</translation>
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
 <translation id="8551647092888540776">ऑफ़लाइन होने पर <ph name="FILE_NAMES" /> को नहीं खोला जा सकता</translation>

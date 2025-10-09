@@ -641,6 +641,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support 페이지를 참
 <translation id="1438739959477268107">기본 키 생성 설정</translation>
 <translation id="1440408958042020947">휴대전화 허브를 통해 휴대전화의 최근 촬영 사진 및 동영상에 액세스하도록 선택한 사용자를 허용합니다.</translation>
 <translation id="1443532790824582949">터치 가상 키보드 사용 설정</translation>
+<translation id="1447252610864877219">Gemini 앱이 웹페이지에서 작업을 실행하도록 허용합니다.</translation>
 <translation id="1449083855104537880">이 정책을 True로 설정하면 작업 표시줄 메뉴에 접근성 옵션이 표시됩니다. 정책을 False로 설정하면 작업 표시줄 메뉴에 접근성 옵션이 표시되지 않습니다.
 
       정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 작업 표시줄 메뉴에 접근성 옵션이 표시되지 않지만 사용자는 설정 페이지에서 이 옵션이 표시되도록 할 수 있습니다.
@@ -1325,6 +1326,22 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
 
 <ph name="PRODUCT_NAME" />의 경우 이 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />에 등록되어 있을 때만 적용됩니다.
 <ph name="PRODUCT_OS_NAME" />의 경우 이 정책이 항상 적용됩니다.</translation>
+<translation id="1878535132109943599">정책을 사용 설정하면 <ph name="LOCAL_NETWORK_ACCESS" />
+요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 검사 실패로 인해 <ph name="CHROME_DEVTOOLS_NAME" />에서만 경고를 표시합니다.
+
+정책을 사용 중지하거나 설정하지 않으면 <ph name="LOCAL_NETWORK_ACCESS" /> 요청에서 이러한 요청의
+기본 처리를 사용합니다.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 링크(https://wicg.github.io/local-network-access/)를 참고하세요.
+
+이 기업 정책은 일시적이며, M146 이후 삭제될 예정입니다.
+
+장기적으로 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 사용하여
+<ph name="LOCAL_NETWORK_ACCESS" /> 권한이 자동으로 부여되어야 하는 URL 패턴을
+허용 목록에 추가할 수 있습니다.
+
+<ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" /> 정책이 사용 설정된 경우
+이 정책보다 우선 적용됩니다.</translation>
 <translation id="187961648719201562">기존 로컬 파일 삭제(버전 137부터 지원됨)</translation>
 <translation id="1883274744253492031">혼합 콘텐츠 자동 업그레이드 사용 설정</translation>
 <translation id="1885782360784839335">전체 탭 프로모션 콘텐츠 표시 기능을 사용합니다.</translation>
@@ -7120,6 +7137,7 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="5774856474228476867">기본 검색 공급자 검색 URL</translation>
 <translation id="5775235485119094648">고정 범위에 해당할 때 배터리를 충전합니다.</translation>
 <translation id="5776485039795852974">사이트에서 데스크톱 알림을 표시할 때마다 확인</translation>
+<translation id="5776508475264864949">Gemini 앱이 웹페이지에서 작업을 실행하도록 허용하지 않습니다.</translation>
 <translation id="5783009211970309878">인쇄 머리글 및 바닥글</translation>
 <translation id="5790763087505467169">관리되는 게스트 세션 자동 실행 알림 줄이기</translation>
 <translation id="5794205610250307906">이 정책은 브라우저가 Web Audio에 적응형 버퍼링을 사용할지 제어합니다.
@@ -7711,6 +7729,7 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
       정책을 <ph name="ASK_LOCAL_FONTS_POLICY_NAME" />(값 3) 정책으로 설정하면 기본적으로 로컬 글꼴 권한이 요청될 때 사용자에게 메시지가 표시됩니다. 사용자가 권한을 허용하면 사이트에서 로컬 글꼴에 관한 정보를 볼 수 있는 기능이 확장됩니다.
 
       정책을 설정하지 않으면 사용자에게 메시지를 표시하는 기본 동작이 적용되지만 사용자가 이 설정을 변경할 수 있습니다.</translation>
+<translation id="6203014458380972093">로컬 네트워크 엔드포인트에 대한 요청 제한을 일시적으로 선택 해제</translation>
 <translation id="6203715554101884845">정책을 설정하면 로그인 화면에서 주어진 공급업체 및 제품 ID로 HID 기기 액세스 권한을 자동으로 부여받는 사이트를 지정하는 URL 목록을 작성할 수 있습니다. 항목이 유효하려면 목록의 각 항목에 <ph name="DEVICES_FIELD_NAME" /> 및 <ph name="URLS_FIELD_NAME" /> 필드가 모두 있어야 하며, 그러지 않으면 항목이 무시됩니다. <ph name="DEVICES_FIELD_NAME" /> 필드에 포함된 각 항목은 <ph name="VENDOR_ID_FIELD_NAME" /> 필드를 가져야 하며 <ph name="PRODUCT_ID_FIELD_NAME" /> 필드를 가질 수 있습니다. <ph name="PRODUCT_ID_FIELD_NAME" /> 필드를 생략하면 지정된 공급업체 ID가 있는 모든 기기와 일치하는 정책이 생성됩니다. <ph name="PRODUCT_ID_FIELD_NAME" /> 필드는 있지만 <ph name="VENDOR_ID_FIELD_NAME" /> 필드가 없는 항목은 유효하지 않으며 무시됩니다.
 
 정책을 설정하지 않으면 모든 사이트에 전체 기본값이 사용됩니다(자동 액세스 없음).</translation>
@@ -9549,6 +9568,7 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
 <translation id="7323896582714668701"><ph name="PRODUCT_NAME" />의 추가 명령줄 매개변수</translation>
 <translation id="7325801934761922681">Chrome이 샌드박스 처리된 iframe 내부에서 외부 프로토콜로 이동을 차단하지 못하도록 방지</translation>
 <translation id="7326394567531622570">완전 삭제(값 2)와 유사하지만, 사용자가 다시 로그인할 필요가 없도록 로그인 토큰을 저장합니다.</translation>
+<translation id="7331098674887251788">Gemini 앱 통합이 웹페이지에서 직접 작동하도록 허용합니다.</translation>
 <translation id="7331387825106440104">로컬로 추가된 신뢰 앵커에 제약조건 적용 안함</translation>
 <translation id="7331962793961469250">True로 설정하면 Chrome 웹 스토어의 앱 홍보가 새 탭 페이지에 표시되지 않습니다.
 
@@ -10354,6 +10374,7 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651"><ph name="PRODUCT_OS_NAME" />에서 한눈에 보기</translation>
 <translation id="7986473886676689183">Android 보고서 사용 설정</translation>
+<translation id="798671159602573821">로컬 네트워크 액세스 제한을 일시적으로 선택 해제할지 지정</translation>
 <translation id="7990280274626154329"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> 사용 설정</translation>
 <translation id="7991022023019679916">이 정책은 지원이 중단되었으며 <ph name="PRODUCT_OS_NAME" /> 버전 85에서 삭제될 예정입니다. 대신 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 정책을 사용하세요.
 
@@ -10681,6 +10702,15 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
       정책을 사용 안함으로 설정하면 등록된 기기가 상세 보고 제어 권한을 받을 수 없습니다.</translation>
 <translation id="82530263956734297">차단 목록에서 제외할 확장 프로그램 ID</translation>
 <translation id="8254749125469750814">클라우드 서비스로 확장 프로그램을 설치할 수 있는지 확인하지 않습니다.</translation>
+<translation id="825509998103089977">Gemini 앱이 사용자를 대신하여 웹페이지에서 작업을 실행하도록 허용할지 제어합니다.
+
+0/설정 안 함 = Gemini 앱이 웹페이지에서 작업을 실행하도록 허용합니다.
+
+1 = Gemini 앱이 웹페이지에서 작업을 실행하도록 허용하지 않습니다.
+
+Gemini 앱이 사용 중지되면 이 정책은 아무런 영향을 미치지 않습니다. 예를 들어 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 Gemini 앱을 사용 중지할 수 있습니다.
+
+자세한 내용은 https://support.google.com/chrome/a/answer/16291696 페이지를 참고하세요.</translation>
 <translation id="8256006033157034334">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="8256688113167012935">계정 이름 <ph name="PRODUCT_OS_NAME" />을(를) 해당 기기 로컬 계정의 로그인 화면에 표시할 것인지 제어합니다.
 

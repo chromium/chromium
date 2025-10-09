@@ -1789,6 +1789,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2204034823255629767">Branje in spreminjanje vsega, kar napišete</translation>
 <translation id="2204168219363024184">Če želite ustvariti ta ključ za dostop z Googlovim upraviteljem gesel, potrdite, da ste to vi</translation>
 <translation id="2204387456724731099">Tega izbora ni bilo mogoče prevesti</translation>
+<translation id="2204613850236199029">Podatki so odstranjeni</translation>
 <translation id="2207116775853792104">Obdrži to razširitev</translation>
 <translation id="2209841631181508629">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše podatke – <ph name="FIELDS_STRING" /> – s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK" />pogoje storitve<ph name="END_LINK" /> tega spletnega mesta.</translation>
 <translation id="2210462644007531147">Namestitve ni bilo mogoče dokončati</translation>
@@ -10928,7 +10929,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8549127125482561383">Kako prikazati zahteve</translation>
 <translation id="8549316893834449916">V Chromebook se boste prijavili z računom Google – istim računom, ki ga uporabljate za Gmail, Drive, YouTube in drugo.</translation>
 <translation id="8550239873869577759">Prenesena je sumljiva datoteka</translation>
-<translation id="8551246044333727813">Ime lahko uredite <ph name="BEGIN_LINK" />v računu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
 <translation id="8551647092888540776">Brez povezave ni mogoče odpreti <ph name="FILE_NAMES" /></translation>

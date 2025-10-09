@@ -1777,6 +1777,7 @@
 <translation id="2204034823255629767">Прагляд і змяненне таго, што вы набіраеце</translation>
 <translation id="2204168219363024184">Каб стварыць гэты ключ доступу з дапамогай Менеджара пароляў Google, прайдзіце спраўджанне асобы</translation>
 <translation id="2204387456724731099">Перакласці вылучаны тэкст не ўдалося</translation>
+<translation id="2204613850236199029">Інфармацыя выдалена</translation>
 <translation id="2207116775853792104">Пакінуць гэта пашырэнне</translation>
 <translation id="2209841631181508629">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK" />умовамі выкарыстання<ph name="END_LINK" /> сайта.</translation>
 <translation id="2210462644007531147">Не ўдалося завяршыць усталяванне</translation>
@@ -10906,7 +10907,6 @@
 <translation id="8549127125482561383">Як будуць паказвацца запыты</translation>
 <translation id="8549316893834449916">Вы будзеце ўваходзіць у Chromebook з дапамогай свайго Уліковага запісу Google – таго самага, які вы выкарыстоўваеце для ўваходу ў такія сэрвісы Google, як Gmail, Дыск, YouTube і іншыя.</translation>
 <translation id="8550239873869577759">Спампаваны падазроны файл</translation>
-<translation id="8551246044333727813">Вы можаце змяніць імя ва <ph name="BEGIN_LINK" />Уліковым запісе Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="8551388862522347954">Ліцэнзіі</translation>
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8551647092888540776">Файл "<ph name="FILE_NAMES" />" немагчыма адкрыць па-за сеткай</translation>

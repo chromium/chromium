@@ -199,6 +199,9 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5671188105328420281">Astuce de Chromium</translation>
 <translation id="5688047395118852662">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
+<translation id="5731004036450828399">Pour protéger vos clés d'accès, vous devrez d'abord créer un NIP de récupération.
+
+        Les clés d'accès sont enregistrées dans le gestionnaire de mots de passe, ce qui vous permet de les utiliser dans Chromium sur n'importe quel appareil.</translation>
 <translation id="584550191241316896">Connecté à Chromium</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5889847953983052353">Lorsque activé :
@@ -265,6 +268,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7285031092584344905">Accédez à vos mots de passe Chromium et plus encore dans d'autres applications.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Cette clé d'accès sera enregistrée dans le gestionnaire de mots de passe du compte <ph name="USER_EMAIL" /></translation>
 <translation id="7504829997542308412">Ouvrez Chromium</translation>
 <translation id="7531461704633548377">De Chromium</translation>
 <translation id="7554983317097061001">Astuce Chromium : Déplacez Chromium vers le Dock</translation>
@@ -298,6 +302,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8254729934443216898">Découvrez de nouvelles fonctionnalités qui vous aident à tirer le meilleur parti de Chromium.</translation>
 <translation id="8293572045658095405">Vous utilisez la Navigation privée de Chromium</translation>
 <translation id="830951810931292870">Ouvre les URL entrées dans Chromium en Navigation privée.</translation>
+<translation id="8385503371191508165">Commencez à enregistrer les clés d'accès avec le gestionnaire de mots de passe</translation>
 <translation id="8390323835464055390">Utilisez Chromium pour le remplissage automatique pour vous connecter avec vos clés d'accès et vos mots de passe enregistrés à partir de n'importe quelle appli</translation>
 <translation id="8409374867500149834">Vous disposez de la sécurité la plus robuste de Chromium contre les sites Web dangereux</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}}</translation>

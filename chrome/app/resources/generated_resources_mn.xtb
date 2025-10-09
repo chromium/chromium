@@ -998,6 +998,7 @@
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1662801900924515589"><ph name="APP" />-г суулгасан</translation>
 <translation id="1663698992894057019">Хамгийн сүүлийн үеийн аюулгүй байдал болон программ хангамжийг авах бол шинэ Chromebook рүү сайжруулна уу</translation>
+<translation id="1664497218584335032">Вебсайт энэ холбоосыг аппад нээх хүсэлтэй байна.</translation>
 <translation id="166454475160289583">Таны гарын оролтыг дарахыг зөвшөөрөөгүй</translation>
 <translation id="1665328953287874063">Өөрийн <ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд нууц үг эсвэл ПИН ашиглана уу</translation>
 <translation id="1665859804801131136">Экспрессионизм</translation>
@@ -6562,10 +6563,12 @@
 <translation id="5517304475148761050">Энэ аппад Play Store-д хандах хандалт шаардлагатай</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137"><ph name="PROTOCOL_SCHEME" />-н холбоосыг үргэлж энэ аппад нээх</translation>
 <translation id="5520605865175417976"><ph name="ACTION_TO_REMOVE" /> үйлдлийг хасах</translation>
 <translation id="5521078259930077036">Энэ таны хүссэн нүүр хуудас мөн үү?</translation>
 <translation id="5522156646677899028">Энэ өргөтгөл нь аюулгүй байдлын ноцтой байдлыг агуулж байна.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Таны администратор өргөтгөлийг суулгасан}other{Таны администратор # өргөтгөлийг суулгасан}}</translation>
+<translation id="5523203511530504754"><ph name="PROTOCOL_SCHEME" />-н холбоосыг <ph name="APP_NAME" />-д нээх</translation>
 <translation id="5523532775593636291">Таны нэмсэн сайтууд үргэлж идэвхтэй байх бөгөөд тэдгээрээс санах ойг чөлөөлөхгүй</translation>
 <translation id="5523558474028191231">Нэр нь үсэг, тоо болон тусгай тэмдэгт ашиглах боломжтой бөгөөд <ph name="MAX_CHARACTER_COUNT" /> эсвэл түүнээс цөөн тэмдэгттэй байх ёстой</translation>
 <translation id="5526745900034778153">Синк хийхийг үргэлжлүүлэхийн тулд дахин нэвтрэх</translation>
@@ -9595,6 +9598,7 @@
 <translation id="7663859337051362114">eSIM профайл нэмэх</translation>
 <translation id="76641554187607347">Ямар ч гар холбогдоогүй</translation>
 <translation id="7664442418269614729">Энэ картыг iPhone дээрээ ашиглаарай</translation>
+<translation id="7664822217939981459"><ph name="PROTOCOL_SCHEME" />-н холбоосыг нээх апп сонгоно уу</translation>
 <translation id="7665082356120621510">Хэмжээг хадгалах</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="7665445336029073980">Таталтын бүтэн түүх</translation>
@@ -10907,7 +10911,6 @@
 <translation id="8549127125482561383">Хүсэлтийг хэрхэн харуулах вэ?</translation>
 <translation id="8549316893834449916">Та Chromebook- дээ нэвтрэхдээ Gmail, Драйв, YouTube болон бусад зүйлд нэвтрэхдээ ашигладаг Google Бүртгэлээ ашиглана.</translation>
 <translation id="8550239873869577759">Сэжигтэй файл татсан</translation>
-<translation id="8551246044333727813">Та <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google Бүртгэлээсээ<ph name="END_LINK" /> нэрээ засаж болно.</translation>
 <translation id="8551388862522347954">Лиценз</translation>
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>
 <translation id="8551647092888540776">Офлайн үед <ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
@@ -11215,6 +11218,7 @@
 <translation id="8750786237117206586">ChromeOS Flex-н аудионы тохиргоог удирдах</translation>
 <translation id="8751034568832412184">Сургууль</translation>
 <translation id="8751329102746373229">Таны администратораас</translation>
+<translation id="875242763254084885"><ph name="ORIGIN" /> сайт энэ холбоосыг аппад нээх хүсэлтэй байна.</translation>
 <translation id="8752451679755290210">Зүйлс хооронд автоматаар шилжих</translation>
 <translation id="8753948258138515839">Files апп нь таны Google Драйв, гадаад хадгалах сан эсвэл ChromeOS Flex төхөөрөмж дээр хадгалсан файлуудад шуурхай хандалт олгоно.</translation>
 <translation id="8754200782896249056">&lt;p&gt; Дэмжлэг бүхий дэлгэцийн орчинд <ph name="PRODUCT_NAME" />-г ачаалж байх үед системийн proxy тохиргоог ашиглана. Гэхдээ таны систед аливаа дэмжлэг байхгүй эсвэл таны системийн тохиргоо нь алдаатай байж болох юм.&lt;/p&gt; &lt;p&gt;Та системын тохиргоог тушаалын мөрөөр дамжуулан хийх боломжтой. &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; -с туг болон орчны хувьсагчийн талаарх нэмэлт мэдээллийг авах боломжтой.&lt;/p&gt;</translation>

@@ -199,6 +199,9 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5671188105328420281">Tipy pre Chromium</translation>
 <translation id="5688047395118852662">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chromium naplno.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
+<translation id="5731004036450828399">Ak chcete, aby boli vaše prístupové kľúče v bezpečí, musíte najprv vytvoriť kód PIN na obnovenie.
+
+        Prístupové kľúče sa ukladajú do Správcu hesiel, takže ich môžete používať v prehliadači Chromium v ľubovoľnom zariadení.</translation>
 <translation id="584550191241316896">Prihlásili ste sa do prehliadača Chromium</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5889847953983052353">Keď túto možnosť zapnete:
@@ -265,6 +268,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="7285031092584344905">Majte prístup k heslám a ďalšiemu obsahu prehliadača Chromium v iných aplikáciách.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Heslo bude uložené do správcu hesiel v účte <ph name="EMAIL" />.</translation>
+<translation id="7434848749522628428">Tento prístupový kľúč bude uložený do Správcu hesiel pre <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">Otvorte Chromium</translation>
 <translation id="7531461704633548377">Z prehliadača Chromium</translation>
 <translation id="7554983317097061001">Tip pre Chromium: presuňte Chromium do Docku</translation>
@@ -298,6 +302,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8254729934443216898">Preskúmajte nové funkcie, ktoré vám pomôžu využívať Chromium naplno.</translation>
 <translation id="8293572045658095405">Ste v režime inkognito prehliadača Chromium</translation>
 <translation id="830951810931292870">Otvorí zadané webové adresy v režime inkognito prehliadača Chromium.</translation>
+<translation id="8385503371191508165">Začnite ukladať prístupové kľúče pomocou Správcu hesiel</translation>
 <translation id="8390323835464055390">Prihlasujte sa uloženými heslami a prístupovými kľúčmi v ľubovoľnej aplikácii pomocou automatického dopĺňania v prehliadači Chromium</translation>
 <translation id="8409374867500149834">Máte nasilnejšie zabezpečenie prehliadača Chromium proti škodlivým webom</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}}</translation>

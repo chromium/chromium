@@ -199,6 +199,9 @@
 <translation id="5671188105328420281">Chromium সম্পর্কিত পরামর্শ</translation>
 <translation id="5688047395118852662">Chromium থেকে কীভাবে সবচেয়ে বেশি সুবিধা পেতে পারেন, এই কার্ড সেই ব্যাপারে আপনাকে সাজেশন দেখায়।</translation>
 <translation id="5700709190537129682">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না</translation>
+<translation id="5731004036450828399">আপনার পাসকী নিরাপদে রাখতে, আপনাকে প্রথমে রিকভারি পিন তৈরি করতে হবে।
+
+        পাসকী, Password Manager-এ সেভ করা হয়, আপনি যেকোনও ডিভাইসে Chromium থেকে এটি ব্যবহার করতে পারবেন।</translation>
 <translation id="584550191241316896">Chromium-এ সাইন-ইন করেছেন</translation>
 <translation id="5862307444128926510">Chromium-এ স্বাগতম</translation>
 <translation id="5889847953983052353">চালু থাকলে:
@@ -265,6 +268,7 @@
 <translation id="7285031092584344905">অন্যান্য অ্যাপ জুড়ে আপনার Chromium পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" />-এর জন্য পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
+<translation id="7434848749522628428">এই পাসকী <ph name="USER_EMAIL" />-এর জন্য Password Manager-এ সেভ করা হবে</translation>
 <translation id="7504829997542308412">Chromium খুলুন</translation>
 <translation id="7531461704633548377">Chromium থেকে</translation>
 <translation id="7554983317097061001">Chromium সম্পর্কিত পরামর্শ: ডকে Chromium সরান</translation>
@@ -298,6 +302,7 @@
 <translation id="8254729934443216898">নতুন ফিচার ব্যবহার করে দেখুন এবং Chromium-এর সবচেয়ে বেশি সুবিধা উপভোগ করুন।</translation>
 <translation id="8293572045658095405">আপনি Chromium ছদ্মবেশী মোড ব্যবহার করছেন</translation>
 <translation id="830951810931292870">Chromium-এ 'ছদ্মবেশী' মোডে ইনপুট দেওয়া URL খোলে।</translation>
+<translation id="8385503371191508165">Password Manager ব্যবহার করে পাসকী সেভ করা শুরু করুন</translation>
 <translation id="8390323835464055390">অটোফিলের জন্য Chromium ব্যবহার করে এমন যেকোনও অ্যাপে সেভ করা পাসওয়ার্ড ও পাসকী দিয়ে সাইন-ইন করুন</translation>
 <translation id="8409374867500149834">ক্ষতিকর ওয়েবসাইটের জন্য আপনার কাছে Chromium-এর সবচেয়ে শক্তিশালী নিরাপত্তা আছে</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}one{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}other{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। আপনি সাইন-ইন করে থাকাকালীন শুধু এই ডিভাইসে যে ডেটা সেভ করা হয়েছিল, তা মুছে ফেলা হবে। এর মধ্যে ইতিহাস ও পাসওয়ার্ড অন্তর্ভুক্ত থাকতে পারে।}}</translation>

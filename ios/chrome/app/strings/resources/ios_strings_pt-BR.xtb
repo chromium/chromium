@@ -194,7 +194,7 @@
 <translation id="1740650426894359238">Usar outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Descartar mudanças</translation>
-<translation id="1748975028205587434">Selecione o arquivo</translation>
+<translation id="1748975028205587434">Selecionar o arquivo</translation>
 <translation id="1749733017156547309">É obrigatório informar uma senha</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opção de endereço disponível acima do teclado.}one{{count} opção de endereço disponível acima do teclado.}other{{count} opções de endereço disponíveis acima do teclado.}}</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
@@ -507,7 +507,7 @@
 <translation id="2931440415625410757">Mostrar instruções</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
-<translation id="2965594942405840553">Não é possível desfazer esta ação</translation>
+<translation id="2965594942405840553">Não é possível desfazer essa ação</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975761176769946178">É obrigatório informar um URL</translation>
 <translation id="297667759942911166">Colaborar em grupos de guias</translation>
@@ -1170,7 +1170,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela organização</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
-<translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecione o arquivo<ph name="END_BOLD" /></translation>
+<translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar o arquivo<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recentes</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5617769621178348890">Abrir no app Arquivos</translation>
@@ -1919,7 +1919,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
 <translation id="8348530355586151720">Toque no menu de três pontos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
-<translation id="8361189290032177785">{count,plural, =1{{count} favorito foi importado}one{{count} favorito foi importado}other{{count} favoritos foram importados}}</translation>
+<translation id="8361189290032177785">{count,plural, =1{{count} favorito importado}one{{count} favorito importado}other{{count} favoritos importados}}</translation>
 <translation id="8363484128299778310">Recuperação temporária em caso de problemas</translation>
 <translation id="8364563001733875155">Para mudar o PIN, primeiro defina uma senha no dispositivo.</translation>
 <translation id="8366466717204352506">Confirmação nunca executada</translation>
