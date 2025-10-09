@@ -204,7 +204,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
             EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
             EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
             EXPECT_EQ(error_params.error_code,
-                      HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+                      GOOPDATEINSTALL_E_INSTALLER_FAILED_START);
             EXPECT_EQ(error_params.extra_code1, kErrorAppCommandLaunchFailed);
           }),
       app_command_web));

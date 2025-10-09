@@ -1255,7 +1255,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  const HRESULT hr = app_command_runner_->Run(substitutions, process_);
+  const HRESULT hr = app_command_runner_.value()->Run(substitutions, process_);
   using LegacyAppCommandWebImplPtr =
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>;
   update_client::Callback callback = base::BindOnce(
