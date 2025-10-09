@@ -41,12 +41,7 @@ PendingImportMap::PendingImportMap(
 // href="https://html.spec.whatwg.org/C#register-an-import-map"> This is
 // parallel to PendingScript::ExecuteScriptBlock().
 void PendingImportMap::RegisterImportMap() {
-  // TODO(crbug.com/364917757): I don't think this ever happens, so we can
-  // replace this with a CHECK.
-  if (!import_map_) {
-    element_->DispatchErrorEvent();
-    return;
-  }
+  CHECK(import_map_);
 
   // TODO(crbug.com/364917757): This step is no longer in the spec, and it's not
   // clear when this can actually happen.
