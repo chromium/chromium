@@ -565,6 +565,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/widget/ViewLookupCachingFrameLayout.java",
     "java/src/org/chromium/ui/widget/ViewRectProvider.java",
     "java/src/org/chromium/ui/widget/ViewRectUpdater.java",
+    "java/src/org/chromium/ui/widget/WindowBoundsChangeDetector.java",
     "java/src/org/chromium/ui/xr/scenecore/XrSceneCoreSessionInitializer.java",
     "java/src/org/chromium/ui/xr/scenecore/XrSceneCoreSessionManager.java",
   ]

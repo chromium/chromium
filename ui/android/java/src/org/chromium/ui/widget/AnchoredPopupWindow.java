@@ -243,6 +243,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
     private @StyleRes int mAnimationStyleId;
     private boolean mAnimateFromAnchor;
+    private boolean mDismissOnScreenSizeChange;
+    private @Nullable WindowBoundsChangeDetector mWindowBoundsChangeDetector;
 
     /** A builder for {@link AnchoredPopupWindow} instances. */
     public static class Builder {
@@ -270,6 +272,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         private int mPreferredHorizontalOrientation = HorizontalOrientation.MAX_AVAILABLE_SPACE;
 
         private boolean mDismissOnTouchInteraction;
+        private boolean mDismissOnScreenSizeChange;
         private boolean mVerticalOverlapAnchor;
         private boolean mHorizontalOverlapAnchor;
         private boolean mUpdateOrientationOnChange;
@@ -417,6 +420,14 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
 
         /**
+         * @param dismiss Whether or not to dismiss this popup when the screen size changes.
+         */
+        public Builder setDismissOnScreenSizeChange(boolean dismiss) {
+            mDismissOnScreenSizeChange = dismiss;
+            return this;
+        }
+
+        /**
          * @param overlap Whether the popup should vertically overlap the anchor.
          */
         public Builder setVerticalOverlapAnchor(boolean overlap) {
@@ -538,6 +549,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         setPreferredVerticalOrientation(builder.mPreferredVerticalOrientation);
         setPreferredHorizontalOrientation(builder.mPreferredHorizontalOrientation);
         setDismissOnTouchInteraction(builder.mDismissOnTouchInteraction);
+        setDismissOnScreenSizeChange(builder.mDismissOnScreenSizeChange);
         setVerticalOverlapAnchor(builder.mVerticalOverlapAnchor);
         setHorizontalOverlapAnchor(builder.mHorizontalOverlapAnchor);
         setUpdateOrientationOnChange(builder.mUpdateOrientationOnChange);
@@ -665,6 +677,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     public void show() {
         if (mPopupWindow.isShowing()) return;
 
+        if (mDismissOnScreenSizeChange) {
+            mWindowBoundsChangeDetector = new WindowBoundsChangeDetector(mRootView, this::dismiss);
+        }
+
         mRectProvider.startObserving(this);
         mViewportRectProvider.startObserving(this);
 
@@ -678,6 +694,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @see PopupWindow#dismiss()
      */
     public void dismiss() {
+        if (mWindowBoundsChangeDetector != null) {
+            mWindowBoundsChangeDetector.detach();
+            mWindowBoundsChangeDetector = null;
+        }
         mPopupWindow.dismiss();
     }
 
@@ -741,6 +761,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     public void setDismissOnTouchInteraction(boolean dismiss) {
         mDismissOnTouchInteraction = dismiss;
         mPopupWindow.setOutsideTouchable(mDismissOnTouchInteraction);
+    }
+
+    /**
+     * @param dismiss Whether or not to dismiss this popup when the screen size changes.
+     * @deprecated Use the {@link Builder} to set this value during construction.
+     */
+    @Deprecated
+    public void setDismissOnScreenSizeChange(boolean dismiss) {
+        mDismissOnScreenSizeChange = dismiss;
     }
 
     /**
