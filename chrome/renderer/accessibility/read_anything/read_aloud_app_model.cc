@@ -23,7 +23,6 @@
 #include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/tokenized_sentence.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
-#include "read_aloud_app_model.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
