@@ -239,7 +239,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     return new Map([
       [
         `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
-        '#site-data-trigger',
+        '#siteDataTrigger',
       ],
     ]);
   }
