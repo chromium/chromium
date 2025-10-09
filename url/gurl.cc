@@ -105,8 +105,7 @@ void GURL::InitializeFromCanonicalSpec() {
     // We can't do this check on the inner_url of a filesystem URL, as
     // canonical_spec actually points to the start of the outer URL, so we'd
     // end up with infinite recursion in this constructor.
-    if (!url::FindAndCompareScheme(spec_.data(), spec_.length(),
-                                   url::kFileSystemScheme, &scheme) ||
+    if (!url::FindAndCompareScheme(spec_, url::kFileSystemScheme, &scheme) ||
         scheme.begin == parsed_.scheme.begin) {
       // We need to retain trailing whitespace on path URLs, as the |parsed_|
       // spec we originally received may legitimately contain trailing white-

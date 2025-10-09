@@ -146,15 +146,16 @@ COMPONENT_EXPORT(URL) void LockSchemeRegistries();
 // input (if any). The |compare| scheme must be a valid canonical scheme or
 // the result of the comparison is undefined.
 COMPONENT_EXPORT(URL)
-bool FindAndCompareScheme(const char* str,
-                          int str_len,
+bool FindAndCompareScheme(std::string_view str,
                           const char* compare,
                           Component* found_scheme);
-inline bool FindAndCompareScheme(std::string_view str,
+inline bool FindAndCompareScheme(const char* str,
+                                 int str_len,
                                  const char* compare,
                                  Component* found_scheme) {
-  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
-                              compare, found_scheme);
+  return FindAndCompareScheme(
+      std::string_view(str, static_cast<size_t>(str_len)), compare,
+      found_scheme);
 }
 COMPONENT_EXPORT(URL)
 bool FindAndCompareScheme(std::u16string_view str,

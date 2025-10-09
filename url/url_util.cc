@@ -224,18 +224,15 @@ bool DoIsOpaqueNonSpecial(const CHAR* spec, const Component& scheme) {
   return false;
 }
 
-// TODO(crbug.com/350788890): Replace `str` and `str_len` with a
-// basic_string_view or a base::span.
-template<typename CHAR>
-bool DoFindAndCompareScheme(const CHAR* str,
-                            int str_len,
+template <typename CHAR>
+bool DoFindAndCompareScheme(std::basic_string_view<CHAR> str,
                             const char* compare,
                             Component* found_scheme) {
   // Before extracting scheme, canonicalize the URL to remove any whitespace.
   // This matches the canonicalization done in DoCanonicalize function.
   STACK_UNINITIALIZED RawCanonOutputT<CHAR> whitespace_buffer;
-  std::basic_string_view<CHAR> spec = RemoveUrlWhitespace(
-      {str, base::checked_cast<size_t>(str_len)}, &whitespace_buffer, nullptr);
+  std::basic_string_view<CHAR> spec =
+      RemoveUrlWhitespace(str, &whitespace_buffer, nullptr);
 
   Component our_scheme;
   if (!ExtractScheme(spec, &our_scheme)) {
@@ -749,18 +746,16 @@ bool IsReferrerScheme(std::optional<std::string_view> scheme) {
                        GetSchemeRegistry().referrer_schemes);
 }
 
-bool FindAndCompareScheme(const char* str,
-                          int str_len,
+bool FindAndCompareScheme(std::string_view str,
                           const char* compare,
                           Component* found_scheme) {
-  return DoFindAndCompareScheme(str, str_len, compare, found_scheme);
+  return DoFindAndCompareScheme(str, compare, found_scheme);
 }
 
 bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
                           Component* found_scheme) {
-  return DoFindAndCompareScheme(str.data(), base::checked_cast<int>(str.size()),
-                                compare, found_scheme);
+  return DoFindAndCompareScheme(str, compare, found_scheme);
 }
 
 bool DomainIs(std::string_view canonical_host,

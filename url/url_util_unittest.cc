@@ -90,47 +90,38 @@ TEST_F(URLUtilTest, FindAndCompareScheme) {
 
   // Simple case where the scheme is found and matches.
   const char kStr1[] = "http://www.com/";
-  EXPECT_TRUE(FindAndCompareScheme(kStr1, static_cast<int>(strlen(kStr1)),
-                                   "http", nullptr));
-  EXPECT_TRUE(FindAndCompareScheme(
-      kStr1, static_cast<int>(strlen(kStr1)), "http", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(kStr1, "http", nullptr));
+  EXPECT_TRUE(FindAndCompareScheme(kStr1, "http", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 4));
 
   // A case where the scheme is found and doesn't match.
-  EXPECT_FALSE(FindAndCompareScheme(
-      kStr1, static_cast<int>(strlen(kStr1)), "https", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(kStr1, "https", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 4));
 
   // A case where there is no scheme.
   const char kStr2[] = "httpfoobar";
-  EXPECT_FALSE(FindAndCompareScheme(
-      kStr2, static_cast<int>(strlen(kStr2)), "http", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(kStr2, "http", &found_scheme));
   EXPECT_TRUE(found_scheme == Component());
 
   // When there is an empty scheme, it should match the empty scheme.
   const char kStr3[] = ":foo.com/";
-  EXPECT_TRUE(FindAndCompareScheme(
-      kStr3, static_cast<int>(strlen(kStr3)), "", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(kStr3, "", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 0));
 
   // But when there is no scheme, it should fail.
-  EXPECT_FALSE(FindAndCompareScheme("", 0, "", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme("", "", &found_scheme));
   EXPECT_TRUE(found_scheme == Component());
 
   // When there is a whitespace char in scheme, it should canonicalize the URL
   // before comparison.
   const char whtspc_str[] = " \r\n\tjav\ra\nscri\tpt:alert(1)";
-  EXPECT_TRUE(FindAndCompareScheme(whtspc_str,
-                                   static_cast<int>(strlen(whtspc_str)),
-                                   "javascript", &found_scheme));
+  EXPECT_TRUE(FindAndCompareScheme(whtspc_str, "javascript", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(1, 10));
 
   // Control characters should be stripped out on the ends, and kept in the
   // middle.
   const char ctrl_str[] = "\02jav\02scr\03ipt:alert(1)";
-  EXPECT_FALSE(FindAndCompareScheme(ctrl_str,
-                                    static_cast<int>(strlen(ctrl_str)),
-                                    "javascript", &found_scheme));
+  EXPECT_FALSE(FindAndCompareScheme(ctrl_str, "javascript", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(1, 11));
 }
 
