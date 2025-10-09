@@ -4508,6 +4508,67 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testOnTabPinnedStateChanged_MovesTab_OutOfBounds() {
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        // Start with tab1 pinned, others not.
+        doReturn(true).when(mTab1).getIsPinned();
+        doReturn(false).when(mTab2).getIsPinned();
+        doReturn(false).when(tab3).getIsPinned();
+
+        // TabModel has all 3 tabs, with pinned tab first.
+        when(mTabModel.getCount()).thenReturn(3);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
+        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTabModel.getTabAt(2)).thenReturn(tab3);
+        when(mTabModel.iterator()).thenAnswer(invocation -> List.of(mTab1, mTab2, tab3).iterator());
+
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(tab3)).thenReturn(2);
+
+        // TabGroupModelFilter also represents all 3.
+        when(mTabGroupModelFilter.getIndividualTabAndGroupCount()).thenReturn(3);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(0)).thenReturn(mTab1);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(1)).thenReturn(mTab2);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(2)).thenReturn(tab3);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB3_ID)).thenReturn(List.of(tab3));
+
+        // But TabListModel only has the first two.
+        List<Tab> tabsInModel = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        mMediator.resetWithListOfTabs(tabsInModel, null, false);
+        assertEquals(2, mModelList.size());
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(mModelList.get(0).model.get(TabProperties.IS_PINNED));
+
+        // Now, unpin tab1. After this, its position in TabModel will be at the end of the
+        // unpinned tabs. With tab2 and tab3 unpinned, and assuming stable sort, tab1 will go
+        // after tab3. Let's say the new order is [tab2, tab3, tab1].
+        doReturn(false).when(mTab1).getIsPinned();
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.indexOf(mTab2)).thenReturn(0);
+        when(mTabModel.indexOf(tab3)).thenReturn(1);
+
+        // Trigger the observer.
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, false);
+
+        // `index` of tab1 in model is 0.
+        // `indexOf` tab1 in TabModel is 2.
+        // `indexOfNthTabCard(2)` on a model with 2 tabs returns 2.
+        // This would call move(0, 2) on a list of size 2, which would crash.
+        // With the fix, it should call move(0, 1). The list should become [tab2, tab1].
+        assertEquals(2, mModelList.size());
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+    }
+
+    @Test
     public void testOnMenuItemClickedCallback_CloseGroupInTabSwitcher_NullListViewTouchTracker() {
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.close_tab_group,

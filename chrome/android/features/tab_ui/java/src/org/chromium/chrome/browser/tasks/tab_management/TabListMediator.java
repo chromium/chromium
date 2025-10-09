@@ -648,6 +648,11 @@ class TabListMediator implements TabListNotificationHandler {
                                             .get()
                                             .getTabModel()
                                             .indexOf(tab));
+                    // indexOfNthTabCard returns n + 1 if the index is higher than the number of
+                    // tabs in the model list. Moving is implemented as removal then addition.
+                    // The last valid index to add to is the size of the model list after the
+                    // removal so we need to clamp to mModelList.size() - 1.
+                    finalIndex = Math.min(finalIndex, mModelList.size() - 1);
                     if (index != finalIndex
                             && index != TabModel.INVALID_TAB_INDEX
                             && finalIndex != TabModel.INVALID_TAB_INDEX) {
