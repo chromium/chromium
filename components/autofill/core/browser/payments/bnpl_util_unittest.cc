@@ -5,40 +5,23 @@
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill::payments {
-
 namespace {
 constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
-}  // namespace
-
-TEST(BnplUtilTest, IsEligible_ReturnsTrueForEligibleIssuers) {
-  BnplIssuerContext issuer_context(test::GetTestLinkedBnplIssuer(),
-                                   BnplIssuerEligibilityForPage::kIsEligible);
-  EXPECT_TRUE(issuer_context.IsEligible());
-}
-
-TEST(BnplUtilTest, IsEligible_ReturnsFalseForIneligibleIssuers) {
-  BnplIssuerContext issuer_context_merchant(
-      test::GetTestLinkedBnplIssuer(),
-      BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant);
-  EXPECT_FALSE(issuer_context_merchant.IsEligible());
-
-  BnplIssuerContext issuer_context_low_amount(
-      test::GetTestLinkedBnplIssuer(),
-      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow);
-  EXPECT_FALSE(issuer_context_low_amount.IsEligible());
-
-  BnplIssuerContext issuer_context_high_amount(
-      test::GetTestLinkedBnplIssuer(),
-      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh);
-  EXPECT_FALSE(issuer_context_high_amount.IsEligible());
-}
 
 struct EligibleBnplIssuerParams {
   BnplIssuer::IssuerId issuer_id;
@@ -100,8 +83,75 @@ TEST_P(BnplUtilEligibleTest, GetBnplIssuerSelectionOptionText) {
       l10n_util::GetStringUTF16(params.expected_issuer_selection_text_id));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligibleIssuerDoesNotSupportMerchant) {
+class MockPaymentsDataManager : public TestPaymentsDataManager {
+ public:
+  using TestPaymentsDataManager::TestPaymentsDataManager;
+  MOCK_METHOD(std::vector<BnplIssuer>, GetBnplIssuers, (), (const, override));
+};
+
+class BnplUtilTest : public testing::Test,
+                     public WithTestAutofillClientDriverManager<> {
+ public:
+  BnplUtilTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillEnableAmountExtraction,
+         features::kAutofillEnableBuyNowPayLaterSyncing,
+         features::kAutofillEnableBuyNowPayLater,
+         features::kAutofillEnableAiBasedAmountExtraction},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  void SetUp() override {
+    InitAutofillClient();
+    autofill_client().GetPersonalDataManager().set_payments_data_manager(
+        std::make_unique<MockPaymentsDataManager>());
+
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client().GetAutofillOptimizationGuideDecider()),
+            IsUrlEligibleForBnplIssuer)
+        .WillByDefault(testing::Return(true));
+
+    ON_CALL(
+        static_cast<MockPaymentsDataManager&>(
+            autofill_client().GetPersonalDataManager().payments_data_manager()),
+        GetBnplIssuers)
+        .WillByDefault(testing::Return(
+            std::vector<BnplIssuer>{test::GetTestLinkedBnplIssuer()}));
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BnplUtilTest, IsEligible_ReturnsTrueForEligibleIssuers) {
+  BnplIssuerContext issuer_context(test::GetTestLinkedBnplIssuer(),
+                                   BnplIssuerEligibilityForPage::kIsEligible);
+  EXPECT_TRUE(issuer_context.IsEligible());
+}
+
+TEST_F(BnplUtilTest, IsEligible_ReturnsFalseForIneligibleIssuers) {
+  BnplIssuerContext issuer_context_merchant(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant);
+  EXPECT_FALSE(issuer_context_merchant.IsEligible());
+
+  BnplIssuerContext issuer_context_low_amount(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow);
+  EXPECT_FALSE(issuer_context_low_amount.IsEligible());
+
+  BnplIssuerContext issuer_context_high_amount(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh);
+  EXPECT_FALSE(issuer_context_high_amount.IsEligible());
+}
+
+TEST_F(
+    BnplUtilTest,
+    GetBnplIssuerSelectionOptionText_NotEligibleIssuerDoesNotSupportMerchant) {
   std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
       test::GetTestLinkedBnplIssuer(),
       BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant)};
@@ -113,8 +163,8 @@ TEST(BnplUtilTest,
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooLow) {
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooLow) {
   std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)};
@@ -127,8 +177,8 @@ TEST(BnplUtilTest,
           u"$50.00"));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooHigh) {
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooHigh) {
   std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
@@ -141,8 +191,8 @@ TEST(BnplUtilTest,
           u"$200.00"));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligible_LargeNumberFormatting) {
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligible_LargeNumberFormatting) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range(
       /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
@@ -160,8 +210,8 @@ TEST(BnplUtilTest,
           u"$30,000.00"));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligible_DecimalFormatting) {
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligible_DecimalFormatting) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range = BnplIssuer::EligiblePriceRange(
       /*currency=*/"USD", /*price_lower_bound=*/49'491'234,
@@ -180,8 +230,8 @@ TEST(BnplUtilTest,
           u"$49.49"));
 }
 
-TEST(BnplUtilTest,
-     GetBnplIssuerSelectionOptionText_NotEligible_DecimalRounding) {
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligible_DecimalRounding) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range = BnplIssuer::EligiblePriceRange(
       /*currency=*/"USD", /*price_lower_bound=*/99'999'999,
@@ -200,7 +250,7 @@ TEST(BnplUtilTest,
           u"$100.00"));
 }
 
-TEST(BnplUtilTest, GetBnplUiFooterText) {
+TEST_F(BnplUtilTest, GetBnplUiFooterText) {
   size_t offset = 0;
   std::u16string text = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION,
@@ -213,4 +263,63 @@ TEST(BnplUtilTest, GetBnplUiFooterText) {
           gfx::Range(offset, offset + kPaymentSettingsLinkText.length())));
 }
 
+// Verify that if the triggering field is CVC, the BNPL option should not be
+// appended.
+TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_IsCvcField) {
+  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
+                                          /*is_card_number_field_empty=*/true,
+                                          CREDIT_CARD_VERIFICATION_CODE));
+}
+
+// Verify that if there was some content filled in the card number field, the
+// BNPL option should not be appended.
+TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_CardNumberFilled) {
+  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
+                                          /*is_card_number_field_empty=*/false,
+                                          CREDIT_CARD_NUMBER));
+}
+
+// Verify that if this profile is not eligible for BNPL, the BNPL option should
+// not be appended.
+TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_BnplNotEligible) {
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
+                                          /*is_card_number_field_empty=*/true,
+                                          CREDIT_CARD_NUMBER));
+}
+
+// Verify that if the feature flag `kAutofillEnableAiBasedAmountExtraction` is
+// disabled, the BNPL option should not be appended.
+TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater},
+      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction});
+
+  EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
+                                          /*is_card_number_field_empty=*/true,
+                                          CREDIT_CARD_NUMBER));
+}
+
+// Verify when the triggering field is not CVC, the suggestion is not empty,
+// this profile is eligible for BNPL on the non-Android platform, the BNPL
+// option should be appended.
+TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_AllConditionsMet) {
+  FieldType trigger_field = CREDIT_CARD_NUMBER;
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_FALSE(ShouldAppendBnplSuggestion(
+        autofill_client(), /*is_card_number_field_empty=*/true, trigger_field));
+  } else {
+    EXPECT_TRUE(ShouldAppendBnplSuggestion(
+        autofill_client(), /*is_card_number_field_empty=*/true, trigger_field));
+  }
+}
+
+}  // namespace
 }  // namespace autofill::payments

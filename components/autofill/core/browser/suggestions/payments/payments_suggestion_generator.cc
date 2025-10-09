@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
@@ -646,13 +647,26 @@ void SetCardArtURL(Suggestion& suggestion,
 // suggestions in the Autofill popup. `should_show_scan_credit_card` is used
 // to conditionally add scan credit card suggestion. `is_autofilled` is used to
 // conditionally add suggestion for clearing all autofilled fields.
+// `should_show_bnpl_suggestion` is used to conditionally append a BNPL
+// suggestion to the end of the payment methods suggestions.
 // `with_gpay_logo` is used to conditionally add GPay logo icon to the manage
 // payment methods suggestion.
 std::vector<Suggestion> GetCreditCardFooterSuggestions(
+    const AutofillClient& client,
+    bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo) {
   std::vector<Suggestion> footer_suggestions;
+
+  if (should_show_bnpl_suggestion) {
+    footer_suggestions.push_back(
+        CreateBnplSuggestion(client.GetPersonalDataManager()
+                                 .payments_data_manager()
+                                 .GetBnplIssuers(),
+                             /*extracted_amount_in_micros=*/std::nullopt));
+  }
+
   if (should_show_scan_credit_card) {
     Suggestion scan_credit_card(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
@@ -1003,7 +1017,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool is_complete_form,
     bool should_show_scan_credit_card,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+    bool is_card_number_field_empty) {
   std::vector<Suggestion> suggestions;
   if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
       ShouldShowCreditCardSaveAndFill(client, is_complete_form,
@@ -1012,6 +1027,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
     std::ranges::move(GetCreditCardFooterSuggestions(
+                          client, /*should_show_bnpl_suggestion=*/false,
                           should_show_scan_credit_card,
                           trigger_field.is_autofilled(), display_gpay_logo),
                       std::back_inserter(suggestions));
@@ -1040,7 +1056,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     suggestions = GetCreditCardOrCvcFieldSuggestions(
         client, trigger_field, four_digit_combinations_in_dom,
         autofilled_last_four_digits_in_form_for_filtering, trigger_field_type,
-        should_show_scan_credit_card, summary);
+        should_show_scan_credit_card, summary, is_card_number_field_empty);
   }
 
   return suggestions;
@@ -1053,7 +1069,8 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
-    CreditCardSuggestionSummary& summary) {
+    CreditCardSuggestionSummary& summary,
+    bool is_card_number_field_empty) {
   // Early return if CVC suggestions are triggered but the client does not
   // support CVC saving (e.g., for iOS WebView). This avoids unnecessary
   // processing, which would ultimately result in an empty suggestion list
@@ -1101,9 +1118,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   summary.metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   std::vector<Suggestion> suggestions;
-  for (size_t current_card_index = 0;
-       current_card_index < cards_to_suggest.size(); current_card_index++) {
-    const CreditCard& credit_card = cards_to_suggest[current_card_index];
+  for (const CreditCard& credit_card : cards_to_suggest) {
     Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
@@ -1111,6 +1126,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
         summary.metadata_logging_context);
     suggestions.push_back(suggestion);
   }
+
   summary.with_cvc = !std::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
   summary.with_card_info_retrieval_enrolled =
@@ -1124,10 +1140,13 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   const bool display_gpay_logo = std::ranges::none_of(
       cards_to_suggest,
       [](const CreditCard& card) { return CreditCard::IsLocalCard(&card); });
-  std::ranges::move(GetCreditCardFooterSuggestions(
-                        should_show_scan_credit_card,
-                        trigger_field.is_autofilled(), display_gpay_logo),
-                    std::back_inserter(suggestions));
+  const bool should_show_bnpl_suggestion = payments::ShouldAppendBnplSuggestion(
+      client, is_card_number_field_empty, trigger_field_type);
+  std::ranges::move(
+      GetCreditCardFooterSuggestions(
+          client, should_show_bnpl_suggestion, should_show_scan_credit_card,
+          trigger_field.is_autofilled(), display_gpay_logo),
+      std::back_inserter(suggestions));
   return suggestions;
 }
 
@@ -1189,9 +1208,10 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
   }
 
   std::ranges::move(
-      GetCreditCardFooterSuggestions(/*should_show_scan_credit_card=*/false,
-                                     trigger_field.is_autofilled(),
-                                     /*with_gpay_logo=*/true),
+      GetCreditCardFooterSuggestions(
+          client, /*should_show_bnpl_suggestion=*/false,
+          /*should_show_scan_credit_card=*/false, trigger_field.is_autofilled(),
+          /*with_gpay_logo=*/true),
       std::back_inserter(suggestions));
 
   return suggestions;
@@ -1705,10 +1725,13 @@ Suggestion CreateCreditCardSuggestionForTest(
 }
 
 std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
+    const AutofillClient& client,
+    bool should_show_bnpl_suggestion,
     bool should_show_scan_credit_card,
     bool is_autofilled,
     bool with_gpay_logo) {
-  return GetCreditCardFooterSuggestions(should_show_scan_credit_card,
+  return GetCreditCardFooterSuggestions(client, should_show_bnpl_suggestion,
+                                        should_show_scan_credit_card,
                                         is_autofilled, with_gpay_logo);
 }
 

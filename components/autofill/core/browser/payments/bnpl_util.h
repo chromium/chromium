@@ -9,9 +9,14 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "ui/gfx/range/range.h"
 
-namespace autofill::payments {
+namespace autofill {
+
+class AutofillClient;
+
+namespace payments {
 
 // An enum indicating the eligibility of a BNPL issuer on the current page.
 enum class BnplIssuerEligibilityForPage {
@@ -64,6 +69,15 @@ std::u16string GetBnplIssuerSelectionOptionText(
 // Returns the footer text to be displayed in a BNPL flow.
 TextWithLink GetBnplUiFooterText();
 
-}  // namespace autofill::payments
+// Returns true if the user has initiated an action on the credit card form
+// and the current context meets all conditions for BNPL eligibility to be
+// shown.
+bool ShouldAppendBnplSuggestion(const AutofillClient& client,
+                                bool is_card_number_field_empty,
+                                FieldType trigger_field_type);
+
+}  // namespace payments
+
+}  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_

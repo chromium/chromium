@@ -262,7 +262,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   base::span<const BnplIssuer> GetUnlinkedBnplIssuers() const;
 
   // Returns all BNPL issuers, both linked and unlinked.
-  std::vector<BnplIssuer> GetBnplIssuers() const;
+  virtual std::vector<BnplIssuer> GetBnplIssuers() const;
 
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.

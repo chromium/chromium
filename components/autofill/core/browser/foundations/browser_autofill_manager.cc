@@ -2992,7 +2992,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       is_card_number_autofilled && card_number_field_value.size() >= 4
           ? card_number_field_value.substr(card_number_field_value.size() - 4)
-          : u"");
+          : u"",
+      card_number_field_value.empty());
   bool is_virtual_card_standalone_cvc_field =
       std::ranges::any_of(suggestions, [](Suggestion suggestion) {
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
