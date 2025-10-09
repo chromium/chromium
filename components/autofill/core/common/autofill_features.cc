@@ -390,7 +390,7 @@ BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
 // in order to reduce false positive classifications of city fields.
 // TODO(crbug.com/330508437): Clean up when launched.
 BASE_FEATURE(kAutofillImproveCityFieldClassification,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
