@@ -160,9 +160,6 @@ data_sources {
 data_sources {
   config {
     name: "android.statsd"
-    # Note: this data source only exists in Android 14+, see
-    # https://r.android.com/2132122. If you get a "no field named ..." error
-    # on the next line, you'll have to remove this data source.
     statsd_tracing_config {
       # Log Cronet telemetry atoms; see
       # org.chromium.net.telemetry.CronetStatsLog.
@@ -184,9 +181,6 @@ data_sources {
     # up under "System" > "Network" in the Perfetto UI, and as counters under
     # process tracks.
     name: "android.network_packets"
-    # Note: this data source only exists in Android 14+, see
-    # https://r.android.com/2310392. If you get a "no field named ..." error
-    # on the next line, you'll have to remove this data source.
     network_packet_trace_config {
       poll_ms: 250
     }
@@ -225,6 +219,14 @@ buffers {
     size_kb: 65536
 }
 ```
+
+*** note
+The above config assumes your device is running a recent Android version. If you
+get a **"No field named ..."** error with the above config, the most likely
+explanation is you are running an Android version that is too old and does not
+support that particular data source. Either use a more recent Android version,
+or remove the data source from the config and try again.
+***
 
 *** note
 If you find that your trace is mysteriously missing all ATrace events (e.g. you
