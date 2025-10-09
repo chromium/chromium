@@ -33,32 +33,37 @@ home dir.
 
 The following commands can be used to set up the environment:
 ```bash
-# 1. Ensure btrfs is installed
+# Ensure btrfs is installed
 sudo apt install btrfs-progs
 
-# 2. Create the virtual image file
+# Create the virtual image file
 truncate -s 500G ~/btrfs_virtual_disk.img
 
-# 3. Format the image with btrfs
+# Format the image with btrfs
 mkfs.btrfs ~/btrfs_virtual_disk.img
 
-# 4. Mount the image
+# Mount the image
 mkdir ~/btrfs
 sudo mount -o loop ~/btrfs_virtual_disk.img ~/btrfs
 
-# 5. Update owner
+# Update owner
 sudo chown $(whoami):$(id -ng) ~/btrfs
 
-# 6. Create a btrfs subvolume for the checkout
+# Create a btrfs subvolume for the checkout
 btrfs subvolume create ~/btrfs/chromium
 
-# 7. Fetch a new Chromium checkout into the subvolume.
+# Fetch a new Chromium checkout into the subvolume.
 # This will place the 'src' directory inside '~/btrfs/chromium/'.
 cd ~/btrfs/chromium
 fetch chromium
 
 # For an existing checkout, you would instead move the contents, e.g.:
 # mv ~/your_old_chromium/* ~/btrfs/chromium/
+
+# (Optional) To make the mount permanent, add it to /etc/fstab.
+# It's wise to back up this critical file first.
+cp /etc/fstab ~/fstab.bak
+echo "$HOME/btrfs_virtual_disk.img $HOME/btrfs btrfs loop,defaults 0 0" | sudo tee -a /etc/fstab
 ```
 
 After Chromium is checked out, `agents/testing/eval_prompts.py` can then
