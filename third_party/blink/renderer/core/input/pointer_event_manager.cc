@@ -318,8 +318,8 @@ void PointerEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
   for (const auto& [pointer_id, element] : element_under_pointer_) {
     if (element &&
         node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(*element)) {
-      element_under_pointer_.Set(pointer_id,
-                                 node_to_be_removed.parentElement());
+      element_under_pointer_.Set(
+          pointer_id, node_to_be_removed.ParentOrShadowHostElement());
       original_element_under_pointer_removed_.insert(pointer_id);
       // TODO(https://crbug.com/1496482): Do we need something similar to the
       // logic in EventPath::CalculatePath()?
