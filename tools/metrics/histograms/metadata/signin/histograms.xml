@@ -3411,9 +3411,8 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncButtons.Clicked" enum="SyncButtonClicked"
-    expires_after="2025-11-16">
-  <owner>tju@chromium.org</owner>
-  <owner>chrome-kids-team@google.com</owner>
+    expires_after="2026-02-16">
+  <owner>tju@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the flavor of the button clicked on sync or history sync opt in
