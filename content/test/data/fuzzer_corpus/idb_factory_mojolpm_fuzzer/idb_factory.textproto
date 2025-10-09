@@ -1,0 +1,80 @@
+actions {
+  new_idb_factory {
+    id: 1
+  }
+}
+actions {
+  idb_factory_remote_action {
+    m_get_database_info {
+    }
+  }
+}
+actions {
+  idb_factory_remote_action {
+    m_open {
+      m_name {
+        new {
+          m_data {
+            values { value: 116 }  # 't'
+            values { value: 101 }  # 'e'
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+          }
+        }
+      }
+      m_version: 42
+      m_transaction_id: 42
+      m_priority: 0
+    }
+  }
+}
+actions {
+  idb_factory_remote_action {
+    m_delete_database {
+      m_name {
+        new {
+          m_data {
+            values { value: 116 }  # 't'
+            values { value: 101 }  # 'e'
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+          }
+        }
+      }
+      m_force_close: false
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    m_commit {
+      m_num_errors_handled: 0
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    reset {
+    }
+  }
+}
+actions {
+  run_thread {
+    id: Bucket
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 6
+  action_indexes: 2
+  action_indexes: 6
+  action_indexes: 4
+  action_indexes: 6
+  action_indexes: 1
+  action_indexes: 3
+  action_indexes: 5
+  action_indexes: 6
+  action_indexes: 1
+}
+sequence_indexes: 0

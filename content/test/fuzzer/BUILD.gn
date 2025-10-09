@@ -211,6 +211,25 @@ content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   ]
 }
 
+content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
+  sources = [ "idb_factory_mojolpm_fuzzer.cc" ]
+
+  proto_source = "idb_factory_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "content.fuzzing.idb_factory.proto.Testcase"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:for_content_tests",
+    "//content/browser/indexed_db:unit_tests",
+    "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_modules_mojolpm",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
+
+  seed_corpus_sources = [ "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto" ]
+}
+
 content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   sources = [ "file_system_manager_mojolpm_fuzzer.cc" ]
 

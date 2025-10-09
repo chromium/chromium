@@ -123,6 +123,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetPathForBlobForTestingCallback callback) override;
   void FlushBackingStoreForTesting(const storage::BucketLocator& bucket_locator,
                                    base::OnceClosure callback) override;
+  void FlushBucketSequenceForTesting(
+      const storage::BucketLocator& bucket_locator,
+      base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
@@ -264,6 +267,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   std::optional<storage::BucketLocator> LookUpBucket(
       storage::BucketId bucket_id);
+
+  // Returns nullptr if the bucket context does not exist.
+  base::SequenceBound<BucketContext>* GetBucketContextForTesting(
+      const storage::BucketLocator& bucket_locator);
 
   bool in_memory() const { return base_data_path_.empty(); }
 

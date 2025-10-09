@@ -606,6 +606,24 @@ void IndexedDBContextImpl::FlushBackingStoreForTesting(
       .Then(std::move(callback));
 }
 
+void IndexedDBContextImpl::FlushBucketSequenceForTesting(
+    const storage::BucketLocator& bucket_locator,
+    base::OnceClosure callback) {
+  base::SequenceBound<BucketContext>* bucket_context =
+      GetBucketContextForTesting(bucket_locator);
+  if (!bucket_context) {
+    std::move(callback).Run();
+    return;
+  }
+  bucket_context->PostTaskWithThisObject(base::BindOnce(
+      [](base::OnceClosure callback,
+         scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+         BucketContext* _) {
+        callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+      },
+      std::move(callback), IDBTaskRunner()));
+}
+
 void IndexedDBContextImpl::GetUsageForTesting(
     GetUsageForTestingCallback callback) {
   if (in_memory()) {
@@ -636,6 +654,30 @@ std::optional<BucketLocator> IndexedDBContextImpl::LookUpBucket(
   }
 
   return *bucket_locator;
+}
+
+base::SequenceBound<BucketContext>*
+IndexedDBContextImpl::GetBucketContextForTesting(
+    const storage::BucketLocator& bucket_locator) {
+  std::optional<storage::BucketId> bucket_id;
+  if (bucket_locator.is_default) {
+    // Lookup the ID by the storage key.
+    auto it = std::ranges::find_if(
+        bucket_set_, [&](const storage::BucketLocator& bucket) {
+          return bucket.is_default &&
+                 bucket.storage_key == bucket_locator.storage_key;
+        });
+    if (it != bucket_set_.end()) {
+      bucket_id = it->id;
+    }
+  } else {
+    bucket_id = bucket_locator.id;
+  }
+  if (!bucket_id) {
+    return nullptr;
+  }
+  auto it = bucket_contexts_.find(*bucket_id);
+  return it == bucket_contexts_.end() ? nullptr : &it->second;
 }
 
 int64_t IndexedDBContextImpl::GetBucketDiskUsage(
