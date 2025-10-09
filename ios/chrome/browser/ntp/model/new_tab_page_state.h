@@ -17,22 +17,13 @@
 
 // Initializes an NTP state with a given scroll position, feed type and sort
 // type.
-- (instancetype)initWithScrollPosition:(CGFloat)scrollPosition
-                          selectedFeed:(FeedType)selectedFeed
-                 followingFeedSortType:
-                     (FollowingFeedSortType)followingFeedSortType;
+- (instancetype)initWithScrollPosition:(CGFloat)scrollPosition;
 
 // The saved content offset in the NTP.
 @property(nonatomic, assign) CGFloat scrollPosition;
 
-// The currently visible feed.
-@property(nonatomic, assign) FeedType selectedFeed;
-
 // Whether the NTP should be scrolled to the top of the feed.
 @property(nonatomic, assign) BOOL shouldScrollToTopOfFeed;
-
-// The current sort type of the Following feed.
-@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
 
 @end
 

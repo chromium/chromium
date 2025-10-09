@@ -16,16 +16,12 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   void CreateFeedModels() final;
   void CreateFeedModel(FeedModelConfiguration* feed_model_config) final;
   void ClearFeedModels() final;
-  void SetFollowingFeedSortType(FollowingFeedSortType sort_type) final;
   void SetIsShownOnStartSurface(bool shown_on_start_surface) final;
   FeedMetricsRecorder* GetFeedMetricsRecorder() final;
   UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration) final;
-  UIViewController* NewFollowingFeedViewControllerWithConfiguration(
-      DiscoverFeedViewControllerConfiguration* configuration) final;
   void RemoveFeedViewController(UIViewController* feed_view_controller) final;
   void UpdateTheme() final;
-  BOOL GetFollowingFeedHasUnseenContent() final;
   void SetFollowingFeedContentSeen() final;
   void UpdateFeedViewVisibilityState(
       UICollectionView* collection_view,

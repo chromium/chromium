@@ -129,7 +129,6 @@ bool IsWebFeedFeedbackRerouteEnabled();
 bool IsiPadFeedGhostCardsEnabled();
 
 // YES if the NTP and feed header elements should be re-positioned as described.
-bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
 bool ShouldEnlargeLogoAndFakebox();
 
 // If feed header should be deprecated, retrieve the value for `param_name` for

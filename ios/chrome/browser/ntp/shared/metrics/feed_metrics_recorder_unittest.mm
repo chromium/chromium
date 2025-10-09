@@ -18,7 +18,6 @@
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder+testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -47,8 +46,6 @@ class FeedMetricsRecorderTest : public PlatformTest {
                                 featureEngagementTracker:&mock_tracker_];
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     actions_tester_ = std::make_unique<base::UserActionTester>();
-    NTP_state_ = [[NewTabPageState alloc] init];
-    recorder_.NTPState = NTP_state_;
   }
 
  protected:
@@ -64,7 +61,6 @@ class FeedMetricsRecorderTest : public PlatformTest {
   }
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FeedMetricsRecorder* recorder_;
-  NewTabPageState* NTP_state_;
   feature_engagement::test::MockTracker mock_tracker_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<base::UserActionTester> actions_tester_;
@@ -158,19 +154,6 @@ TEST_F(FeedMetricsRecorderTest,
                                        FeedEngagementType::kGoodVisit, 1);
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
-  histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-
-  // Add URL to Read Later constitutes a Good Visit for AllFeeds (not counted as
-  // one has been triggered already this session) and Following. The Discover
-  // histogram should still have 1 Good Visit reported.
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
   histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 1);
 }
@@ -340,119 +323,6 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitDiscover) {
                                        FeedEngagementType::kGoodVisit, 1);
 }
 
-#pragma mark - Following Feed Good Visit tests
-
-// Tests that a Good Visit is recorded when a url is added to Read Later.
-TEST_F(FeedMetricsRecorderTest, GoodExplicitInteraction_Following) {
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Add URL to Read Later constitutes a Good Visit by itself.
-  [recorder_ recordAddURLToReadLater];
-  // There should be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is recorded when we open a url in a new incognito
-// tab.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_OpenInNewIncognitoTab_Following) {
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // After Action, Good Visit should be recorded.
-  [recorder_ recordOpenURLInIncognitoTab];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is recorded when we do a long press on a card.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_LongPress_Following) {
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // After Action, Good Visit should be recorded.
-  [recorder_ recordNativeContextMenuVisibilityChanged:YES];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is only logged once for each Good Visit session.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_OnlyLoggedOncePerVisit_Following) {
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Start with a Good Visit.
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-  // Adding to Read Later should count as a Good Visit, but we only log one Good
-  // Visit per session, so the histogram count should remain at 1.
-  [recorder_ recordAddURLToReadLater];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Good Visit is not logged when a non-Good Visit action is
-// triggered.
-TEST_F(FeedMetricsRecorderTest,
-       GoodVisit_NonGoodVisitActionTriggered_Following) {
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // There should not be a Good Visit recorded.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  // Trigger a non-Good Visit action.
-  [recorder_ recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
-  // There should not be a Good Visit recorded as the action was not a trigger
-  // for a Good Visit.
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-}
-
-#pragma mark - Following Feed Time Based Good Visit tests
-
-TEST_F(FeedMetricsRecorderTest, GoodVisit_GoodTimeInFeedFollowing) {
-  base::ScopedMockClockOverride mock_clock;
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-
-  [recorder_ recordNTPDidChangeVisibility:YES];
-  [recorder_ recordFeedScrolled:kMinScrollForGoodVisitTests];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  mock_clock.Advance(base::Seconds(kGoodVisitTimeInFeedSeconds) +
-                     kAddedTimeForMockClock);
-  [recorder_ recordFeedScrolled:kMinScrollForGoodVisitTests];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
-// Tests that a Short Click Visit is recorded appropriately.
-TEST_F(FeedMetricsRecorderTest, GoodVisit_ShortClickVisitFollowing) {
-  base::ScopedMockClockOverride mock_clock;
-  // Change feed to Following.
-  NTP_state_.selectedFeed = FeedTypeFollowing;
-  // Trigger article click
-  [recorder_ recordOpenURLInSameTab];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 0);
-  mock_clock.Advance(
-      (base::Seconds(kNonShortClickSeconds) + kAddedTimeForMockClock));
-  // Coming back to the main feed. There should be a Good Visit.
-  [recorder_ recordNTPDidChangeVisibility:YES];
-  histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
-                                       FeedEngagementType::kGoodVisit, 1);
-}
-
 #pragma mark - Time Spent in Feed tests.
 
 // Tests that the time spent in feed is recorded appropriately.
@@ -573,30 +443,6 @@ TEST_F(FeedMetricsRecorderTest, Actions_kNTPViewHierarchyFixed) {
 // Testing `recordFeedWillRefresh`.
 TEST_F(FeedMetricsRecorderTest, Actions_kFeedWillRefresh) {
   EXPECT_ACTION(kFeedWillRefresh, recordFeedWillRefresh);
-}
-
-// Testing `recordFollowFromMenu`.
-TEST_F(FeedMetricsRecorderTest, Actions_kFollowFromMenu) {
-  EXPECT_ACTION(kFollowFromMenu, recordFollowFromMenu);
-}
-
-// Testing `recordUnfollowFromMenu`.
-TEST_F(FeedMetricsRecorderTest, Actions_kUnfollowFromMenu) {
-  EXPECT_ACTION(kUnfollowFromMenu, recordUnfollowFromMenu);
-}
-
-// Testing `recordManagementTappedUnfollow`.
-TEST_F(FeedMetricsRecorderTest, Actions_ManagementTappedUnfollow) {
-  EXPECT_ACTION(kDiscoverFeedUserActionManagementTappedUnfollow,
-                recordManagementTappedUnfollow);
-}
-
-// Testing `recordManagementTappedRefollowAfterUnfollowOnSnackbar`.
-TEST_F(FeedMetricsRecorderTest,
-       Actions_ManagementTappedRefollowAfterUnfollowOnSnackbar) {
-  EXPECT_ACTION(
-      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar,
-      recordManagementTappedRefollowAfterUnfollowOnSnackbar);
 }
 
 // Testing `recordShowSignInOnlyUIWithUserId` with user Id.

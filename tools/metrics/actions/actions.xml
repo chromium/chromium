@@ -9599,13 +9599,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContentSuggestions.Feed.Selected">
-  <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <description>The user has selected the Discover feed in the NTP.</description>
-</action>
-
 <action name="ContentSuggestions.Feed.SignIn.FeedSignInPromoUICancelTapped">
   <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
@@ -9683,16 +9676,8 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContentSuggestions.Feed.WebFeed.Selected">
-  <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <description>
-    The user has selected the Following feed in the NTP.
-  </description>
-</action>
-
 <action name="ContentSuggestions.Feed.WebFeed.SortType.GroupByPublisher">
+  <obsolete>Removed as of 10/2025.</obsolete>
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -9702,6 +9687,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.WebFeed.SortType.SortByLatest">
+  <obsolete>Removed as of 10/2025.</obsolete>
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -9730,49 +9716,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContentSuggestions.Follow.FirstFollow.GoToFeedButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>feed@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped Go To Feed button on the first follow sheet. iOS only.
-  </description>
-</action>
-
 <action name="ContentSuggestions.Follow.SnackbarGoToFeedButtonTapped">
   <owner>adamta@google.org</owner>
   <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     The user tapped GO TO FEED button on the follow succeed snackbar.
-  </description>
-</action>
-
-<action name="ContentSuggestions.Follow.SnackbarRetryFollowButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped RETRY button on the follow failed snackbar.
-  </description>
-</action>
-
-<action name="ContentSuggestions.Follow.SnackbarRetryUnfollowButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped RETRY button on the unfollow failed snackbar.
-  </description>
-</action>
-
-<action name="ContentSuggestions.Follow.SnackbarUndoButtonTapped">
-  <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>tinazwang@chromium.org</owner>
-  <description>
-    The user tapped UNDO button on the unfollow succeed snackbar.
   </description>
 </action>
 

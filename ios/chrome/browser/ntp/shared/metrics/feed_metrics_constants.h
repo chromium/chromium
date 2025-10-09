@@ -284,9 +284,6 @@ extern const char kDiscoverFeedNetworkDuration[];
 // Histogram name to track opened articles from the Discover feed.
 extern const char kDiscoverFeedURLOpened[];
 
-// Histogram name to track opened articles from the Following feed.
-extern const char kFollowingFeedURLOpened[];
-
 // Histogram name to capture if the last Feed fetch had logging enabled.
 extern const char kDiscoverFeedActivityLoggingEnabled[];
 
@@ -303,13 +300,6 @@ extern const char kDiscoverUniformityFlag[];
 // Histogram name for the Feed settings when the App is being start.
 extern const char kFeedUserSettingsOnStart[];
 
-// Histogram name for selecting Following feed sort types.
-extern const char kFollowingFeedSortType[];
-
-// Histogram name for the selected sort type when engaging with the Following
-// feed.
-extern const char kFollowingFeedSortTypeWhenEngaged[];
-
 // Histogram names for logging followed publisher count after certain events.
 // After showing Following feed with content.
 extern const char kFollowCountFollowingContentShown[];
@@ -319,13 +309,6 @@ extern const char kFollowCountFollowingNoContentShown[];
 extern const char kFollowCountAfterFollow[];
 // After unfollowing a channel.
 extern const char kFollowCountAfterUnfollow[];
-
-// Histogram name for last visible card when switching from Discover to
-// Following feed.
-extern const char kDiscoverIndexWhenSwitchingFeed[];
-// Histogram name for last visible card when switching from Following to
-// Discover feed.
-extern const char kFollowingIndexWhenSwitchingFeed[];
 
 // Histogram name for sign-in related UI triggered by Feed entry points.
 extern const char kFeedSignInUI[];
@@ -368,24 +351,11 @@ extern const char kSnackbarUndoButtonTapped[];
 extern const char kSnackbarRetryFollowButtonTapped[];
 extern const char kSnackbarRetryUnfollowButtonTapped[];
 
-// User action names for management surface.
-extern const char kDiscoverFeedUserActionManagementTappedUnfollow[];
-extern const char
-    kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar[];
-extern const char
-    kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[];
-
 // User action name for engaging with feed.
 extern const char kDiscoverFeedUserActionEngaged[];
 
 // User action indicating that the feed will refresh.
 extern const char kFeedWillRefresh[];
-
-// User action indicating that the Discover feed was selected.
-extern const char kDiscoverFeedSelected[];
-
-// User action indicating that the Following feed was selected.
-extern const char kFollowingFeedSelected[];
 
 // User action triggered when the NTP view hierarchy was fixed after being
 // detected as broken.
@@ -395,11 +365,6 @@ extern const char kNTPViewHierarchyFixed[];
 // User actions for following and unfollowing publishers from the overflow menu.
 extern const char kFollowFromMenu[];
 extern const char kUnfollowFromMenu[];
-
-// User action triggered when a Following feed sort type selected from the sort
-// menu.
-extern const char kFollowingFeedGroupByPublisher[];
-extern const char kFollowingFeedSortByLatest[];
 
 #pragma mark - User Actions for Feed Sign-in Promo
 

@@ -10,23 +10,6 @@
 // Delegate for controlling the presented feed.
 @protocol FeedControlDelegate
 
-// Returns the currently selected feed.
-- (FeedType)selectedFeed;
-
-// Returns the currently selected sort type for the Following feed.
-- (FollowingFeedSortType)followingFeedSortType;
-
-// Handles operations after a new feed has been selected. e.g. Displays the
-// feed, updates states, etc.
-- (void)handleFeedSelected:(FeedType)feedType;
-
-// Handles the sorting being selected for the Following feed.
-- (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType;
-
-// YES if the Following Feed is currently available. e.g. It might be disabled
-// for certain circumstances like restricted accounts.
-- (BOOL)isFollowingFeedAvailable;
-
 // Returns the index of the last visible feed card.
 - (NSUInteger)lastVisibleFeedCardIndex;
 

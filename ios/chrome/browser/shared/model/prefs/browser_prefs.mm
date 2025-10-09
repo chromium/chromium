@@ -224,6 +224,9 @@ inline constexpr char kTipsInMagicStackDisabledPref[] =
     "tips_magic_stack.disabled";
 inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
     "ios.home_customization.magic_stack.set_up_list.enabled";
+// Preference that represents the sorting order of the Following feed content.
+inline constexpr char kNTPFollowingFeedSortType[] =
+    "ios.ntp.following_feed.sort_type";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -766,11 +769,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to show the link preview.
   registry->RegisterBooleanPref(prefs::kLinkPreviewEnabled, true);
 
-  // The Following feed sort type comes from
-  // ios/chrome/browser/discover_feed/model/feed_constants.h Defaults to 2,
-  // which is sort by latest.
-  registry->RegisterIntegerPref(prefs::kNTPFollowingFeedSortType, 2);
-
   // Register pref to determine if the user changed the Following sort type.
   registry->RegisterBooleanPref(prefs::kDefaultFollowingFeedSortTypeChanged,
                                 false);
@@ -1109,8 +1107,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kHomeCustomizationMagicStackSetUpListEnabled,
                                 true);
 
-  // Deprecated 10/2025. Use
-  // `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
+  // Deprecated 10/2025.
+  registry->RegisterIntegerPref(kNTPFollowingFeedSortType, 2);
+  // Use `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
 
@@ -1293,6 +1292,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 10/2025
   prefs->ClearPref(kTipsInMagicStackDisabledPref);
   prefs->ClearPref(kHomeCustomizationMagicStackSetUpListEnabled);
+  prefs->ClearPref(kNTPFollowingFeedSortType);
 
   // Added 10/2025.
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,

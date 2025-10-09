@@ -8,10 +8,18 @@ DiscoverFeedService::DiscoverFeedService() = default;
 
 DiscoverFeedService::~DiscoverFeedService() = default;
 
-// TODO(crbug.com/40221402): Remove this when downstream implementation is
-// landed.
-void DiscoverFeedService::SetIsShownOnStartSurface(
-    bool shown_on_start_surface) {}
+// TODO(crbug.com/448683013): Remove this when downstream implementation is
+// removed.
+void DiscoverFeedService::SetFollowingFeedSortType(
+    FollowingFeedSortType sort_type) {}
+UIViewController*
+DiscoverFeedService::NewFollowingFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+BOOL DiscoverFeedService::GetFollowingFeedHasUnseenContent() {
+  return NO;
+}
 
 void DiscoverFeedService::AddObserver(DiscoverFeedObserver* observer) {
   observer_list_.AddObserver(observer);

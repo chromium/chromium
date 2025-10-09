@@ -13,7 +13,6 @@ source_set("ui_bundled") {
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
     "new_tab_page_delegate.h",
-    "new_tab_page_follow_delegate.h",
     "new_tab_page_url_loader_delegate.h",
   ]
   public_deps = [
@@ -158,9 +157,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/follow/model:browser_agent",
-    "//ios/chrome/browser/follow/model:enums",
-    "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/google/model:google_logo",
     "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/home_customization/model",

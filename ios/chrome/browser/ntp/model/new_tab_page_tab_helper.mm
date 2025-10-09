@@ -10,12 +10,10 @@
 #import "base/memory/ptr_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -34,13 +32,6 @@ NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
   web_state->AddObserver(this);
   active_ = IsUrlNtp(web_state_->GetVisibleURL());
   ntp_state_ = [[NewTabPageState alloc] init];
-
-  // Assign sort type to NTP state from prefs.
-  PrefService* pref_service =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
-  ntp_state_.followingFeedSortType =
-      (FollowingFeedSortType)pref_service->GetInteger(
-          prefs::kNTPFollowingFeedSortType);
 }
 
 #pragma mark - Static
@@ -79,7 +70,6 @@ bool NewTabPageTabHelper::IsActive() const {
 
 void NewTabPageTabHelper::SetNTPState(NewTabPageState* ntpState) {
   ntp_state_.scrollPosition = ntpState.scrollPosition;
-  ntp_state_.selectedFeed = ntpState.selectedFeed;
 }
 
 NewTabPageState* NewTabPageTabHelper::GetNTPState() {

@@ -4227,7 +4227,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  [_NTPCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
+  // TODO(crbug.com/448683013): remove.
 }
 
 - (void)handleFeedModelOfType:(FeedType)feedType
@@ -4238,12 +4238,11 @@ const char kChromeAppStoreUrl[] =
 - (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {
   web::WebState* activeWebState = self.activeWebState;
 
-  // Configure next NTP to be scrolled into `feedType`.
+  // Configure next NTP to be scrolled into the feed.
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(activeWebState);
   if (NTPHelper) {
     NewTabPageState* ntpState = NTPHelper->GetNTPState();
-    ntpState.selectedFeed = feedType;
     ntpState.shouldScrollToTopOfFeed = YES;
     NTPHelper->SetNTPState(ntpState);
   }

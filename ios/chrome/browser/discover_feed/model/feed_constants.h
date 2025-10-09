@@ -46,6 +46,7 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType) {
 };
 
 // The types of sorting for the Following feed.
+// TODO(crbug.com/448683013): Remove.
 typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   // Does not provide a sort type. Used for non-Following feeds.
   FollowingFeedSortTypeUnspecified = 0,

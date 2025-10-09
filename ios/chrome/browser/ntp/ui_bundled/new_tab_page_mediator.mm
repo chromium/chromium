@@ -408,21 +408,13 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
   NewTabPageState* NTPState = [[NewTabPageState alloc]
-      initWithScrollPosition:self.scrollPositionToSave
-                selectedFeed:[self.feedControlDelegate selectedFeed]
-       followingFeedSortType:[self.feedControlDelegate followingFeedSortType]];
-  self.feedMetricsRecorder.NTPState = NTPState;
+      initWithScrollPosition:self.scrollPositionToSave];
   NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
 }
 
 - (void)restoreNTPStateForWebState:(web::WebState*)webState {
   NewTabPageState* NTPState =
       NewTabPageTabHelper::FromWebState(webState)->GetNTPState();
-  self.feedMetricsRecorder.NTPState = NTPState;
-  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    [self.NTPContentDelegate updateForSelectedFeed:NTPState.selectedFeed];
-  }
-
   if (NTPState.shouldScrollToTopOfFeed) {
     [self.consumer restoreScrollPositionToTopOfFeed];
     // Prevent next NTP from being scrolled to the top of feed.

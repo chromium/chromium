@@ -367,9 +367,11 @@ chromium-metrics-reviews@google.com.
   <int value="44"
       label="User tapped the Follow button on the page overflow menu."/>
   <int value="45"
-      label="User selected the Discover feed from the feed header."/>
+      label="User selected the Discover feed from the feed header.
+             (Deprecated M143)"/>
   <int value="46"
-      label="User selected the Following feed from the feed header."/>
+      label="User selected the Following feed from the feed header.
+             (Deprecated M143)"/>
   <int value="47"
       label="User tapped the Unfollow button on the page overflow menu."/>
   <int value="48" label="Show Follow Succeed Snackbar."/>

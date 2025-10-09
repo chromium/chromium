@@ -17,10 +17,6 @@
 // Creates the configuration for a Discover feed.
 + (instancetype)discoverFeedModelConfiguration;
 
-// Creates the configuration for a Following feed with a given `sortType`.
-+ (instancetype)followingModelConfigurationWithSortType:
-    (FollowingFeedSortType)sortType;
-
 // The type of feed to be created.
 @property(nonatomic, readonly) FeedType feedType;
 

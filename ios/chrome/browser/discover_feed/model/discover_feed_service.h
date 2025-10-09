@@ -33,11 +33,8 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Clears all existing feed models.
   virtual void ClearFeedModels() = 0;
 
-  // Sets the Following feed sorting and refreshes the model to display it.
-  virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type) = 0;
-
   // Sets whether the feed is currently being shown on the Start Surface.
-  virtual void SetIsShownOnStartSurface(bool shown_on_start_surface);
+  virtual void SetIsShownOnStartSurface(bool shown_on_start_surface) = 0;
 
   // Returns the FeedMetricsRecorder to be used by the feed. There only exists a
   // single instance of the metrics recorder per profile.
@@ -46,11 +43,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Returns the Discover Feed ViewController with a custom
   // DiscoverFeedViewControllerConfiguration.
   virtual UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
-      DiscoverFeedViewControllerConfiguration* configuration) = 0;
-
-  // Returns the Following Feed ViewController with a custom
-  // DiscoverFeedViewControllerConfiguration.
-  virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration) = 0;
 
   // Removes the Discover `feed_view_controller`. It should be called whenever
@@ -67,9 +59,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme() = 0;
 
-  // Returns whether the Following feed model has unseen content.
-  virtual BOOL GetFollowingFeedHasUnseenContent() = 0;
-
   // Informs the service that the Following content has been seen.
   virtual void SetFollowingFeedContentSeen() = 0;
 
@@ -79,6 +68,13 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Methods to register or remove observers.
   void AddObserver(DiscoverFeedObserver* observer);
   void RemoveObserver(DiscoverFeedObserver* observer);
+
+  // TODO(crbug.com/448683013): Remove after downstream implementation is
+  // removed.
+  virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type);
+  virtual UIViewController* NewFollowingFeedViewControllerWithConfiguration(
+      DiscoverFeedViewControllerConfiguration* configuration);
+  virtual BOOL GetFollowingFeedHasUnseenContent();
 
  protected:
   void NotifyDiscoverFeedModelRecreated();

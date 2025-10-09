@@ -736,8 +736,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kTappedDismissPostFollowActiveHelp:
     case FeedUserActionType::kTappedDiscoverFeedPreview:
     case FeedUserActionType::kOpenedAutoplaySettings:
-    case FeedUserActionType::kDiscoverFeedSelected:
-    case FeedUserActionType::kFollowingFeedSelected:
     case FeedUserActionType::kTappedUnfollowButton:
     case FeedUserActionType::kShowFollowSucceedSnackbar:
     case FeedUserActionType::kShowFollowFailedSnackbar:

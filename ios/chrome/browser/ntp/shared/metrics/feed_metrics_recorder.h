@@ -13,9 +13,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_refresh_state_tracker.h"
 
-@protocol NewTabPageFollowDelegate;
 @protocol NewTabPageActionsDelegate;
-@class NewTabPageState;
 namespace feature_engagement {
 class Tracker;
 }
@@ -26,12 +24,6 @@ class PrefService;
 // general like `FeedRecorder` if kFeedSwipeInProductHelp becomes a full launch
 // candidate.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
-
-// The last active new tab page state.
-@property(nonatomic, weak) NewTabPageState* NTPState;
-
-// Delegate for getting information relating to Following.
-@property(nonatomic, weak) id<NewTabPageFollowDelegate> followDelegate;
 
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;
@@ -55,9 +47,6 @@ class PrefService;
 // Record metrics for when the user changes the device orientation with the feed
 // visible.
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
-
-// Tracks time spent in a specific Feed for a Good Visit.
-- (void)recordFeedTypeChangedFromFeed:(FeedType)previousFeed;
 
 // Record when the NTP changes visibility.
 - (void)recordNTPDidChangeVisibility:(BOOL)visible;
@@ -181,11 +170,6 @@ class PrefService;
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
 
-// Records that a given `feedType` was explicitly selected. Logs position in
-// previous feed as `index`.
-- (void)recordFeedSelected:(FeedType)feedType
-    fromPreviousFeedPosition:(NSUInteger)index;
-
 // Records the user's current follow count after a given event `logReason`.
 - (void)recordFollowCount:(NSUInteger)followCount
              forLogReason:(FollowCountLogReason)logReason;
@@ -200,9 +184,6 @@ class PrefService;
                                          spywEnabled:(BOOL)spywEnabled
                                      lastRefreshTime:
                                          (base::Time)lastRefreshTime;
-
-// Records a user action for the Following feed sort type being selected.
-- (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
 
 // Records when the user has scrolled `scrollDistance` in a carousel within a
 // cell.
@@ -238,18 +219,6 @@ class PrefService;
 // button on the follow succeed snackbar.
 - (void)recordFollowSnackbarTappedWithAction:
     (FollowSnackbarActionType)followSnackbarActionType;
-
-// Record metrics for when the user swipes or taps to unfollow a web channel in
-// the management UI.
-- (void)recordManagementTappedUnfollow;
-
-// Record metrics for when the user taps "UNDO" on the successful unfollow
-// confirmation snackbar in the management UI.
-- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar;
-
-// Record metrics for when the user taps "Try Again" on the unfollow error
-// confirmation snackbar in the management UI.
-- (void)recordManagementTappedUnfollowTryAgainOnSnackbar;
 
 // Record metrics for when a Follow Recommendation IPH is shown.
 // A follow Recommendation IPH is a textual bublle that tells users that they

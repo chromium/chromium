@@ -20,11 +20,9 @@
 #import "components/feed/core/v2/public/ios/prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -136,21 +134,11 @@ using feed::FeedUserActionType;
   }
 
   // Log scrolled into Discover feed.
-  if (self.NTPState.selectedFeed == FeedTypeDiscover &&
-      !self.scrolledReportedDiscover) {
+  if (!self.scrolledReportedDiscover) {
     base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedScrolled);
     self.scrolledReportedDiscover = YES;
   }
-
-  // Log scrolled into Following feed.
-  if (self.NTPState.selectedFeed == FeedTypeFollowing &&
-      !self.scrolledReportedFollowing) {
-    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedScrolled);
-    self.scrolledReportedFollowing = YES;
-  }
-
   [self recordEngagement:scrollDistance interacted:NO];
 }
 
@@ -163,11 +151,6 @@ using feed::FeedUserActionType;
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedHistogramDeviceOrientationChangedToLandscape));
   }
-}
-
-- (void)recordFeedTypeChangedFromFeed:(FeedType)previousFeed {
-  // Recalculate time spent in previous surface.
-  [self timeSpentForCurrentGoodVisitSessionInFeed:previousFeed];
 }
 
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
@@ -399,25 +382,12 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordCardShownAtIndex:(NSUInteger)index {
-  switch (self.NTPState.selectedFeed) {
-    case FeedTypeDiscover:
-      base::UmaHistogramExactLinear(kDiscoverFeedCardShownAtIndex, index,
-                                    kMaxCardsInFeed);
-      break;
-    case FeedTypeFollowing:
-      base::UmaHistogramExactLinear(kFollowingFeedCardShownAtIndex, index,
-                                    kMaxCardsInFeed);
-  }
+  base::UmaHistogramExactLinear(kDiscoverFeedCardShownAtIndex, index,
+                                kMaxCardsInFeed);
 }
 
 - (void)recordCardTappedAtIndex:(NSUInteger)index {
-  switch (self.NTPState.selectedFeed) {
-    case FeedTypeDiscover:
-      base::UmaHistogramExactLinear(kDiscoverFeedURLOpened, 0, 1);
-      break;
-    case FeedTypeFollowing:
-      base::UmaHistogramExactLinear(kFollowingFeedURLOpened, 0, 1);
-  }
+  base::UmaHistogramExactLinear(kDiscoverFeedURLOpened, 0, 1);
 }
 
 - (void)recordNoticeCardShown:(BOOL)shown {
@@ -534,40 +504,6 @@ using feed::FeedUserActionType;
   self.engagedWithLatestRefreshedContent = NO;
 }
 
-- (void)recordFeedSelected:(FeedType)feedType
-    fromPreviousFeedPosition:(NSUInteger)index {
-  if (!self.followDelegate) {
-    return;
-  }
-  switch (feedType) {
-    case FeedTypeDiscover:
-      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                      kDiscoverFeedSelected
-                                    asInteraction:NO];
-      base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
-      base::UmaHistogramExactLinear(kFollowingIndexWhenSwitchingFeed, index,
-                                    kMaxCardsInFeed);
-      break;
-    case FeedTypeFollowing:
-      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                      kFollowingFeedSelected
-                                    asInteraction:NO];
-      base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
-      base::UmaHistogramExactLinear(kDiscoverIndexWhenSwitchingFeed, index,
-                                    kMaxCardsInFeed);
-      NSUInteger followCount = [self.followDelegate followedPublisherCount];
-      if (followCount > 0 &&
-          [self.followDelegate doesFollowingFeedHaveContent]) {
-        [self recordFollowCount:followCount
-                   forLogReason:FollowCountLogReasonContentShown];
-      } else {
-        [self recordFollowCount:followCount
-                   forLogReason:FollowCountLogReasonNoContentShown];
-      }
-      break;
-  }
-}
-
 - (void)recordFollowCount:(NSUInteger)followCount
              forLogReason:(FollowCountLogReason)logReason {
   switch (logReason) {
@@ -604,26 +540,6 @@ using feed::FeedUserActionType;
                                         waaEnabled:waaEnabled
                                    lastRefreshTime:lastRefreshTime];
   base::UmaHistogramEnumeration(kFeedUserSettingsOnStart, settings);
-}
-
-- (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType {
-  switch (sortType) {
-    case FollowingFeedSortTypeByPublisher:
-      base::UmaHistogramEnumeration(kFollowingFeedSortType,
-                                    FeedSortType::kGroupedByPublisher);
-      base::RecordAction(
-          base::UserMetricsAction(kFollowingFeedGroupByPublisher));
-      return;
-    case FollowingFeedSortTypeByLatest:
-      base::UmaHistogramEnumeration(kFollowingFeedSortType,
-                                    FeedSortType::kSortedByLatest);
-      base::RecordAction(base::UserMetricsAction(kFollowingFeedSortByLatest));
-      return;
-    case FollowingFeedSortTypeUnspecified:
-      base::UmaHistogramEnumeration(kFollowingFeedSortType,
-                                    FeedSortType::kUnspecifiedSortType);
-      return;
-  }
 }
 
 - (void)recordCarouselScrolled:(int)scrollDistance {
@@ -725,30 +641,6 @@ using feed::FeedUserActionType;
           base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
       break;
   }
-}
-
-- (void)recordManagementTappedUnfollow {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowOnManagementSurface
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManagementTappedUnfollow));
-}
-
-- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(
-      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar));
-}
-
-- (void)recordManagementTappedUnfollowTryAgainOnSnackbar {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(
-      kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
 - (void)recordFollowRecommendationIPHShown {
@@ -1002,12 +894,7 @@ using feed::FeedUserActionType;
     }
   }
   self.lastInteractionTimeForGoodVisits = now;
-  if (self.NTPState.selectedFeed == FeedTypeDiscover) {
-    self.lastInteractionTimeForDiscoverGoodVisits = now;
-  }
-  if (self.NTPState.selectedFeed == FeedTypeFollowing) {
-    self.lastInteractionTimeForFollowingGoodVisits = now;
-  }
+  self.lastInteractionTimeForDiscoverGoodVisits = now;
   // If the session hasn't been reset and a GoodVisit has already been
   // reported for all possible surfaces return early as an optimization.
   if (self.goodVisitReportedDiscover && self.goodVisitReportedFollowing &&
@@ -1021,16 +908,15 @@ using feed::FeedUserActionType;
   // new incognito tab ...).
 
   if (interacted) {
-    [self recordEngagedGoodVisits:self.NTPState.selectedFeed allFeedsOnly:NO];
+    [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:NO];
     return;
   }
   // 2. Good time in feed (`kGoodVisitTimeInFeedSeconds` with >= 1 scroll in an
   // entire session).
-  if (([self timeSpentForCurrentGoodVisitSessionInFeed:self.NTPState
-                                                           .selectedFeed] >
+  if (([self timeSpentForCurrentGoodVisitSessionInFeed:FeedTypeDiscover] >
        kGoodVisitTimeInFeedSeconds) &&
       self.goodVisitScroll) {
-    [self recordEngagedGoodVisits:self.NTPState.selectedFeed allFeedsOnly:YES];
+    [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:YES];
 
     // Check if Good Visit should be triggered for Discover feed.
     if (self.discoverPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds) {
@@ -1052,17 +938,9 @@ using feed::FeedUserActionType;
   base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
                                 FeedEngagementType::kFeedInteracted);
 
-  // Log interaction for Discover feed.
-  if (self.NTPState.selectedFeed == FeedTypeDiscover) {
-    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedInteracted);
-  }
-
-  // Log interaction for Following feed.
-  if (self.NTPState.selectedFeed == FeedTypeFollowing) {
-    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedInteracted);
-  }
+  // Log interaction for the feed.
+  base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                FeedEngagementType::kFeedInteracted);
 
   // Log interaction with the Feature Engagement Tracker.
   if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
@@ -1071,29 +949,15 @@ using feed::FeedUserActionType;
   }
 }
 
-// Records simple engagement for the current `selectedFeed`.
+// Records simple engagement for the current feed.
 - (void)recordEngagedSimple {
-  // If neither feed has been engaged with, log "AllFeeds" simple engagement.
-  if (!self.engagedSimpleReportedDiscover &&
-      !self.engagedSimpleReportedFollowing) {
+  // Log simple engagment for Discover feed.
+  if (!self.engagedSimpleReportedDiscover) {
     base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
                                   FeedEngagementType::kFeedEngagedSimple);
-  }
-
-  // Log simple engagment for Discover feed.
-  if (self.NTPState.selectedFeed == FeedTypeDiscover &&
-      !self.engagedSimpleReportedDiscover) {
     base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedEngagedSimple);
     self.engagedSimpleReportedDiscover = YES;
-  }
-
-  // Log simple engagement for Following feed.
-  if (self.NTPState.selectedFeed == FeedTypeFollowing &&
-      !self.engagedSimpleReportedFollowing) {
-    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedEngagedSimple);
-    self.engagedSimpleReportedFollowing = YES;
   }
 }
 
@@ -1115,30 +979,11 @@ using feed::FeedUserActionType;
   }
 
   // Log engagment for Discover feed.
-  if (self.NTPState.selectedFeed == FeedTypeDiscover &&
-      !self.engagedReportedDiscover) {
+  if (!self.engagedReportedDiscover) {
     base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedEngaged);
     self.engagedReportedDiscover = YES;
   }
-
-  // Log engagement for Following feed.
-  if (self.NTPState.selectedFeed == FeedTypeFollowing &&
-      !self.engagedReportedFollowing) {
-    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
-                                  FeedEngagementType::kFeedEngaged);
-    base::UmaHistogramEnumeration(
-        kFollowingFeedSortTypeWhenEngaged,
-        [self convertFollowingFeedSortTypeForHistogram:
-                  self.NTPState.followingFeedSortType]);
-    self.engagedReportedFollowing = YES;
-
-    // Log follow count when engaging with Following feed.
-    // TODO(crbug.com/40838123): `followDelegate` is nil when navigating to an
-    // article, since NTPCoordinator is stopped first. When this is fixed,
-    // `recordFollowCount` should be called here.
-  }
-
   // TODO(crbug.com/40838123): Separate user action for Following feed.
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
@@ -1330,8 +1175,7 @@ using feed::FeedUserActionType;
   // Save the time of the open so we can then calculate how long the user spent
   // in that page.
   self.prefService->SetTime(kArticleVisitTimestampKey, base::Time::Now());
-  self.prefService->SetInteger(kLastUsedFeedForGoodVisitsKey,
-                               self.NTPState.selectedFeed);
+  self.prefService->SetInteger(kLastUsedFeedForGoodVisitsKey, FeedTypeDiscover);
   [self.NTPActionsDelegate feedArticleOpened];
 }
 

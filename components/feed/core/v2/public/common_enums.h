@@ -143,10 +143,15 @@ enum class FeedUserActionType {
   // User tapped the "Follow" button on the main menu. (Android)
   // User tapped the "Follow" option on the context menu. (IOS)
   kTappedFollowButton = 44,
+
+  // The following enum values are deprecated as a result of removing the feed
+  // header
+  // toggle.
   // User tapped on the Discover feed from the feed header.
-  kDiscoverFeedSelected = 45,
+  // kDiscoverFeedSelected = 45,
   // User tapped on the Following feed from the feed header.
-  kFollowingFeedSelected = 46,
+  // kFollowingFeedSelected = 46,
+
   // User tapped the "Unfollow" option on the context menu.
   kTappedUnfollowButton = 47,
   // User action caused a follow succeed snackbar to be shown. User action not

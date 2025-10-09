@@ -15,13 +15,6 @@
                   followingFeedSortType:FollowingFeedSortTypeUnspecified];
 }
 
-+ (instancetype)followingModelConfigurationWithSortType:
-    (FollowingFeedSortType)sortType {
-  DCHECK_NE(sortType, FollowingFeedSortTypeUnspecified);
-  return [[self alloc] initWithFeedType:FeedTypeFollowing
-                  followingFeedSortType:sortType];
-}
-
 #pragma mark - Private
 
 // Initializes `self` with a `feedType` and a `sortType`.

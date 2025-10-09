@@ -93,13 +93,6 @@ bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }
 
-bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
-  return is_google_default_search_engine && ShouldDeprecateFeedHeader() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
-             false);
-}
-
 bool ShouldEnlargeLogoAndFakebox() {
   if (ShouldEnlargeNTPFakeboxForMIA()) {
     return YES;

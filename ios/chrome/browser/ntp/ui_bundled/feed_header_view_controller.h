@@ -21,9 +21,6 @@
 // Delegate to communicate back to the New Tab Page coordinator.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
-// The currently selected sorting for the Following feed.
-@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
-
 // Feed metrics recorder.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
@@ -38,15 +35,6 @@
 // Updates the header view and re-applies constraints in response to the default
 // search engine changing.
 - (void)updateForDefaultSearchEngineChanged;
-
-// Updates the header for when the user turns the feed off from the header menu.
-- (void)updateForFeedVisibilityChanged;
-
-// Updates the header for when the Following Feed visibility has changed.
-- (void)updateForFollowingFeedVisibilityChanged;
-
-// Updates the segmented control and sort button for the current feed type.
-- (void)updateForSelectedFeed;
 
 @end
 
