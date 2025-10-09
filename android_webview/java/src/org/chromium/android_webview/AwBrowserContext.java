@@ -507,13 +507,17 @@ public class AwBrowserContext implements BrowserContextHandle {
 
     @CalledByNative
     private int getGeolocationPermission(@JniType("std::string") String origin) {
-        AwGeolocationPermissions permissions = getGeolocationPermissions();
-        if (!permissions.hasOrigin(origin)) {
-            return PermissionStatus.ASK;
+        // This will trigger a disk read if the geolocation permissions have not been read before.
+        // See https://crbug.com/450091066.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            AwGeolocationPermissions permissions = getGeolocationPermissions();
+            if (!permissions.hasOrigin(origin)) {
+                return PermissionStatus.ASK;
+            }
+            return permissions.isOriginAllowed(origin)
+                    ? PermissionStatus.GRANTED
+                    : PermissionStatus.DENIED;
         }
-        return permissions.isOriginAllowed(origin)
-                ? PermissionStatus.GRANTED
-                : PermissionStatus.DENIED;
     }
 
     @NativeMethods
