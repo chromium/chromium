@@ -8,3 +8,13 @@ source_set("ios") {
   sources = [ "test_utils.h" ]
   deps = [ "//third_party/ocmock" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "test_utils_unittest.mm" ]
+  deps = [
+    ":ios",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

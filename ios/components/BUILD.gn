@@ -35,6 +35,7 @@ test("ios_components_unittests") {
   deps = [
     ":run_all_unittests",
     "//base",
+    "//components/test/ios:unit_tests",
     "//ios/components/cookie_util:unit_tests",
     "//ios/components/credential_provider_extension:unit_tests",
     "//ios/components/io_thread:unit_tests",
