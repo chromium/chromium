@@ -73,7 +73,6 @@
 +org.chromium.ui.util.ColorUtils
 +org.chromium.ui.insets.WindowInsetsUtils
 +org.chromium.ui.widget.AnchoredPopupWindow
-+org.chromium.url.Origin
 +org.chromium.webapk.shell_apk.LaunchHostBrowserSelector
 
 # Disallow new shadows of chrome-authored code.

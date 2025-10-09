@@ -9,10 +9,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** An origin is either a (scheme, host, port) tuple or is opaque. */
 @JNINamespace("url")
@@ -28,15 +31,25 @@ public class Origin {
     private final long mTokenHighBits;
     private final long mTokenLowBits;
 
+    private static @Nullable Supplier<Origin> sOpaqueOriginFactoryForTesting;
+
     /** Constructs an opaque origin. */
     public static Origin createOpaqueOrigin() {
+        if (sOpaqueOriginFactoryForTesting != null) {
+            return sOpaqueOriginFactoryForTesting.get();
+        }
         return OriginJni.get().createOpaque();
+    }
+
+    public static void setOpaqueOriginFactoryForTesting(Supplier<Origin> supplier) {
+        sOpaqueOriginFactoryForTesting = supplier;
+        ResettersForTesting.register(() -> sOpaqueOriginFactoryForTesting = null);
     }
 
     /**
      * See origin.h for many warnings about this method.
      *
-     * Constructs an Origin from a GURL.
+     * <p>Constructs an Origin from a GURL.
      */
     public static Origin create(GURL gurl) {
         return OriginJni.get().createFromGURL(gurl);
