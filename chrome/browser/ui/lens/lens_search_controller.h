@@ -128,10 +128,13 @@ class LensSearchController {
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion);
 
-  // Issues a text search request for Lens to fulfill using query text.
-  // Starts contextualization flow if its not already in progress. If the Lens
-  // Overlay is in the process of opening, the request will be queued until the
-  // overlay is fully opened.
+  // Issues a zero state request for Lens to fulfill. Starts contextualization
+  // flow and once contextualization is complete, issues a Lens region request
+  // with the entire viewport selected as the region. Does not open the overlay
+  // UI.
+  void IssueZeroStateRequest(
+      lens::LensOverlayInvocationSource invocation_source);
+
   // If `suppress_contextualization` is true, queries will not be performed with
   // contextualization for the duration of the session. However,
   // contextualization may still be initialized as normal.
@@ -396,6 +399,12 @@ class LensSearchController {
   // Called when the tab will be removed from the window.
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
+
+  // Callback to run when the page context has been updated as part of a zero
+  // state request and the region search request should now be issued.
+  void OnPageContextUpdatedForZeroStateRequest(
+      lens::LensOverlayInvocationSource invocation_source,
+      base::Time query_start_time);
 
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.

@@ -178,6 +178,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     // Showing an overlay without results.
     kOverlay,
 
+    // TODO(crbug.com/450638028): Remove this state and only keep kOverlay.
     // Showing an overlay with results.
     kOverlayAndResults,
 
@@ -949,6 +950,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
 
+  // Shorthand to grab the LensOverlaySidePanelCoordinator for this instance of Lens.
+  lens::LensOverlaySidePanelCoordinator* GetLensOverlaySidePanelCoordinator();
+
   // Shorthand to grab the LensSearchContextualizationController for this
   // instance of Lens.
   lens::LensSearchContextualizationController* GetContextualizationController();
@@ -1147,6 +1151,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // be assumed to be non-null.
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
+  // TODO(crbug.com/450336818): Remove this field and use the
+  // LensSearchController to get the side panel coordinator.
   // Side panel coordinator for the side panel coordinator that controls the
   // results side panel. Guaranteed to exist if the overlay is not `kOff`.
   raw_ptr<lens::LensOverlaySidePanelCoordinator>

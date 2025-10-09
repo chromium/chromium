@@ -922,7 +922,7 @@ void LensOverlayController::ShowUI(
   // Grab reference to the side panel coordinator it not already done so.
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
-        lens_search_controller_->lens_overlay_side_panel_coordinator();
+        GetLensOverlaySidePanelCoordinator();
   }
 
   Profile* profile =
@@ -1595,7 +1595,8 @@ void LensOverlayController::MaybeHideSharedOverlayView() {
 }
 
 void LensOverlayController::MaybeOpenSidePanel() {
-  results_side_panel_coordinator_->RegisterEntryAndShow();
+  GetLensOverlaySidePanelCoordinator()
+      ->RegisterEntryAndShow();
 }
 
 void LensOverlayController::InitializeOverlay(
@@ -1645,16 +1646,22 @@ void LensOverlayController::InitializeOverlay(
             live_page_widget_host);
   }
 
-  state_ = State::kOverlay;
+  const bool is_side_panel_open =
+      GetLensOverlaySidePanelCoordinator()
+          ->IsEntryShowing();
+  // TODO(crbug.com/450638028): Stop using kOverlayAndResults now that overlay
+  // controller should be separated from the side panel.
+  state_ = is_side_panel_open ? State::kOverlayAndResults : State::kOverlay;
   lens_search_controller_->NotifyOverlayOpened();
 
   // Update the entry points state to ensure that the entry points are disabled
   // now that the overlay is showing.
   UpdateEntryPointsState();
 
-  // Only start the query flow again if we don't already have a full image
-  // response, unless the early start query flow optimization is enabled.
-  if (!initialization_data_->has_full_image_response()) {
+  // Only start the query flow again if there is no full image response and the
+  // side panel is not open. The side panel being open indicates that a full
+  // image response could have been received and not passed to the overlay.
+  if (lens_overlay_query_controller_->IsOff()) {
     if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
       initialization_data_->initial_screenshot_ = SkBitmap();
       initialization_data_->page_url_ = GURL();
@@ -2495,9 +2502,11 @@ void LensOverlayController::HandleStartQueryResponse(
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   MaybeOpenSidePanel();
-  results_side_panel_coordinator_->SetLatestPageUrlWithResponse(
+  auto* results_side_panel_coordinator =
+      GetLensOverlaySidePanelCoordinator();
+  results_side_panel_coordinator->SetLatestPageUrlWithResponse(
       GURL(response.page_url()));
-  results_side_panel_coordinator_->LoadURLInResultsFrame(GURL(response.url()));
+  results_side_panel_coordinator->LoadURLInResultsFrame(GURL(response.url()));
 }
 
 void LensOverlayController::HandleInteractionResponse(
@@ -2834,7 +2843,7 @@ void LensOverlayController::OnPageContextUpdatedForSuggestion(
   // side panel.
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
-        lens_search_controller_->lens_overlay_side_panel_coordinator();
+        GetLensOverlaySidePanelCoordinator();
   }
 
   CHECK(lens_overlay_query_controller_);
@@ -2913,6 +2922,11 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
 lens::LensSearchboxController*
 LensOverlayController::GetLensSearchboxController() {
   return lens_search_controller_->lens_searchbox_controller();
+}
+
+lens::LensOverlaySidePanelCoordinator*
+LensOverlayController::GetLensOverlaySidePanelCoordinator() {
+  return lens_search_controller_->lens_overlay_side_panel_coordinator();
 }
 
 lens::LensSearchContextualizationController*

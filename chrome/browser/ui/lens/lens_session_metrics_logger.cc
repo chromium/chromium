@@ -209,4 +209,9 @@ void LensSessionMetricsLogger::
   last_navigation_time_.reset();
 }
 
+lens::LensOverlayInvocationSource
+LensSessionMetricsLogger::GetInvocationSource() {
+  return invocation_source_;
+}
+
 }  // namespace lens
