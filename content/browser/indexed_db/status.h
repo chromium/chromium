@@ -61,6 +61,10 @@ class CONTENT_EXPORT Status {
     return leveldb_status_;
   }
 
+  const std::optional<sql::SqliteResultCode>& sqlite_code() const {
+    return sqlite_code_;
+  }
+
   bool IndicatesDiskFull() const;
   void Log(std::string_view histogram_name) const;
 

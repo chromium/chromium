@@ -89,7 +89,9 @@ bool Status::IsCorruption() const {
 
 bool Status::IsIOError() const {
   return type_ == Type::kIoError ||
-         (leveldb_status_ && leveldb_status_->IsIOError());
+         (leveldb_status_ && leveldb_status_->IsIOError()) ||
+         sqlite_code_ == sql::SqliteResultCode::kIo ||
+         sqlite_code_ == sql::SqliteResultCode::kError;
 }
 
 bool Status::IsInvalidArgument() const {
