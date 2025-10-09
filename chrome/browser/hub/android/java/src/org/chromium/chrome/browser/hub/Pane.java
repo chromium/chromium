@@ -88,4 +88,7 @@ public interface Pane extends BackPressHandler {
 
     /** Returns whether to enable the state of hub search. */
     ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
+
+    /** Returns whether the hub search box should be visible. */
+    ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier();
 }

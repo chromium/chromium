@@ -124,6 +124,8 @@ public class HubToolbarMediator {
     private final Callback<Pane> mOnFocusedPaneChange = this::onFocusedPaneChange;
     private final Callback<Boolean> mOnHubSearchEnabledStateChange =
             this::onHubSearchEnabledStateChange;
+    private final Callback<Boolean> mOnSearchBoxVisibilityChange =
+            this::onSearchBoxVisibilityChange;
     private final Callback<@Nullable Tab> mOnCurrentTabChange = this::onCurrentTabChange;
 
     private @Nullable PaneButtonLookup mPaneButtonLookup;
@@ -163,6 +165,7 @@ public class HubToolbarMediator {
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
 
             pane.getHubSearchEnabledStateSupplier().addObserver(mOnHubSearchEnabledStateChange);
+            pane.getHubSearchBoxVisibilitySupplier().addObserver(mOnSearchBoxVisibilityChange);
         }
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
@@ -192,6 +195,7 @@ public class HubToolbarMediator {
             @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
             if (pane == null) continue;
             pane.getHubSearchEnabledStateSupplier().removeObserver(mOnHubSearchEnabledStateChange);
+            pane.getHubSearchBoxVisibilitySupplier().removeObserver(mOnSearchBoxVisibilityChange);
         }
     }
 
@@ -222,6 +226,14 @@ public class HubToolbarMediator {
             }
         }
         return INVALID_PANE_SWITCHER_INDEX;
+    }
+
+    private void onSearchBoxVisibilityChange(Boolean shouldShow) {
+        int screenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
+        boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
+        shouldShow = !isTablet && shouldShow;
+
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, shouldShow);
     }
 
     private void onReferenceButtonChange(@PaneId int paneId, @Nullable DisplayButtonData current) {

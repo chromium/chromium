@@ -97,6 +97,10 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mRegularHubSearchVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchVisibilitySupplier =
+            new ObservableSupplierImpl<>();
     private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;
@@ -117,7 +121,8 @@ public class HubManagerImplUnitTest {
         when(mTabSwitcherPane.getRootView()).thenReturn(mTabSwitcherPaneView);
         when(mTabSwitcherPane.getMenuOrKeyboardActionHandler())
                 .thenReturn(mTabSwitcherMenuOrKeyboardActionHandler);
-
+        when(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mRegularHubSearchVisibilitySupplier);
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
@@ -129,6 +134,8 @@ public class HubManagerImplUnitTest {
         when(mIncognitoTabSwitcherPane.getRootView()).thenReturn(mIncognitoTabSwitcherPaneView);
         when(mIncognitoTabSwitcherPane.getMenuOrKeyboardActionHandler())
                 .thenReturn(mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mIncognitoHubSearchVisibilitySupplier);
 
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);

@@ -111,6 +111,11 @@ public class HubToolbarMediatorUnitTest {
     private ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<Boolean> mGroupsHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<Boolean> mHistoryHubSearchEnabledStateSupplier;
+    private ObservableSupplierImpl<Boolean> mTabSwitcherSearchBoxVisibilitySupplier;
+    private ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherSearchBoxVisibilitySupplier;
+    private ObservableSupplierImpl<Boolean> mTabGroupsSearchBoxVisibilitySupplier;
+    private ObservableSupplierImpl<Boolean> mBookmarksSearchBoxVisibilitySupplier;
+    private ObservableSupplierImpl<Boolean> mHistorySearchBoxVisibilitySupplier;
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
@@ -126,6 +131,11 @@ public class HubToolbarMediatorUnitTest {
         mIncognitoHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mGroupsHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mHistoryHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
+        mTabSwitcherSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
+        mIncognitoTabSwitcherSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
+        mTabGroupsSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
+        mBookmarksSearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
+        mHistorySearchBoxVisibilitySupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
@@ -151,6 +161,16 @@ public class HubToolbarMediatorUnitTest {
 
         when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mRegularHubSearchEnabledStateSupplier);
+        when(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mTabSwitcherSearchBoxVisibilitySupplier);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mIncognitoTabSwitcherSearchBoxVisibilitySupplier);
+        when(mTabGroupsPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mTabGroupsSearchBoxVisibilitySupplier);
+        when(mBookmarksPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mBookmarksSearchBoxVisibilitySupplier);
+        when(mHistoryPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(mHistorySearchBoxVisibilitySupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mTabGroupsPane.getHubSearchEnabledStateSupplier())
@@ -840,6 +860,39 @@ public class HubToolbarMediatorUnitTest {
         // Should now show search box (phone behavior)
         assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
         assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchBoxVisibilitySupplier_PaneSupplier() {
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        HubToolbarMediator mediator =
+                new HubToolbarMediator(
+                        Robolectric.buildActivity(Activity.class).get(),
+                        mModel,
+                        mPaneManager,
+                        mTracker,
+                        mSearchActivityClient,
+                        mCurrentTabSupplier,
+                        mExitHubRunnable);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+
+        // Setting supplier to false should hide the search box.
+        mTabSwitcherSearchBoxVisibilitySupplier.set(false);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+
+        // Setting supplier to true should show it again.
+        mTabSwitcherSearchBoxVisibilitySupplier.set(true);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+
+        // On tablet, search box should remain hidden regardless of supplier.
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+        mediator.triggerConfigurationChangeForTesting(mConfiguration);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+
+        mTabSwitcherSearchBoxVisibilitySupplier.set(false);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
     }
 
     private void mockSearchActivityClient() {

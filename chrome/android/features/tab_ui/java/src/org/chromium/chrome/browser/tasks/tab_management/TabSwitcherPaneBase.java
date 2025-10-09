@@ -102,6 +102,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<@Nullable View> mOverlayViewSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier =
+            new ObservableSupplierImpl<>();
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final Handler mHandler = new Handler();
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
@@ -669,6 +671,13 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         if (mNativeInitialized) {
             coordinator.initWithNative();
         }
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
+        // TODO(crbug.com/445195388): Implement search visibility supplier for tab switcher for
+        //  search box auto-roll.
+        return mHubSearchBoxVisibilitySupplier;
     }
 
     /**

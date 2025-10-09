@@ -229,4 +229,9 @@ public class TabGroupsPane implements Pane {
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;
     }
+
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
+        return mHubSearchEnabledStateSupplier;
+    }
 }

@@ -56,6 +56,8 @@ public class BookmarkPane implements Pane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier =
+            new ObservableSupplierImpl<>();
 
     // FrameLayout which has HistoryManager's root view as the only child.
     private final FrameLayout mRootView;
@@ -197,6 +199,11 @@ public class BookmarkPane implements Pane {
     @Override
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
+        return mHubSearchBoxVisibilitySupplier;
     }
 
     private void destroyManagerAndRemoveView() {

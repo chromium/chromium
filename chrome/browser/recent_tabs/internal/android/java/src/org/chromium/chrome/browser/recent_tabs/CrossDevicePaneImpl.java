@@ -52,6 +52,8 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier =
+            new ObservableSupplierImpl<>();
 
     private @Nullable CrossDeviceListCoordinator mCrossDeviceListCoordinator;
 
@@ -172,5 +174,10 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     @Override
     public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
         return mHubSearchEnabledStateSupplier;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier() {
+        return mHubSearchBoxVisibilitySupplier;
     }
 }

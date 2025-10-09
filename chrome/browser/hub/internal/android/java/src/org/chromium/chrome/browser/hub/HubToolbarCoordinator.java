@@ -35,7 +35,7 @@ public class HubToolbarCoordinator {
     private final Callback<Boolean> mBottomToolbarVisibilityObserver =
             this::onBottomToolbarVisibilityChange;
     private final HubToolbarMediator mMediator;
-    private final HubToolbarView mHubToolbarView;
+    private final View mSearchBoxView;
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final MenuButton mMenuButton;
     private final UserEducationHelper mUserEducationHelper;
@@ -75,6 +75,7 @@ public class HubToolbarCoordinator {
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsAnimatingSupplier = isHubAnimatingSupplier;
         mBottomToolbarVisibilitySupplier = bottomToolbarVisibilitySupplier;
+        mSearchBoxView = hubToolbarView.findViewById(R.id.search_box);
 
         Button hubActionButton = hubToolbarView.findViewById(R.id.toolbar_action_button);
         mActionButtonCoordinator =
@@ -95,7 +96,6 @@ public class HubToolbarCoordinator {
                         searchActivityClient,
                         currentTabSupplier,
                         exitHubRunnable);
-        mHubToolbarView = hubToolbarView;
 
         // Set up bottom toolbar visibility observer
         if (mBottomToolbarVisibilitySupplier != null) {
@@ -142,6 +142,11 @@ public class HubToolbarCoordinator {
         return mMediator.getButton(paneId);
     }
 
+    /** Returns whether the search box view is currently visible. */
+    public boolean isSearchBoxVisible() {
+        return mSearchBoxView.getVisibility() == View.VISIBLE;
+    }
+
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
@@ -150,9 +155,5 @@ public class HubToolbarCoordinator {
             mBottomToolbarVisibilitySupplier.removeObserver(mBottomToolbarVisibilityObserver);
         }
         mActionButtonCoordinator.destroy();
-    }
-
-    public boolean isSearchBoxVisible() {
-        return mHubToolbarView.findViewById(R.id.search_box).getVisibility() == View.VISIBLE;
     }
 }
