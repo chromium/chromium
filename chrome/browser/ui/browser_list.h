@@ -56,8 +56,6 @@ class BrowserList {
   bool empty() const { return browsers_.empty(); }
   size_t size() const { return browsers_.size(); }
 
-  Browser* get(size_t index) const { return browsers_[index]; }
-
   // Enumerate the current browser and the new browser in-order.
   void ForEachCurrentAndNewBrowser(
       base::FunctionRef<void(Browser*)> on_browser);
