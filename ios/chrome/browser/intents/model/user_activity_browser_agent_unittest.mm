@@ -452,6 +452,15 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBrowsingWeb) {
   NSURL* nsurl = [NSURL URLWithString:@"http://google.com/foo/bar"];
   [user_activity setWebpageURL:nsurl];
 
+  GURL startGurl("http://www.google.com");
+  AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+       initWithExternalURL:startGurl
+               completeURL:startGurl
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
+
+  [connection_information_ setStartupParameters:startup_params];
+
   BOOL result =
       user_activity_browser_agent_->ContinueUserActivity(user_activity, YES);
 
@@ -672,8 +681,11 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
   EXPECT_EQ(complete_url, scene_controller_.urlLoadParams.web_params.url);
   EXPECT_EQ(external_url,
             scene_controller_.urlLoadParams.web_params.virtual_url);
-  EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
-            connection_information_.startupParameters.applicationMode);
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:^(
+          ApplicationModeForTabOpening applicationMode) {
+        EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+      }];
 }
 
 // Tests that performActionForShortcutItem set startupParameters accordingly
@@ -725,8 +737,12 @@ TEST_F(UserActivityBrowserAgentTest,
         [[parameters objectAtIndex:2] boolValue]
             ? ApplicationModeForTabOpening::INCOGNITO
             : ApplicationModeForTabOpening::NORMAL;
-    EXPECT_EQ(app_mode,
-              connection_information_.startupParameters.applicationMode);
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:^(
+            ApplicationModeForTabOpening applicationMode) {
+          EXPECT_EQ(applicationMode, app_mode);
+        }];
+
     EXPECT_EQ([[parameters objectAtIndex:3] intValue],
               connection_information_.startupParameters.postOpeningAction);
   }
@@ -801,8 +817,12 @@ TEST_F(UserActivityBrowserAgentTest,
             connection_information_.startupParameters.completeURL);
   EXPECT_EQ(GURL(kChromeUINewTabURL),
             connection_information_.startupParameters.externalURL);
-  EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
-            connection_information_.startupParameters.applicationMode);
+
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:^(
+          ApplicationModeForTabOpening applicationMode) {
+        EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::NORMAL);
+      }];
 }
 
 // Tests that Chrome does not continue the activity if the intent URLs array is
@@ -1069,8 +1089,11 @@ TEST_F(UserActivityBrowserAgentTest,
 
   user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
 
-  EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
-            [connection_information_ startupParameters].applicationMode);
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:^(
+          ApplicationModeForTabOpening applicationMode) {
+        EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+      }];
   EXPECT_EQ(GURL(kChromeUINewTabURL),
             [connection_information_ startupParameters].completeURL);
   EXPECT_EQ(GURL(kChromeUINewTabURL),
@@ -1091,8 +1114,12 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityIntentSearchInChrome) {
 
   user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
 
-  EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
-            [connection_information_ startupParameters].applicationMode);
+  [connection_information_.startupParameters
+      requestApplicationModeWithBlock:^(
+          ApplicationModeForTabOpening applicationMode) {
+        EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::NORMAL);
+      }];
+
   EXPECT_EQ(GURL(kChromeUINewTabURL),
             [connection_information_ startupParameters].completeURL);
   EXPECT_EQ(GURL(kChromeUINewTabURL),
