@@ -253,4 +253,90 @@ suite('ContextMenuEntrypoint', () => {
     const preview = $$<HTMLImageElement>(entrypoint, '.tab-preview');
     assertFalse(!!preview);
   });
+
+  test('create image mode disables file upload and other tools', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      composeboxShowDeepSearchButton: true,
+      composeboxShowCreateImageButton: true,
+    });
+
+    entrypoint.remove();
+    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    document.body.appendChild(entrypoint);
+    await microtasksFinished();
+
+    await openContextMenuWithSuggestions([]);
+
+    const fileUploadButton = $$<HTMLButtonElement>(entrypoint, '#fileUpload');
+    const deepSearchButton = $$<HTMLButtonElement>(entrypoint, '#deepSearch');
+    const createImageButton = $$<HTMLButtonElement>(entrypoint, '#createImage');
+    assertTrue(!!fileUploadButton);
+    assertTrue(!!deepSearchButton);
+    assertTrue(!!createImageButton);
+
+    // Assert buttons are enabled initially.
+    assertFalse(fileUploadButton.disabled);
+    assertFalse(deepSearchButton.disabled);
+
+    // Set `inCreateImageMode` to true.
+    entrypoint.inCreateImageMode = true;
+    await entrypoint.updateComplete;
+
+    // Assert buttons are disabled.
+    assertTrue(fileUploadButton.disabled);
+    assertTrue(deepSearchButton.disabled);
+
+    // Click create image.
+    const eventFired = eventToPromise('create-image-click', entrypoint);
+    createImageButton.click();
+    await eventFired;
+
+    // Assert menu is closed.
+    assertFalse(entrypoint.$.menu.open);
+
+    // Set `inCreateImageMode` to false.
+    await openContextMenuWithSuggestions([]);
+    entrypoint.inCreateImageMode = false;
+    await entrypoint.updateComplete;
+
+    // Assert buttons are enabled again.
+    assertFalse(fileUploadButton.disabled);
+    assertFalse(deepSearchButton.disabled);
+  });
+
+  test('deep search mode disables contextual inputs', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      composeboxShowDeepSearchButton: true,
+    });
+    entrypoint.remove();
+    entrypoint = document.createElement('composebox-context-menu-entrypoint');
+    document.body.appendChild(entrypoint);
+    await entrypoint.updateComplete;
+
+    await openContextMenuWithSuggestions([]);
+
+    // Assert entrypoint is enabled initially.
+    const deepSearchButton = $$<HTMLButtonElement>(entrypoint, '#deepSearch');
+    assertTrue(!!deepSearchButton);
+    assertFalse(entrypoint.inputsDisabled);
+
+    // Click deep search button.
+    const eventFired = eventToPromise('deep-search-click', entrypoint);
+    deepSearchButton.click();
+    await eventFired;
+    await entrypoint.updateComplete;
+
+    // Assert menu is closed and entrypoint is disabled.
+    assertFalse(entrypoint.$.menu.open);
+    assertTrue(entrypoint.inputsDisabled);
+
+    // Toggle deep search button.
+    entrypoint['onDeepSearchClick_']();
+    await entrypoint.updateComplete;
+
+    // Assert entrypoint is enabled again.
+    assertFalse(entrypoint.inputsDisabled);
+  });
 });

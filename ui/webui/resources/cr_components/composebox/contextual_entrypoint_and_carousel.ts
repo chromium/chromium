@@ -171,6 +171,22 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.files_ = new Map();
   }
 
+  resetModes() {
+    if (this.inDeepSearchMode_) {
+      this.inDeepSearchMode_ = false;
+      this.inputsDisabled_ = false;
+      this.fire(
+          'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
+      this.showContextMenuDescription_ = true;
+    } else if (this.inCreateImageMode_) {
+      this.inCreateImageMode_ = false;
+      this.fire(
+          'set-create-image-mode',
+          {inCreateImageMode: this.inCreateImageMode_});
+      this.showContextMenuDescription_ = true;
+    }
+  }
+
   hasImageFiles() {
     if (this.files_) {
       for (const file of this.files_.values()) {

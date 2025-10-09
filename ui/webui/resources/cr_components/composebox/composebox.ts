@@ -300,6 +300,10 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.value = '';
   }
 
+  resetModes() {
+    this.$.context.resetModes();
+  }
+
   getSmartComposeForTesting() {
     return this.smartComposeInlineHint_;
   }
@@ -601,6 +605,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private closeComposebox_() {
+    this.resetModes();
     this.fire('close-composebox', {composeboxText: this.$.input.value});
 
     if (this.isCollapsible) {
