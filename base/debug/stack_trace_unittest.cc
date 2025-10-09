@@ -452,6 +452,8 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
     asm("ud2");
 #elif defined(ARCH_CPU_ARM_FAMILY)
     asm("udf 0");
+#elif defined(ARCH_CPU_RISCV_FAMILY)
+    asm("unimp");
 #else
 #error Unsupported platform!
 #endif
