@@ -135,7 +135,7 @@
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/compose_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/passkeys/passkey_autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
@@ -3571,8 +3571,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
     if (PasswordManagerDelegate* password_delegate =
             client().GetPasswordManagerDelegate(field_id)) {
       suggestion_generators_.push_back(
-          std::make_unique<PasskeyAutofillSuggestionGenerator>(
-              *password_delegate));
+          std::make_unique<PasskeySuggestionGenerator>(*password_delegate));
     }
   }
   if (relevant_filling_products.contains(FillingProduct::kOneTimePassword) &&

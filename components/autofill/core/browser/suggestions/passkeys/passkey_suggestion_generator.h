@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_SUGGESTION_GENERATOR_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_SUGGESTION_GENERATOR_H_
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
@@ -14,28 +14,28 @@ class PasswordManagerDelegate;
 
 // Responsible for generating password-related suggestions. Currently, it only
 // provides a suggestion to sign in with a passkey from another device.
-class PasskeyAutofillSuggestionGenerator : public SuggestionGenerator {
+class PasskeySuggestionGenerator : public SuggestionGenerator {
  public:
-  explicit PasskeyAutofillSuggestionGenerator(
+  explicit PasskeySuggestionGenerator(
       PasswordManagerDelegate& password_manager_delegate);
-  ~PasskeyAutofillSuggestionGenerator() override;
+  ~PasskeySuggestionGenerator() override;
 
   // SuggestionGenerator:
   void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
           callback) override;
   void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
@@ -46,4 +46,4 @@ class PasskeyAutofillSuggestionGenerator : public SuggestionGenerator {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_SUGGESTION_GENERATOR_H_

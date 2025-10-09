@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/passkeys/passkey_autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
@@ -30,23 +30,22 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
 
 }  // namespace
 
-PasskeyAutofillSuggestionGenerator::PasskeyAutofillSuggestionGenerator(
+PasskeySuggestionGenerator::PasskeySuggestionGenerator(
     PasswordManagerDelegate& password_manager_delegate)
     : password_manager_delegate_(password_manager_delegate) {}
-PasskeyAutofillSuggestionGenerator::~PasskeyAutofillSuggestionGenerator() =
-    default;
+PasskeySuggestionGenerator::~PasskeySuggestionGenerator() = default;
 
-void PasskeyAutofillSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+void PasskeySuggestionGenerator::FetchSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  if (!ShouldShowWebauthnHybridEntryPoint(field_data) ||
+  if (!ShouldShowWebauthnHybridEntryPoint(trigger_field) ||
       !password_manager_delegate_
            ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
     std::move(callback).Run({SuggestionDataSource::kPasskey, {}});
@@ -56,11 +55,11 @@ void PasskeyAutofillSuggestionGenerator::FetchSuggestionData(
       {SuggestionDataSource::kPasskey, {HybridPasskeyAvailability(true)}});
 }
 
-void PasskeyAutofillSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+void PasskeySuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {

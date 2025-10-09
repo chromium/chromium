@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/passkeys/passkey_autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
@@ -31,7 +31,7 @@ using ProductSuggestionDataPair =
     std::pair<SuggestionGenerator::SuggestionDataSource,
               std::vector<SuggestionData>>;
 
-class PasskeyAutofillSuggestionGeneratorTest : public testing::Test {
+class PasskeySuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -39,8 +39,8 @@ class PasskeyAutofillSuggestionGeneratorTest : public testing::Test {
         ::password_manager::features::
             kAutofillReintroduceHybridPasskeyDropdownItem);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    generator_ = std::make_unique<PasskeyAutofillSuggestionGenerator>(
-        password_delegate());
+    generator_ =
+        std::make_unique<PasskeySuggestionGenerator>(password_delegate());
     form_ = test::CreateTestHybridSignUpFormData();
   }
 
@@ -57,7 +57,7 @@ class PasskeyAutofillSuggestionGeneratorTest : public testing::Test {
     return password_manager_delegate_;
   }
 
-  PasskeyAutofillSuggestionGenerator& generator() { return *generator_; }
+  PasskeySuggestionGenerator& generator() { return *generator_; }
 
   const AutofillClient& client() { return test_autofill_client_; }
 
@@ -71,15 +71,14 @@ class PasskeyAutofillSuggestionGeneratorTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment test_environment_;
   TestAutofillClient test_autofill_client_;
   MockPasswordManagerDelegate password_manager_delegate_;
-  std::unique_ptr<PasskeyAutofillSuggestionGenerator> generator_;
+  std::unique_ptr<PasskeySuggestionGenerator> generator_;
   FormData form_;
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Ensure the hybrid suggestion provided by the password delegate is fetched
 // and displayed on valid webauthn fields.
-TEST_F(PasskeyAutofillSuggestionGeneratorTest,
-       FetchCreatesValidSuggestionForGenerate) {
+TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
   Suggestion suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice);
   EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillRepeatedly(Return(suggestion));
@@ -105,7 +104,7 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-TEST_F(PasskeyAutofillSuggestionGeneratorTest, NoHybridPasskeyAvailability) {
+TEST_F(PasskeySuggestionGeneratorTest, NoHybridPasskeyAvailability) {
   DisableHybridEntryPoint();
 
   // Neither fetch nor generate should call into the delegate now.
@@ -132,7 +131,7 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest, NoHybridPasskeyAvailability) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Ensure the hybrid suggestion provided by the password delegate is fetched
 // and not displayed on fields without webauthn annotation.
-TEST_F(PasskeyAutofillSuggestionGeneratorTest,
+TEST_F(PasskeySuggestionGeneratorTest,
        NoSuggestionsOnFieldsWithoutWebauthnAnnotation) {
   form().set_fields({test::CreateTestFormField(
       "Email", "email", "", FormControlType::kInputEmail, "username")});
@@ -163,7 +162,7 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Ensure if no hybrid suggestion is provided by the password delegate, no
 // no suggestion is fetched or generated.
-TEST_F(PasskeyAutofillSuggestionGeneratorTest,
+TEST_F(PasskeySuggestionGeneratorTest,
        NoSuggestionFromPasswordManagerDelegate) {
   EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillRepeatedly(Return(std::nullopt));
@@ -190,7 +189,7 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
 // Ensure that a fetch step always reports correctly whether a suggestion is
 // generated. This ensures that other generators can reliably tell whether a
 // hybrid entry point will be present or not.
-TEST_F(PasskeyAutofillSuggestionGeneratorTest,
+TEST_F(PasskeySuggestionGeneratorTest,
        NoUpdateInGenerateIfFetchCreatesNoSuggestion) {
   // Simulate that a suggestion *could* be generated now ...
   Suggestion suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice);
