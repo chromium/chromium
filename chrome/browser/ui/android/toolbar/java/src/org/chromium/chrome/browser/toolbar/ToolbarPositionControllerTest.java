@@ -295,6 +295,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier =
             new ObservableSupplierImpl<>(TOOLBAR_HEIGHT);
+    private final ObservableSupplierImpl<Integer> mKeyboardHeightSupplier =
+            new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
@@ -374,7 +376,8 @@ public class ToolbarPositionControllerTest {
                         new Handler(Looper.getMainLooper()),
                         mContext,
                         mToolbarPosition,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mKeyboardHeightSupplier);
 
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
         LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
@@ -1086,6 +1089,9 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsOmniboxFocused.set(true);
         assertControlsAtBottom();
+
+        mKeyboardHeightSupplier.set(400);
+        verify(mControlContainerView).setTranslationY(-400f);
     }
 
     @Test
