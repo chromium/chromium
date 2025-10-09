@@ -410,19 +410,19 @@ std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
 }
 
 std::vector<const EntityInstance*> GetEntitiesForSuggestion(
-    base::span<const EntityInstance> entities,
+    std::vector<const EntityInstance*> entities,
     const AttributeTypeAssignment& assignment,
     const FieldGlobalId& trigger_field_id,
     const std::string& app_locale) {
   std::vector<const EntityInstance*> relevant_entities;
-  for (const EntityInstance& entity : entities) {
+  for (const EntityInstance* entity : entities) {
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
-            FindField(assignment.Find(entity.type()), trigger_field_id);
+            FindField(assignment.Find(entity->type()), trigger_field_id);
     if (trigger_field_with_type &&
-        EntityShouldProduceSuggestion(entity, *trigger_field_with_type,
+        EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
                                       app_locale)) {
-      relevant_entities.push_back(&entity);
+      relevant_entities.push_back(entity);
     }
   }
   return DedupedEntitiesForSuggestions(
@@ -531,8 +531,7 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  // TODO(crbug.com/450060416): Do an EntityType-specific
-  // MayPerformAutofillAiAction() check.
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling)) {
     callback({SuggestionDataSource::kAutofillAi, {}});
     return;
@@ -545,7 +544,7 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
   }
 
   std::vector<const EntityInstance*> entities = GetEntitiesForSuggestion(
-      entity_manager->GetEntityInstances(),
+      GetFillableEntityInstances(client),
       AttributeTypeAssignment(form_structure->fields(),
                               trigger_autofill_field->section()),
       trigger_field.global_id(), client.GetAppLocale());

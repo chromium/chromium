@@ -24,6 +24,11 @@ struct AutofillFieldWithAttributeType;
 class EntityInstance;
 class FormStructure;
 
+// Returns the entities from EntityDataManager::GetEntityInstances() for which
+// filling is enabled.
+std::vector<const EntityInstance*> GetFillableEntityInstances(
+    const AutofillClient& client);
+
 // Returns all fields in a `FormStructure` that are fillable by Autofill AI,
 // taking into account whether AutofillAI filling is enabled as well as the
 // field type predictions and the available entities in `EntityDataManager`.

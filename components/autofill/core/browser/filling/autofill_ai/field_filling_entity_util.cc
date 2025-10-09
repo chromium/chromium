@@ -183,16 +183,44 @@ std::u16string GetValueForSelect(const AttributeInstance& attribute,
 
 }  // namespace
 
+std::vector<const EntityInstance*> GetFillableEntityInstances(
+    const AutofillClient& client) {
+  const EntityDataManager* const edm = client.GetEntityDataManager();
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
+  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
+    return {};
+  }
+
+  base::span<const EntityInstance> all_entities = edm->GetEntityInstances();
+
+  DenseSet<EntityType> enabled_types;
+  for (EntityType type : DenseSet(all_entities, &EntityInstance::type)) {
+    if (MayPerformAutofillAiAction(client, AutofillAiAction::kFilling, type)) {
+      enabled_types.insert(type);
+    }
+  }
+
+  std::vector<const EntityInstance*> enabled_entities;
+  enabled_entities.reserve(all_entities.size());
+  for (const EntityInstance& entity : all_entities) {
+    if (enabled_types.contains(entity.type())) {
+      enabled_entities.push_back(&entity);
+    }
+  }
+  return enabled_entities;
+}
+
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const AutofillClient& client) {
   const EntityDataManager* const edm = client.GetEntityDataManager();
-  // TODO(crbug.com/450060416): Do an EntityType-specific
-  // MayPerformAutofillAiAction() check.
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
     return {};
   }
-  base::span<const EntityInstance> entities = edm->GetEntityInstances();
+
+  std::vector<const EntityInstance*> entities =
+      GetFillableEntityInstances(client);
   if (entities.empty()) {
     return {};
   }
@@ -205,10 +233,10 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
 
   // Returns true if there is data present that could fill the `field`.
   auto is_fillable = [&](const AutofillField& field) {
-    return std::ranges::any_of(entities, [&](const EntityInstance& entity) {
+    return std::ranges::any_of(entities, [&](const EntityInstance* entity) {
       std::optional<AttributeType> type = GetAttributeTypeForEntityAndField(
-          section_to_entity_and_field_and_types, entity, field);
-      return type && entity.attribute(*type).has_value();
+          section_to_entity_and_field_and_types, *entity, field);
+      return type && entity->attribute(*type).has_value();
     });
   };
 
