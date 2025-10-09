@@ -4130,7 +4130,7 @@ TEST_F(UnderlayTest, PrimaryPlaneOverlayIsTransparentWithUnderlay) {
       &candidate_list, &damage_rect_, &content_bounds_);
 
   ASSERT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
-  ASSERT_FALSE(output_surface_plane->is_opaque);
+  ASSERT_THAT(candidate_list, test::HasPrimaryPlaneWithOpaqueness(false));
 }
 
 TEST_F(UnderlayTest, UpdateDamageWhenChangingUnderlays) {
@@ -4806,7 +4806,7 @@ TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
 
   EXPECT_EQ(0U, content_bounds_.size());
   ASSERT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
-  ASSERT_EQ(false, output_surface_plane->is_opaque);
+  ASSERT_THAT(candidate_list, test::HasPrimaryPlaneWithOpaqueness(false));
 }
 #endif  // BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
 
@@ -6862,12 +6862,12 @@ TEST_P(MultiUnderlayPromotedTest, UnderlaysBlendPrimaryPlane) {
     // Both candidates are promoted.
     ASSERT_EQ(test::NumOverlaysExcludingPrimaryPlane(candidate_list), 2u);
     // Blending enabled on primary plane.
-    EXPECT_FALSE(output_surface_plane->is_opaque);
+    ASSERT_THAT(candidate_list, test::HasPrimaryPlaneWithOpaqueness(false));
   } else {
     // No candidates are promoted.
     ASSERT_EQ(test::NumOverlaysExcludingPrimaryPlane(candidate_list), 0u);
     // Blending not enabled on primary plane.
-    EXPECT_TRUE(output_surface_plane->is_opaque);
+    ASSERT_THAT(candidate_list, test::HasPrimaryPlaneWithOpaqueness(true));
   }
 }
 

@@ -55,9 +55,6 @@ void OverlayProcessorMac::ProcessForOverlays(
   TRACE_EVENT0("viz", "OverlayProcessorMac::ProcessForOverlays");
   auto* render_pass = render_passes->back().get();
 
-  // Clear to get ready to handle output surface as overlay.
-  output_surface_already_handled_ = false;
-
   // We could have surfaceless overlay but not ca overlay system on. In this
   // case we would still have the OutputSurfaceOverlayPlane.
 
@@ -67,10 +64,6 @@ void OverlayProcessorMac::ProcessForOverlays(
       render_pass, resource_provider, gfx::RectF(render_pass->output_rect),
       render_pass_filters, render_pass_backdrop_filters, candidates);
   if (success) {
-    // Mark the output surface as already handled (there is no output surface
-    // anymore).
-    output_surface_already_handled_ = true;
-
     // Set |ca_overlay_damage_rect_| to be everything, so that the next
     // composite that we draw to the output surface will do a full re-draw.
     ca_overlay_damage_rect_ = render_pass->output_rect;
@@ -88,17 +81,12 @@ void OverlayProcessorMac::ProcessForOverlays(
 
     CHECK(primary_plane);
     render_pass->has_transparent_background |= !primary_plane->is_opaque;
-  }
-}
 
-void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  if (!output_surface_plane.has_value()) {
-    return;
+    // Mac doesn't use the plane_z_order field and it needs to have primary
+    // plane last in the list of overlays.
+    candidates->push_back(std::move(primary_plane).value());
+    primary_plane.reset();
   }
-
-  if (output_surface_already_handled_)
-    output_surface_plane.reset();
 }
 
 bool OverlayProcessorMac::NeedsSurfaceDamageRectList() const {

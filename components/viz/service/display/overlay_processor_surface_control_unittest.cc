@@ -132,14 +132,13 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(100, 200);
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  std::optional<OverlayCandidate> overlay_plane = candidate;
 
   OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
   processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
-  processor.AdjustOutputSurfaceOverlay(overlay_plane);
-  EXPECT_RECTF_EQ(overlay_plane.value().display_rect, gfx::RectF(200, 100));
-  EXPECT_EQ(std::get<gfx::OverlayTransform>(overlay_plane.value().transform),
+  processor.AdjustPrimaryPlaneForDisplayTransformForTesting(candidate);
+  EXPECT_RECTF_EQ(candidate.display_rect, gfx::RectF(200, 100));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
 }
 

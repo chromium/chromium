@@ -55,15 +55,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
 
-  // This function takes a pointer to the std::optional instance so the
-  // instance can be reset. When the overlay strategy covers the entire output
-  // surface, we no longer need the output surface as a separate overlay. This
-  // is also used by SurfaceControl to adjust rotation.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) override;
-
   gfx::RectF GetUnassignedDamage() const override;
 
  private:

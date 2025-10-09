@@ -418,6 +418,18 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   UpdateOverlayStatusMap(*candidates);
   UpdateDamageRect(surface_damage_rect_list, *damage_rect);
 
+  // If the overlay candidates cover the entire screen, the
+  // |output_surface_plane| could be removed.
+  if (last_successful_strategy_ &&
+      last_successful_strategy_->RemoveOutputSurfaceAsOverlay()) {
+    primary_plane.reset();
+  }
+
+  if (primary_plane) {
+    InsertPrimaryPlane(std::move(primary_plane).value(), *candidates);
+    primary_plane.reset();
+  }
+
   NotifyOverlayPromotion(resource_provider, *candidates,
                          render_pass->quad_list);
 
@@ -441,6 +453,13 @@ void OverlayProcessorUsingStrategy::CheckOverlaySupport(
 #endif
 
   CheckOverlaySupportImpl(primary_plane, candidate_list);
+}
+
+void OverlayProcessorUsingStrategy::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  // Other platforms respect plane_z_order so the list order doesn't matter.
+  candidates.push_back(std::move(primary_plane));
 }
 
 void OverlayProcessorUsingStrategy::ClearOverlayCombinationCache() {
@@ -635,20 +654,6 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
                                         status.damage_area_estimate != 0.f,
                                         damage_rect.IsEmpty());
     }
-  }
-}
-
-void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  if (!output_surface_plane) {
-    return;
-  }
-
-  // If the overlay candidates cover the entire screen, the
-  // |output_surface_plane| could be removed.
-  if (last_successful_strategy_ &&
-      last_successful_strategy_->RemoveOutputSurfaceAsOverlay()) {
-    output_surface_plane.reset();
   }
 }
 

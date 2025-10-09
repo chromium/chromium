@@ -220,24 +220,14 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     CHECK(primary_plane);
     render_passes->back()->has_transparent_background |=
         !primary_plane->is_opaque;
+
+    // TODO(crbug.com/40775556) : Damage propagation will allow us to remove the
+    // primary plan entirely in the case of full delegation.
+    InsertPrimaryPlane(std::move(primary_plane).value(), *candidates);
+    primary_plane.reset();
   }
 
   DebugLogAfterDelegation(delegated_status_, *candidates, *damage_rect);
-}
-
-void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  if (!output_surface_plane) {
-    return;
-  }
-
-  // TODO(crbug.com/40775556) : Damage propagation will allow us to
-  // remove the primary plan entirely in the case of full delegation.
-  // In that case we will do "output_surface_plane->reset()" like the existing
-  // fullscreen overlay code.
-  if (delegated_status_ == DelegationStatus::kFullDelegation) {
-    output_surface_plane.reset();
-  }
 }
 
 gfx::RectF OverlayProcessorDelegated::GetUnassignedDamage() const {

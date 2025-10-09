@@ -53,9 +53,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Sets |is_page_fullscreen_mode_|.
   void SetIsPageFullscreen(bool enabled) override;
 
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) override;
-
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
   void ProcessForOverlays(

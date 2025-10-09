@@ -116,15 +116,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
 
-  // If we successfully generated a candidates list for delegated compositing
-  // during |ProcessForOverlays|, we no longer need the |output_surface_plane|.
-  // This function takes a pointer to the std::optional instance so the instance
-  // can be reset.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  virtual void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& primary_plane) = 0;
-
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are
   // later sent over to the GPU thread by SkiaRenderer. This helper function

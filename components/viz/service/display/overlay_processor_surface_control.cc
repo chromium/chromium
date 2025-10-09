@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <variant>
 
 #include "base/android/android_info.h"
@@ -145,34 +146,6 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
   }
 }
 
-void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
-    std::optional<OverlayCandidate>& output_surface_plane) {
-  // For surface control, we should always have a valid |output_surface_plane|
-  // here.
-  DCHECK(output_surface_plane);
-
-  OverlayCandidate& plane = output_surface_plane.value();
-  DCHECK(gfx::SurfaceControl::SupportsColorSpace(plane.color_space))
-      << "The main overlay must only use color space supported by the "
-         "device";
-
-  DCHECK(std::holds_alternative<gfx::OverlayTransform>(plane.transform));
-  DCHECK_EQ(std::get<gfx::OverlayTransform>(plane.transform),
-            gfx::OVERLAY_TRANSFORM_NONE);
-  DCHECK(plane.display_rect == ClipFromOrigin(plane.display_rect));
-
-  plane.transform = display_transform_;
-  const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
-      gfx::InvertOverlayTransform(display_transform_),
-      gfx::SizeF(viewport_size_));
-  plane.display_rect = display_inverse.MapRect(plane.display_rect);
-  plane.display_rect = gfx::RectF(gfx::ToEnclosingRect(plane.display_rect));
-
-  // Call the base class implementation.
-  OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(
-      output_surface_plane);
-}
-
 gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& candidate) const {
   // Should only be called after ProcessForOverlays on handled candidates.
@@ -192,6 +165,44 @@ gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
 
 bool OverlayProcessorSurfaceControl::SupportsFlipRotateTransform() const {
   return true;
+}
+
+void OverlayProcessorSurfaceControl::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  AdjustPrimaryPlaneForDisplayTransform(primary_plane);
+
+  // Android respects plane_z_order and order in the list shouldn't matter,
+  // but it surfaces the bug when the planes are not hidden properly. As we
+  // use only underlays, we should keep primary plane first so it would hide
+  // planes that are not supposed to be visible.
+  const auto insert_positon = candidates.begin();
+  candidates.insert(insert_positon, std::move(primary_plane));
+}
+
+void OverlayProcessorSurfaceControl::AdjustPrimaryPlaneForDisplayTransform(
+    OverlayCandidate& primary_plane) const {
+  // Apply the display transform hint which will be non-identity if output
+  // surface's `orientation_mode` is `kHardware` and the display's hardware
+  // orientation does not match the OS's logical orientation. This will allow us
+  // to draw into the primary plane in the orientation that allows the hardware
+  // to make use of hardware overlays.
+  DCHECK(gfx::SurfaceControl::SupportsColorSpace(primary_plane.color_space))
+      << "The main overlay must only use color space supported by the device";
+  DCHECK(
+      std::holds_alternative<gfx::OverlayTransform>(primary_plane.transform));
+  DCHECK_EQ(std::get<gfx::OverlayTransform>(primary_plane.transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
+  DCHECK(primary_plane.display_rect ==
+         ClipFromOrigin(primary_plane.display_rect));
+  primary_plane.transform = display_transform_;
+  const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
+      gfx::InvertOverlayTransform(display_transform_),
+      gfx::SizeF(viewport_size_));
+  primary_plane.display_rect =
+      display_inverse.MapRect(primary_plane.display_rect);
+  primary_plane.display_rect =
+      gfx::RectF(gfx::ToEnclosingRect(primary_plane.display_rect));
 }
 
 void OverlayProcessorSurfaceControl::SetDisplayTransformHint(

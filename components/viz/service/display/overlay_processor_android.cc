@@ -190,6 +190,13 @@ gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
   return ToEnclosedRect(overlay.display_rect);
 }
 
+void OverlayProcessorAndroid::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  // `OverlayProcessorAndroid` will never have a primary plane.
+  NOTREACHED();
+}
+
 void OverlayProcessorAndroid::TakeOverlayCandidates(
     OverlayCandidateList* candidate_list) {
   overlay_candidates_.swap(*candidate_list);

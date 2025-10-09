@@ -490,6 +490,15 @@ void OverlayProcessorOzone::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   }
 }
 
+void OverlayProcessorOzone::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  // Ozone DRM needs the primary plane as the first overlay when overlay
+  // testing.
+  const auto insert_positon = candidates.begin();
+  candidates.insert(insert_positon, std::move(primary_plane));
+}
+
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,

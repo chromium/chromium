@@ -309,36 +309,11 @@ void DirectRenderer::DrawFrame(
         "Compositing.DirectRenderer.OverlayProcessingUs",
         overlay_processing_time, kMinTime, kMaxTime, kTimeBuckets);
 
-    overlay_processor_->AdjustOutputSurfaceOverlay(primary_plane);
-
-    if (primary_plane) {
-#if BUILDFLAG(IS_OZONE)
-      // Ozone DRM needs the primary plane as the first overlay when overlay
-      // testing.
-      const auto insert_positon = current_frame()->overlay_list.begin();
-      current_frame()->overlay_list.insert(insert_positon,
-                                           std::move(primary_plane).value());
-#elif BUILDFLAG(IS_MAC)
-      // Mac doesn't use the plane_z_order field and it needs to have primary
-      // plane last in the list of overlays.
-      current_frame()->overlay_list.push_back(std::move(primary_plane).value());
-#elif BUILDFLAG(IS_ANDROID)
-      // Android respects plane_z_order and order in the list shouldn't matter,
-      // but it surfaces the bug when the planes are not hidden properly. As we
-      // use only underlays, we should keep primary plane first so it would hide
-      // planes that are not supposed to be visible.
-      const auto insert_positon = current_frame()->overlay_list.begin();
-      current_frame()->overlay_list.insert(insert_positon,
-                                           std::move(primary_plane).value());
-#else
-      // Other platforms respect plane_z_order so the list order doesn't matter.
-      current_frame()->overlay_list.push_back(std::move(primary_plane).value());
-#endif
-
 #if BUILDFLAG(IS_WIN)
-      has_primary_plane = true;
+    has_primary_plane = std::ranges::any_of(
+        current_frame()->overlay_list,
+        [](const auto& candidate) { return candidate.is_root_render_pass; });
 #endif
-    }
   }
 
   // Only reshape when we know we are going to draw. Otherwise, the reshape

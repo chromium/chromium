@@ -59,14 +59,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
-  // For Mac, if we successfully generated a candidate list for CALayerOverlay,
-  // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the std::optional instance so the instance can be reset.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OverlayCandidate>& output_surface_plane) override;
-
   gfx::CALayerResult GetCALayerErrorCode() const override;
 
  private:
@@ -82,9 +74,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   CALayerOverlayProcessor* GetOverlayProcessor() const {
     return ca_layer_overlay_processor_.get();
   }
-
- private:
-  bool output_surface_already_handled_;
 };
 
 }  // namespace viz
