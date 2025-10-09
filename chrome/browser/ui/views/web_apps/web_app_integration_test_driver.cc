@@ -58,6 +58,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -558,20 +560,21 @@ class BrowserAddedWaiter final : public BrowserListObserver {
   raw_ptr<Browser> browser_added_ = nullptr;
 };
 
-Browser* GetAppBrowserForAppId(const Profile* profile,
-                               const webapps::AppId& app_id) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto it = browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
-    if (browser->profile() != profile) {
-      continue;
-    }
-    if (AppBrowserController::IsForWebApp(browser, app_id)) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GetAppBrowserForAppId(const Profile* profile,
+                                              const webapps::AppId& app_id) {
+  BrowserWindowInterface* browser_for_app_id = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;  // continue iterating
+        }
+        if (AppBrowserController::IsForWebApp(browser, app_id)) {
+          browser_for_app_id = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_for_app_id;
 }
 
 content::WebContents* GetAnyWebContentsForAppId(const webapps::AppId& app_id) {
@@ -643,13 +646,17 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       LOG(INFO) << "Uninstall not completed yet.";
       return;
     }
-    Browser* app_browser = GetAppBrowserForAppId(profile_, app_id_);
+    BrowserWindowInterface* app_browser =
+        GetAppBrowserForAppId(profile_, app_id_);
     if (app_browser != nullptr) {
       LOG(INFO) << base::StringPrintf(
           "An app browser is still open at %p: IsAttemptingToClose(): %v, "
           "IsBrowserClosing(): %v, is_delete_scheduled(): %v",
-          app_browser, app_browser->IsAttemptingToCloseBrowser(),
-          app_browser->IsBrowserClosing(), app_browser->is_delete_scheduled());
+          app_browser,
+          app_browser->GetBrowserForMigrationOnly()
+              ->IsAttemptingToCloseBrowser(),
+          app_browser->GetBrowserForMigrationOnly()->IsBrowserClosing(),
+          app_browser->GetBrowserForMigrationOnly()->is_delete_scheduled());
       return;
     }
 
@@ -1860,7 +1867,8 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // If there already is an open app browser for this app the launch is not
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
-    app_browser_ = GetAppBrowserForAppId(profile(), app_id);
+    BrowserWindowInterface* bwi = GetAppBrowserForAppId(profile(), app_id);
+    app_browser_ = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
     bool had_open_browsers = false;
     for (auto* profile : GetAllProfiles()) {
       auto* provider = GetProviderForProfile(profile);
