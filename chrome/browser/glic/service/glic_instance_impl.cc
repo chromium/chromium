@@ -492,6 +492,7 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
     active_embedder_key_.reset();
     NotifyStateChange();
     NotifyPanelStateChanged();
+    host().PanelWasClosed();
   }
   return;
 }

@@ -820,7 +820,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttached) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
   RunTestSequence(WaitForHide(kGlicViewElementId));
 }
