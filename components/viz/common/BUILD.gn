@@ -304,7 +304,6 @@ viz_source_set("unit_tests") {
     "quads/offset_tag_unittest.cc",
     "quads/render_pass_io_unittest.cc",
     "resources/peak_gpu_memory_tracker_util_unittest.cc",
-    "resources/resource_sizes_unittest.cc",
     "resources/shared_image_format_unittest.cc",
     "resources/shared_image_format_utils_unittest.cc",
     "surfaces/child_local_surface_id_allocator_unittest.cc",
