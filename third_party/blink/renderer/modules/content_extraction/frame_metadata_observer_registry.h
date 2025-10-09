@@ -18,14 +18,19 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote_set.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
+#include "third_party/blink/renderer/core/dom/mutation_record.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-class HTMLMetaElement;
-class HTMLScriptElement;
 class LocalFrame;
-class MutationObserver;
 
 // Registry used to Add Observers for when frame metadata changes.
 class MODULES_EXPORT FrameMetadataObserverRegistry final
@@ -59,12 +64,160 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
       mojo::PendingRemote<mojom::blink::MetaTagsObserver> observer) override;
 
  private:
+  struct MetaTagsObserverTraits;
+  struct PaidContentObserverTraits;
+  template <typename Traits>
+  class FrameMetadataMutationObserver;
+
   class DomContentLoadedListener;
   class MetaTagAttributeObserver;
-  class MetaTagsMutationObserver;
   class PaidContentAttributeObserver;
-  class PaidContentMutationObserver;
   friend class DomContentLoadedListener;
+
+  struct MetaTagsObserverTraits {
+    using ElementType = HTMLMetaElement;
+    static void OnChanged(FrameMetadataObserverRegistry* registry) {
+      registry->OnMetaTagsChanged();
+    }
+    static void ObserveAttributes(FrameMetadataObserverRegistry* registry,
+                                  ElementType* element) {
+      registry->ObserveMetaTagAttributes(element);
+    }
+    static void StopObservingAttributes(FrameMetadataObserverRegistry* registry,
+                                        ElementType* element) {
+      registry->StopObservingMetaTagAttributes(element);
+    }
+    static void DisconnectAllAttributeObservers(
+        FrameMetadataObserverRegistry* registry) {
+      registry->DisconnectAllAttributeObservers();
+    }
+  };
+
+  struct PaidContentObserverTraits {
+    using ElementType = HTMLScriptElement;
+    static void OnChanged(FrameMetadataObserverRegistry* registry) {
+      registry->OnPaidContentMetadataChanged();
+    }
+    static void ObserveAttributes(FrameMetadataObserverRegistry* registry,
+                                  ElementType* element) {
+      registry->ObservePaidContentScriptAttributes(element);
+    }
+    static void StopObservingAttributes(FrameMetadataObserverRegistry* registry,
+                                        ElementType* element) {
+      registry->StopObservingPaidContentScriptAttributes(element);
+    }
+    static void DisconnectAllAttributeObservers(
+        FrameMetadataObserverRegistry* registry) {
+      registry->DisconnectAllPaidContentAttributeObservers();
+    }
+  };
+
+  template <typename Traits>
+  class FrameMetadataMutationObserver final
+      : public MutationObserver::Delegate {
+   public:
+    explicit FrameMetadataMutationObserver(
+        FrameMetadataObserverRegistry* registry)
+        : registry_(registry), observer_(MutationObserver::Create(this)) {}
+
+    void ObserveHead(HTMLHeadElement* head) {
+      if (observing_.Get() == head) {
+        return;
+      }
+      Disconnect();
+
+      observing_ = head;
+      if (!head) {
+        return;
+      }
+
+      // Start observing childList changes in the head.
+      MutationObserverInit* init = MutationObserverInit::Create();
+      init->setChildList(true);
+      init->setSubtree(true);
+      DummyExceptionStateForTesting exception_state;
+      observer_->observe(head, init, exception_state);
+      DCHECK(!exception_state.HadException());
+
+      // For all existing elements, set up attribute observers.
+      for (typename Traits::ElementType& element :
+           Traversal<typename Traits::ElementType>::ChildrenOf(*head)) {
+        Traits::ObserveAttributes(registry_, &element);
+      }
+    }
+
+    void ObserveDocument(Element* document_element) {
+      if (observing_.Get() == document_element) {
+        return;
+      }
+      observer_->disconnect();
+      MutationObserverInit* init = MutationObserverInit::Create();
+      init->setChildList(true);
+      DummyExceptionStateForTesting exception_state;
+      observer_->observe(document_element, init, exception_state);
+      DCHECK(!exception_state.HadException());
+      observing_ = document_element;
+    }
+
+    void Disconnect() {
+      observer_->disconnect();
+      observing_ = nullptr;
+      Traits::DisconnectAllAttributeObservers(registry_);
+    }
+
+    ExecutionContext* GetExecutionContext() const override {
+      return registry_->GetSupplementable()->GetExecutionContext();
+    }
+
+    void Deliver(const HeapVector<Member<MutationRecord>>& records,
+                 MutationObserver&) override {
+      bool needs_update = false;
+      for (const auto& record : records) {
+        if (record->type() == "childList") {
+          // This handles the case where the <head> element itself is added to
+          // the doc.
+          for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+            if (IsA<HTMLHeadElement>(record->addedNodes()->item(i))) {
+              Traits::OnChanged(registry_);
+              return;
+            }
+          }
+
+          // This handles meta tags added/removed inside the head.
+          for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+            if (auto* element = DynamicTo<typename Traits::ElementType>(
+                    record->addedNodes()->item(i))) {
+              Traits::ObserveAttributes(registry_, element);
+              needs_update = true;
+            }
+          }
+          for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
+            if (auto* element = DynamicTo<typename Traits::ElementType>(
+                    record->removedNodes()->item(i))) {
+              Traits::StopObservingAttributes(registry_, element);
+              needs_update = true;
+            }
+          }
+        }
+      }
+
+      if (needs_update) {
+        Traits::OnChanged(registry_);
+      }
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(registry_);
+      visitor->Trace(observer_);
+      visitor->Trace(observing_);
+      MutationObserver::Delegate::Trace(visitor);
+    }
+
+   private:
+    Member<FrameMetadataObserverRegistry> registry_;
+    Member<MutationObserver> observer_;
+    WeakMember<Node> observing_;
+  };
 
   void Bind(mojo::PendingReceiver<mojom::blink::FrameMetadataObserverRegistry>
                 receiver);
@@ -115,8 +268,10 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
 
-  Member<MetaTagsMutationObserver> meta_tags_mutation_observer_;
-  Member<PaidContentMutationObserver> paid_content_mutation_observer_;
+  Member<FrameMetadataMutationObserver<MetaTagsObserverTraits>>
+      meta_tags_mutation_observer_;
+  Member<FrameMetadataMutationObserver<PaidContentObserverTraits>>
+      paid_content_mutation_observer_;
 
   HeapHashMap<WeakMember<HTMLMetaElement>, Member<MutationObserver>>
       meta_tag_attribute_observers_;
