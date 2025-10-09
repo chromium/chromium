@@ -68,8 +68,35 @@ constexpr char kDefaultPath[] = "/defaultresponse";
 constexpr char kTreatAsPublicAddressPath[] =
     "/set-header?Content-Security-Policy: treat-as-public-address";
 
+// Path to a response with a wide-open CORS header. This can be fetched
+// cross-origin without triggering CORS violations.
+constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
+
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
+
+// Path to a cacheable variant of `kCorsPath`.
+constexpr char kCacheableCorsPath[] =
+    "/set-header"
+    "?Cache-Control: max-age%3D60"
+    "&Access-Control-Allow-Origin: *";
+
+// Returns a snippet of Javascript that fetch()es the given URL.
+//
+// The snippet evaluates to a boolean promise which resolves to true iff the
+// fetch was successful. The promise never rejects, as doing so makes it hard
+// to assert failure.
+std::string FetchSubresourceScript(const GURL& url) {
+  return JsReplace(
+      R"(fetch($1).then(
+           response => response.ok,
+           error => {
+             console.log('Error fetching ' + $1, error);
+             return false;
+           });
+      )",
+      url);
+}
 
 // A |ContentBrowserClient| implementation that allows modifying the return
 // value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
@@ -2506,6 +2533,336 @@ IN_PROC_BROWSER_TEST_P(
       warn_instead_of_block
           ? network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn
           : network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
+// =======================
+// SUBRESOURCE FETCH TESTS
+// =======================
+//
+// These tests verify the behavior of the browser when fetching subresources
+// across IP address spaces.
+
+// Check that the `--disable-web-security` command-line switch disables LNA
+// checks.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTestDisableWebSecurity,
+                       LocalNetworkRequestIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  // Check that the page can load a loopback resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from a secure page served from a public IP address
+//  - to a loopback IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromSecurePublicToLoopbackNoPermissionIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  // We load the resource from a secure origin to avoid running afoul of mixed
+  // content restrictions.
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(SecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from a secure page served from a local IP address
+//  - to a loopback IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromSecureLocalToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  // We load the resource from a secure origin to avoid running afoul of mixed
+  // content restrictions.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from a secure page served from a loopback IP address
+//  - to a loopback IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromSecureLoopbackToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  // Check that the page can load a loopback resource. We load it from a secure
+  // origin to avoid running afoul of mixed content restrictions.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(OtherSecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that when the content browser client overrides it,
+// requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a loopback IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    FromInsecureTreatAsPublicToLoopbackWithPolicySetToAllowIsNotBlocked) {
+  GURL url = InsecureLoopbackURL(kTreatAsPublicAddressPath);
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+
+  // Check that the page can load a loopback resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a loopback IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecureTreatAsPublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load a loopback resource.
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from an insecure page served by a public IP address
+//  - to loopback IP addresses
+//  are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecurePublicToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  // Check that the page cannot load a loopback resource.
+  EXPECT_EQ(false,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from an insecure page served by a local IP address
+//  - to loopback IP addresses
+//  are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecureLocalToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  // Check that the page can load a loopback resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from an insecure page served by a loopback IP address
+//  - to loopback IP addresses
+//  are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecureLoopbackToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  // Check that the page can load a loopback resource.
+  EXPECT_EQ(true,
+            EvalJs(root_frame_host(),
+                   FetchSubresourceScript(InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - embedded in an insecure page served from a loopback IP address
+//  - to loopback IP addresses
+//  are blocked.
+IN_PROC_BROWSER_TEST_F(
+    LocalNetworkAccessBrowserTest,
+    FromSecurePublicEmbeddedInInsecureLoopbackToLoopbackIsBlocked) {
+  // First navigate to an insecure page served by a loopback IP address.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  // Then embed a secure public iframe.
+  std::string script = JsReplace(
+      R"(
+        const iframe = document.createElement("iframe");
+        iframe.src = $1;
+        document.body.appendChild(iframe);
+      )",
+      SecurePublicURL(kDefaultPath));
+  EXPECT_TRUE(ExecJs(root_frame_host(), script));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // Even though the iframe document was loaded from a secure connection, the
+  // context is deemed insecure because it was embedded by an insecure context.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+
+  // The address space of the document, however, is not influenced by the
+  // parent's address space.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+
+  // Check that the iframe cannot load a loopback resource.
+  EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript(
+                                           InsecureLoopbackURL(kCorsPath))));
+}
+
+// This test verifies that requests:
+//  - from a non-secure context in the `loopback` IP address space
+//  - to a subresource cached from a `loopback` IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecureLoopbackToCachedLoopbackIsNotBlocked) {
+  GURL target = InsecureLoopbackURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that requests:
+//  - from a non-secure context in the `public` IP address space
+//  - to a subresource cached from a `loopback` IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromInsecurePublicToCachedLoopbackIsBlocked) {
+  GURL target = InsecureLoopbackURL(kCacheablePath);
+
+  // Cache the resource first, by fetching it from a document in the same IP
+  // address space. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Now navigate to a document in the `public` address space belonging to the
+  // same site as the previous document (this will use the same cache key).
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the resource, even from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      InsecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that requests:
+//  - from a secure context in the `loopback` IP address space
+//  - to a subresource cached from a `loopback` IP address
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromSecureLoopbackToCachedLoopbackIsNotBlocked) {
+  GURL target = SecureLoopbackURL(kCacheablePath);
+
+  // Cache the resource first. The server receives a GET request.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  // Check that the page can still load the subresource from cache. The server
+  // does not receive any new request.
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+}
+
+// This test verifies that requests:
+//  - from a secure page served in the `public` IP address space
+//  - to a subresource cached from a `loopback` IP address
+//  are blocked.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       FromSecurePublicToCachedLoopbackIsBlocked) {
+  GURL target = OtherSecureLoopbackURL(kCacheableCorsPath);
+
+  // Cache the resource first.
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+  EXPECT_THAT(
+      SecureLoopbackServer().request_observer().RequestMethodsForUrl(target),
+      ElementsAre(METHOD_GET));
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  // Check that the page cannot load the subresource from cache.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
+}
+
+// This test verifies that an insecure page in the `loopback` address space
+// cannot fetch a `file:` URL.
+//
+// This is relevant to Local Network Access, since `file:` URLs are considered
+// to be in the `loopback` IP address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       InsecurePageCannotRequestFile) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
+}
+
+// This test verifies that a secure page in the `loopback` address space cannot
+// fetch a `file:` URL.
+//
+// This is relevant to Local Network Access, since `file:` URLs are considered
+// to be in the `loopback` IP address space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       SecurePageCannotRequestFile) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(false, EvalJs(root_frame_host(), FetchSubresourceScript(GetTestUrl(
+                                                 "", "empty.html"))));
+}
+
+// This test verifies that if a page redirects after responding to a local
+// network request to a server in a different address space, the request does
+// not fail.
+// Regression test for https://crbug.com/1293891.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, Redirect) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  GURL target =
+      SecureLoopbackURL("/server-redirect?" + SecureLocalURL(kCorsPath).spec());
+
+  EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 }
 
 }  // namespace content
