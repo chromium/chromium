@@ -16,7 +16,6 @@
 +org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController
 +org.chromium.chrome.browser.device.DeviceConditions
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
-+org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl
 +org.chromium.chrome.browser.firstrun.FirstRunUtils
 +org.chromium.chrome.browser.homepage.HomepagePolicyManager
 +org.chromium.chrome.browser.incognito.IncognitoUtils

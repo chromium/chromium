@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
-import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerImpl;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -65,7 +65,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
+        shadows = {ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -243,7 +243,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void startsReparenting_WhenOpenInBrowserCalled_AndChromeCanHandleIntent() {
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         mNavigationController.openCurrentUrlInBrowser();
         verify(env.activity, never()).startActivity(any());
         verify(mTabController).detachAndStartReparenting(any(), any(), any());
@@ -251,7 +251,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_whenDoneReparenting() {
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         doNothing().when(mTabController).detachAndStartReparenting(any(), any(), captor.capture());
 
@@ -264,7 +264,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_whenDoneReparentingToAdjacentActivity() {
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(
                 () -> mAdjacentActivity);
         MultiWindowUtils.setActivitySupplierForTesting(() -> mAdjacentActivity);
@@ -277,7 +277,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanNotHandleIntent() {
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> false);
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
@@ -286,7 +286,7 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanHandleIntent_AndIsTwa() {
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
         when(env.intentDataProvider.getActivityType())
                 .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
 

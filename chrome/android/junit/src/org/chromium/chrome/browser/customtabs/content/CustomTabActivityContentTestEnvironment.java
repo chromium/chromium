@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
-import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -186,7 +185,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Override
     protected void finished(Description description) {
         AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
     }
 
     @SuppressWarnings("DirectInvocationOnMock")

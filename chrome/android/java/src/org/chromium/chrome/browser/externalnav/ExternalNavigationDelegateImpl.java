@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -44,6 +45,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** The main implementation of the {@link ExternalNavigationDelegate}. */
@@ -55,6 +57,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     private final @Nullable Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private boolean mIsTabDestroyed;
+
+    private static @Nullable Predicate<Intent> sWillChromeHandleIntentHookForTesting;
 
     public ExternalNavigationDelegateImpl(Tab tab) {
         mTab = tab;
@@ -88,6 +92,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return activityContext;
     }
 
+    public static void setWillChromeHandleIntentHookForTesting(Predicate<Intent> hook) {
+        sWillChromeHandleIntentHookForTesting = hook;
+        ResettersForTesting.register(() -> sWillChromeHandleIntentHookForTesting = null);
+    }
+
     /**
      * Determines whether Chrome would handle this Intent if fired immediately. Note that this does
      * not guarantee that Chrome actually will handle the intent, as another app may be installed,
@@ -99,6 +108,9 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
      * @return True if Chrome will definitely handle the intent, false otherwise.
      */
     public static boolean willChromeHandleIntent(Intent intent, boolean matchDefaultOnly) {
+        if (sWillChromeHandleIntentHookForTesting != null) {
+            return sWillChromeHandleIntentHookForTesting.test(intent);
+        }
         // Early-out if the intent targets Chrome.
         if (IntentUtils.intentTargetsSelf(intent)) return true;
 
