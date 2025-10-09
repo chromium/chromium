@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -33,9 +32,6 @@ class CORE_EXPORT MediaQueryParser {
                                            ExecutionContext*);
   static MediaQuerySet* ParseMediaCondition(CSSParserTokenStream&,
                                             ExecutionContext*);
-  static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenStream&,
-                                                 CSSParserMode,
-                                                 ExecutionContext*);
 
   // Passed to ConsumeFeature to determine which features are allowed.
   class FeatureSet {
@@ -96,7 +92,7 @@ class CORE_EXPORT MediaQueryParser {
     kMediaConditionParser,
   };
 
-  MediaQueryParser(ParserType, CSSParserMode, ExecutionContext*);
+  MediaQueryParser(ParserType, ExecutionContext*);
 
   // [ not | only ]
   static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenStream&);
@@ -167,7 +163,6 @@ class CORE_EXPORT MediaQueryParser {
   void UseCountRangeSyntax();
 
   ParserType parser_type_;
-  CSSParserMode mode_;
   ExecutionContext* execution_context_;
   // A fake CSSParserContext for use counter only.
   // TODO(xiaochengh): Plumb the real CSSParserContext from the document.

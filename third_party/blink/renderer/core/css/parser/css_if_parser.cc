@@ -20,7 +20,6 @@ using css_parsing_utils::ConsumeIfIdent;
 CSSIfParser::CSSIfParser(const CSSParserContext& context)
     : container_query_parser_(ContainerQueryParser(context)),
       media_query_parser_(MediaQueryParser::kMediaQuerySetParser,
-                          kHTMLStandardMode,
                           context.GetExecutionContext()),
       supports_query_parser_(CSSParserImpl(&context)) {}
 

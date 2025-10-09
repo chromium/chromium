@@ -463,8 +463,7 @@ MediaQueryEvaluatorTestCase g_float_cast_overflow_cases[] = {
 };
 
 void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
-                     const MediaQueryEvaluator* media_query_evaluator,
-                     CSSParserMode mode) {
+                     const MediaQueryEvaluator* media_query_evaluator) {
   MediaQuerySet* query_set = nullptr;
   for (const MediaQueryEvaluatorTestCase& test_case : test_cases) {
     if (String(test_case.input).empty()) {
@@ -472,17 +471,11 @@ void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
     } else {
       StringView str(test_case.input);
       CSSParserTokenStream stream(str);
-      query_set =
-          MediaQueryParser::ParseMediaQuerySetInMode(stream, mode, nullptr);
+      query_set = MediaQueryParser::ParseMediaQuerySet(stream, nullptr);
     }
     EXPECT_EQ(test_case.output, media_query_evaluator->Eval(*query_set))
         << "Query: " << test_case.input;
   }
-}
-
-void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
-                     const MediaQueryEvaluator* media_query_evaluator) {
-  TestMQEvaluator(test_cases, media_query_evaluator, kHTMLStandardMode);
 }
 
 TEST(MediaQueryEvaluatorTest, Cached) {

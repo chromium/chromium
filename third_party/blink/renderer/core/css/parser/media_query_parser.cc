@@ -125,32 +125,20 @@ MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
     CSSParserTokenStream& stream,
     ExecutionContext* execution_context) {
-  return MediaQueryParser(kMediaQuerySetParser, kHTMLStandardMode,
-                          execution_context)
-      .ParseImpl(stream);
-}
-
-MediaQuerySet* MediaQueryParser::ParseMediaQuerySetInMode(
-    CSSParserTokenStream& stream,
-    CSSParserMode mode,
-    ExecutionContext* execution_context) {
-  return MediaQueryParser(kMediaQuerySetParser, mode, execution_context)
+  return MediaQueryParser(kMediaQuerySetParser, execution_context)
       .ParseImpl(stream);
 }
 
 MediaQuerySet* MediaQueryParser::ParseMediaCondition(
     CSSParserTokenStream& stream,
     ExecutionContext* execution_context) {
-  return MediaQueryParser(kMediaConditionParser, kHTMLStandardMode,
-                          execution_context)
+  return MediaQueryParser(kMediaConditionParser, execution_context)
       .ParseImpl(stream);
 }
 
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
-                                   CSSParserMode mode,
                                    ExecutionContext* execution_context)
     : parser_type_(parser_type),
-      mode_(mode),
       execution_context_(execution_context),
       fake_context_(*MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode,
