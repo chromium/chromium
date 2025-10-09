@@ -38,9 +38,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
  public:
   ClientSideDetectionIntelligentScanDelegateDesktopTest() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionBrandAndIntentForScamDetection,
-         kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-         kClientSideDetectionShowScamVerdictWarning,
+        {kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
          kClientSideDetectionShowLlamaScamVerdictWarning},
         {kClientSideDetectionKillswitch});
     RegisterProfilePrefs(pref_service_.registry());
@@ -787,52 +785,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 }
 
 class
-    ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled
-    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
- public:
-  ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-        {kClientSideDetectionBrandAndIntentForScamDetection});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled,
-    ShouldNotRequestIntelligentScan_KeyboardLockRequested) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
-  // Disabled because kClientSideDetectionBrandAndIntentForScamDetection
-  // is disabled.
-  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateDesktopTestBrandAndIntentDisabled,
-    ShouldRequestIntelligentScan_IntelligentScanRequested) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::FORCE_REQUEST);
-  verdict.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
-  // kClientSideDetectionBrandAndIntentForScamDetection shouldn't affect
-  // intelligent scan requests.
-  EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-class
     ClientSideDetectionIntelligentScanDelegateDesktopTestLlamaForcedTriggerInfoDisabled
     : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
  public:
   ClientSideDetectionIntelligentScanDelegateDesktopTestLlamaForcedTriggerInfoDisabled() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionBrandAndIntentForScamDetection},
-        {kClientSideDetectionLlamaForcedTriggerInfoForScamDetection});
+        {}, {kClientSideDetectionLlamaForcedTriggerInfoForScamDetection});
   }
 
  protected:
@@ -864,32 +822,6 @@ TEST_F(
   EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
 }
 
-class
-    ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled
-    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
- public:
-  ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled() {
-    feature_list_.InitWithFeatures(
-        {}, {kClientSideDetectionBrandAndIntentForScamDetection,
-             kClientSideDetectionLlamaForcedTriggerInfoForScamDetection});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateDesktopTestBothFeatureFlagsDisabled,
-    NotListenToModelUpdateOnCreation) {
-  // Both feature flags are disabled, so we shouldn't listen to model updates.
-  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .Times(0);
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-
-  EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
-      /*log_failed_eligibility_reason=*/true));
-}
-
 class ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled
     : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
  public:
@@ -913,39 +845,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
 }
 
 class
-    ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled
-    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
- public:
-  ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled() {
-    feature_list_.InitWithFeatures(
-        {kClientSideDetectionShowLlamaScamVerdictWarning},
-        {kClientSideDetectionShowScamVerdictWarning});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateDesktopTestShowScamWarningDisabled,
-    ShouldShowScamWarning) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
-  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
-}
-
-class
     ClientSideDetectionIntelligentScanDelegateDesktopTestShowLlamaWarningDisabled
     : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
  public:
   ClientSideDetectionIntelligentScanDelegateDesktopTestShowLlamaWarningDisabled() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionShowScamVerdictWarning},
-        {kClientSideDetectionShowLlamaScamVerdictWarning});
+        {}, {kClientSideDetectionShowLlamaScamVerdictWarning});
   }
 
  protected:
@@ -961,32 +866,6 @@ TEST_F(
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
   EXPECT_TRUE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
-}
-
-class
-    ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled
-    : public ClientSideDetectionIntelligentScanDelegateDesktopTest {
- public:
-  ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled() {
-    feature_list_.InitWithFeatures(
-        {}, {kClientSideDetectionShowScamVerdictWarning,
-             kClientSideDetectionShowLlamaScamVerdictWarning});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    ClientSideDetectionIntelligentScanDelegateDesktopTestShowAllWarningDisabled,
-    ShouldShowScamWarning) {
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
 }
 

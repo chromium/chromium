@@ -218,10 +218,6 @@ extern const char kChangeUnfocusedPriorityDescription[];
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 
-extern const char kClientSideDetectionBrandAndIntentForScamDetectionName[];
-extern const char
-    kClientSideDetectionBrandAndIntentForScamDetectionDescription[];
-
 extern const char kClientSideDetectionShowScamVerdictWarningName[];
 extern const char kClientSideDetectionShowScamVerdictWarningDescription[];
 

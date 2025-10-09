@@ -3310,7 +3310,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   EXPECT_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
       .WillOnce(Return(false));
   // Because the delegate has disabled intelligent scan, we will
@@ -3343,7 +3342,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithEmptyResponse) {
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   SetInquireOnDeviceModelCallback(/*should_return_response=*/false);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -3373,7 +3371,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithFullResponse) {
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
@@ -3403,7 +3400,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT inquire the on-device model.
   EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
@@ -3435,7 +3431,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // The current inner text is too short. Threshold is set at
   // ClientSideDetectionHost::kInnerTextMinThresholdBytes.
   raw_delegate_->SetInnerText("text");
@@ -3470,7 +3465,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // Because the URL is on the HC allowlist, we will NOT inquire the
   // on-device model.
   EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _)).Times(0);
@@ -3504,7 +3498,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   EXPECT_CALL(*intelligent_scan_delegate_, IsOnDeviceModelAvailable(_))
       .WillOnce(Return(false));
   // Because the on-device model is unavailable, we will NOT inquire the
@@ -3533,54 +3526,12 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 }
 
-TEST_F(
-    ClientSideDetectionHostScamDetectionTest,
-    ScamExperimentVerdictOnClientPhishingResponseButDoesntShowBlockingPageDueToDisabledDelegate) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
-              {kClientSideDetectionShowScamVerdictWarning});
-  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/true,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
-  EXPECT_CALL(*intelligent_scan_delegate_,
-              ShouldShowScamWarning(std::optional<IntelligentScanVerdict>(
-                  IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1)))
-      .WillOnce(Return(false));
-  // We do not expect the blocking page to pop up because
-  // kClientSideDetectionShowScamVerdictWarning is disabled.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
-                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::
-          KEYBOARD_LOCK_REQUESTED,
-      /*is_on_device_model_available=*/true,
-      /*model_has_successful_response=*/true,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
-}
-
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        ScamExperimentVerdictOnClientPhishingResponseAndShowBlockingPage) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionShowScamVerdictWarning},
-              {});
   SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
@@ -3624,8 +3575,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {});
   CacheForcedTriggerInfo(
@@ -3963,10 +3913,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowScamVerdictWarning,
                kClientSideDetectionShowLlamaScamVerdictWarning},
               {});
 
@@ -4011,10 +3959,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
-               kClientSideDetectionShowScamVerdictWarning,
                kClientSideDetectionShowLlamaScamVerdictWarning},
               {});
   SetInquireOnDeviceModelCallback(/*should_return_response=*/true);

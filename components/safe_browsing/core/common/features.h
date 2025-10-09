@@ -38,10 +38,6 @@ BASE_DECLARE_FEATURE(kAutoRevokeSuspiciousNotification);
 // Enables Bundled Security Settings UI on chrome://settings/security
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 
-// Create a response containing the brand and the intent of the page using the
-// on-device model LLM.
-BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
-
 // Expand CSPP beyond phishing and trigger when clipboard copy API is called on
 // the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionClipboardCopyApi);
@@ -103,10 +99,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo);
 // Show a warning to the user based on the
 // IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2.
 BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);
-
-// Show a warning to the user that factors in the IntelligentScanVerdict from
-// ClientPhishingResponse.
-BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarning);
 
 #if BUILDFLAG(IS_ANDROID)
 // Show a warning to the user that factors in the IntelligentScanVerdict from

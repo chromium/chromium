@@ -76,10 +76,8 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
   }
 
   bool is_keyboard_lock_requested =
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionBrandAndIntentForScamDetection) &&
       verdict->client_side_detection_type() ==
-          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
 
   bool is_intelligent_scan_requested =
       base::FeatureList::IsEnabled(
@@ -107,30 +105,20 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::ShouldShowScamWarning(
     return false;
   }
 
-  return (base::FeatureList::IsEnabled(
-              kClientSideDetectionShowScamVerdictWarning) &&
-          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1) ||
+  return *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1 ||
          (base::FeatureList::IsEnabled(
               kClientSideDetectionShowLlamaScamVerdictWarning) &&
           *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2) ||
-         ((base::FeatureList::IsEnabled(
-               kClientSideDetectionShowScamVerdictWarning) ||
-           base::FeatureList::IsEnabled(
-               kClientSideDetectionShowLlamaScamVerdictWarning)) &&
-          *verdict ==
-              IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+         *verdict ==
+             IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::OnPrefsUpdated() {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
-  bool is_feature_enabled =
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionBrandAndIntentForScamDetection) ||
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
-  if (IsEnhancedProtectionEnabled(*pref_) && is_feature_enabled) {
+
+  if (IsEnhancedProtectionEnabled(*pref_)) {
     StartListeningToOnDeviceModelUpdate();
   } else {
     StopListeningToOnDeviceModelUpdate();

@@ -45,9 +45,6 @@ BASE_FEATURE(kAutoRevokeSuspiciousNotification,
 
 BASE_FEATURE(kBundledSecuritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionClipboardCopyApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate{
@@ -105,9 +102,6 @@ BASE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClientSideDetectionShowScamVerdictWarning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
