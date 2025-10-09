@@ -275,22 +275,58 @@ StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
       url_value.ValueForSerialization());
 }
 
+namespace {
+
+struct BasicShapeAndCoordBox {
+  STACK_ALLOCATED();
+
+ public:
+  BasicShape* shape;
+  CoordBox coord_box;
+};
+
+BasicShapeAndCoordBox BasicShapeAndCoordBoxForValue(StyleResolverState& state,
+                                                    const CSSValue& value) {
+  BasicShape* shape = nullptr;
+  CoordBox coord_box = CoordBox::kBorderBox;
+  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+    shape = BasicShapeForValue(state, pair->First());
+    coord_box = To<CSSIdentifierValue>(pair->Second()).ConvertTo<CoordBox>();
+  } else {
+    shape = BasicShapeForValue(state, value);
+  }
+  return {shape, coord_box};
+}
+
+}  // namespace
+
 StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
     StyleResolverState& state,
     const CSSValue& value) {
+  // Either:
+  // - none;
+  // - a single shape (meaning default coord box is border-box);
+  // - a pair of shape + coord_box;
+  // - list of either: two pairs of shape + coord_box or two shapes.
   if (value.IsIdentifierValue()) {
     CHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
     return nullptr;
   }
 
-  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    DCHECK_EQ(list->length(), 2u);
+    auto [outer_shape, outer_coord_box] =
+        BasicShapeAndCoordBoxForValue(state, list->First());
+    auto [inner_shape, inner_coord_box] =
+        BasicShapeAndCoordBoxForValue(state, list->Last());
     return MakeGarbageCollected<StyleBorderShape>(
-        *BasicShapeForValue(state, pair->First()),
-        BasicShapeForValue(state, pair->Second()));
+        *outer_shape, inner_shape, outer_coord_box, inner_coord_box);
   }
 
+  auto [outer_shape, outer_coord_box] =
+      BasicShapeAndCoordBoxForValue(state, value);
   return MakeGarbageCollected<StyleBorderShape>(
-      *BasicShapeForValue(state, value));
+      *outer_shape, outer_shape, outer_coord_box, outer_coord_box);
 }
 
 LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
