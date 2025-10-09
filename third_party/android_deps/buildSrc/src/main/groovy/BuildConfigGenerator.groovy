@@ -879,6 +879,24 @@ No modifications.
                 sb.append('  include_java_resources = true\n')
                 sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]\n')
                 break
+            case 'io_grpc_grpc_core':
+                // Classes are loaded both by reflection & by ServiceLoader.load(),
+                // so need to strip out the class and the configs.
+                sb.append('  # Needed only for gRPC networking (not IPC).\n')
+                sb.append('  jar_excluded_patterns = [\n')
+                sb.append('    "META-INF/services/io.grpc.NameResolverProvider",\n')
+                sb.append('    "io/grpc/internal/DnsNameResolver*",\n')
+                sb.append('  ]\n')
+                break
+            case 'io_grpc_grpc_binder':
+                // Classes are loaded both by reflection & by ServiceLoader.load(),
+                // so need to strip out the class and the configs.
+                sb.append('  # https://crbug.com/450243304.\n')
+                sb.append('  jar_excluded_patterns = [\n')
+                sb.append('    "META-INF/services/io.grpc.NameResolverProvider",\n')
+                sb.append('    "io/grpc/binder/internal/IntentNameResolver*",\n')
+                sb.append('  ]\n')
+                break
         }
     }
 

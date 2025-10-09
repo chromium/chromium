@@ -50,6 +50,8 @@ _IGNORE_WARNINGS = (
         r'PaymentRequest[BH]',
         # This service is defined in Native not Java.
         r'NativeServiceSandboxedProcessService',
+        # TODO(450243304): Temporary.
+        r'DnsNameResolverProvider',
     ]) + ')',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
