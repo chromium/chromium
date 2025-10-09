@@ -28,6 +28,10 @@ class CreditCardCvcAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class WebViewAutofillClientIOS;
 class PaymentsDataManager;
+class CreditCardRiskBasedAuthenticator;
+struct CardUnmaskChallengeOption;
+struct VirtualCardEnrollmentFields;
+class VirtualCardEnrollmentManager;
 
 namespace payments {
 
@@ -193,7 +197,12 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
+  std::unique_ptr<VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager_;
+
   const raw_ref<web::WebState> web_state_;
+
+  PrefService* GetPrefService() const;
 };
 
 }  // namespace payments

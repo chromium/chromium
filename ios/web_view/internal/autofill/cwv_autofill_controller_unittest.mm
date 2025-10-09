@@ -9,7 +9,9 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/mock_callback.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -39,8 +41,10 @@
 #import "ios/web/public/test/web_test.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "ios/web_view/internal/autofill/cwv_card_unmask_challenge_option_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
@@ -552,5 +556,108 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
   [delegate verify];
 }
 
+// Tests that the delegate is correctly called for showing the unmask
+// authenticator selector.
+TEST_F(CWVAutofillControllerTest, ShowUnmaskAuthenticatorSelectorWithOptions) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  std::vector<autofill::CardUnmaskChallengeOption> challenge_options;
+
+  autofill::CardUnmaskChallengeOption cvc_option;
+  cvc_option.id =
+      autofill::CardUnmaskChallengeOption::ChallengeOptionId("cvc_id");
+  cvc_option.type = autofill::CardUnmaskChallengeOptionType::kCvc;
+  cvc_option.challenge_info =
+      u"Enter the 3-digit code on the back of your card";
+  cvc_option.challenge_input_length = 3;
+  cvc_option.cvc_position = autofill::CvcPosition::kBackOfCard;
+  challenge_options.push_back(cvc_option);
+
+  autofill::CardUnmaskChallengeOption sms_option;
+  sms_option.id =
+      autofill::CardUnmaskChallengeOption::ChallengeOptionId("sms_otp_id");
+  sms_option.type = autofill::CardUnmaskChallengeOptionType::kSmsOtp;
+  sms_option.challenge_info = u"Send OTP to ••••1234";
+  sms_option.challenge_input_length = 6;
+  challenge_options.push_back(sms_option);
+
+  // Use MockOnceCallback for the C++ callbacks
+  base::MockOnceCallback<void(const std::string&)> acceptCallback;
+  base::MockOnceCallback<void()> cancelCallback;
+
+  __block void (^capturedAcceptBlock)(NSString*);
+  __block void (^capturedCancelBlock)(void);
+
+  OCMExpect([delegate autofillController:autofill_controller_
+      showUnmaskCreditCardAuthenticatorWithChallengeOptions:
+          [OCMArg checkWithBlock:^BOOL(id obj) {
+            NSArray<CWVCardUnmaskChallengeOption*>* objcOptions = obj;
+            // Use EXPECT so the test continues and returns YES,
+            // but records a failure if counts don't match.
+            EXPECT_EQ(objcOptions.count, challenge_options.size());
+            if (objcOptions.count != challenge_options.size()) {
+              return YES;  // Return early if counts mismatch to avoid crash
+            }
+
+            for (size_t i = 0; i < challenge_options.size(); ++i) {
+              const auto& cppOption = challenge_options[i];
+              CWVCardUnmaskChallengeOption* objcOption = objcOptions[i];
+
+              EXPECT_TRUE([base::SysUTF8ToNSString(cppOption.id.value())
+                  isEqualToString:objcOption.identifier]);
+              EXPECT_EQ(static_cast<int>(cppOption.type),
+                        static_cast<int>(objcOption.type));
+              EXPECT_TRUE([base::SysUTF16ToNSString(cppOption.challenge_info)
+                  isEqualToString:objcOption.challengeLabel]);
+              EXPECT_EQ(cppOption.challenge_input_length,
+                        static_cast<size_t>(objcOption.challengeInputLength));
+            }
+            return YES;  // OCMock argument check block must return YES on
+                         // success.
+          }]
+                                                acceptBlock:
+                                                    [OCMArg
+                                                        checkWithBlock:^BOOL(
+                                                            id obj) {
+                                                          capturedAcceptBlock =
+                                                              [obj copy];
+                                                          return YES;
+                                                        }]
+                                                cancelBlock:
+                                                    [OCMArg
+                                                        checkWithBlock:^BOOL(
+                                                            id obj) {
+                                                          capturedCancelBlock =
+                                                              [obj copy];
+                                                          return YES;
+                                                        }]]);
+
+  [autofill_controller_
+      showUnmaskAuthenticatorSelectorWithOptions:challenge_options
+                                  acceptCallback:acceptCallback.Get()
+                                  cancelCallback:cancelCallback.Get()];
+
+  [delegate verify];
+
+  // Use GoogleTest assertions for checking block capture
+  ASSERT_NE(capturedAcceptBlock, nullptr) << "Accept block was not captured";
+  ASSERT_NE(capturedCancelBlock, nullptr) << "Cancel block was not captured";
+
+  // Test invoking the captured accept block
+  NSString* testOptionId = @"selected_option_id";
+  // Expect the C++ acceptCallback to be Run with the correct string
+  EXPECT_CALL(acceptCallback, Run(base::SysNSStringToUTF8(testOptionId)));
+  if (capturedAcceptBlock) {
+    capturedAcceptBlock(testOptionId);
+  }
+
+  // Test invoking the captured cancel block
+  // Expect the C++ cancelCallback to be Run.
+  EXPECT_CALL(cancelCallback, Run());
+  if (capturedCancelBlock) {
+    capturedCancelBlock();
+  }
+}
 }  // namespace
 }  // namespace ios_web_view

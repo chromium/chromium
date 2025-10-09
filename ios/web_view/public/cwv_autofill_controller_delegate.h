@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVCreditCardSaver;
 @class CWVCreditCardVerifier;
 @class CWVPassword;
+@class CWVCardUnmaskChallengeOption;
 
 // User decision for saving / updating an autofill profile.
 typedef NS_ENUM(NSInteger, CWVAutofillProfileUserDecision) {
@@ -227,6 +228,16 @@ typedef void (^ProceduralBlock)(void);
 - (void)autofillController:(CWVAutofillController*)autofillController
     closeProgressDialogWithConfirmation:(BOOL)showConfirmation
                              completion:(ProceduralBlock)completion;
+
+// Called when the user needs to select an option to verify a credit card.
+- (void)autofillController:(CWVAutofillController*)autofillController
+    showUnmaskCreditCardAuthenticatorWithChallengeOptions:
+        (NSArray<CWVCardUnmaskChallengeOption*>*)options
+                                              acceptBlock:
+                                                  (void (^)(NSString* option))
+                                                      acceptBlock
+                                              cancelBlock:
+                                                  (ProceduralBlock)cancelBlock;
 
 @end
 

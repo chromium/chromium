@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -68,6 +69,15 @@ class CreditCard;
 - (void)closeAutofillProgressDialogWithConfirmation:(BOOL)showConfirmation
                                  completionCallback:(base::OnceClosure)callback;
 
+// Bridge for PaymentsAutofillClient's method
+// `ShowUnmaskAuthenticatorSelectionDialog`.
+- (void)showUnmaskAuthenticatorSelectorWithOptions:
+            (const std::vector<autofill::CardUnmaskChallengeOption>&)options
+                                    acceptCallback:
+                                        (base::OnceCallback<void(
+                                             const std::string&)>)acceptCallback
+                                    cancelCallback:
+                                        (base::OnceClosure)cancelCallback;
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_AUTOFILL_CLIENT_IOS_BRIDGE_H_

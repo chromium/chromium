@@ -16,6 +16,7 @@
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -29,6 +30,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -37,8 +39,10 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "ios/web_view/internal/autofill/cwv_card_unmask_challenge_option_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
@@ -405,9 +409,27 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
+
+  web::WebState* currentWebState = _webState;
+
   std::ranges::copy_if(
       suggestions, std::back_inserter(filtered_suggestions),
-      [](const autofill::Suggestion& suggestion) {
+      [currentWebState](const autofill::Suggestion& suggestion) {
+        if (!currentWebState) {
+          return false;
+        }
+        PrefService* prefService =
+            ios_web_view::WebViewBrowserState::FromBrowserState(
+                currentWebState->GetBrowserState())
+                ->GetPrefs();
+        if (prefService->GetBoolean(
+                ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+          return suggestion.type == autofill::SuggestionType::kAddressEntry ||
+                 suggestion.type ==
+                     autofill::SuggestionType::kCreditCardEntry ||
+                 suggestion.type ==
+                     autofill::SuggestionType::kVirtualCreditCardEntry;
+        }
         return suggestion.type == autofill::SuggestionType::kAddressEntry ||
                suggestion.type == autofill::SuggestionType::kCreditCardEntry;
       });
@@ -486,6 +508,43 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     [_verifier loadRiskData:std::move(callback)];
   } else if (_saver) {
     [_saver loadRiskData:std::move(callback)];
+  }
+}
+
+- (void)showUnmaskAuthenticatorSelectorWithOptions:
+            (const std::vector<autofill::CardUnmaskChallengeOption>&)
+                challenge_options
+                                    acceptCallback:
+                                        (base::OnceCallback<void(
+                                             const std::string&)>)acceptCallback
+                                    cancelCallback:
+                                        (base::OnceClosure)cancelCallback {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              showUnmaskCreditCardAuthenticatorWithChallengeOptions:acceptBlock
+                                                                   :cancelBlock
+                                                                   :)]) {
+    NSMutableArray<CWVCardUnmaskChallengeOption*>* options =
+        [NSMutableArray arrayWithCapacity:challenge_options.size()];
+    for (const auto& option : challenge_options) {
+      CWVCardUnmaskChallengeOption* objcOption =
+          [[CWVCardUnmaskChallengeOption alloc] initWithChallengeOption:option];
+      [options addObject:objcOption];
+    }
+
+    auto wrappedAcceptCallback = base::BindOnce(&base::SysNSStringToUTF8)
+                                     .Then(std::move(acceptCallback));
+    void (^acceptBlock)(NSString*) =
+        base::CallbackToBlock(std::move(wrappedAcceptCallback));
+
+    void (^cancelBlock)(void) =
+        base::CallbackToBlock(std::move(cancelCallback));
+
+    [_delegate autofillController:self
+        showUnmaskCreditCardAuthenticatorWithChallengeOptions:options
+                                                  acceptBlock:acceptBlock
+                                                  cancelBlock:cancelBlock];
   }
 }
 
