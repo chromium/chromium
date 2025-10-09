@@ -38,6 +38,8 @@ enum WrappablePointerTag : uint16_t {
   kGinPort,                          // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kJsBinding,                        // js_injection::JsBinding
+  kJsMessageEvent,                   // android_webview::JsMessageEvent
+  kJsSandboxMessagePort,             // android_webview::JsSandboxMessagePort
   kJSHookInterface,                  // extensions::JSHookInterface
   kLastErrorObject,                  // extensions::LastErrorObject
   kLocalStorageArea,                 // extensions::LocalStorageArea

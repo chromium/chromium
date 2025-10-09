@@ -10,13 +10,16 @@
 #include <string>
 #include <unordered_map>
 
+#include "android_webview/js_sandbox/service/js_sandbox_message_port.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8-promise.h"
@@ -42,6 +45,7 @@ namespace android_webview {
 class FdWithLength;
 class JsSandboxArrayBufferAllocator;
 class JsSandboxIsolateCallback;
+class JsSandboxMessagePort;
 
 class JsSandboxIsolate {
  public:
@@ -69,6 +73,17 @@ class JsSandboxIsolate {
   // May enable or disable inspection, as needed.
   void SetConsoleEnabled(JNIEnv* env,
                          jboolean enable);
+
+  void ProvideMessagePort(
+      JNIEnv* env,
+      std::string name,
+      const base::android::JavaParamRef<jobject>& j_message_port);
+
+  gin::ContextHolder* GetContextHolder();
+
+  v8::Isolate* GetIsolate();
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetIsolateTaskRunner();
 
  private:
   class InspectorClient;
@@ -135,6 +150,16 @@ class JsSandboxIsolate {
       std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver);
 
   void ConsumeNamedDataAsArrayBuffer(gin::Arguments* args);
+
+  // Retrieves a MessagePort instance by its name.
+  //
+  // If set via provideMessagePort, the port instance is retrieved by its name.
+  // If no MessagePort with the specified name exists, the returned Promise will
+  // resolve once the port becomes available. If the port exists, the returned
+  // Promise will resolve with the already existing port. This will happen even
+  // if you call with the same port name repeatedly.
+  void GetNamedPort(gin::Arguments* args);
+
   v8::Local<v8::ObjectTemplate> CreateAndroidNamespaceTemplate(
       v8::Isolate* isolate);
 
@@ -153,6 +178,10 @@ class JsSandboxIsolate {
   void EnableOrDisableInspectorAsNeeded();
   void SetConsoleEnabledOnControlThread(bool enable);
   void SetConsoleEnabledOnIsolateThread(bool enable);
+
+  void ProvideMessagePortOnIsolateThread(
+      std::string name,
+      const base::android::ScopedJavaGlobalRef<jobject> j_message_port);
 
   // Remove a callback from the ongoing_evaluation_callbacks_ set.
   //
@@ -218,6 +247,13 @@ class JsSandboxIsolate {
       ongoing_evaluation_callbacks_;
 
   bool console_enabled_;
+
+  base::flat_map<std::string, cppgc::Persistent<JsSandboxMessagePort>>
+      message_ports_;
+  base::flat_map<
+      std::string,
+      std::vector<std::unique_ptr<v8::Global<v8::Promise::Resolver>>>>
+      pending_port_requests_;
 
   // Inspector objects should be destructed before anything they're inspecting,
   // so they are later in the field list.

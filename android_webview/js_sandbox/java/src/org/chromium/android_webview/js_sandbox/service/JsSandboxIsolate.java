@@ -8,10 +8,12 @@ import android.content.res.AssetFileDescriptor;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
+import androidx.javascriptengine.common.MessagePortInternal;
 import androidx.javascriptengine.common.Utils;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxConsoleCallback;
@@ -26,6 +28,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -46,6 +50,9 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     private long mJsSandboxIsolate;
 
     @Nullable private final IJsSandboxIsolateClient mIsolateClient;
+
+    private final ExecutorService mExecutorService =
+            Executors.newSingleThreadExecutor(r -> new Thread(r, "MessagePortIO"));
 
     JsSandboxIsolate() {
         this(0);
@@ -229,6 +236,25 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         }
     }
 
+    @Override
+    public IMessagePort provideMessagePort(String name, IMessagePort port) {
+        synchronized (mLock) {
+            if (mJsSandboxIsolate == 0) {
+                throw new IllegalStateException(
+                        "provideMessagePort(String, IMessagePort) called after close()");
+            }
+
+            MessagePortInternal messagePortInternal =
+                    new MessagePortInternal(mExecutorService, Integer.MAX_VALUE);
+            messagePortInternal.setRemoteIMessagePort(port);
+
+            JsSandboxIsolateJni.get()
+                    .provideMessagePort(mJsSandboxIsolate, name, messagePortInternal);
+
+            return messagePortInternal.getLocalIMessagePort();
+        }
+    }
+
     // Notify the client side that the isolate should be terminated.
     //
     // Returns true if the client supports and received the onTerminated notification. (It is OK to
@@ -257,11 +283,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         JsSandboxIsolateJni.get().initializeEnvironment();
     }
 
-    @Override
-    public IMessagePort provideMessagePort(String name, IMessagePort port) {
-        throw new UnsupportedOperationException();
-    }
-
     @NativeMethods
     public interface Natives {
         long createNativeJsSandboxIsolateWrapper(
@@ -286,5 +307,10 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         boolean provideNamedData(long nativeJsSandboxIsolate, String name, int fd, int length);
 
         void setConsoleEnabled(long nativeJsSandboxIsolate, boolean enable);
+
+        void provideMessagePort(
+                long nativeJsSandboxIsolate,
+                @JniType("std::string") String name,
+                MessagePortInternal messagePortInternal);
     }
 }

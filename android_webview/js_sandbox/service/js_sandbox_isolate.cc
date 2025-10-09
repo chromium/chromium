@@ -554,15 +554,20 @@ v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
     v8::Isolate* isolate) {
   v8::Local<v8::ObjectTemplate> android_namespace_template =
       v8::ObjectTemplate::New(isolate);
-  v8::Local<v8::ObjectTemplate> consume_template =
+  v8::Local<v8::ObjectTemplate> android_object_template =
       v8::ObjectTemplate::New(isolate);
-  consume_template->Set(
+  android_object_template->Set(
       isolate, "consumeNamedDataAsArrayBuffer",
       gin::CreateFunctionTemplate(
           isolate,
           base::BindRepeating(&JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer,
                               base::Unretained(this))));
-  android_namespace_template->Set(isolate, "android", consume_template);
+  android_object_template->Set(
+      isolate, "getNamedPort",
+      gin::CreateFunctionTemplate(
+          isolate, base::BindRepeating(&JsSandboxIsolate::GetNamedPort,
+                                       base::Unretained(this))));
+  android_namespace_template->Set(isolate, "android", android_object_template);
   return android_namespace_template;
 }
 
@@ -919,6 +924,44 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
   args->Return(promise);
 }
 
+void JsSandboxIsolate::GetNamedPort(gin::Arguments* args) {
+  v8::Isolate* isolate = args->isolate();
+  v8::Global<v8::Promise::Resolver> global_resolver(
+      isolate, v8::Promise::Resolver::New(isolate->GetCurrentContext())
+                   .ToLocalChecked());
+
+  if (args->Length() != 1) {
+    args->ThrowTypeError("getNamedPort requires exactly one argument.");
+    return;
+  }
+  std::string name;
+  if (!args->GetNext(&name)) {
+    args->ThrowTypeError("Invalid argument type.");
+    return;
+  }
+
+  cppgc::Persistent<android_webview::JsSandboxMessagePort> message_port;
+  v8::Local<v8::Promise> promise = global_resolver.Get(isolate)->GetPromise();
+  args->Return(promise);
+
+  auto entry = message_ports_.find(name);
+  if (entry != message_ports_.end()) {
+    message_port = entry->second;
+  } else {
+    pending_port_requests_[name].push_back(
+        std::make_unique<v8::Global<v8::Promise::Resolver>>(isolate,
+                                                            global_resolver));
+  }
+
+  if (message_port) {
+    v8::Local<v8::Value> v8_message_port =
+        gin::ConvertToV8(isolate, message_port.Get()).ToLocalChecked();
+    global_resolver.Get(isolate)
+        ->Resolve(context_holder_->context(), v8_message_port)
+        .ToChecked();
+  }
+}
+
 // Called from isolate thread.
 [[noreturn]] size_t JsSandboxIsolate::NearHeapLimitCallback(
     void* data,
@@ -1109,6 +1152,62 @@ const scoped_refptr<JsSandboxIsolateCallback>& JsSandboxIsolate::UseCallback(
   const size_t removed = ongoing_evaluation_callbacks_.erase(callback);
   CHECK_EQ(removed, size_t{1});
   return callback;
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::ProvideMessagePortOnIsolateThread(
+    std::string name,
+    const base::android::ScopedJavaGlobalRef<jobject> j_message_port) {
+  v8::Isolate* isolate = isolate_holder_->isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Context::Scope context_scope(context_holder_->context());
+
+  android_webview::JsSandboxMessagePort* message_port =
+      JsSandboxMessagePort::Create(this, j_message_port);
+  std::vector<std::unique_ptr<v8::Global<v8::Promise::Resolver>>>
+      resolvers_to_process;
+
+  message_ports_.emplace(name, message_port);
+  auto entry = pending_port_requests_.find(name);
+  if (entry != pending_port_requests_.end()) {
+    resolvers_to_process = std::move(entry->second);
+    pending_port_requests_.erase(entry);
+  }
+
+  for (const auto& resolver_ptr : resolvers_to_process) {
+    v8::Local<v8::Value> v8_message_port =
+        gin::ConvertToV8(isolate, message_port).ToLocalChecked();
+    resolver_ptr->Get(isolate)
+        ->Resolve(context_holder_->context(), v8_message_port)
+        .ToChecked();
+  }
+}
+
+// Called from binder thread
+void JsSandboxIsolate::ProvideMessagePort(
+    JNIEnv* env,
+    std::string name,
+    const base::android::JavaParamRef<jobject>& j_message_port) {
+  isolate_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &JsSandboxIsolate::ProvideMessagePortOnIsolateThread,
+          base::Unretained(this), std::move(name),
+          base::android::ScopedJavaGlobalRef<jobject>(j_message_port)));
+}
+
+// Called from isolate thread
+gin::ContextHolder* JsSandboxIsolate::GetContextHolder() {
+  return context_holder_.get();
+}
+
+v8::Isolate* JsSandboxIsolate::GetIsolate() {
+  return isolate_holder_->isolate();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+JsSandboxIsolate::GetIsolateTaskRunner() {
+  return isolate_task_runner_;
 }
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {

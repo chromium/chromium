@@ -32,13 +32,15 @@ public class JsSandboxService extends Service {
                     IJsSandboxService.CONSOLE_MESSAGING,
                     IJsSandboxService.ISOLATE_CLIENT,
                     IJsSandboxService.CONSOLE_MESSAGING,
-                    IJsSandboxService.EVALUATE_FROM_FD);
+                    IJsSandboxService.EVALUATE_FROM_FD,
+                    IJsSandboxService.MESSAGE_PORTS);
 
     /**
      * Feature for {@link #isClientSideFeatureSupported(String)}.
-     * <p>
-     * When this feature is present, consoleMessage and consoleClear notifications are supported by
-     * the client.
+     *
+     * <p>When this feature is present, consoleMessage and consoleClear notifications are supported
+     * by the client.
+     *
      * @hide
      */
     public static final String JS_FEATURE_CONSOLE_MESSAGING = "JS_FEATURE_CONSOLE_MESSAGING";
