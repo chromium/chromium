@@ -62,8 +62,11 @@ void RunJavaCallbackLoadAllTabs(
 
     base::Token tab_group_token(tab_state.tab_group_id_high(),
                                 tab_state.tab_group_id_low());
-    base::android::ScopedJavaLocalRef<jobject> j_tab_group_id =
-        base::android::TokenAndroid::Create(env, tab_group_token);
+    base::android::ScopedJavaLocalRef<jobject> j_tab_group_id;
+    if (!tab_group_token.is_zero()) {
+      j_tab_group_id =
+          base::android::TokenAndroid::Create(env, tab_group_token);
+    }
 
     base::android::ScopedJavaLocalRef<jobject> j_on_tab_created_callback =
         base::android::ToJniCallback(
