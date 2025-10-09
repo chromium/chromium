@@ -69,7 +69,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -154,9 +154,6 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
-// Disable TrackingProtection3pcd as we use prefs instead of the feature in
-// these tests.
-@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
@@ -409,14 +406,6 @@ public class PageInfoViewTest {
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setInteger(COOKIE_CONTROLS_MODE, value);
-                });
-    }
-
-    private void enableTrackingProtection() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, true);
                 });
     }
 
@@ -705,8 +694,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowWithPermissionsAndCookieBlockingTrackingProtection() throws IOException {
-        enableTrackingProtection();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_Permissions_TrackingProtection");
@@ -736,9 +725,9 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowTrackingProtectionStatusSubtitleOnAllowlistedSiteModeB()
             throws IOException {
-        enableTrackingProtection();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTpcdGrantEnforcement();
         mRenderTestRule.render(
@@ -909,8 +898,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
-        enableTrackingProtection();
         setBlockAll3pc(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1039,8 +1028,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowCookiesSubpageSubtitleLimitedInModeB() throws IOException {
-        enableTrackingProtection();
         setBlockAll3pc(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1255,8 +1244,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowCookiesSubpageWillBlockDescriptionInModeB() throws IOException {
-        enableTrackingProtection();
         setBlockAll3pc(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1281,8 +1270,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void cookiesSubpageShowsGrantDescriptionForAllowlistedSiteInModeB() throws IOException {
-        enableTrackingProtection();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTpcdGrantEnforcement();
         onView(withId(R.id.page_info_cookies_row)).perform(click());
@@ -1303,8 +1292,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
-        enableTrackingProtection();
         setBlockAll3pc(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1500,8 +1489,8 @@ public class PageInfoViewTest {
     /** Tests clearing cookies on the Tracking Protection page of the PageInfo UI. */
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void clearCookiesOnSubpageTrackingProtection() throws Exception {
-        enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
