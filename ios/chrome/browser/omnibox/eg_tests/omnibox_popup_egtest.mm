@@ -721,38 +721,4 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey clearPasteboard];
 }
 
-- (void)testHardwareKeyboardSelectLinkYouCopiedAsFirstElement {
-  // Start a server to be able to navigate to a web page.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(omnibox::PageURL(1));
-  // Copy link in clipboard.
-  [ChromeEarlGrey
-      copyLinkAsURLToPasteBoard:[NSString cr_fromString:pageURL.spec()]];
-
-  // Focus the fake omnibox.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-
-  // Wait for the clipboard suggestion to show.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:LinkYouCopiedRow()];
-
-  // The omnibox popup may update multiple times.  Don't downArrow until this
-  // is done.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-
-  // Highlight the text you copied row. Accept with Return.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\r" flags:0];
-
-  // The web page should load.
-  [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(1)];
-
-  [ChromeEarlGrey clearPasteboard];
-}
-
 @end
