@@ -4882,7 +4882,7 @@
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4378556263712303865">デバイスの登録</translation>
 <translation id="4378589147979399051">メインのキーボードによるマウスカーソルの操作</translation>
-<translation id="4379097572583973456">サイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。これらの他のサイトでもデータが保存される可能性があります。</translation>
+<translation id="4379097572583973456">サイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。これらの他のサイトもデータを保存できます。</translation>
 <translation id="4379281552162875326">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="4380648069038809855">全画面表示に切り替えました</translation>
@@ -5621,7 +5621,7 @@
 <translation id="4893522937062257019">ロック画面</translation>
 <translation id="4894055916816649664">10 分間のみ</translation>
 <translation id="4895799941222633551">ショートカットを作成(&amp;S)...</translation>
-<translation id="4898913189644355814">使用する言語や購入しようとしている商品がサイトに保存される場合があります。この情報は、該当のサイトとそのサブドメインで使用されます。</translation>
+<translation id="4898913189644355814">サイトが、あなたの使用言語や購入しようとしている商品を保存する場合があります。この情報は、該当のサイトとそのサブドメインで使用されます。</translation>
 <translation id="4899052647152077033">色を反転</translation>
 <translation id="4899696330053002588">広告が表示されます</translation>
 <translation id="490031510406860025">このサイトでは許可されていません</translation>
@@ -7695,7 +7695,7 @@
 <translation id="6415816101512323589">ローカルデータの復元をオンにしてデータを保護しますか？</translation>
 <translation id="6415900369006735853">スマートフォンを使ってインターネットに接続します</translation>
 <translation id="6416743254476733475">パソコンで許可またはブロックしてください。</translation>
-<translation id="6416856063840710198">利便性を高めるため、サイトでユーザーのアクティビティをデバイスに保存することがよくあります。<ph name="SETTINGS" /></translation>
+<translation id="6416856063840710198">利便性を高めるため、サイトがあなたのアクティビティをお使いのデバイスに保存することがよくあります。<ph name="SETTINGS" /></translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6417468503703810114">デフォルトの動作</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> の以前のインストール バージョンに戻しています</translation>
@@ -8597,7 +8597,7 @@
 <translation id="7039912931802252762">Microsoft スマート カード ログオン</translation>
 <translation id="7039951224110875196">お子様用の Google アカウントを作成する</translation>
 <translation id="7039968672732182060">この Chromebook は、セキュリティ アップデートの提供が終了しました。最新のセキュリティとソフトウェアにアップグレードしましょう。特典の利用規約が適用されます。</translation>
-<translation id="7042116641003232070">デバイスへのデータの保存を許可しました</translation>
+<translation id="7042116641003232070">デバイスへのデータの保存が許可されています</translation>
 <translation id="7043108582968290193">完了しました。互換性のないアプリケーションは見つかりませんでした。</translation>
 <translation id="7044124535091449260">サイトアクセスの詳細</translation>
 <translation id="7044207729381622209">タブで表示中のものも含め、これらのサイトからログアウトします</translation>
@@ -9147,7 +9147,7 @@
 <translation id="744341768939279100">新しいプロファイルを作成</translation>
 <translation id="744366959743242014">データを読み込んでいます。これには数秒かかる場合があります。</translation>
 <translation id="7443806024147773267">Google アカウントにログインすれば、いつでもパスワードにアクセスできます。</translation>
-<translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{今日から Cookie のブロックを再開します}=1{明日から Cookie のブロックを再開します}other{# 日後に Cookie のブロックを再開します}}</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> を無効にする</translation>
 <translation id="7446716846072322308"><ph name="SITE_NAME" /> と関連サイトにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
@@ -9817,7 +9817,7 @@
 <translation id="7907502219904644296">アクセス権限を変更</translation>
 <translation id="7907837847548254634">フォーカス中の項目をハイライト表示する</translation>
 <translation id="7908378463497120834">外部ストレージ デバイスの少なくとも 1 つのパーティションがマウントできませんでした。</translation>
-<translation id="7908835530772972485">すべてのウィンドウを閉じるときにデータを削除する</translation>
+<translation id="7908835530772972485">すべてのウィンドウを閉じるとデータが削除されます</translation>
 <translation id="7909324225945368569">プロフィールの名前を変更</translation>
 <translation id="7909969815743704077">シークレット モードでダウンロード</translation>
 <translation id="7909986151924474987">このプロファイルを再インストールできなくなる可能性があります</translation>
@@ -11062,7 +11062,7 @@
 <translation id="8742998548129056176">送信されるのは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。この情報は Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743357966416354615">管理対象の開発環境（<ph name="GENERAL_NAME" />）</translation>
 <translation id="8744641000906923997">ローマ字</translation>
-<translation id="8745034592125932220">デバイスへのデータの保存を許可しない</translation>
+<translation id="8745034592125932220">デバイスへのデータの保存は許可されていません</translation>
 <translation id="8746654918629346731">「<ph name="EXTENSION_NAME" />」はリクエスト済みです</translation>
 <translation id="874689135111202667">{0,plural, =1{1 個のファイルをこのサイトにアップロードしますか？}other{# 個のファイルをこのサイトにアップロードしますか？}}</translation>
 <translation id="8748916845823567967"><ph name="SITE" /> により保存されたすべてのデータと Cookie が削除されます。</translation>
