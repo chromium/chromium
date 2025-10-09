@@ -520,6 +520,49 @@ class WebIdlSchemaTest(unittest.TestCase):
     }
     self.assertEqual(enum_expected, getType(schema, 'EnumType'))
 
+    expected_type_with_function = {
+        'name': 'callbackMember',
+        'type': 'function',
+        'parameters': [{
+            'name': 'stringArgument',
+            'type': 'string'
+        }]
+    }
+    self.assertEqual(
+        expected_type_with_function,
+        getType(schema,
+                'DictionaryWithCallbackMember')['properties']['callbackMember'])
+
+  # Tests that a schema that references a custom type that has not been defined
+  # causes an error to be thrown.
+  # TODO(crbug.com/450443604): This will likely have to change when adding
+  # support for shared types between schema files in WebIDL.
+  def testCustomTypeNotFound(self):
+    expected_error_regex = (
+        r'.* Typeref\(MissingType\): Could not find definition of referenced'
+        r' type "MissingType" for node.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/custom_type_not_found.idl',
+    )
+
+  # Tests that a schema referencing a typeref style type whose definition is not
+  # one of the valid IDL node classes (Dictionary, Enum, Callback) causes an
+  # error to be thrown.
+  def testInvalidTyperefType(self):
+    expected_error_regex = (
+        r'.* Typeref\(OnTestEvent\): Found a Typeref node referencing a node of'
+        r' type "Interface", but we only support Typerefs that reference'
+        r' Dictionary, Enum or Callback class nodes.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/invalid_typeref_type.idl',
+    )
+
   # Tests that a top level API comment is processed into a description
   # attribute, with HTML paragraph nodes added due to the blank commented line.
   def testApiDescriptionComment(self):

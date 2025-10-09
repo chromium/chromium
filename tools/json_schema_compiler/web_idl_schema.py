@@ -370,11 +370,41 @@ class Type():
         properties['type'] = 'binary'
         properties['isInstanceOf'] = 'ArrayBuffer'
       else:
-        # For our own custom types defined as Dictionaries in the schema file,
-        # the name indicates the underlying referenced type.
-        # TODO(crbug.com/340297705): We should verify this ref name is actually
-        # a custom type we have parsed from the IDL.
-        properties['$ref'] = type_details.GetName()
+        # Other Typerefs will either be referencing a custom type defined as a
+        # Dictionary/Enum or a function defined as a Callback in the schema
+        # file. For custom types we just add a '$ref' with the type name,
+        # but functions we embed similar to how we normally process Operations.
+        type_name = type_details.GetName()
+        # Custom types and Callback functions are defined at the top level of
+        # the IDL file, so we need to recurse up the tree to the File node to
+        # look for them.
+        parent = self.type_node
+        while parent.GetClass() != 'File':
+          parent = parent.GetParent()
+
+        referenced_type = GetChildWithName(parent, type_name)
+        # TODO(crbug.com/450443604): Add support for shared types, which are
+        # defined in a separate file that is referenced by several different
+        # schemas.
+        if referenced_type is None:
+          raise SchemaCompilerError(
+              'Could not find definition of referenced type "%s" for node.' %
+              type_name,
+              type_details,
+          )
+
+        if referenced_type.GetClass() in ['Dictionary', 'Enum']:
+          properties['$ref'] = type_name
+        elif referenced_type.GetClass() == 'Callback':
+          properties = Operation(referenced_type).process()
+        else:
+          raise SchemaCompilerError(
+              'Found a Typeref node referencing a node of type "%s", but we'
+              ' only support Typerefs that reference Dictionary, Enum or'
+              ' Callback class nodes.' % referenced_type.GetClass(),
+              type_details,
+          )
+
     elif type_details.IsA('Undefined'):
       properties['type'] = UndefinedType
     elif type_details.IsA('Promise'):
