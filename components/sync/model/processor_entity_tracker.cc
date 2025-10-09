@@ -278,12 +278,11 @@ size_t ProcessorEntityTracker::size() const {
 
 std::vector<const ProcessorEntity*>
 ProcessorEntityTracker::IncrementSequenceNumberForAllExcept(
-    const std::unordered_set<std::string>& already_updated_storage_keys) {
+    const absl::flat_hash_set<std::string>& already_updated_storage_keys) {
   std::vector<const ProcessorEntity*> affected_entities;
   for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->storage_key().empty() ||
-        (already_updated_storage_keys.find(entity->storage_key()) !=
-         already_updated_storage_keys.end())) {
+        already_updated_storage_keys.contains(entity->storage_key())) {
       // Entities with empty storage key were already processed. ProcessUpdate()
       // incremented their sequence numbers and cached commit data. Their
       // metadata will be persisted in UpdateStorageKey().

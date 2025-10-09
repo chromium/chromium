@@ -24,6 +24,7 @@
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -68,7 +69,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   // If new encryption requirements come from the server, the entities that are
   // in `updates` will be recorded here so they can be ignored during the
   // re-encryption phase at the end.
-  std::unordered_set<std::string> already_updated;
+  absl::flat_hash_set<std::string> already_updated;
 
   for (syncer::UpdateResponseData& update : updates) {
     std::string storage_key_to_clear;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -16,6 +15,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -129,7 +129,7 @@ class ProcessorEntityTracker {
   // Increments sequence number for all entities except those in
   // `already_updated_storage_keys`. Returns affected list of entities.
   std::vector<const ProcessorEntity*> IncrementSequenceNumberForAllExcept(
-      const std::unordered_set<std::string>& already_updated_storage_keys);
+      const absl::flat_hash_set<std::string>& already_updated_storage_keys);
 
   // Assigns a new storage key to the entity for the given `client_tag_hash`.
   // Clears previous storage key if entity already has one (the metadata of the
