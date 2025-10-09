@@ -20,8 +20,8 @@ found in the LICENSE file.
     <dimen name="context_menu_list_lateral_padding">16dp</dimen>
     <dimen name="context_menu_list_vertical_padding">16dp</dimen>
     <dimen name="context_menu_small_vertical_margin">10dp</dimen>
-    <dimen name="context_menu_bottom_padding">8dp</dimen>
-    <dimen name="context_menu_header_vertical_padding">16dp</dimen>
+    <dimen name="context_menu_padding">8dp</dimen>
+
     <dimen name="context_menu_header_image_max_size">60dp</dimen>
     <dimen name="context_menu_header_circle_bg_diameter">48dp</dimen>
     <dimen name="context_menu_header_circle_bg_margin">6dp</dimen>

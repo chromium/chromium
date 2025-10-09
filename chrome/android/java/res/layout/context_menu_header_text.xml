@@ -10,8 +10,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/context_menu_header_vertical_padding"
-    android:paddingBottom="@dimen/context_menu_bottom_padding">
+    android:padding="@dimen/context_menu_padding"
+    android:background="?attr/listChoiceBackgroundIndicator">
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/menu_header_title"
