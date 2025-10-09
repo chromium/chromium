@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
+#include "chrome/browser/ui/autofill/payments/android_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
@@ -662,16 +663,17 @@ void ChromePaymentsAutofillClient::ShowAutofillErrorDialog(
 
 PaymentsWindowManager*
 ChromePaymentsAutofillClient::GetPaymentsWindowManager() {
-#if !BUILDFLAG(IS_ANDROID)
   if (!payments_window_manager_) {
+#if BUILDFLAG(IS_ANDROID)
+    payments_window_manager_ =
+        std::make_unique<AndroidPaymentsWindowManager>(&client_.get());
+#else
     payments_window_manager_ =
         std::make_unique<DesktopPaymentsWindowManager>(&client_.get());
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   return payments_window_manager_.get();
-#else
-  return nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePaymentsAutofillClient::ShowUnmaskPrompt(
