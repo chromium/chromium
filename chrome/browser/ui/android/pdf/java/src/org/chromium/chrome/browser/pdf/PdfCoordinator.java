@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.pdf.PdfSandboxHandle;
+import androidx.pdf.SandboxedPdfLoader;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.json.JSONException;
@@ -77,6 +79,9 @@ public class PdfCoordinator {
     /** ProgressBar to be shown during PDF download. */
     private final ProgressBar mProgressBar;
 
+    /** A PdfSandboxHandle representing the active pdf session. */
+    private PdfSandboxHandle mPdfSandboxHandle;
+
     /**
      * Creates a PdfCoordinator for the PdfPage.
      *
@@ -114,6 +119,9 @@ public class PdfCoordinator {
         }
         // Create PdfViewerFragment to start showing the loading spinner.
         mChromePdfViewerFragment = new ChromePdfViewerFragment();
+        // Start pdf library initialization. This prepares pdf resources ahead of time, so that pdf
+        // could be loaded faster when documentUri is set.
+        mPdfSandboxHandle = SandboxedPdfLoader.startInitialization(activity);
         // PDF is downloading when the filepath is null.
         if (filepath == null) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -185,6 +193,8 @@ public class PdfCoordinator {
      */
     @SuppressWarnings({"NullAway"})
     void destroy() {
+        mPdfSandboxHandle.close();
+        mPdfSandboxHandle = null;
         if (mChromePdfViewerFragment == null) {
             Log.w(TAG, "Fragment is null when pdf page is destroyed.");
             return;
