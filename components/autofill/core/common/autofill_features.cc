@@ -63,6 +63,11 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSaveSurvey,
 BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, autofill will fill not skip filling fields that had an initial
+// value which was modified.
+BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled (and if `AutofillAiServerModel` is also enabled), this ignores
 // the `may_run_server_model` boolean sent by the Autofill server and, instead,
 // queries the server model for every encountered form that is not already

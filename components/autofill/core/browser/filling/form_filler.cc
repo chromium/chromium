@@ -197,6 +197,14 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
           .empty()) {
     return false;
   }
+  // Since this function is about analysing the initial value, we should not
+  // process fields that were modified, since those fields do not have their
+  // initial values anymore.
+  if (field.value() != field.initial_value() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAllowFillingModifiedInitialValues)) {
+    return false;
+  }
   // If the field's initial value coincides with the value of its placeholder
   // attribute, don't consider the initial value to be meaningful.
   if (field.initial_value() == field.placeholder()) {
