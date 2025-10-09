@@ -24,6 +24,11 @@ void TrustedVaultClientBackend::RemoveObserver(
       observer);
 }
 
+void TrustedVaultClientBackend::SetDeviceRegistrationPublicKeyVerifierForUMA(
+    VerifierCallback verifier) {
+  // Do nothing. Must be implemented by subclasses.
+}
+
 void TrustedVaultClientBackend::NotifyKeysChanged(
     trusted_vault::SecurityDomainId security_domain_id) {
   auto it = observer_lists_per_security_domain_id_.find(security_domain_id);

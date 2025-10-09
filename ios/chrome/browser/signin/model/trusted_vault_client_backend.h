@@ -64,7 +64,7 @@ class TrustedVaultClientBackend : public KeyedService {
   // TODO(crbug.com/40939090): device registration verification has been
   // removed, remove remaining code from TrustedVaultClientBackend.
   virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) = 0;
+      VerifierCallback verifier);
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
