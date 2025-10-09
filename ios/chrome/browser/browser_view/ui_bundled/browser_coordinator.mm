@@ -119,7 +119,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
-#import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -235,7 +234,6 @@
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
-#import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
@@ -521,9 +519,6 @@ const char kChromeAppStoreUrl[] =
 // Coordinator to show the Autofill error dialog.
 @property(nonatomic, strong)
     AutofillErrorDialogCoordinator* autofillErrorDialogCoordinator;
-
-// Coordinator for the First Follow modal.
-@property(nonatomic, strong) FirstFollowCoordinator* firstFollowCoordinator;
 
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
@@ -1193,7 +1188,6 @@ const char kChromeAppStoreUrl[] =
     @protocol(DownloadListCommands),
     @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
-    @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(FindInPageCommands),
@@ -1648,9 +1642,6 @@ const char kChromeAppStoreUrl[] =
 - (void)stopChildCoordinators {
   [self.ARQuickLookCoordinator stop];
   self.ARQuickLookCoordinator = nil;
-
-  [self.firstFollowCoordinator stop];
-  self.firstFollowCoordinator = nil;
 
   [self.formInputAccessoryCoordinator stop];
   self.formInputAccessoryCoordinator = nil;
@@ -2835,17 +2826,6 @@ const char kChromeAppStoreUrl[] =
   [_enhancedCalendarCoordinator stop];
   _enhancedCalendarCoordinator = nil;
 }
-
-#pragma mark - FeedCommands
-
-- (void)showFirstFollowUIForWebSite:(FollowedWebSite*)followedWebSite {
-  self.firstFollowCoordinator = [[FirstFollowCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                 followedWebSite:followedWebSite];
-  [self.firstFollowCoordinator start];
-}
-
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderModeFromAccessPoint:(ReaderModeAccessPoint)accessPoint {
@@ -3414,8 +3394,7 @@ const char kChromeAppStoreUrl[] =
     FollowBrowserAgent::FromBrowser(self.browser)
         ->SetUIProviders(
             HandlerForProtocol(commandDispatcher, NewTabPageCommands),
-            static_cast<id<SnackbarCommands>>(commandDispatcher),
-            HandlerForProtocol(commandDispatcher, FeedCommands));
+            static_cast<id<SnackbarCommands>>(commandDispatcher), nil);
   }
 
   ReaderModeBrowserAgent* readerModeBrowserAgent =

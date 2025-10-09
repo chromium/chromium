@@ -751,26 +751,6 @@ using feed::FeedUserActionType;
       kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
-- (void)recordFirstFollowShown {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kFirstFollowSheetShown
-                                asInteraction:NO];
-}
-
-- (void)recordFirstFollowTappedGoToFeed {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kFirstFollowSheetTappedGoToFeed
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kFirstFollowGoToFeedButtonTapped));
-}
-
-- (void)recordFirstFollowTappedGotIt {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kFirstFollowSheetTappedGotIt
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kFirstFollowGotItButtonTapped));
-}
-
 - (void)recordFollowRecommendationIPHShown {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                   kFollowRecommendationIPHShown

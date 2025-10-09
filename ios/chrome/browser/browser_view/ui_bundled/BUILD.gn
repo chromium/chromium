@@ -124,8 +124,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/follow/model:tab_helper",
-    "//ios/chrome/browser/follow/ui_bundled",
-    "//ios/chrome/browser/follow/ui_bundled:first_follow",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/geolocation/model",

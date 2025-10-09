@@ -153,10 +153,6 @@ const char
         "TappedRefollowAfterUnfollowOnSnackbar";
 const char kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[] =
     "ContentSuggestions.Feed.Management.TappedUnfollowTryAgainOnSnackbar";
-const char kFirstFollowGoToFeedButtonTapped[] =
-    "ContentSuggestions.Follow.FirstFollow.GoToFeedButtonTapped";
-const char kFirstFollowGotItButtonTapped[] =
-    "ContentSuggestions.Follow.FirstFollow.GotItButtonTapped";
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
 const char kDiscoverFeedSelected[] = "ContentSuggestions.Feed.Selected";

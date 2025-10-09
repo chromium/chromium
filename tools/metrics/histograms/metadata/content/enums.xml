@@ -380,11 +380,13 @@ chromium-metrics-reviews@google.com.
       label="User tapped to go to Following feed using the snackbar 'go to
              Following' option."/>
   <int value="53" label="User tapped the Crow button in the context menu."/>
-  <int value="54" label="Show First Follow Sheet."/>
+  <int value="54" label="Show First Follow Sheet. (Deprecated M143)"/>
   <int value="55"
-      label="User tapped the 'Go To Feed' button on the first follow sheet."/>
+      label="User tapped the 'Go To Feed' button on the first follow sheet.
+             (Deprecated M143)"/>
   <int value="56"
-      label="User tapped the 'Got It' button on the first follow sheet."/>
+      label="User tapped the 'Got It' button on the first follow sheet.
+             (Deprecated M143)"/>
   <int value="57"
       label="Show Follow Recommendation IPH telling users that they are able
              to follow a website."/>

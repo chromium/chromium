@@ -744,9 +744,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kShowUnfollowSucceedSnackbar:
     case FeedUserActionType::kShowUnfollowFailedSnackbar:
     case FeedUserActionType::kTappedGoToFeedOnSnackbar:
-    case FeedUserActionType::kFirstFollowSheetShown:
-    case FeedUserActionType::kFirstFollowSheetTappedGoToFeed:
-    case FeedUserActionType::kFirstFollowSheetTappedGotIt:
     case FeedUserActionType::kFollowRecommendationIPHShown:
     case FeedUserActionType::kFollowingFeedSelectedGroupByPublisher:
     case FeedUserActionType::kFollowingFeedSelectedSortByLatest:

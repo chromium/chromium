@@ -375,10 +375,6 @@ extern const char
 extern const char
     kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[];
 
-// User action names for first follow surface.
-extern const char kFirstFollowGoToFeedButtonTapped[];
-extern const char kFirstFollowGotItButtonTapped[];
-
 // User action name for engaging with feed.
 extern const char kDiscoverFeedUserActionEngaged[];
 

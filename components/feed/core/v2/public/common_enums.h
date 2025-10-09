@@ -169,13 +169,11 @@ enum class FeedUserActionType {
   // No longer used after the removal of Crow.
   // kTappedCrowButton = 53,
 
-  // User action caused a first follow sheet to be shown. User action not
-  // reported here. iOS only.
-  kFirstFollowSheetShown = 54,
-  // User tapped the "Go To Feed" button on the first follow sheet. (IOS)
-  kFirstFollowSheetTappedGoToFeed = 55,
-  // User tapped the "Got It" button on the first follow sheet. (IOS)
-  kFirstFollowSheetTappedGotIt = 56,
+  // First follow actions on iOS. No longer used after follow removal.
+  // kFirstFollowSheetShown = 54,
+  // kFirstFollowSheetTappedGoToFeed = 55,
+  // kFirstFollowSheetTappedGotIt = 56,
+
   // Page load caused a Follow Recommendation IPH to be shown. User action not
   // reported here. iOS only.
   kFollowRecommendationIPHShown = 57,

@@ -251,15 +251,6 @@ class PrefService;
 // confirmation snackbar in the management UI.
 - (void)recordManagementTappedUnfollowTryAgainOnSnackbar;
 
-// Record metrics for when the first follow sheet is shown.
-- (void)recordFirstFollowShown;
-
-// Record metrics for when the user taps "Go To Feed" on the first follow sheet.
-- (void)recordFirstFollowTappedGoToFeed;
-
-// Record metrics for when the user taps "Got it" on the first follow sheet.
-- (void)recordFirstFollowTappedGotIt;
-
 // Record metrics for when a Follow Recommendation IPH is shown.
 // A follow Recommendation IPH is a textual bublle that tells users that they
 // are able to follow a website.

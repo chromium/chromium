@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -255,8 +254,6 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
           prefs::kFirstFollowUIShownCount,
           pref_service->GetInteger(prefs::kFirstFollowUIShownCount) + 1);
     }
-
-    [feed_commands_ showFirstFollowUIForWebSite:web_site];
     return;
   }
 

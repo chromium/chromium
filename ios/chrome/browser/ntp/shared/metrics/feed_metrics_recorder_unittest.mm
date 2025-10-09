@@ -599,17 +599,6 @@ TEST_F(FeedMetricsRecorderTest,
       recordManagementTappedRefollowAfterUnfollowOnSnackbar);
 }
 
-// Testing `recordFirstFollowTappedGoToFeed`.
-TEST_F(FeedMetricsRecorderTest, Actions_FirstFollowGoToFeedButtonTapped) {
-  EXPECT_ACTION(kFirstFollowGoToFeedButtonTapped,
-                recordFirstFollowTappedGoToFeed);
-}
-
-// Testing `recordFirstFollowTappedGotIt`.
-TEST_F(FeedMetricsRecorderTest, Actions_FirstFollowGotItButtonTapped) {
-  EXPECT_ACTION(kFirstFollowGotItButtonTapped, recordFirstFollowTappedGotIt);
-}
-
 // Testing `recordShowSignInOnlyUIWithUserId` with user Id.
 TEST_F(FeedMetricsRecorderTest, Actions_ShowFeedSignInOnlyUIWithUserId) {
   EXPECT_ACTION(kShowFeedSignInOnlyUIWithUserId,

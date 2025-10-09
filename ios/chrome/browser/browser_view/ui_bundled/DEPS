@@ -37,7 +37,6 @@ include_rules = [
   "+ios/chrome/browser/find_in_page/model",
   "+ios/chrome/browser/first_run/ui_bundled",
   "+ios/chrome/browser/follow/model",
-  "+ios/chrome/browser/follow/ui_bundled",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/google_one/coordinator",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
