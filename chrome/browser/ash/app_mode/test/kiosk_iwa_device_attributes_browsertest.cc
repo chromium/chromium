@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -237,9 +238,10 @@ class KioskIwaDeviceAttributesApiTest
 
   void LaunchIwaKiosk() {
     ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
+    SetBrowser(browser_created_observer.Wait());
 
-    SelectFirstBrowser();
     ASSERT_NE(web_contents(), nullptr);
     ASSERT_EQ(web_contents()->GetVisibleURL(), kAppOrigin.GetURL());
     ASSERT_TRUE(WaitForLoadStop(web_contents()));

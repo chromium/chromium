@@ -60,9 +60,10 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     // the preference, so it can't create renderers with SABs enabled by policy.
     // Create a new browser that will pick up the preference and enable SABs for
     // new renderer processes.
-    Browser* new_browser = CreateBrowser(browser()->profile());
+    BrowserWindowInterface* const new_browser =
+        CreateBrowser(browser()->profile());
     CloseBrowserSynchronously(browser());
-    SelectFirstBrowser();
+    SetBrowser(new_browser);
     ASSERT_EQ(browser(), new_browser);
 
     // Clear existing spares and navigate the new browser to 'localhost', so the

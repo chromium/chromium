@@ -502,7 +502,7 @@ class ProfileMenuViewPixelTest
     if (new_browser) {
       ASSERT_NE(new_browser, browser());
       CloseBrowserSynchronously(browser());
-      SelectFirstBrowser();
+      SetBrowser(new_browser);
       ASSERT_EQ(new_browser, browser());
     }
 

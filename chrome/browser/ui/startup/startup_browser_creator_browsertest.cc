@@ -2328,10 +2328,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
     content::RunAllTasksUntilIdle();
     // Launching with an app opens the app window via a task, so the test
-    // might start before SelectFirstBrowser is called.
+    // might start before the first browser is created.
     if (!browser()) {
-      added_observer.Wait();
-      SelectFirstBrowser();
+      SetBrowser(added_observer.Wait());
     }
   }
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));

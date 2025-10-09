@@ -62,12 +62,12 @@ class WebKioskMediaUITest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskMediaUITest, MediaTrayStaysPinnedInKiosk) {
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(WaitKioskLaunched());
+  SetBrowser(browser_created_observer.Wait());
 
   ash::MediaTray::SetPinnedToShelf(false);
   ASSERT_FALSE(ash::MediaTray::IsPinnedToShelf());
-
-  SelectFirstBrowser();
 
   MediaNotificationServiceFactory::GetForProfile(GetProfile())
       ->ShowDialogAsh(DummyPresentationContext(CHECK_DEREF(browser())));

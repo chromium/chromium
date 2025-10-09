@@ -151,14 +151,15 @@ class KioskEnterpriseInputApiBrowserTest
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     ExtensionTestMessageListener extension_ready("ready");
     extension_ready.set_extension_id(std::string(kExtensionId));
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(kiosk::test::WaitKioskLaunched());
+    SetBrowser(browser_created_observer.Wait());
     // `chrome.runtime` only gets defined once the page finishes loading.
     ASSERT_TRUE(WaitForLoadStop(&GetAppWebContents()));
     ASSERT_TRUE(extension_ready.WaitUntilSatisfied());
   }
 
   content::WebContents& GetAppWebContents() {
-    SelectFirstBrowser();
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return CHECK_DEREF(browser_view->GetActiveWebContents());

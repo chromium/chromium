@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -185,8 +186,9 @@ class WebKioskAppLevelLogsTest : public KioskAppLevelLogsTestBase {
 
   void SetUpOnMainThread() override {
     KioskAppLevelLogsTestBase::SetUpOnMainThread();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(ash::kiosk::test::WaitKioskLaunched());
-    SelectFirstBrowser();
+    SetBrowser(browser_created_observer.Wait());
     ExpectOnlyKioskAppOpen();
   }
 

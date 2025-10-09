@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/public/test/browser_test.h"
@@ -164,9 +165,10 @@ IN_PROC_BROWSER_TEST_F(IncognitoUserReideintificationDevtoolsProtocolTest,
                        Enabled_Incognito_SubframeDocumentLoadIssueReported) {
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   ASSERT_TRUE(embedded_test_server()->Start());

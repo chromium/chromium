@@ -69,8 +69,9 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::Get()->GetPrimaryRootWindow());
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
-    SelectFirstBrowser();
+    SetBrowser(browser_created_observer.Wait());
     ExpectOnlyKioskAppOpen();
   }
 

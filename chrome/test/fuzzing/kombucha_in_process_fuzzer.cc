@@ -10,6 +10,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -175,7 +176,7 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
     for (Browser* browser : extra_browsers) {
       CloseBrowserSynchronously(browser);
     }
-    SelectFirstBrowser();
+    SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   }
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();

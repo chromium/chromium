@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/common/chrome_constants.h"
@@ -596,13 +597,7 @@ void InProcessBrowserTest::CreatedBrowserMainParts(
 }
 
 void InProcessBrowserTest::SetBrowser(BrowserWindowInterface* browser) {
-  browser_ = browser->GetBrowserForMigrationOnly();
-}
-
-void InProcessBrowserTest::SelectFirstBrowser() {
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  if (!browser_list->empty())
-    browser_ = browser_list->get(0);
+  browser_ = browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 void InProcessBrowserTest::RecordPropertyFromMap(
@@ -838,7 +833,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // Pump startup related events.
   content::RunAllPendingInMessageLoop();
 
-  SelectFirstBrowser();
+  SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   if (browser_ && !browser_->tab_strip_model()->empty()) {
     base::WeakPtr<content::WebContents> tab =
         browser_->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();

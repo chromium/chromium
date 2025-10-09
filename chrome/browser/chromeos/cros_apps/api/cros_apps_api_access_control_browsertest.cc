@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -86,9 +87,9 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
 
     // Create the browser with a default WebContents for running the tests.
     Browser::CreateParams params(profile, /*user_gesture=*/true);
-    Browser::Create(params);
+    BrowserWindowInterface* const new_browser = Browser::Create(params);
     CHECK_EQ(1u, BrowserList::GetInstance()->size());
-    SelectFirstBrowser();
+    SetBrowser(new_browser);
     browser()->window()->Show();
 
     std::unique_ptr<content::WebContents> web_contents_to_add =

@@ -201,8 +201,10 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     SessionRestoreTestHelper restore_observer;
 
     // Create a new window, which should trigger session restore.
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     chrome::NewEmptyWindow(profile);
     tab_waiter.Wait();
+    SetBrowser(browser_created_observer.Wait());
 
     for (Browser* new_browser : *BrowserList::GetInstance()) {
       WaitForTabsToLoad(new_browser);
@@ -211,7 +213,6 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
     restore_observer.Wait();
     keep_alive.reset();
     profile_keep_alive.reset();
-    SelectFirstBrowser();
   }
 
   void WaitForTabsToLoad(Browser* browser) {

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,7 +53,9 @@ class WebKioskAcceleratorTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
+    SetBrowser(browser_created_observer.Wait());
   }
 
   KioskMixin kiosk_{
@@ -64,7 +67,6 @@ class WebKioskAcceleratorTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
-  SelectFirstBrowser();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   ASSERT_FALSE(PressCloseTabAccelerator(browser()));
   ASSERT_FALSE(PressCloseWindowAccelerator(browser()));
@@ -77,8 +79,6 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
-  SelectFirstBrowser();
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_NE(browser_view, nullptr);
   content::WebContents* web_contents = browser_view->GetActiveWebContents();

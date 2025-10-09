@@ -1843,9 +1843,10 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, RestartBrowser) {
             expected_full_version_list);
 
   // Restart the browser, create a new browser to mock the restart process.
-  Browser* new_browser = CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const new_browser =
+      CreateBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(new_browser);
   ASSERT_EQ(browser(), new_browser);
 
   // First request with new browser should expect the high-entropy client hints

@@ -3958,7 +3958,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        HomeTabAddedToEveryWindow) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
-  Browser* app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
@@ -3966,7 +3966,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
 
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
 
   AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
@@ -4015,7 +4015,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        MAYBE_CantDragHomeTab) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
-  Browser* app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
@@ -4023,7 +4023,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
 
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
 
   AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
@@ -4050,7 +4050,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
                        NoHomeTab) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/false);
-  Browser* app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_EQ(2u, browser_list()->size());
 
@@ -4058,7 +4058,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
 
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
 
   AddTabsAndResetBrowser(browser(), 1, GURL("https://www.example.com/newpage"));
@@ -4865,7 +4865,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   // Close normal browser since other code expects only 1 browser to start.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
   EXPECT_EQ(BrowserWindowInterface::Type::TYPE_APP, browser()->GetType());
   AddTabsAndResetBrowser(browser(), 1, GetAppUrl());
@@ -4907,7 +4907,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   // Close normal browser since other code expects only 1 browser to start.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(2u, browser_list()->size());
-  SelectFirstBrowser();
+  SetBrowser(app_browser1);
   ASSERT_EQ(app_browser1, browser());
 
   AddTabsAndResetBrowser(browser(), 1, GetAppUrl());
@@ -5880,7 +5880,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   // Close normal browser.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
@@ -5914,7 +5914,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   // Close normal browser.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
@@ -5943,7 +5943,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   // Close normal browser.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(1u, browser_list()->size());
-  SelectFirstBrowser();
+  SetBrowser(app_browser);
   ASSERT_EQ(app_browser, browser());
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 

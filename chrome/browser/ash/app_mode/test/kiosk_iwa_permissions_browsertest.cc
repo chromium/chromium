@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
@@ -179,10 +180,10 @@ class KioskIwaPermissionsBaseTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
+    SetBrowser(browser_created_observer.Wait());
 
-    SelectFirstBrowser();
     ASSERT_NE(web_contents(), nullptr);
     ASSERT_EQ(web_contents()->GetVisibleURL(), kExpectedOrigin.GetURL());
     WaitForPageLoad(web_contents());

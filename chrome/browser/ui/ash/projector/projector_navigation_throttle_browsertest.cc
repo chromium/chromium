@@ -158,14 +158,14 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   }
 
   browser_destroyed_observer.Wait();
-  browser_created_observer.Wait();
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // about:blank pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  // Select the first available browser, which should be the SWA.
-  SelectFirstBrowser();
+  // Set the default browser to the swa browser.
+  SetBrowser(swa_browser);
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
   // Projector SWA is now open.
@@ -267,14 +267,14 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   browser_destroyed_observer.Wait();
-  browser_created_observer.Wait();
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
   // During the navigation, we closed the previous browser to prevent dangling
   // blank redirect pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  // Select the first available browser, which should be the SWA.
-  SelectFirstBrowser();
+  // Set the default browser to the swa browser.
+  SetBrowser(swa_browser);
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::PROJECTOR);
 

@@ -107,9 +107,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close normal browser and switch the test's browser instance to an incognito
   // instance.
-  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  BrowserWindowInterface* incognito =
+      CreateIncognitoBrowser(browser()->profile());
   CloseBrowserSynchronously(browser());
-  SelectFirstBrowser();
+  SetBrowser(incognito);
   ASSERT_EQ(browser(), incognito);
 
   // TODO(https://crbug.com/358371545): Test console messaging for subframe

@@ -263,7 +263,7 @@ class SearchEngineChoiceUIPixelTest
       ASSERT_TRUE(new_browser->profile()->IsGuestSession());
 
       CloseBrowserSynchronously(browser());
-      SelectFirstBrowser();
+      SetBrowser(new_browser);
       ASSERT_EQ(new_browser, browser());
     }
   }

@@ -4295,9 +4295,10 @@ class SearchNavigationPrefetchIncognitoBrowserTest
   void SetUpOnMainThread() override {
     // Close normal browser and switch the test's browser instance to an
     // incognito instance.
-    Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+    BrowserWindowInterface* const incognito =
+        CreateIncognitoBrowser(browser()->profile());
     CloseBrowserSynchronously(browser());
-    SelectFirstBrowser();
+    SetBrowser(incognito);
     ASSERT_EQ(browser(), incognito);
 
     SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
