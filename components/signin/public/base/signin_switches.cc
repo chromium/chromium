@@ -230,6 +230,17 @@ constexpr base::FeatureParam<SeamlessSigninPromoType>::Option
 constexpr base::FeatureParam<SeamlessSigninPromoType> kSeamlessSigninPromoType{
     &kEnableSeamlessSignin, "seamless-signin-promo-type",
     SeamlessSigninPromoType::kCompact, &kSeamlessSigninPromoTypes};
+// Determines the sign-in promo strings that are shown when
+// kEnableSeamlessSignin is enabled.
+constexpr base::FeatureParam<SeamlessSigninStringType>::Option
+    kSeamlessSigninStringTypes[] = {
+        {SeamlessSigninStringType::kContinueButton, "continueButton"},
+        {SeamlessSigninStringType::kSigninButton, "signinButton"},
+};
+constexpr base::FeatureParam<SeamlessSigninStringType>
+    kSeamlessSigninStringType{
+        &kEnableSeamlessSignin, "seamless-signin-string-type",
+        SeamlessSigninStringType::kContinueButton, &kSeamlessSigninStringTypes};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -349,6 +349,20 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kWebSigninLeadsToImplicitlySignedInState);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_ANDROID)
+enum class SeamlessSigninStringType {
+  // Strings with "Sign in to Chrome" in the title and "Continue as" in the
+  // primary button
+  kContinueButton,
+  // Strings with "Sign in to Chrome" in the description and "Sign in as" in the
+  // primary button
+  kSigninButton,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<SeamlessSigninStringType>
+    kSeamlessSigninStringType;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // keep-sorted end
 
 // Helper functions that are no longer attached to any features.

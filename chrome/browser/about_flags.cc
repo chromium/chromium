@@ -4987,16 +4987,31 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kSeamlessSigninPromoTypeCompact[] = {
-    {"seamless-signin-promo-type", "compact"}};
-const FeatureEntry::FeatureParam kSeamlessSigninPromoTypeTwoButtons[] = {
-    {"seamless-signin-promo-type", "twoButtons"}};
-
-const FeatureEntry::FeatureVariation kSeamlessSigninPromoTypes[] = {
-    {"with compact layout", kSeamlessSigninPromoTypeCompact,
-     std::size(kSeamlessSigninPromoTypeCompact), nullptr},
-    {"with two buttons layout", kSeamlessSigninPromoTypeTwoButtons,
-     std::size(kSeamlessSigninPromoTypeTwoButtons), nullptr}};
+const FeatureEntry::FeatureParam kSeamlessSigninTwoButtonsContinue[] = {
+    {"seamless-signin-promo-type", "twoButtons"},
+    {"seamless-signin-string-type", "continueButton"}};
+const FeatureEntry::FeatureParam kSeamlessSigninCompactContinue[] = {
+    {"seamless-signin-promo-type", "compact"},
+    {"seamless-signin-string-type", "continueButton"}};
+const FeatureEntry::FeatureParam kSeamlessSigninTwoButtonsSignin[] = {
+    {"seamless-signin-promo-type", "twoButtons"},
+    {"seamless-signin-string-type", "signinButton"}};
+const FeatureEntry::FeatureParam kSeamlessSigninCompactSignin[] = {
+    {"seamless-signin-promo-type", "compact"},
+    {"seamless-signin-string-type", "signinButton"}};
+const FeatureEntry::FeatureVariation kSeamlessSigninVariations[] = {
+    {"with two buttons layout and \"Continue as\" button (group 1)",
+     kSeamlessSigninTwoButtonsContinue,
+     std::size(kSeamlessSigninTwoButtonsContinue), nullptr},
+    {"with compact layout and \"Continue as\" button (group 2)",
+     kSeamlessSigninCompactContinue, std::size(kSeamlessSigninCompactContinue),
+     nullptr},
+    {"with two buttons layout and \"Sign in as\" button (group 3)",
+     kSeamlessSigninTwoButtonsSignin,
+     std::size(kSeamlessSigninTwoButtonsSignin), nullptr},
+    {"with compact layout and \"Sign in as\" button (group 4)",
+     kSeamlessSigninCompactSignin, std::size(kSeamlessSigninCompactSignin),
+     nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
@@ -12777,8 +12792,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-seamless-signin", flag_descriptions::kEnableSeamlessSigninName,
      flag_descriptions::kEnableSeamlessSigninDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kEnableSeamlessSignin,
-                                    kSeamlessSigninPromoTypes,
-                                    "SeamlessSigninPromoTypes")},
+                                    kSeamlessSigninVariations,
+                                    "SeamlessSigninVariations")},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
