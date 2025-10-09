@@ -100,7 +100,6 @@ import java.util.Set;
         manifest = Config.NONE,
         shadows = {
             SearchActivityUnitTest.ShadowSearchActivityUtils.class,
-            SearchActivityUnitTest.ShadowWebContentsFactory.class,
             SearchActivityUnitTest.ShadowProfileManager.class,
             SearchActivityUnitTest.ShadowRevenueStats.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
@@ -134,17 +133,6 @@ public class SearchActivityUnitTest {
         public static void resolveOmniboxRequestForResult(
                 Activity activity, OmniboxLoadUrlParams params) {
             sMockUtils.resolveOmniboxRequestForResult(activity, params);
-        }
-    }
-
-    @Implements(WebContentsFactory.class)
-    public static class ShadowWebContentsFactory {
-        static WebContents sMockWebContents;
-
-        @Implementation
-        public static WebContents createWebContents(
-                Profile p, boolean initiallyHidden, boolean initRenderer) {
-            return sMockWebContents;
         }
     }
 
@@ -241,7 +229,7 @@ public class SearchActivityUnitTest {
         when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
-        ShadowWebContentsFactory.sMockWebContents = mWebContents;
+        WebContentsFactory.setWebContentsForTesting(mWebContents);
         ShadowTabBuilder.sMockTab = mTab;
         ShadowRevenueStats.sSetCustomTabSearchClient = mSetCustomTabSearchClient;
     }

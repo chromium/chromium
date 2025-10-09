@@ -12,7 +12,6 @@
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask
 +org.chromium.base.version_info.VersionInfo
-+org.chromium.chrome.browser.content.WebContentsFactory
 +org.chromium.chrome.browser.contextmenu.ContextMenuHeaderCoordinator
 +org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController
 +org.chromium.chrome.browser.device.DeviceConditions

@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.content;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
@@ -18,7 +20,14 @@ import org.chromium.net.NetId;
  */
 @NullMarked
 public class WebContentsFactory {
+    private static @Nullable WebContents sWebContentsForTesting;
+
     private WebContentsFactory() {}
+
+    public static void setWebContentsForTesting(WebContents webContents) {
+        sWebContentsForTesting = webContents;
+        ResettersForTesting.register(() -> sWebContentsForTesting = null);
+    }
 
     /** For capturing where WebContentsImpl is created. */
     private static class WebContentsCreationException extends RuntimeException {
@@ -38,6 +47,9 @@ public class WebContentsFactory {
      */
     public static WebContents createWebContentsWithSeparateStoragePartitionForExperiment(
             Profile profile) {
+        if (sWebContentsForTesting != null) {
+            return sWebContentsForTesting;
+        }
         return WebContentsFactoryJni.get()
                 .createWebContentsWithSeparateStoragePartitionForExperiment(
                         profile, new WebContentsCreationException());
@@ -60,6 +72,9 @@ public class WebContentsFactory {
             boolean initializeRenderer,
             boolean usesPlatformAutofill,
             long targetNetwork) {
+        if (sWebContentsForTesting != null) {
+            return sWebContentsForTesting;
+        }
         return WebContentsFactoryJni.get()
                 .createWebContents(
                         profile,
