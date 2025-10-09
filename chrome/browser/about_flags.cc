@@ -2016,6 +2016,13 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRemoveSearchReadyOmniboxNoMatchParam), nullptr}};
 #endif
 
+const FeatureEntry::FeatureParam kOmniboxAimToggleOnlyParam[] = {
+    {"aim_toggle_only", "true"}};
+
+const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
+    {"AIM Toggle Only", kOmniboxAimToggleOnlyParam,
+     std::size(kOmniboxAimToggleOnlyParam), nullptr}};
+
 const FeatureEntry::FeatureParam
     kOmniboxImprovementForLFFVariationsSwitchToTabChip[] = {
         {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
@@ -7102,7 +7109,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMultimodalInput)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMultimodalInput,
+                                    kOmniboxMultimodalInputVariants,
+                                    "OmniboxMultiModalInput")},
 
     {"omnibox-remove-search-ready-omnibox",
      flag_descriptions::kOmniboxRemoveSearchReadyOmniboxName,

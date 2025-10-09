@@ -39,7 +39,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock ViewGroup mParent;
-    private @Mock Group mNavigationView;
+    private @Mock Group mAttachmentsToolbar;
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock ChromeImageButton mAddButton;
     private @Mock Button mCameraButton;
@@ -53,7 +53,9 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        doReturn(mNavigationView).when(mParent).findViewById(R.id.location_bar_navigation_toolbar);
+        doReturn(mAttachmentsToolbar)
+                .when(mParent)
+                .findViewById(R.id.location_bar_attachments_toolbar);
         doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
         doReturn(mSwitch).when(mParent).findViewById(R.id.location_bar_navigation_type);
@@ -68,11 +70,11 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
     @Test
     public void toolbarVisible_setsVisibility() {
-        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, true);
-        verify(mNavigationView).setVisibility(View.VISIBLE);
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
+        verify(mAttachmentsToolbar).setVisibility(View.VISIBLE);
 
-        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, false);
-        verify(mNavigationView).setVisibility(View.GONE);
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false);
+        verify(mAttachmentsToolbar).setVisibility(View.GONE);
     }
 
     @Test

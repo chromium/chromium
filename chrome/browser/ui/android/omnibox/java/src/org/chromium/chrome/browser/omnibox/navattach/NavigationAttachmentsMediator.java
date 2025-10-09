@@ -136,11 +136,18 @@ class NavigationAttachmentsMediator {
     void setToolbarVisible(boolean visible) {
         // Don't toggle visibility until we have a bridge to talk to.
         if (mComposeBoxQueryControllerBridge == null) return;
-        // Don't take an action if the state isn't really changing.
-        if (mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE) == visible) return;
+        mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
+    }
 
-        mModel.set(NavigationAttachmentsProperties.TOOLBAR_VISIBLE, visible);
-        if (!visible) {
+    public void setNavigationTypeVisible(boolean showNavigationType) {
+        // Don't toggle visibility until we have a bridge to talk to.
+        if (mComposeBoxQueryControllerBridge == null) return;
+        // Don't take an action if the state isn't really changing.
+        if (mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE)
+                == showNavigationType) return;
+
+        mModel.set(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE, showNavigationType);
+        if (!showNavigationType) {
             onUseAiModeChanged(false);
         }
     }

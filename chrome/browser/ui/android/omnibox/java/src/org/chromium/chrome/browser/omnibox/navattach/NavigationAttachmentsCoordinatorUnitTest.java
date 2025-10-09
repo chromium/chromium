@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -99,7 +100,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                 .getPageClassification(anyBoolean());
 
         mProfileSupplier.set(mProfileMock);
-        View navigationToolbar = mParent.findViewById(R.id.location_bar_navigation_toolbar);
+        View navigationToolbar = mParent.findViewById(R.id.location_bar_attachments_toolbar);
         assertEquals(View.GONE, navigationToolbar.getVisibility());
 
         mCoordinator.onUrlFocusChange(true);
@@ -196,5 +197,23 @@ public class NavigationAttachmentsCoordinatorUnitTest {
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
             Mockito.verify(mMediator).setToolbarVisible(shouldBeVisible);
         }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testAimToggleOnly() {
+        OmniboxFeatures.sAimToggleOnly.setForTesting(true);
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        mParent,
+                        mProfileSupplier,
+                        mLocationBarDataProvider);
+
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 }

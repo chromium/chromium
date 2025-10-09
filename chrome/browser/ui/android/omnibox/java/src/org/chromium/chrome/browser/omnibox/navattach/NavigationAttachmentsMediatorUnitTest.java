@@ -81,26 +81,30 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void initialState_toolbarIsHidden() {
-        assertFalse(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
+        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test
     public void onUrlFocusChange_toolbarVisibleWhenFocused() {
         mMediator.initializeBridge(mProfile);
         mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
+        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test
-    public void onUrlFocusChange_toolbarHiddenWhenNotFocused() {
+    public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
         mMediator.initializeBridge(mProfile);
         // Show it first
         mMediator.setToolbarVisible(true);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
+        mMediator.setNavigationTypeVisible(true);
+        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertTrue(mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE));
 
         // Then hide it
         mMediator.setToolbarVisible(false);
-        assertFalse(mModel.get(NavigationAttachmentsProperties.TOOLBAR_VISIBLE));
+        mMediator.setNavigationTypeVisible(false);
+        assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertFalse(mModel.get(NavigationAttachmentsProperties.NAVIGATION_TYPE_VISIBLE));
     }
 
     @Test
@@ -221,7 +225,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
 
         // Transition to true. Should NOT start a session.
-        mMediator.setToolbarVisible(true);
+        mMediator.setNavigationTypeVisible(true);
         verify(mNativeMock, never()).notifySessionStarted(anyLong());
         verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
 
@@ -231,18 +235,18 @@ public class NavigationAttachmentsMediatorUnitTest {
         Mockito.clearInvocations(mNativeMock);
 
         // Calling with true again. Should do nothing.
-        mMediator.setToolbarVisible(true);
+        mMediator.setNavigationTypeVisible(true);
         verify(mNativeMock, never()).notifySessionStarted(anyLong());
         verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
 
         // Transition to false. Should abandon the session.
-        mMediator.setToolbarVisible(false);
+        mMediator.setNavigationTypeVisible(false);
         verify(mNativeMock, never()).notifySessionStarted(anyLong());
         verify(mNativeMock).notifySessionAbandoned(123L);
         Mockito.clearInvocations(mNativeMock);
 
         // Calling with false again. Should do nothing.
-        mMediator.setToolbarVisible(false);
+        mMediator.setNavigationTypeVisible(false);
         verify(mNativeMock, never()).notifySessionStarted(anyLong());
         verify(mNativeMock, never()).notifySessionAbandoned(anyLong());
     }
