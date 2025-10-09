@@ -85,7 +85,6 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
   SkImageInfo image_info = SkImageInfo::MakeN32(
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
-  context_provider->BindToCurrentSequence();
   sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
       context_provider->GrContext(), skgpu::Budgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
