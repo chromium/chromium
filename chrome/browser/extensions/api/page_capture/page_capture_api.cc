@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"

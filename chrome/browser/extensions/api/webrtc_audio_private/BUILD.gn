@@ -23,7 +23,6 @@ source_set("webrtc_audio_private") {
   ]
 
   deps = [
-    "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
     "//components/media_device_salt",
     "//extensions/common",

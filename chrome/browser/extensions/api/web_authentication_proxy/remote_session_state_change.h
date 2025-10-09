@@ -16,8 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/buildflags/buildflags.h"
 

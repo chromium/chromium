@@ -8,7 +8,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
 
-#include <optional>
 #include <string>
 
 #include "base/memory/singleton.h"

@@ -158,7 +158,7 @@ class WebAuthenticationProxyService
   using RespondCallback = base::OnceCallback<void(std::optional<std::string>)>;
 
   // Returns the service instance for the given BrowserContext, if a proxy is
-  // currently attached, and nulltpr otherwise. References to this class should
+  // currently attached, and nullptr otherwise. References to this class should
   // not be stored because they become invalid whenever the proxy detaches.
   //
   // Service instances are shared between incognito and regular contexts if the

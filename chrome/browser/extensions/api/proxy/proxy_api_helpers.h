@@ -8,7 +8,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
 
 #include <array>
-#include <memory>
 #include <optional>
 #include <string>
 

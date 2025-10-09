@@ -23,7 +23,6 @@ source_set("web_authentication_proxy") {
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//components/keyed_service/core",
-    "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
     "//services/data_decoder/public/cpp",

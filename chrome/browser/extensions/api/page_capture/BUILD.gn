@@ -15,7 +15,6 @@ source_set("page_capture") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common/extensions/api",
     "//extensions/browser",
     "//storage/browser",

@@ -6,7 +6,6 @@
 
 #include <limits>
 #include <optional>
-#include <string>
 #include <variant>
 
 #include "base/json/json_writer.h"
