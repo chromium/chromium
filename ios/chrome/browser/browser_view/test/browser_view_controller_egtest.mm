@@ -304,7 +304,9 @@ const char kSecondURLText[] = "You've arrived";
 
 // Test that code for opening URLs from Search widgets loads the NTP with the
 // Omnibox focused and switches to the correct profile and account.
-- (void)testOpenSearchWidgetWithProfileSwitch {
+// Disabled due to failures when field trial config is disabled.
+// See crbug.com/450574249.
+- (void)DISABLED_testOpenSearchWidgetWithProfileSwitch {
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
