@@ -863,23 +863,32 @@ bool CatapAudioInputStreamSource::ConfigureFramesPerBufferOfAggregateDevice() {
 bool CatapAudioInputStreamSource::ProbeAudioTapPermissions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CATapDescription* description;
   UInt32 propertySize = sizeof(CATapDescription*);
   AudioObjectPropertyAddress propertyAddress = {
       kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
       kAudioObjectPropertyElementMain};
 
+  void* get_description_ptr = nullptr;
   OSStatus status = catap_api_->AudioObjectGetPropertyData(
       tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
-      /*in_qualifier_data=*/nullptr, &propertySize, &description);
-
+      /*in_qualifier_data=*/nullptr, &propertySize, &get_description_ptr);
   if (status != noErr) {
     return false;
   }
 
+  // We receive ownership of the Core Foundation object returned by
+  // `AudioObjectGetPropertyData()`. `CFBridgingRelease` transfers this
+  // ownership to ARC. The `description` object will now be released
+  // automatically when it goes out of scope.
+  CATapDescription* description = CFBridgingRelease(get_description_ptr);
+
+  // `AudioObjectSetPropertyData()` does not take ownership of the object. We
+  // use a non-owning `__bridge` cast to pass the pointer. ARC retains
+  // ownership, and `description` will be released when it goes out of scope.
+  void* set_description_ptr = (__bridge void*)description;
   status = catap_api_->AudioObjectSetPropertyData(
       tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
-      /*in_qualifier_data=*/nullptr, propertySize, &description);
+      /*in_qualifier_data=*/nullptr, propertySize, &set_description_ptr);
 
   if (status != noErr) {
     return false;
