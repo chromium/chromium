@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,6 +34,8 @@ import org.chromium.url.GURL;
 class ContextMenuHeaderCoordinator {
     private final PropertyModel mModel;
 
+    private static boolean sDisableForTesting;
+
     ContextMenuHeaderCoordinator(
             Activity activity,
             ContextMenuParams params,
@@ -47,6 +50,11 @@ class ContextMenuHeaderCoordinator {
             Profile profile,
             ContextMenuNativeDelegate nativeDelegate,
             boolean isCustomItemPresent) {
+        if (sDisableForTesting) {
+            mModel = new PropertyModel();
+            return;
+        }
+
         if (!ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
             isCustomItemPresent = false;
         }
@@ -67,6 +75,11 @@ class ContextMenuHeaderCoordinator {
 
         mModel = buildModel(activity, title, url, secondaryUrl, tertiaryUrl);
         new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
+    }
+
+    public static void setDisableForTesting(boolean disable) {
+        sDisableForTesting = disable;
+        ResettersForTesting.register(() -> sDisableForTesting = false);
     }
 
     @VisibleForTesting

@@ -127,19 +127,6 @@ public class ContextMenuCoordinatorTest {
         }
     }
 
-    /** No-op constructor for test cases that does not care of creation of real object. */
-    @Implements(ContextMenuHeaderCoordinator.class)
-    public static class ShadowContextMenuHeaderCoordinator {
-        public ShadowContextMenuHeaderCoordinator() {}
-
-        @Implementation
-        public void __constructor__(
-                Activity activity,
-                ContextMenuParams params,
-                Profile profile,
-                ContextMenuNativeDelegate nativeDelegate) {}
-    }
-
     /** Helper shadow to set the results for {@link Profile#fromWebContents}. */
     @Implements(Profile.class)
     public static class ShadowProfile {
@@ -177,6 +164,7 @@ public class ContextMenuCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         ShadowProfile.sProfileFromWebContents = mProfile;
+        ContextMenuHeaderCoordinator.setDisableForTesting(true);
     }
 
     @Test
@@ -293,11 +281,7 @@ public class ContextMenuCoordinatorTest {
     @DisabledTest(message = "crbug.com/1444964")
     @DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(
-            shadows = {
-                ShadowContextMenuDialog.class,
-                ShadowContextMenuHeaderCoordinator.class,
-                ShadowProfile.class
-            },
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
             qualifiers = "mdpi")
     public void testDisplayMenu() {
         final int triggeringTouchXDp = 100;
@@ -330,11 +314,7 @@ public class ContextMenuCoordinatorTest {
     @DisabledTest(message = "crbug.com/1444964")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
-            shadows = {
-                ShadowContextMenuDialog.class,
-                ShadowContextMenuHeaderCoordinator.class,
-                ShadowProfile.class
-            },
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
             qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
