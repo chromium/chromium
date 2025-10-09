@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.SiteSettingsChanged" enum="ContentType"
-    expires_after="2026-02-01">
+    expires_after="2026-10-01">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1896,6 +1896,26 @@ chromium-metrics-reviews@google.com.
     which means they are probably in the wrong buckets and need to be viewed
     with cautious.
   </summary>
+</histogram>
+
+<histogram name="Permissions.SiteSettingsChanged.{ContentSettingType}"
+    enum="ContentType" expires_after="2026-10-01">
+  <owner>lyf@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records which content setting value a user has selected for a particular
+    content setting type in the site settings page. For example, this may be
+    `Allow` for the `Notifications` permission setting or `Block` for the
+    `Camera` permission setting.
+  </summary>
+  <token key="ContentSettingType">
+    <variant name="Allow"/>
+    <variant name="Ask"/>
+    <variant name="Block"/>
+    <variant name="Default"/>
+    <variant name="SessionOnly"/>
+  </token>
 </histogram>
 
 <histogram

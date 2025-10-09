@@ -1111,6 +1111,8 @@ void SiteSettingsHandler::HandleSetDefaultValueForContentType(
       map->GetDefaultContentSetting(type, nullptr);
   map->SetDefaultContentSetting(type, default_setting);
 
+  content_settings_uma_util::RecordContentSettingChange(default_setting, type);
+
   if (type == ContentSettingsType::SOUND &&
       previous_setting != default_setting) {
     if (default_setting == CONTENT_SETTING_BLOCK) {

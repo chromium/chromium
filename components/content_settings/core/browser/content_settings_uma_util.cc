@@ -250,4 +250,32 @@ void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,
       content_setting_type);
 }
 
+void RecordContentSettingChange(ContentSetting content_setting_value,
+                                ContentSettingsType content_setting_type) {
+  switch (content_setting_value) {
+    case CONTENT_SETTING_ALLOW:
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.SiteSettingsChanged.Allow", content_setting_type);
+      break;
+    case CONTENT_SETTING_BLOCK:
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.SiteSettingsChanged.Block", content_setting_type);
+      break;
+    case CONTENT_SETTING_DEFAULT:
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.SiteSettingsChanged.Default", content_setting_type);
+      break;
+    case CONTENT_SETTING_ASK:
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.SiteSettingsChanged.Ask", content_setting_type);
+      break;
+    case CONTENT_SETTING_SESSION_ONLY:
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.SiteSettingsChanged.SessionOnly", content_setting_type);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace content_settings_uma_util
