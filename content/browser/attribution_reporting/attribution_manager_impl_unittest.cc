@@ -604,16 +604,6 @@ TEST_F(AttributionManagerImplTest,
 
   histograms.ExpectTotalCount(
       "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
-
-  static constexpr char kNetworkConnectionTypeOnFailureHistogram[] =
-      "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure2";
-
-  histograms.ExpectBucketCount(
-      kNetworkConnectionTypeOnFailureHistogram,
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN, 2);
-  histograms.ExpectBucketCount(kNetworkConnectionTypeOnFailureHistogram,
-                               network::mojom::ConnectionType::CONNECTION_2G,
-                               1);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {

@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 
 namespace content {
 
@@ -41,8 +40,6 @@ struct CONTENT_EXPORT SendResult {
 
     Result result;
     int status;
-    network::mojom::ConnectionType connection_type =
-        network::mojom::ConnectionType::CONNECTION_UNKNOWN;
 
     Sent(Result result, int status) : result(result), status(status) {}
 

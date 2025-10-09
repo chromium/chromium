@@ -1392,21 +1392,6 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
-<histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure2"
-    enum="NetworkConnectionType" expires_after="2026-02-22">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the network connection type in the event that the report failed to
-    be sent due to network issues. Recorded for each report sending attempt that
-    failed.
-  </summary>
-  <token key="ReportType">
-    <variant name="AggregatableReport"/>
-    <variant name="EventLevelReport"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.{ReportType}.ReportBodySize" units="bytes"
     expires_after="2026-01-11">
   <owner>linnan@chromium.org</owner>
