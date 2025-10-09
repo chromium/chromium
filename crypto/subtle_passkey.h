@@ -33,6 +33,10 @@ class FreedesktopSecretKeyProvider;
 class KeychainKeyProvider;
 }
 
+namespace password_manager {
+crypto::SubtlePassKey MakeCryptoPassKey();
+}
+
 class OSCryptImpl;
 
 namespace crypto {
@@ -76,6 +80,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
   friend class ::OSCryptImpl;
   friend class os_crypt_async::FreedesktopSecretKeyProvider;
   friend class os_crypt_async::KeychainKeyProvider;
+
+  // This class uses custom scrypt parameters and has to keep doing so for
+  // compatibility with a server-side implementation.
+  friend SubtlePassKey password_manager::MakeCryptoPassKey();
 
   // This class uses custom PBKDF2 parameters which cannot be changed for
   // compatibility with persisted data.

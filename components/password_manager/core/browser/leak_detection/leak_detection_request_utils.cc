@@ -49,8 +49,7 @@ LookupSingleLeakPayload ProduceHashes(std::string_view username,
   LookupSingleLeakPayload payload;
   payload.username_hash_prefix = BucketizeUsername(canonicalized_username);
   payload.encrypted_payload =
-      ScryptHashUsernameAndPassword(canonicalized_username, password)
-          .value_or("");
+      ScryptHashUsernameAndPassword(canonicalized_username, password);
   if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
   }

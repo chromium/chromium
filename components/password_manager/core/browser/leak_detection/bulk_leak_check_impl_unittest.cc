@@ -291,7 +291,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
       "trash_bytes";
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
+          ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kHashingFailure));
@@ -318,7 +318,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
+          ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
@@ -350,7 +350,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
+          ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
   leaked_credential = TestCredential(u"abc");

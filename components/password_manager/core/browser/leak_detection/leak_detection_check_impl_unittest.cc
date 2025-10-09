@@ -296,7 +296,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_DecryptionError) {
       "trash_bytes";
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kPassword),
+          ScryptHashUsernameAndPassword("another_username", kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(),
@@ -328,7 +328,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_NoLeak) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kPassword),
+          ScryptHashUsernameAndPassword("another_username", kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(),
@@ -366,7 +366,7 @@ TEST_P(LeakDetectionCheckImplTest, ParseResponse_Leak) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword(canonicalized_username, kPassword),
+          ScryptHashUsernameAndPassword(canonicalized_username, kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(),
