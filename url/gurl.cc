@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -95,7 +96,7 @@ void GURL::InitializeFromCanonicalSpec() {
                                         *parsed_.inner_parsed(), true);
   }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   // For testing purposes, check that the parsed canonical URL is identical to
   // what we would have produced. Skip checking for invalid URLs have no meaning
   // and we can't always canonicalize then reproducibly.
@@ -349,9 +350,6 @@ bool GURL::IsAboutSrcdoc() const {
 bool GURL::SchemeIs(std::string_view lower_ascii_scheme) const {
   DCHECK(base::IsStringASCII(lower_ascii_scheme));
   DCHECK(base::ToLowerASCII(lower_ascii_scheme) == lower_ascii_scheme);
-
-  if (!has_scheme())
-    return lower_ascii_scheme.empty();
   return scheme() == lower_ascii_scheme;
 }
 
@@ -364,10 +362,7 @@ bool GURL::SchemeIsWSOrWSS() const {
 }
 
 bool GURL::SchemeIsCryptographic() const {
-  if (!has_scheme())
-    return false;
-  return SchemeIsCryptographic(scheme());
-}
+  return has_scheme() && SchemeIsCryptographic(scheme());}
 
 bool GURL::SchemeIsCryptographic(std::string_view lower_ascii_scheme) {
   DCHECK(base::IsStringASCII(lower_ascii_scheme));
@@ -393,8 +388,7 @@ int GURL::IntPort() const {
 int GURL::EffectiveIntPort() const {
   int int_port = IntPort();
   if (int_port == url::PORT_UNSPECIFIED && IsStandard())
-    return url::DefaultPortForScheme(std::string_view(
-        spec_.data() + parsed_.scheme.begin, parsed_.scheme.len));
+    return url::DefaultPortForScheme(scheme());
   return int_port;
 }
 
@@ -495,33 +489,19 @@ size_t GURL::EstimateMemoryUsage() const {
 }
 
 bool GURL::IsAboutUrl(std::string_view allowed_path) const {
-  if (!SchemeIs(url::kAboutScheme))
-    return false;
-
-  if (has_host() || has_username() || has_password() || has_port())
-    return false;
-
-  return IsAboutPath(path(), allowed_path);
+  bool has_wrong_components =
+      has_host() || has_username() || has_password() || has_port();
+  return SchemeIs(url::kAboutScheme) && !has_wrong_components &&
+         IsAboutPath(path(), allowed_path);
 }
 
 // static
 bool GURL::IsAboutPath(std::string_view actual_path,
                        std::string_view allowed_path) {
-  if (!base::StartsWith(actual_path, allowed_path))
-    return false;
-
-  if (actual_path.size() == allowed_path.size()) {
-    DCHECK_EQ(actual_path, allowed_path);
-    return true;
-  }
-
-  if ((actual_path.size() == allowed_path.size() + 1) &&
-      actual_path.back() == '/') {
-    DCHECK_EQ(actual_path, std::string(allowed_path) + '/');
-    return true;
-  }
-
-  return false;
+  return actual_path == allowed_path ||
+         (actual_path.size() == allowed_path.size() + 1 &&
+          actual_path.back() == '/' &&
+          base::StartsWith(actual_path, allowed_path));
 }
 
 void GURL::WriteIntoTrace(perfetto::TracedValue context) const {

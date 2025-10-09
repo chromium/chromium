@@ -433,7 +433,8 @@ class COMPONENT_EXPORT(URL) GURL {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL.
+  // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL. Returns true if
+  // actual_path == allowed_path or actual_path == allowed_path + '/'.
   static bool IsAboutPath(std::string_view actual_path,
                           std::string_view allowed_path);
 
