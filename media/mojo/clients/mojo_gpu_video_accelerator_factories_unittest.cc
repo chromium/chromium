@@ -159,7 +159,6 @@ class MockContextProviderCommandBuffer
   MOCK_METHOD(gpu::gles2::GLES2Interface*, ContextGL, (), (override));
   MOCK_METHOD(gpu::raster::RasterInterface*, RasterInterface, (), (override));
   MOCK_METHOD(gpu::ContextSupport*, ContextSupport, (), (override));
-  MOCK_METHOD(class GrDirectContext*, GrContext, (), (override));
   MOCK_METHOD(gpu::SharedImageInterface*, SharedImageInterface, (), (override));
   MOCK_METHOD(viz::ContextCacheController*, CacheController, (), (override));
   MOCK_METHOD(base::Lock*, GetLock, (), (override));

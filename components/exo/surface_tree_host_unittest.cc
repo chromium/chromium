@@ -334,10 +334,6 @@ class FakeRasterContextProvider
     return nullptr;
   }
   gpu::ContextSupport* ContextSupport() override { return nullptr; }
-  class GrDirectContext* GrContext() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::SharedImageInterface* SharedImageInterface() override {
     ADD_FAILURE();
     return nullptr;

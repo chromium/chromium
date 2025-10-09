@@ -91,10 +91,6 @@ class TestRasterContextProvider
   gpu::ContextSupport* ContextSupport() override {
     return &gpu_context_support_;
   }
-  class GrDirectContext* GrContext() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::SharedImageInterface* SharedImageInterface() override {
     return shared_image_interface_.get();
   }

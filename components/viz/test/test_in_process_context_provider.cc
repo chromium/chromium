@@ -21,8 +21,6 @@
 #include "gpu/config/skia_limits.h"
 #include "gpu/ipc/gl_in_process_context.h"
 #include "gpu/ipc/raster_in_process_context.h"
-#include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 
@@ -105,10 +103,6 @@ gpu::raster::RasterInterface* TestInProcessContextProvider::RasterInterface() {
 gpu::ContextSupport* TestInProcessContextProvider::ContextSupport() {
   return gles2_context_ ? gles2_context_->GetImplementation()
                         : raster_context_->GetContextSupport();
-}
-
-class GrDirectContext* TestInProcessContextProvider::GrContext() {
-  return nullptr;
 }
 
 gpu::SharedImageInterface*

@@ -18,8 +18,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/config/gpu_feature_info.h"
 
-class GrDirectContext;
-
 namespace gpu {
 class GLInProcessContext;
 class GpuProcessShmCount;
@@ -57,7 +55,6 @@ class TestInProcessContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrDirectContext* GrContext() override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;

@@ -80,13 +80,14 @@ class TestContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrDirectContext* GrContext() override;
   gpu::TestSharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
   unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
+
+  class GrDirectContext* GrContext();
 
   TestGLES2Interface* TestContextGL();
   TestRasterInterface* GetTestRasterInterface();
