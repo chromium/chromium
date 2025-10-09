@@ -144,9 +144,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     if (this.syncAllCache_ === null) {
       this.syncAllCache_ = this.syncPrefs_.syncAllDataTypes;
     }
-    this.set(
-        'historySyncVirtualPref_.value',
-        this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
+    this.set('historySyncVirtualPref_.value', this.syncPrefs_.typedUrlsSynced);
 
     if (this.firstSyncPrefUpdate_) {
       this.startStateHistorySyncOn_ = this.syncPrefs_.typedUrlsSynced;
