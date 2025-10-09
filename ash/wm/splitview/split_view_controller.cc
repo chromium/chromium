@@ -507,6 +507,73 @@ class SplitViewController::ToBeSnappedWindowsObserver
   base::flat_map<SnapPosition, WindowAndSnapSourceInfo> to_be_snapped_windows_;
 };
 
+// -----------------------------------------------------------------------------
+// TabDragWindowObserver:
+
+class SplitViewController::TabDragWindowObserver : public aura::WindowObserver {
+ public:
+  TabDragWindowObserver(SplitViewController* split_view_controller,
+                        aura::Window* drag_window,
+                        SnapPosition desired_snap_position,
+                        const gfx::Point& last_location_in_screen,
+                        WindowSnapActionSource snap_action_source)
+      : split_view_controller_(CHECK_DEREF(split_view_controller)),
+        drag_window_(drag_window),
+        desired_snap_position_(desired_snap_position),
+        last_location_in_screen_(last_location_in_screen),
+        snap_action_source_(snap_action_source) {
+    CHECK(drag_window_);
+    CHECK(window_util::IsDraggingTabs(drag_window_));
+    drag_window_->AddObserver(this);
+  }
+
+  ~TabDragWindowObserver() override {
+    if (drag_window_) {
+      drag_window_->RemoveObserver(this);
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    // The dragged tabs got merged into another browser.
+    CHECK_EQ(window, drag_window_);
+    CHECK(window_util::IsDraggingTabs(drag_window_));
+    CHECK(drag_window_->is_destroying());
+    OnTabDragEnded();
+  }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    CHECK_EQ(window, drag_window_);
+    if (key == kIsDraggingTabsKey &&
+        !window_util::IsDraggingTabs(drag_window_)) {
+      // The drag window survived the drag.
+      OnTabDragEnded();
+    }
+  }
+
+ private:
+  void OnTabDragEnded() {
+    drag_window_->RemoveObserver(this);
+    auto* window = drag_window_.get();
+    drag_window_ = nullptr;
+    split_view_controller_->EndWindowDragImpl(
+        window, window->is_destroying(), desired_snap_position_,
+        last_location_in_screen_, snap_action_source_);
+  }
+
+  const raw_ref<SplitViewController> split_view_controller_;
+  raw_ptr<aura::Window> drag_window_;
+  const SnapPosition desired_snap_position_;
+  const gfx::Point last_location_in_screen_;
+  const WindowSnapActionSource snap_action_source_;
+};
+
+// -----------------------------------------------------------------------------
+// SplitViewController:
+
 // static
 SplitViewController* SplitViewController::Get(const aura::Window* window) {
   DCHECK(window);
@@ -514,9 +581,6 @@ SplitViewController* SplitViewController::Get(const aura::Window* window) {
   DCHECK(RootWindowController::ForWindow(window));
   return RootWindowController::ForWindow(window)->split_view_controller();
 }
-
-// -----------------------------------------------------------------------------
-// SplitViewController:
 
 SplitViewController::SplitViewController(aura::Window* root_window)
     : root_window_(root_window),
@@ -1072,67 +1136,6 @@ void SplitViewController::OnWindowDragStarted(aura::Window* dragged_window) {
     split_view_divider_.OnWindowDragStarted(dragged_window);
   }
 }
-
-class SplitViewController::TabDragWindowObserver : public aura::WindowObserver {
- public:
-  TabDragWindowObserver(SplitViewController* split_view_controller,
-                        aura::Window* drag_window,
-                        SnapPosition desired_snap_position,
-                        const gfx::Point& last_location_in_screen,
-                        WindowSnapActionSource snap_action_source)
-      : split_view_controller_(CHECK_DEREF(split_view_controller)),
-        drag_window_(drag_window),
-        desired_snap_position_(desired_snap_position),
-        last_location_in_screen_(last_location_in_screen),
-        snap_action_source_(snap_action_source) {
-    CHECK(drag_window_);
-    CHECK(window_util::IsDraggingTabs(drag_window_));
-    drag_window_->AddObserver(this);
-  }
-
-  ~TabDragWindowObserver() override {
-    if (drag_window_) {
-      drag_window_->RemoveObserver(this);
-    }
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override {
-    // The dragged tabs got merged into another browser.
-    CHECK_EQ(window, drag_window_);
-    CHECK(window_util::IsDraggingTabs(drag_window_));
-    CHECK(drag_window_->is_destroying());
-    OnTabDragEnded();
-  }
-
-  // aura::WindowObserver:
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override {
-    CHECK_EQ(window, drag_window_);
-    if (key == kIsDraggingTabsKey &&
-        !window_util::IsDraggingTabs(drag_window_)) {
-      // The drag window survived the drag.
-      OnTabDragEnded();
-    }
-  }
-
- private:
-  void OnTabDragEnded() {
-    drag_window_->RemoveObserver(this);
-    auto* window = drag_window_.get();
-    drag_window_ = nullptr;
-    split_view_controller_->EndWindowDragImpl(
-        window, window->is_destroying(), desired_snap_position_,
-        last_location_in_screen_, snap_action_source_);
-  }
-
-  const raw_ref<SplitViewController> split_view_controller_;
-  raw_ptr<aura::Window> drag_window_;
-  const SnapPosition desired_snap_position_;
-  const gfx::Point last_location_in_screen_;
-  const WindowSnapActionSource snap_action_source_;
-};
 
 void SplitViewController::OnWindowDragEnded(
     aura::Window* dragged_window,

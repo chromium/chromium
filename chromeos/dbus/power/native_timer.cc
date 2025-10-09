@@ -33,6 +33,27 @@ const PowerManagerClient::TimerId kErrorId = -2;
 
 }  // namespace
 
+struct NativeTimer::StartTimerParams {
+  StartTimerParams() = default;
+  StartTimerParams(base::TimeTicks absolute_expiration_time,
+                   base::OnceClosure timer_expiration_callback,
+                   OnStartNativeTimerCallback result_callback)
+      : absolute_expiration_time(absolute_expiration_time),
+        timer_expiration_callback(std::move(timer_expiration_callback)),
+        result_callback(std::move(result_callback)) {}
+
+  StartTimerParams(const StartTimerParams&) = delete;
+  StartTimerParams& operator=(const StartTimerParams&) = delete;
+
+  StartTimerParams(StartTimerParams&&) = default;
+
+  ~StartTimerParams() = default;
+
+  base::TimeTicks absolute_expiration_time;
+  base::OnceClosure timer_expiration_callback;
+  OnStartNativeTimerCallback result_callback;
+};
+
 bool NativeTimer::simulate_timer_creation_failure_for_testing_ = false;
 
 NativeTimer::NativeTimer(const std::string& tag)
@@ -72,27 +93,6 @@ NativeTimer::~NativeTimer() {
 
   PowerManagerClient::Get()->DeleteArcTimers(tag_, base::DoNothing());
 }
-
-struct NativeTimer::StartTimerParams {
-  StartTimerParams() = default;
-  StartTimerParams(base::TimeTicks absolute_expiration_time,
-                   base::OnceClosure timer_expiration_callback,
-                   OnStartNativeTimerCallback result_callback)
-      : absolute_expiration_time(absolute_expiration_time),
-        timer_expiration_callback(std::move(timer_expiration_callback)),
-        result_callback(std::move(result_callback)) {}
-
-  StartTimerParams(const StartTimerParams&) = delete;
-  StartTimerParams& operator=(const StartTimerParams&) = delete;
-
-  StartTimerParams(StartTimerParams&&) = default;
-
-  ~StartTimerParams() = default;
-
-  base::TimeTicks absolute_expiration_time;
-  base::OnceClosure timer_expiration_callback;
-  OnStartNativeTimerCallback result_callback;
-};
 
 void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
                         base::OnceClosure timer_expiration_callback,

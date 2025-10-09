@@ -9,15 +9,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate.h"
 
 class PrefRegistrySimple;
 class PrefService;
-
-namespace base {
-class OneShotTimer;
-}  // namespace base
 
 namespace ash {
 

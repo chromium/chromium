@@ -140,6 +140,11 @@ void AutoConnectNotifier::OnAutoConnectedInitiated(int auto_connect_reasons) {
   timer_->Start(FROM_HERE, kNetworkConnectionTimeout, base::DoNothing());
 }
 
+void AutoConnectNotifier::set_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> test_timer) {
+  timer_ = std::move(test_timer);
+}
+
 void AutoConnectNotifier::DisplayToast(const NetworkState* network) {
   NET_LOG(EVENT) << "Show AutoConnect Toast for: " << NetworkId(network);
   // Remove previous toast if one was already being shown.

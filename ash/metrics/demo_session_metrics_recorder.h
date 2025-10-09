@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ui/base/app_types.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
