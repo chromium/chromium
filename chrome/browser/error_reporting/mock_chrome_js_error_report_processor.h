@@ -83,6 +83,10 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
  private:
   ~MockChromeJsErrorReportProcessor() override;
 
+  // The experiments listed in kDefaultExperimentListString before they are
+  // URL-escaped.
+  static const char kDefaultExperimentListStringPreEscaping[];
+
   // Number of times SendErrorReport has been called.
   int send_count_ = 0;
   std::string crash_endpoint_;

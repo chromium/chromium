@@ -6,10 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/escape.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -44,13 +40,9 @@ class MockCrashEndpoint::Client : public crash_reporter::CrashReporterClient {
   raw_ptr<MockCrashEndpoint> owner_;
 };
 
-MockCrashEndpoint::Report::Report(
-    std::multimap<std::string, std::string> query_params,
-    std::string content)
-    : query_params_(std::move(query_params)), content_(std::move(content)) {}
-
-MockCrashEndpoint::Report::Report(const MockCrashEndpoint::Report&) = default;
-MockCrashEndpoint::Report::~Report() = default;
+MockCrashEndpoint::Report::Report(std::string query_value,
+                                  std::string content_value)
+    : query(std::move(query_value)), content(std::move(content_value)) {}
 
 MockCrashEndpoint::MockCrashEndpoint(
     net::test_server::EmbeddedTestServer* test_server)
@@ -82,35 +74,6 @@ MockCrashEndpoint::Report MockCrashEndpoint::WaitForReport() {
   return *last_report_;
 }
 
-// static
-MockCrashEndpoint::Report MockCrashEndpoint::Report::ParseQuery(
-    std::string_view query,
-    std::string content) {
-  base::StringPairs param_pairs;
-  // Tolerate and discard empty key-value pairs.
-  base::SplitStringIntoKeyValuePairs(query, '=', '&', &param_pairs);
-  std::multimap<std::string, std::string> query_params;
-  for (const auto& param : param_pairs) {
-    std::string unescaped_value = base::UnescapeURLComponent(
-        param.second,
-        base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
-            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-            base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
-    query_params.emplace(param.first, std::move(unescaped_value));
-  }
-  return MockCrashEndpoint::Report(std::move(query_params), std::move(content));
-}
-
-std::optional<std::string_view> MockCrashEndpoint::Report::GetQueryParam(
-    const std::string& param) const {
-  auto it = query_params_.find(param);
-  if (it != query_params_.end()) {
-    return it->second;
-  } else {
-    return std::nullopt;
-  }
-}
-
 std::unique_ptr<net::test_server::HttpResponse>
 MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
   GURL absolute_url = test_server_->GetURL(request.relative_url);
@@ -121,7 +84,7 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
   }
 
   ++report_count_;
-  last_report_ = Report::ParseQuery(absolute_url.GetQuery(), request.content);
+  last_report_ = Report(absolute_url.GetQuery(), request.content);
   all_reports_.push_back(*last_report_);
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(response_code_);
@@ -135,14 +98,6 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
 
 std::ostream& operator<<(std::ostream& out,
                          const MockCrashEndpoint::Report& report) {
-  std::vector<std::string> param_pairs;
-  for (const auto& pair : report.query_params()) {
-    std::string escaped_value =
-        base::EscapeQueryParamValue(pair.second, /*use_plus=*/true);
-    param_pairs.push_back(
-        base::StrCat({pair.first, "=", std::move(escaped_value)}));
-  }
-  std::string query = base::JoinString(param_pairs, "&");
-  out << "query: " << std::move(query) << "\ncontent: " << report.content();
+  out << "query: " << report.query << "\ncontent: " << report.content;
   return out;
 }

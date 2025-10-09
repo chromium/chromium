@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
-
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -113,27 +111,21 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
 
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report->GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report->GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report->GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report->GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report->GetQueryParam("full_url"), "http://www.test.com/");
-  EXPECT_EQ(report->GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report->GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report->GetQueryParam("prod"), "Chrome_ChromeOS");
-  EXPECT_THAT(report->GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report->GetQueryParam("src"), "http://www.test.com/");
-  EXPECT_EQ(report->GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report->GetQueryParam("url"), "/");
-  EXPECT_EQ(report->GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report->GetQueryParam("ver"), "1.2.3.4");
-  EXPECT_EQ(report->content(), "");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4"})));
+  EXPECT_EQ(report->content, "");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
@@ -154,33 +146,25 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
 
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report->GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report->GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report->GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report->GetQueryParam("column"), "456");
-  EXPECT_EQ(report->GetQueryParam("debug_id"),
-            "2751679EE:233977D75E03BAC9DA/255DD0");
-  EXPECT_EQ(report->GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report->GetQueryParam("full_url"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("line"), "123");
-  EXPECT_EQ(report->GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report->GetQueryParam("os"), "ChromeOS");
   // The product name is escaped twice. The first time, it becomes
   // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
-  EXPECT_EQ(report->GetQueryParam("prod"), "Chrome%20(Chrome%20OS)");
-  EXPECT_THAT(report->GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report->GetQueryParam("src"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report->GetQueryParam("url"), "/foo");
-  EXPECT_EQ(report->GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report->GetQueryParam("ver"), "1.0.0.0");
-  EXPECT_EQ(report->content(), "   at <anonymous>:1:1");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&column=456&"
+           "debug_id=2751679EE%3A233977D75E03BAC9DA%2F255DD0&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
+           "&line=123&num-experiments=1&os=ChromeOS"
+           "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"
+           "uptime_ms=\\d+&"
+           "source_system=crash_report_api&"
+           "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
+           "type=JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
+  EXPECT_EQ(report->content, "   at <anonymous>:1:1");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
@@ -200,29 +184,21 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
 
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report->GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report->GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report->GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report->GetQueryParam("column"), "456");
-  EXPECT_EQ(report->GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report->GetQueryParam("full_url"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("line"), "123");
-  EXPECT_EQ(report->GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report->GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report->GetQueryParam("prod"), "TestApp");
-  EXPECT_THAT(report->GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report->GetQueryParam("src"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report->GetQueryParam("url"), "/foo");
-  EXPECT_EQ(report->GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report->GetQueryParam("ver"), "1.0.0.0");
-  EXPECT_EQ(report->content(), "");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_version=1.2."
+           "3.4&channel=Stable&column=456&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
+           "line=123&num-experiments=1&os=ChromeOS"
+           "&prod=TestApp&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src=http%3A%"
+           "2F%2Fwww.test.com%2Ffoo&type="
+           "JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
+  EXPECT_EQ(report->content, "");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
@@ -243,30 +219,22 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
 
   const std::optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report->GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report->GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report->GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report->GetQueryParam("column"), "456");
-  EXPECT_EQ(report->GetQueryParam("error_message"),
-            "(MAC OUI=06:00:00 IFACE=1)");
-  EXPECT_EQ(report->GetQueryParam("full_url"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("line"), "123");
-  EXPECT_EQ(report->GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report->GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report->GetQueryParam("prod"), "TestApp");
-  EXPECT_THAT(report->GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report->GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report->GetQueryParam("src"), "http://www.test.com/foo");
-  EXPECT_EQ(report->GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report->GetQueryParam("url"), "/foo");
-  EXPECT_EQ(report->GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report->GetQueryParam("ver"), "1.0.0.0");
-  EXPECT_EQ(report->content(), "");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
+           "browser_version=1.2."
+           "3.4&channel=Stable&column=456&"
+           "error_message=\\(MAC%20OUI%3D06%3A00%3A00%20IFACE%3D1\\)&"
+           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&num-experiments="
+           "1&"
+           "os=ChromeOS&prod=TestApp&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src=http%3A%2F%2Fwww."
+           "test.com%2Ffoo&type="
+           "JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
+  EXPECT_EQ(report->content, "");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
@@ -327,28 +295,21 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
   EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = crash_endpoint_->WaitForReport();
-  EXPECT_EQ(report.GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report.GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report.GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report.GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report.GetQueryParam("full_url"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report.GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report.GetQueryParam("prod"), "Chrome_ChromeOS");
-  EXPECT_THAT(report.GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report.GetQueryParam("src"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report.GetQueryParam("url"), "/");
-  EXPECT_EQ(report.GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report.GetQueryParam("ver"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("window_type"), "REGULAR_TABBED");
-  EXPECT_EQ(report.content(), "");
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=REGULAR_TABBED"})));
+  EXPECT_EQ(report.content, "");
 }
 
 using CrashReportPrivateCalledFromSwaTest = ash::SystemWebAppIntegrationTest;
@@ -388,28 +349,22 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = endpoint.WaitForReport();
-  EXPECT_EQ(report.GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report.GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report.GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report.GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report.GetQueryParam("full_url"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report.GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report.GetQueryParam("prod"), "Chrome_ChromeOS");
-  EXPECT_THAT(report.GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report.GetQueryParam("src"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report.GetQueryParam("url"), "/");
-  EXPECT_EQ(report.GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report.GetQueryParam("ver"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("window_type"), "WEB_APP");
-  EXPECT_EQ(report.content(), "");
+
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=WEB_APP"})));
+  EXPECT_EQ(report.content, "");
 }
 
 // Test SWA_WINDOW is detected when |CrashReportPrivate| is called from a
@@ -431,28 +386,22 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   EXPECT_EQ(true, ExecJs(web_content, kTestScript));
 
   auto report = endpoint.WaitForReport();
-  EXPECT_EQ(report.GetQueryParam("app_locale"), "en-US");
-  EXPECT_EQ(report.GetQueryParam("browser"), "Chrome");
-  EXPECT_THAT(report.GetQueryParam("browser_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("browser_version"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("channel"), "Stable");
-  EXPECT_EQ(report.GetQueryParam("error_message"), "hi");
-  EXPECT_EQ(report.GetQueryParam("full_url"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("num-experiments"), "1");
-  EXPECT_EQ(report.GetQueryParam("os"), "ChromeOS");
-  EXPECT_EQ(report.GetQueryParam("prod"), "Chrome_ChromeOS");
-  EXPECT_THAT(report.GetQueryParam("renderer_process_uptime_ms").value_or(""),
-              MatchesRegex("\\d+"));
-  EXPECT_EQ(report.GetQueryParam("source_system"), "crash_report_api");
-  EXPECT_EQ(report.GetQueryParam("src"), "http://www.test.com/");
-  EXPECT_EQ(report.GetQueryParam("type"), "JavascriptError");
-  EXPECT_EQ(report.GetQueryParam("url"), "/");
-  EXPECT_EQ(report.GetQueryParam("variations"),
-            MockChromeJsErrorReportProcessor::kDefaultExperimentListString);
-  EXPECT_EQ(report.GetQueryParam("ver"), "1.2.3.4");
-  EXPECT_EQ(report.GetQueryParam("window_type"), "SYSTEM_WEB_APP");
-  EXPECT_EQ(report.content(), "");
+
+  EXPECT_THAT(
+      report.query,
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=SYSTEM_WEB_APP"})));
+  EXPECT_EQ(report.content, "");
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
