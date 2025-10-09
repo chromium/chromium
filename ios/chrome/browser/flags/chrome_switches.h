@@ -37,10 +37,6 @@ extern const char kEnableDiscoverFeed[];
 
 // Enables the fullscreen sign-in promo.
 extern const char kEnableFullscreenSigninPromo[];
-// DEPRECATED, please use `kEnableFullscreenSigninPromo`.
-
-// Enables the upgrade sign-in promo.
-extern const char kEnableUpgradeSigninPromo[];
 
 // Enables device switcher experience for the segment specified in the argument,
 // e.g. "Android."

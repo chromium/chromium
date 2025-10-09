@@ -22,7 +22,6 @@ const char kEnableThirdPartyKeyboardWorkaround[] =
 const char kEnableDiscoverFeed[] = "enable-discover-feed";
 
 const char kEnableFullscreenSigninPromo[] = "enable-fullscreen-signin-promo";
-const char kEnableUpgradeSigninPromo[] = "enable-fullscreen-signin-promo";
 
 const char kForceDeviceSwitcherExperienceCommandLineFlag[] =
     "force-device-switcher-experience";
