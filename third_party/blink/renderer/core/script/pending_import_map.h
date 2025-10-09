@@ -24,7 +24,7 @@ class ScriptElementBase;
 // script" until it is registered. PendingImportMap is similar to PendingScript.
 //
 // After PendingImportMap is ready, PendingImportMap works mostly as
-// https://wicg.github.io/import-maps/#import-map-parse-result and
+// https://html.spec.whatwg.org/multipage/webappapis.html#import-map-parse-result
 // |element_|'s script's result is |this|,
 // except for "null import map parse result" corresponds to
 // non-null PendingImportMap with |import_map_| == nullptr.
@@ -34,7 +34,7 @@ class ScriptElementBase;
 class CORE_EXPORT PendingImportMap final
     : public GarbageCollected<PendingImportMap> {
  public:
-  // https://wicg.github.io/import-maps/#create-an-import-map-parse-result
+  // https://html.spec.whatwg.org/multipage/webappapis.html#import-map-parse-result
   // for inline import maps.
   static PendingImportMap* CreateInline(ScriptElementBase&,
                                         const String& import_map_text,
@@ -56,13 +56,13 @@ class CORE_EXPORT PendingImportMap final
  private:
   Member<ScriptElementBase> element_;
 
-  // https://wicg.github.io/import-maps/#import-map-parse-result-import-map
+  // https://html.spec.whatwg.org/multipage/webappapis.html#import-map
   Member<ImportMap> import_map_;
 
-  // https://wicg.github.io/import-maps/#import-map-parse-result-error-to-rethrow
+  // https://html.spec.whatwg.org/multipage/webappapis.html#impr-error-to-rethrow
   std::optional<ImportMapError> error_to_rethrow_;
 
-  // https://wicg.github.io/import-maps/#import-map-parse-result-settings-object
+  // https://html.spec.whatwg.org/multipage/webappapis.html#realm-execution-context
   // The context at the time when PrepareScript() is executed.
   // This is only used to check whether the script element is moved between
   // context and thus doesn't retain a strong reference.
