@@ -112,14 +112,8 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
          {privacy_sandbox::kActUserBypassUx, {}}},
         {});
 
-    cookie_controls_page_action_controller_ =
-        std::make_unique<CookieControlsPageActionController>(
-            mock_tab_interface_, profile_, page_action_controller_);
-
     auto mock_bubble_delegate = std::make_unique<MockBubbleDelegate>();
     mock_bubble_delegate_ = mock_bubble_delegate.get();
-    controller().set_bubble_delegate_for_testing(
-        std::move(mock_bubble_delegate));
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
@@ -127,6 +121,8 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
         .WillByDefault(Return(web_contents_.get()));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
     user_education_.emplace(&mock_browser_window_interface_);
@@ -145,6 +141,12 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
 
     ON_CALL(*mock_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
     ON_CALL(*mock_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
+
+    cookie_controls_page_action_controller_ =
+        std::make_unique<CookieControlsPageActionController>(
+            mock_tab_interface_, profile_, page_action_controller_);
+    controller().set_bubble_delegate_for_testing(
+        std::move(mock_bubble_delegate));
 
     controller().Init();
   }
