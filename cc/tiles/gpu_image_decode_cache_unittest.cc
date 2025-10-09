@@ -39,6 +39,7 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -57,6 +58,8 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 using testing::_;
 using testing::StrictMock;
@@ -320,10 +323,16 @@ class GpuImageDecodeCacheTest
     context_provider_ = GPUImageDecodeTestMockContextProvider::Create(
         &transfer_cache_helper_, advertise_accelerated_decoding_);
     context_provider_->BindToCurrentSequence();
+    sk_sp<const GrGLInterface> gr_interface =
+        skia_bindings::CreateGLES2InterfaceBindings(
+            context_provider_->UnboundTestContextGL(),
+            context_provider_->ContextSupport());
+    gr_context_ = GrDirectContexts::MakeGL(std::move(gr_interface));
+    ASSERT_TRUE(!!gr_context_);
     {
       viz::RasterContextProvider::ScopedRasterContextLock context_lock(
           context_provider_.get());
-      transfer_cache_helper_.SetGrContext(context_provider_->GrContext());
+      transfer_cache_helper_.SetGrContext(gr_context_.get());
       max_texture_size_ =
           context_provider_->ContextCapabilities().max_texture_size;
     }
@@ -609,6 +618,7 @@ class GpuImageDecodeCacheTest
   // on |transfer_cache_helper_|.
   TransferCacheTestHelper transfer_cache_helper_;
   scoped_refptr<GPUImageDecodeTestMockContextProvider> context_provider_;
+  sk_sp<GrDirectContext> gr_context_;
 
   // Only used when |do_yuv_decode_| is true.
   SkYUVAPixmapInfo::DataType yuv_data_type_ =

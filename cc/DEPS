@@ -74,6 +74,9 @@ specific_include_rules = {
     "+gpu/command_buffer/common/command_buffer_id.h",
     "+gpu/command_buffer/common/constants.h",
   ],
+  "gpu_image_decode_cache_unittest\.cc" : [
+      "+gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h",
+  ],
   "oop_pixeltest\.cc" : [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
