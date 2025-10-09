@@ -108,6 +108,9 @@ extern const char kAndroidBcivBottomControlsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidBookmarkBarName[];
 extern const char kAndroidBookmarkBarDescription[];
+
+extern const char kAndroidBookmarkBarFastFollowName[];
+extern const char kAndroidBookmarkBarFastFollowDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kAndroidBottomToolbarName[];

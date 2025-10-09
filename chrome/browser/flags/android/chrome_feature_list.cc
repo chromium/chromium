@@ -205,6 +205,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppIntegrationMultiDataSource,
     &kAndroidAppearanceSettings,
     &kAndroidBookmarkBar,
+    &kAndroidBookmarkBarFastFollow,
     &kAndroidBottomToolbar,
     &kAndroidBottomToolbarV2,
     &kAndroidContextMenuDuplicateTabs,
@@ -554,6 +555,8 @@ BASE_FEATURE(kNewTabPageCustomizationForMvt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAppearanceSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidBookmarkBar, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidBookmarkBarFastFollow, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidBottomToolbar, base::FEATURE_ENABLED_BY_DEFAULT);
 

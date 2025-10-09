@@ -168,6 +168,13 @@ const char kAndroidBookmarkBarName[] = "Bookmark Bar";
 const char kAndroidBookmarkBarDescription[] =
     "Enables the bookmark bar which provides users with bookmark access from "
     "top chrome. Note that device form factor restrictions also apply.";
+
+const char kAndroidBookmarkBarFastFollowName[] =
+    "Android Bookmark Bar Fast Follow";
+const char kAndroidBookmarkBarFastFollowDescription[] =
+    "Enables fast follow for the bookmark bar which adds addition "
+    "functionality. This flag requires having the Android Bookmark Bar flag "
+    "enabled as well.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kAndroidBottomToolbarName[] = "Bottom Toolbar";

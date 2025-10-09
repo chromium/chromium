@@ -259,6 +259,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-bookmark-bar-fast-follow",
+    "owners": [ "mschillaci@google.com", "eleanorlee@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bottom-toolbar",
     "owners": [ "pnoland@chromium.org","lazzzis@google.com" ],
     "expiry_milestone": 150
