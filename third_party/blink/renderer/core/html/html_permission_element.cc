@@ -1013,18 +1013,27 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   }
 
   // The radius is adjusted to be at most the hardcoded percentage.
-  builder.SetBorderTopLeftRadius(AdjustedPercentBoundedRadius(
-      builder.BorderTopLeftRadius(), kDefaultMaxPercentRadiusWidth,
-      kDefaultMaxPercentRadiusHeight));
-  builder.SetBorderTopRightRadius(AdjustedPercentBoundedRadius(
-      builder.BorderTopRightRadius(), kDefaultMaxPercentRadiusWidth,
-      kDefaultMaxPercentRadiusHeight));
-  builder.SetBorderBottomLeftRadius(AdjustedPercentBoundedRadius(
-      builder.BorderBottomLeftRadius(), kDefaultMaxPercentRadiusWidth,
-      kDefaultMaxPercentRadiusHeight));
-  builder.SetBorderBottomRightRadius(AdjustedPercentBoundedRadius(
-      builder.BorderBottomRightRadius(), kDefaultMaxPercentRadiusWidth,
-      kDefaultMaxPercentRadiusHeight));
+  // However if all border radius are identical there is no need as it will
+  // result in a "pill"-shape which is desired behavior. Applying these
+  // restrictions would prevent this behavior.
+  if (builder.BorderTopLeftRadius() != builder.BorderTopRightRadius() ||
+      builder.BorderTopLeftRadius() != builder.BorderBottomLeftRadius() ||
+      builder.BorderTopLeftRadius() != builder.BorderBottomRightRadius() ||
+      builder.BorderTopLeftRadius().Height() !=
+          builder.BorderTopLeftRadius().Width()) {
+    builder.SetBorderTopLeftRadius(AdjustedPercentBoundedRadius(
+        builder.BorderTopLeftRadius(), kDefaultMaxPercentRadiusWidth,
+        kDefaultMaxPercentRadiusHeight));
+    builder.SetBorderTopRightRadius(AdjustedPercentBoundedRadius(
+        builder.BorderTopRightRadius(), kDefaultMaxPercentRadiusWidth,
+        kDefaultMaxPercentRadiusHeight));
+    builder.SetBorderBottomLeftRadius(AdjustedPercentBoundedRadius(
+        builder.BorderBottomLeftRadius(), kDefaultMaxPercentRadiusWidth,
+        kDefaultMaxPercentRadiusHeight));
+    builder.SetBorderBottomRightRadius(AdjustedPercentBoundedRadius(
+        builder.BorderBottomRightRadius(), kDefaultMaxPercentRadiusWidth,
+        kDefaultMaxPercentRadiusHeight));
+  }
 
   // The base `text-decoration` property must be reset for each `<permission>`
   // element. This prevents any `text-decoration` from a parent element from
