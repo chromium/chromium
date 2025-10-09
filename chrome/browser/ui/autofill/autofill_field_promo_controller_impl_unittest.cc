@@ -36,6 +36,8 @@ using ::testing::Return;
 
 class MockAutofillFieldPromoView : public AutofillFieldPromoView {
  public:
+  MOCK_METHOD(void, MakeInvisible, (), (override));
+
   MOCK_METHOD(void, Close, (), (override));
 
   bool OverlapsWithPictureInPictureWindow() const override { return false; }
@@ -136,7 +138,7 @@ TEST_F(AutofillFieldPromoControllerImplTest, CloseViewOnFailingMaybeShowPromo) {
             .Run(user_education::FeaturePromoResult::kError);
       });
 
-  EXPECT_CALL(*promo_view, Close());
+  EXPECT_CALL(*promo_view, MakeInvisible());
 
   autofill_field_promo_controller()->Show(gfx::RectF(0, 0, 1, 1));
   Mock::VerifyAndClearExpectations(promo_view.get());
@@ -179,19 +181,19 @@ class AutofillFieldPromoControllerImplTestWithView
 };
 
 TEST_F(AutofillFieldPromoControllerImplTestWithView, CloseViewOnHide) {
-  EXPECT_CALL(*promo_view(), Close());
+  EXPECT_CALL(*promo_view(), MakeInvisible());
   autofill_field_promo_controller()->Hide();
 }
 
 TEST_F(AutofillFieldPromoControllerImplTestWithView,
        CloseViewOnControllerDeletion) {
-  EXPECT_CALL(*promo_view(), Close());
+  EXPECT_CALL(*promo_view(), MakeInvisible());
   reset_autofill_field_promo_controller();
 }
 
 // Tests that the hide helper can hide the view.
 TEST_F(AutofillFieldPromoControllerImplTestWithView, CloseViewOnFrameDeleted) {
-  EXPECT_CALL(*promo_view(), Close());
+  EXPECT_CALL(*promo_view(), MakeInvisible());
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
