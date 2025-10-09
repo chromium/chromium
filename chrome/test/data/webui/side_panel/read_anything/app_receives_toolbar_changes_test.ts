@@ -310,6 +310,15 @@ suite('AppReceivesToolbarChanges', () => {
             chrome.readingMode.keyboardShortcutStopSource,
             await metrics.whenCalled('recordSpeechStopSource'));
       });
+
+      test('other key presses do not play', async () => {
+        const fPress = new KeyboardEvent('keydown', {key: 'f'});
+        app.$.appFlexParent.dispatchEvent(fPress);
+        await microtasksFinished();
+
+        assertFalse(speechController.isSpeechActive());
+        assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
+      });
     });
   });
 

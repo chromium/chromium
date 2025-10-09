@@ -508,8 +508,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
+      e.preventDefault();
+      this.speechController_.onPlayPauseKeyPress(this.$.container);
     }
-    this.speechController_.onPlayPauseKeyPress(this.$.container);
   }
 }
 
