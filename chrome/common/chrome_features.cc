@@ -1691,6 +1691,10 @@ BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
 // the WebUI implementation of top chrome. Individual features will be
 // additionally gated by this flag.
 BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
+// When enable, the reload button will be replaced with the a WebView, and
+// chrome://reload-button.top-chrome will be loaded as the content.
+// crbug.com/444358999
+BASE_FEATURE(kWebUIReloadButton, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only

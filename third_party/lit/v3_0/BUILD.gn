@@ -62,6 +62,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
+    "//chrome/browser/resources/reload_button:build_ts",
     "//chrome/browser/resources/search_engine_choice:build_ts",
     "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",

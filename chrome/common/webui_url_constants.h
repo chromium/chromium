@@ -300,6 +300,9 @@ inline constexpr char kChromeUISystemInfoHost[] = "system";
 inline constexpr char kChromeUITermsHost[] = "terms";
 inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
 inline constexpr char kChromeUIThemeHost[] = "theme";
+inline constexpr char kChromeUIReloadButtonURL[] =
+    "chrome://reload-button.top-chrome";
+inline constexpr char kChromeUIReloadButtonHost[] = "reload-button.top-chrome";
 inline constexpr char kChromeUIThemeURL[] = "chrome://theme/";
 inline constexpr char kChromeUITopChromeDomain[] = "top-chrome";
 inline constexpr char kChromeUITranslateInternalsHost[] = "translate-internals";

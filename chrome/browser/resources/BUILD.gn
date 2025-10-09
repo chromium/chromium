@@ -62,6 +62,7 @@ group("resources") {
       "privacy_sandbox:resources",
       "privacy_sandbox/internals:resources",
       "profile_internals:resources",
+      "reload_button:resources",
       "search_engine_choice:resources",
       "settings:resources",
       "settings_shared:resources",

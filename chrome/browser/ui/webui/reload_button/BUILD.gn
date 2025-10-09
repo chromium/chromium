@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("reload_button") {
+  sources = [ "reload_button_ui.h" ]
+  public_deps = [
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "reload_button_ui.cc" ]
+  deps = [
+    ":reload_button",
+    "//chrome/common",
+    "//ui/webui",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
