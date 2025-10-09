@@ -2836,7 +2836,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
                        /*can_show_contextual_suggestions=*/false,
                        /*mia_enabled=*/false, /*is_incognito=*/false);
 
-    const std::array<TestData, 8> expected_data{{
+    const std::array<TestData, 5> expected_data{{
         // Previous search related suggestion chips are permitted in the omnibox
         // when the WebUI omnibox popup feature is enabled.
         {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
@@ -2844,15 +2844,11 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
         {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
     }};
     AssertResultMatches(result, expected_data);
 
-    // Verify that the secondary zero-prefix suggestions were triggered.
-    VerifyTriggeredFeatures(triggered_feature_service(),
-                            {remote_secondary_zps_feature});
+    // Verify that the secondary zero-prefix suggestions were not triggered.
+    VerifyTriggeredFeatures(triggered_feature_service(), {});
   }
 
   // Set up input for zero-prefix suggestions from the realbox.
