@@ -72,7 +72,7 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
   size_t index;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    index = base::WaitableEvent::WaitMany(events.data(), std::size(events));
+    index = base::WaitableEvent::WaitMany(events);
   }
 
   if (events[index] == &aborted_) {

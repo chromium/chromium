@@ -377,7 +377,7 @@ class PortsTest : public testing::Test, public MessageRouter {
       std::vector<base::WaitableEvent*> events;
       for (const auto& entry : nodes_)
         events.push_back(&entry.second->idle_event());
-      base::WaitableEvent::WaitMany(events.data(), events.size());
+      base::WaitableEvent::WaitMany(events);
     }
   }
 
