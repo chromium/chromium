@@ -1,7 +1,7 @@
 Name: Room-Common
 Short Name: room-common-jvm
-URL: https://dl.google.com/dl/android/maven2/androidx/room/room-common-jvm/2.8.1/room-common-jvm-2.8.1.jar
-Version: 2.8.1
+URL: https://dl.google.com/dl/android/maven2/androidx/room/room-common-jvm/2.8.2/room-common-jvm-2.8.2.jar
+Version: 2.8.2
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Android Room-Common
 
-See also: https://developer.android.com/jetpack/androidx/releases/room#2.8.1
+See also: https://developer.android.com/jetpack/androidx/releases/room#2.8.2
 
 
 Local Modifications:

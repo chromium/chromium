@@ -917,22 +917,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "savedstate",
