@@ -187,7 +187,19 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestWithHeaders(
     const net::HttpResponseHeaders* response_headers,
     bool is_incognito_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(response_headers);
+
+  if (!response_headers) {
+    // NOTE: This can happen for auth challenges from CORS preflight requests
+    // that get routed to the respective main request's handler (since they
+    // share the same `request_id`), which happens when `extraHeaders` is
+    // enabled.
+    //
+    // At this point, the main request is paused waiting for the preflight, and
+    // has not received its own headers, so `response_headers` is null. We must
+    // return early. See https://crbug.com/444248440.
+    return {};
+  }
+
   return EvaluateRequestInternal(request, response_headers,
                                  is_incognito_context);
 }

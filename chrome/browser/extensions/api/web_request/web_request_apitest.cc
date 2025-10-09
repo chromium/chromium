@@ -6156,6 +6156,93 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
   WaitForPreflightResponse();
 }
 
+// Tests that an extension can successfully use 'extraHeaders' and
+// 'declarativeNetRequest' (with header-dependent rules) while handling
+// 'onAuthRequired' for a CORS preflight request.
+// Regression test for crbug.com/444248440.
+IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
+                       PreflightOnAuthRequiredWithExtraHeadersDNR) {
+  static constexpr char kManifest[] = R"({
+    "name": "MV3 CORS Preflight webRequest.OnAuthRequired extraHeaders DNR",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": [
+      "webRequest",
+      "webRequestAuthProvider",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": [ "http://127.0.0.1/*", "http://cors.test/*" ],
+    "background": { "service_worker": "background.js" },
+    "declarative_net_request": {
+      "rule_resources": [{
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }]
+    }
+  })";
+
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onAuthRequired.addListener(details => {
+             const authCredentials = { username: '%s', password: '%s' };
+             setTimeout(() => {
+               chrome.test.succeed();
+             }, 0);
+             return {authCredentials};
+           },
+           { urls: ['<all_urls>'] },
+           // 'extraHeaders' is necessary to hit the critical path.
+           ['blocking', 'extraHeaders']);)";
+
+  // Use a DNR rule that depends on response headers. By including
+  // 'responseHeaders' in the condition, the rule cannot be evaluated until
+  // headers are received.
+  // This ensures `RulesetManager::HasRulesets(kOnHeadersReceived)` returns
+  // true, forcing the call to `EvaluateRequestWithHeaders`.
+  static constexpr char kRulesJson[] = R"([
+    {
+      "id": 1,
+      "priority": 1,
+      "action": { "type": "block" },
+      "condition": {
+        "urlFilter": "*",
+        "responseHeaders": [{"header": "header-that-forces-evaluation"}]
+      }
+    }
+  ])";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundJs, kCORSProxyUser, kCORSProxyPass));
+  test_dir.WriteFile(FILE_PATH_LITERAL("rules.json"), kRulesJson);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension) << message_;
+
+  ResultCatcher result_catcher;
+  preflight_waiter_ = std::make_unique<base::RunLoop>();
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+
+  // Send a CORS preflight request which requires proxy auth.
+  // This triggers the sequence:
+  //   - Preflight
+  //   - Auth Challenge
+  //   - HandleAuthRequest (with extraHeaders)
+  //   - HandleResponseOrRedirectHeaders
+  //   - WebRequestEventRouter::OnHeadersReceived
+  //   - RulesetManager::HasRulesets(kOnHeadersReceived) == true
+  //   - RulesetManager::EvaluateRequestWithHeaders(nullptr)
+  //   - Graceful handling of headers == nullptr.
+  ExecuteCorsPreflightedRequest();
+
+  EXPECT_TRUE(result_catcher.GetNextResult());
+  WaitForPreflightResponse();
+}
+
 // Depends on declarativeWebRequest. crbug.com/332512510.
 class ExtensionWebRequestApiFencedFrameTest
     : public ExtensionWebRequestApiTest {
