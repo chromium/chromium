@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/optimization_guide/proto/features/amount_extraction.pb.h"
 
 namespace autofill {
 class AutofillDriver;
@@ -47,6 +48,9 @@ namespace autofill::payments {
 // UI together. If not, it does nothing.
 class AmountExtractionManager {
  public:
+  using AmountExtractionResponse =
+      optimization_guide::proto::AmountExtractionResponse;
+
   // Enum for all features that require amount extraction.
   enum class EligibleFeature {
     // Buy now pay later uses the amount extracted by amount extraction to
@@ -79,6 +83,13 @@ class AmountExtractionManager {
   // systems that require high precision for financial calculations.
   static std::optional<uint64_t> MaybeParseAmountToMonetaryMicroUnits(
       const std::string& amount);
+
+  // Validates the AmountExtractionResponse returned from the server-side AI.
+  // A valid response should be with a non-negative value for the field of
+  // `final_checkout_amount` and the field of `currency` should be from the
+  // standard ISO 4217 currency code.
+  bool IsValidAmountExtractionResponse(
+      const AmountExtractionResponse& response);
 
   // Returns the set of all eligible features that depend on amount extraction
   // result when:

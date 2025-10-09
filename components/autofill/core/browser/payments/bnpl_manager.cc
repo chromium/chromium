@@ -250,6 +250,22 @@ void BnplManager::OnAmountExtractionReturned(
   }
 }
 
+void BnplManager::OnAmountExtractionReturnedFromAi(
+    const std::optional<uint64_t>& extracted_amount_in_micros,
+    bool timeout_reached) {
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetNextActionOnAmountExtractionReturned()) {
+    default:
+      // TODO(crbug.com/444685164) Add logic to handle BNPL flow once the model
+      // executor response comes back.
+      NOTIMPLEMENTED();
+      break;
+  }
+}
+
 void BnplManager::FetchVcnDetails(GURL url) {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
