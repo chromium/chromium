@@ -33,13 +33,13 @@ id<GREYMatcher> ReadingListItem(NSString* entryTitle) {
 id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
   return grey_allOf(grey_accessibilityID(entryTitle),
                     grey_kindOfClassName(@"TableViewURLCell"),
-                    grey_sufficientlyVisible(), nil);
+                    grey_minimumVisiblePercent(0.95), nil);
 }
 
 id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
   return grey_allOf(grey_ancestor(ReadingListItem(title)),
                     grey_accessibilityID(kTableViewURLCellMetadataImageID),
-                    grey_sufficientlyVisible(), nil);
+                    grey_minimumVisiblePercent(0.95), nil);
 }
 
 // Opens the reading list menu.
