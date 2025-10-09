@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
@@ -69,6 +70,8 @@ class TabStateStorageService : public KeyedService,
   int next_storage_id_ = 1;
   absl::flat_hash_map<int32_t, int> tab_handle_to_storage_id_;
   absl::flat_hash_map<int32_t, int> collection_handle_to_storage_id_;
+
+  base::WeakPtrFactory<TabStateStorageService> weak_ptr_factory_{this};
 };
 
 }  // namespace tabs

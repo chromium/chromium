@@ -80,7 +80,7 @@ void TabStateStorageService::Save(const TabCollection* collection) {
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
   tab_backend_->LoadAllNodes(
       base::BindOnce(&TabStateStorageService::OnAllTabsLoaded,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
@@ -95,7 +95,7 @@ void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
         loaded_tabs.emplace_back(
             std::move(tab_state),
             base::BindOnce(&TabStateStorageService::OnTabCreated,
-                           base::Unretained(this), entry.id));
+                           weak_ptr_factory_.GetWeakPtr(), entry.id));
       }
     }
   }
