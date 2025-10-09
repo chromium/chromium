@@ -414,19 +414,17 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
     const AttributeTypeAssignment& assignment,
     const FieldGlobalId& trigger_field_id,
     const std::string& app_locale) {
-  std::vector<const EntityInstance*> relevant_entities;
-  for (const EntityInstance* entity : entities) {
+  std::erase_if(entities, [&](const EntityInstance* entity) {
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
             FindField(assignment.Find(entity->type()), trigger_field_id);
-    if (trigger_field_with_type &&
-        EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
-                                      app_locale)) {
-      relevant_entities.push_back(entity);
-    }
-  }
+    return !trigger_field_with_type ||
+           !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
+                                          app_locale);
+  });
   return DedupedEntitiesForSuggestions(
-      OrderedEntitiesForSuggestion(relevant_entities), assignment, app_locale);
+      OrderedEntitiesForSuggestion(std::move(entities)), assignment,
+      app_locale);
 }
 
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
