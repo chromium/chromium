@@ -167,14 +167,10 @@
     NSString* description = l10n_util::GetNSString(
         IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION);
     NSString* buttonText = l10n_util::GetNSString(IDS_OK);
-    __weak __typeof(self) weakSelf = self;
-    UIAlertAction* dismiss = [UIAlertAction
-        actionWithTitle:buttonText
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction* action) {
-                  [weakSelf.errorAlert dismissViewControllerAnimated:YES
-                                                          completion:nil];
-                }];
+    UIAlertAction* dismiss =
+        [UIAlertAction actionWithTitle:buttonText
+                                 style:UIAlertActionStyleDefault
+                               handler:nil];
     _errorAlert = [UIAlertController
         alertControllerWithTitle:title
                          message:description

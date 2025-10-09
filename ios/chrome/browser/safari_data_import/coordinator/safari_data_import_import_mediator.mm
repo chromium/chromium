@@ -179,16 +179,12 @@
   if (_currentSecurityScopedURL) {
     return;
   }
-  _currentSecurityScopedURL = urls.firstObject;
-  if (!_currentSecurityScopedURL) {
+  NSURL* securityScopedURL = urls.firstObject;
+  if (![securityScopedURL startAccessingSecurityScopedResource]) {
+    [self.importStageTransitionHandler resetToInitialImportStage:NO];
     return;
   }
-  if (![_currentSecurityScopedURL startAccessingSecurityScopedResource]) {
-    /// Cannot access security scoped resource.
-    /// TODO(crbug.com/449982000): Display error and reset stage?
-    _currentSecurityScopedURL = nil;
-    return;
-  }
+  _currentSecurityScopedURL = securityScopedURL;
   [self setUpImportClient];
   _importer->PrepareImport(
       base::apple::NSURLToFilePath(_currentSecurityScopedURL));
