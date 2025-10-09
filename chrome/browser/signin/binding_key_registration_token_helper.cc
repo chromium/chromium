@@ -171,9 +171,11 @@ void BindingKeyRegistrationTokenHelper::CreateRegistrationToken(
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(binding_key);
+  std::vector<uint8_t> pubkey =
+      *unexportable_key_service_->GetSubjectPublicKeyInfo(binding_key);
   std::optional<std::string> registration_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                pubkey, *signature);
   if (!registration_token.has_value()) {
     std::move(callback).Run(base::unexpected(Error::kAppendSignatureFailure));
     return;

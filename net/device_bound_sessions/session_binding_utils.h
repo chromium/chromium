@@ -51,6 +51,7 @@ std::optional<std::string> NET_EXPORT CreateKeyRefreshHeaderAndPayload(
 std::optional<std::string> NET_EXPORT AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature);
 
 // Returns true if `url`'s scheme is cryptographic or if it's localhost. This

@@ -58,6 +58,7 @@ void RecordHttpResponseOrErrorCode(const char* metric_name,
 
 void OnDataSigned(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    const std::vector<uint8_t>& pubkey,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string header_and_payload,
     base::OnceCallback<
@@ -70,7 +71,7 @@ void OnDataSigned(
 
   const std::vector<uint8_t>& signature = result.value();
   std::optional<std::string> registration_token =
-      AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
+      AppendSignatureToHeaderAndPayload(header_and_payload, algorithm, pubkey,
                                         signature);
   std::move(callback).Run(std::move(registration_token));
 }
@@ -91,14 +92,15 @@ void SignChallengeWithKey(
     return;
   }
 
+  auto expected_public_key =
+      unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
+  if (!expected_public_key.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   std::optional<std::string> header_and_payload;
   if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
-    auto expected_public_key =
-        unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-    if (!expected_public_key.has_value()) {
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
     header_and_payload = CreateLegacyKeyRegistrationHeaderAndPayload(
         challenge, registration_url, expected_algorithm.value(),
         expected_public_key.value(), base::Time::Now(),
@@ -107,12 +109,6 @@ void SignChallengeWithKey(
     header_and_payload =
         CreateKeyRefreshHeaderAndPayload(challenge, expected_algorithm.value());
   } else {
-    auto expected_public_key =
-        unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-    if (!expected_public_key.has_value()) {
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
     header_and_payload = CreateKeyRegistrationHeaderAndPayload(
         challenge, expected_algorithm.value(), expected_public_key.value(),
         std::move(authorization));
@@ -127,6 +123,7 @@ void SignChallengeWithKey(
       key_id, base::as_byte_span(*header_and_payload), kTaskPriority,
       /*max_retries=*/0,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
+                     std::move(expected_public_key).value(),
                      std::ref(unexportable_key_service), *header_and_payload,
                      std::move(callback)));
 }

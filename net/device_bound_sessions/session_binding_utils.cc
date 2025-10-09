@@ -15,6 +15,8 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/url_util.h"
@@ -70,30 +72,6 @@ std::optional<std::string> CombineHeaderAndPayload(
 
   return base::StrCat({Base64UrlEncode(*header_serialized), ".",
                        Base64UrlEncode(*payload_serialized)});
-}
-
-std::optional<std::vector<uint8_t>> ConvertDERSignatureToRaw(
-    base::span<const uint8_t> der_signature) {
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(der_signature.data(), der_signature.size()));
-  if (!ecdsa_sig) {
-    DVLOG(1) << "Failed to create ECDSA_SIG";
-    return std::nullopt;
-  }
-
-  // TODO(b/301888680): this implicitly depends on a curve used by
-  // `crypto::UnexportableKey`. Make this dependency more explicit.
-  const size_t kMaxBytesPerBN = 32;
-  std::vector<uint8_t> jwt_signature(2 * kMaxBytesPerBN);
-
-  if (!BN_bn2bin_padded(&jwt_signature[0], kMaxBytesPerBN, ecdsa_sig->r) ||
-      !BN_bn2bin_padded(&jwt_signature[kMaxBytesPerBN], kMaxBytesPerBN,
-                        ecdsa_sig->s)) {
-    DVLOG(1) << "Failed to serialize R and S to " << kMaxBytesPerBN << " bytes";
-    return std::nullopt;
-  }
-
-  return jwt_signature;
 }
 
 // Helper function for the shared functionality of refresh and
@@ -182,10 +160,17 @@ std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature) {
   std::optional<std::vector<uint8_t>> signature_holder;
   if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
-    signature_holder = ConvertDERSignatureToRaw(signature);
+    std::optional<crypto::keypair::PublicKey> public_key =
+        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pubkey_spki);
+    if (!public_key.has_value()) {
+      return std::nullopt;
+    }
+    signature_holder =
+        crypto::ConvertEcdsaDerSignatureToRaw(*public_key, signature);
     if (!signature_holder.has_value()) {
       return std::nullopt;
     }

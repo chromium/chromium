@@ -65,6 +65,7 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature);
 
 // Decrypts `base64_encrypted_value` with `ephemeral_key`.

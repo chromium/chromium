@@ -50,7 +50,7 @@ base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
 
   std::optional<std::string> assertion_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                public_key, *signature);
   if (!assertion_token) {
     return base::unexpected(kAppendSignatureFailure);
   }

@@ -56,6 +56,7 @@ static_library("base") {
   ]
   deps = [
     "//components/prefs",
+    "//crypto",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
     "//third_party/re2",
