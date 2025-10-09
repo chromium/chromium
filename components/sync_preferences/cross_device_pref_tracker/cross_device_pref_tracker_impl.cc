@@ -100,13 +100,45 @@ struct TimestampedPrefValueInternal {
 };
 
 // Helper to construct the cross-device pref name from a tracked pref name.
+// This should be used internally when the input is known to be a tracked pref.
 std::string GetCrossDevicePrefName(std::string_view tracked_pref_name) {
+  CHECK(!tracked_pref_name.empty()) << "Tracked pref name must not be empty.";
   CHECK(!tracked_pref_name.starts_with(kCrossDevicePrefPrefix))
       << "Pref name '" << tracked_pref_name
       << "' must not start with the reserved prefix '" << kCrossDevicePrefPrefix
       << "'.";
 
   return base::StrCat({kCrossDevicePrefPrefix, tracked_pref_name});
+}
+
+// Helper to resolve the cross-device pref name from an input pref name, which
+// can be either the tracked pref name or the cross-device pref name. This is
+// used for public API methods (e.g. `GetValues()`) and validates the input
+// format.
+std::string ResolveCrossDevicePrefName(std::string_view pref_name) {
+  if (pref_name.starts_with(kCrossDevicePrefPrefix)) {
+    // It's already a cross-device pref name. Validate its structure.
+    std::string_view remainder = pref_name;
+    remainder.remove_prefix(strlen(kCrossDevicePrefPrefix));
+
+    // Must not be just the prefix (e.g. "cross_device.").
+    CHECK(!remainder.empty())
+        << "Cross-device pref name must not be just the prefix: " << pref_name;
+
+    // Must not have a double prefix (e.g. "cross_device.cross_device.foo").
+    // This indicates a client error, as tracked prefs cannot start with the
+    // prefix.
+    CHECK(!remainder.starts_with(kCrossDevicePrefPrefix))
+        << "Cross-device pref name must not have a double prefix: "
+        << pref_name;
+
+    return std::string(pref_name);
+  }
+
+  // If it doesn't start with the prefix, it's treated as a tracked pref name.
+  CHECK(!pref_name.empty()) << "Tracked pref name must not be empty.";
+
+  return base::StrCat({kCrossDevicePrefPrefix, pref_name});
 }
 
 // Helper to retrieve the local device's Cache GUID from
@@ -317,6 +349,7 @@ void ApplyPrefChangeToCrossDevice(
 
 // Retrieves, filters, and parses all valid cross-device pref entries that
 // match the provided `filter` criteria and are associated with known devices.
+// Assumes `cross_device_pref_name` is valid and tracked.
 std::vector<TimestampedPrefValueInternal>
 GetCrossDeviceEntriesMatchingDeviceFilter(
     const PrefService& profile_pref_service,
@@ -468,7 +501,9 @@ std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
 
-  std::string cross_device_pref_name = GetCrossDevicePrefName(pref_name);
+  // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
+  // pref names as input.
+  std::string cross_device_pref_name = ResolveCrossDevicePrefName(pref_name);
 
   std::vector<TimestampedPrefValueInternal> matching_entries =
       GetCrossDeviceEntriesMatchingDeviceFilter(*profile_pref_service_,
@@ -497,7 +532,9 @@ CrossDevicePrefTrackerImpl::GetMostRecentValue(
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
 
-  std::string cross_device_pref_name = GetCrossDevicePrefName(pref_name);
+  // Use `ResolveCrossDevicePrefName()` to allow either tracked or cross-device
+  // pref names as input.
+  std::string cross_device_pref_name = ResolveCrossDevicePrefName(pref_name);
 
   std::vector<TimestampedPrefValueInternal> matching_entries =
       GetCrossDeviceEntriesMatchingDeviceFilter(*profile_pref_service_,

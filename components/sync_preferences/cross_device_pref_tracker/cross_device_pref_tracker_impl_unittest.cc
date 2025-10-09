@@ -588,16 +588,22 @@ TEST_F(CrossDevicePrefTrackerTest,
   InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, "guid3", base::Value(300),
                              kTime2, kTime1);
 
+  auto expected_results = testing::ElementsAre(
+      IsTimestampedPrefValue(200, base::Time()),
+      IsTimestampedPrefValue(300, kTime1), IsTimestampedPrefValue(100, kTime1));
+
   // Query using the tracked pref name.
   std::vector<TimestampedPrefValue> results =
       tracker_->GetValues(kTrackedProfilePref, {});
 
   // Verify sorting (most recent update time first: T3, T2, T1) and correct
   // projection of values and timestamps.
-  EXPECT_THAT(results,
-              testing::ElementsAre(IsTimestampedPrefValue(200, base::Time()),
-                                   IsTimestampedPrefValue(300, kTime1),
-                                   IsTimestampedPrefValue(100, kTime1)));
+  EXPECT_THAT(results, expected_results);
+
+  // Query using the cross-device pref name and verify results are identical.
+  std::vector<TimestampedPrefValue> results_cross_device =
+      tracker_->GetValues(kCrossDeviceProfilePref, {});
+  EXPECT_THAT(results_cross_device, expected_results);
 }
 
 // Verifies that GetMostRecentValue returns the single most recent entry.
@@ -620,13 +626,21 @@ TEST_F(CrossDevicePrefTrackerTest, GetMostRecentValue) {
   InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, "guid2", base::Value(200),
                              kTime2, kTime2);
 
-  // Query the most recent value.
+  // Query the most recent value using the tracked pref name.
   std::optional<TimestampedPrefValue> result =
       tracker_->GetMostRecentValue(kTrackedProfilePref, {});
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->value.GetInt(), 200);
   EXPECT_EQ(result->last_observed_change_time, kTime2);
+
+  // Query the most recent value using the cross-device pref name.
+  std::optional<TimestampedPrefValue> result_cross_device =
+      tracker_->GetMostRecentValue(kCrossDeviceProfilePref, {});
+
+  ASSERT_TRUE(result_cross_device.has_value());
+  EXPECT_EQ(result_cross_device->value.GetInt(), 200);
+  EXPECT_EQ(result_cross_device->last_observed_change_time, kTime2);
 }
 
 // Verifies that GetValues can filter results based on OS Type.

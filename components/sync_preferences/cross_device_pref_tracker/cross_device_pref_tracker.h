@@ -45,6 +45,8 @@ class CrossDevicePrefTracker : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     // Called when `pref_name` is updated to `pref_value` on a remote device.
+    // The `pref_name` reported here is always the tracked pref name (e.g.,
+    // "ios.example_pref").
     virtual void OnRemotePrefChanged(
         std::string_view pref_name,
         const TimestampedPrefValue& pref_value,
@@ -64,11 +66,16 @@ class CrossDevicePrefTracker : public KeyedService {
 
   // Retrieves all values for a tracked pref matching the filter, sorted in
   // descending order by timestamp (i.e., most recent first).
+  // `pref_name` can be either the tracked pref name (e.g.,
+  // "ios.example_pref") or the cross-device pref name (e.g.,
+  // "cross_device.ios.example_pref").
   virtual std::vector<TimestampedPrefValue> GetValues(
       std::string_view pref_name,
       const DeviceFilter& filter) const = 0;
 
   // Convenience wrapper to get the single most recent value.
+  // `pref_name` can be either the tracked pref name or the cross-device pref
+  // name.
   //
   // NOTE: In the case of a timestamp collision, we'll use the value of the
   // device that's most recently updated with the sync servers (via
@@ -81,11 +88,15 @@ class CrossDevicePrefTracker : public KeyedService {
   // Return the Java object that allows access to the CrossDevicePrefTracker.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
   // Java versions of query methods.
+  // `pref_name` can be either the tracked pref name or the cross-device pref
+  // name.
   virtual base::android::ScopedJavaLocalRef<jobjectArray> GetValues(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor) const = 0;
+  // `pref_name` can be either the tracked pref name or the cross-device pref
+  // name.
   virtual base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& pref_name,
