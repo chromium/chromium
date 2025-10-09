@@ -1888,11 +1888,6 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
 }
 
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // TODO(crbug.com/450044205): update test for SQLite.
-    GTEST_SKIP();
-  }
-
   SetUpInMemoryContext();
 
   BucketContextHandle bucket_context_handle = CreateBucketHandle();

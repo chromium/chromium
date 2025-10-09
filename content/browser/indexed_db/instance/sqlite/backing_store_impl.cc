@@ -26,11 +26,6 @@ BackingStoreImpl::BackingStoreImpl(
 BackingStoreImpl::~BackingStoreImpl() = default;
 
 bool BackingStoreImpl::CanOpportunisticallyClose() const {
-  // In-memory stores have to stay alive.
-  if (in_memory()) {
-    return false;
-  }
-
   // There's not much of a point in deleting `this` since it doesn't use many
   // resources (just a tiny amount of memory). But for now, match the logic of
   // the LevelDB store, where `this` is cleaned up if there are no active
