@@ -1326,9 +1326,6 @@ constexpr base::FeatureParam<int>
 // Enables Safety Hub card in magic stack.
 BASE_FEATURE(kSafetyHubMagicStack, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Safety Hub followup work.
-BASE_FEATURE(kSafetyHubFollowup, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Safety Hub organic HaTS survey on Android.
 BASE_FEATURE(kSafetyHubAndroidOrganicSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 

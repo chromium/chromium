@@ -2109,9 +2109,6 @@ extern const char
 extern const char kSafetyHubMagicStackName[];
 extern const char kSafetyHubMagicStackDescription[];
 
-extern const char kSafetyHubFollowupName[];
-extern const char kSafetyHubFollowupDescription[];
-
 extern const char kSafetyHubLocalPasswordsModuleName[];
 extern const char kSafetyHubLocalPasswordsModuleDescription[];
 

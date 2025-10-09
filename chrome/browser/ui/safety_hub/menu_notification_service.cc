@@ -139,16 +139,14 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
         stored_notifications);
   }
 #else   // !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSafetyHubFollowup)) {
-    pref_dict_key_map_.emplace(safety_hub::SafetyHubModuleType::PASSWORDS,
-                               "passwords");
-    SetInfoElement(
-        safety_hub::SafetyHubModuleType::PASSWORDS,
-        MenuNotificationPriority::HIGH, kPasswordCheckNotificationInterval,
-        base::BindRepeating(&PasswordStatusCheckResultAndroid::GetResult,
-                            base::Unretained(pref_service)),
-        stored_notifications);
-  }
+  pref_dict_key_map_.emplace(safety_hub::SafetyHubModuleType::PASSWORDS,
+                             "passwords");
+  SetInfoElement(
+      safety_hub::SafetyHubModuleType::PASSWORDS,
+      MenuNotificationPriority::HIGH, kPasswordCheckNotificationInterval,
+      base::BindRepeating(&PasswordStatusCheckResultAndroid::GetResult,
+                          base::Unretained(pref_service)),
+      stored_notifications);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Listen for changes to the Safe Browsing pref to accommodate the trigger

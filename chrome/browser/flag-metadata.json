@@ -8933,14 +8933,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "safety-hub-followup",
-    "owners": [
-      "zalmashni@google.com",
-      "chrome-browser-privacy-team@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "safety-hub-local-passwords-module",
     "owners": [
       "fsenra@google.com",
