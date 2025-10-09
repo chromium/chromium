@@ -14,6 +14,7 @@ source_set("confirmation_alert") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/promo_style:utils",

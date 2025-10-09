@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -669,11 +670,16 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // The secondary action button has button type based on
   // actionButtonsVisibility and should be recreated.
   if (_secondaryActionButton) {
+    UIView* parent = _secondaryActionButton.superview;
+    NSUInteger buttonIndex =
+        [parent.subviews indexOfObject:_secondaryActionButton];
+
     // Remove the current secondary button from view.
     [_secondaryActionButton removeFromSuperview];
     _secondaryActionButton = [self createSecondaryActionButton];
+
     [_actionButtonsStackView insertArrangedSubview:_secondaryActionButton
-                                           atIndex:1];
+                                           atIndex:buttonIndex];
     [self updateActionButtonsSpacing];
   }
 
@@ -1247,8 +1253,11 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Add other buttons with the correct margins.
   if (self.secondaryActionString) {
     _secondaryActionButton = [self createSecondaryActionButton];
-    [_actionButtonsStackView insertArrangedSubview:_secondaryActionButton
-                                           atIndex:1];
+    [_actionButtonsStackView
+        insertArrangedSubview:_secondaryActionButton
+                      atIndex:app_group::IsConfirmationButtonSwapOrderEnabled()
+                                  ? 0
+                                  : 1];
     [self updateActionButtonsSpacing];
   }
   if (self.tertiaryActionString) {

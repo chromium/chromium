@@ -5,6 +5,7 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -858,20 +859,37 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     actionStackView.spacing = kButtonStackViewSpacing;
   }
 
+  // Tertiary button should always be at the top.
+  if (self.tertiaryActionString) {
+    self.tertiaryActionButton = [self createTertiaryButton];
+    [actionStackView addArrangedSubview:self.tertiaryActionButton];
+  }
+
   if (self.primaryActionString) {
     _primaryButton = [self createPrimaryActionButton];
-    [actionStackView addArrangedSubview:_primaryButton];
   }
 
   if (self.secondaryActionString) {
     _secondaryActionButton = [self createSecondaryActionButton];
-    [actionStackView addArrangedSubview:self.secondaryActionButton];
   }
-  // Tertiary button should show above the primary one.
-  if (self.tertiaryActionString) {
-    self.tertiaryActionButton = [self createTertiaryButton];
-    [actionStackView insertArrangedSubview:self.tertiaryActionButton atIndex:0];
+
+  if (app_group::IsConfirmationButtonSwapOrderEnabled()) {
+    if (_secondaryActionButton) {
+      [actionStackView addArrangedSubview:_secondaryActionButton];
+    }
+    if (_primaryButton) {
+      [actionStackView addArrangedSubview:_primaryButton];
+    }
+  } else {
+    // Default order: Primary, then Secondary.
+    if (_primaryButton) {
+      [actionStackView addArrangedSubview:_primaryButton];
+    }
+    if (_secondaryActionButton) {
+      [actionStackView addArrangedSubview:_secondaryActionButton];
+    }
   }
+
   return actionStackView;
 }
 

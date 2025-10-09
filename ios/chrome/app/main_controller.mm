@@ -237,6 +237,10 @@ NSString* const kShareExtensionForMultiprofileKey =
 // Constant for enabling  multi-profile.
 NSString* const kMultiprofileKey = @"MultiprofileKey";
 
+// Constant for enabling the swap of confirmation button order.
+NSString* const kConfirmationButtonSwapOrderKey =
+    @"ConfirmationButtonSwapOrderKey";
+
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
   component_updater::ComponentUpdateService* cus =
@@ -1498,6 +1502,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     },
     kMultiprofileKey : @{
       kFieldTrialValueKey : @(AreSeparateProfilesForManagedAccountsEnabled()),
+      kFieldTrialVersionKey : @1,
+    },
+    kConfirmationButtonSwapOrderKey : @{
+      kFieldTrialValueKey : @(IsConfirmationButtonSwapOrderEnabled()),
       kFieldTrialVersionKey : @1,
     },
   };

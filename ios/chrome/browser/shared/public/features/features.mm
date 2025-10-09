@@ -870,7 +870,7 @@ bool FRESignInSecondaryActionLabelUpdate() {
 
 BASE_FEATURE(kConfirmationButtonSwapOrder, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IConfirmationButtonSwapOrderEnabled() {
+bool IsConfirmationButtonSwapOrderEnabled() {
   return base::FeatureList::IsEnabled(kConfirmationButtonSwapOrder);
 }
 

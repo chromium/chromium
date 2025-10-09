@@ -26,6 +26,9 @@ NSString* UserDefaultsStringForKey(NSString* key, NSString* default_value);
 // value store in the shared defaults.
 BOOL MultiProfileShareExtensionEnabled();
 
+// Returns whether the confirmation alerts should be swapped.
+BOOL IsConfirmationButtonSwapOrderEnabled();
+
 }  // namespace app_group
 
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_
