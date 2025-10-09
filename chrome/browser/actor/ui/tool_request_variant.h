@@ -22,6 +22,7 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         CreateWindowToolRequest,
                                         DragAndReleaseToolRequest,
                                         HistoryToolRequest,
+                                        MediaControlToolRequest,
                                         MoveMouseToolRequest,
                                         NavigateToolRequest,
                                         ScriptToolRequest,
@@ -47,6 +48,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const CreateWindowToolRequest&) override;
   void Apply(const DragAndReleaseToolRequest&) override;
   void Apply(const HistoryToolRequest&) override;
+  void Apply(const MediaControlToolRequest&) override;
   void Apply(const MoveMouseToolRequest&) override;
   void Apply(const NavigateToolRequest&) override;
   void Apply(const ScriptToolRequest&) override;

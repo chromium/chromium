@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
@@ -35,6 +36,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const CreateWindowToolRequest&) = 0;
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
   virtual void Apply(const HistoryToolRequest&) = 0;
+  virtual void Apply(const MediaControlToolRequest&) = 0;
   virtual void Apply(const MoveMouseToolRequest&) = 0;
   virtual void Apply(const NavigateToolRequest&) = 0;
   virtual void Apply(const ScriptToolRequest&) = 0;

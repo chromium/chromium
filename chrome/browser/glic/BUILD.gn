@@ -410,6 +410,7 @@ source_set("interactive_ui_tests") {
     "host/glic_actor_general_interactive_uitest.cc",
     "host/glic_actor_interactive_uitest_common.cc",
     "host/glic_actor_interactive_uitest_common.h",
+    "host/glic_actor_media_control_tool_interactive_uitest.cc",
     "host/glic_actor_mouse_move_tool_interactive_uitest.cc",
     "host/glic_actor_navigation_tool_interactive_uitest.cc",
     "host/glic_actor_script_tool_interactive_uitest.cc",

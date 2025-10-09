@@ -65,6 +65,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<CreateWindowToolRequest>,
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
+    NoUiEvents<MediaControlToolRequest>,
     [](const MoveMouseToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
           ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
@@ -90,6 +91,7 @@ constexpr absl::Overload PostToolEventsFn{NoUiEvents<ClickToolRequest>,
                                           NoUiEvents<CreateWindowToolRequest>,
                                           NoUiEvents<DragAndReleaseToolRequest>,
                                           NoUiEvents<HistoryToolRequest>,
+                                          NoUiEvents<MediaControlToolRequest>,
                                           NoUiEvents<MoveMouseToolRequest>,
                                           NoUiEvents<NavigateToolRequest>,
                                           NoUiEvents<ScrollToolRequest>,

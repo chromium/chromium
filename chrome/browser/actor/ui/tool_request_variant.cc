@@ -39,6 +39,9 @@ void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {
 void ConvertToVariantFn::Apply(const HistoryToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const MediaControlToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const MoveMouseToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
