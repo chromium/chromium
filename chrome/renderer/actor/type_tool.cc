@@ -226,7 +226,7 @@ const absl::flat_hash_map<char16_t, char16_t>& GetAltGrMap() {
             {u'¿', u'/'},
             {u'¥', u'-'},
             // Characters requiring Shift
-            {u'¹', u'1'},
+            {u'¹', u'!'},
             {u'¢', u'C'},
             {u'£', u'$'},
             {u'§', u'S'},
