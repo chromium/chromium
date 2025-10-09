@@ -2467,6 +2467,8 @@ void WebViewImpl::SetPageLifecycleStateFromNewPageCommit(
     mojom::blink::PagehideDispatch pagehide_dispatch) {
   TRACE_EVENT0("navigation",
                "WebViewImpl::SetPageLifecycleStateFromNewPageCommit");
+  base::ScopedUmaHistogramTimer timer(
+      "Navigation.PageLifecycleStateFromNewPageCommit.Duration");
   mojom::blink::PageLifecycleStatePtr state =
       GetPage()->GetPageLifecycleState().Clone();
   state->visibility = visibility;

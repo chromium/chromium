@@ -1747,6 +1747,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.PageLifecycleStateFromNewPageCommit.Duration"
+    units="ms" expires_after="2026-03-22">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the total running time of the previous page's event handlers such
+    as pagehide and visibilitychange when the new page's navigation is
+    committed.
+  </summary>
+</histogram>
+
 <histogram
     name="Navigation.PendingCommit.BlockedCommitCount.{RegularOrMHTMLType}"
     units="count" expires_after="2023-12-31">
