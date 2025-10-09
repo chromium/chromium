@@ -174,7 +174,8 @@ void ReportDesktopCaptureImplementationAndType(
 DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
     NativeScreenCapturePicker* picker,
     const DesktopMediaID& desktop_id,
-    std::unique_ptr<media::VideoCaptureDevice>& device_out) {
+    std::unique_ptr<media::VideoCaptureDevice>& device_out,
+    media::VideoCaptureDeviceClient* device_client) {
   DCHECK_EQ(device_out.get(), nullptr);
 #if BUILDFLAG(IS_MAC)
   // Use ScreenCaptureKit with picker if specified. `desktop_id` for the picker
@@ -203,7 +204,7 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_IOS)
-  if ((device_out = DesktopCaptureDevice::Create(desktop_id))) {
+  if ((device_out = DesktopCaptureDevice::Create(desktop_id, device_client))) {
     return kLegacyDesktopCaptureDevice;
   }
 #endif  // !BUILDFLAG(IS_IOS)
@@ -499,9 +500,16 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
   DesktopCaptureImplementation implementation =
       CreatePlatformDependentVideoCaptureDevice(
-          native_screen_capture_picker_, desktop_id, video_capture_device);
-  DVLOG(1) << __func__ << " implementation " << implementation << " type "
-           << desktop_id.type;
+          native_screen_capture_picker_, desktop_id, video_capture_device,
+          device_client.get());
+  std::ostringstream string_stream;
+  string_stream << "InProcessVideoCaptureDeviceLauncher::"
+                   "DoStartDesktopCaptureOnDeviceThread: implementation = "
+                << implementation << ", type = " << desktop_id.type;
+  DVLOG(1) << string_stream.str();
+  if (device_client) {
+    device_client->OnLog(string_stream.str());
+  }
   ReportDesktopCaptureImplementationAndType(implementation, desktop_id.type);
   if (video_capture_device)
     video_capture_device->AllocateAndStart(params, std::move(device_client));

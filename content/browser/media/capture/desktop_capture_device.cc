@@ -902,7 +902,8 @@ base::TimeTicks DesktopCaptureDevice::Core::NowTicks() const {
 
 // static
 std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
-    const DesktopMediaID& source) {
+    const DesktopMediaID& source,
+    Client* device_client) {
   CHECK(source.type == DesktopMediaID::TYPE_WINDOW ||
         source.type == DesktopMediaID::TYPE_SCREEN);
 
@@ -946,17 +947,28 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   options.set_wgc_require_border(
       base::FeatureList::IsEnabled(features::kWebRtcWgcRequireBorder));
 
-  VLOG(1) << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
-          << options.prefer_cursor_embedded() << ", allow_wgc_screen_capturer: "
-          << options.allow_wgc_screen_capturer()
-          << ", allow_wgc_window_capturer: "
-          << options.allow_wgc_window_capturer()
-          << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
-          << ", wgc_require_border: " << options.wgc_require_border() << "}";
+  std::ostringstream string_stream;
+  string_stream << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
+                << options.prefer_cursor_embedded()
+                << ", allow_wgc_screen_capturer: "
+                << options.allow_wgc_screen_capturer()
+                << ", allow_wgc_window_capturer: "
+                << options.allow_wgc_window_capturer()
+                << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
+                << ", wgc_require_border: " << options.wgc_require_border()
+                << "}";
+  VLOG(1) << string_stream.str();
+  if (device_client) {
+    device_client->OnLog(string_stream.str());
+  }
 #endif
 
   // For browser tests, to create a fake desktop capturer.
   if (source.id == DesktopMediaID::kFakeId) {
+    if (device_client) {
+      device_client->OnLog(
+          "DesktopCaptureDevice::Create creates FakeDesktopCapturer");
+    }
     capturer = std::make_unique<webrtc::FakeDesktopCapturer>();
     result.reset(new DesktopCaptureDevice(std::move(capturer), source.type));
     return result;
@@ -974,6 +986,10 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
         IncrementDesktopCaptureCounter(
             source.audio_share ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
                                : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+      } else if (device_client) {
+        device_client->OnLog(
+            "DesktopCaptureDevice::Create fails because either screen_capturer "
+            "is null or screen_capturer->SelectSource(source.id) is false");
       }
       break;
     }
@@ -985,6 +1001,10 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(window_capturer), options);
         IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);
+      } else if (device_client) {
+        device_client->OnLog(
+            "DesktopCaptureDevice::Create fails because either window_capturer "
+            "is null or window_capturer->SelectSource(source.id) is false");
       }
       break;
     }
