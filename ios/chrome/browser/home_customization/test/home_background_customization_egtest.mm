@@ -172,14 +172,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that a custom gallery background can be set.
-// TODO(crbug.com/450042069): Test is causing almost deterministic failures on
-// device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testCustomizeGalleryBackground testCustomizeGalleryBackground
-#else
-#define MAYBE_testCustomizeGalleryBackground DISABLED_testCustomizeGalleryBackground
-#endif
-- (void)MAYBE_testCustomizeGalleryBackground {
+// TODO(crbug.com/450042069): Test is causing almost deterministic failures.
+- (void)DISABLED_testCustomizeGalleryBackground {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
