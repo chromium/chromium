@@ -360,14 +360,9 @@ Browser* FindLastActiveWithProfile(Profile* profile) {
 }
 
 Browser* FindLastActive() {
-  const BrowserList& bl = *BrowserList::GetInstance();
-  for (auto i = bl.begin_browsers_ordered_by_activation();
-       i != bl.end_browsers_ordered_by_activation(); ++i) {
-    if (!(*i)->is_delete_scheduled()) {
-      return *i;
-    }
-  }
-  return nullptr;
+  BrowserWindowInterface* last_active =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  return last_active ? last_active->GetBrowserForMigrationOnly() : nullptr;
 }
 
 size_t GetTotalBrowserCount() {
