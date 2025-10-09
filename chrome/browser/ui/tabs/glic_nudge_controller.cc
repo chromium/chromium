@@ -116,7 +116,7 @@ void GlicNudgeController::SetNudgeActivityCallbackForTesting() {
 void GlicNudgeController::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   if (delegate_ && delegate_->GetIsShowingGlicNudge()) {
-    delegate_->OnTriggerGlicNudgeUI(std::string());
+    delegate_->OnHideGlicNudgeUI();
     OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
 }
