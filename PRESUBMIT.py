@@ -694,10 +694,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         True,
         [
-            # Only used to implement a test HTTP server:
-            # https://crbug.com/438422635#comment8
-            '^third_party/crashpad/crashpad/third_party/'
-            r'cpp-httplib/cpp-httplib/httplib\.h$',
             # Abseil's benchmarks never linked into chrome.
             'third_party/abseil-cpp/.*_benchmark.cc',
         ],

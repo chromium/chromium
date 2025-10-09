@@ -33,6 +33,7 @@ namespace {
 using testing::AllOf;
 using testing::DoAll;
 using testing::Eq;
+using testing::Invoke;
 using testing::Pointee;
 using testing::ResultOf;
 using testing::Return;
@@ -527,7 +528,7 @@ TEST_F(NotifyServerTest, MachNotifyDeadName) {
                                          ResultOf(DeadNameRightRefCount, 2)),
                                    ResultOf(AuditPIDFromMachMessageTrailer, 0)))
       .WillOnce(
-          DoAll(WithArg<1>(MachPortDeallocate), Return(MIG_NO_REPLY)))
+          DoAll(WithArg<1>(Invoke(MachPortDeallocate)), Return(MIG_NO_REPLY)))
       .RetiresOnSaturation();
 
   receive_right.reset();
