@@ -41,21 +41,23 @@ export function navigateToStep(step: PrivacyGuideStep): Promise<void> {
 // Set all relevant sync status and fire a changed event and flush the UI.
 export function setupSync({
   syncBrowserProxy,
-  signedInState,
+  syncOn,
   syncAllDataTypes,
   typedUrlsSynced,
 }: {
   syncBrowserProxy: TestSyncBrowserProxy,
-  signedInState: SignedInState,
   syncAllDataTypes: boolean,
   typedUrlsSynced: boolean,
+  syncOn: boolean,
 }): void {
   if (syncAllDataTypes) {
     assertTrue(typedUrlsSynced);
   }
   if (typedUrlsSynced) {
-    assertTrue(signedInState !== SignedInState.SIGNED_OUT);
+    assertTrue(syncOn);
   }
+  const signedInState =
+      syncOn ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
   syncBrowserProxy.testSyncStatus = {
     signedInState: signedInState,
     hasError: false,
@@ -119,14 +121,8 @@ export function shouldShowSafeBrowsingCard(
 
 export function shouldShowHistorySyncCard(
     syncBrowserProxy: TestSyncBrowserProxy): boolean {
-  if (!syncBrowserProxy.testSyncStatus) {
-    return true;
-  }
-  return syncBrowserProxy.testSyncStatus.signedInState ===
-      SignedInState.SYNCING ||
-      (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
-       syncBrowserProxy.testSyncStatus.signedInState ===
-           SignedInState.SIGNED_IN);
+  return !syncBrowserProxy.testSyncStatus ||
+      syncBrowserProxy.testSyncStatus.signedInState === SignedInState.SYNCING;
 }
 
 // Bundles functionality to create the page object for tests.
@@ -153,9 +149,9 @@ export function setupPrivacyGuidePageForTest(
     setThirdPartyCookieSetting(page, CookieControlsMode.INCOGNITO_ONLY);
   }
   setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
-  setupSync({
+    setupSync({
     syncBrowserProxy: syncBrowserProxy,
-    signedInState: SignedInState.SYNCING,
+    syncOn: true,
     syncAllDataTypes: true,
     typedUrlsSynced: true,
   });
@@ -166,7 +162,7 @@ export function setParametersForHistorySyncStep(
   if (!isEligible) {
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_OUT,
+      syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });

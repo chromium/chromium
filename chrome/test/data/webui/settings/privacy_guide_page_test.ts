@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -269,7 +269,7 @@ suite('PrivacyGuidePage', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SYNCING,
+      syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
@@ -321,7 +321,7 @@ suite('PrivacyGuidePage', function() {
 
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SYNCING,
+      syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
@@ -491,7 +491,7 @@ suite('FlowLength', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SYNCING,
+      syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
@@ -634,7 +634,7 @@ suite('MsbbCardNavigations', function() {
   test('ForwardNavigationSyncOff', async function() {
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_OUT,
+      syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
@@ -712,7 +712,7 @@ suite('HistorySyncCardNavigations', function() {
     // User disables sync while history sync card is shown.
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_OUT,
+      syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
@@ -726,7 +726,7 @@ suite('HistorySyncCardNavigations', function() {
     await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_OUT,
+      syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
@@ -751,38 +751,6 @@ suite('HistorySyncCardNavigations', function() {
         'Settings.PrivacyGuide.NextClickHistorySync',
         testMetricsBrowserProxy.getArgs('recordAction')[0]);
   });
-
-  // <if expr="not is_chromeos">
-  // ChromeOS does not have signed-in non-syncing users.
-  test('ShownForSignedInUsersWhenFlagEnabled', async function() {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_IN,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
-
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible(
-        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
-  });
-
-  test('NotShownForSignedInUsersWhenFlagDisabled', async function() {
-    loadTimeData.overrideValues({'replaceSyncPromosWithSignInPromos': false});
-
-    await navigateToStep(PrivacyGuideStep.HISTORY_SYNC);
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_IN,
-      syncAllDataTypes: true,
-      typedUrlsSynced: true,
-    });
-    // The history sync card is removed/not shown anymore and the next card is
-    // shown instead.
-    assertSafeBrowsingCardVisible(
-        page, syncBrowserProxy, testPrivacyGuideBrowserProxy);
-  });
-  // </if>
 });
 
 suite('SafeBrowsingCardNavigations', function() {
@@ -844,7 +812,7 @@ suite('SafeBrowsingCardNavigations', function() {
   test('BackNavigationSyncOff', async function() {
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SIGNED_OUT,
+      syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
     });
@@ -1127,7 +1095,7 @@ suite('AdTopicsCardNavigations', function() {
       async function() {
         setupSync({
           syncBrowserProxy: syncBrowserProxy,
-          signedInState: SignedInState.SIGNED_OUT,
+          syncOn: false,
           syncAllDataTypes: false,
           typedUrlsSynced: false,
         });
@@ -1285,7 +1253,7 @@ suite('3pcdOff', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      signedInState: SignedInState.SYNCING,
+      syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });

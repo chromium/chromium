@@ -624,9 +624,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHomeAndWork));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "replaceSyncPromosWithSignInPromos",
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   TryShowHatsSurveyWithTimeout();
 }
