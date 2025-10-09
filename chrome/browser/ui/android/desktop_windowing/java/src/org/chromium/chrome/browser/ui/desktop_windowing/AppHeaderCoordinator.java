@@ -90,6 +90,9 @@ public class AppHeaderCoordinator
     private int mKeyboardInset;
     private int mNavBarInset;
 
+    // The minimum height (in px) of the app header required for customization.
+    private final int mMinHeightPx;
+
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
      *
@@ -106,6 +109,8 @@ public class AppHeaderCoordinator
      *     information for restoration on startup.
      * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} to determine the
      *     edge-to-edge state.
+     * @param minHeightPx The minimum height of the app header (in px) required for app header
+     *     customization.
      */
     public AppHeaderCoordinator(
             Activity activity,
@@ -114,10 +119,12 @@ public class AppHeaderCoordinator
             InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState,
-            EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            int minHeightPx) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mRootView = rootView;
+        mMinHeightPx = minHeightPx;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
         mInsetsController = assertNonNull(mRootView.getWindowInsetsController());
@@ -211,7 +218,10 @@ public class AppHeaderCoordinator
                 !DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
         mHeuristicResult =
                 checkIsInDesktopWindow(
-                        mCaptionBarRectProvider, mHeuristicResult, isOnExternalDisplay);
+                        mCaptionBarRectProvider,
+                        mHeuristicResult,
+                        isOnExternalDisplay,
+                        mMinHeightPx);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
         // Avoid determining the mode when there are no window insets, which may be the case in the
@@ -280,24 +290,28 @@ public class AppHeaderCoordinator
     private static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
             InsetsRectProvider insetsRectProvider,
             @DesktopWindowHeuristicResult int currentResult,
-            boolean isOnExternalDisplay) {
+            boolean isOnExternalDisplay,
+            int minHeightPx) {
         @DesktopWindowHeuristicResult int newResult;
 
         Insets captionBarInset = insetsRectProvider.getCachedInset();
         boolean allowHeaderCustomization =
                 AppHeaderUtils.shouldAllowHeaderCustomizationOnNonDefaultDisplay()
                         || !isOnExternalDisplay;
+        var widestUnoccludedRect = insetsRectProvider.getWidestUnoccludedRect();
 
-        if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
+        if (widestUnoccludedRect.isEmpty()) {
             newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;
         } else if (captionBarInset.top == 0) {
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
-        } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
+        } else if (widestUnoccludedRect.bottom != captionBarInset.top) {
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
         } else if (!allowHeaderCustomization) {
             newResult = DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY;
         } else if (insetsRectProvider.isUnoccludedRegionComplex()) {
             newResult = DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION;
+        } else if (minHeightPx > 0 && widestUnoccludedRect.height() < minHeightPx) {
+            newResult = DesktopWindowHeuristicResult.BELOW_MIN_HEIGHT_THRESHOLD;
         } else {
             newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         }

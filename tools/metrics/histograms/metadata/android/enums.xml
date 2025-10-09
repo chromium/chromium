@@ -981,6 +981,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Caption bar customizable space unavailable."/>
   <int value="5" label="The app is open on an external display."/>
   <int value="6" label="Caption bar has a complex unoccluded region."/>
+  <int value="7"
+      label="Caption bar height is below min height threshold for
+             customization."/>
 </enum>
 
 <enum name="DesktopWindowModeState">
