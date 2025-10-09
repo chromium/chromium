@@ -148,6 +148,12 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   }
 
  private:
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandleOnIO(
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage);
+
   std::unique_ptr<SharedImageBacking> CreateSharedBufferD3D12(
       const Mailbox& mailbox,
       const gfx::Size& size,

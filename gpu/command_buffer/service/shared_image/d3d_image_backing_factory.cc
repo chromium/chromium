@@ -12,7 +12,10 @@
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
@@ -23,6 +26,7 @@
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -226,13 +230,107 @@ D3DImageBackingFactory::SwapChainBackings::operator=(
     D3DImageBackingFactory::SwapChainBackings&&) = default;
 
 // static
+gfx::GpuMemoryBufferHandle
+D3DImageBackingFactory::CreateGpuMemoryBufferHandleOnIO(
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
+  gfx::GpuMemoryBufferHandle result;
+  base::WaitableEvent event;
+
+  io_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](gfx::GpuMemoryBufferHandle* out_gmb_handle,
+                        base::WaitableEvent* waitable_event,
+                        scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+                        const gfx::Size& size, viz::SharedImageFormat format,
+                        gfx::BufferUsage usage) {
+                       *out_gmb_handle =
+                           D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
+                               io_runner, size, format, usage);
+
+                       waitable_event->Signal();
+                     },
+                     &result, &event, io_runner, size, format, usage));
+
+  event.Wait();
+
+  return result;
+}
+
+// static
 gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
     scoped_refptr<base::SingleThreadTaskRunner> io_runner,
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  return GetGpuMemoryBufferFactoryDXGI(io_runner)->CreateNativeGmbHandle(
-      size, format, usage);
+  if (io_runner && !io_runner->BelongsToCurrentThread()) {
+    // Thread-hop is required!
+    return CreateGpuMemoryBufferHandleOnIO(io_runner, size, format, usage);
+  }
+
+  TRACE_EVENT0("gpu", "D3DImageBackingFactory::CrceateGpuMemoryBufferHandle");
+
+  gfx::GpuMemoryBufferHandle handle;
+  auto d3d11_device =
+      GetGpuMemoryBufferFactoryDXGI(io_runner)->GetOrCreateD3D11Device();
+  if (!d3d11_device) {
+    return handle;
+  }
+
+  DXGI_FORMAT dxgi_format = gpu::ToDXGIFormat(format);
+  if (dxgi_format == DXGI_FORMAT_UNKNOWN) {
+    return handle;
+  }
+
+  auto buffer_size = viz::SharedMemorySizeForSharedImageFormat(format, size);
+  if (!buffer_size) {
+    return handle;
+  }
+
+  // We are binding as a shader resource and render target regardless of usage,
+  // so make sure that the usage is one that we support.
+  DCHECK(usage == gfx::BufferUsage::GPU_READ ||
+         usage == gfx::BufferUsage::SCANOUT ||
+         usage == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE)
+      << "Incorrect usage, usage=" << gfx::BufferUsageToString(usage);
+
+  D3D11_TEXTURE2D_DESC desc = {
+      static_cast<UINT>(size.width()),
+      static_cast<UINT>(size.height()),
+      1,
+      1,
+      dxgi_format,
+      {1, 0},
+      D3D11_USAGE_DEFAULT,
+      D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
+      0,
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+          D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX};
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+
+  if (FAILED(d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture))) {
+    return handle;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  if (FAILED(d3d11_texture.As(&dxgi_resource))) {
+    return handle;
+  }
+
+  HANDLE texture_handle;
+  if (FAILED(dxgi_resource->CreateSharedHandle(
+          nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+          nullptr, &texture_handle))) {
+    return handle;
+  }
+
+  handle = gfx::GpuMemoryBufferHandle(
+      gfx::DXGIHandle(base::win::ScopedHandle(texture_handle)));
+
+  return handle;
 }
 
 // static

@@ -36,22 +36,12 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI {
   GpuMemoryBufferFactoryDXGI& operator=(const GpuMemoryBufferFactoryDXGI&) =
       delete;
 
-  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage);
-
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture() {
     return staging_texture_;
   }
 
  private:
-  gfx::GpuMemoryBufferHandle CreateNativeGmbHandleOnIO(
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      gfx::BufferUsage usage);
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_
       GUARDED_BY_CONTEXT(thread_checker_);
 
