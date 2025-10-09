@@ -1843,22 +1843,6 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
-  // context_provider_wrapper, so it's important to call that first as it can
-  // invalidate the weak pointer.
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper) {
-    return false;
-  }
-
-  auto size = Host()->Size();
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
-  if (size.width() > capabilities.max_texture_size ||
-      size.height() > capabilities.max_texture_size) {
-    return false;
-  }
-
   return GetDrawingBuffer()->SupportsConcurrentReadWrite();
 }
 
