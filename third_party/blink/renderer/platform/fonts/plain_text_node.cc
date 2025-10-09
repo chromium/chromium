@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -79,6 +78,76 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
     return {String::Adopt(*buffer), maybe_bidi};
   }
   return {text.ToString(), maybe_bidi};
+}
+
+template <bool split_by_zws>
+bool IsWordDelimiter(UChar ch) {
+  // As of 2025 March, Google Docs always wraps text with BiDi control
+  // characters, and they are replaced with ZWS for HarfBuzzShaper.
+  // Assuming ZWS as a word delimiter improves hit rate of a shape cache.
+  return ch == uchar::kSpace || ch == uchar::kTab ||
+         (split_by_zws && ch == uchar::kZeroWidthSpace);
+}
+
+unsigned NextWordEndIndex(StringView text, unsigned start_index) {
+  const unsigned length = text.length();
+  if (start_index >= length) {
+    return 0;
+  }
+
+  if (start_index + 1u == length || IsWordDelimiter<true>(text[start_index])) {
+    return start_index + 1;
+  }
+
+  // 8Bit words end at IsWordDelimiter().
+  if (text.Is8Bit()) {
+    for (unsigned i = start_index + 1;; ++i) {
+      if (i == length || IsWordDelimiter<false>(text[i])) {
+        return i;
+      }
+    }
+  }
+
+  // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
+  unsigned end = start_index;
+  UChar32 ch = text.CodePointAtAndNext(end);
+  if (!Character::IsCJKIdeographOrSymbol(ch)) {
+    for (unsigned next_end = end; end < length; end = next_end) {
+      ch = text.CodePointAtAndNext(next_end);
+      if (IsWordDelimiter<true>(ch) ||
+          Character::IsCJKIdeographOrSymbolBase(ch)) {
+        return end;
+      }
+    }
+    return length;
+  }
+
+  // For CJK/Emoji words, delimit every character because these scripts do
+  // not delimit words by spaces, and delimiting only at IsWordDelimiter()
+  // worsen the cache efficiency.
+  bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
+  for (unsigned next_end = end; end < length; end = next_end) {
+    ch = text.CodePointAtAndNext(next_end);
+    // Modifier check in order not to split Emoji sequences.
+    if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
+        ch == uchar::kZeroWidthJoiner || Character::IsEmojiComponent(ch) ||
+        Character::IsExtendedPictographic(ch)) {
+      continue;
+    }
+    // Avoid delimiting COMMON/INHERITED alone, which makes harder to
+    // identify the script.
+    if (Character::IsCJKIdeographOrSymbol(ch)) {
+      if (Character::IsCommonOrInheritedScript(ch)) {
+        continue;
+      }
+      if (!has_any_script) {
+        has_any_script = true;
+        continue;
+      }
+    }
+    return end;
+  }
+  return length;
 }
 
 }  // namespace
@@ -245,8 +314,7 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
   const wtf_size_t insertion_index = item_list_.size();
   StringView text_content(text_content_, start_offset, run_length);
   for (wtf_size_t index = 0; index < run_length;) {
-    wtf_size_t new_index =
-        CachingWordShapeIterator::NextWordEndIndex<true>(text_content, index);
+    wtf_size_t new_index = NextWordEndIndex(text_content, index);
     PlainTextItem item(start_offset + index, new_index - index, direction,
                        text_content_);
     if (IsLtr(direction)) {
