@@ -81,7 +81,7 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  if (target_->is_coordinate()) {
+  if (target_->is_coordinate_dip()) {
     NOTIMPLEMENTED() << "Coordinate-based target is not yet supported.";
     return base::unexpected(MakeErrorResult());
   }

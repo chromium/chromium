@@ -78,13 +78,16 @@ ToolBase::~ToolBase() = default;
 ToolBase::ResolveResult ToolBase::ResolveTarget(
     const mojom::ToolTarget& target) const {
   ResolvedTarget resolved_target;
-  if (target.is_coordinate()) {
-    const gfx::PointF coordinate_point(target.get_coordinate());
+  if (target.is_coordinate_dip()) {
+    gfx::PointF coordinate_point =
+        frame_->GetWebFrame()->FrameWidget()->DIPsToBlinkSpace(
+            gfx::PointF(target.get_coordinate_dip()));
     if (!IsPointWithinViewport(coordinate_point, frame_.get())) {
-      return base::unexpected(MakeResult(
-          mojom::ActionResultCode::kCoordinatesOutOfBounds,
-          /*requires_page_stabilization=*/false,
-          absl::StrFormat("Point [%s]", coordinate_point.ToString())));
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds,
+                     /*requires_page_stabilization=*/false,
+                     absl::StrFormat("Point (physical) [%s]",
+                                     coordinate_point.ToString())));
     }
     resolved_target.point = coordinate_point;
 
@@ -146,7 +149,7 @@ void ToolBase::EnsureTargetInView() {
   // Scrolling a target into view is only supported for node_id targets since
   // TOCTOU checks cannot be applied to the APC captured at the old scroll
   // offset.
-  if (target_->is_coordinate()) {
+  if (target_->is_coordinate_dip()) {
     return;
   }
 
@@ -164,7 +167,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
 
   // For coordinate target, check the observed node matches the live DOM hit
   // test target.
-  if (target_->is_coordinate()) {
+  if (target_->is_coordinate_dip()) {
     if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
@@ -182,7 +185,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       journal_->Log(
           task_id_, "TimeOfUseValidation",
           JournalDetailsBuilder()
-              .Add("coordinate", base::ToString(target_->get_coordinate()))
+              .Add("coordinate_dip",
+                   base::ToString(target_->get_coordinate_dip()))
               .Add("target_id", target_node.GetDomNodeId())
               .Add("observed_target_id",
                    *observed_target_->node_attribute->dom_node_id)
@@ -204,7 +208,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       journal_->Log(
           task_id_, "TimeOfUseValidation",
           JournalDetailsBuilder()
-              .Add("coordinate", base::ToString(target_->get_coordinate()))
+              .Add("coordinate_dip",
+                   base::ToString(target_->get_coordinate_dip()))
               .Add("target_id", target_node.GetDomNodeId())
               .Add("observed_target_id", observed_target_node.GetDomNodeId())
               .Add("target", NodeToDebugSring(target_node))

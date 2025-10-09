@@ -98,9 +98,9 @@ std::string ToDebugString(const mojom::ToolTargetPtr& target) {
 
   std::stringstream ss;
   ss << "target(";
-  if (target->is_coordinate()) {
-    ss << "XY=" << target->get_coordinate().x() << ","
-       << target->get_coordinate().y();
+  if (target->is_coordinate_dip()) {
+    ss << "XY[DIP]=" << target->get_coordinate_dip().x() << ","
+       << target->get_coordinate_dip().y();
   } else {
     ss << "ID=" << target->get_dom_node_id();
   }

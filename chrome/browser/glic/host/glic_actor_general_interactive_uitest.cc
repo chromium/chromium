@@ -13,6 +13,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace glic::test {
 
@@ -290,6 +292,54 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
         EXPECT_EQ(tab.screenshot_mime_type(), actor::kMimeTypeJpeg);
       })
   );
+  // clang-format on
+}
+
+class GlicActorGeneralUiTestHighDPI : public GlicActorGeneralUiTest {
+ public:
+  static constexpr double kDeviceScaleFactor = 2.0;
+  GlicActorGeneralUiTestHighDPI() {
+    display::Display::SetForceDeviceScaleFactor(kDeviceScaleFactor);
+  }
+  ~GlicActorGeneralUiTestHighDPI() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
+                       CoordinatesApplyDeviceScaleFactor) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  constexpr std::string_view kOffscreenButton = "offscreen";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  gfx::Rect button_bounds;
+
+  auto click_provider = base::BindLambdaForTesting([&button_bounds, this]() {
+    // Coordinates are provided in DIPs
+    gfx::Point coordinate = button_bounds.CenterPoint();
+    apc::Actions action =
+        actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
+                         apc::ClickAction::SINGLE);
+
+    action.set_task_id(task_id_.value());
+    return EncodeActionProto(action);
+  });
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ExecuteJs(kNewActorTabId,
+        content::JsReplace("() => document.getElementById($1).scrollIntoView()",
+          kOffscreenButton)),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kOffscreenButton, button_bounds),
+      CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked", false),
+      ExecuteAction(std::move(click_provider)),
+      CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked"));
   // clang-format on
 }
 

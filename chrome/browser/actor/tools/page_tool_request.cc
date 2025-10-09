@@ -27,7 +27,7 @@ using tabs::TabHandle;
 namespace {
 constexpr absl::Overload ToMojoFn{
     [](const gfx::Point& pt) -> mojom::ToolTargetPtr {
-      return actor::mojom::ToolTarget::NewCoordinate(pt);
+      return actor::mojom::ToolTarget::NewCoordinateDip(pt);
     },
     [](const DomNode& node) -> mojom::ToolTargetPtr {
       return actor::mojom::ToolTarget::NewDomNodeId(node.node_id);

@@ -93,7 +93,7 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
                    /*requires_page_stabilization=*/false, "Negative Distance"));
   }
 
-  if (target_->is_coordinate()) {
+  if (target_->is_coordinate_dip()) {
     NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
     return base::unexpected(MakeErrorResult());
   }

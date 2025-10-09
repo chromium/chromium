@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/number_formatting.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace glic::test {
@@ -46,20 +48,31 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Range) {
                     "() => document.querySelector('#range').value", "50"));
 }
 
+// Test coordinate conversions under normal and high-DPI scaling factors.
+class GlicActorDragDSFTest : public GlicActorUiTest,
+                             public testing::WithParamInterface<int> {
+ public:
+  GlicActorDragDSFTest() {
+    display::Display::SetForceDeviceScaleFactor(DeviceScaleFactor());
+  }
+  ~GlicActorDragDSFTest() override = default;
+
+  int DeviceScaleFactor() const { return GetParam(); }
+};
+
 // Ensure the drag tool sends the expected mouse down, move and up events.
-IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Events) {
+IN_PROC_BROWSER_TEST_P(GlicActorDragDSFTest, Events) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
 
-  gfx::Rect target_rect;
+  // The values are provided in DIPs. Since there is no browser zoom, this is
+  // equivalent to CSS pixels so should be the same values provided to web APIs,
+  // regardless of device scale.
+  const gfx::Vector2d delta(100, 150);
+  const gfx::Point start(10, 20);
+  const gfx::Point end = start + delta;
 
-  auto drag_provider = base::BindLambdaForTesting([this, &target_rect]() {
-    // Arbitrary pad to hit a few pixels inside the logger element.
-    const int kPadding = 10;
-    gfx::Vector2d delta(100, 150);
-    gfx::Point start(target_rect.x() + kPadding, target_rect.y() + kPadding);
-    gfx::Point end = start + delta;
-
+  auto drag_provider = base::BindLambdaForTesting([this, start, end]() {
     Actions action = actor::MakeDragAndRelease(tab_handle_, start, end);
     action.set_task_id(task_id_.value());
     return EncodeActionProto(action);
@@ -68,14 +81,28 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Events) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      ExecuteJs(kNewActorTabId, "() => { window.scrollTo(450, 250); }"),
+      CheckJsResult(kNewActorTabId, "() => window.devicePixelRatio",
+                    DeviceScaleFactor()),
+      ExecuteJs(kNewActorTabId, R"JS(
+          () => {
+              document.getElementById('dragLogger')
+                  .scrollIntoView({block:'start', inline:'start'});
+          })JS"),
       CheckJsResult(kNewActorTabId, "() => event_log.join(',')", ""),
-      GetClientRect(kNewActorTabId, "dragLogger", target_rect),
       ExecuteAction(std::move(drag_provider)),
-      WaitForJsResult(kNewActorTabId, "() => event_log.join(',')",
-                      "mousemove[60,60],mousedown[60,60],mousemove[160,210],"
-                      "mouseup[160,210]"));
+      CheckJsResult(kNewActorTabId, "() => event_log.join(',')",
+                    absl::StrFormat(
+                        "mousemove[%s],mousedown[%s],mousemove[%s],mouseup[%s]",
+                        start.ToString(), start.ToString(), end.ToString(),
+                        end.ToString())));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicActorDragDSFTest,
+                         testing::Values(1, 2),
+                         [](const ::testing::TestParamInfo<int>& info) {
+                           return absl::StrFormat("DSF_%d", info.param);
+                         });
 
 // Ensure coordinates outside of the viewport are rejected.
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Offscreen) {
