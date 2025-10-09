@@ -80,6 +80,8 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
                                  bool needs_alpha) const;
   BufferFormat GetOutputBufferFormat(ContentColorUsage color_usage,
                                      bool needs_alpha) const;
+  viz::SharedImageFormat GetOutputFormat(ContentColorUsage color_usage,
+                                         bool needs_alpha) const;
 
   // Set the maximum SDR luminance, in nits. This is a non-default value only
   // on Windows.

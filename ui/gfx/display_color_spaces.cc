@@ -119,6 +119,13 @@ BufferFormat DisplayColorSpaces::GetOutputBufferFormat(
   return buffer_formats_[GetIndex(color_usage, needs_alpha)];
 }
 
+viz::SharedImageFormat DisplayColorSpaces::GetOutputFormat(
+    ContentColorUsage color_usage,
+    bool needs_alpha) const {
+  return viz::GetSharedImageFormat(
+      GetOutputBufferFormat(color_usage, needs_alpha));
+}
+
 ColorSpace DisplayColorSpaces::GetRasterAndCompositeColorSpace(
     ContentColorUsage color_usage) const {
   gfx::ColorSpace result;
