@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 
 /**
  * Glue-level class that manages lifetime of root .tabmodel objects: {@link TabPersistentStore} and
@@ -55,8 +56,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_CUSTOM,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_CUSTOM,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,

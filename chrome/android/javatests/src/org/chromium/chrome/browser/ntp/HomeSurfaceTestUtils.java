@@ -26,8 +26,8 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelMetadata;
@@ -114,7 +114,7 @@ public class HomeSurfaceTestUtils {
         TabModelSelectorMetadata selectorMetaData =
                 new TabModelSelectorMetadata(normalInfo, incognitoInfo);
 
-        TabPersistentStore.saveTabModelPrefs(0, ActiveTabState.OTHER);
+        TabPersistentStoreImpl.saveTabModelPrefs(0, ActiveTabState.OTHER);
         File metadataFile =
                 new File(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),

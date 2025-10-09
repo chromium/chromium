@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridgeJni;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -135,7 +136,9 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mMismatchedIndicesHandler,
                 0);
         List<Pair<AsyncTask<DataInputStream>, String>> tabStatesToMerge;
-        tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
+        TabPersistentStoreImpl tabPersistentStore =
+                (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
+        tabStatesToMerge = tabPersistentStore.getTabListToMergeTasksForTesting();
         assertFalse("Should have a tab state file to merge", tabStatesToMerge.isEmpty());
 
         MultiWindowTestUtils.createInstance(/* instanceId= */ 0, "https://url.com", 1, 57);
@@ -152,7 +155,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 mMultiInstanceManager,
                 mMismatchedIndicesHandler,
                 1);
-        tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
+        tabPersistentStore = (TabPersistentStoreImpl) orchestrator.getTabPersistentStore();
+        tabStatesToMerge = tabPersistentStore.getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
     }
 

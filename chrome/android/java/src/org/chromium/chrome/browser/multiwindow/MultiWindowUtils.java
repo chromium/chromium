@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -1095,7 +1095,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         int totalCount = 0;
         for (TabModel model : models) {
             for (Tab tab : model) {
-                if (!TabPersistentStore.shouldSkipTab(tab)) {
+                if (!TabPersistenceUtils.shouldSkipTab(tab)) {
                     totalCount++;
                 }
             }

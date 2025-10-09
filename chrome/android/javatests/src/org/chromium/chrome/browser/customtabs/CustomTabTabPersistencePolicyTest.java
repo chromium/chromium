@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
@@ -247,7 +247,7 @@ public class CustomTabTabPersistencePolicyTest {
                         () -> {
                             TabModelSelectorImpl selectorImpl =
                                     buildTestTabModelSelector(new int[] {111, 222, 333}, null);
-                            return TabPersistentStore.extractTabMetadataFromSelector(
+                            return TabPersistentStoreImpl.extractTabMetadataFromSelector(
                                     selectorImpl, null);
                         });
         FileOutputStream fos = null;

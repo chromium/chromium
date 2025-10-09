@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
@@ -165,8 +166,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 new TabbedModeTabPersistencePolicy(
                         assignedIndex, mergeTabsOnStartup, mTabMergingEnabled);
         mTabPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,
@@ -289,7 +290,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         mArchivedTabModelOrchestrator.registerTabModelOrchestrator(this);
     }
 
-    public TabPersistentStore getTabPersistentStoreForTesting() {
-        return mTabPersistentStore;
+    public TabPersistentStoreImpl getTabPersistentStoreForTesting() {
+        return (TabPersistentStoreImpl) mTabPersistentStore;
     }
 }

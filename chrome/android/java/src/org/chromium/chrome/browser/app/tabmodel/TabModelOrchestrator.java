@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 
 /**
  * Implementers are glue-level objects that manage lifetime of root .tabmodel objects: {@link
@@ -63,8 +64,9 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
-     * Sets {@link TabPersistentStore} for testing.
-     * @param tabPersistentStore The {@link TabPersistentStore}.
+     * Sets {@link TabPersistentStoreImpl} for testing.
+     *
+     * @param tabPersistentStore The {@link TabPersistentStoreImpl}.
      */
     void setTabPersistentStoreForTesting(TabPersistentStore tabPersistentStore) {
         mTabPersistentStore = tabPersistentStore;

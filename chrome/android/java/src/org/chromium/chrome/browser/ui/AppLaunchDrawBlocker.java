@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.util.function.Supplier;
@@ -168,7 +168,7 @@ public class AppLaunchDrawBlocker {
 
     /** Only block the draw if we believe the initial tab will be the NTP. */
     private void maybeBlockDraw() {
-        @ActiveTabState int tabState = TabPersistentStore.readLastKnownActiveTabStatePref();
+        @ActiveTabState int tabState = TabPersistentStoreImpl.readLastKnownActiveTabStatePref();
         boolean searchEngineHasLogo =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);

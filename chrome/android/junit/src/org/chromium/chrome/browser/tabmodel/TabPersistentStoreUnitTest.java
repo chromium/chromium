@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabRestoreDetails;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -104,7 +104,7 @@ public class TabPersistentStoreUnitTest {
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
-    private TabPersistentStore mPersistentStore;
+    private TabPersistentStoreImpl mPersistentStore;
     private CipherFactory mCipherFactory;
 
     @Before
@@ -138,7 +138,7 @@ public class TabPersistentStoreUnitTest {
         // Flush pending PersistentStore tasks.
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
-            SequencedTaskRunner runner = mPersistentStore.getTaskRunnerForTests();
+            SequencedTaskRunner runner = mPersistentStore.getTaskRunnerForTesting();
             if (!mockingDetails(runner).isMock()) {
                 runner.execute(() -> flushed.set(true));
                 BaseRobolectricTestRule.runAllBackgroundAndUi();
@@ -154,8 +154,8 @@ public class TabPersistentStoreUnitTest {
         when(mIncognitoTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
 
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -182,8 +182,8 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNotActiveEmptyNtpNotIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -210,8 +210,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -244,8 +244,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -284,8 +284,8 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNtpWithStateNotIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -308,8 +308,8 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -342,8 +342,8 @@ public class TabPersistentStoreUnitTest {
         AsyncTabParamsManagerSingleton.getInstance()
                 .add(1, new AsyncTabCreationParams(new LoadUrlParams(url)));
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -367,8 +367,8 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNotActiveIncognitoNtpIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -387,8 +387,8 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testActiveEmptyIncognitoNtpIgnoredDuringRestoreIfIncognitoLoadingIsDisabled() {
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -408,8 +408,8 @@ public class TabPersistentStoreUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH)
     public void testDuplicateTabIds() {
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -434,7 +434,7 @@ public class TabPersistentStoreUnitTest {
     public void testSerializeTabModelSelector() {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(mTabModelSelector, null);
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(mTabModelSelector, null);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         // Verifies that the non-active NTP isn't saved.
@@ -465,7 +465,7 @@ public class TabPersistentStoreUnitTest {
     public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(mTabModelSelector, null);
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(mTabModelSelector, null);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -481,7 +481,7 @@ public class TabPersistentStoreUnitTest {
     public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(mTabModelSelector, null);
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(mTabModelSelector, null);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -497,7 +497,7 @@ public class TabPersistentStoreUnitTest {
     public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled() {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(mTabModelSelector, null);
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(mTabModelSelector, null);
 
         assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
         assertEquals(
@@ -532,7 +532,7 @@ public class TabPersistentStoreUnitTest {
         tabRestoreDetails.add(unknownTabRestoreDetails);
 
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(
                         mTabModelSelector, tabRestoreDetails);
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -590,7 +590,7 @@ public class TabPersistentStoreUnitTest {
                 .thenAnswer(inv -> List.of(regularTab1, regularTab2).iterator());
 
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.extractTabMetadataFromSelector(mTabModelSelector, null);
+                TabPersistentStoreImpl.extractTabMetadataFromSelector(mTabModelSelector, null);
 
         assertEquals(1, metadata.normalModelMetadata.ids.size());
         assertEquals(1, metadata.normalModelMetadata.urls.size());
@@ -608,8 +608,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -645,8 +645,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -700,8 +700,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -737,8 +737,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -775,8 +775,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -822,8 +822,8 @@ public class TabPersistentStoreUnitTest {
         when(mNormalTabModel.getTabAt(anyInt())).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         mPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_REGULAR,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -852,7 +852,7 @@ public class TabPersistentStoreUnitTest {
         when(mTab.getUrl()).thenReturn(ntpGurl);
         when(mTab.isNativePage()).thenReturn(true);
         when(mTab.getIsPinned()).thenReturn(true);
-        assertFalse("Pinned NTPs should not be skipped.", TabPersistentStore.shouldSkipTab(mTab));
+        assertFalse("Pinned NTPs should not be skipped.", TabPersistenceUtils.shouldSkipTab(mTab));
 
         // Pinned regular tabs should not be skipped.
         when(mTab.getUrl()).thenReturn(regularGurl);
@@ -860,7 +860,7 @@ public class TabPersistentStoreUnitTest {
         when(mTab.getIsPinned()).thenReturn(true);
         assertFalse(
                 "Pinned regular tabs should not be skipped.",
-                TabPersistentStore.shouldSkipTab(mTab));
+                TabPersistenceUtils.shouldSkipTab(mTab));
     }
 
     private void setupSerializationTestMocks() {

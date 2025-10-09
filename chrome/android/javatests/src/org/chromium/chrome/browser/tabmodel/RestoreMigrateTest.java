@@ -64,7 +64,7 @@ public class RestoreMigrateTest {
         TabModelSelectorMetadata data =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                TabPersistentStore.extractTabMetadataFromSelector(
+                                TabPersistentStoreImpl.extractTabMetadataFromSelector(
                                         selector, /* tabsBeingRestored= */ null));
 
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
@@ -125,14 +125,14 @@ public class RestoreMigrateTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
-    private TabPersistentStore buildTabPersistentStore(
+    private TabPersistentStoreImpl buildTabPersistentStore(
             final TabModelSelector selector, final int selectorIndex) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
-                    return new TabPersistentStore(
-                            TabPersistentStore.CLIENT_TAG_REGULAR,
+                    return new TabPersistentStoreImpl(
+                            TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
                             persistencePolicy,
                             selector,
                             null,
