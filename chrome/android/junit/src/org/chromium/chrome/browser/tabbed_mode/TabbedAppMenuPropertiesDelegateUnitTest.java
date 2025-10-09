@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -1297,7 +1296,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // Setup no wifi condition, and "only on wifi" user option.
         DeviceConditions noWifi =
                 new DeviceConditions(false, 75, ConnectionType.CONNECTION_2G, false, false, true);
-        ShadowDeviceConditions.setCurrentConditions(noWifi);
+        DeviceConditions.setForTesting(noWifi);
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
                 .thenReturn(true);
 

@@ -12,7 +12,6 @@
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask
 +org.chromium.base.version_info.VersionInfo
-+org.chromium.chrome.browser.device.DeviceConditions
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
 +org.chromium.chrome.browser.firstrun.FirstRunUtils
 +org.chromium.chrome.browser.homepage.HomepagePolicyManager

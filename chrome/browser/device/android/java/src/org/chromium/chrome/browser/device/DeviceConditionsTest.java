@@ -362,7 +362,6 @@ public class DeviceConditionsTest {
 
     @Test
     public void testSettingConnectionType() {
-        // This is used by ShadowDeviceConditions.
         DeviceConditions conditions = DeviceConditions.getCurrent(mContext);
         conditions.setNetworkConnectionType(ConnectionType.CONNECTION_ETHERNET);
         assertEquals(ConnectionType.CONNECTION_ETHERNET, conditions.getNetConnectionType());
