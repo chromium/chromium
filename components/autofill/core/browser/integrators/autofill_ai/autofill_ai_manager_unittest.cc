@@ -1022,6 +1022,37 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
+// Test that disabling the property for, say, identity-related entities
+// suppresses import.
+TEST_F(AutofillAiManagerImportFormTest,
+       DoNotImportIfPrefForEntityGroupDisabled) {
+  using enum AttributeTypeName;
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, DRIVERS_LICENSE_NUMBER});
+  EntityInstance entity = test::GetDriversLicenseEntityInstance();
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"1234321");
+
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call("pref disabled"));
+    EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+    EXPECT_CALL(check, Call("pref enabled"));
+    EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble);
+  }
+
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiIdentityEntitiesEnabled, false);
+  check.Call("pref disabled");
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiIdentityEntitiesEnabled, true);
+  check.Call("pref enabled");
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
 TEST_F(AutofillAiManagerImportFormTest,
        EntityContainsRequiredAttributes_ShowPromptAndAccept) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
@@ -1590,6 +1621,45 @@ TEST_F(AutofillAiManagerUpstreamTest, FeatureOff_DoNotShowMigrationPrompt) {
 
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
   EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that disabling the pref for, say, travel-related entities suppresses
+// the wallet migration prompt.
+TEST_F(AutofillAiManagerUpstreamTest,
+       PrefForEntityGroupOff_DoNotShowMigrationPrompt) {
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance local_entity = test::GetVehicleEntityInstance();
+  AddOrUpdateEntityInstance(local_entity);
+
+  form->field(0)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      local_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call("pref disabled"));
+    EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+    EXPECT_CALL(check, Call("pref enabled"));
+    EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble);
+  }
+
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiTravelEntitiesEnabled, false);
+  check.Call("pref disabled");
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiTravelEntitiesEnabled, true);
+  check.Call("pref enabled");
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
 // Tests that a migration prompt is not shown if the user entered data in the

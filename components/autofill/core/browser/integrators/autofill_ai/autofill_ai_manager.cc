@@ -222,15 +222,16 @@ void AutofillAiManager::OnDidFillSuggestion(
 bool AutofillAiManager::MaybeUpstreamEntityToWallet(
     const FormStructure& form,
     ukm::SourceId ukm_source_id) {
-  // TODO(crbug.com/450060416): Do an EntityType-specific
-  // MayPerformAutofillAiAction() check.
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
 
   std::optional<std::pair<EntityInstance, EntityInstance::EntityId>>
       entity_to_be_upstreamed = GetEntityUpstreamCandidate(form);
-  if (!entity_to_be_upstreamed) {
+  if (!entity_to_be_upstreamed ||
+      !MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport,
+                                  entity_to_be_upstreamed->first.type())) {
     return false;
   }
 
@@ -313,14 +314,19 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
-  // TODO(crbug.com/450060416): Do an EntityType-specific
-  // MayPerformAutofillAiAction() check.
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
 
   std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
       save_update_candidates = GetEntitySaveAndUpdatePromptCandidates(form);
+  std::erase_if(save_update_candidates, [&](const auto& p) {
+    EntityType type = p.first.type();
+    return !MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport,
+                                       type);
+  });
+
   for (const std::pair<EntityInstance, std::optional<EntityInstance>>&
            save_update_candidate : save_update_candidates) {
     const auto& [new_entity, old_entity] = save_update_candidate;
