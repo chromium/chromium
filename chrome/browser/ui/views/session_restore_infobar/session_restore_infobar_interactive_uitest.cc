@@ -302,6 +302,25 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
+// Test that the session restore infobar is not shown on a new tab after the
+// pref is changed.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       InfobarNotShownOnNewTabAfterPrefChange) {
+  CreateInfobar(browser(), false);
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  // Change the pref to continue where you left off.
+                  Do([this]() {
+                    browser()->profile()->GetPrefs()->SetInteger(
+                        prefs::kRestoreOnStartup, 1);
+                  }),
+                  // The infobar should be hidden after the pref change.
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId),
+                  // Open a new tab.
+                  AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
+                  // Ensure the infobar is not present on the new tab.
+                  EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SessionRestoreInfobarInteractiveTest,
                          testing::Bool());

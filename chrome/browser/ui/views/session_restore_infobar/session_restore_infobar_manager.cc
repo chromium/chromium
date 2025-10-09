@@ -19,9 +19,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
@@ -43,6 +46,14 @@ void SessionRestoreInfoBarManager::ShowInfoBar(
   profile_->AddObserver(this);
   message_type_ = message_type;
 
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(profile_->GetPrefs());
+  pref_change_registrar_->Add(
+      prefs::kRestoreOnStartup,
+      base::BindRepeating(
+          &SessionRestoreInfoBarManager::OnSessionRestorePreferenceChanged,
+          base::Unretained(this)));
+
   InitTabStripTracker();
 }
 
@@ -52,6 +63,7 @@ void SessionRestoreInfoBarManager::CloseAllInfoBars() {
   }
 
   browser_tab_strip_tracker_.reset();
+  pref_change_registrar_.reset();
 
   // Repeatedly remove the first infobar. OnInfoBarRemoved will be called,
   // which erases the infobar from the map. This continues until the map is
@@ -155,6 +167,14 @@ void SessionRestoreInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void SessionRestoreInfoBarManager::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK_EQ(profile, profile_);
   CloseAllInfoBars();
+}
+
+void SessionRestoreInfoBarManager::OnSessionRestorePreferenceChanged() {
+  if (!profile_->GetPrefs()
+           ->FindPreference(prefs::kRestoreOnStartup)
+           ->IsDefaultValue()) {
+    CloseAllInfoBars();
+  }
 }
 
 }  // namespace session_restore_infobar

@@ -28,6 +28,8 @@ namespace infobars {
 class InfoBar;
 }
 
+class PrefChangeRegistrar;
+
 namespace session_restore_infobar {
 
 // This class is responsible for managing the session restore infobar. It
@@ -72,6 +74,9 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // Callback for session restore preference changes.
+  void OnSessionRestorePreferenceChanged();
+
   // Helper methods
   void InitTabStripTracker();
   void CreateInfoBarForWebContents(content::WebContents* web_contents);
@@ -87,6 +92,8 @@ class SessionRestoreInfoBarManager : public BrowserTabStripTrackerDelegate,
   bool user_initiated_info_bar_close_pending_ = false;
   SessionRestoreInfoBarDelegate::InfobarMessageType message_type_ =
       SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
 }  // namespace session_restore_infobar
