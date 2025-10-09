@@ -23,7 +23,7 @@ public class TestAwNavigationClient implements AwNavigationClient {
     private final List<AwPage> mDeletedPages = new ArrayList<AwPage>();
     private final List<AwPage> mPagesWithLoadEventFired = new ArrayList<AwPage>();
     private final List<AwPage> mPagesWithDOMContentLoadEventFired = new ArrayList<AwPage>();
-    private final List<AwPage> mPagesWithFirstContentfulPaint = new ArrayList<AwPage>();
+    private final List<Long> mFirstContentfulPaintLoadTimes = new ArrayList<Long>();
 
     public TestAwNavigationClient() {}
 
@@ -70,11 +70,11 @@ public class TestAwNavigationClient implements AwNavigationClient {
                 mPagesWithDOMContentLoadEventFired.size() - 1);
     }
 
-    @Nullable AwPage getLastPageWithFirstContentfulPaint() {
-        if (mPagesWithFirstContentfulPaint.isEmpty()) {
+    @Nullable Long getLastFirstContentfulPaintLoadTime() {
+        if (mFirstContentfulPaintLoadTimes.isEmpty()) {
             return null;
         }
-        return mPagesWithFirstContentfulPaint.get(mPagesWithFirstContentfulPaint.size() - 1);
+        return mFirstContentfulPaintLoadTimes.get(mFirstContentfulPaintLoadTimes.size() - 1);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class TestAwNavigationClient implements AwNavigationClient {
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page) {
-        mPagesWithFirstContentfulPaint.add(page);
+    public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
+        mFirstContentfulPaintLoadTimes.add(loadTimeUs);
     }
 }

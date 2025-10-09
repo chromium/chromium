@@ -105,7 +105,7 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationClient {
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page) {
+    public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;

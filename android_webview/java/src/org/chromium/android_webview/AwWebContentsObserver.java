@@ -169,7 +169,7 @@ public class AwWebContentsObserver extends WebContentsObserver
         if (awContents != null) {
             AwNavigationClient client = awContents.getNavigationClient();
             if (client != null) {
-                client.onFirstContentfulPaint(getAwPageFor(page));
+                client.onFirstContentfulPaint(getAwPageFor(page), loadTimeUs);
             }
         }
     }

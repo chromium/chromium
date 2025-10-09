@@ -25,5 +25,5 @@ public interface AwNavigationClient {
 
     void onPageDOMContentLoadedEventFired(AwPage page);
 
-    void onFirstContentfulPaint(AwPage page);
+    void onFirstContentfulPaint(AwPage page, long loadTimeUs);
 }
