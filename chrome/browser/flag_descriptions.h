@@ -186,6 +186,9 @@ extern const char kBackgroundResourceFetchDescription[];
 extern const char kByDateHistoryInSidePanelName[];
 extern const char kByDateHistoryInSidePanelDescription[];
 
+extern const char kBlockV8OptimizerOnUnfamiliarSitesSettingName[];
+extern const char kBlockV8OptimizerOnUnfamiliarSitesSettingDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];

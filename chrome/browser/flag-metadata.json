@@ -1292,6 +1292,11 @@
     "owners": [ "jingyliang@chromium.org", "chromeos-tango@google.com" ],
     "expiry_milestone": 145
   },
+  {
+    "name": "block-v8-optimizer-on-unfamiliar-sites",
+    "owners": [ "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
+    "expiry_milestone": 144
+  },
   {  "name": "blue-dot-on-tools-menu-button",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
      "expiry_milestone": 135

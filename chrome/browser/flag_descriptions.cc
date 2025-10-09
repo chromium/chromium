@@ -261,6 +261,12 @@ const char kByDateHistoryInSidePanelName[] = "By Date History in Side Panel";
 const char kByDateHistoryInSidePanelDescription[] =
     "If enabled, shows the 'By Date' History in Side Panel";
 
+const char kBlockV8OptimizerOnUnfamiliarSitesSettingName[] =
+    "Automatic JS Optimizer Control";
+const char kBlockV8OptimizerOnUnfamiliarSitesSettingDescription[] =
+    "Adds an option to the V8 optimizer content setting that disables the "
+    "JavaScript optimizer on sites that are unfamiliar to the user.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kBiometricAuthIdentityCheckName[] =
     "Enables android identity check for eligible features";

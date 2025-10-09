@@ -9221,6 +9221,8 @@ from previous Chrome versions.
   <int value="-1788662002" label="MainNodeAnnotations:enabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
+  <int value="-1785314304"
+      label="BlockV8OptimizerOnUnfamiliarSitesSetting:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1784452112" label="ReplaceSyncPromosWithSignInPromos:enabled"/>
@@ -13667,6 +13669,8 @@ from previous Chrome versions.
   <int value="-189740492"
       label="PolicyIndicationForManagedDefaultSearch:disabled"/>
   <int value="-189543840" label="PageActionsMigration:disabled"/>
+  <int value="-188923198"
+      label="BlockV8OptimizerOnUnfamiliarSitesSetting:disabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-187536302" label="TabstripComboButton:enabled"/>
   <int value="-187506528" label="(Obsolete) CrOSSuspendToDisk:enabled"/>

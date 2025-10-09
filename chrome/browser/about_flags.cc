@@ -13287,6 +13287,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidContextMenuDuplicateTabsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuDuplicateTabs)},
 #endif
+
+    {"block-v8-optimizer-on-unfamiliar-sites",
+     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesSettingName,
+     flag_descriptions::kBlockV8OptimizerOnUnfamiliarSitesSettingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(content_settings::features::
+                            kBlockV8OptimizerOnUnfamiliarSitesSetting)},
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
