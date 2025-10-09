@@ -424,7 +424,7 @@ namespace autofillPrivate {
     // The entity instance sublabel.
     DOMString entityInstanceSubLabel;
     // Whether the entity is stored on Google Wallet servers.
-    boolean stored_in_wallet;
+    boolean storedInWallet;
   };
 
   // A Pay Over Time Issuer entry which can be displayed in the autofill
