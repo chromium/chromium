@@ -47,10 +47,6 @@ mojom::blink::PreferredColorScheme ImageElementBase::PreferredColorScheme()
       style);
 }
 
-bool ImageElementBase::IsSVGSource() const {
-  return CachedImage() && IsA<SVGImage>(CachedImage()->GetImage());
-}
-
 bool ImageElementBase::IsImageElement() const {
   return CachedImage() && !IsA<SVGImage>(CachedImage()->GetImage());
 }
