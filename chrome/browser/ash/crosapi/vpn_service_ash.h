@@ -79,9 +79,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
                            CreateConfigurationCallback) override;
   void DestroyConfiguration(const std::string& configuration_name,
                             DestroyConfigurationCallback) override;
-  void NotifyConnectionStateChanged(
-      bool connection_success,
-      NotifyConnectionStateChangedCallback) override;
   void BindPepperVpnProxyObserver(
       const std::string& configuration_name,
       mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>

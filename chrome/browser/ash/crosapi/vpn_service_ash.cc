@@ -258,24 +258,6 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
               weak_factory_.GetWeakPtr(), std::move(failure)));
 }
 
-void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
-    bool connection_success,
-    NotifyConnectionStateChangedCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-      active_configuration_->object_path(),
-      connection_success
-          ? base::to_underlying(api_vpn::VpnConnectionState::kConnected)
-          : base::to_underlying(api_vpn::VpnConnectionState::kFailure),
-      std::move(success), std::move(failure));
-}
-
 void VpnServiceForExtensionAsh::BindPepperVpnProxyObserver(
     const std::string& configuration_name,
     mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>
@@ -506,8 +488,13 @@ void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
   if (!service) {
     return;
   }
-  service->NotifyConnectionStateChanged(
-      /*connection_success=*/false, base::DoNothing());
+  if (std::optional<std::string> object_path =
+          service->GetActiveConfigurationObjectPath()) {
+    ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
+        *object_path,
+        base::to_underlying(api_vpn::VpnConnectionState::kFailure),
+        base::DoNothing(), base::DoNothing());
+  }
 
   if (destroy_configurations) {
     service->DestroyAllConfigurations();

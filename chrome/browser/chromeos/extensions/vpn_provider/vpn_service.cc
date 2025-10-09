@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -259,10 +260,20 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
                                               bool connection_success,
                                               SuccessCallback success,
                                               FailureCallback failure) {
-  GetVpnServiceForExtension(extension_id)
-      ->NotifyConnectionStateChanged(
-          connection_success,
-          AdaptCallback(std::move(success), std::move(failure)));
+  if (!OwnsActiveConfiguration(extension_id)) {
+    RunFailureCallback(std::move(failure), /*error_name=*/{},
+                       "Unauthorized access.");
+    return;
+  }
+
+  ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
+      GetActiveConfigurationObjectPath(extension_id).value(),
+      connection_success
+          ? base::to_underlying(
+                extensions::api::vpn_provider::VpnConnectionState::kConnected)
+          : base::to_underlying(
+                extensions::api::vpn_provider::VpnConnectionState::kFailure),
+      std::move(success), std::move(failure));
 }
 
 void VpnService::Shutdown() {

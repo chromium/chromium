@@ -74,11 +74,7 @@ interface VpnServiceForExtension {
 
   // SendPacket@3 was removed.
 
-  // Notifies new connection state to the active VPN configuration after
-  // verifying that it belongs to the extension.
-  // See chrome.vpnProvider.notifyConnectionStateChanged(...)
-  NotifyConnectionStateChanged@4(bool connection_success)
-      => (VpnErrorResponse? error);
+  // NotifyConnectionStateChanged@4 was removed.
 
   // Binds |pepper_vpn_proxy_observer| to the active configuration if it belongs
   // to the extension and has name equal to
