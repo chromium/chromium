@@ -213,8 +213,7 @@
         </template>
         <template is="dom-if"
             if="[[hasOptionsPageInSettings_(item.id)]]">
-          <div class="internal-wrapper"
-              hidden="[[!item.hasOptionsPage]]">
+          <div class="internal-wrapper">
             <cr-icon-button class="subpage-arrow"
                 aria-label$="[[getOpenOptionsPageLabel_(
                 item.displayName)]]"
