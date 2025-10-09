@@ -556,6 +556,11 @@ bool LensOverlayController::IsOverlayActive() const {
   return IsOverlayShowing() || state_ == State::kHidden;
 }
 
+bool LensOverlayController::HasRegionSelection() const {
+  return initialization_data_ &&
+         !initialization_data_->selected_region_.is_null();
+}
+
 bool LensOverlayController::IsOverlayInitializing() {
   return state_ == State::kStartingWebUI || state_ == State::kScreenshot ||
          state_ == State::kClosingOpenedSidePanel;
@@ -848,6 +853,10 @@ LensOverlayController::GetPageClassificationForTesting() {
 
 const std::string& LensOverlayController::GetThumbnailForTesting() {
   return GetLensSearchboxController()->GetThumbnail();
+}
+
+void LensOverlayController::ClearRegionSelectionForTesting() {
+  ClearRegionSelection();
 }
 
 void LensOverlayController::OnTextModifiedForTesting() {

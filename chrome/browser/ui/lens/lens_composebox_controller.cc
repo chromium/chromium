@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_composebox_handler.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
@@ -189,16 +190,21 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
       lens_search_controller_->lens_overlay_query_controller();
   LensSearchContextualizationController* contextualization_controller =
       lens_search_controller_->lens_search_contextualization_controller();
+  LensOverlayController* overlay_controller =
+      lens_search_controller_->lens_overlay_controller();
   lens_image_query_data->set_search_session_id(
       query_controller->search_session_id());
 
   const auto& primary_content_type =
       contextualization_controller->primary_content_type();
+  const auto media_type =
+      overlay_controller->HasRegionSelection()
+          ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+          : MimeTypeToMediaType(primary_content_type,
+                                /*has_viewport_screenshot=*/true);
   lens_image_query_data->mutable_request_id()->CopyFrom(
-      *query_controller->GetNextRequestId(
-          lens::RequestIdUpdateMode::kSearchUrl,
-          MimeTypeToMediaType(primary_content_type,
-                              /*has_viewport_screenshot=*/true)));
+      *query_controller->GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
+                                          media_type));
   lens_image_query_data->set_visual_input_type(
       LensMimeTypeToVisualInputType(primary_content_type));
   return client_to_aim_message;

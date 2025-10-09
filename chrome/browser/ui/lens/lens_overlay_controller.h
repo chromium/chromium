@@ -271,6 +271,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns true if the overlay is currently in the process of closing.
   bool IsOverlayClosing();
 
+  // Returns true if the overlay has a region selection.
+  bool HasRegionSelection() const;
+
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
@@ -373,6 +376,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Returns the current thumbnail URI for testing.
   const std::string& GetThumbnailForTesting();
+
+  // Clears the region selection for testing.
+  void ClearRegionSelectionForTesting();
 
   // Handles the event where text was modified in the searchbox for testing.
   void OnTextModifiedForTesting();
