@@ -637,10 +637,24 @@ class GpuIntegrationTest(
       cls.SetBrowserOptions(cls.GetOriginalFinderOptions())
       cls.StartBrowser()
     else:
+      is_cros = cls.browser.platform.GetOSName() == 'chromeos'
+      if is_cros:
+        logging.info('crbug.com/449866954: Stopping browser')
       cls.StopBrowser()
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Browser stopped, restarting TS Proxy')
       cls.platform.RestartTsProxyServerOnRemotePlatforms()
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Proxy restarted, setting browser options')
       cls.SetBrowserOptions(cls._finder_options)
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Browser options set, starting browser')
       cls.StartBrowser()
+      if is_cros:
+        logging.info('crbug.com/449866954: Browser started')
 
   @classmethod
   def _ClearFeatureValues(cls) -> None:
