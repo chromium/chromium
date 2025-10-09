@@ -1870,6 +1870,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
 
   // Enter overview, head over to the desks templates grid and launch the
   // template.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
@@ -1878,10 +1879,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
 
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
+  const BrowserWindowInterface* new_browser = browser_created_observer.Wait();
 
   EXPECT_EQ(4u, BrowserList::GetInstance()->size());
   aura::Window* new_browser_window =
-      BrowserList::GetInstance()->get(3)->window()->GetNativeWindow();
+      new_browser->GetWindow()->GetNativeWindow();
 
   // Tests that the stacking is correct while in overview. The parent has other
   // children for overview mode windows, but the first three app windows should

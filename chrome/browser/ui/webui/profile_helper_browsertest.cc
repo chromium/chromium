@@ -200,10 +200,11 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
-  content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+  BrowserWindowInterface* const additional_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(additional_profile, additional_browser->GetProfile());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 
