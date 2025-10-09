@@ -454,9 +454,9 @@ export class SettingsClearBrowsingDataDialogElement extends
     const page = this.$.pages.selectedItem as HTMLElement;
     assert(page);
     switch (page.id) {
-      case 'basic-tab':
+      case 'basicTab':
         return true;
-      case 'advanced-tab':
+      case 'advancedTab':
         return false;
       default:
         assertNotReached();
