@@ -5866,18 +5866,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestNetErrorCode" enum="NetErrorCodes"
-    expires_after="2025-11-17">
-  <owner>peter@chromium.org</owner>
+    expires_after="2026-11-17">
   <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
   <summary>
     Net error code from a GetToken request. Recorded when URL loading fails.
   </summary>
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2025-11-17">
-  <owner>peter@chromium.org</owner>
+    enum="GCMRegistrationRequestStatus" expires_after="2026-11-17">
   <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of GetToken request. Warning: this histogram was
     expired from 2023-08-06 to 2023-09-22, and from 2024-02-20 to 2024-05-28;
@@ -5886,9 +5886,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus.SyncInvalidations"
-    enum="GCMRegistrationRequestStatus" expires_after="2026-03-22">
-  <owner>peter@chromium.org</owner>
+    enum="GCMRegistrationRequestStatus" expires_after="2026-11-17">
   <owner>rushans@google.com</owner>
+  <owner>peter@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Status code of the outcome of GetToken request for Sync invalidations
