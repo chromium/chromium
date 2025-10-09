@@ -1983,10 +1983,10 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticWithOpener) {
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
     // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
-        WebStateList::InsertionParams::Automatic().WithOpener(opener));
+        WebStateList::InsertionParams::Automatic().WithOpener(
+            WebStateOpener(opener_web_state)));
 
     // Check everything is as expected after insertion.
     EXPECT_TRUE(RangesOfTabGroupsAreValid())
@@ -2045,8 +2045,6 @@ TEST_F(WebStateListTest, InsertWebState_Groups_AutomaticInheritOpener) {
     builder.SetWebStateIdentifier(web_state_to_insert_ptr, 'X');
     ASSERT_TRUE(RangesOfTabGroupsAreValid());
 
-    // Inserting the WebState with opener at `opener_index`.
-    WebStateOpener opener(opener_web_state);
     web_state_list_.InsertWebState(
         std::move(web_state_to_insert),
         WebStateList::InsertionParams::Automatic().InheritOpener());

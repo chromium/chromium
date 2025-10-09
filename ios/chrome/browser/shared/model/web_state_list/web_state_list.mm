@@ -204,6 +204,11 @@ WebStateList::~WebStateList() {
     observer.WebStateListDestroyed(this);
   }
 
+  // Clear all openers to avoid dangling references.
+  for (const auto& wrapper : web_state_wrappers_) {
+    wrapper->SetOpener(WebStateOpener());
+  }
+
   CHECK(!locked_);
   CHECK(!batch_operation_in_progress_);
 }
