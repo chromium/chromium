@@ -220,7 +220,7 @@ void BubbleManagerImpl::AddToPendingQueue(
   if (!controller->CanBeReshown()) {
     // Bubbles that cannot be reshown should not be added to the queue. This is
     // the case for bubbles that are time-bound or clear their state when
-    // closed.
+    // closed, mostly the confirmation bubbles.
     return;
   }
 
