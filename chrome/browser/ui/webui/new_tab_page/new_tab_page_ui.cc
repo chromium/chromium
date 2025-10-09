@@ -588,14 +588,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxCloseByClickOutside",
                      composebox_config.close_by_click_outside());
   source->AddBoolean("composeboxSmartComposeEnabled", true);
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
   source->AddBoolean("composeboxShowDeepSearchButton",
-                     ntp_composebox::kShowToolsAndModels.Get());
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsDeepSearchEligible() &&
+                         ntp_composebox::kShowToolsAndModels.Get());
   source->AddBoolean("composeboxShowCreateImageButton",
                      ntp_composebox::kShowToolsAndModels.Get() &&
                          ntp_composebox::kShowCreateImageTool.Get());
 
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
   bool show_pdf_upload = aim_eligibility_service &&
                          aim_eligibility_service->IsPdfUploadEligible() &&
                          composebox_config.is_pdf_upload_enabled();

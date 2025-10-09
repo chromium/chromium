@@ -284,6 +284,18 @@ bool AimEligibilityService::IsPdfUploadEligible() const {
   return true;
 }
 
+bool AimEligibilityService::IsDeepSearchEligible() const {
+  if (!IsAimEligible()) {
+    return false;
+  }
+
+  if (IsServerEligibilityEnabled()) {
+    return most_recent_response_.is_deep_search_eligible();
+  }
+
+  return true;
+}
+
 // Private methods -------------------------------------------------------------
 
 void AimEligibilityService::Initialize() {
@@ -505,6 +517,11 @@ void AimEligibilityService::LogEligibilityResponse(
                            most_recent_response_.session_index());
   base::UmaHistogramSparse(base::StrCat({sliced_prefix, ".session_index"}),
                            most_recent_response_.session_index());
+  base::UmaHistogramBoolean(base::StrCat({prefix, ".is_deep_search_eligible"}),
+                            most_recent_response_.is_deep_search_eligible());
+  base::UmaHistogramBoolean(
+      base::StrCat({sliced_prefix, ".is_deep_search_eligible"}),
+      most_recent_response_.is_deep_search_eligible());
 }
 
 void AimEligibilityService::LogEligibilityResponseChange() const {
@@ -525,4 +542,7 @@ void AimEligibilityService::LogEligibilityResponseChange() const {
   base::UmaHistogramBoolean(
       base::StrCat({prefix, ".session_index"}),
       most_recent_response_.session_index() != prefs_response.session_index());
+  base::UmaHistogramBoolean(base::StrCat({prefix, ".is_deep_search_eligible"}),
+                            most_recent_response_.is_deep_search_eligible() !=
+                                prefs_response.is_deep_search_eligible());
 }
