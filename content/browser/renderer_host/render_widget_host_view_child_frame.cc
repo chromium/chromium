@@ -243,7 +243,7 @@ void RenderWidgetHostViewChildFrame::EnsureSurfaceSynchronizedForWebTest() {
 uint32_t RenderWidgetHostViewChildFrame::GetCaptureSequenceNumber() const {
   if (!frame_connector_)
     return 0u;
-  return frame_connector_->capture_sequence_number();
+  return frame_connector_->GetCaptureSequenceNumber();
 }
 
 void RenderWidgetHostViewChildFrame::ShowWithVisibility(
@@ -285,7 +285,7 @@ void RenderWidgetHostViewChildFrame::WasUnOccluded() {
 gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
   gfx::Rect screen_space_rect;
   if (frame_connector_) {
-    screen_space_rect = frame_connector_->rect_in_parent_view_in_dip();
+    screen_space_rect = frame_connector_->GetRectInParentViewInDip();
 
     RenderWidgetHostView* parent_view =
         frame_connector_->GetParentRenderWidgetHostView();
@@ -301,7 +301,7 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
     // on. We want the location of the frame in screen coordinates to place
     // popups but we want the size in local coordinates to produce the right-
     // sized CompositorFrames. https://crbug.com/928825.
-    screen_space_rect.set_size(frame_connector_->local_frame_size_in_dip());
+    screen_space_rect.set_size(frame_connector_->GetLocalFrameSizeInDip());
   }
   return screen_space_rect;
 }
@@ -407,7 +407,7 @@ void RenderWidgetHostViewChildFrame::
 
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   if (frame_connector_)
-    return frame_connector_->local_frame_size_in_pixels();
+    return frame_connector_->GetLocalFrameSizeInPixels();
   return gfx::Size();
 }
 
@@ -456,13 +456,13 @@ void RenderWidgetHostViewChildFrame::UpdateCursor(const ui::Cursor& cursor) {
 
 void RenderWidgetHostViewChildFrame::UpdateScreenInfo() {
   if (frame_connector_)
-    screen_infos_ = frame_connector_->screen_infos();
+    screen_infos_ = frame_connector_->GetScreenInfos();
 }
 
 void RenderWidgetHostViewChildFrame::SendInitialPropertiesIfNeeded() {
   if (initial_properties_sent_ || !frame_connector_)
     return;
-  UpdateViewportIntersection(frame_connector_->intersection_state(),
+  UpdateViewportIntersection(frame_connector_->GetIntersectionState(),
                              std::nullopt);
   SetIsInert();
   UpdateInheritedEffectiveTouchAction();
@@ -721,10 +721,13 @@ const viz::FrameSinkId& RenderWidgetHostViewChildFrame::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
-    const {
+const viz::LocalSurfaceId&
+
+RenderWidgetHostViewChildFrame::GetLocalSurfaceId() const {
   if (frame_connector_)
-    return frame_connector_->local_surface_id();
+
+    return frame_connector_->GetLocalSurfaceId();
+
   return viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
 }
 
@@ -786,11 +789,11 @@ viz::SurfaceId RenderWidgetHostViewChildFrame::GetCurrentSurfaceId() const {
 }
 
 bool RenderWidgetHostViewChildFrame::HasSize() const {
-  return frame_connector_ && frame_connector_->has_size();
+  return frame_connector_ && frame_connector_->HasSize();
 }
 
 double RenderWidgetHostViewChildFrame::GetCSSZoomFactor() const {
-  return frame_connector_ ? frame_connector_->css_zoom_factor() : 1.0;
+  return frame_connector_ ? frame_connector_->GetCssZoomFactor() : 1.0;
 }
 
 gfx::PointF RenderWidgetHostViewChildFrame::TransformPointToRootCoordSpaceF(

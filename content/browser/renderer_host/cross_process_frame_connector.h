@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
 #include "components/input/child_frame_input_helper.h"
-#include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/surfaces/local_surface_id.h"
-#include "components/viz/common/surfaces/surface_id.h"
+#include "content/browser/renderer_host/cross_process_frame_connector_base.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
@@ -88,7 +86,7 @@ class RenderWidgetHostViewChildFrame;
 // process, SetView() is called to update to the new view.
 //
 class CONTENT_EXPORT CrossProcessFrameConnector
-    : public input::ChildFrameInputHelper::Delegate {
+    : public CrossProcessFrameConnectorBase {
  public:
   // |frame_proxy_in_parent_renderer| corresponds to A2 in the example above.
   explicit CrossProcessFrameConnector(
@@ -104,171 +102,154 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // above.
   RenderWidgetHostViewChildFrame* get_view_for_testing() { return view_; }
 
-  void SetView(RenderWidgetHostViewChildFrame* view, bool allow_paint_holding);
+  void SetView(RenderWidgetHostViewChildFrame* view,
+               bool allow_paint_holding) override;
 
   // Returns the parent RenderWidgetHostView or nullptr if it doesn't have one.
-  virtual RenderWidgetHostViewBase* GetParentRenderWidgetHostView();
+  RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
 
   // Returns the view for the top-level frame under the same WebContents.
-  virtual RenderWidgetHostViewBase* GetRootRenderWidgetHostView();
+  RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override;
 
   // Notify the frame connector that the renderer process has terminated.
-  void RenderProcessGone();
+  void RenderProcessGone() override;
 
   // Provide the SurfaceInfo to the embedder, which becomes a reference to the
   // current view's Surface that is included in higher-level compositor
   // frames. This is virtual to be overridden in tests.
-  virtual void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {}
+  void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {}
 
   // Sends the given intrinsic sizing information from a sub-frame to
   // its corresponding remote frame in the parent frame's renderer.
-  void SendIntrinsicSizingInfoToParent(blink::mojom::IntrinsicSizingInfoPtr);
+  void SendIntrinsicSizingInfoToParent(
+      blink::mojom::IntrinsicSizingInfoPtr) override;
 
   // Record and apply new visual properties for the subframe. If 'propagate' is
   // true, the new properties will be sent to the subframe's renderer process.
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
-      bool propagate = true);
+      bool propagate = true) override;
 
   // ChildFrameInputHelper::Delegate implementation.
   input::RenderWidgetHostViewInput* GetParentViewInput() override;
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
-  double css_zoom_factor() const { return last_received_css_zoom_factor_; }
+  double GetCssZoomFactor() const override;
 
   // Return the size of the CompositorFrame to use in the child renderer.
-  const gfx::Size& local_frame_size_in_pixels() const {
-    return local_frame_size_in_pixels_;
-  }
+  const gfx::Size& GetLocalFrameSizeInPixels() const override;
 
   // Return the size of the CompositorFrame to use in the child renderer in DIP.
   // This is used to set the layout size of the child renderer.
-  const gfx::Size& local_frame_size_in_dip() const {
-    return local_frame_size_in_dip_;
-  }
+  const gfx::Size& GetLocalFrameSizeInDip() const override;
 
   // Return the rect in DIP that the RenderWidgetHostViewChildFrame's content
   // will render into.
-  const gfx::Rect& rect_in_parent_view_in_dip() const {
-    return rect_in_parent_view_in_dip_;
-  }
+  const gfx::Rect& GetRectInParentViewInDip() const override;
 
   // Return the latest capture sequence number for this subframe.
-  uint32_t capture_sequence_number() const { return capture_sequence_number_; }
+  uint32_t GetCaptureSequenceNumber() const override;
 
   // Request that the platform change the mouse cursor when the mouse is
   // positioned over this view's content.
-  void UpdateCursor(const ui::Cursor& cursor);
-
-  // These values are written to logs. Do not renumber or delete existing items;
-  // add new entries to the end of the list.
-  enum class RootViewFocusState {
-    // RootView is NULL.
-    kNullView = 0,
-    // Root View is already focused.
-    kFocused = 1,
-    // Root View is not focused at TouchStart. Calls
-    // RenderWidgetHostViewChildFrame::Focus() to focus it.
-    kNotFocused = 2,
-    kMaxValue = kNotFocused
-  };
+  void UpdateCursor(const ui::Cursor& cursor) override;
 
   // Determines whether the root RenderWidgetHostView (and thus the current
   // page) has focus. We need a tri-state enum as a return variable to
   // differentiate between the cases where root view is NULL and when it's
   // actually focused/unfocused. No behaviour change expected in focus handling.
-  RootViewFocusState HasFocus();
+  RootViewFocusState HasFocus() override;
 
   // Cause the root RenderWidgetHostView to become focused.
-  void FocusRootView();
+  void FocusRootView() override;
 
   // Locks the mouse pointer, if |request_unadjusted_movement_| is true, try
   // setting the unadjusted movement mode. Returns true if mouse pointer is
   // locked.
-  blink::mojom::PointerLockResult LockPointer(bool request_unadjusted_movement);
+  blink::mojom::PointerLockResult LockPointer(
+      bool request_unadjusted_movement) override;
 
   // Change the current pointer lock to match the unadjusted movement option
   // given.
   blink::mojom::PointerLockResult ChangePointerLock(
-      bool request_unadjusted_movement);
+      bool request_unadjusted_movement) override;
 
   // Unlocks the mouse pointer if it is locked.
-  void UnlockPointer();
+  void UnlockPointer() override;
 
   // Returns the state of the frame's intersection with the top-level viewport.
-  const blink::mojom::ViewportIntersectionState& intersection_state() const {
-    return intersection_state_;
-  }
+  const blink::mojom::ViewportIntersectionState& GetIntersectionState()
+      const override;
 
   // Returns the viz::LocalSurfaceId propagated from the parent to be
   // used by this child frame.
-  const viz::LocalSurfaceId& local_surface_id() const {
-    return local_surface_id_;
-  }
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
 
   // Returns the ScreenInfos propagated from the parent to be used by this
   // child frame.
-  const display::ScreenInfos& screen_infos() const { return screen_infos_; }
+  const display::ScreenInfos& GetScreenInfos() const override;
 
   // Informs the parent the child will enter auto-resize mode, automatically
   // resizing itself to the provided |min_size| and |max_size| constraints.
-  void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size);
+  void EnableAutoResize(const gfx::Size& min_size,
+                        const gfx::Size& max_size) override;
 
   // Turns off auto-resize mode.
-  void DisableAutoResize();
+  void DisableAutoResize() override;
 
   // Determines whether the current view's content is inert, either because
   // an HTMLDialogElement is being modally displayed in a higher-level frame,
   // or because the inert attribute has been specified.
-  bool IsInert() const;
+  bool IsInert() const override;
 
   // Returns the inherited effective touch action property that should be
   // applied to any nested child RWHVCFs inside the caller RWHVCF.
-  cc::TouchAction InheritedEffectiveTouchAction() const;
+  cc::TouchAction InheritedEffectiveTouchAction() const override;
 
   // Determines whether the RenderWidgetHostViewChildFrame is hidden due to
   // a higher-level embedder being hidden. This is distinct from the
   // RenderWidgetHostImpl being hidden, which is a property set when
   // RenderWidgetHostView::Hide() is called on the current view.
-  bool IsHidden() const;
+  bool IsHidden() const override;
 
   // IsThrottled() indicates that the frame is outside of it's parent frame's
   // visible viewport, and should be render throttled.
-  bool IsThrottled() const;
+  bool IsThrottled() const override;
   // IsSubtreeThrottled() indicates that IsThrottled() is true for one of this
   // frame's ancestors, which means this frame must also be throttled.
-  bool IsSubtreeThrottled() const;
+  bool IsSubtreeThrottled() const override;
   // IsDisplayLocked() indicates that a DOM ancestor of this frame's owning
   // <iframe> element in the parent frame is currently display locked; or that
   // IsDisplayLocked() is true for one of this frame's ancestors; which means
   // this frame should be render throttled.
-  bool IsDisplayLocked() const;
+  bool IsDisplayLocked() const override;
 
   // Called by RenderWidgetHostViewChildFrame when the child frame has updated
   // its visual properties and its viz::LocalSurfaceId has changed.
-  void DidUpdateVisualProperties(const cc::RenderFrameMetadata& metadata);
+  void DidUpdateVisualProperties(
+      const cc::RenderFrameMetadata& metadata) override;
 
-  bool has_size() const { return has_size_; }
+  bool HasSize() const override;
 
   // Called by RenderWidgetHostViewChildFrame to update the visibility of any
   // nested child RWHVCFs inside it.
-  void SetVisibilityForChildViews(bool visible) const;
+  void SetVisibilityForChildViews(bool visible) const override;
 
   // Called to resize the child renderer's CompositorFrame.
   // |local_frame_size| is in pixels if zoom-for-dsf is enabled, and in DIP
   // if not.
-  void SetLocalFrameSize(const gfx::Size& local_frame_size);
+  void SetLocalFrameSize(const gfx::Size& local_frame_size) override;
 
   // Called to resize the child renderer. |rect_in_parent_view| is in physical
   // pixels.
-  void SetRectInParentView(const gfx::Rect& rect_in_parent_view);
+  void SetRectInParentView(const gfx::Rect& rect_in_parent_view) override;
 
-  void SetIsInert(bool inert);
+  void SetIsInert(bool inert) override;
 
   // Handlers for messages received from the parent frame called
   // from RenderFrameProxyHost to be sent to |view_|.
-  void OnSetInheritedEffectiveTouchAction(cc::TouchAction);
-  void OnVisibilityChanged(blink::mojom::FrameVisibility visibility);
+  void OnSetInheritedEffectiveTouchAction(cc::TouchAction) override;
+  void OnVisibilityChanged(blink::mojom::FrameVisibility visibility) override;
 
   // Exposed for tests.
   RenderWidgetHostViewBase* GetRootRenderWidgetHostViewForTesting() {
@@ -277,10 +258,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector
 
   void UpdateRenderThrottlingStatus(bool is_throttled,
                                     bool subtree_throttled,
-                                    bool display_locked);
+                                    bool display_locked) override;
   void UpdateViewportIntersection(
       const blink::mojom::ViewportIntersectionState& intersection_state,
-      const std::optional<blink::FrameVisualProperties>& visual_properties);
+      const std::optional<blink::FrameVisualProperties>& visual_properties)
+      override;
 
   // These enums back crashed frame histograms - see MaybeLogCrash() and
   // MaybeLogShownCrash() below.  Please do not modify or remove existing enum
@@ -306,16 +288,16 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // Returns whether the child widget is actually visible to the user.  This is
   // different from the IsHidden override, and takes into account viewport
   // intersection as well as the visibility of the RenderFrameHostDelegate.
-  bool IsVisible();
+  bool IsVisible() override;
 
   // This function is called by the RenderFrameHostDelegate to signal that it
   // became visible. This is called after any navigations resulting from
   // visibility changes have been queued (e.g. if needs-reload was set).
-  void DelegateWasShown();
+  void DelegateWasShown() override;
 
   // Handlers for messages received from the parent frame.
   void OnSynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties) override;
 
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
 
@@ -325,7 +307,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   }
 
   // Returns the embedder's visibility.
-  Visibility EmbedderVisibility();
+  Visibility EmbedderVisibility() override;
 
  protected:
   friend class MockCrossProcessFrameConnector;

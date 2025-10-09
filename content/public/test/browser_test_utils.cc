@@ -4427,7 +4427,7 @@ void ProxyDSFObserver::OnCreation(RenderFrameProxyHost* rfph) {
   // CrossProcessFrameConnector. We're only interested in the ones that do.
   if (auto* cpfc = rfph->cross_process_frame_connector()) {
     proxy_host_created_dsf_.push_back(
-        cpfc->screen_infos().current().device_scale_factor);
+        cpfc->GetScreenInfos().current().device_scale_factor);
   }
   if (runner_) {
     runner_->Quit();

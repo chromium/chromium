@@ -244,6 +244,26 @@ CrossProcessFrameConnector::GetRootViewInput() {
   return GetRootRenderWidgetHostView();
 }
 
+double CrossProcessFrameConnector::GetCssZoomFactor() const {
+  return last_received_css_zoom_factor_;
+}
+
+const gfx::Size& CrossProcessFrameConnector::GetLocalFrameSizeInPixels() const {
+  return local_frame_size_in_pixels_;
+}
+
+const gfx::Size& CrossProcessFrameConnector::GetLocalFrameSizeInDip() const {
+  return local_frame_size_in_dip_;
+}
+
+const gfx::Rect& CrossProcessFrameConnector::GetRectInParentViewInDip() const {
+  return rect_in_parent_view_in_dip_;
+}
+
+uint32_t CrossProcessFrameConnector::GetCaptureSequenceNumber() const {
+  return capture_sequence_number_;
+}
+
 void CrossProcessFrameConnector::UpdateCursor(const ui::Cursor& cursor) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   // UpdateCursor messages are ignored if the root view does not support
@@ -290,6 +310,20 @@ void CrossProcessFrameConnector::UnlockPointer() {
     root_view->UnlockPointer();
 }
 
+const blink::mojom::ViewportIntersectionState&
+CrossProcessFrameConnector::GetIntersectionState() const {
+  return intersection_state_;
+}
+
+const viz::LocalSurfaceId& CrossProcessFrameConnector::GetLocalSurfaceId()
+    const {
+  return local_surface_id_;
+}
+
+const display::ScreenInfos& CrossProcessFrameConnector::GetScreenInfos() const {
+  return screen_infos_;
+}
+
 void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
   TRACE_EVENT_WITH_FLOW2(
@@ -304,7 +338,8 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
   // changed, then the viz::LocalSurfaceId must also change.
   if ((last_received_local_frame_size_ != visual_properties.local_frame_size ||
        screen_infos_.current() != visual_properties.screen_infos.current() ||
-       capture_sequence_number() != visual_properties.capture_sequence_number ||
+       GetCaptureSequenceNumber() !=
+           visual_properties.capture_sequence_number ||
        last_received_zoom_level_ != visual_properties.zoom_level ||
        last_received_css_zoom_factor_ != visual_properties.css_zoom_factor) &&
       local_surface_id_ == visual_properties.local_surface_id) {
@@ -473,6 +508,10 @@ void CrossProcessFrameConnector::DidUpdateVisualProperties(
   frame_proxy_in_parent_renderer_->DidUpdateVisualProperties(metadata);
 }
 
+bool CrossProcessFrameConnector::HasSize() const {
+  return has_size_;
+}
+
 void CrossProcessFrameConnector::SetVisibilityForChildViews(
     bool visible) const {
   current_child_frame_host()->SetVisibilityForChildViews(visible);
@@ -619,7 +658,7 @@ void CrossProcessFrameConnector::DelegateWasShown() {
 
 bool CrossProcessFrameConnector::IsVisible() {
   if (visibility_ == blink::mojom::FrameVisibility::kNotRendered ||
-      intersection_state().viewport_intersection.IsEmpty()) {
+      GetIntersectionState().viewport_intersection.IsEmpty()) {
     return false;
   }
 
