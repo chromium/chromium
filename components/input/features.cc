@@ -47,10 +47,6 @@ BASE_FEATURE_PARAM(bool,
                    "generate_synthetic_scroll",
                    true);
 
-// Flag guard for fix for crbug.com/404464598.
-BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Flag guard for renderer hang watcher \ hang monitor.
 BASE_FEATURE(kRendererHangWatcher, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(

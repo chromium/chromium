@@ -7,7 +7,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/input/features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
@@ -250,10 +249,7 @@ void FlingController::ProgressFling(
   if (std::abs(delta_to_scroll.x()) > kMinInertialScrollDelta ||
       std::abs(delta_to_scroll.y()) > kMinInertialScrollDelta) {
     base::TimeTicks event_generation_time =
-        base::FeatureList::IsEnabled(
-            features::kUseFirstCoalescedFrameAsFlingGenerationTimestamp)
-            ? first_coalesced_frame_begin_time.value_or(current_time)
-            : current_time;
+        first_coalesced_frame_begin_time.value_or(current_time);
     GenerateAndSendFlingProgressEvents(event_generation_time, delta_to_scroll);
     last_progress_time_ = current_time;
   }

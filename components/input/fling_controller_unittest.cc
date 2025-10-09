@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/input/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -759,28 +758,8 @@ TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
   EXPECT_FALSE(FlingInProgress());
 }
 
-TEST_P(FlingControllerTest, SetGenerationTimestampToCurrentTimeWithoutFix) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kUseFirstCoalescedFrameAsFlingGenerationTimestamp, false);
-
-  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
-                     gfx::Vector2dF(1000, 0));
-
-  AdvanceTime();
-  std::optional<base::TimeTicks> first_coalesced_frame_begin_time =
-      NowTicks() - base::Seconds(3);
-  ProgressFling(NowTicks(), first_coalesced_frame_begin_time);
-
-  EXPECT_EQ(NowTicks(), last_sent_gesture_.TimeStamp());
-}
-
 TEST_P(FlingControllerTest,
-       SetGenerationTimestampToFirstCoalescedFrameBeginTimeWithFix) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kUseFirstCoalescedFrameAsFlingGenerationTimestamp, true);
-
+       SetGenerationTimestampToFirstCoalescedFrameBeginTime) {
   SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
                      gfx::Vector2dF(1000, 0));
 
