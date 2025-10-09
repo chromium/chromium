@@ -13824,6 +13824,7 @@ from previous Chrome versions.
   <int value="-124291249" label="HistoryOptInEducationalTip:disabled"/>
   <int value="-124235074" label="IOSPromoPaymentBubble:enabled"/>
   <int value="-123599761" label="IncludeIpcOverheadInNavigationStart:disabled"/>
+  <int value="-122886597" label="TopControlsRefactorV2:disabled"/>
   <int value="-122557051" label="SafetyHubUnifiedPasswordsModule:disabled"/>
   <int value="-122492389" label="enable-browser-task-scheduler"/>
   <int value="-122458532" label="FilesExtractArchive:enabled"/>
@@ -13901,6 +13902,7 @@ from previous Chrome versions.
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-94191861" label="NtpOneGoogleBarAsyncBarParts:enabled"/>
   <int value="-94055083" label="RemoveUPMUnenrollment:enabled"/>
+  <int value="-93838841" label="TopControlsRefactorV2:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
   <int value="-92507010" label="AISummarizationAPI:disabled"/>
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>

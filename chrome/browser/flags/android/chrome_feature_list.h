@@ -271,6 +271,7 @@ BASE_DECLARE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kTopControlsRefactor);
+BASE_DECLARE_FEATURE(kTopControlsRefactorV2);
 BASE_DECLARE_FEATURE(kToolbarPhoneAnimationRefactor);
 BASE_DECLARE_FEATURE(kToolbarSnapshotRefactor);
 BASE_DECLARE_FEATURE(kToolbarStaleCaptureBugFix);

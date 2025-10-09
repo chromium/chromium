@@ -9884,6 +9884,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "top-controls-refactor-v2",
+    "owners": [ "mschillaci@google.com", "wenyufu@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 147
+  },
+  {
     "name": "touch-selection-strategy",
     "owners": [ "dovizu@google.com" ],
     "expiry_milestone": 99

@@ -2360,6 +2360,9 @@ extern const char kTLSTrustAnchorIDsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kTopControlsRefactorName[];
 extern const char kTopControlsRefactorDescription[];
+
+extern const char kTopControlsRefactorV2Name[];
+extern const char kTopControlsRefactorV2Description[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

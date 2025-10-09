@@ -439,6 +439,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarStaleCaptureBugFix,
     &kToolbarTabletResizeRefactor,
     &kTopControlsRefactor,
+    &kTopControlsRefactorV2,
     &kTouchToSearchCallout,
     &kTrustedWebActivityContactsDelegation,
     &kStartSurfaceReturnTime,
@@ -1099,6 +1100,8 @@ BASE_FEATURE(kToolbarStaleCaptureBugFix, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarTabletResizeRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTopControlsRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTopControlsRefactorV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTouchToSearchCallout, base::FEATURE_DISABLED_BY_DEFAULT);
 

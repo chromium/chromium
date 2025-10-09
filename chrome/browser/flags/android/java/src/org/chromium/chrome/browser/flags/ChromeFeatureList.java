@@ -678,6 +678,7 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_STALE_CAPTURE_BUG_FIX = "ToolbarStaleCaptureBugFix";
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
     public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
+    public static final String TOP_CONTROLS_REFACTOR_V2 = "TopControlsRefactorV2";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
@@ -1078,6 +1079,8 @@ public abstract class ChromeFeatureList {
                     TOP_CONTROLS_REFACTOR,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sTopControlsRefactorV2 =
+            newCachedFlag(TOP_CONTROLS_REFACTOR_V2, /* defaultValue= */ false);
     public static final CachedFlag sTouchToSearchCallout =
             newCachedFlag(
                     TOUCH_TO_SEARCH_CALLOUT,
@@ -1243,6 +1246,7 @@ public abstract class ChromeFeatureList {
                     sToolbarSnapshotRefactor,
                     sToolbarTabletResizeRefactor,
                     sTopControlsRefactor,
+                    sTopControlsRefactorV2,
                     sTouchToSearchCallout,
                     sUseActivityManagerForTabActivation,
                     sUseChimeAndroidSdk,

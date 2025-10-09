@@ -12508,6 +12508,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"top-controls-refactor", flag_descriptions::kTopControlsRefactorName,
      flag_descriptions::kTopControlsRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTopControlsRefactor)},
+    {"top-controls-refactor-v2", flag_descriptions::kTopControlsRefactorV2Name,
+     flag_descriptions::kTopControlsRefactorV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTopControlsRefactorV2)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

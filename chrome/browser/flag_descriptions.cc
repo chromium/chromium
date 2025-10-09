@@ -4089,6 +4089,11 @@ const char kTopControlsRefactorDescription[] =
     "Enables the alternative code path in Android for the top controls layout "
     "control.";
 
+const char kTopControlsRefactorV2Name[] = "Top Controls Refactor V2";
+const char kTopControlsRefactorV2Description[] =
+    "Enables the alternative code path in Android for the top controls layout "
+    "control, v2, including y-offsets.";
+
 const char kToolbarPhoneAnimationRefactorName[] =
     "Toolbar Phone Animation Refactor";
 const char kToolbarPhoneAnimationRefactorDescription[] =
