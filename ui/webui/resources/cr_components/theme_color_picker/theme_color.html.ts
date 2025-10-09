@@ -18,5 +18,6 @@ export function getHtml(this: ThemeColorElement) {
     <rect id="base" x="25" y="25" width="25" height="25">
     </rect>
   </svg>
+  <slot></slot>
 </cr-theme-color-check-mark-wrapper>`;
 }

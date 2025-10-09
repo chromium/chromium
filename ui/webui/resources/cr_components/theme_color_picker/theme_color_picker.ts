@@ -29,7 +29,6 @@ const ThemeColorPickerElementBase = I18nMixinLit(CrLitElement);
 
 export interface ThemeColorPickerElement {
   $: {
-    customColorContainer: HTMLElement,
     customColor: ThemeColorElement,
     colorPickerIcon: HTMLElement,
     hueSlider: ThemeHueSliderDialogElement,
@@ -237,7 +236,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
       return;
     }
 
-    this.$.hueSlider.showAt(this.$.customColorContainer);
+    this.$.hueSlider.showAt(this.$.colorPickerIcon);
   }
 
   protected onSelectedHueChanged_() {

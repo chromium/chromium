@@ -55,22 +55,20 @@ export function getHtml(this: ThemeColorPickerElement) {
         @click="${this.onChromeColorClick_}">
     </cr-theme-color>
   `)}
-  <div id="customColorContainer"
-      title="${this.i18n('colorPickerLabel')}"
-      aria-label="${this.i18n('colorPickerLabel')}"
-      role="radio"
-      aria-checked="${this.isCustomColorSelected_}"
-      tabindex="${this.tabIndex_(this.isCustomColorSelected_)}"
-      @click="${this.onCustomColorClick_}">
     <cr-theme-color
         id="customColor"
         .backgroundColor="${this.customColor_.background}"
         .foregroundColor="${this.customColor_.foreground}"
         background-color-hidden
+        title="${this.i18n('colorPickerLabel')}"
+        aria-label="${this.i18n('colorPickerLabel')}"
+        role="radio"
+        tabindex="${this.tabIndex_(this.isCustomColorSelected_)}"
+        @click="${this.onCustomColorClick_}"
+        aria-checked="${this.isCustomColorSelected_}"
         ?checked="${this.isCustomColorSelected_}">
+        <div id="colorPickerIcon"></div>
     </cr-theme-color>
-    <div id="colorPickerIcon"></div>
-  </div>
 </cr-grid>
 
 <cr-theme-hue-slider-dialog id="hueSlider"
