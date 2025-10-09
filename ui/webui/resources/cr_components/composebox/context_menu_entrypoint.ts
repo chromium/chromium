@@ -50,7 +50,7 @@ export class ContextMenuEntrypointElement extends
     return {
       inputsDisabled: {type: Boolean},
       showContextMenuDescription: {type: Boolean},
-      inCreateImageMode_: {
+      inCreateImageMode: {
         reflect: true,
         type: Boolean,
       },
@@ -70,7 +70,7 @@ export class ContextMenuEntrypointElement extends
 
   accessor inputsDisabled: boolean = false;
   accessor showContextMenuDescription: boolean = false;
-  protected accessor inCreateImageMode_: boolean = false;
+  accessor inCreateImageMode: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =
@@ -157,8 +157,7 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onCreateImageClick_() {
-    this.fire(
-        'create-image-click', {inCreateImageMode: this.inCreateImageMode_});
+    this.fire('create-image-click');
     this.$.menu.close();
   }
 }
