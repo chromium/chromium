@@ -148,12 +148,10 @@ MediaQuerySet* MediaQueryParser::ParseMediaCondition(
 
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    CSSParserMode mode,
-                                   ExecutionContext* execution_context,
-                                   SyntaxLevel syntax_level)
+                                   ExecutionContext* execution_context)
     : parser_type_(parser_type),
       mode_(mode),
       execution_context_(execution_context),
-      syntax_level_(syntax_level),
       fake_context_(*MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode,
           SecureContextMode::kInsecureContext,

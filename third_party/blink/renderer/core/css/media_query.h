@@ -72,9 +72,6 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
   RestrictorType restrictor_;
   // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.
   //
-  // If the runtime flag CSSMediaQueries4 is *not* enabled, this will cause the
-  // MediaQuery to appear as a "not all".
-  //
   // Knowing whether or not something is unknown is useful for use-counting and
   // testing purposes.
   bool has_unknown_;

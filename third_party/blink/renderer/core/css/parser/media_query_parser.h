@@ -96,17 +96,7 @@ class CORE_EXPORT MediaQueryParser {
     kMediaConditionParser,
   };
 
-  enum class SyntaxLevel {
-    // Determined by CSSMediaQueries4 flag.
-    kAuto,
-    // Use mediaqueries-4 syntax regardless of flags.
-    kLevel4,
-  };
-
-  MediaQueryParser(ParserType,
-                   CSSParserMode,
-                   ExecutionContext*,
-                   SyntaxLevel = SyntaxLevel::kAuto);
+  MediaQueryParser(ParserType, CSSParserMode, ExecutionContext*);
 
   // [ not | only ]
   static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenStream&);
@@ -179,7 +169,6 @@ class CORE_EXPORT MediaQueryParser {
   ParserType parser_type_;
   CSSParserMode mode_;
   ExecutionContext* execution_context_;
-  SyntaxLevel syntax_level_;
   // A fake CSSParserContext for use counter only.
   // TODO(xiaochengh): Plumb the real CSSParserContext from the document.
   const CSSParserContext& fake_context_;
