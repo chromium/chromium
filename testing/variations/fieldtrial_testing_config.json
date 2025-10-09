@@ -236,21 +236,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3AccessibilityCommon": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3AccessibilityCommon"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [

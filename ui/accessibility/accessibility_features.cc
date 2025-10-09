@@ -335,7 +335,7 @@ bool IsAccessibilityManifestV3EnabledForGoogleTts() {
 }
 
 BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3AccessibilityCommon);
