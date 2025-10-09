@@ -251,17 +251,6 @@ bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
 
 }  // namespace
 
-TypeTool::TargetAndKeys::TargetAndKeys(const gfx::PointF& coordinate,
-                                       std::vector<KeyParams> key_sequence)
-    : target(coordinate), key_sequence(std::move(key_sequence)) {}
-
-TypeTool::TargetAndKeys::~TargetAndKeys() = default;
-TypeTool::TargetAndKeys::TargetAndKeys(const TargetAndKeys&) = default;
-TypeTool::TargetAndKeys& TypeTool::TargetAndKeys::operator=(
-    const TargetAndKeys&) = default;
-TypeTool::TargetAndKeys::TargetAndKeys(TargetAndKeys&&) = default;
-TypeTool::TargetAndKeys& TypeTool::TargetAndKeys::operator=(TargetAndKeys&&) =
-    default;
 
 TypeTool::KeyParams::KeyParams() = default;
 TypeTool::KeyParams::~KeyParams() = default;
@@ -503,15 +492,14 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
     }
   }
 
-  std::vector<KeyParams> key_sequence;
   // Reserve two space per letter in text in case of composition keys.
-  key_sequence.reserve(2 * action_->text.length() +
-                       (action_->follow_by_enter ? 1 : 0));
-  bool can_simulate_typing = ProcessInputText(key_sequence);
+  key_sequence_.reserve(2 * action_->text.length() +
+                        (action_->follow_by_enter ? 1 : 0));
+  bool can_simulate_typing = ProcessInputText(key_sequence_);
 
   if (can_simulate_typing) {
     if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
-      for (const auto& param : key_sequence) {
+      for (const auto& param : key_sequence_) {
         mojom::ActionResultPtr result = SimulateKeyPress(param);
         if (!IsOk(*result)) {
           // The initial click may have changed the page.
@@ -528,7 +516,6 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
                         .Add("delay", features::kGlicActorKeyUpDuration.Get())
                         .Build());
       task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-      target_and_keys_ = TargetAndKeys(coordinate, std::move(key_sequence));
       task_runner_->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&TypeTool::ContinueIncrementalTyping,
@@ -557,7 +544,7 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
 }
 
 void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
-  const KeyParams& params = target_and_keys_->key_sequence[current_key_];
+  const KeyParams& params = key_sequence_[current_key_];
 
   if (!is_key_down_) {
     WebInputEventResult down_result =
@@ -599,16 +586,14 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
     current_key_++;
   }
 
-  if (current_key_ >= target_and_keys_->key_sequence.size()) {
+  if (current_key_ >= key_sequence_.size()) {
     std::move(callback).Run(MakeOkResult());
   } else {
-    bool is_final_enter_key_down =
-        action_->follow_by_enter &&
-        current_key_ == target_and_keys_->key_sequence.size() - 1 &&
-        !is_key_down_;
-    DCHECK(!is_final_enter_key_down ||
-           target_and_keys_->key_sequence[current_key_].dom_code ==
-               GetEnterKeyParams().dom_code);
+    bool is_final_enter_key_down = action_->follow_by_enter &&
+                                   current_key_ == key_sequence_.size() - 1 &&
+                                   !is_key_down_;
+    DCHECK(!is_final_enter_key_down || key_sequence_[current_key_].dom_code ==
+                                           GetEnterKeyParams().dom_code);
 
     base::TimeDelta delay;
 
