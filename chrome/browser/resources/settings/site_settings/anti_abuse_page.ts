@@ -20,12 +20,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
-import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
-import {DefaultSettingSource} from '../site_settings/site_settings_prefs_browser_proxy.js';
-import {isSettingEnabled} from '../site_settings/site_settings_util.js';
 
 import {getTemplate} from './anti_abuse_page.html.js';
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
+import {isSettingEnabled} from './site_settings_util.js';
 
 export interface SettingsAntiAbusePageElement {
   $: {
