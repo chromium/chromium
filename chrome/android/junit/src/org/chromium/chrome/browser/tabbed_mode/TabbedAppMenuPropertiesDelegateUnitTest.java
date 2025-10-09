@@ -711,7 +711,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         testPageMenuItems_RegularPage(/* shouldShowNewIncognitoTab= */ false);
     }
 
-    private void testPageMenuItems_IncognitoPage(boolean shouldShowNewTab) {
+    private void testPageMenuItems_IncognitoPage(boolean isIncognitoWindow) {
         setUpMocksForPageMenu();
         when(mTab.isIncognito()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -726,7 +726,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(R.id.icon_row_menu_id);
         expectedTitles.add(0);
 
-        if (shouldShowNewTab) {
+        if (!isIncognitoWindow) {
             expectedItems.add(R.id.new_tab_menu_id);
             expectedTitles.add(R.string.menu_new_tab);
         }
@@ -739,8 +739,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_pin_tab);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
-        expectedItems.add(R.id.open_history_menu_id);
-        expectedTitles.add(R.string.menu_history);
+        if (!isIncognitoWindow) {
+            expectedItems.add(R.id.open_history_menu_id);
+            expectedTitles.add(R.string.menu_history);
+        }
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -787,7 +789,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPageMenuItems_Phone_IncognitoPage() {
-        testPageMenuItems_IncognitoPage(/* shouldShowNewTab= */ true);
+        testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ false);
     }
 
     @Test
@@ -797,7 +799,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
     })
     public void testPageMenuItems_Phone_IncognitoPage_incognitoWindowEnabled() {
-        testPageMenuItems_IncognitoPage(/* shouldShowNewTab= */ false);
+        testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ true);
     }
 
     @Test
