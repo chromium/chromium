@@ -198,7 +198,9 @@ class VisitDatabase {
 
   // Finds a redirect coming from the given `from_visit`. If a redirect is
   // found, it fills the visit ID and URL into the out variables and returns
-  // true. If there is no redirect from the given visit, returns false.
+  // true. If there is no redirect from the given visit, returns false. Includes
+  // or excludes redirects that result in a 404 response based on
+  // `policy_for_404_visits`.
   //
   // If there is more than one redirect, this will compute a random one. But
   // duplicates should be very rare, and we don't actually care which one we
@@ -208,7 +210,8 @@ class VisitDatabase {
   // to_visit and to_url can be NULL in which case they are ignored.
   bool GetRedirectFromVisit(VisitID from_visit,
                             VisitID* to_visit,
-                            GURL* to_url);
+                            GURL* to_url,
+                            VisitQuery404sPolicy policy_for_404_visits);
 
   // Similar to the above function except finds a redirect going to a given
   // `to_visit`; or, if there is no such redirect, finds the referral going to

@@ -413,6 +413,128 @@ TEST_F(VisitDatabaseTest, GetMostRecentVisitsForURL_404Policy) {
   EXPECT_THAT(out_visits.front(), MatchesVisitInfo(visit_non_404));
 }
 
+TEST_F(VisitDatabaseTest, GetRedirectFromVisit) {
+  // Add a visit chain: 1 -> 2 -> 3, where -> is a redirect.
+  // Within a redirect chain, all visits have the same timestamp.
+  GURL url1("http://www.google.com/url1");
+  URLRow url_row1(url1);
+  URLID url_id1 = AddURL(url_row1);
+  ASSERT_NE(0, url_id1);
+  VisitRow visit1(url_id1, base::Time::Now(), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit1, SOURCE_BROWSED));
+
+  GURL url2("http://www.google.com/url2");
+  URLRow url_row2(url2);
+  URLID url_id2 = AddURL(url_row2);
+  ASSERT_NE(0, url_id2);
+  VisitRow visit2(
+      url_id2, base::Time::Now(), visit1.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit2, SOURCE_BROWSED));
+
+  GURL url3("http://www.google.com/url3");
+  URLRow url_row3(url3);
+  URLID url_id3 = AddURL(url_row3);
+  ASSERT_NE(0, url_id3);
+  VisitRow visit3(
+      url_id3, base::Time::Now(), visit2.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit3, SOURCE_BROWSED));
+
+  // Get redirect from visit2.
+  VisitID to_visit_id = 0;
+  GURL to_url;
+  EXPECT_TRUE(GetRedirectFromVisit(visit2.visit_id, &to_visit_id, &to_url,
+                                   VisitQuery404sPolicy::kInclude404s));
+  EXPECT_EQ(visit3.visit_id, to_visit_id);
+  EXPECT_EQ(GURL("http://www.google.com/url3"), to_url);
+
+  // Get redirect from visit1.
+  to_visit_id = 0;
+  to_url = GURL();
+  EXPECT_TRUE(GetRedirectFromVisit(visit1.visit_id, &to_visit_id, &to_url,
+                                   VisitQuery404sPolicy::kInclude404s));
+  EXPECT_EQ(visit2.visit_id, to_visit_id);
+  EXPECT_EQ(GURL("http://www.google.com/url2"), to_url);
+
+  // Get redirect from visit3 (no referrer)
+  to_visit_id = 0;
+  to_url = GURL();
+  EXPECT_FALSE(GetRedirectFromVisit(visit3.visit_id, &to_visit_id, &to_url,
+                                    VisitQuery404sPolicy::kInclude404s));
+  EXPECT_EQ(0, to_visit_id);
+
+  // Non-redirect case.
+  VisitRow visit4(visit1.url_id, base::Time::Now(), 0, ui::PAGE_TRANSITION_LINK,
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit4, SOURCE_BROWSED));
+
+  VisitRow visit5(visit2.url_id, base::Time::Now(), visit4.visit_id,
+                  ui::PAGE_TRANSITION_LINK, 0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit5, SOURCE_BROWSED));
+
+  // Get redirect from visit4. The referrer (visit5) is not a redirect.
+  // The from_url part should fail.
+  to_visit_id = 0;
+  to_url = GURL();
+  EXPECT_FALSE(GetRedirectFromVisit(visit4.visit_id, &to_visit_id, &to_url,
+                                    VisitQuery404sPolicy::kInclude404s));
+  EXPECT_EQ(to_visit_id, 0);
+  EXPECT_TRUE(to_url.is_empty());
+}
+
+TEST_F(VisitDatabaseTest, GetRedirectToVisit_404Policy) {
+  // Within a redirect chain, all visits have the same timestamp.
+  GURL url1("http://www.google.com/url1");
+  URLRow url_row1(url1);
+  URLID url_id1 = AddURL(url_row1);
+  ASSERT_NE(0, url_id1);
+  VisitRow visit1(url_id1, base::Time::Now(), 0,
+                  ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                            ui::PAGE_TRANSITION_CHAIN_START),
+                  0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit1, SOURCE_BROWSED));
+
+  // Add a 404 visit
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+  GURL url2("http://www.google.com/404");
+  URLRow url_row2(url2);
+  URLID url_id2 = AddURL(url_row2);
+  ASSERT_NE(0, url_id2);
+  VisitRow visit404(
+      url_id2, base::Time::Now(), visit1.visit_id,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit404, SOURCE_BROWSED));
+  AddContextAnnotationsForVisit(visit404.visit_id, context_annotations_404);
+
+  VisitID to_visit_id = 0;
+  GURL to_url;
+  EXPECT_TRUE(GetRedirectFromVisit(visit1.visit_id, &to_visit_id, &to_url,
+                                   VisitQuery404sPolicy::kInclude404s));
+  EXPECT_EQ(visit404.visit_id, to_visit_id);
+  EXPECT_EQ(GURL("http://www.google.com/404"), to_url);
+
+  // When 404s are disabled, redirects from visit1 should return false.
+  to_visit_id = 0;
+  to_url = GURL();
+  EXPECT_FALSE(GetRedirectFromVisit(visit1.visit_id, &to_visit_id, &to_url,
+                                    VisitQuery404sPolicy::kExclude404s));
+  EXPECT_EQ(to_visit_id, 0);
+  EXPECT_EQ(to_url.is_empty(), true);
+}
+
 TEST_F(VisitDatabaseTest, GetVisibleVisitCountToHost) {
   // Add a primary main frame non-redirect visit to a URL.
   GURL url("http://www.google.com/");

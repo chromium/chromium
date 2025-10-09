@@ -2950,7 +2950,9 @@ void HistoryBackend::GetRedirectsFromSpecificVisit(VisitID cur_visit,
   GURL cur_url;
   std::set<VisitID> visit_set;
   visit_set.insert(cur_visit);
-  while (db_->GetRedirectFromVisit(cur_visit, &cur_visit, &cur_url)) {
+  // TODO: crbug.com/449755235 Take in a 404 policy param and pass it in here.
+  while (db_->GetRedirectFromVisit(cur_visit, &cur_visit, &cur_url,
+                                   VisitQuery404sPolicy::kExclude404s)) {
     if (visit_set.find(cur_visit) != visit_set.end()) {
       DUMP_WILL_BE_NOTREACHED() << "Loop in visit chain, giving up";
       return;
