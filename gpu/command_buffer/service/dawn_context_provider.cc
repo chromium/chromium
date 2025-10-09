@@ -444,7 +444,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
                   const GpuDriverBugWorkarounds& workarounds,
                   DawnContextProvider::ValidateAdapterFn validate_adapter_fn);
   void SetCachingInterface(
-      std::unique_ptr<dawn::platform::CachingInterface> caching_interface);
+      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
   wgpu::Device GetDevice() const { return device_; }
   wgpu::BackendType backend_type() const { return backend_type_; }
@@ -456,7 +456,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   webgpu::DawnPlatform* GetDawnPlatform() { return &platform_; }
 
-  dawn::platform::CachingInterface* GetCachingInterface() {
+  webgpu::DawnCachingInterface* GetCachingInterface() {
     return caching_interface_.get();
   }
 
@@ -670,7 +670,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  std::unique_ptr<dawn::platform::CachingInterface> caching_interface_;
+  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
 
   Platform platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
@@ -982,7 +982,7 @@ bool DawnSharedContext::Initialize(
 }
 
 void DawnSharedContext::SetCachingInterface(
-    std::unique_ptr<dawn::platform::CachingInterface> caching_interface) {
+    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
   CHECK(!caching_interface_);
   caching_interface_ = std::move(caching_interface);
 }
@@ -1239,14 +1239,13 @@ bool DawnContextProvider::InitializeGraphiteContext(
 }
 
 void DawnContextProvider::SetCachingInterface(
-    std::unique_ptr<dawn::platform::CachingInterface> caching_interface) {
+    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
   CHECK(dawn_shared_context_->HasOneRef());
   CHECK(!graphite_shared_context_);
   dawn_shared_context_->SetCachingInterface(std::move(caching_interface));
 }
 
-dawn::platform::CachingInterface* DawnContextProvider::GetCachingInterface()
-    const {
+webgpu::DawnCachingInterface* DawnContextProvider::GetCachingInterface() const {
   return dawn_shared_context_->GetCachingInterface();
 }
 

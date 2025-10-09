@@ -71,9 +71,25 @@ size_t GpuPersistentCache::LoadData(const void* key,
                                     size_t key_size,
                                     void* value,
                                     size_t value_size) {
+  std::string_view key_str(static_cast<const char*>(key), key_size);
+  std::unique_ptr<persistent_cache::Entry> entry = LoadEntry(key_str);
+  if (!entry) {
+    return 0;
+  }
+
+  if (value_size > 0) {
+    return entry->CopyContentTo(
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value), value_size)));
+  }
+
+  return entry->GetContentSize();
+}
+
+std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadEntry(
+    std::string_view key) {
   ScopedHistogramTimer timer(GetHistogramName("Load"));
   SCOPED_LOCK(lock_);
-  TRACE_EVENT1("gpu", "GpuPersistentCache::LoadData", "persistent_cache_",
+  TRACE_EVENT1("gpu", "GpuPersistentCache::LoadEntry", "persistent_cache_",
                !!persistent_cache_);
 
   // Track cache available for the 1st kMaxLoadStoreForTrackingCacheAvailable
@@ -85,23 +101,11 @@ size_t GpuPersistentCache::LoadData(const void* key,
 
   if (!persistent_cache_) {
     timer.SetEnabled(false);
-    return 0;
+    return nullptr;
   }
 
-  std::string_view key_str(static_cast<const char*>(key), key_size);
-  std::unique_ptr<persistent_cache::Entry> entry =
-      persistent_cache_->Find(key_str);
+  return persistent_cache_->Find(key);
 
-  if (!entry) {
-    return 0;
-  }
-
-  if (value_size > 0) {
-    return entry->CopyContentTo(
-        UNSAFE_TODO(base::span(static_cast<uint8_t*>(value), value_size)));
-  }
-
-  return entry->GetContentSize();
 }
 
 void GpuPersistentCache::StoreData(const void* key,

@@ -242,10 +242,11 @@ GpuServiceImpl::GpuServiceImpl(
     if (dawn_context_provider_) {
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
-      std::unique_ptr<dawn::platform::CachingInterface> caching_interface;
+      std::unique_ptr<gpu::webgpu::DawnCachingInterface> caching_interface;
       if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
-        caching_interface =
-            std::make_unique<gpu::GpuPersistentCache>("GraphiteDawn");
+        caching_interface = dawn_caching_interface_factory_->CreateInstance(
+            gpu::kGraphiteDawnGpuDiskCacheHandle,
+            std::make_unique<gpu::GpuPersistentCache>("GraphiteDawn"));
       } else {
         auto cache_blob_callback = base::BindRepeating(
             [](GpuServiceImpl* self, const std::string& key,
@@ -948,10 +949,9 @@ void GpuServiceImpl::SetChannelPersistentCacheParams(
     return;
   }
 
-  auto* persistent_cache = static_cast<gpu::GpuPersistentCache*>(
-      dawn_context_provider_->GetCachingInterface());
-  CHECK(persistent_cache);
-  persistent_cache->InitializeCache(std::move(backend_params));
+  auto* cache = dawn_context_provider_->GetCachingInterface();
+  CHECK(cache);
+  cache->InitializePersistentCache(std::move(backend_params));
 #endif
 }
 
