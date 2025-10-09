@@ -120,6 +120,10 @@ crbug.com/330130724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWi
 # Gardener 2024-04-30 - timeouts
 crbug.com/324934210 [ mac angle-metal intel-0x3e9b passthrough asan ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 
+# Win11 / NVIDIA RTX 4070 Super
+crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
+crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

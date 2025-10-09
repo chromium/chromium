@@ -237,6 +237,9 @@ crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] Cont
 crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
 crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Slow ]
 
+# Win11 / NVIDIA RTX 4070 Super
+crbug.com/450323460 [ win11 nvidia-0x2783 ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################

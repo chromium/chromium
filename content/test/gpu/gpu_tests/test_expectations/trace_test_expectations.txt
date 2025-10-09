@@ -260,6 +260,9 @@ crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineIn
 
 # Win11/RTX 4070 Super failures after upgrading to driver 580.88
 crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
+crbug.com/450323461 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
+crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
+crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ RetryOnFailure ]
 
 ###############################
 # Permanent Slow Expectations #

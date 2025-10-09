@@ -486,6 +486,9 @@ crbug.com/395934162 [ angle-d3d9 intel-0x4680 passthrough win ] conformance/unif
 crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/443182226 [ win nvidia angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
+# Win11 / NVIDIA RTX 4070 Super
+crbug.com/450326413 [ win11 nvidia-0x2783 ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
+
 ####################
 # Mac failures     #
 ####################
