@@ -166,6 +166,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLoggerTest.java",
   ]
@@ -182,6 +183,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

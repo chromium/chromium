@@ -1071,7 +1071,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",
       "src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelperTest.java",
       "src/org/chromium/chrome/browser/tab/TabStateBrowserControlsVisibilityDelegateTest.java",
-      "src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
       "src/org/chromium/chrome/browser/tab/TabUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabViewAndroidDelegateTest.java",
