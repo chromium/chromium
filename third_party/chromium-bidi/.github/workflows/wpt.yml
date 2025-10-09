@@ -256,7 +256,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
+          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN || secrets.GITHUB_TOKEN }}
       - name: Download Artifact
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
