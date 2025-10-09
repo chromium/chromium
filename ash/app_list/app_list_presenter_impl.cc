@@ -231,15 +231,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   std::unique_ptr<AppListView::ScopedAccessibilityAnnouncementLock>
       scoped_accessibility_lock;
 
-  // App list view state accessibility alerts should be suppressed when the app
-  // list view is shown by the assistant. The assistant UI should handle its
-  // own accessibility notifications.
-  if (show_source && *show_source == AppListShowSource::kAssistantEntryPoint) {
-    scoped_accessibility_lock =
-        std::make_unique<AppListView::ScopedAccessibilityAnnouncementLock>(
-            view_);
-  }
-
   auto* layer = view_->GetWidget()->GetNativeWindow()->layer();
 
   bool has_aborted_animation = false;

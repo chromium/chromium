@@ -6872,24 +6872,6 @@ const char kEnableGesturePropertiesDBusServiceDescription[] =
     "Enable a D-Bus service for accessing gesture properties, which are used "
     "to configure input devices.";
 
-const char kEnableGoogleAssistantDspName[] =
-    "Enable Google Assistant with hardware-based hotword";
-const char kEnableGoogleAssistantDspDescription[] =
-    "Enable an experimental feature that uses hardware-based hotword detection "
-    "for Assistant. Only a limited number of devices have this type of "
-    "hardware support.";
-
-const char kEnableGoogleAssistantStereoInputName[] =
-    "Enable Google Assistant with stereo audio input";
-const char kEnableGoogleAssistantStereoInputDescription[] =
-    "Enable an experimental feature that uses stereo audio input for hotword "
-    "and voice to text detection in Google Assistant.";
-
-const char kEnableGoogleAssistantAecName[] = "Enable Google Assistant AEC";
-const char kEnableGoogleAssistantAecDescription[] =
-    "Enable an experimental feature that removes local feedback from audio "
-    "input to help hotword and ASR when background audio is playing.";
-
 const char kEnableInputEventLoggingName[] = "Enable input event logging";
 const char kEnableInputEventLoggingDescription[] =
     "Enable detailed logging of input events from touchscreens, touchpads, and "

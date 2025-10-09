@@ -27,7 +27,6 @@ static_library("assistant") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/services/assistant/public/cpp",
-    "//chromeos/ash/services/assistant/public/proto",
     "//components/session_manager/core",
     "//content/public/browser",
     "//content/public/common",

@@ -532,7 +532,6 @@ source_set("browser_tests") {
     "//chromeos/ash/experiences/arc/session",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/assistant/public/cpp",
-    "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_shared_cpp_sources",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",

@@ -31,18 +31,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Assistant.ContextEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2026-02-10">
-  <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Among eligible users, whether the user has the Assistant context (related
-    info) enabled. Recorded once for every UMA upload. The set of eligible users
-    includes all users with profiles that can allow Assistant service to be
-    enabled (AssistantAllowedState is limited by locale, policy, etc).
-  </summary>
-</histogram>
-
 <histogram name="Assistant.DspHotwordDetection"
     enum="DspHotwordDetectionStatus" expires_after="2026-02-10">
   <owner>xiaohuic@chromium.org</owner>
@@ -189,18 +177,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The source of Assistant query (e.g. dialog plate text field, voice input).
     Recorded when the query is committed.
-  </summary>
-</histogram>
-
-<histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2026-02-10">
-  <owner>xiaohuic@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Among eligible users, whether the user has the Assistant service enabled.
-    Recorded once for every UMA upload. The set of eligible users includes all
-    users with profiles that can allow Assistant service to be enabled
-    (AssistantAllowedState is limited by locale, policy, etc).
   </summary>
 </histogram>
 

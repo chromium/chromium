@@ -5663,7 +5663,6 @@ if (!is_android) {
         "//chromeos/ash/experiences/arc/session:arc_base_enums",
         "//chromeos/ash/experiences/system_web_apps/types",
         "//chromeos/ash/services/assistant/public/cpp",
-        "//chromeos/ash/services/assistant/public/proto",
         "//chromeos/ash/services/auth_factor_config",
         "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
         "//chromeos/ash/services/device_sync/public/cpp:test_support",

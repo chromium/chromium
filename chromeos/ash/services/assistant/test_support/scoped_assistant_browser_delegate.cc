@@ -29,20 +29,6 @@ void ScopedAssistantBrowserDelegate::SetOpenNewEntryPointClosure(
   open_new_entry_point_closure_ = std::move(closure);
 }
 
-void ScopedAssistantBrowserDelegate::SetMediaControllerManager(
-    mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver) {
-  media_controller_manager_receiver_ = receiver;
-}
-
-void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
-    mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-        receiver) {
-  if (media_controller_manager_receiver_) {
-    media_controller_manager_receiver_->reset();
-    media_controller_manager_receiver_->Bind(std::move(receiver));
-  }
-}
-
 void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
   NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,

@@ -100,7 +100,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/user_manager/user.h"
@@ -911,26 +910,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeRunningDurationMinutes] =
       settings_api::PrefType::kNumber;
 
-  // Google Assistant.
-  (*s_allowlist)[ash::assistant::prefs::kAssistantConsentStatus] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantDisabledByPolicy] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantEnabled] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantContextEnabled] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantHotwordAlwaysOn] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantHotwordEnabled] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantLaunchWithMicOpen] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::assistant::prefs::kAssistantNotificationEnabled] =
-      settings_api::PrefType::kBoolean;
-
   // Quick Answers.
   (*s_allowlist)[quick_answers::prefs::kQuickAnswersEnabled] =
       settings_api::PrefType::kBoolean;
@@ -1480,11 +1459,6 @@ std::optional<settings_api::PrefObject> PrefsUtil::GetPref(
     return pref_object;
   }
 
-  if (IsHotwordDisabledForChildUser(name)) {
-    pref_object->controlled_by = settings_api::ControlledBy::kChildRestriction;
-    pref_object->enforcement = settings_api::Enforcement::kEnforced;
-    return pref_object;
-  }
 #endif
 
   const Extension* extension = GetExtensionControllingPref(*pref_object);
@@ -1695,20 +1669,6 @@ bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
   return false;
 }
 
-bool PrefsUtil::IsHotwordDisabledForChildUser(const std::string& pref_name) {
-  const std::string& hotwordEnabledPref =
-      ash::assistant::prefs::kAssistantHotwordEnabled;
-  if (!profile_->IsChild() || pref_name != hotwordEnabledPref) {
-    return false;
-  }
-
-  PrefService* pref_service = FindServiceForPref(hotwordEnabledPref);
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(hotwordEnabledPref);
-  DCHECK(pref);
-  const bool isHotwordEnabled = pref->GetValue()->GetIfBool().value_or(false);
-  return !isHotwordEnabled;
-}
 #endif
 
 bool PrefsUtil::IsPrefSupervisorControlled(const std::string& pref_name) {

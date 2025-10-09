@@ -38,8 +38,6 @@ component("cpp") {
     "ambient/fake_ambient_backend_controller_impl.cc",
     "ambient/fake_ambient_backend_controller_impl.h",
     "ambient/weather_info.h",
-    "android_intent_helper.cc",
-    "android_intent_helper.h",
     "annotator/annotations_overlay_view.cc",
     "annotator/annotations_overlay_view.h",
     "annotator/annotator_controller_base.cc",
@@ -408,7 +406,6 @@ component("cpp") {
   ]
 
   deps = [
-    ":accelerator_actions",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
     "//ash/resources/vector_icons",
@@ -468,6 +465,7 @@ component("cpp") {
   ]
 
   public_deps = [
+    ":accelerator_actions",
     "//ash/public/mojom",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
@@ -477,7 +475,6 @@ component("cpp") {
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/experiences/arc/mojom:notifications",
-    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/connectivity/public/mojom",
@@ -520,7 +517,6 @@ source_set("unit_tests") {
     "accelerator_actions_unittest.cc",
     "accelerator_keycode_lookup_cache_unittest.cc",
     "accelerators_util_unittest.cc",
-    "android_intent_helper_unittest.cc",
     "app_list/app_list_config_provider_unittest.cc",
     "holding_space/holding_space_controller_unittest.cc",
     "holding_space/holding_space_image_unittest.cc",
@@ -636,6 +632,7 @@ source_set("test_support") {
 
   deps = [
     ":cpp",
+    "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/services/nearby/public/mojom",

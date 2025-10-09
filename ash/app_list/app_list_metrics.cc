@@ -208,7 +208,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
     case AppListShowSource::kScrollFromShelf:
       return "Scroll";
     case AppListShowSource::kTabletMode:
-    case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kAssistantEntryPoint_DEPRECATED:
     case AppListShowSource::kBrowser:
     case AppListShowSource::kWelcomeTour:
       return "Others";

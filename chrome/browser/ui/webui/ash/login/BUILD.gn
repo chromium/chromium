@@ -301,7 +301,6 @@ static_library("login") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
-    "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/multidevice_setup",
     "//chromeos/components/onc",

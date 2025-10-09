@@ -2421,8 +2421,6 @@ static_library("ui") {
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/resources",
       "//chromeos/ash/services/assistant/public/cpp",
-      "//chromeos/ash/services/assistant/public/mojom",
-      "//chromeos/ash/services/assistant/public/proto",
       "//chromeos/ash/services/auth_factor_config",
       "//chromeos/ash/services/bluetooth_config",
       "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",

@@ -7,85 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "sandbox/policy/switches.h"
 
 namespace ash::assistant::features {
-
-BASE_FEATURE(kAssistantAudioEraser, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableDspHotword, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableStereoAudioInput,
-             "AssistantEnableStereoAudioInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnablePowerManager,
-             "ChromeOSAssistantEnablePowerManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableLibAssistantBetaBackend,
-             "LibAssistantBetaBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Disable voice match for test purpose.
-BASE_FEATURE(kDisableVoiceMatch, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableLibAssistantDLC,
-             "LibAssistantDLC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableAssistantOnboarding,
-             "AssistantOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNewEntryPoint,
              "ChromeOSEnableNewEntryPoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAudioEraserEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantAudioEraser);
-}
-
-bool IsAssistantDebuggingEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantDebugging);
-}
-
-bool IsDspHotwordEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDspHotword);
-}
-
-bool IsPowerManagerEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePowerManager);
-}
-
-bool IsLibAssistantBetaBackendEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLibAssistantBetaBackend);
-}
-
-bool IsStereoAudioInputEnabled() {
-  return base::FeatureList::IsEnabled(kEnableStereoAudioInput) ||
-         // Audio eraser requires 2 channel input.
-         base::FeatureList::IsEnabled(kAssistantAudioEraser);
-}
-
-bool IsVoiceMatchDisabled() {
-  return base::FeatureList::IsEnabled(kDisableVoiceMatch);
-}
-
-bool IsLibAssistantSandboxEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      sandbox::policy::switches::kNoSandbox);
-}
-
-bool IsLibAssistantDLCEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLibAssistantDLC);
-}
-
-bool IsOnboardingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAssistantOnboarding);
-}
 
 bool IsNewEntryPointEnabled() {
   return base::FeatureList::IsEnabled(kEnableNewEntryPoint);

@@ -4937,8 +4937,6 @@ static_library("browser") {
       "memory/oom_kills_monitor.h",
       "metrics/ambient_mode_metrics_provider.cc",
       "metrics/ambient_mode_metrics_provider.h",
-      "metrics/assistant_service_metrics_provider.cc",
-      "metrics/assistant_service_metrics_provider.h",
       "metrics/chromeos_family_link_user_metrics_provider.cc",
       "metrics/chromeos_family_link_user_metrics_provider.h",
       "metrics/chromeos_metrics_provider.cc",
@@ -6192,10 +6190,6 @@ static_library("browser") {
         "//ash/webui/sample_system_web_app_ui",
         "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
       ]
-    }
-
-    if (enable_cros_libassistant) {
-      deps += [ "//chromeos/ash/services/libassistant/public/mojom" ]
     }
 
     if (enable_server_based_recognition) {

@@ -52,7 +52,7 @@ enum class AppListShowSource {
   kTabletMode = 3,
   kSearchKeyFullscreen_DEPRECATED = 4,    // Migrated to kSearchKey.
   kShelfButtonFullscreen_DEPRECATED = 5,  // Obsolete on bubble launcher.
-  kAssistantEntryPoint = 6,
+  kAssistantEntryPoint_DEPRECATED = 6,    // Feature removed.
   kScrollFromShelf = 7,
   kBrowser = 8,
   kWelcomeTour = 9,

@@ -16,9 +16,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -34,30 +31,6 @@ class AssistantBrowserDelegateImpl
   ~AssistantBrowserDelegateImpl() override;
 
   // chromeos::assistant::AssistantBrowserDelegate overrides:
-  void OnAssistantStatusChanged(
-      ash::assistant::AssistantStatus new_status) override;
-  void RequestAssistantVolumeControl(
-      mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver)
-      override;
-  void RequestBatteryMonitor(
-      mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) override;
-  void RequestWakeLockProvider(
-      mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
-  void RequestAudioStreamFactory(
-      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
-      override;
-  void RequestAudioDecoderFactory(
-      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
-          receiver) override;
-  void RequestAudioFocusManager(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
-      override;
-  void RequestMediaControllerManager(
-      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          receiver) override;
-  void RequestNetworkConfig(
-      mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
-          receiver) override;
   void OpenUrl(GURL url) override;
   base::expected<bool, AssistantBrowserDelegate::Error>
   IsNewEntryPointEligibleForPrimaryProfile() override;
