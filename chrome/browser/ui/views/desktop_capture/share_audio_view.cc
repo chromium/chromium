@@ -75,7 +75,9 @@ std::u16string_view ShareAudioView::GetAudioLabelText() const {
 }
 
 void ShareAudioView::OnAudioToggleButtonPressed() {
-  audio_check_callback_.Run();
+  if (audio_check_callback_) {
+    audio_check_callback_.Run();
+  }
 }
 
 BEGIN_METADATA(ShareAudioView)
