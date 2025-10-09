@@ -945,7 +945,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="-818596785"
       label="NonTabWebUIFCP.org.chromium.background_tracing.non-tab-webui-creation"/>
   <int value="-725424469" label="Jank.org.chromium.background_tracing.timer"/>
-  <int value="-624204648" label="org.chromium.CollectWebviewTrace"/>
   <int value="-84416026" label="Jank.Browser.MainThreadsCongestion"/>
   <int value="445229567"
       label="NonTabWebUIFCP.org.chromium.background_tracing.show-tab-search-bubble"/>
