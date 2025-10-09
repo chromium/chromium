@@ -27,6 +27,7 @@ const char kGwsHeadChunkStartMarkName[] = "SearchHeadStart";
 const char kGwsHeadChunkEndMarkName[] = "SearchHeadEnd";
 const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
 const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
+const char kGwsSGLMarkName[] = "SearchSGL";
 
 }  // namespace internal
 
