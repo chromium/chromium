@@ -133,12 +133,14 @@ void ContextualTasksServiceImpl::AttachUrlToTask(const base::Uuid& task_id,
                                                  const GURL& url) {
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
-    it->second.AddUrl(url);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
-                       weak_ptr_factory_.GetWeakPtr(), it->second,
-                       TriggerSource::kLocal));
+    if (it->second.AddUrlResource(
+            UrlResource(base::Uuid::GenerateRandomV4(), url))) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                         weak_ptr_factory_.GetWeakPtr(), it->second,
+                         TriggerSource::kLocal));
+    }
   }
 }
 

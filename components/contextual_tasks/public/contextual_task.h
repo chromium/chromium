@@ -40,6 +40,18 @@ struct Thread {
   std::string conversation_turn_id;
 };
 
+struct UrlResource {
+  UrlResource(const base::Uuid& url_id, const GURL& url);
+  UrlResource(const UrlResource& other);
+  ~UrlResource();
+
+  // ID used for sync.
+  base::Uuid url_id;
+
+  // URL of the resource.
+  GURL url;
+};
+
 // A task is a representation of a user's journey to accomplish a goal. It
 // could be a simple goal, like getting an answer to a question, or a complex
 // multi-step process. A task can have multiple pieces of context associated
@@ -56,6 +68,12 @@ class ContextualTask {
   // Returns the unique ID of the task.
   const base::Uuid& GetTaskId() const;
 
+  // Sets the title of the task.
+  void SetTitle(const std::string& title);
+
+  // Gets the title of the task.
+  std::string GetTitle() const;
+
   // Adds the server-side conversation to the task. If a task already has a
   // thread attached to it, it will be overwritten.
   void AddThread(const Thread& thread);
@@ -67,11 +85,11 @@ class ContextualTask {
   std::optional<Thread> GetThread() const;
 
   // Adds a URL to the task. If the URL already exists, this method does
-  // nothing.
-  void AddUrl(const GURL& url);
+  // nothing and returns false. Otherwise, it will return true.
+  bool AddUrlResource(const UrlResource& url_resource);
 
   // Returns the URLs relevant to the task.
-  std::vector<GURL> GetUrls() const;
+  std::vector<UrlResource> GetUrlResources() const;
 
   // Removes a URL from the task.
   void RemoveUrl(const GURL& url);
@@ -90,12 +108,15 @@ class ContextualTask {
   // The unique ID of the task.
   base::Uuid task_id_;
 
+  // Title of the task;
+  std::string title_;
+
   // The server-side conversation associated with the task.
   // When we persist this, we need to ensure we support up to N Threads.
   std::optional<Thread> thread_;
 
   // URLs relevant to the task.
-  std::vector<GURL> urls_;
+  std::vector<UrlResource> url_resources_;
 
   // SessionIDs of tabs related to the task. SessionIDs are local to the
   // device and are not synced.

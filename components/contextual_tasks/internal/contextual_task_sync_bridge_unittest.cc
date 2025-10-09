@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
@@ -16,22 +17,69 @@
 
 namespace contextual_tasks {
 
+using testing::_;
+using testing::ReturnRef;
+
 namespace {
 
-using testing::_;
+std::unique_ptr<syncer::EntityChange> CreateEntityChange(
+    const std::string& guid,
+    const std::string& title,
+    syncer::EntityChange::ChangeType change_type) {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_contextual_task()->set_guid(guid);
+  specifics.mutable_contextual_task()->mutable_contextual_task()->set_title(
+      title);
+
+  syncer::EntityData entity_data;
+  entity_data.specifics = specifics;
+  entity_data.name = title;
+
+  if (change_type == syncer::EntityChange::ACTION_DELETE) {
+    return syncer::EntityChange::CreateDelete(guid, syncer::EntityData());
+  } else if (change_type == syncer::EntityChange::ACTION_UPDATE) {
+    return syncer::EntityChange::CreateUpdate(guid, std::move(entity_data));
+  }
+
+  return syncer::EntityChange::CreateAdd(guid, std::move(entity_data));
+}
+
+class MockObserver : public ContextualTaskSyncBridge::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnContextualTaskDataStoreLoaded,
+              (const std::vector<proto::ContextualTaskEntity>&),
+              (override));
+  MOCK_METHOD(void,
+              OnTaskAddedOrUpdatedRemotely,
+              (const std::vector<proto::ContextualTaskEntity>&),
+              (override));
+  MOCK_METHOD(void,
+              OnTaskRemovedRemotely,
+              (const std::vector<base::Uuid>&),
+              (override));
+};
+
+}  // namespace
 
 class ContextualTaskSyncBridgeTest : public testing::Test {
  public:
-  ContextualTaskSyncBridgeTest() {
+  void SetUp() override {
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     bridge_ = std::make_unique<ContextualTaskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
+    bridge_->AddObserver(&observer_);
   }
+
+  void TearDown() override { bridge_->RemoveObserver(&observer_); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ContextualTaskSyncBridge> bridge_;
+  MockObserver observer_;
 };
 
 TEST_F(ContextualTaskSyncBridgeTest, GetClientTagAndStorageKey) {
@@ -80,6 +128,48 @@ TEST_F(ContextualTaskSyncBridgeTest,
       trimmed_specifics.contextual_task().contextual_task().has_thread_id());
 }
 
-}  // namespace
+TEST_F(ContextualTaskSyncBridgeTest,
+       ApplyIncrementalSyncChanges_AddUpdateDelete) {
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
+  syncer::EntityChangeList change_list;
+  change_list.push_back(CreateEntityChange("guid_add", "Added Title",
+                                           syncer::EntityChange::ACTION_ADD));
+  change_list.push_back(CreateEntityChange(
+      "guid_existing", "Updated Title", syncer::EntityChange::ACTION_UPDATE));
+  change_list.push_back(CreateEntityChange(
+      "guid_delete", "", syncer::EntityChange::ACTION_DELETE));
+
+  EXPECT_CALL(observer_, OnTaskAddedOrUpdatedRemotely(_))
+      .WillOnce([&](const std::vector<proto::ContextualTaskEntity>& entities) {
+        EXPECT_EQ(2u, entities.size());
+        barrier.Run();
+      });
+  EXPECT_CALL(observer_, OnTaskRemovedRemotely(_))
+      .WillOnce([&](const std::vector<base::Uuid>& guids) {
+        EXPECT_EQ(1u, guids.size());
+        barrier.Run();
+      });
+
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTaskSyncBridgeTest, OnDataTypeStoreLoaded) {
+  auto store_factory =
+      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextualTaskDataStoreLoaded(_))
+      .WillOnce([&](const std::vector<proto::ContextualTaskEntity>& entities) {
+        EXPECT_EQ(0u, entities.size());
+        run_loop.Quit();
+      });
+
+  bridge_ = std::make_unique<ContextualTaskSyncBridge>(
+      mock_processor_.CreateForwardingProcessor(), std::move(store_factory));
+  bridge_->AddObserver(&observer_);
+  run_loop.Run();
+}
 
 }  // namespace contextual_tasks

@@ -287,10 +287,11 @@ TEST_F(ContextualTasksContextControllerImplTest, DetachUrlFromTask) {
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
+
   GURL url1("https://example.com/1");
   GURL url2("https://example.com/2");
-  task.AddUrl(url1);
-  task.AddUrl(url2);
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), url1));
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), url2));
 
   ContextualTaskContext expected_context(task);
 

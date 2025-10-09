@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_INTERNAL_CONTEXTUAL_TASK_SYNC_BRIDGE_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_INTERNAL_CONTEXTUAL_TASK_SYNC_BRIDGE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/contextual_tasks/internal/proto/contextual_task_entity.pb.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
@@ -32,10 +35,12 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
     Observer() = default;
     ~Observer() override = default;
 
+    virtual void OnContextualTaskDataStoreLoaded(
+        const std::vector<proto::ContextualTaskEntity>& task_entities) = 0;
     virtual void OnTaskAddedOrUpdatedRemotely(
-        const std::vector<ContextualTask>& tasks) = 0;
+        const std::vector<proto::ContextualTaskEntity>& task_entities) = 0;
     virtual void OnTaskRemovedRemotely(
-        const std::vector<ContextualTask>& tasks) = 0;
+        const std::vector<base::Uuid>& task_entities) = 0;
   };
 
   ContextualTaskSyncBridge(
@@ -75,8 +80,22 @@ class ContextualTaskSyncBridge : public syncer::DataTypeSyncBridge {
   void RemoveObserver(Observer* observer);
 
  private:
+  friend class ContextualTaskSyncBridgeTest;
+
   void OnDataTypeStoreCreated(const std::optional<syncer::ModelError>& error,
                               std::unique_ptr<syncer::DataTypeStore> store);
+
+  void OnReadAllData(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> entries);
+
+  std::optional<proto::ContextualTaskEntity> GetEntityProto(
+      const std::string& guid);
+
+  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
+                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
 
   base::ObserverList<Observer> observers_;
 

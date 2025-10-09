@@ -27,7 +27,7 @@ class FallbackTitleContextDecoratorTest : public testing::Test {
 TEST_F(FallbackTitleContextDecoratorTest, DecorateContextWithTitle) {
   ContextualTask task(base::Uuid::GenerateRandomV4());
   GURL url("https://www.google.com");
-  task.AddUrl(url);
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), url));
   auto context = std::make_unique<ContextualTaskContext>(task);
 
   base::RunLoop run_loop;

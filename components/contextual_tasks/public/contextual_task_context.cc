@@ -26,8 +26,8 @@ UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorData() {
 
 ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     : task_id_(task.GetTaskId()) {
-  for (const auto& url : task.GetUrls()) {
-    urls_.emplace_back(url);
+  for (const auto& url_resource : task.GetUrlResources()) {
+    urls_.emplace_back(url_resource.url);
   }
 }
 

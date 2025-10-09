@@ -364,9 +364,9 @@ TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
 
   std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
-  std::vector<GURL> urls = tasks[0].GetUrls();
+  std::vector<UrlResource> urls = tasks[0].GetUrlResources();
   ASSERT_EQ(1u, urls.size());
-  EXPECT_EQ(url, urls[0]);
+  EXPECT_EQ(url, urls[0].url);
   service_->RemoveObserver(&observer_);
 }
 
@@ -391,19 +391,19 @@ TEST_F(ContextualTasksServiceImplTest, AttachAndDetachUrl_MultipleTasks) {
           ? tasks_before_detach[0]
           : tasks_before_detach[1];
 
-  std::vector<GURL> urls1 = result_task1_before.GetUrls();
+  std::vector<UrlResource> urls1 = result_task1_before.GetUrlResources();
   ASSERT_EQ(1u, urls1.size());
-  EXPECT_EQ(url1, urls1[0]);
+  EXPECT_EQ(url1, urls1[0].url);
 
-  std::vector<GURL> urls2 = result_task2_before.GetUrls();
+  std::vector<UrlResource> urls2 = result_task2_before.GetUrlResources();
   ASSERT_EQ(1u, urls2.size());
-  EXPECT_EQ(url2, urls2[0]);
+  EXPECT_EQ(url2, urls2[0].url);
 
   service_->DetachUrlFromTask(task1.GetTaskId(), url1);
   std::vector<ContextualTask> tasks_after_detach = GetTasks();
   ASSERT_EQ(2u, tasks_after_detach.size());
-  EXPECT_TRUE(GetTaskById(task1.GetTaskId())->GetUrls().empty());
-  EXPECT_EQ(1u, GetTaskById(task2.GetTaskId())->GetUrls().size());
+  EXPECT_TRUE(GetTaskById(task1.GetTaskId())->GetUrlResources().empty());
+  EXPECT_EQ(1u, GetTaskById(task2.GetTaskId())->GetUrlResources().size());
 }
 
 TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
@@ -414,7 +414,7 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   service_->AttachUrlToTask(task.GetTaskId(), url);
   task_environment_.RunUntilIdle();
   std::vector<ContextualTask> tasks_before_detach = GetTasks();
-  EXPECT_EQ(1u, tasks_before_detach[0].GetUrls().size());
+  EXPECT_EQ(1u, tasks_before_detach[0].GetUrlResources().size());
 
   EXPECT_CALL(
       observer_,
@@ -422,7 +422,7 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   service_->DetachUrlFromTask(task.GetTaskId(), url);
   task_environment_.RunUntilIdle();
   std::vector<ContextualTask> tasks_after_detach = GetTasks();
-  EXPECT_TRUE(tasks_after_detach[0].GetUrls().empty());
+  EXPECT_TRUE(tasks_after_detach[0].GetUrlResources().empty());
   service_->RemoveObserver(&observer_);
 }
 

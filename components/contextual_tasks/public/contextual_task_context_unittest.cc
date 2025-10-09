@@ -16,8 +16,8 @@ TEST(ContextualTaskContextTest, ConstructFromContextualTask) {
   ContextualTask task(task_id);
   GURL url1("https://google.com");
   GURL url2("https://youtube.com");
-  task.AddUrl(url1);
-  task.AddUrl(url2);
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), url1));
+  task.AddUrlResource(UrlResource(base::Uuid::GenerateRandomV4(), url2));
 
   ContextualTaskContext context(task);
 

@@ -19,18 +19,19 @@ TEST(ContextualTaskTest, GetTaskId) {
   EXPECT_EQ(task_id, task.GetTaskId());
 }
 
-TEST(ContextualTaskTest, AddAndRemoveUrl) {
+TEST(ContextualTaskTest, AddAndRemoveUrlResource) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
-  GURL url("https://www.google.com");
+  UrlResource url_resource(base::Uuid::GenerateRandomV4(),
+                           GURL("https://www.google.com"));
 
-  task.AddUrl(url);
-  task.AddUrl(url);
+  task.AddUrlResource(url_resource);
+  task.AddUrlResource(url_resource);
 
-  EXPECT_EQ(1u, task.GetUrls().size());
+  EXPECT_EQ(1u, task.GetUrlResources().size());
 
-  task.RemoveUrl(url);
-  EXPECT_EQ(0u, task.GetUrls().size());
+  task.RemoveUrl(url_resource.url);
+  EXPECT_EQ(0u, task.GetUrlResources().size());
 }
 
 TEST(ContextualTaskTest, AddThread) {
@@ -89,6 +90,15 @@ TEST(ContextualTaskTest, AddAndRemoveSessionId) {
 
   task.RemoveSessionId(session_id);
   EXPECT_EQ(0u, task.GetSessionIds().size());
+}
+
+TEST(ContextualTaskTest, SetAndGetTitle) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  std::string title = "test title";
+
+  task.SetTitle(title);
+  EXPECT_EQ(title, task.GetTitle());
 }
 
 }  // namespace contextual_tasks
