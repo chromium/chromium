@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom-data-view.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -33,7 +34,8 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,
       Browser* browser,
       Profile* profile,
-      base::OnceClosure history_optin_completed_closure);
+      HistorySyncOptinHelper::FlowCompletedCallback
+          history_optin_completed_callback);
   ~HistorySyncOptinHandler() override;
 
   HistorySyncOptinHandler(const HistorySyncOptinHandler&) = delete;
@@ -50,7 +52,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
   // starts observing the identity manager listening for account info updates.
   void MaybeGetAccountInfo();
   // Closes the modal dialog, if one is open.
-  void FinishAndCloseDialog();
+  void FinishAndCloseDialog(HistorySyncOptinHelper::ScreenChoiceResult result);
   // Adds sync consent to the history data type.
   void AddHistorySyncConsent();
 
@@ -71,7 +73,8 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
 
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<Profile> profile_;
-  base::OnceClosure history_optin_completed_closure_;
+  HistorySyncOptinHelper::FlowCompletedCallback
+      history_optin_completed_callback_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 

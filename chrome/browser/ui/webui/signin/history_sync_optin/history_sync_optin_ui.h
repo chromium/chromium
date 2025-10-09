@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -56,7 +57,8 @@ class HistorySyncOptinUI
 
   // Prepares the information to be given to the handler once ready.
   void Initialize(Browser* browser,
-                  base::OnceClosure history_optin_completed_closure);
+                  HistorySyncOptinHelper::FlowCompletedCallback
+                      history_optin_completed_callback);
 
  private:
   // history_sync_optin::mojom::PageHandlerFactory:
@@ -69,7 +71,8 @@ class HistorySyncOptinUI
   // with all the needed information to display.
   void OnMojoHandlersReady(
       Browser* browser,
-      base::OnceClosure history_optin_completed_closure,
+      HistorySyncOptinHelper::FlowCompletedCallback
+          history_optin_completed_callback,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,
       mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver);
 

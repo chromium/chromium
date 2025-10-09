@@ -919,7 +919,8 @@ class HistorySyncOptinCoordinator
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& /*event*/) override {
-    if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
+    if (signin_util::ShouldShowHistorySyncOptinScreen(profile_.get()) !=
+        signin_util::ShouldShowHistorySyncOptinResult::kShow) {
       // Needed to prevent the promo from showing when it is already triggered
       // and the user sign out or turns on sync without dismissing the promo.
       Collapse();

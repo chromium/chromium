@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -65,6 +66,8 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
 
  protected:
   base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
+
   base::test::ScopedFeatureList feature_list_{
       syncer::kReplaceSyncPromosWithSignInPromos};
 };
@@ -120,6 +123,17 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
             0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Signin_HistorySync_AlreadyOptedIn"),
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Completed",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
@@ -167,6 +181,17 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
             0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Signin_HistorySync_AlreadyOptedIn"),
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Completed",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
@@ -218,6 +243,17 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
             0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Signin_HistorySync_AlreadyOptedIn"),
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Declined",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
@@ -266,6 +302,76 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
             0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Signin_HistorySync_AlreadyOptedIn"),
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Aborted",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+                       HistorySyncOptinSkippedIfUserIsAlreadyOptedIn) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+      ui::test::PollingStateObserver<int>,
+      kHistorySyncOptInAlreadyOptedInHistogramState);
+  AccountInfo account_info;
+
+  RunTestSequence(
+      Do([&]() {
+        account_info = identity_test_env()->MakePrimaryAccountAvailable(
+            kMainEmail, signin::ConsentLevel::kSignin);
+        // Optin to syncing history, tabs & tab groups.
+        auto* user_settings =
+            SyncServiceFactory::GetForProfile(browser()->profile())
+                ->GetUserSettings();
+        user_settings->SetSelectedType(syncer::UserSelectableType::kHistory,
+                                       true);
+        user_settings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
+        user_settings->SetSelectedType(
+            syncer::UserSelectableType::kSavedTabGroups, true);
+      }),
+      InstrumentTab(kTabId, 0, browser()),
+      // Poll for the histogram to be recorded.
+      PollState(kHistorySyncOptInAlreadyOptedInHistogramState,
+                [&]() {
+                  return user_action_tester_.GetActionCount(
+                      "Signin_HistorySync_AlreadyOptedIn");
+                }),
+      Do([&]() {
+        signin_ui_util::EnableSyncFromSingleAccountPromo(
+            browser()->profile(),
+            /*account=*/account_info,
+            signin_metrics::AccessPoint::kAccountMenu);
+      }),
+      WaitForState(kHistorySyncOptInAlreadyOptedInHistogramState, 1),
+      StopObservingState(kHistorySyncOptInAlreadyOptedInHistogramState),
+      // The user is already opted in history/tab/tab grous syncing,
+      // the history sync optin dialog should not open.
+      EnsureNotPresent(SigninViewController::kHistorySyncOptinViewId));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
+  histogram_tester_.ExpectTotalCount("Signin.HistorySyncOptIn.Started",
+                                     /*expected_count=*/0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.AlreadyOptedIn",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
 }
 
 }  // namespace

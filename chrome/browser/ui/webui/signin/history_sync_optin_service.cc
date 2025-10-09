@@ -33,17 +33,18 @@ HistorySyncOptinServiceDefaultDelegate::
 
 void HistorySyncOptinServiceDefaultDelegate::ShowHistorySyncOptinScreen(
     Profile* profile,
-    base::OnceClosure history_optin_completed_closure) {
+    HistorySyncOptinHelper::FlowCompletedCallback callback) {
   CHECK(profile);
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     // The browser has been closed in the meantime, nothing to do.
+    std::move(callback.value())
+        .Run(HistorySyncOptinHelper::ScreenChoiceResult::kScreenSkipped);
     return;
   }
   browser->GetFeatures()
       .signin_view_controller()
-      ->ShowModalHistorySyncOptInDialog(
-          std::move(history_optin_completed_closure));
+      ->ShowModalHistorySyncOptInDialog(std::move(callback));
 }
 
 void HistorySyncOptinServiceDefaultDelegate::ShowAccountManagementScreen(

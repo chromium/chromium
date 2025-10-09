@@ -76,7 +76,8 @@ class HistorySyncOptinUIDialogPixelTest
         "SigninViewControllerDelegateViews");
 
     auto* controller = browser()->GetFeatures().signin_view_controller();
-    controller->ShowModalHistorySyncOptInDialog(base::DoNothing());
+    controller->ShowModalHistorySyncOptInDialog(
+        HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
@@ -128,7 +129,7 @@ class HistorySyncOptinStepControllerForTest
 
     history_sync_optin_ui->Initialize(
         /*browser=*/nullptr,
-        /*history_optin_completed_closure=*/base::DoNothing());
+        HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
 
     if (!step_shown_callback->is_null()) {
       std::move(step_shown_callback.value()).Run(/*success=*/true);

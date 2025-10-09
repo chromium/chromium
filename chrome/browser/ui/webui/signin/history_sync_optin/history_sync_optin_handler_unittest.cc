@@ -59,7 +59,7 @@ class HistorySyncOptinHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     handler_ = std::make_unique<HistorySyncOptinHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
-        browser(), profile(), base::DoNothing());
+        browser(), profile(), HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
   }
 
   void TearDown() override {

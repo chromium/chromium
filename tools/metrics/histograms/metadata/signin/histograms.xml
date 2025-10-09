@@ -1763,6 +1763,8 @@ prefs when the profile is loaded.  -->
     Records that {OptInFlowEvent}, and logs the original access point associated
     with this event.
   </summary>
+<!-- LINT.IfChange(Signin.HistorySyncOptIn) -->
+
   <token key="OptInFlowEvent">
     <variant name="Aborted"
         summary="the history sync screen has been dismissed due to some
@@ -1781,12 +1783,18 @@ prefs when the profile is loaded.  -->
         summary="the user was shown a button that would start the flow to
                  enable history sync (only recorded on Desktop)"/>
     <variant name="Skipped"
-        summary="the history sync screen has been skipped (due to enterprise
+        summary="the history sync screen has been skipped due to enterprise
                  policies disabling sync, history sync, or tabs sync; or if
-                 user is signed out)"/>
+                 user is signed out (note: on Desktop, skipped is only
+                 recorded if the history sync optin flow has been attempted;
+                 it is not recorded for flows that check in advance if
+                 history sync cannot be enabled and prevent the history
+                 screen flow from starting)"/>
     <variant name="Started"
         summary="the user started the flow to enable history sync"/>
   </token>
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/history_sync_optin_helper.cc:FlowEventToString) -->
+
 </histogram>
 
 <histogram name="Signin.IdentityConfirmationSnackbarDecision"
