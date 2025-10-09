@@ -403,12 +403,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3DShaderCompilationTimeUs" units="microseconds"
-    expires_after="2025-01-05">
+    expires_after="2026-06-05">
   <owner>geofflang@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The time it takes for fxc to compile HLSL to D3D bytecode. Recorded for all
-    clients regardless of support for high resolution timers.
+    clients regardless of support for high resolution timers. NOTE: metric
+    expired from 2025-01-05 to 2025-10-09.
   </summary>
 </histogram>
 
