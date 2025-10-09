@@ -97,8 +97,9 @@ void PageActionContainerView::OnPageActionSuggestionChipStateChanged(
   } else {
     const auto action_id = view->GetActionId();
     // Restore the original order using the recorded index.
-    if (page_action_view_initial_indices_.contains(action_id)) {
-      ReorderChildView(view, page_action_view_initial_indices_.at(action_id));
+    if (auto it = page_action_view_initial_indices_.find(action_id);
+        it != page_action_view_initial_indices_.end()) {
+      ReorderChildView(view, it->second);
     }
   }
 }
