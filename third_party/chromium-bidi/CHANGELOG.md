@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.0.0...chromium-bidi-v10.1.0) (2025-10-09)
+
+
+### Features
+
+* implement `emulation.setNetworkConditions:offline` ([#3819](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3819)) ([cc702ca](https://github.com/GoogleChromeLabs/chromium-bidi/commit/cc702caf1e249e4e6141fc9fa75d374027529569))
+
 ## [10.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.2.1...chromium-bidi-v10.0.0) (2025-10-07)
 
 
