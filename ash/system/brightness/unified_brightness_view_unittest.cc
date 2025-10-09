@@ -14,6 +14,7 @@
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -114,6 +115,9 @@ class UnifiedBrightnessViewTest : public AshTestBase {
 // letting them get through to the slider. Effectively the `slider_button` is
 // part of the slider in the brightness view.
 TEST_F(UnifiedBrightnessViewTest, SliderButtonClickThrough) {
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  controller()->UpdateBrightnessSlider();
   slider()->SetValue(1.0);
   EXPECT_FLOAT_EQ(unified_brightness_view()->slider()->GetValue(), 1.0);
 

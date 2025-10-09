@@ -94,9 +94,13 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
   pagination_controller_ = std::make_unique<PaginationController>(
       model_->pagination_model(), PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating(&RecordPageSwitcherSourceByEventType));
+
+  display::Screen::Get()->AddObserver(this);
 }
 
-UnifiedSystemTrayController::~UnifiedSystemTrayController() = default;
+UnifiedSystemTrayController::~UnifiedSystemTrayController() {
+  display::Screen::Get()->RemoveObserver(this);
+}
 
 void UnifiedSystemTrayController::AddObserver(Observer* observer) {
   if (observer) {
@@ -138,6 +142,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
                       base::Unretained(this))));
   unified_brightness_view_ =
       qs_view->AddSliderView(brightness_slider_controller_->CreateView());
+  UpdateBrightnessSlider();
 
   qs_view->SetMaxHeight(max_height);
 
@@ -492,6 +497,42 @@ void UnifiedSystemTrayController::ShutDownDetailedViewController() {
   if (detailed_view_controller_) {
     detailed_view_controller_->ShutDown();
   }
+}
+
+void UnifiedSystemTrayController::UpdateBrightnessSlider() const {
+  if (!unified_brightness_view_) {
+    return;
+  }
+  auto* slider =
+      views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
+          ->slider();
+  for (const display::Display& display :
+       display::Screen::Get()->GetAllDisplays()) {
+    if (display.IsInternal()) {
+      slider->SetEnabled(true);
+      return;
+    }
+  }
+  slider->SetEnabled(false);
+}
+
+bool UnifiedSystemTrayController::GetBrightnessSliderEnabledForTesting() const {
+  if (!unified_brightness_view_) {
+    return false;
+  }
+  return views::AsViewClass<UnifiedBrightnessView>(unified_brightness_view_)
+      ->slider()
+      ->GetEnabled();
+}
+
+void UnifiedSystemTrayController::OnDisplayAdded(
+    const display::Display& new_display) {
+  UpdateBrightnessSlider();
+}
+
+void UnifiedSystemTrayController::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  UpdateBrightnessSlider();
 }
 
 }  // namespace ash
