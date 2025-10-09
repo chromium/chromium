@@ -40,13 +40,13 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI {
       const gfx::Size& size,
       viz::SharedImageFormat format,
       gfx::BufferUsage usage);
-  bool FillSharedMemoryRegionWithBufferContents(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture() {
+    return staging_texture_;
+  }
 
  private:
-  Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
-
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandleOnIO(
       const gfx::Size& size,
       viz::SharedImageFormat format,

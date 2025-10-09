@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space_win.h"
@@ -239,9 +240,23 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     scoped_refptr<base::SingleThreadTaskRunner> io_runner,
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
-  return GetGpuMemoryBufferFactoryDXGI(io_runner)
-      ->FillSharedMemoryRegionWithBufferContents(std::move(buffer_handle),
-                                                 std::move(shared_memory));
+  DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  auto* gmb_factory = GetGpuMemoryBufferFactoryDXGI(io_runner);
+
+  auto d3d11_device = gmb_factory->GetOrCreateD3D11Device();
+  if (!d3d11_device) {
+    return false;
+  }
+
+  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
+  if (!mapping.IsValid()) {
+    return false;
+  }
+
+  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
+                               mapping.GetMemoryAsSpan<uint8_t>(),
+                               d3d11_device.Get(),
+                               &gmb_factory->staging_texture());
 }
 
 // static

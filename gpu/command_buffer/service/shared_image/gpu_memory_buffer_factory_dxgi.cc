@@ -210,24 +210,4 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
   return handle;
 }
 
-bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory) {
-  DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
-
-  auto d3d11_device = GetOrCreateD3D11Device();
-  if (!d3d11_device) {
-    return false;
-  }
-
-  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
-  if (!mapping.IsValid()) {
-    return false;
-  }
-
-  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
-                               mapping.GetMemoryAsSpan<uint8_t>(),
-                               d3d11_device.Get(), &staging_texture_);
-}
-
 }  // namespace gpu
