@@ -375,6 +375,7 @@ public class StripLayoutHelper
                     for (StripLayoutTab stripTab : mStripTabs) {
                         mTabDelegate.setIsTabMultiSelected(
                                 stripTab, mModel.isTabMultiSelected(stripTab.getTabId()));
+                        setAccessibilityDescription(stripTab, getTabById(stripTab.getTabId()));
                     }
                     mUpdateHost.requestUpdate();
                 }
