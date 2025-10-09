@@ -266,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 
   WaitForFreClose();
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Fre.WidgetClosedReason",
-      /*sample=*/views::Widget::ClosedReason::kUnspecified,
+      "Glic.Fre.WidgetClosedReason2",
+      /*sample=*/glic::GlicFreWidgetClosedReason::kHostTabClosed,
       /*expected_bucket_count=*/1);
 }
 
@@ -282,6 +282,10 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Accept"), 1);
   WaitForFreClose();
   WaitForGlicPanelShow();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.WidgetClosedReason2",
+      /*sample=*/glic::GlicFreWidgetClosedReason::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, DoNotCrashOnBrowserClose) {
@@ -292,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, DoNotCrashOnBrowserClose) {
 
   chrome::CloseAllBrowsers();
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Fre.WidgetClosedReason",
-      /*sample=*/views::Widget::ClosedReason::kUnspecified,
+      "Glic.Fre.WidgetClosedReason2",
+      /*sample=*/glic::GlicFreWidgetClosedReason::kHostTabClosed,
       /*expected_bucket_count=*/1);
 }
 
@@ -328,6 +332,28 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.LoadingPanelClosed"),
             1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.WidgetClosedReason2",
+      /*sample=*/glic::GlicFreWidgetClosedReason::kHostTabClosed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreRejection) {
+  // Open the FRE dialog in a tab.
+  glic_fre_controller().ShowFreDialog(
+      browser(), mojom::InvocationSource::kTopChromeButton);
+  WaitForFreShow();
+
+  // Reject the FRE and confirm it closed.
+  glic_fre_controller().RejectFre();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.NoThanks"), 1);
+  WaitForFreClose();
+
+  // Verify the close reason was logged correctly.
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Fre.WidgetClosedReason2",
+      /*sample=*/glic::GlicFreWidgetClosedReason::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

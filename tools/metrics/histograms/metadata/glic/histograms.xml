@@ -388,15 +388,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.WidgetClosedReason" enum="WidgetClosedReason"
+<histogram name="Glic.Fre.WidgetClosedReason2" enum="GlicFreWidgetClosedReason"
     expires_after="2026-07-01">
   <owner>birnie@google.com</owner>
   <owner>cuianthony@google.com</owner>
   <summary>
-    The FRE widget is configured to synchronously close the widget in response
-    to a few specific browser actions. This histogram records the reason why the
-    FRE widget was closed by the browser in such scenarios. This is logged by
-    GlicFreController::CloseWithReason().
+    Records the reason why the Glic FRE widget was closed. This is a successor
+    to Glic.Fre.WidgetClosedReason and includes more detailed reasons related to
+    tab movement and close in addition to the standard WidgetCloseReasons from
+    before.
   </summary>
 </histogram>
 

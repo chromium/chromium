@@ -43,6 +43,28 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+glic::GlicFreWidgetClosedReason ToGlicFreWidgetClosedReason(
+    views::Widget::ClosedReason reason) {
+  switch (reason) {
+    case views::Widget::ClosedReason::kUnspecified:
+      return glic::GlicFreWidgetClosedReason::kUnspecified;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+      return glic::GlicFreWidgetClosedReason::kEscKeyPressed;
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      return glic::GlicFreWidgetClosedReason::kCloseButtonClicked;
+    case views::Widget::ClosedReason::kLostFocus:
+      return glic::GlicFreWidgetClosedReason::kLostFocus;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      return glic::GlicFreWidgetClosedReason::kCancelButtonClicked;
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return glic::GlicFreWidgetClosedReason::kAcceptButtonClicked;
+  }
+}
+
+}  // namespace
+
 namespace glic {
 
 GlicFreController::GlicFreController(Profile* profile,
@@ -244,7 +266,7 @@ void GlicFreController::AcceptFre() {
   // Dismiss the FRE window and then show the Glic panel, but store source
   // browser before it is cleared.
   Browser* source_browser = source_browser_;
-  DismissFre(webui_state_);
+  CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Show a glic window attached to the invocation source browser.
   if (source_browser) {
@@ -265,11 +287,12 @@ void GlicFreController::RejectFre() {
                             interaction_timer_->Elapsed());
     interaction_timer_.reset();
   }
-  DismissFre(webui_state_);
+  CloseWithReason(views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
-  base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason", reason);
+  base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2",
+                                ToGlicFreWidgetClosedReason(reason));
   switch (reason) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
     case views::Widget::ClosedReason::kCancelButtonClicked:
@@ -537,17 +560,21 @@ void GlicFreController::OnCheckIsDefaultBrowserFinished(
 void GlicFreController::OnTabShowingModalWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
+  GlicFreWidgetClosedReason glic_reason;
   switch (reason) {
     case tabs::TabInterface::DetachReason::kDelete:
       base::RecordAction(
           base::UserMetricsAction("Glic.Fre.CloseByClosingHostTab"));
+      glic_reason = GlicFreWidgetClosedReason::kHostTabClosed;
       break;
     case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
       base::RecordAction(
           base::UserMetricsAction("Glic.Fre.CloseByMovingHostTab"));
+      glic_reason = GlicFreWidgetClosedReason::kHostTabMoved;
       break;
   }
-  CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2", glic_reason);
+  DismissFre(webui_state_);
 }
 
 void GlicFreController::CreateView() {

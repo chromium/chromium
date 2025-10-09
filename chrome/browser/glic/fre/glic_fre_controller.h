@@ -50,6 +50,23 @@ enum class FreErrorStateReason {
 };
 // LINT.ThenChange(tools/metrics/histograms/metadata/glic/enums.xml:FreErrorStateReason)
 
+// This enum is used for the Glic.Fre.WidgetClosedReason2 histogram.
+// It mirrors views::Widget::ClosedReason and adds Glic-specific reasons.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(GlicFreWidgetClosedReason)
+enum class GlicFreWidgetClosedReason {
+  kUnspecified = 0,
+  kEscKeyPressed = 1,
+  kCloseButtonClicked = 2,
+  kLostFocus = 3,
+  kCancelButtonClicked = 4,
+  kAcceptButtonClicked = 5,
+  kHostTabClosed = 6,
+  kHostTabMoved = 7,
+  kMaxValue = kHostTabMoved,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicFreWidgetClosedReason)
+
 // This class owns and manages the glic FRE modal dialog, and is owned by a
 // GlicWindowController.
 class GlicFreController {
