@@ -37,7 +37,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 }  // namespace
 
-@interface ExtendedShareViewController () <ShareExtensionDelegate>
+@interface ExtendedShareViewController () <ShareExtensionDelegate,
+                                           NSURLSessionDelegate>
 
 // The sheet to display when an item is shared.
 @property(nonatomic, strong) ShareExtensionSheet* shareSheet;
@@ -288,6 +289,53 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                                   userInfo:nil]];
 }
 
+#pragma mark - NSURLSessionDelegate
+
+- (void)URLSession:(NSURLSession*)session
+              dataTask:(NSURLSessionDataTask*)dataTask
+    didReceiveResponse:(NSURLResponse*)response
+     completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))
+                           completionHandler {
+  NSHTTPURLResponse* httpResponse =
+      base::apple::ObjCCast<NSHTTPURLResponse>(response);
+  NSString* mimeType = [httpResponse MIMEType];
+  int64_t contentLength = [httpResponse expectedContentLength];
+
+  // The task must be cancelled because it was a HEAD request
+  // and its purpose (header check) is now complete.
+  completionHandler(NSURLSessionResponseCancel);
+
+  __weak ExtendedShareViewController* weakSelf = self;
+
+  if ([mimeType hasPrefix:@"image/"]) {
+    // max image size to share (20 MB).
+    int64_t maxImageSize = 20 * 1024 * 1024;
+    if (contentLength == NSURLResponseUnknownLength ||
+        contentLength < maxImageSize) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf handleSharedImage:dataTask.originalRequest.URL
+                            forItem:nil
+                          withError:nil];
+      });
+    }
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf handleURL:dataTask.originalRequest.URL forItem:nil];
+    });
+  }
+}
+
+- (void)URLSession:(NSURLSession*)session
+                    task:(NSURLSessionTask*)task
+    didCompleteWithError:(NSError*)error {
+  if (error && error.code != NSURLErrorCancelled) {
+    // if an error has occured consider the task's URL to not be an image.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self handleURL:task.originalRequest.URL forItem:nil];
+    });
+  }
+}
+
 #pragma mark - Private methods
 
 - (void)executeInAppWithCommand:(AppGroupCommand*)command
@@ -441,6 +489,32 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [self displayErrorView];
     return;
   }
+  [self initiateHeaderCheckForURL:URL forItem:item withError:error];
+}
+
+// Initiates an asynchronous HEAD request to retrieve the URL's HTTP headers
+// determining its resource type.
+- (void)initiateHeaderCheckForURL:(NSURL*)URL
+                          forItem:(NSExtensionItem*)item
+                        withError:(NSError*)error {
+  // TODO(crbug.com/40278725): Add image with a file path handling.
+  if (![[URL scheme] isEqualToString:@"http"] &&
+      ![[URL scheme] isEqualToString:@"https"]) {
+    [self displayErrorView];
+    return;
+  }
+  NSURLSessionConfiguration* config =
+      [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSession* session = [NSURLSession sessionWithConfiguration:config
+                                                        delegate:self
+                                                   delegateQueue:nil];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:URL];
+  [request setHTTPMethod:@"HEAD"];
+  NSURLSessionDataTask* task = [session dataTaskWithRequest:request];
+  [task resume];
+}
+
+- (void)handleURL:(NSURL*)URL forItem:(NSExtensionItem*)item {
   self.shareItem = item;
   self.shareURL = URL;
   self.shareTitle = [[item attributedTitle] string];
@@ -484,6 +558,12 @@ const NSUInteger kSearchCharacterLimit = 1000;
         imageWithData:[NSData
                           dataWithContentsOfURL:base::apple::ObjCCast<NSURL>(
                                                     idImage)]];
+    if (!self.shareImage) {
+      // If the data for a given URL is nil, consider the URL to no longer be an
+      // image.
+      [self handleURL:idImage forItem:item];
+      return;
+    }
   }
 
   self.shareItem = item;

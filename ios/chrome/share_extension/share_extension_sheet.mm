@@ -212,7 +212,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 }
 
 - (void)setSharedURLPreview:(UIImage*)sharedURLPreview {
-  CHECK(!_sharedImage && !_sharedText);
+  CHECK(!_sharedText);
   _sharedURLPreview = sharedURLPreview;
 }
 
