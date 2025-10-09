@@ -92,8 +92,6 @@ void BookmarkBarPreloadPipeline::StartPrefetch(
 void BookmarkBarPreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
-  CHECK(!base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
-        prefetch_handle_);
   if (base::FeatureList::IsEnabled(
           features::kBookmarkTriggerForPrerender2KillSwitch)) {
     return;
@@ -125,6 +123,8 @@ void BookmarkBarPreloadPipeline::StartPrerender(
         ChromePreloadingEligibility::KDisallowSearchUrl));
     return;
   }
+  CHECK(!base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
+        prefetch_handle_);
 
   // BookmarkBar only allows https protocol.
   if (!url_.SchemeIs("https")) {
