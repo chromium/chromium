@@ -9754,6 +9754,3 @@ crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geoloca
 crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-animated-image.tentative.html [ Failure Pass ]
 # crbug.com/449751911 failure pass for linux debug, crbug.com/805756 for timeouts on all platforms.
 crbug.com/449751911 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout ]
-
-# Gardener 2025-10-08
-crbug.com/448666461 [ Mac15-arm64 ] clipboard/async-clipboard/async-selective-format-read.tentative.html [ Failure Pass ]
