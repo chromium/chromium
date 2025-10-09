@@ -170,7 +170,9 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
   if (search_terms_args.page_classification ==
           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX ||
       search_terms_args.page_classification ==
-          metrics::OmniboxEventProto::NTP_COMPOSEBOX) {
+          metrics::OmniboxEventProto::NTP_COMPOSEBOX ||
+      search_terms_args.page_classification ==
+          metrics::OmniboxEventProto::NTP_REALBOX) {
     send_request_and_session_ids =
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
@@ -282,13 +284,13 @@ GURL RemoteSuggestionsService::EndpointUrl(
                                                "chrome-multimodal");
       break;
     }
-    case metrics::OmniboxEventProto::NTP_COMPOSEBOX: {
+    case metrics::OmniboxEventProto::NTP_REALBOX:
+    case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
       if (search_terms_args.lens_overlay_suggest_inputs.has_value()) {
         url = net::AppendOrReplaceQueryParameter(url, "client",
                                                  "chrome-contextual");
       }
       break;
-    }
     default:
       break;
   }

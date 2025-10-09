@@ -48,6 +48,34 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
 
 }  // namespace
 
+ContextualOmniboxClient::ContextualOmniboxClient(
+    Profile* profile, content::WebContents* web_contents,
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        contextual_session_handle)
+    : SearchboxOmniboxClient(profile, web_contents),
+      contextual_session_handle_(std::move(contextual_session_handle)) {}
+
+ContextualOmniboxClient::~ContextualOmniboxClient() = default;
+
+std::optional<lens::proto::LensOverlaySuggestInputs>
+ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (!contextual_session_handle_) {
+    return std::nullopt;
+  }
+
+  auto* query_controller = contextual_session_handle_->GetController();
+  if (!query_controller) {
+    return std::nullopt;
+  }
+
+  const auto& suggest_inputs = query_controller->suggest_inputs();
+  if (suggest_inputs.has_encoded_request_id()) {
+    return suggest_inputs;
+  }
+
+  return std::nullopt;
+}
+
 void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
 

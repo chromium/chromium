@@ -30,6 +30,8 @@ class RealboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       std::unique_ptr<ContextualSessionService::SessionHandle>
           contextual_session_handle,
+      std::unique_ptr<ContextualSessionService::SessionHandle>
+          secondary_contextual_session_handle,
       std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
       Profile* profile,
       content::WebContents* web_contents,

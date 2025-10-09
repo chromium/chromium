@@ -274,6 +274,29 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection) {
             88,
         });
   }
+  {
+    SCOPED_TRACE("Up to 5 contextual search suggestions should be added.");
+    test(
+        {
+            CreateMatch(90, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(89, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(88, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(87, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(86, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(85, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(84, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(83, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(82, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(81, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        {
+            90,
+            89,
+            88,
+            87,
+            86,
+        });
+  }
 }
 
 // Tests the groups, limits, and rules for the Desktop NTP ZPS section.

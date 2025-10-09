@@ -409,6 +409,10 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
                     {
                         {omnibox::GROUP_TRENDS, 8},
                     }),
+              Group(5,
+                    {
+                        {omnibox::GROUP_CONTEXTUAL_SEARCH, 5},
+                    }),
           },
           group_configs) {}
 

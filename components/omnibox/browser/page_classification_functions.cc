@@ -84,4 +84,8 @@ bool IsComposebox(OEP::PageClassification classification) {
   return classification == OEP::NTP_COMPOSEBOX;
 }
 
+bool IsNTPRealbox(OEP::PageClassification classification) {
+  return classification == OEP::NTP_REALBOX;
+}
+
 }  // namespace omnibox

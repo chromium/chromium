@@ -854,6 +854,8 @@ void NewTabPageUI::BindInterface(
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   std::unique_ptr<ContextualSessionService::SessionHandle>
       contextual_session_handle;
+  std::unique_ptr<ContextualSessionService::SessionHandle>
+      secondary_contextual_session_handle;
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
   // Only create the composebox query controller and metrics recorder needed for
   // contextual search if realbox next is enabled.
@@ -864,11 +866,15 @@ void NewTabPageUI::BindInterface(
         ntp_composebox::kSendLnsSurfaceParam.Get(),
         ntp_composebox::kMaxNumFiles.Get() > 1,
         ntp_composebox::kEnableViewportImages.Get());
+    secondary_contextual_session_handle =
+      contextual_session_service->GetSession(
+          contextual_session_handle->session_id());
     composebox_metrics_recorder = std::make_unique<ComposeboxMetricsRecorder>(
         kComposeboxMetricsReporterPrefName);
   }
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), std::move(contextual_session_handle),
+      std::move(secondary_contextual_session_handle),
       std::move(composebox_metrics_recorder), profile_, web_contents(),
       service->metrics_reporter());
 }

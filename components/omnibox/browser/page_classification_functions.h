@@ -58,6 +58,10 @@ bool SupportsMostVisitedSites(
 bool IsComposebox(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if page classification is the NTP realbox.
+bool IsNTPRealbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_PAGE_CLASSIFICATION_FUNCTIONS_H_

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -46,9 +45,11 @@
 
 namespace {
 
-class RealboxOmniboxClient final : public SearchboxOmniboxClient {
+class RealboxOmniboxClient final : public ContextualOmniboxClient {
  public:
-  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
+  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents,
+                       std::unique_ptr<ContextualSessionService::SessionHandle>
+                            contextual_session_handle);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
@@ -57,9 +58,12 @@ class RealboxOmniboxClient final : public SearchboxOmniboxClient {
   void OnBookmarkLaunched() override;
 };
 
-RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
-                                           content::WebContents* web_contents)
-    : SearchboxOmniboxClient(profile, web_contents) {}
+RealboxOmniboxClient::RealboxOmniboxClient(
+    Profile* profile, content::WebContents* web_contents,
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        contextual_session_handle)
+    : ContextualOmniboxClient(profile, web_contents,
+                              std::move(contextual_session_handle)) {}
 
 RealboxOmniboxClient::~RealboxOmniboxClient() = default;
 
@@ -79,6 +83,8 @@ RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     std::unique_ptr<ContextualSessionService::SessionHandle>
         contextual_session_handle,
+    std::unique_ptr<ContextualSessionService::SessionHandle>
+        secondary_contextual_session_handle,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents,
@@ -91,7 +97,9 @@ RealboxHandler::RealboxHandler(
           std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
-              std::make_unique<RealboxOmniboxClient>(profile, web_contents),
+              std::make_unique<RealboxOmniboxClient>(
+                  profile, web_contents,
+                  std::move(secondary_contextual_session_handle)),
               kAutocompleteDefaultStopTimerDuration),
           std::move(contextual_session_handle)) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());

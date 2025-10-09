@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -36,6 +37,23 @@ struct ImageEncodingOptions;
 namespace tabs {
 class TabInterface;
 }
+
+class ContextualOmniboxClient : public SearchboxOmniboxClient {
+ public:
+  ContextualOmniboxClient(
+      Profile* profile,
+      content::WebContents* web_contents,
+      std::unique_ptr<ContextualSessionService::SessionHandle>
+          contextual_session_handle);
+  ~ContextualOmniboxClient() override;
+
+ private:
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
+
+  std::unique_ptr<ContextualSessionService::SessionHandle>
+      contextual_session_handle_;
+};
 
 // Abstract class that extends the SearchboxHandler and implements all methods
 // shared between the composebox and realbox to support contextual search.

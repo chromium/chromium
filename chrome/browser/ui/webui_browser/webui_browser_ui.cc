@@ -129,9 +129,10 @@ void WebUIBrowserUI::BindInterface(
   content::WebUI* webui = web_ui();
   content::WebContents* web_contents = webui->GetWebContents();
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), /*query_controller=*/nullptr,
-      /*composebox_metrics_recorder=*/nullptr, Profile::FromWebUI(webui),
-      web_contents, &metrics_reporter_);
+      std::move(pending_page_handler), /*contextual_session_handle=*/nullptr,
+      /*secondary_contextual_session_handle=*/nullptr,
+      /*composebox_metrics_recorder=*/nullptr,
+      Profile::FromWebUI(webui), web_contents, &metrics_reporter_);
 }
 
 void WebUIBrowserUI::BindInterface(
