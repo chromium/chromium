@@ -12799,6 +12799,28 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_NVS_HttpCache_Only_WithNewAreEquivalent_DevCanary_1008_Desktop",
+                    "enable_features": [
+                        "HttpCacheNoVarySearch",
+                        "HttpNoVarySearchDataUseNewAreEquivalent"
+                    ],
+                    "disable_features": [
+                        "DsePreload2",
+                        "PrefetchPrerenderIntegration",
+                        "SearchPrefetchWithNoVarySearchDiskCache"
+                    ]
+                }
+            ]
         }
     ],
     "HttpDiskCachePrewarming": [
