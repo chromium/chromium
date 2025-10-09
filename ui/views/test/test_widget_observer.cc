@@ -10,18 +10,14 @@
 namespace views::test {
 
 TestWidgetObserver::TestWidgetObserver(Widget* widget) : widget_(widget) {
-  widget_->AddObserver(this);
+  widget_observation_.Observe(widget_);
 }
 
-TestWidgetObserver::~TestWidgetObserver() {
-  if (widget_) {
-    widget_->RemoveObserver(this);
-  }
-  CHECK(!IsInObserverList());
-}
+TestWidgetObserver::~TestWidgetObserver() = default;
 
 void TestWidgetObserver::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(widget_, widget);
+  widget_observation_.Reset();
   widget_ = nullptr;
 }
 
