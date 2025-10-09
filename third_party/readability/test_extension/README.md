@@ -11,6 +11,9 @@ distillation algorithm.
 
 ## Features
 
+*   **Clone Page**: Captures the DOM of the active webpage, processes it into a
+    self-contained HTML document, and opens it in a new tab. This provides a
+    static, offline-ready, and refreshable version of the page for analysis.
 *   **Readerable?**: Performs a quick, preliminary check to see if a page is
     likely to be distillable, based on Mozilla's `isProbablyReaderable()`
     heuristic.
@@ -39,6 +42,8 @@ distillation algorithm.
 
 *   Navigate to any article or webpage you want to test.
 *   Click the extension's icon in the Chrome toolbar to see the available
-    action:
+    actions:
+    *   **"Clone"**: Opens a self-contained, static version of the page in a new
+        tab.
     *   **"Readerable?"**: Checks if the page is likely to be distillable and
         shows the result in the popup.

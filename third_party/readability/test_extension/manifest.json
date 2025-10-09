@@ -20,6 +20,7 @@
     {
       "resources": [
         "Readability-readerable.js",
+        "cloned.html",
         "readability_checker.js"
       ],
       "matches": [ "<all_urls>" ]

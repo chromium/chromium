@@ -9,6 +9,7 @@
  */
 const PageMode = {
   ORIGINAL: 'original',
+  CLONED: 'cloned',
   // Other modes will be added in subsequent CLs.
 };
 
@@ -20,7 +21,14 @@ const PageMode = {
 const POPUP_CONFIG = {
   [PageMode.ORIGINAL]: {
     buttons: [
+      {text: 'Clone', command: 'clone-new', target: 'runtime'},
       {text: 'Readerable?', command: 'check-readerable', target: 'runtime'},
+    ],
+  },
+  [PageMode.CLONED]: {
+    message: 'This is a cloned page.',
+    buttons: [
+      {text: 'Readerable?', command: 'check-readerable', target: 'tab'},
     ],
   },
 };
@@ -50,6 +58,12 @@ function renderPopup(container, pageMode, tabId) {
   container.innerHTML = '';
 
   const config = POPUP_CONFIG[pageMode] ?? POPUP_CONFIG[PageMode.ORIGINAL];
+
+  if (config.message) {
+    const info = document.createElement('p');
+    info.textContent = config.message;
+    container.appendChild(info);
+  }
 
   config.buttons.forEach(({text, command, target}) => {
     let messageCallback;
@@ -88,9 +102,13 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     return;
   }
 
+  const clonedUrl = chrome.runtime.getURL('cloned.html');
+  let pageMode = PageMode.ORIGINAL;
+  if (tab.url.startsWith(clonedUrl)) {
+    pageMode = PageMode.CLONED;
+  }
   // TODO(crrev.com/449799192): Add logic to detect other page modes (e.g.,
-  // cloned).
-  const pageMode = PageMode.ORIGINAL;
+  // viewer).
 
   const container = document.getElementById('popup-content');
   renderPopup(container, pageMode, tab.id);
