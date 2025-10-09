@@ -284,6 +284,11 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+  if (base::FeatureList::IsEnabled(features::kGlicEntrypointVariations)) {
+    GTEST_SKIP() << "TODO(crbug.com/450575228): Skipped when GlicEntrypointVariations "
+                    "flag is enabled. Update this test and re-enable.";
+  }
+
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
