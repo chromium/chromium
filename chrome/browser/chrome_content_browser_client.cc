@@ -66,6 +66,7 @@
 #include "chrome/browser/btm/btm_browser_signin_detector.h"
 #include "chrome/browser/btm/stateful_bounce_counter.h"
 #include "chrome/browser/child_process_host_flags.h"
+#include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
 #include "chrome/browser/chrome_content_browser_client_navigation_throttles.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
@@ -80,14 +81,12 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/font_family_cache.h"
-#include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -104,8 +103,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
-#include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
-#include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
@@ -115,7 +112,6 @@
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
-#include "chrome/browser/performance_monitor/chrome_browser_main_extra_parts_performance_monitor.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/plugins/plugin_utils.h"
@@ -137,20 +133,17 @@
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
-#include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/renderer_updater.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
-#include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
@@ -416,7 +409,6 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/tracing/tracing_features.h"
@@ -427,8 +419,6 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"
-#include "chrome/browser/chrome_browser_main_mac.h"
-#include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "chrome/common/chrome_version.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/sandbox_serializer.h"
@@ -456,7 +446,6 @@
 #include "chrome/browser/ash/fileapi/mtp_file_system_backend_delegate.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/main_parts/chrome_browser_main_parts_ash.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -466,7 +455,6 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
-#include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_dialog.h"
@@ -479,9 +467,6 @@
 #include "components/user_manager/user_manager.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#elif BUILDFLAG(IS_LINUX)
-#include "chrome/browser/chrome_browser_main_linux.h"
-#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "base/feature_list.h"
@@ -491,7 +476,6 @@
 #include "chrome/browser/android/service_tab_launcher.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
-#include "chrome/browser/chrome_browser_main_android.h"
 #include "chrome/browser/chrome_content_browser_client_android.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -509,8 +493,6 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/display/util/display_util.h"
-#elif BUILDFLAG(IS_POSIX)
-#include "chrome/browser/chrome_browser_main_posix.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -519,7 +501,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
-#include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -594,16 +575,6 @@
 #include "components/webapps/isolated_web_apps/scheme.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-#include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
-#elif BUILDFLAG(IS_OZONE)
-#include "chrome/browser/chrome_browser_main_extra_parts_ozone.h"
-#endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -783,23 +754,6 @@ BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
 // Warm up the ServiceWorker registration for DSE.
 BASE_FEATURE(kPrewarmServiceWorkerRegistrationForDSE,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// A small ChromeBrowserMainExtraParts that invokes a callback when threads are
-// ready. Used to initialize ChromeContentBrowserClient data that needs the UI
-// thread.
-class ChromeBrowserMainExtraPartsThreadNotifier final
-    : public ChromeBrowserMainExtraParts {
- public:
-  explicit ChromeBrowserMainExtraPartsThreadNotifier(
-      base::OnceClosure threads_ready_closure)
-      : threads_ready_closure_(std::move(threads_ready_closure)) {}
-
-  // ChromeBrowserMainExtraParts:
-  void PostCreateThreads() final { std::move(threads_ready_closure_).Run(); }
-
- private:
-  base::OnceClosure threads_ready_closure_;
-};
 
 // Cached version of the locale so we can return the locale on the I/O
 // thread.
@@ -1636,101 +1590,10 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
 
 std::unique_ptr<content::BrowserMainParts>
 ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
-  std::unique_ptr<ChromeBrowserMainParts> main_parts;
-  // Construct the Main browser parts based on the OS type.
-#if BUILDFLAG(IS_WIN)
-  main_parts = std::make_unique<ChromeBrowserMainPartsWin>(is_integration_test,
-                                                           &startup_data_);
-#elif BUILDFLAG(IS_MAC)
-  main_parts = std::make_unique<ChromeBrowserMainPartsMac>(is_integration_test,
-                                                           &startup_data_);
-#elif BUILDFLAG(IS_CHROMEOS)
-  main_parts = std::make_unique<ash::ChromeBrowserMainPartsAsh>(
-      is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_LINUX)
-  main_parts = std::make_unique<ChromeBrowserMainPartsLinux>(
-      is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_ANDROID)
-  main_parts = std::make_unique<ChromeBrowserMainPartsAndroid>(
-      is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_POSIX)
-  main_parts = std::make_unique<ChromeBrowserMainPartsPosix>(
-      is_integration_test, &startup_data_);
-#else
-#error "Unimplemented platform"
-#endif
-
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsThreadNotifier>(
-          base::BindOnce(&ChromeContentBrowserClient::InitOnUIThread,
-                         weak_factory_.GetWeakPtr())));
-
-  bool add_profiles_extra_parts = true;
-#if BUILDFLAG(IS_ANDROID)
-  if (startup_data_.HasBuiltProfilePrefService()) {
-    add_profiles_extra_parts = false;
-  }
-#endif
-  if (add_profiles_extra_parts) {
-    AddProfilesExtraParts(main_parts.get());
-  }
-
-  // Construct additional browser parts. Stages are called in the order in
-  // which they are added.
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(IS_LINUX)
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsViewsLinux>());
-#else
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsViews>());
-#endif
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsMac>());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(jamescook): Combine with `ChromeBrowserMainPartsAsh`.
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsAsh>());
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsLinux>());
-#elif BUILDFLAG(IS_OZONE)
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsOzone>());
-#endif
-
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsPerformanceMonitor>());
-
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsPerformanceManager>());
-
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsProfiling>());
-
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsMemory>());
-
-  chrome::AddMetricsExtraParts(main_parts.get());
-
-  main_parts->AddParts(
-      std::make_unique<
-          enterprise_util::ChromeBrowserMainExtraPartsEnterprise>());
-
-#if !BUILDFLAG(IS_ANDROID)
-  main_parts->AddParts(
-      std::make_unique<headless::ChromeBrowserMainExtraPartsHeadless>());
-#endif
-
-  // Always add ChromeBrowserMainExtraPartsGpu last to make sure
-  // GpuDataManager initialization could pick up about:flags settings.
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsGpu>());
-
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsSegmentationPlatform>());
-
-  return main_parts;
+  return ChromeBrowserMainParts::Create(
+      is_integration_test, &startup_data_,
+      base::BindOnce(&ChromeContentBrowserClient::InitOnUIThread,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ChromeContentBrowserClient::PostAfterStartupTask(
