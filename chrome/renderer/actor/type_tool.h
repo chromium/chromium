@@ -76,9 +76,11 @@ class TypeTool : public ToolBase {
     gfx::PointF target;
     std::vector<KeyParams> key_sequence;
   };
-  using ValidatedResult = base::expected<TargetAndKeys, mojom::ActionResultPtr>;
+  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
+  // Return true if input text can be procssed into a series of keypresses.
+  bool ProcessInputText(std::vector<KeyParams>& key_sequence) const;
   KeyParams GetEnterKeyParams() const;
   std::optional<KeyParams> GetKeyParamsForChar(char16_t c) const;
   blink::WebInputEventResult CreateAndDispatchKeyEvent(
@@ -86,7 +88,7 @@ class TypeTool : public ToolBase {
       KeyParams key_params);
   mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
-  void OnFocusingClickComplete(ValidatedResult validated_result,
+  void OnFocusingClickComplete(gfx::PointF coordinate,
                                ToolFinishedCallback callback,
                                mojom::ActionResultPtr click_result);
   void ContinueIncrementalTyping(ToolFinishedCallback callback);

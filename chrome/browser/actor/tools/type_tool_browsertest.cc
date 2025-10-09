@@ -143,6 +143,28 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_TextInput) {
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
+// Basic test of the TypeTool - ensure typed string is entered into an input
+// box.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputAnyCharacter) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::string typed_string = "你好こんにちはпривет";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Ensure that if the page creates and focus on to a new input upon focusing on
 // the original target (even if the original target is readonly), type tool will
 // continue on to the new input.

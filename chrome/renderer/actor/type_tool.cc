@@ -435,25 +435,24 @@ mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
 }
 
 void TypeTool::Execute(ToolFinishedCallback callback) {
-  ValidatedResult validated_result = Validate();
-  if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
+  ValidatedResult validated_target = Validate();
+  if (!validated_target.has_value()) {
+    std::move(callback).Run(std::move(validated_target.error()));
     return;
   }
 
   // Injecting a click to get focus.
-  gfx::PointF coordinate = validated_result->target;
+  gfx::PointF coordinate = *validated_target;
   journal_->Log(task_id_, "TypeTool::Execute::Focus",
                 JournalDetailsBuilder().Add("coord", coordinate).Build());
-  CreateAndDispatchClick(
-      blink::WebMouseEvent::Button::kLeft, 1, coordinate,
-      weak_ptr_factory_.GetWeakPtr(),
-      base::BindOnce(&TypeTool::OnFocusingClickComplete,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(validated_result), std::move(callback)));
+  CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         base::BindOnce(&TypeTool::OnFocusingClickComplete,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        coordinate, std::move(callback)));
 }
 
-void TypeTool::OnFocusingClickComplete(ValidatedResult validated_result,
+void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
                                        ToolFinishedCallback callback,
                                        mojom::ActionResultPtr click_result) {
   // Cancel rest of typing if initial click failed.
@@ -479,52 +478,81 @@ void TypeTool::OnFocusingClickComplete(ValidatedResult validated_result,
   WebElement focused_element =
       focused_frame ? focused_frame->GetDocument().FocusedElement()
                     : WebElement();
-  if (focused_element && focused_element.IsEditable()) {
+  bool in_editing_context = focused_element && focused_element.IsEditable();
+  if (in_editing_context) {
     journal_->Log(
         task_id_, "TypeTool::Execute::FocusElementEditable",
         JournalDetailsBuilder().Add("focus", focused_element).Build());
     PrepareTargetForMode(*focused_frame, action_->mode);
-  } else if (focused_element) {
-    journal_->Log(
-        task_id_, "TypeTool::Execute::FocusElementNotEditable",
-        JournalDetailsBuilder().Add("focus", focused_element).Build());
-    // TODO(crbug.com/421133798): If the target isn't editable, the existing
-    // TypeAction modes don't make sense.
-    ACTOR_LOG() << "Warning: TypeAction::Mode cannot be applied when targeting "
-                   "a non-editable ["
-                << focused_element << "]. https://crbug.com/421133798.";
   } else {
-    journal_->Log(task_id_, "TypeTool::Execute::NoFocusElement", {});
-    ACTOR_LOG()
-        << "Warning: TypeAction::Mode cannot be applied when there is no "
-           "focused element in the widget. https://crbug.com/432551725.";
+    if (focused_element) {
+      journal_->Log(
+          task_id_, "TypeTool::Execute::FocusElementNotEditable",
+          JournalDetailsBuilder().Add("focus", focused_element).Build());
+      // TODO(crbug.com/421133798): If the target isn't editable, the existing
+      // TypeAction modes don't make sense.
+      ACTOR_LOG()
+          << "Warning: TypeAction::Mode cannot be applied when targeting "
+             "a non-editable ["
+          << focused_element << "]. https://crbug.com/421133798.";
+    } else {
+      journal_->Log(task_id_, "TypeTool::Execute::NoFocusElement", {});
+      ACTOR_LOG()
+          << "Warning: TypeAction::Mode cannot be applied when there is no "
+             "focused element in the widget. https://crbug.com/432551725.";
+    }
   }
 
-  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
-    for (const auto& param : validated_result->key_sequence) {
-      mojom::ActionResultPtr result = SimulateKeyPress(param);
-      if (!IsOk(*result)) {
-        // The initial click may have changed the page.
-        result->requires_page_stabilization = true;
+  std::vector<KeyParams> key_sequence;
+  // Reserve two space per letter in text in case of composition keys.
+  key_sequence.reserve(2 * action_->text.length() +
+                       (action_->follow_by_enter ? 1 : 0));
+  bool can_simulate_typing = ProcessInputText(key_sequence);
 
-        std::move(callback).Run(std::move(result));
-        return;
+  if (can_simulate_typing) {
+    if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
+      for (const auto& param : key_sequence) {
+        mojom::ActionResultPtr result = SimulateKeyPress(param);
+        if (!IsOk(*result)) {
+          // The initial click may have changed the page.
+          result->requires_page_stabilization = true;
+
+          std::move(callback).Run(std::move(result));
+          return;
+        }
       }
+      std::move(callback).Run(MakeOkResult());
+    } else {
+      journal_->Log(task_id_, "TypeTool::Execute::TypeWithDelay",
+                    JournalDetailsBuilder()
+                        .Add("delay", features::kGlicActorKeyUpDuration.Get())
+                        .Build());
+      task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+      target_and_keys_ = TargetAndKeys(coordinate, std::move(key_sequence));
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&TypeTool::ContinueIncrementalTyping,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          features::kGlicActorKeyUpDuration.Get());
     }
-
+    return;
+  }
+  // Fallback to using PasteText when we can't simulate typing.
+  if (in_editing_context) {
+    journal_->Log(task_id_, "TypeTool::Execute::PasteTextFallback",
+                  JournalDetailsBuilder()
+                      .Add("text", action_->text)
+                      .Add("focus", focused_element)
+                      .Build());
+    focused_element.PasteText(WebString::FromUTF8(action_->text),
+                              /*replace_all=*/false);
     std::move(callback).Run(MakeOkResult());
   } else {
-    journal_->Log(task_id_, "TypeTool::Execute::TypeWithDelay",
-                  JournalDetailsBuilder()
-                      .Add("delay", features::kGlicActorKeyUpDuration.Get())
-                      .Build());
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-    target_and_keys_ = std::move(validated_result).value();
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TypeTool::ContinueIncrementalTyping,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        features::kGlicActorKeyUpDuration.Get());
+    std::move(callback).Run(MakeResult(
+        mojom::ActionResultCode::kTypeUnsupportedCharacters,
+        /*requires_page_stabilization=*/false,
+        "Cannot paste text with unsupported characters because no editable "
+        "element is focused after click."));
   }
 }
 
@@ -652,17 +680,17 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       }
     }
   }
+  return resolved_target->point;
+}
 
+bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
   // Perform typing specific validation.
   std::u16string text_to_type;
   if (!base::UTF8ToUTF16(action_->text.c_str(), action_->text.length(),
                          &text_to_type)) {
-    return base::unexpected(MakeResult(
-        mojom::ActionResultCode::kTypeInvalidTextEncoding,
-        /*requires_page_stabilization=*/false, "Invalid UTF-8 in input text"));
+    return false;
   }
 
-  std::vector<KeyParams> key_sequence;
   const absl::flat_hash_map<char16_t, Composition>& composition_map =
       GetCompositionMap();
 
@@ -681,10 +709,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       std::optional<KeyParams> dead_key_params =
           GetKeyParamsForChar(composition.dead_key);
       if (!dead_key_params.has_value()) {
-        return base::unexpected(MakeResult(
-            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
-            /*requires_page_stabilization=*/false,
-            absl::StrFormat("Failed to map dead key for char U+%X", c)));
+        return false;
       }
       dead_key_params->unmodified_text = 0;
       dead_key_params->text = 0;
@@ -694,10 +719,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       std::optional<KeyParams> base_key_params =
           GetKeyParamsForChar(composition.second_key);
       if (!base_key_params.has_value()) {
-        return base::unexpected(MakeResult(
-            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
-            /*requires_page_stabilization=*/false,
-            absl::StrFormat("Failed to map base key for char U+%X", c)));
+        return false;
       }
       base_key_params->text = c;
       base_key_params->unmodified_text = c;
@@ -713,10 +735,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       std::optional<KeyParams> base_key_params =
           GetKeyParamsForChar(altgr_it->second);
       if (!base_key_params.has_value()) {
-        return base::unexpected(MakeResult(
-            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
-            /*requires_page_stabilization=*/false,
-            absl::StrFormat("Failed to map AltGr base key for char U+%X", c)));
+        return false;
       }
       base_key_params->modifiers |= WebInputEvent::kAltGrKey;
       base_key_params->text = c;
@@ -725,18 +744,15 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       continue;
     }
 
-    // The character beyond ASCII and dead key composition is unsupported.
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kTypeUnsupportedCharacters,
-                   /*requires_page_stabilization=*/false,
-                   absl::StrFormat("Unsupported character U+%X", c)));
+    // The character is unsupported.
+    return false;
   }
 
   if (action_->follow_by_enter) {
     key_sequence.push_back(GetEnterKeyParams());
   }
 
-  return TargetAndKeys{resolved_target->point, std::move(key_sequence)};
+  return true;
 }
 
 }  // namespace actor
