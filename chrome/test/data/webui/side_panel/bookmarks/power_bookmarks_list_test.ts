@@ -226,6 +226,37 @@ suite('General', () => {
           ]));
     });
 
+    test('RebuildsKeyboardNavigationFiltered', async () => {
+      await flushTasks();
+
+      assertEquals(
+          JSON.stringify(
+              powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                  .getElementsForTesting()
+                  .map((el: HTMLElement) => el.id)),
+          JSON.stringify([
+            'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
+            'bookmark-5',
+            'bookmark-4',
+            'bookmark-3',
+          ]));
+
+      await performSearch('child');
+      await microtasksFinished();
+      await flushTasks();
+
+      assertEquals(
+          JSON.stringify(
+              powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                  .getElementsForTesting()
+                  .map((el: HTMLElement) => el.id)),
+          JSON.stringify([
+            'bookmark-5',
+            'bookmark-4',
+            'bookmark-3',
+          ]));
+    });
+
     test('RebuildsKeyboardNavigationMoved', async () => {
       await flushTasks();
 
