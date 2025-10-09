@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """A promptfoo provider for the Gemini CLI."""
 
+import dataclasses
+import functools
 import json
 import logging
 import os
@@ -30,6 +32,25 @@ DEFAULT_EXTENSIONS = [
 ]
 
 
+@dataclasses.dataclass
+class GeminiCliArguments:
+    """Information that is relevant to starting gemini-cli for a test."""
+    # The command to run gemini-cli.
+    command: list[str]
+    # The home directory that gemini-cli will use.
+    home_dir: pathlib.Path | None
+    # The environment that gemini-cli will be started in.
+    env: dict[str, str]
+    # The duration that gemini-cli will be allowed to run for.
+    timeout_seconds: int
+    # The system prompt that gemini-cli will be run with.
+    system_prompt: str
+    # The user prompt to pass to gemini-cli
+    user_prompt: str
+    # How wide to treat the console that gemini-cli is run in.
+    console_width: int
+
+
 def _stream_reader(stream, output_list: list[str], width):
     """Reads a stream line-by-line and appends to a list."""
     try:
@@ -54,7 +75,8 @@ def _get_sandbox_image_tag() -> str | None:
     return f'{constants.GEMINI_SANDBOX_IMAGE_URL}:{gemini_version}'
 
 
-def _get_container_path(sandbox_image: str) -> str | None:
+@functools.cache
+def _get_container_path(sandbox_image: str | None) -> str | None:
     """Gets the default PATH from the sandbox container."""
     if not sandbox_image:
         return None
@@ -183,6 +205,154 @@ def _get_installed_extensions(home_dir: pathlib.Path | None) -> str:
     )
 
 
+def _get_sandbox_flags() -> tuple[list[str], str]:
+    """Gets flags for the gemini-cli sandbox.
+
+    Returns:
+        A tuple (flags, error). |flags| is a list of flags to use with the
+        sandbox. |error| is an empty string if no error occurred, otherwise the
+        error string that should be surfaced to promptfoo.
+    """
+    sandbox_flags = []
+    depot_tools_path = checkout_helpers.get_depot_tools_path()
+    if not depot_tools_path:
+        return ([],
+                'Sandbox requires depot_tools, but it could not be located.')
+    sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
+
+    container_path = _get_container_path(_get_sandbox_image_tag())
+    if container_path:
+        sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
+    else:
+        return ([], 'Could not determine container PATH. PATH will not be '
+                'overridden.')
+
+    return sandbox_flags, ''
+
+
+def _get_gemini_cli_arguments(
+        provider_vars: dict[str, Any], provider_config: dict[str, Any],
+        user_prompt: str) -> tuple[GeminiCliArguments | None, str]:
+    """Collects arguments relevant to starting/running gemini-cli.
+
+    Args:
+        provider_vars: The key/value variables given to the provider.
+        provider_config: The config parsed from the test's YAML config file.
+        user_prompt: The user prompt to pass to gemini-cli
+
+    Returns:
+        A tuple (arguments, error). On success, |arguments| will be a
+        GeminiCliArguments instance with all fields filled and |error| will be
+        an empty string. On failure, |arguments| will be None and |error| will
+        be a non-empty string containing the error message.
+    """
+    try:
+        unparsed_timeout = provider_config.get('timeoutSeconds',
+                                               DEFAULT_TIMEOUT_SECONDS)
+        timeout_seconds = int(unparsed_timeout)
+    except (ValueError, TypeError):
+        return None, f'Failed to parse timeout from {unparsed_timeout}'
+
+    gemini_cli_bin = provider_vars.get('gemini_cli_bin', 'gemini')
+    command = [gemini_cli_bin, '-y']
+
+    sandbox_flags = []
+    if provider_vars.get('sandbox', False):
+        command.append('--sandbox')
+        sandbox_flags, error = _get_sandbox_flags()
+        if error:
+            return None, error
+
+    home_dir_str = provider_vars.get('home_dir')
+    home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
+
+    return GeminiCliArguments(
+        command=command,
+        home_dir=home_dir,
+        env=_get_env_with_overrides(
+            home=home_dir,
+            sandbox_flags=sandbox_flags,
+            sandbox_image=_get_sandbox_image_tag(),
+        ),
+        timeout_seconds=timeout_seconds,
+        system_prompt=_get_system_prompt(provider_config),
+        user_prompt=user_prompt,
+        console_width=provider_vars.get('console_width', 80)), ''
+
+
+def _get_system_prompt(provider_config: dict[str, Any]) -> str:
+    """Gets the system prompt to use for gemini-cli.
+
+    Args:
+        provider_config: The config parsed from the test's YAML config file.
+
+    Returns:
+        A string to use as the system prompt for the test.
+    """
+    system_prompt = provider_config.get('system_prompt', '')
+    templates = provider_config.get('templates', [])
+    template_prompt = _load_templates(templates)
+    if template_prompt:
+        if system_prompt:
+            system_prompt = f'{system_prompt}\n\n{template_prompt}'
+        else:
+            system_prompt = template_prompt
+    return system_prompt
+
+
+def _run_gemini_cli_with_output_streaming(
+        arguments: GeminiCliArguments) -> tuple[subprocess.Popen, list[str]]:
+    """Runs gemini-cli and with output streamed to console.
+
+    The caller is responsible for handling any exceptions that may arise from
+    running gemini-cli.
+
+    Args:
+        arguments: The GeminiCliArguments to run gemini-cli with
+
+    Returns:
+        A tuple (process, combined_output). |process| is the subprocess used
+        to run gemini-cli. |combined_output| is a list of all stdout and stderr
+        output collected from |process|. |process| will have terminated by the
+        time this function returns.
+    """
+    output_thread = None
+    process = None
+    combined_output = []
+    try:
+        process = subprocess.Popen(  # pylint: disable=consider-using-with
+            arguments.command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            universal_newlines=True,
+            env=arguments.env,
+        )
+        process.stdin.write(f'{arguments.system_prompt}\n\n'
+                            f'{arguments.user_prompt}')
+        process.stdin.close()
+        logging.info('--- Streaming Output (Timeout: %ss) ---',
+                     arguments.timeout_seconds)
+        output_thread = threading.Thread(
+            target=_stream_reader,
+            args=(process.stdout, combined_output, arguments.console_width),
+            daemon=True,
+        )
+        output_thread.start()
+        process.wait(timeout=arguments.timeout_seconds)
+        output_thread.join(timeout=5)
+        logging.info('\n--- End of Stream ---')
+        return process, combined_output
+    finally:
+        if process and process.poll() is None:
+            process.kill()
+        if output_thread:
+            output_thread.join(timeout=5)
+            if output_thread.is_alive():
+                logging.warning('Output thread did not cleanly terminate.')
+
+
 def call_api(prompt: str, options: dict[str, Any],
              context: dict[str, Any]) -> dict[str, Any]:
     """A flexible promptfoo provider that runs a command-line tool.
@@ -197,104 +367,37 @@ def call_api(prompt: str, options: dict[str, Any],
         if provider_vars.get('verbose', False) else logging.INFO,
         format='%(message)s',
     )
-
-    gemini_cli_bin = provider_vars.get('gemini_cli_bin', 'gemini')
-    command = [gemini_cli_bin, '-y']
-    if not isinstance(command, list):
-        return {
-            'error': f"'command' must be a list of strings, but got: {command}"
-        }
-
-    sandbox_flags = []
-    sandbox_image = _get_sandbox_image_tag()
-    if provider_vars.get('sandbox', False):
-        command.append('--sandbox')
-        depot_tools_path = checkout_helpers.get_depot_tools_path()
-        if not depot_tools_path:
-            return {
-                'error':
-                'Sandbox requires depot_tools, but it could not be located.'
-            }
-        sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
-
-        container_path = _get_container_path(sandbox_image)
-        if container_path:
-            sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
-        else:
-            return {
-                'error': ('Could not determine container PATH. '
-                          'PATH will not be overridden.')
-            }
-
-    system_prompt = provider_config.get('system_prompt', '')
-    try:
-        timeout_seconds = int(
-            provider_config.get('timeoutSeconds', DEFAULT_TIMEOUT_SECONDS))
-    except (ValueError, TypeError):
-        timeout_seconds = DEFAULT_TIMEOUT_SECONDS
-    process = None
-    combined_output: list[str] = []
-
     logging.debug('options: %s', json.dumps(options, indent=2))
     logging.debug('context: %s', json.dumps(context, indent=2))
 
-    home_dir_str = provider_vars.get('home_dir')
-    home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
+    gcli_arguments, error = _get_gemini_cli_arguments(provider_vars,
+                                                      provider_config, prompt)
+    if error:
+        return {'error': error}
 
-    extensions = provider_config.get('extensions', DEFAULT_EXTENSIONS)
-    _install_extensions(extensions, home_dir=home_dir)
+    _install_extensions(provider_config.get('extensions', DEFAULT_EXTENSIONS),
+                        home_dir=gcli_arguments.home_dir)
+    _apply_changes(provider_config.get('changes', []))
 
-    templates = provider_config.get('templates', [])
-    template_prompt = _load_templates(templates)
-    if template_prompt:
-        if system_prompt:
-            system_prompt = f'{system_prompt}\n\n{template_prompt}'
-        else:
-            system_prompt = template_prompt
-
-    changes = provider_config.get('changes', [])
-    _apply_changes(changes)
-
+    process = None
+    combined_output: list[str] = []
+    metrics = {
+        'system_prompt': gcli_arguments.system_prompt,
+        'user_prompt': gcli_arguments.user_prompt,
+    }
     try:
         start_time = time.time()
-        process = subprocess.Popen(  # pylint: disable=consider-using-with
-            command,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            universal_newlines=True,
-            env=_get_env_with_overrides(home=home_dir,
-                                        sandbox_flags=sandbox_flags,
-                                        sandbox_image=sandbox_image),
-        )
-        if process.stdin:
-            process.stdin.write(f'{system_prompt}\n\n{prompt}')
-            process.stdin.close()
-        logging.info('--- Streaming Output (Timeout: %ss) ---',
-                     timeout_seconds)
-        console_width = int(provider_vars.get('console_width', 80))
-        output_thread = threading.Thread(
-            target=_stream_reader,
-            args=(process.stdout, combined_output, console_width),
-        )
-        output_thread.start()
-        process.wait(timeout=timeout_seconds)
-        output_thread.join(timeout=5)
+        process, combined_output = _run_gemini_cli_with_output_streaming(
+            gcli_arguments)
         elapsed_time = time.time() - start_time
-        logging.info('\n--- End of Stream ---')
 
         full_output = ''.join(combined_output)
-        metrics = {
-            'system_prompt': system_prompt,
-            'user_prompt': prompt,
-            'full_output': full_output,
-            'duration': elapsed_time,
-        }
+        metrics['full_output'] = full_output
+        metrics['duration'] = elapsed_time
         if process.returncode != 0:
             error_message = (
-                f"Command '{' '.join(command)}' failed with return code "
-                f'{process.returncode}.\n'
+                f"Command '{' '.join(gcli_arguments.command)}' failed with "
+                f'return code {process.returncode}.\n'
                 f'Output:\n{full_output}')
             return {'error': error_message, 'metrics': metrics}
         return {
@@ -302,36 +405,22 @@ def call_api(prompt: str, options: dict[str, Any],
             'metrics': metrics,
         }
     except subprocess.TimeoutExpired:
-        if process:
-            process.kill()
-            output_thread.join(timeout=5)
-        metrics = {
-            'system_prompt': system_prompt,
-            'user_prompt': prompt,
-            'full_output': ''.join(combined_output),
-        }
+        metrics['full_output'] = ''.join(combined_output)
         return {
-            'error': f'Command timed out after {timeout_seconds} seconds.',
-            'metrics': metrics,
+            'error': (f'Command timed out after '
+                      f'{gcli_arguments.timeout_seconds} seconds.'),
+            'metrics':
+            metrics,
         }
     except FileNotFoundError:
-        metrics = {
-            'system_prompt': system_prompt,
-            'user_prompt': prompt,
-        }
         return {
-            'error': f"Command not found: '{command[0]}'. Please ensure it is "
-            'in your PATH.',
-            'metrics': metrics,
+            'error': (f"Command not found: '{gcli_arguments.command[0]}'. "
+                      f'Please ensure it is in your PATH.'),
+            'metrics':
+            metrics,
         }
     except Exception as e:
-        if process:
-            process.kill()
-        metrics = {
-            'system_prompt': system_prompt,
-            'user_prompt': prompt,
-            'full_output': ''.join(combined_output),
-        }
+        metrics['full_output'] = ''.join(combined_output)
         return {
             'error': f'An unexpected error occurred: {e}',
             'metrics': metrics,
