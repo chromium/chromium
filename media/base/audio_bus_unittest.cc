@@ -263,35 +263,55 @@ TEST_F(AudioBusTest, AllChannelsSubspan) {
 
 // Verify an AudioBus created via wrapping a memory block works as advertised.
 TEST_F(AudioBusTest, WrapMemory) {
-  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
-                         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
-                         kSampleRate, kFrameCount);
-  size_t total_frame_count =
-      AudioBus::CalculateMemorySize(params) / sizeof(float);
-  AlignedFloatArray data = base::AlignedUninit<float>(
-      total_frame_count, AudioBus::kChannelAlignment);
+  auto verify_wrapped_memory = [&](bool use_byte_span) {
+    AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                           ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                           kSampleRate, kFrameCount);
 
-  // Fill the memory with a test value we can check for after wrapping.
-  static const float kTestValue = 3;
-  std::ranges::fill(data, kTestValue);
+    const size_t total_frame_count =
+        AudioBus::CalculateMemorySize(params) / sizeof(float);
+    auto float_data = base::AlignedUninit<float>(total_frame_count,
+                                                 AudioBus::kChannelAlignment);
+    base::span<float> float_span = base::span(float_data);
 
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::WrapMemory(params, data.as_span().data());
-  // Verify the test value we filled prior to wrapping.
-  for (auto channel : bus->AllChannels()) {
-    VerifySpanIsFilledWithValue(channel, kTestValue);
+    // Fill the memory with a test value we can check for after wrapping.
+    static constexpr float kTestValue = 3;
+    std::ranges::fill(float_data, kTestValue);
+
+    std::unique_ptr<AudioBus> bus;
+
+    if (use_byte_span) {
+      base::span<uint8_t> byte_span =
+          base::as_writable_bytes(base::allow_nonunique_obj, float_span);
+      bus = AudioBus::WrapMemory(params, byte_span);
+    } else {
+      bus = AudioBus::WrapMemory(params, float_span);
+    }
+
+    // Verify the test value we filled prior to wrapping.
+    for (auto channel : bus->AllChannels()) {
+      VerifySpanIsFilledWithValue(channel, kTestValue);
+    }
+    VerifyChannelAndFrameCount(bus.get());
+    VerifyReadWriteAndAlignment(bus.get());
+
+    auto all_channels = bus->AllChannels();
+    auto first_channel = all_channels.front();
+    auto last_channel = all_channels.back();
+
+    // Verify the channel vectors lie within the provided memory block.
+    EXPECT_GE(&first_channel.front(), &float_span.front());
+    EXPECT_LT(&last_channel.back(), &float_span.back());
+  };
+
+  {
+    SCOPED_TRACE("uint8_t span");
+    verify_wrapped_memory(/*use_byte_span=*/true);
   }
-  VerifyChannelAndFrameCount(bus.get());
-  VerifyReadWriteAndAlignment(bus.get());
-
-  // Verify the channel vectors lie within the provided memory block.
-  base::span<const float> backing_memory_start = data.as_span();
-  const float* backing_memory_end =
-      backing_memory_start.subspan(total_frame_count).data();
-  EXPECT_GE(bus->channel_span(0).data(), backing_memory_start.data());
-  UNSAFE_TODO(
-      EXPECT_LT(bus->channel_span(bus->channels() - 1).data() + bus->frames(),
-                backing_memory_end));
+  {
+    SCOPED_TRACE("float span");
+    verify_wrapped_memory(/*use_byte_span=*/false);
+  }
 }
 
 // Simulate a shared memory transfer and verify results.
@@ -304,18 +324,37 @@ TEST_F(AudioBusTest, CopyTo) {
   std::unique_ptr<AudioBus> bus1 = AudioBus::Create(kChannels, kFrameCount);
   std::unique_ptr<AudioBus> bus2 = AudioBus::Create(params);
 
+  const size_t memory_size = AudioBus::CalculateMemorySize(params);
+
   {
     SCOPED_TRACE("Created");
     CopyTest(bus1.get(), bus2.get());
   }
   {
-    SCOPED_TRACE("Wrapped Memory");
+    SCOPED_TRACE("Wrapped Memory - raw pointer");
     // Try a copy to an AudioBus wrapping a memory block.
-    std::unique_ptr<float, base::AlignedFreeDeleter> data(static_cast<float*>(
-        base::AlignedAlloc(AudioBus::CalculateMemorySize(params),
-                           AudioBus::kChannelAlignment)));
+    auto data =
+        base::AlignedUninit<uint8_t>(memory_size, AudioBus::kChannelAlignment);
 
-    bus2 = AudioBus::WrapMemory(params, data.get());
+    bus2 = AudioBus::WrapMemory(params, data.data());
+    CopyTest(bus1.get(), bus2.get());
+  }
+  {
+    SCOPED_TRACE("Wrapped Memory - byte span");
+    // Try a copy to an AudioBus wrapping a memory block.
+    auto data =
+        base::AlignedUninit<uint8_t>(memory_size, AudioBus::kChannelAlignment);
+
+    bus2 = AudioBus::WrapMemory(params, data.as_span());
+    CopyTest(bus1.get(), bus2.get());
+  }
+  {
+    SCOPED_TRACE("Wrapped Memory - float span");
+    // Try a copy to an AudioBus wrapping a memory block.
+    auto data = base::AlignedUninit<float>(memory_size / sizeof(float),
+                                           AudioBus::kChannelAlignment);
+
+    bus2 = AudioBus::WrapMemory(params, data.as_span());
     CopyTest(bus1.get(), bus2.get());
   }
 }

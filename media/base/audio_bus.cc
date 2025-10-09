@@ -29,7 +29,7 @@ namespace media {
 
 // Returns `frames` rounded up to the nearest number which allows full rows of
 // SIMD instructions.
-static size_t AlignFramesUp(size_t frames) {
+constexpr static size_t AlignFramesUp(size_t frames) {
   // Since our internal sample format is float, we can guarantee the alignment
   // by making the number of frames an integer multiple of
   // AudioBus::kChannelAlignment / sizeof(float).
@@ -44,11 +44,12 @@ static size_t AlignFramesUp(size_t frames) {
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
 // in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-static size_t CalculateMemorySizeInternal(int channels, size_t frames) {
+constexpr static size_t CalculateMemorySizeInternal(int channels,
+                                                    size_t frames) {
   return sizeof(float) * channels * AlignFramesUp(frames);
 }
 
-static bool IsValidChannelCount(int channels) {
+constexpr static bool IsValidChannelCount(int channels) {
   CHECK_GT(channels, 0);
   return base::checked_cast<size_t>(channels) <=
          static_cast<size_t>(limits::kMaxChannels);
@@ -79,15 +80,6 @@ AudioBus::AudioBus(int channels, int frames)
 
   BuildChannelData(channels, data_);
 }
-
-AudioBus::AudioBus(int channels, int frames, float* data)
-    : AudioBus(channels,
-               frames,
-               // Per interface contract, `data` must have a size of at least
-               // CalculateMemorySizeInternal().
-               UNSAFE_TODO(base::span(
-                   data,
-                   CalculateMemorySizeInternal(channels, frames)))) {}
 
 AudioBus::AudioBus(int channels, int frames, base::span<float> data)
     : frames_(base::checked_cast<size_t>(frames)) {
@@ -140,9 +132,39 @@ std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
                                                void* data) {
   // |data| must be aligned by AudioBus::kChannelAlignment.
   CHECK(IsAligned(data));
-  return base::WrapUnique(new AudioBus(params.channels(),
-                                       params.frames_per_buffer(),
-                                       static_cast<float*>(data)));
+  const auto memory_size = CalculateMemorySizeInternal(
+      params.channels(), params.frames_per_buffer());
+
+  // Per interface contract, `data` must point to at least `memory_size` bytes.
+  // TODO(crbug.com/373960632): Remove this method and enforce this on the
+  // caller side.
+  UNSAFE_TODO(auto float_span = base::span<float>(
+                  reinterpret_cast<float*>(data), memory_size / sizeof(float)));
+  return WrapMemory(params, float_span);
+}
+
+std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
+                                               base::span<uint8_t> data) {
+  CHECK(IsAligned(data.data()));
+  CHECK_EQ(data.size() % sizeof(float), 0u);
+
+  // SAFETY: This reinterpret cast is unfortunately unavoidable, since we want
+  // to expose channels as float spans. Making sure `data` is aligned and its
+  // size a multiple of `sizeof(float)` is the best we can do for safety here.
+  auto float_span = UNSAFE_BUFFERS(base::span<float>(
+      reinterpret_cast<float*>(data.data()), data.size() / sizeof(float)));
+  return WrapMemory(params, float_span);
+}
+
+std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
+                                               base::span<float> data) {
+  // |data| must be aligned by AudioBus::kChannelAlignment.
+  CHECK(IsAligned(data));
+  CHECK_GE(data.size_bytes(),
+           CalculateMemorySizeInternal(params.channels(),
+                                       params.frames_per_buffer()));
+  return base::WrapUnique(
+      new AudioBus(params.channels(), params.frames_per_buffer(), data));
 }
 
 std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(

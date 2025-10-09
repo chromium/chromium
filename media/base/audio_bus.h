@@ -59,6 +59,10 @@ class MEDIA_EXPORT AudioBus {
                                               base::span<float> data);
   static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
                                               void* data);
+  static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
+                                              base::span<uint8_t> data);
+  static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
+                                              base::span<float> data);
   static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(
       const AudioParameters& params,
       const void* data);
@@ -230,7 +234,6 @@ class MEDIA_EXPORT AudioBus {
 
  protected:
   AudioBus(int channels, int frames);
-  AudioBus(int channels, int frames, float* data);
   AudioBus(int channels, int frames, base::span<float> data);
   explicit AudioBus(int channels);
 
