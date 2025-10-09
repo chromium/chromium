@@ -34,6 +34,27 @@ enum class FirstRunSentinelCreationResult {
   kMaxValue = kFileSystemError,
 };
 
+// An enumeration of startup temperatures. This must be kept in sync with
+// the UMA StartupType enumeration defined in histograms.xml.
+// LINT.IfChange(StartupTemperature)
+enum StartupTemperature {
+  // The startup was a cold start: nearly all of the binaries and resources were
+  // brought into memory using hard faults.
+  COLD_STARTUP_TEMPERATURE = 0,
+  // The startup was a warm start: the binaries and resources were mostly
+  // already resident in memory and effectively no hard faults were observed.
+  WARM_STARTUP_TEMPERATURE = 1,
+  // The startup type couldn't quite be classified as warm or cold, but rather
+  // was somewhere in between.
+  LUKEWARM_STARTUP_TEMPERATURE = 2,
+  // Startup temperature wasn't yet determined, or could not be determined.
+  UNDETERMINED_STARTUP_TEMPERATURE = 3,
+  // This must be after all meaningful values. All new values should be added
+  // above this one.
+  STARTUP_TEMPERATURE_COUNT,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:StartupTemperature)
+
 class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
     BrowserStartupMetricRecorder final {
  public:
@@ -131,6 +152,13 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
                                    bool set_non_browser_ui_displayed);
 
   bool ShouldLogStartupHistogram() const;
+
+  // Returns the startup temperature if available.
+  StartupTemperature GetStartupTemperature() const;
+
+  // Returns the appropriate application start ticks for use in startup metrics.
+  // Returns a null TimeTicks if a value has not been recorded yet.
+  base::TimeTicks GetApplicationStartTicksForStartup() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the time at which the first browser window is opened may not

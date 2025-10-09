@@ -95,30 +95,8 @@ struct SYSTEM_PROCESS_INFORMATION_EX {
 namespace {
 const char kProcessType[] = "type";
 
-// An enumeration of startup temperatures. This must be kept in sync with
-// the UMA StartupType enumeration defined in histograms.xml.
-enum StartupTemperature {
-  // The startup was a cold start: nearly all of the binaries and resources
-  // were
-  // brought into memory using hard faults.
-  COLD_STARTUP_TEMPERATURE = 0,
-  // The startup was a warm start: the binaries and resources were mostly
-  // already resident in memory and effectively no hard faults were
-  // observed.
-  WARM_STARTUP_TEMPERATURE = 1,
-  // The startup type couldn't quite be classified as warm or cold, but
-  // rather
-  // was somewhere in between.
-  LUKEWARM_STARTUP_TEMPERATURE = 2,
-  // Startup temperature wasn't yet determined, or could not be determined.
-  UNDETERMINED_STARTUP_TEMPERATURE = 3,
-  // This must be after all meaningful values. All new values should be
-  // added
-  // above this one.
-  STARTUP_TEMPERATURE_COUNT,
-};
-
-StartupTemperature g_startup_temperature = UNDETERMINED_STARTUP_TEMPERATURE;
+startup_metric_utils::StartupTemperature g_startup_temperature =
+    startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE;
 
 // Helper function for splitting out an UMA histogram based on startup
 // temperature. |histogram_function| is the histogram type, and corresponds to
@@ -143,20 +121,20 @@ void EmitHistogramWithTemperature(void (*histogram_function)(std::string_view,
   (*histogram_function)(histogram_basename, value);
   // Record to the cold/warm suffixed histogram as appropriate.
   switch (g_startup_temperature) {
-    case COLD_STARTUP_TEMPERATURE:
+    case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
       (*histogram_function)(base::StrCat({histogram_basename, ".ColdStartup"}),
                             value);
       break;
-    case WARM_STARTUP_TEMPERATURE:
+    case startup_metric_utils::WARM_STARTUP_TEMPERATURE:
       (*histogram_function)(base::StrCat({histogram_basename, ".WarmStartup"}),
                             value);
       break;
-    case LUKEWARM_STARTUP_TEMPERATURE:
+    case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
       // No suffix emitted for lukewarm startups.
       break;
-    case UNDETERMINED_STARTUP_TEMPERATURE:
+    case startup_metric_utils::UNDETERMINED_STARTUP_TEMPERATURE:
       break;
-    case STARTUP_TEMPERATURE_COUNT:
+    case startup_metric_utils::STARTUP_TEMPERATURE_COUNT:
       NOTREACHED();
   }
 }
@@ -477,26 +455,10 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaint(
     return;
   }
 
-  base::TimeTicks latency_origin;
-#if BUILDFLAG(IS_CHROMEOS)
-  // `application_start_ticks_` is inappropriate since the device often boots
-  // to a login screen, and an indefinite amount of time can elapse before a
-  // browser window is opened. Even when restoring a session after a crash
-  // (which has no login screen), the session is not restored automatically.
-  // The user must click a notification first before browser windows are
-  // created and restored, so using `application_start_ticks_` would have the
-  // same issue.
-  //
-  // If `web_contents_start_ticks_` is not set here, that could be intentional
-  // as this metric should not be recorded in certain cases (ex: a manually
-  // opened browser window).
-  if (web_contents_start_ticks_.is_null()) {
+  base::TimeTicks latency_origin = GetApplicationStartTicksForStartup();
+  if (latency_origin.is_null()) {
     return;
   }
-  latency_origin = web_contents_start_ticks_;
-#else
-  latency_origin = GetCommon().application_start_ticks_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   DCHECK(!latency_origin.is_null());
 
   EmitHistogramWithTemperatureAndTraceEvent(&base::UmaHistogramLongTimes100,
@@ -550,6 +512,33 @@ void BrowserStartupMetricRecorder::RecordHardFaultHistogram() {
 
 bool BrowserStartupMetricRecorder::ShouldLogStartupHistogram() const {
   return !WasMainWindowStartupInterrupted();
+}
+
+StartupTemperature BrowserStartupMetricRecorder::GetStartupTemperature() const {
+  return g_startup_temperature;
+}
+
+base::TimeTicks
+BrowserStartupMetricRecorder::GetApplicationStartTicksForStartup() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // `application_start_ticks_` is inappropriate since the device often boots
+  // to a login screen, and an indefinite amount of time can elapse before a
+  // browser window is opened. Even when restoring a session after a crash
+  // (which has no login screen), the session is not restored automatically.
+  // The user must click a notification first before browser windows are
+  // created and restored, so using `application_start_ticks_` would have the
+  // same issue.
+  //
+  // If `web_contents_start_ticks_` is not set here, that could be intentional
+  // as this metric should not be recorded in certain cases (ex: a manually
+  // opened browser window).
+  if (web_contents_start_ticks_.is_null()) {
+    return base::TimeTicks();
+  }
+  return web_contents_start_ticks_;
+#else
+  return GetCommon().application_start_ticks_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
