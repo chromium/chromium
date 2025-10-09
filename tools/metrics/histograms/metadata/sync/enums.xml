@@ -375,6 +375,7 @@ chromium-metrics-reviews@google.com.
   <int value="101" label="AutofillAiIdentityEntitiesEnabled"/>
   <int value="102" label="AutofillAiTravelEntitiesEnabled"/>
   <int value="103" label="CrossDeviceTabResumptionHomeModuleEnabled"/>
+  <int value="104" label="AutofillAmountExtractionAiTermsSeen"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

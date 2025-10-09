@@ -51,6 +51,10 @@ inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
 inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Boolean that is true if the Chrome user has seen the Amount Extraction AI
+// terms.
+inline constexpr char kAutofillAmountExtractionAiTermsSeen[] =
+    "autofill.amount_extraction_ai_terms_seen";
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =
@@ -287,6 +291,10 @@ void SetAutofillHasSeenBnpl(PrefService* prefs);
 bool HasSeenBnpl(const PrefService* prefs);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+
+void SetAutofillAmountExtractionAiTermsSeen(PrefService* prefs);
+
+bool AmountExtractionAiTermsSeen(const PrefService* prefs);
 }  // namespace autofill::prefs
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_

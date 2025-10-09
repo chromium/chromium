@@ -150,6 +150,7 @@ enum {
   kAutofillAiIdentityEntitiesEnabled = 101,
   kAutofillAiTravelEntitiesEnabled = 102,
   kCrossDeviceTabResumptionHomeModuleEnabled = 103,
+  kAutofillAmountExtractionAiTermsSeen = 104,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -421,6 +422,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           MergeBehavior::kNone}},
         {prefs::kFingerprintingProtectionEnabled,
          {syncable_prefs_ids::kFingerprintingProtectionEnabled,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillAmountExtractionAiTermsSeen,
+         {syncable_prefs_ids::kAutofillAmountExtractionAiTermsSeen,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     });
 

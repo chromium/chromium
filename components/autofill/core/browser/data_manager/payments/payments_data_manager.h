@@ -386,6 +386,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+  // Returns the value of the kAutofillAmountExtractionAiTermsSeen pref.
+  bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled() const;
+
+  // Sets the value of the kAutofillAmountExtractionAiTermsSeen pref to true.
+  void SetAutofillAmountExtractionAiTermsSeen();
+
   // Returns if the user has seen a BNPL suggestion before and if the BNPL
   // feature is enabled. Does not check for user's locale.
   bool ShouldShowBnplSettings() const;

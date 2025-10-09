@@ -148,6 +148,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    registry->RegisterBooleanPref(
+        kAutofillAmountExtractionAiTermsSeen, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
+
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForHomeAndWork)) {
     registry->RegisterDictionaryPref(
         kAutofillHomeMetadata,
@@ -410,4 +417,18 @@ bool HasSeenBnpl(const PrefService* prefs) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+// If called, always sets the pref to true, and once true, it will follow the
+// user around forever.
+void SetAutofillAmountExtractionAiTermsSeen(PrefService* prefs) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    prefs->SetBoolean(kAutofillAmountExtractionAiTermsSeen, true);
+  }
+}
+
+bool AmountExtractionAiTermsSeen(const PrefService* prefs) {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableAiBasedAmountExtraction) &&
+         prefs->GetBoolean(kAutofillAmountExtractionAiTermsSeen);
+}
 }  // namespace autofill::prefs

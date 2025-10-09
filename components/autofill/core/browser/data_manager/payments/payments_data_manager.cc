@@ -1099,6 +1099,20 @@ void PaymentsDataManager::SetAutofillHasSeenBnpl() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+bool PaymentsDataManager::IsAutofillAmountExtractionAiTermsSeenPrefEnabled()
+    const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableAiBasedAmountExtraction) &&
+         prefs::AmountExtractionAiTermsSeen(pref_service_);
+}
+
+void PaymentsDataManager::SetAutofillAmountExtractionAiTermsSeen() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    prefs::SetAutofillAmountExtractionAiTermsSeen(pref_service_);
+  }
+}
+
 bool PaymentsDataManager::IsAutofillWalletImportEnabled() const {
   if (is_syncing_for_test_) {
     return true;

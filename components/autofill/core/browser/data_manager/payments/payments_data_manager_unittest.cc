@@ -272,7 +272,8 @@ class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
 
   PaymentsDataManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
+        /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                              features::kAutofillEnableAiBasedAmountExtraction},
         /*disabled_features=*/{});
   }
 
@@ -4148,6 +4149,21 @@ TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {
   // The pref remains enabled after subsequent calls.
   payments_data_manager().SetAutofillHasSeenBnpl();
   ASSERT_TRUE(payments_data_manager().IsAutofillHasSeenBnplPrefEnabled());
+}
+
+// Tests that `SetAutofillAmountExtractionAiTermsSeen()` sets the pref to
+// `true` regardless of its current value.
+TEST_F(PaymentsDataManagerTest, SetAutofillAmountExtractionAiTermsSeen) {
+  // The pref should always start disabled.
+  EXPECT_FALSE(payments_data_manager()
+                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+
+  // Calling `SetAutofillAmountExtractionAiTermsSeen()` permanently enables
+  // the pref.
+  payments_data_manager().SetAutofillAmountExtractionAiTermsSeen();
+
+  EXPECT_TRUE(payments_data_manager()
+                  .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
 }
 
 // Tests that Buy-now-pay-later issuers are loaded when the
