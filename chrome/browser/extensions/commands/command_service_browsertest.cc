@@ -22,7 +22,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/command_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 

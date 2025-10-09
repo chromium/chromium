@@ -50,10 +50,8 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/context_type.mojom.h"
-#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -62,42 +60,27 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/browser_process.h"  // nogncheck
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/platform_util.h"  // nogncheck
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"                   // nogncheck
-#include "chrome/browser/ui/browser_finder.h"            // nogncheck
-#include "chrome/browser/ui/browser_window.h"            // nogncheck
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"  // nogncheck
+#include "chrome/browser/ui/browser.h"                             // nogncheck
+#include "chrome/browser/ui/browser_finder.h"                      // nogncheck
+#include "chrome/browser/ui/browser_window.h"                      // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"     // nogncheck
-#include "chrome/browser/ui/singleton_tabs.h"                      // nogncheck
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"  // nogncheck
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"  // nogncheck
-#include "chrome/browser/ui/tabs/tab_enums.h"        // nogncheck
-#include "chrome/browser/ui/tabs/tab_group_model.h"  // nogncheck
-#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
-#include "chrome/browser/ui/tabs/tab_utils.h"        // nogncheck
-#include "chrome/browser/ui/ui_features.h"           // nogncheck
+#include "chrome/browser/ui/tabs/tab_enums.h"                      // nogncheck
+#include "chrome/browser/ui/tabs/tab_group_model.h"                // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"                // nogncheck
+#include "chrome/browser/ui/tabs/tab_utils.h"                      // nogncheck
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
 #include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"  // nogncheck
+#include "components/tabs/public/tab_group.h"
 #include "content/public/browser/back_forward_cache.h"
-#include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/manifest_handlers/options_page_info.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
