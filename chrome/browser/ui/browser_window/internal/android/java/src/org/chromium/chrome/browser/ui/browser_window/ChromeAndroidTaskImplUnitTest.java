@@ -851,7 +851,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
-    public void setBoundsInDp_clampBoundsThatAreTooLarge() {
+    public void setBoundsInDp_clampsBoundsThatAreTooLarge() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
@@ -874,6 +874,52 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(
                 "Bounds that are too large should be clamped to the maximized bounds",
                 DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
+                boundsCaptor.getValue());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void setBoundsInDp_clampsBoundsThatAreTooSmall() {
+        // Arrange
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var displayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        float dipScale = 2.0f;
+        when(displayAndroid.getDipScale()).thenReturn(dipScale);
+
+        // Act: set new bounds that are smaller than the minimum size.
+        Rect maxBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
+        Rect newBoundsInDp =
+                new Rect(
+                        maxBoundsInDp.centerX(),
+                        maxBoundsInDp.centerY(),
+                        /* right= */ maxBoundsInDp.centerX()
+                                + ChromeAndroidTaskBoundsConstraints.MINIMAL_TASK_SIZE_DP
+                                - 10,
+                        /* bottom= */ maxBoundsInDp.centerY()
+                                + ChromeAndroidTaskBoundsConstraints.MINIMAL_TASK_SIZE_DP
+                                - 10);
+        chromeAndroidTask.setBoundsInDp(newBoundsInDp);
+
+        // Assert
+        Rect expectedBoundsInDp =
+                new Rect(
+                        maxBoundsInDp.centerX(),
+                        maxBoundsInDp.centerY(),
+                        /* right= */ maxBoundsInDp.centerX()
+                                + ChromeAndroidTaskBoundsConstraints.MINIMAL_TASK_SIZE_DP,
+                        /* bottom= */ maxBoundsInDp.centerY()
+                                + ChromeAndroidTaskBoundsConstraints.MINIMAL_TASK_SIZE_DP);
+        Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(expectedBoundsInDp, dipScale);
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(
+                "Bounds that are too small should be adjusted to the minimum size",
+                expectedBoundsInPx,
                 boundsCaptor.getValue());
     }
 

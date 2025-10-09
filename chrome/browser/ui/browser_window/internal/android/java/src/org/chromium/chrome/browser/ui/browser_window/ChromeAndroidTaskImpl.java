@@ -1004,7 +1004,10 @@ final class ChromeAndroidTaskImpl
                 DisplayUtil.scaleToEnclosingRect(
                         boundsInDp, activityWindowAndroid.getDisplay().getDipScale());
         Rect adjustedBoundsInPx =
-                ChromeAndroidTaskBoundsConstraints.apply(boundsInPx, activity.getWindowManager());
+                ChromeAndroidTaskBoundsConstraints.apply(
+                        boundsInPx,
+                        activityWindowAndroid.getDisplay(),
+                        activity.getWindowManager());
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), adjustedBoundsInPx);
     }
 
