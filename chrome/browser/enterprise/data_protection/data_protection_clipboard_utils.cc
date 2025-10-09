@@ -28,11 +28,13 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/clipboard_util.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -505,6 +507,24 @@ void IsCopyRestrictedByDialog(
   IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
 }
 
+content::ClipboardEndpoint MakeClipboardEndpoint(
+    ui::DataTransferEndpoint dte,
+    content::RenderFrameHost* rfh) {
+  return content::ClipboardEndpoint(
+      dte,
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+}
+
 }  // namespace
 
 void PasteIfAllowedByPolicy(
@@ -664,6 +684,75 @@ void ReplaceSameTabClipboardDataIfRequiredByPolicy(
   if (seqno == data_controls::GetLastReplacedClipboardData().seqno) {
     data = data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
   }
+}
+
+bool HandleWriteTextToClipboard(content::WebContents* web_contents,
+                                ui::ClipboardBuffer clipboard_buffer,
+                                const std::u16string_view& text) {
+  if (clipboard_buffer == ui::ClipboardBuffer::kSelection) {
+    return false;
+  }
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+
+  if (!rfh) {
+    return false;
+  }
+
+  ui::DataTransferEndpoint dte(
+      rfh->GetMainFrame()->GetLastCommittedURL(),
+      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
+
+  content::ClipboardEndpoint clipboard_endpoint =
+      MakeClipboardEndpoint(dte, rfh);
+
+  content::ClipboardPasteData data;
+  data.text = text;
+  auto meta = ui::ClipboardMetadata{
+      .size = data.text.size() * sizeof(std::u16string::value_type),
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+
+  IsClipboardCopyAllowedByPolicy(
+      std::move(clipboard_endpoint), meta, std::move(data),
+      base::BindOnce(
+          [](ui::ClipboardBuffer clipboard_buffer,
+             std::unique_ptr<ui::DataTransferEndpoint> dte,
+             const ui::ClipboardFormatType& data_type,
+             const content::ClipboardPasteData& data,
+             std::optional<std::u16string> replacement_data) {
+            ui::ScopedClipboardWriter scw(clipboard_buffer, std::move(dte));
+            if (replacement_data) {
+              scw.WriteText(std::move(*replacement_data));
+            } else {
+              scw.WriteText(data.text);
+            }
+          },
+          clipboard_buffer,
+          std::make_unique<ui::DataTransferEndpoint>(std::move(dte))));
+
+  return true;
+}
+
+bool DragAndDropForTextIsAllowed(content::WebContents* web_contents) {
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    return true;
+  }
+
+  ui::DataTransferEndpoint dte(
+      rfh->GetMainFrame()->GetLastCommittedURL(),
+      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
+
+  content::ClipboardEndpoint source = MakeClipboardEndpoint(dte, rfh);
+
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    return true;
+  }
+
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source.browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+  return verdict.level() != data_controls::Rule::Level::kBlock;
 }
 
 }  // namespace enterprise_data_protection
