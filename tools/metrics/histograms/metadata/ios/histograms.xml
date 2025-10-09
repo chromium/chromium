@@ -3500,7 +3500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay" units="s"
-    expires_after="2025-11-16">
+    expires_after="2026-10-08">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
