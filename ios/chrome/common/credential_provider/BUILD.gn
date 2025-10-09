@@ -69,18 +69,14 @@ source_set("mock_credential_store") {
 # TODO(crbug.com/450221329): Use a template for those targets.
 source_set("passkey_keychain_provider_chrome") {
   public_deps = [ ":passkey_keychain_provider_header" ]
-
-  # TODO(crbug.com/448228341): Replace with target from internal.
-  deps = [ ":passkey_keychain_provider_implementation" ]
+  deps = [ ios_passkey_keychain_provider_chrome_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("passkey_keychain_provider_extension") {
   public_deps = [ ":passkey_keychain_provider_header" ]
-
-  # TODO(crbug.com/448228341): Replace with new target from internal.
-  deps = [ ios_passkey_keychain_provider_target ]
+  deps = [ ios_passkey_keychain_provider_extension_target ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
