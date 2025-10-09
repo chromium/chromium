@@ -2,17 +2,71 @@
 
 [TOC]
 
+## Use Google's C++ style!
+
+We have an emacs module,
+[google-c-style.el](https://raw.githubusercontent.com/google/styleguide/gh-pages/google-c-style.el),
+which adds c-mode formatting. Then add to your .emacs:
+
+```el
+(load "/<path/to/chromium>/src/third_party/clang-format/script/clang-format.el")
+(add-hook 'c-mode-common-hook
+    (function (lambda () (local-set-key (kbd "TAB") 'clang-format-region))))
+```
+
+Now, you can use the
+
+&lt;Tab&gt;
+
+key to format the current line (even a long line) or region.
+
+## git tools
+
+We're collecting Chrome-specific tools under `tools/emacs`. See the files there
+for details.
+
+*   `trybot.el`: import Windows trybot output into a `compilation-mode` buffer.
+
+### Syntax-error Highlighting
+
+[Ninja](https://chromium.googlesource.com/chromium/src/+/0e94f26e8/docs/ninja_build.md)
+users get in-line highlighting of syntax errors using `flymake.el` on each
+buffer-save:
+
+```el
+(load "/<path/to/chromium>/src/tools/emacs/flymake-chromium.el")
+```
+
+### BUILD.gn and .gni files
+
+BUILD.gn and gni files are supported by the official gn-mode which can
+be enabled with:
+
+```el
+(load "/<path/to/chromium>/src/tools/emacs/gn.el")
+```
+
+### Mojom IDL (.mojom files)
+
+[Mojom](/mojo/public/tools/bindings/README.md)
+files are supported by mojom-mode, which can be enabled with:
+
+```el
+(load "/<path/to/chromium>/src/tools/emacs/mojom-mode.el")
+```
+
+Alternatively, you can `require` the feature.
+(See emacs documentation on
+[Named Features](https://www.gnu.org/software/emacs/manual/html_node/elisp/Named-Features.html).)
+
+```el
+(add-to-list 'load-path "/<path/to/chromium>/src/tools/emacs/")
+(require 'mojom-mode)
+```
+
 ## Debugging
 
 [Linux Debugging](linux/debugging.md) has some Emacs-specific debugging tips.
-
-## Syntax-error Highlighting
-
-[Ninja](ninja_build.md) users get in-line highlighting of syntax errors using
-`flymake.el` on each buffer-save:
-
-
-    (load-file "src/tools/emacs/flymake-chromium.el")
 
 ## [ycmd](https://github.com/Valloric/ycmd) (YouCompleteMe) + flycheck
 
@@ -24,11 +78,6 @@ flycheck provides:
 *   navigation to declarations and definitions (using `ycmd-goto`) based on
     on-the-fly processing using clang. A quick demo video showing code
     completion and flycheck highlighting a missing semicolon syntax error:
-
-[![video preview][img]][video]
-
-[img]: http://img.youtube.com/vi/a0zMbm4jACk/0.jpg
-[video]: http://www.youtube.com/watch?feature=player_embedded&v=a0zMbm4jACk
 
 ### Requirements
 
@@ -64,8 +113,6 @@ flycheck provides:
 
 ```el
 ;; ycmd
-
-;;; Googlers can replace a lot of this with (require 'google-ycmd).
 
 (require 'ycmd)
 (require 'company-ycmd)
@@ -153,49 +200,6 @@ specific) that always finds, try this:
 _Note: if you know an easy way to change the ff-get-other-file behavior, please
 replace this hack with that solution! - stevenjb@chromium.org_
 
-## Use Google's C++ style!
-
-We have an emacs module,
-[google-c-style.el](http://google-styleguide.googlecode.com/svn/trunk/google-c-style.el),
-which adds c-mode formatting. Then add to your .emacs:
-
-```el
-(load "/<path/to/chromium>/src/third_party/clang-format/script/clang-format.el")
-(add-hook 'c-mode-common-hook
-    (function (lambda () (local-set-key (kbd "TAB") 'clang-format-region))))
-```
-
-Now, you can use the
-
-&lt;Tab&gt;
-
-key to format the current line (even a long line) or region.
-
-## BUILD.gn and .gni files
-
-BUILD.gn and gni files are supported by the official gn-mode which can
-be enabled with:
-
-    (load-file "src/tools/emacs/gn.el")
-
-## Mojom IDL (.mojom files)
-
-[Mojom](/mojo/public/tools/bindings/README.md)
-files are supported by mojom-mode, which can be enabled with:
-
-```el
-(load-file "/<path/to/chromium>/src/tools/emacs/mojom-mode.el")
-```
-
-Alternatively, you can `require` the feature.
-(See emacs documentation on
-[Named Features](https://www.gnu.org/software/emacs/manual/html_node/elisp/Named-Features.html).)
-
-```el
-(add-to-list 'load-path "/<path/to/chromium>/src/tools/emacs/")
-(require 'mojom-mode)
-```
-
 ## Highlight long lines
 
 One nice way to highlight long lines and other style issues:
@@ -212,7 +216,7 @@ One nice way to highlight long lines and other style issues:
 ```
 
 Note: You might need to grab the latest version of
-[whitespace.el](http://www.emacswiki.org/emacs-en/download/whitespace.el).
+[whitespace.el](https://www.emacswiki.org/emacs/download/whitespace.el).
 
 ## deep nesting
 
@@ -292,13 +296,6 @@ ad-do-it)
 (ad-activate 'vc-registered)
 )
 ```
-
-## git tools
-
-We're collecting Chrome-specific tools under `tools/emacs`. See the files there
-for details.
-
-*   `trybot.el`: import Windows trybot output into a `compilation-mode` buffer.
 
 ## ERC for IRC
 
