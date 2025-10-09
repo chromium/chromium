@@ -141,18 +141,14 @@ const CGFloat kSymbolSize = 22;
 
   TableViewModel* model = self.tableViewModel;
   if (_showMigrateToAccountSection) {
-    AutofillProfileDetailsSectionIdentifier section =
-        AutofillProfileDetailsSectionIdentifierFields;
-    if (base::FeatureList::IsEnabled(
-            kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-      section = AutofillProfileDetailsSectionIdentifierMigrationButton;
-      [model addSectionWithIdentifier:
-                 AutofillProfileDetailsSectionIdentifierMigrationButton];
-    }
+    [model addSectionWithIdentifier:
+               AutofillProfileDetailsSectionIdentifierMigrationButton];
     [model addItem:[self migrateToAccountRecommendationItem]
-        toSectionWithIdentifier:section];
+        toSectionWithIdentifier:
+            AutofillProfileDetailsSectionIdentifierMigrationButton];
     [model addItem:[self migrateToAccountButtonItem]
-        toSectionWithIdentifier:section];
+        toSectionWithIdentifier:
+            AutofillProfileDetailsSectionIdentifierMigrationButton];
   }
 
   if (_showEditButtonAsCell) {
@@ -369,42 +365,11 @@ const CGFloat kSymbolSize = 22;
 
 // Removes the migrate button section from the view.
 - (void)removeMigrateButton:(void (^)(BOOL finished))onCompletion {
-  __weak AutofillSettingsProfileEditTableViewController* weakSelf = self;
   [self
       performBatchTableViewUpdates:^{
-        TableViewModel* model = weakSelf.tableViewModel;
-        if (base::FeatureList::IsEnabled(
-                kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-          [self removeSectionWithIdentifier:
-                    AutofillProfileDetailsSectionIdentifierMigrationButton
-                           withRowAnimation:UITableViewRowAnimationFade];
-        } else {
-          NSIndexPath* indexPathForMigrateRecommendationItem = [model
-              indexPathForItemType:
-                  AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
-                 sectionIdentifier:
-                     AutofillProfileDetailsSectionIdentifierFields];
-          NSIndexPath* indexPathForMigrateButton =
-              [model indexPathForItemType:
-                         AutofillProfileDetailsItemTypeMigrateToAccountButton
-                        sectionIdentifier:
-                            AutofillProfileDetailsSectionIdentifierFields];
-
-          [model removeItemWithType:
-                     AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
-              fromSectionWithIdentifier:
-                  AutofillProfileDetailsSectionIdentifierFields];
-          [model removeItemWithType:
-                     AutofillProfileDetailsItemTypeMigrateToAccountButton
-              fromSectionWithIdentifier:
-                  AutofillProfileDetailsSectionIdentifierFields];
-
-          [weakSelf.tableView
-              deleteRowsAtIndexPaths:@[
-                indexPathForMigrateRecommendationItem, indexPathForMigrateButton
-              ]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
+        [self removeSectionWithIdentifier:
+                  AutofillProfileDetailsSectionIdentifierMigrationButton
+                         withRowAnimation:UITableViewRowAnimationFade];
       }
                         completion:onCompletion];
   _showMigrateToAccountSection = NO;
