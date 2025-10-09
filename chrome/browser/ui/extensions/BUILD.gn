@@ -25,6 +25,8 @@ source_set("extensions") {
       "extension_dialog_utils.h",
       "extension_install_ui.h",
       "extensions_dialogs.h",
+      "extensions_menu_view_model.h",
+      "extensions_menu_view_platform_delegate.h",
       "reload_page_dialog_controller.h",
       "settings_overridden_dialog.h",
     ]
@@ -109,6 +111,7 @@ source_set("impl") {
       "extension_install_ui.cc",
       "extension_multiple_uninstall_dialog.cc",
       "extension_uninstall_dialog_impl.cc",
+      "extensions_menu_view_model.cc",
       "reload_page_dialog_controller.cc",
       "settings_overridden_dialog.cc",
     ]

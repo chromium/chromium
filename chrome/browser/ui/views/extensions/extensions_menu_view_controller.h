@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
@@ -24,8 +25,14 @@ class ExtensionsMenuMainPageView;
 class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
+// TODO(crbug.com/449814184): Rename class to
+// ExtensionsMenuViewPlatformDelegateViews.
+// TODO(crbug.com/449814184): Separate extensions UI business logic (e.g what
+// text should appear on a button) versus UI platform logic (e.g updating the
+// view).
 class ExtensionsMenuViewController
-    : public ExtensionsMenuHandler,
+    : public ExtensionsMenuViewPlatformDelegate,
+      public ExtensionsMenuHandler,
       public TabStripModelObserver,
       public ToolbarActionsModel::Observer,
       public extensions::PermissionsManager::Observer {
