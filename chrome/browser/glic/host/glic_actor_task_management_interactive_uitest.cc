@@ -227,22 +227,26 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        PauseThenResumeActorTaskBeforePerformAction) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
-
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
-
   RunTestSequence(
       // clang-format off
     InitializeWithOpenGlicWindow(),
-    StartActorTaskInNewTab(task_url, kNewActorTabId),
-
-    GetPageContextFromFocusedTab(),
-
+    AddInstrumentedTab(kNewActorTabId, task_url),
+    WithElement(kNewActorTabId, [this](ui::TrackedElement* el){
+      content::WebContents* tab_contents =
+          AsInstrumentedWebContents(el)->web_contents();
+      tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(tab_contents);
+      CHECK(tab);
+      tab_handle_ = tab->GetHandle();
+    }),
+    CreateTask(task_id_, ""),
     PauseActorTask(),
     ResumeActorTask(UpdatedContextOptions(), true),
     CheckIsActingOnTab(kNewActorTabId, true),
-
     // Ensure actions work after pause and resume.
+    GetPageContextFromFocusedTab(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE),
     WaitForJsResult(kNewActorTabId, "() => button_clicked")
       // clang-format on
