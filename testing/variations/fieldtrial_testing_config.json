@@ -15782,6 +15782,21 @@
             ]
         }
     ],
+    "MigrateAccountManagerDelegate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateAccountManagerDelegate"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateAccountPrefs": [
         {
             "platforms": [

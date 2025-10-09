@@ -6928,6 +6928,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "migrate-account-manager-delegate",
+    "owners": ["mlbipin@google.com", "chrome-signin-mobile-team@google.com"],
+    "expiry_milestone":150
+  },
+  {
     "name": "migrate-account-prefs-on-mobile",
     "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 150

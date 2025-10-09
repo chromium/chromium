@@ -77,4 +77,15 @@ public class FakePlatformAccount implements PlatformAccount {
                 .values()
                 .removeIf(tokenData -> accessToken.equals(tokenData.getToken()));
     }
+
+    @Override
+    public int hashCode() {
+        return mAccount.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FakePlatformAccount)) return false;
+        return mAccount.equals(((FakePlatformAccount) obj).mAccount);
+    }
 }

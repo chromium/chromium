@@ -25,7 +25,11 @@ public final class SigninFeatureMap extends FeatureMap {
     private SigninFeatureMap() {}
 
     public static final CachedFlag sMigrateAccountManagerDelegate =
-            new CachedFlag(sInstance, SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE, false);
+            new CachedFlag(
+                    sInstance,
+                    SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final List<CachedFlag> sCachedFlags = List.of(sMigrateAccountManagerDelegate);
 
     /** Layout type for the sign-in promo. */

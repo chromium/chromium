@@ -14606,6 +14606,7 @@ from previous Chrome versions.
   <int value="161008398" label="NearbyKeepAliveFix:disabled"/>
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
   <int value="161706692" label="ContextualPageActionPriceTracking:disabled"/>
+  <int value="165007022" label="MigrateAccountManagerDelegate:enabled"/>
   <int value="165429419" label="DrawNativeEdgeToEdge:disabled"/>
   <int value="165912610"
       label="PrivateNetworkAccessForWorkersWarningOnly:enabled"/>
@@ -17523,6 +17524,7 @@ from previous Chrome versions.
   <int value="1212186655" label="EnableDuplicateDownloadDialog:enabled"/>
   <int value="1212314391"
       label="EnableSupervisedUserSkipParentApprovalToInstallExtensions:disabled"/>
+  <int value="1212361100" label="MigrateAccountManagerDelegate:disabled"/>
   <int value="1212526465" label="MediaAppPdfInInk:disabled"/>
   <int value="1213886096" label="EnableOidcProfileRemoteCommands:disabled"/>
   <int value="1214219155" label="gamepad-polling-interval"/>

@@ -25,7 +25,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
-import org.chromium.components.signin.PlatformAccount;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -115,7 +114,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     private final Set<AccountHolder> mAccountHolders =
             Collections.synchronizedSet(new LinkedHashSet<>());
 
-    private final Set<PlatformAccount> mPlatformAccounts =
+    private final Set<FakePlatformAccount> mPlatformAccounts =
             Collections.synchronizedSet(new LinkedHashSet<>());
 
     /** Can be used to cause {@link #getAccessToken} method to fail. */
@@ -156,7 +155,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         if (mBlockedGetAccountsPromise != null) {
             return mBlockedGetAccountsPromise;
         }
-        return Promise.fulfilled(getAccountsInternal());
+
+        if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            return Promise.fulfilled(getAccountsInternal());
+        }
+        return Promise.fulfilled(getPlatformAccountInfosInternal());
     }
 
     @MainThread
@@ -211,13 +214,24 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
         ThreadUtils.checkUiThread();
-        synchronized (mAccountHolders) {
-            for (AccountHolder accountHolder : mAccountHolders) {
-                if (accountHolder.removeAccessToken(accessToken)) {
-                    break;
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            synchronized (mPlatformAccounts) {
+                for (FakePlatformAccount account : mPlatformAccounts) {
+                    if (account.removeAccessToken(accessToken)) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            synchronized (mAccountHolders) {
+                for (AccountHolder accountHolder : mAccountHolders) {
+                    if (accountHolder.removeAccessToken(accessToken)) {
+                        break;
+                    }
                 }
             }
         }
+
         if (completedRunnable != null) {
             completedRunnable.run();
         }
@@ -231,8 +245,21 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void checkIsSubjectToParentalControls(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
-        AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
-        if (accountHolder.getAccountCapabilities().isSubjectToParentalControls() == Tribool.TRUE) {
+
+        if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
+            if (accountHolder.getAccountCapabilities().isSubjectToParentalControls()
+                    == Tribool.TRUE) {
+                listener.onStatusReady(true, coreAccountInfo);
+            } else {
+                listener.onStatusReady(false, /* childAccount= */ null);
+            }
+            return;
+        }
+
+        FakePlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
+        if (account.getAccountInfo().getAccountCapabilities().isSubjectToParentalControls()
+                == Tribool.TRUE) {
             listener.onStatusReady(true, coreAccountInfo);
         } else {
             listener.onStatusReady(false, /* childAccount= */ null);
@@ -241,8 +268,13 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public Promise<AccountCapabilities> getAccountCapabilities(CoreAccountInfo coreAccountInfo) {
-        AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
-        return Promise.fulfilled(accountHolder.getAccountCapabilities());
+        if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
+            return Promise.fulfilled(accountHolder.getAccountCapabilities());
+        }
+
+        FakePlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
+        return Promise.fulfilled(account.getAccountInfo().getAccountCapabilities());
     }
 
     @Override
@@ -393,20 +425,43 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     /** Removes an account from the fake AccountManagerFacade. */
     public void removeAccount(CoreAccountId accountId) {
+        if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        synchronized (mAccountHolders) {
+                            @Nullable AccountHolder accountHolder =
+                                    mAccountHolders.stream()
+                                            .filter(
+                                                    (ah) ->
+                                                            ah.getAccountInfo()
+                                                                    .getId()
+                                                                    .equals(accountId))
+                                            .findFirst()
+                                            .orElse(null);
+                            if (accountHolder == null || !mAccountHolders.remove(accountHolder)) {
+                                throw new IllegalArgumentException(
+                                        "Cannot find account:" + accountId);
+                            }
+                        }
+                        if (mBlockedGetAccountsPromise == null) {
+                            fireOnAccountsChangedNotification();
+                        }
+                    });
+            return;
+        }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    synchronized (mAccountHolders) {
-                        @Nullable
-                        AccountHolder accountHolder =
-                                mAccountHolders.stream()
+                    synchronized (mPlatformAccounts) {
+                        @Nullable FakePlatformAccount platformAccount =
+                                mPlatformAccounts.stream()
                                         .filter(
-                                                (ah) ->
-                                                        ah.getAccountInfo()
+                                                (account) ->
+                                                        account.getAccountInfo()
                                                                 .getId()
                                                                 .equals(accountId))
                                         .findFirst()
                                         .orElse(null);
-                        if (accountHolder == null || !mAccountHolders.remove(accountHolder)) {
+                        if (platformAccount == null || !mPlatformAccounts.remove(platformAccount)) {
                             throw new IllegalArgumentException("Cannot find account:" + accountId);
                         }
                     }
@@ -437,7 +492,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                     assert mBlockedGetAccountsPromise == null;
                     mBlockedGetAccountsPromise = new Promise<>();
                     if (populateCache) {
-                        mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
+                        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+                            mBlockedGetAccountsPromise.fulfill(getPlatformAccountInfosInternal());
+                        } else {
+                            mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
+                        }
                     }
                 });
         return new UpdateBlocker();
@@ -453,7 +512,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                 () -> {
                     assert mBlockedGetAccountsPromise != null;
                     if (!mBlockedGetAccountsPromise.isFulfilled()) {
-                        mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
+                        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+                            mBlockedGetAccountsPromise.fulfill(getPlatformAccountInfosInternal());
+                        } else {
+                            mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
+                        }
                     }
                     mBlockedGetAccountsPromise = null;
                     fireOnAccountsChangedNotification();
@@ -503,6 +566,15 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         }
     }
 
+    private List<AccountInfo> getPlatformAccountInfosInternal() {
+        ThreadUtils.checkUiThread();
+        synchronized (mPlatformAccounts) {
+            return mPlatformAccounts.stream()
+                    .map(FakePlatformAccount::getAccountInfo)
+                    .collect(Collectors.toList());
+        }
+    }
+
     @AnyThread
     private @Nullable AccountHolder getAccountHolder(CoreAccountId accountId) {
         synchronized (mAccountHolders) {
@@ -545,9 +617,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             CoreAccountId accountId, AccountCapabilities accountCapabilities) {
         ThreadUtils.checkUiThread();
         assert accountId != null;
-        AccountHolder accountHolder = getAccountHolder(accountId);
-        boolean capabilitiesChanged =
-                accountHolder.getAccountCapabilities().updateWith(accountCapabilities);
+        boolean capabilitiesChanged;
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            FakePlatformAccount account = getPlatformAccount(accountId.getId());
+            capabilitiesChanged =
+                    account.getAccountInfo()
+                            .getAccountCapabilities()
+                            .updateWith(accountCapabilities);
+        } else {
+            AccountHolder accountHolder = getAccountHolder(accountId);
+            capabilitiesChanged =
+                    accountHolder.getAccountCapabilities().updateWith(accountCapabilities);
+        }
+
         if (capabilitiesChanged) {
             fireOnAccountsChangedNotification();
         }

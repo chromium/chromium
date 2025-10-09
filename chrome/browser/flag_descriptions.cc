@@ -5272,6 +5272,12 @@ const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "
     "ignored as of Android U)";
 
+const char kMigrateAccountManagerDelegateName[] =
+    "Migrate Account Manager Delegate";
+const char kMigrateAccountManagerDelegateDescription[] =
+    "Enables a refactoring of the Account Manager Delegate to use "
+    "PlatformAccounts";
+
 const char kMigrateAccountPrefsOnMobileName[] =
     "Migrate account prefs on mobile";
 const char kMigrateAccountPrefsOnMobileDescription[] =

@@ -13381,6 +13381,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillPrioritizeSaveCardOverMandatoryReauth)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"migrate-account-manager-delegate",
+     flag_descriptions::kMigrateAccountManagerDelegateName,
+     flag_descriptions::kMigrateAccountManagerDelegateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kMigrateAccountManagerDelegate)},
+#endif
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -3057,6 +3057,9 @@ extern const char kMediaCodecLowDelayModeDescription[];
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
+extern const char kMigrateAccountManagerDelegateName[];
+extern const char kMigrateAccountManagerDelegateDescription[];
+
 extern const char kMigrateAccountPrefsOnMobileName[];
 extern const char kMigrateAccountPrefsOnMobileDescription[];
 
