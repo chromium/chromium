@@ -608,7 +608,6 @@ source_set("web_applications") {
   if (is_mac) {
     deps += [
       "//chrome/browser/web_applications/mojom:web_app_shortcut_copier_mojom",
-      "//components/os_crypt/sync",
     ]
   }
 

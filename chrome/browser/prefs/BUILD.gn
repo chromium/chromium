@@ -284,9 +284,6 @@ source_set("impl") {
       "//chrome/browser/browser_switcher",
       "//chrome/browser/ui/webui/whats_new",
     ]
-    if (is_win || is_mac) {
-      deps += [ "//components/os_crypt/sync" ]
-    }
   }
 
   if (is_win) {
