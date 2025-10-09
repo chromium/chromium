@@ -2063,7 +2063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FirstRun.BestFeatures.MainScreen.Action"
-    enum="IOSBestFeaturesMainScreenActionType" expires_after="2025-10-26">
+    enum="IOSBestFeaturesMainScreenActionType" expires_after="2026-04-08">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FirstRun.BestFeatures.{FeatureName}.Action"
-    enum="IOSBestFeaturesDetailScreenActionType" expires_after="2025-10-26">
+    enum="IOSBestFeaturesDetailScreenActionType" expires_after="2026-04-08">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
