@@ -422,7 +422,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForHome"
     enum="BooleanSuccess" expires_after="2025-10-01">
-  <owner>hardikgoyal@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
     The result of a cryptohome restore SELinux context operation of user home
@@ -433,7 +432,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForShadow"
     enum="BooleanSuccess" expires_after="2025-10-01">
-  <owner>hardikgoyal@chromium.org</owner>
+  <owner>jadmanski@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
     The result of a cryptohome restore SELinux context operation of shadow
@@ -645,7 +644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.{AuthBlockType}.PrepareForRemovalResult"
     enum="CryptohomeCryptoError" expires_after="2026-09-15">
-  <owner>hardikgoyal@chromium.org</owner>
+  <owner>jadmanski@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     Records the result of PrepareForRemoval() call of an auth factor. Reported
@@ -656,7 +655,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.{AuthBlockType}.RevokeCredentialResult"
     enum="HwsecRetryActionEnum" expires_after="2026-09-24">
-  <owner>hardikgoyal@chromium.org</owner>
+  <owner>jadmanski@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     Records the result of credentials revocation Revoke() method, which removes
