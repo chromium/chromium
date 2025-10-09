@@ -987,6 +987,47 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPersistTabContextDeleteResult) -->
+
+<enum name="IOSPersistTabContextDeleteResult">
+  <summary>
+    The result of attempting to delete a persisted tab context from storage.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Storage Path Empty"/>
+  <int value="2" label="Delete Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h:IOSPersistTabContextDeleteResult) -->
+
+<!-- LINT.IfChange(IOSPersistTabContextReadResult) -->
+
+<enum name="IOSPersistTabContextReadResult">
+  <summary>
+    The result of attempting to read a persisted tab context from storage.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="File Not Found"/>
+  <int value="2" label="Storage Path Empty"/>
+  <int value="3" label="Read Failure"/>
+  <int value="4" label="Parse Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h:IOSPersistTabContextReadResult) -->
+
+<!-- LINT.IfChange(IOSPersistTabContextWriteResult) -->
+
+<enum name="IOSPersistTabContextWriteResult">
+  <summary>
+    The result of attempting to write a persisted tab context to storage.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Storage Path Empty"/>
+  <int value="2" label="Write Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h:IOSPersistTabContextWriteResult) -->
+
 <enum name="IOSPhotosServiceUploadFailureType">
   <int value="0" label="None"/>
   <int value="1" label="The service is already uploading."/>

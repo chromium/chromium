@@ -4636,6 +4636,96 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PersistTabContext.CreateDirectoryResult"
+    enum="BooleanSuccess" expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to create a profile-specific directory in
+    which serialized page contexts are to be saved.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.DeleteResult"
+    enum="IOSPersistTabContextDeleteResult" expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to delete a serialized page context from
+    storage.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.DeleteTime" units="ms"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The time taken to successfully delete a serialized page context from disk in
+    milliseconds. Time is not logged for failures
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.ReadResult"
+    enum="IOSPersistTabContextReadResult" expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to read a serialized page context from
+    storage.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.ReadTime" units="ms"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The time taken to successfully read and parse a serialized page context from
+    disk in milliseconds. This includes file reading and proto parsing. Time is
+    not logged for failures
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.Size" units="bytes"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The size in bytes of each tab context that is persisted in storage. Logged
+    whenever a tab context is saved to storage.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.WriteResult"
+    enum="IOSPersistTabContextWriteResult" expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to write a serialized page context to
+    storage.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PersistTabContext.WriteTime" units="ms"
+    expires_after="2026-03-01">
+  <owner>cloutierc@google.com</owner>
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The time taken to successfully write a serialized page context to disk in
+    milliseconds. This includes directory creation and file writing. Time is not
+    logged for failures
+  </summary>
+</histogram>
+
 <histogram name="IOS.PostDefaultAbandonmentPromo.UserAction"
     enum="IOSPostRestoreDefaultBrowserActionOnPrompt"
     expires_after="2024-12-31">

@@ -7,15 +7,20 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
-// TODO(crbug.com/445963646): Add metrics logging to browser agent.
+// TODO(crbug.com/445963646): Add metrics logging to browser agent for cleanup
+// functions and for tracking the difference between the number of web states vs
+// the number of page contexts in storage.
 // TODO(crbug.com/447646545): Add test coverage for persist tab context
 
 namespace {
@@ -37,8 +42,11 @@ base::FilePath GetContextFilePath(const base::FilePath& storage_directory_path,
 void WriteContextToStorage(std::string_view serialized_page_context,
                            const std::string& webstate_unique_id,
                            base::FilePath storage_directory_path) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (storage_directory_path.empty()) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kWriteTabContextResultHistogram,
+        IOSPersistTabContextWriteResult::kStoragePathEmptyFailure);
     return;
   }
 
@@ -46,14 +54,29 @@ void WriteContextToStorage(std::string_view serialized_page_context,
       GetContextFilePath(storage_directory_path, webstate_unique_id);
 
   if (!base::WriteFile(file_path, serialized_page_context)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kWriteTabContextResultHistogram,
+        IOSPersistTabContextWriteResult::kWriteFailure);
+    return;
   }
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramTimes(kPersistTabContextWriteTimeHistogram, elapsed_time);
+
+  base::UmaHistogramEnumeration(kWriteTabContextResultHistogram,
+                                IOSPersistTabContextWriteResult::kSuccess);
+
+  base::UmaHistogramCounts10M(kPersistTabContextSizeHistogram,
+                              serialized_page_context.size());
 }
 
 void DeleteContextFromStorage(const std::string& webstate_unique_id,
                               base::FilePath storage_directory_path) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (storage_directory_path.empty()) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kDeleteTabContextResultHistogram,
+        IOSPersistTabContextDeleteResult::kStoragePathEmptyFailure);
     return;
   }
 
@@ -61,9 +84,17 @@ void DeleteContextFromStorage(const std::string& webstate_unique_id,
       GetContextFilePath(storage_directory_path, webstate_unique_id);
 
   if (!base::DeleteFile(file_path)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kDeleteTabContextResultHistogram,
+        IOSPersistTabContextDeleteResult::kDeleteFailure);
     return;
   }
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramTimes(kPersistTabContextDeleteTimeHistogram, elapsed_time);
+
+  base::UmaHistogramEnumeration(kDeleteTabContextResultHistogram,
+                                IOSPersistTabContextDeleteResult::kSuccess);
 }
 
 // Creates the profile-specific directory in which serialized page contexts will
@@ -71,8 +102,11 @@ void DeleteContextFromStorage(const std::string& webstate_unique_id,
 // ensure it is created before any attempts are made to write, read or delete
 // to/from the directory while improving performance by only creating it once.
 void CreateStorageDirectory(const base::FilePath& storage_directory_path) {
-  if (!base::CreateDirectory(storage_directory_path)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+  if (base::CreateDirectory(storage_directory_path)) {
+    base::UmaHistogramBoolean(kCreateDirectoryResultHistogram, true);
+  } else {
+    // Log the failure to UMA.
+    base::UmaHistogramBoolean(kCreateDirectoryResultHistogram, false);
   }
 }
 
@@ -82,20 +116,26 @@ std::optional<std::string> ReadFileContents(
     const base::FilePath& storage_directory_path,
     const std::string& unique_id) {
   if (storage_directory_path.empty()) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kReadTabContextResultHistogram,
+        IOSPersistTabContextReadResult::kStoragePathEmptyFailure);
     return std::nullopt;
   }
 
   base::FilePath file_path =
       GetContextFilePath(storage_directory_path, unique_id);
+
   if (!base::PathExists(file_path)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kReadTabContextResultHistogram,
+        IOSPersistTabContextReadResult::kFileNotFound);
     return std::nullopt;
   }
 
   std::string serialized_data;
   if (!base::ReadFileToString(file_path, &serialized_data)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(kReadTabContextResultHistogram,
+                                  IOSPersistTabContextReadResult::kReadFailure);
     return std::nullopt;
   }
 
@@ -109,7 +149,9 @@ ParsePageContext(const std::string& serialized_data) {
   auto page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
   if (!page_context->ParseFromString(serialized_data)) {
-    // TODO(crbug.com/445963646): Add metrics logging to browser agent.
+    base::UmaHistogramEnumeration(
+        kReadTabContextResultHistogram,
+        IOSPersistTabContextReadResult::kParseFailure);
     return std::nullopt;
   }
 
@@ -123,6 +165,7 @@ ParsePageContext(const std::string& serialized_data) {
 std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
 ReadAndParseContextFromStorage(const base::FilePath& storage_directory_path,
                                const std::string& webstate_unique_id) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   std::optional<std::string> serialized_data =
       ReadFileContents(storage_directory_path, webstate_unique_id);
   if (!serialized_data) {
@@ -135,8 +178,11 @@ ReadAndParseContextFromStorage(const base::FilePath& storage_directory_path,
     return std::nullopt;
   }
 
-  // TODO(crbug.com/445963646): Add metrics logging to browser agent. (time and
-  // success)
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramTimes(kPersistTabContextReadTimeHistogram, elapsed_time);
+
+  base::UmaHistogramEnumeration(kReadTabContextResultHistogram,
+                                IOSPersistTabContextReadResult::kSuccess);
 
   return page_context;
 }
