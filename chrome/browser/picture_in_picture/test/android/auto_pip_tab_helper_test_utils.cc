@@ -54,16 +54,6 @@ void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
   tab_helper->set_has_high_engagement_for_testing(has_high_engagement);
 }
 
-void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasAudioFocusForTesting(
-    JNIEnv* env,
-    content::WebContents* web_contents,
-    jboolean has_focus) {
-  auto* tab_helper =
-      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
-  CHECK(tab_helper);
-  tab_helper->set_has_audio_focus_for_testing(has_focus);
-}
-
 jint JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
     JNIEnv* env,
     content::WebContents* web_contents,

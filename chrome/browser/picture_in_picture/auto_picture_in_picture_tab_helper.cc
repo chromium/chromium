@@ -51,12 +51,17 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
       base::BindRepeating(&AutoPictureInPictureTabHelper::OnTabActivatedChanged,
                           base::Unretained(this)));
 
+  // On non-Android platforms, we observe the internal AudioFocusManager to
+  // track audio focus state. Android has a native system-wide AudioManager,
+  // so this observer is never notified and is not used.
+#if !BUILDFLAG(IS_ANDROID)
   // Connect to receive audio focus events.
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
   content::GetMediaSessionService().BindAudioFocusManager(
       audio_focus_remote.BindNewPipeAndPassReceiver());
   audio_focus_remote->AddObserver(
       audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Connect to receive media session updates if the media session already
   // exists. If it does not, then we'll become an observer in
@@ -345,6 +350,7 @@ void AutoPictureInPictureTabHelper::OnTabActivatedChanged(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void AutoPictureInPictureTabHelper::OnFocusGained(
     media_session::mojom::AudioFocusRequestStatePtr session) {
   if (has_audio_focus_) {
@@ -373,9 +379,19 @@ void AutoPictureInPictureTabHelper::OnFocusLost(
   }
   has_audio_focus_ = (request_id != session->request_id);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  // On Android, audio focus is managed by the operating system. The
+  // MediaSession state is the source of truth as it reflects focus changes from
+  // the Android system's AudioManager.
+#if BUILDFLAG(IS_ANDROID)
+  has_audio_focus_ =
+      session_info &&
+      session_info->state ==
+          media_session::mojom::MediaSessionInfo::SessionState::kActive;
+#endif  // BUILDFLAG(IS_ANDROID)
   const bool is_playing =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;

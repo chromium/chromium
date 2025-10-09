@@ -263,7 +263,6 @@ public class AutoPictureInPictureTabHelperTest {
 
         // Fulfill media engagement conditions, but do not start playback.
         AutoPictureInPictureTabHelperTestUtils.setHasHighMediaEngagement(webContents, true);
-        AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
 
         // Switch away from the tab.
         switchToTab(newTab);
@@ -529,10 +528,6 @@ public class AutoPictureInPictureTabHelperTest {
         // Start playing the video.
         DOMUtils.playMedia(webContents, VIDEO_ID);
         DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
-
-        // Manually set audio focus for testing. It's needed because programmatically
-        // starting a video on Android doesn't gain audio focus.
-        AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
     }
 
     /**

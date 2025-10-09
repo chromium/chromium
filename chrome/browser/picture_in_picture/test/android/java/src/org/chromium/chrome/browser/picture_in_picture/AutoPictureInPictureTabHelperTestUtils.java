@@ -99,19 +99,6 @@ public class AutoPictureInPictureTabHelperTestUtils {
     }
 
     /**
-     * Sets a mock audio focus state for the given {@link WebContents} for testing purposes.
-     *
-     * @param webContents The WebContents to modify.
-     * @param hasFocus The mock audio focus state to set.
-     */
-    public static void setHasAudioFocusForTesting(WebContents webContents, boolean hasFocus) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutoPictureInPictureTabHelperTestUtilsJni.get()
-                                .setHasAudioFocusForTesting(webContents, hasFocus));
-    }
-
-    /**
      * Sets the content setting for a given URL and waits for it to be applied.
      *
      * @param profile The profile to set the content setting for.
@@ -165,9 +152,6 @@ public class AutoPictureInPictureTabHelperTestUtils {
         void setHasHighMediaEngagement(
                 @JniType("content::WebContents*") WebContents webContents,
                 boolean hasHighEngagement);
-
-        void setHasAudioFocusForTesting(
-                @JniType("content::WebContents*") WebContents webContents, boolean hasFocus);
 
         int getDismissCountForTesting(
                 @JniType("content::WebContents*") WebContents webContents,
