@@ -199,6 +199,49 @@ const absl::flat_hash_map<char16_t, Composition>& GetCompositionMap() {
   return *composition_map;
 }
 
+// Function to provide access to the AltGr map.
+const absl::flat_hash_map<char16_t, char16_t>& GetAltGrMap() {
+  static const base::NoDestructor<absl::flat_hash_map<char16_t, char16_t>>
+      altgr_map([] {
+        absl::flat_hash_map<char16_t, char16_t> map_data = {
+            // Non-shifted characters
+            {u'¡', u'1'},
+            {u'²', u'2'},
+            {u'³', u'3'},
+            {u'€', u'5'},
+            {u'¶', u';'},
+            {u'æ', u'z'},
+            {u'ß', u's'},
+            {u'ð', u'd'},
+            {u'ƒ', u'f'},
+            {u'ø', u'l'},
+            {u'´', u'j'},
+            {u'þ', u't'},
+            {u'å', u'w'},
+            {u'©', u'c'},
+            {u'®', u'r'},
+            {u'µ', u'm'},
+            {u'«', u'['},
+            {u'»', u']'},
+            {u'¿', u'/'},
+            {u'¥', u'-'},
+            // Characters requiring Shift
+            {u'¹', u'1'},
+            {u'¢', u'C'},
+            {u'£', u'$'},
+            {u'§', u'S'},
+            {u'°', u':'},
+            {u'Æ', u'Z'},
+            {u'Ð', u'D'},
+            {u'Ø', u'L'},
+            {u'Þ', u'T'},
+            {u'Å', u'W'},
+        };
+        return map_data;
+      }());
+  return *altgr_map;
+}
+
 bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
   // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
   // we'll have to implement the different insertion modes.
@@ -659,6 +702,25 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       base_key_params->text = c;
       base_key_params->unmodified_text = c;
       base_key_params->dom_key = base::UTF16ToUTF8(std::u16string(1, c));
+      key_sequence.push_back(base_key_params.value());
+      continue;
+    }
+
+    // Handle characters requiring AltGr combo key
+    const absl::flat_hash_map<char16_t, char16_t>& altgr_map = GetAltGrMap();
+    auto altgr_it = altgr_map.find(c);
+    if (altgr_it != altgr_map.end()) {
+      std::optional<KeyParams> base_key_params =
+          GetKeyParamsForChar(altgr_it->second);
+      if (!base_key_params.has_value()) {
+        return base::unexpected(MakeResult(
+            mojom::ActionResultCode::kTypeFailedMappingCharToKey,
+            /*requires_page_stabilization=*/false,
+            absl::StrFormat("Failed to map AltGr base key for char U+%X", c)));
+      }
+      base_key_params->modifiers |= WebInputEvent::kAltGrKey;
+      base_key_params->text = c;
+      base_key_params->unmodified_text = c;
       key_sequence.push_back(base_key_params.value());
       continue;
     }

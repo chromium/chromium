@@ -98,6 +98,30 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
+// Basic test of the TypeTool - ensure typed string containing composition
+// characters is entered into an input box.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
+                       TypeTool_TextInputAltGrCharacter) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string typed_string =
+      "Symbols: ¡§©®¶. Currency: ¢£¥. Ordinals: ¹²³. "
+      "Letters: ßæåøðþÆÅØÐÞ. Micro: µ.";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/true);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Basic test of the TypeTool - ensure typed string is entered into an input
 // box.
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_TextInput) {
