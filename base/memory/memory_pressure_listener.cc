@@ -50,6 +50,38 @@ CreateMemoryPressureListenerRegistrationImpl(
 
 }  // namespace
 
+// MemoryPressureListener ------------------------------------------------------
+
+// static
+void MemoryPressureListener::NotifyMemoryPressure(
+    MemoryPressureLevel memory_pressure_level) {
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(memory_pressure_level);
+}
+
+// static
+bool MemoryPressureListener::AreNotificationsSuppressed() {
+  return MemoryPressureListenerRegistry::AreNotificationsSuppressed();
+}
+
+// static
+void MemoryPressureListener::SetNotificationsSuppressed(bool suppressed) {
+  MemoryPressureListenerRegistry::SetNotificationsSuppressed(suppressed);
+}
+
+// static
+void MemoryPressureListener::SimulatePressureNotification(
+    MemoryPressureLevel memory_pressure_level) {
+  MemoryPressureListenerRegistry::SimulatePressureNotification(
+      memory_pressure_level);
+}
+
+// static
+void MemoryPressureListener::SimulatePressureNotificationAsync(
+    MemoryPressureLevel memory_pressure_level) {
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      memory_pressure_level);
+}
+
 // SyncMemoryPressureListenerRegistration --------------------------------------
 
 SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
@@ -177,36 +209,5 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
 
 MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() =
     default;
-
-// static
-void MemoryPressureListenerRegistration::NotifyMemoryPressure(
-    MemoryPressureLevel memory_pressure_level) {
-  MemoryPressureListenerRegistry::NotifyMemoryPressure(memory_pressure_level);
-}
-
-// static
-bool MemoryPressureListenerRegistration::AreNotificationsSuppressed() {
-  return MemoryPressureListenerRegistry::AreNotificationsSuppressed();
-}
-
-// static
-void MemoryPressureListenerRegistration::SetNotificationsSuppressed(
-    bool suppressed) {
-  MemoryPressureListenerRegistry::SetNotificationsSuppressed(suppressed);
-}
-
-// static
-void MemoryPressureListenerRegistration::SimulatePressureNotification(
-    MemoryPressureLevel memory_pressure_level) {
-  MemoryPressureListenerRegistry::SimulatePressureNotification(
-      memory_pressure_level);
-}
-
-// static
-void MemoryPressureListenerRegistration::SimulatePressureNotificationAsync(
-    MemoryPressureLevel memory_pressure_level) {
-  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      memory_pressure_level);
-}
 
 }  // namespace base
