@@ -78,7 +78,7 @@ class ActorTask {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
 
   State GetState() const;
-  void SetState(State state);
+  void SetState(State new_state);
 
   base::Time GetEndTime() const;
 
@@ -101,6 +101,8 @@ class ActorTask {
   bool IsPaused() const;
 
   bool IsStopped() const;
+
+  bool IsActive() const;
 
   ExecutionEngine* GetExecutionEngine() const;
 
@@ -127,18 +129,43 @@ class ActorTask {
   TabHandleSet GetLastActedTabs() const;
 
  private:
-  struct ActingTabState {
-    ActingTabState();
-    ~ActingTabState();
-    ActingTabState(ActingTabState&&);
-    ActingTabState& operator=(ActingTabState&&);
+  class ActingTabState : public content::WebContentsObserver {
+   public:
+    explicit ActingTabState(ActorTask* task);
+    ~ActingTabState() override;
 
+    void SetContents(content::WebContents* web_contents);
+
+    // content::WebContentsObserver overrides
+    void PrimaryPageChanged(content::Page& page) override;
+
+    // Parent task
+    raw_ptr<ActorTask> task;
     // Keeps the tab in "actuation mode". The runner is present when the tab is
     // actively being kept awake and is reset during pause.
     base::ScopedClosureRunner actuation_runner;
     // Subscription for TabInterface::WillDetach.
     base::CallbackListSubscription will_detach_subscription;
+    // Subscription for TabInterface::WillDiscardContents.
+    base::CallbackListSubscription content_discarded_subscription;
   };
+
+  // Transitions a tab from an inactive state to an active state.
+  void DidTabBecomeActive(tabs::TabHandle handle);
+
+  void DidContentsBecomeActive(ActingTabState* state,
+                               content::WebContents* contents);
+
+  // Transitions the tab from an active state to an inactive state.
+  void DidTabBecomeInactive(tabs::TabHandle handle);
+
+  void DidContentsBecomeInactive(ActingTabState* state,
+                                 content::WebContents* contents);
+
+  // Callback from TabInterface for when the WebContents change.
+  void HandleDiscardContents(tabs::TabInterface* tab,
+                             content::WebContents* old_contents,
+                             content::WebContents* new_contents);
 
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
@@ -169,7 +196,8 @@ class ActorTask {
 
   // A map from a tab's handle to state associated with that tab. The presence
   // of a tab in this map signifies that it is part of the task.
-  absl::flat_hash_map<tabs::TabHandle, ActingTabState> acting_tabs_;
+  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActingTabState>>
+      acting_tabs_;
 
   // Running number of actions taken in the current state.
   size_t actions_in_current_state_ = 0;

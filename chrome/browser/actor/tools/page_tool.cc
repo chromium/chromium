@@ -379,10 +379,6 @@ void PageTool::Invoke(InvokeCallback callback) {
   // ToolRequest params are checked for validity at creation.
   CHECK(invocation->action);
 
-  // Ensure the renderer believes it has focus. This ensures a realistic state
-  // needed for e.g. firing 'focus' events.
-  frame.GetRenderWidgetHost()->Focus();
-
   frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 
   // Watch for the RenderFrameHost being swapped out by a navigation (e.g. after
@@ -480,13 +476,6 @@ void PageTool::OnRenderFrameGone() {
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
   if (!invoke_callback_) {
     return;
-  }
-
-  // Blink state was set to focused as part of invocation. Reset Blink focus
-  // back to match the Views focus state.
-  if (GetFrame() && GetFrame()->GetRenderWidgetHost()->GetView() &&
-      !GetFrame()->GetRenderWidgetHost()->GetView()->HasFocus()) {
-    GetFrame()->GetRenderWidgetHost()->Blur();
   }
 
   frame_change_observer_.reset();
