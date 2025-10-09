@@ -720,7 +720,8 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(std::optional<uint64_t>(), false))
+              OnAmountExtractionReturned(std::optional<uint64_t>(),
+                                         /*timeout_reached=*/false))
       .Times(1);
 
   FakeCheckoutAmountReceived("");
@@ -730,9 +731,10 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(
-                  std::optional<uint64_t>(123'450'000ULL), false))
+  EXPECT_CALL(
+      *autofill_manager().GetPaymentsBnplManager(),
+      OnAmountExtractionReturned(std::optional<uint64_t>(123'450'000ULL),
+                                 /*timeout_reached=*/false))
       .Times(1);
 
   FakeCheckoutAmountReceived("$ 123.45");
@@ -742,8 +744,9 @@ TEST_F(AmountExtractionManagerTest,
 // extraction times out.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountExtractionTimeout_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(Eq(std::nullopt), true))
+  EXPECT_CALL(
+      *autofill_manager().GetPaymentsBnplManager(),
+      OnAmountExtractionReturned(Eq(std::nullopt), /*timeout_reached=*/true))
       .Times(1);
 
   FakeAmountExtractionTimeout();

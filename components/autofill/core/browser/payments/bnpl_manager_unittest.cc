@@ -1307,7 +1307,8 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
+                                            /*timeout_reached=*/false);
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
@@ -1740,7 +1741,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_SuggestionShownWithBnplEntry) {
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
+                                            /*timeout_reached=*/false);
 }
 
 // Tests that update suggestions callback is not called when the BNPL manager
@@ -1762,7 +1764,8 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
   EXPECT_CALL(callback, Run).Times(0);
 
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
+                                            /*timeout_reached=*/false);
 }
 
 // Tests that when CreateBnplPaymentInstrument and responds with a success
@@ -2140,7 +2143,8 @@ TEST_F(BnplManagerTest,
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(50'000'000ULL);
+  bnpl_manager_->OnAmountExtractionReturned(50'000'000ULL,
+                                            /*timeout_reached=*/false);
 }
 
 TEST_F(
@@ -2163,7 +2167,8 @@ TEST_F(
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
-  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
+                                            /*timeout_reached=*/false);
 }
 
 TEST_F(BnplManagerTest, IsBnplIssuerSupported) {

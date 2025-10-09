@@ -89,7 +89,7 @@ class BnplManager {
   // that the manager can update suggestions for buy-now-pay-later.
   virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount,
-      bool timeout_reached = false);
+      bool timeout_reached);
 
   // Returns true if the issuer for the ongoing flow contains the required
   // action `PaymentInstrument::ActionRequired::kAcceptTos`.
