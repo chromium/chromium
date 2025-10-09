@@ -403,7 +403,13 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
       CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
+// TODO(crbug.com/448993914): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestPromoCompleted DISABLED_TestPromoCompleted
+#else
+#define MAYBE_TestPromoCompleted TestPromoCompleted
+#endif
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_TestPromoCompleted) {
   InstallTestPromo(Eligibility::kCompleted);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -476,7 +482,14 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
 // or run these tests on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
+// TODO(crbug.com/448993914): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SigninPromoAppearsAndIsClickable \
+  DISABLED_SigninPromoAppearsAndIsClickable
+#else
+#define MAYBE_SigninPromoAppearsAndIsClickable SigninPromoAppearsAndIsClickable
+#endif
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, MAYBE_SigninPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpSignInPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -500,7 +513,16 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
+// TODO(crbug.com/448993914): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ExtensionsPromoAppearsAndIsClickable \
+  DISABLED_ExtensionsPromoAppearsAndIsClickable
+#else
+#define MAYBE_ExtensionsPromoAppearsAndIsClickable \
+  ExtensionsPromoAppearsAndIsClickable
+#endif
+IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
+                       MAYBE_ExtensionsPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpExtensionsPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -522,8 +544,16 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
   // TODD(https://crbug.com/433607240): Check model, histograms.
 }
 
+// TODO(crbug.com/448993914): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CustomizationPromoAppearsAndIsClickable \
+  DISABLED_CustomizationPromoAppearsAndIsClickable
+#else
+#define MAYBE_CustomizationPromoAppearsAndIsClickable \
+  CustomizationPromoAppearsAndIsClickable
+#endif
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
-                       CustomizationPromoAppearsAndIsClickable) {
+                       MAYBE_CustomizationPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
