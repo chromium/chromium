@@ -14,6 +14,7 @@ import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.ext.SdkExtensions;
 
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
@@ -38,10 +39,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Set;
 
 /** Custom TestRule for Cronet instrumentation tests. */
 public class CronetTestRule implements TestRule {
+    /**
+     * This should only be updated after an emulator image update causes a test to start failing
+     * against AOSP_PLAFORM.
+     *
+     * <p>Along side this, you should also update all IgnoreFor annotations that do not override
+     * requiredSdkExtensionForPlatform, but whose test is passing for AOSP_PLATFORM. This makes it
+     * possible to automatically find the minimum SDK extension for which a test can run against
+     * AOSP_PLATFORM.
+     *
+     * <p>Also, see http://go/android-sdk-docs-sdk-extensions.
+     */
+    public static final int LAST_SDK_EXTENSION_WITH_FAILING_TESTS = 20;
+
     private static final String TAG = "CronetTestRule";
 
     private CronetTestFramework mCronetTestFramework;
@@ -190,21 +203,26 @@ public class CronetTestRule implements TestRule {
                         + Build.VERSION.SDK_INT,
                 Build.VERSION.SDK_INT >= requiredAndroidApiVersion);
 
-        EnumSet<CronetTestFramework.CronetImplementation> excludedImplementations =
-                EnumSet.noneOf(CronetTestFramework.CronetImplementation.class);
-        IgnoreFor ignoreDueToClassAnnotation = getTestClassAnnotation(desc, IgnoreFor.class);
-        if (ignoreDueToClassAnnotation != null) {
-            excludedImplementations.addAll(
-                    Arrays.asList(ignoreDueToClassAnnotation.implementations()));
-        }
-        IgnoreFor ignoreDueToMethodAnnotation = getTestMethodAnnotation(desc, IgnoreFor.class);
-        if (ignoreDueToMethodAnnotation != null) {
-            excludedImplementations.addAll(
-                    Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
+        EnumSet<CronetTestFramework.CronetImplementation> implementationsUnderTest =
+                EnumSet.allOf(CronetTestFramework.CronetImplementation.class);
+        for (IgnoreFor ignoreFor :
+                Arrays.asList(
+                        getTestClassAnnotation(desc, IgnoreFor.class),
+                        getTestMethodAnnotation(desc, IgnoreFor.class))) {
+            if (ignoreFor == null) {
+                continue;
+            }
+            implementationsUnderTest.removeAll(Arrays.asList(ignoreFor.implementations()));
+            // SdkExtensions.getExtensionVersion is available starting from API level 30 (R).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                    // HttpEngine ships to S+.
+                    && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S)
+                            >= ignoreFor.requiredSdkExtensionForPlatform()) {
+                implementationsUnderTest.add(
+                        CronetTestFramework.CronetImplementation.AOSP_PLATFORM);
+            }
         }
 
-        Set<CronetTestFramework.CronetImplementation> implementationsUnderTest =
-                EnumSet.complementOf(excludedImplementations);
         assertWithMessage(
                         "Test should not be skipped via IgnoreFor annotation. "
                                 + "Use DisabledTest instead")
@@ -343,6 +361,27 @@ public class CronetTestRule implements TestRule {
         CronetTestFramework.CronetImplementation[] implementations();
 
         String reason();
+
+        /**
+         * Allows ignoring AOSP_PLATFORM if the device does not bundle a recent enough SDK
+         * extension.
+         *
+         * <p>This is useful when writing tests that cannot currently run against AOSP_PLATFORM
+         * because the code being tested has not been released via HttpEngine yet (this could be a
+         * bug fix, or a new API).
+         *
+         * <p>We default to the SDK extension that follows the last one that had any test breakage.
+         * This helps us find the SDK extension for which a test start passing against
+         * AOSP_PLATFORM. See LAST_SDK_EXTENSION_WITH_FAILING_TESTS's documentations to understand
+         * how this is handled.
+         *
+         * <p>For tests which will never be able to target AOSP_PLATFORM, this should be manually
+         * set, in the each test's IgnoreFor annotation, to Integer.MAX_VALUE.
+         *
+         * <p>For tests that will eventually be able to target AOSP_PLATFORM, this should be set to
+         * the lowest SDK extension that allows doing so.
+         */
+        int requiredSdkExtensionForPlatform() default LAST_SDK_EXTENSION_WITH_FAILING_TESTS + 1;
     }
 
     /**
