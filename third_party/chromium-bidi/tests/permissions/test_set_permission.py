@@ -84,3 +84,44 @@ async def test_permissions_set_permission_in_user_context(
                                   'geolocation') == 'prompt'
     assert await query_permission(websocket, another_browsing_context_id,
                                   'geolocation') == 'prompt'
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("same_origin", [True, False])
+async def test_permissions_set_permission_per_top_level_origin(
+        websocket, context_id, url_example, iframe_id, html, same_origin):
+    origin = get_origin(url_example)
+    frame_url = html(same_origin=same_origin)
+    await goto_url(websocket, iframe_id, frame_url)
+
+    # Default permission is `prompt`.
+    assert await query_permission(websocket, iframe_id,
+                                  'storage-access') == 'prompt'
+
+    # Set permissions for the same origin. Should be ignored in iframe, as it
+    # has a different origin.
+    resp = await set_permission(websocket, origin, {'name': 'storage-access'},
+                                'granted')
+    assert resp == {}
+
+    # Assert the iframe's permission depending on `same_origin`.
+    assert (await query_permission(websocket, iframe_id, 'storage-access')
+            == 'granted') if same_origin else 'prompt'
+
+    # Set permission for the iframe within top-level origin.
+    resp = await set_permission(websocket,
+                                origin, {'name': 'storage-access'},
+                                'granted',
+                                embedded_origin=frame_url)
+    assert resp == {}
+    # Assert the permission is applied in the iframe.
+    assert await query_permission(websocket, iframe_id,
+                                  'storage-access') == 'granted'
+
+    # Reset permission.
+    resp = await set_permission(websocket, origin, {'name': 'storage-access'},
+                                'prompt')
+    assert resp == {}
+    # Assert permission is reset to the default.
+    assert await query_permission(websocket, context_id,
+                                  'storage-access') == 'prompt'
