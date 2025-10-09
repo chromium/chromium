@@ -429,6 +429,9 @@ void SharedWorkerHost::Start(
 
   std::optional<blink::NoiseToken> canvas_noise_token =
       GetOrCreateCanvasNoiseToken();
+  mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+      canvas_noise_token_observer =
+          canvas_noise_token_updater_.BindNewPipeAndPassReceiver();
 
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
@@ -450,7 +453,7 @@ void SharedWorkerHost::Start(
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies(),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      std::move(canvas_noise_token));
+      std::move(canvas_noise_token), std::move(canvas_noise_token_observer));
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
@@ -574,6 +577,10 @@ void SharedWorkerHost::GetSandboxedFileSystemForBucket(
 storage::BucketClientInfo SharedWorkerHost::GetBucketClientInfo() const {
   return storage::BucketClientInfo{GetProcessHost()->GetDeprecatedID(),
                                    token()};
+}
+
+void SharedWorkerHost::UpdateCanvasNoiseToken() {
+  canvas_noise_token_updater_->OnTokenReceived(GetOrCreateCanvasNoiseToken());
 }
 
 std::optional<blink::NoiseToken>

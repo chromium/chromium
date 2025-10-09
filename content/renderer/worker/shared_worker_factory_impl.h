@@ -65,7 +65,9 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           dip_reporting_observer,
-      std::optional<blink::NoiseToken> canvas_noise_token) override;
+      std::optional<blink::NoiseToken> canvas_noise_token,
+      mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer) override;
 };
 
 }  // namespace content

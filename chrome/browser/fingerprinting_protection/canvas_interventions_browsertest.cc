@@ -166,12 +166,26 @@ class CanvasInterventionsBrowserTest
 
   Browser* GetBrowser() const { return browser_; }
 
-  void CreateChildFrame() {
+  content::RenderFrameHost* CreateChildFrameAndNavigateToURL(
+      const content::ToRenderFrameHost& to_rfh,
+      GURL iframe_url) {
+    // This method assumes there are no existing iframes on the main frame.
+    CHECK_EQ(0,
+             EvalJs(to_rfh, "document.getElementsByTagName('iframe').length"));
+
+    // TODO(https://crbug.com/449204853): Add a new html file that creates
+    // service worker under an iframe to replace this logic.
     std::string script =
         "var iframe = document.createElement('iframe');"
         "document.body.appendChild(iframe);";
-    ASSERT_TRUE(ExecJs(web_contents(), script));
-    ASSERT_TRUE(WaitForLoadStop(web_contents()));
+    CHECK(ExecJs(to_rfh, script));
+    CHECK(WaitForLoadStop(web_contents()));
+
+    auto* iframe = content::ChildFrameAt(to_rfh, 0);
+    CHECK(content::NavigateToURLFromRenderer(iframe, iframe_url));
+    iframe = content::ChildFrameAt(to_rfh, 0);
+    CHECK(iframe);
+    return iframe;
   }
 
   std::optional<blink::NoiseToken> GetBrowserTokenFromPage(
@@ -488,21 +502,14 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
                        ServiceWorkerSubframeSameToken) {
   const GURL main_frame_url = embedded_https_test_server().GetURL(
       "a.com", "/service_worker/create_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
-
-  // Register a Service Worker in the main frame.
-  ASSERT_TRUE(RegisterServiceWorker(web_contents()));
-  auto main_frame_sw_token = GetRendererTokenFromServiceWorker(web_contents());
-
-  CreateChildFrame();
-  auto* iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
-
   const GURL iframe_url = embedded_https_test_server().GetURL(
       "b.com", "/service_worker/create_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(iframe, iframe_url));
-  iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  auto* iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+
+  // Register a Service Worker in both frames.
+  ASSERT_TRUE(RegisterServiceWorker(web_contents()));
+  auto main_frame_sw_token = GetRendererTokenFromServiceWorker(web_contents());
 
   ASSERT_TRUE(RegisterServiceWorker(iframe));
   auto iframe_sw_token = GetRendererTokenFromServiceWorker(iframe);
@@ -576,26 +583,18 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
                        ServiceWorkerSubframeUpdatesSameToken) {
-  const GURL main_frame_url = embedded_https_test_server().GetURL(
-      "a.com", "/service_worker/create_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
-
   auto* tracking_protection_settings =
       TrackingProtectionSettingsFactory::GetForProfile(GetBrowser()->profile());
-
-  // Register a Service Worker in the main frame.
-  ASSERT_TRUE(RegisterServiceWorker(web_contents()));
-  auto main_frame_sw_token = GetRendererTokenFromServiceWorker(web_contents());
-
-  CreateChildFrame();
-  auto* iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
-
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
+      "a.com", "/service_worker/create_service_worker.html");
   const GURL iframe_url = embedded_https_test_server().GetURL(
       "b.com", "/service_worker/create_service_worker.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(iframe, iframe_url));
-  iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  auto* iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+
+  // Register a Service Worker in both frames.
+  ASSERT_TRUE(RegisterServiceWorker(web_contents()));
+  auto main_frame_sw_token = GetRendererTokenFromServiceWorker(web_contents());
 
   ASSERT_TRUE(RegisterServiceWorker(iframe));
   auto iframe_sw_token = GetRendererTokenFromServiceWorker(iframe);
@@ -617,11 +616,7 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
   tracking_protection_settings->AddTrackingProtectionException(main_frame_url);
   // Refresh the page to simulate user bypass behavior.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
-  CreateChildFrame();
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
-      content::ChildFrameAt(web_contents(), 0), iframe_url));
-  iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
+  iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
 
   auto flipped_main_frame_sw_token =
       GetRendererTokenFromServiceWorker(web_contents());
@@ -642,6 +637,10 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
   // Now re-enable canvas noise for the top url.
   tracking_protection_settings->RemoveTrackingProtectionException(
       main_frame_url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+  ASSERT_TRUE(iframe);
+
   flipped_main_frame_sw_token =
       GetRendererTokenFromServiceWorker(web_contents());
   flipped_iframe_sw_token = GetRendererTokenFromServiceWorker(iframe);
@@ -688,7 +687,7 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest, SharedWorkerSameToken) {
-  GURL url = embedded_https_test_server().GetURL(
+  const GURL url = embedded_https_test_server().GetURL(
       "a.com",
       "/workers/create_shared_worker.html?worker_url=/"
       "fingerprinting_protection/canvas_noise_token_shared_worker.js");
@@ -707,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest, SharedWorkerSameToken) {
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
                        SharedWorkerDifferentTabSameToken) {
-  GURL url = embedded_https_test_server().GetURL(
+  const GURL url = embedded_https_test_server().GetURL(
       "a.com",
       "/workers/create_shared_worker.html?worker_url=/"
       "fingerprinting_protection/canvas_noise_token_shared_worker.js");
@@ -738,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
     GTEST_SKIP() << "This test tests both profiles";
   }
 
-  GURL url = embedded_https_test_server().GetURL(
+  const GURL url = embedded_https_test_server().GetURL(
       "a.com",
       "/workers/create_shared_worker.html?worker_url=/"
       "fingerprinting_protection/canvas_noise_token_shared_worker.js");
@@ -762,24 +761,19 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
                        SharedWorkerSubframeSameToken) {
-  GURL main_frame_url = embedded_https_test_server().GetURL(
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
       "a.com",
       "/workers/create_shared_worker.html?worker_url=/"
       "fingerprinting_protection/canvas_noise_token_shared_worker.js");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
-  auto main_frame_shw_token = GetRendererTokenFromSharedWorker(web_contents());
-
-  CreateChildFrame();
-  auto* iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
-
-  GURL iframe_url = embedded_https_test_server().GetURL(
+  const GURL iframe_url = embedded_https_test_server().GetURL(
       "b.com",
       "/workers/create_shared_worker.html?worker_url=/"
       "fingerprinting_protection/canvas_noise_token_shared_worker.js");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(iframe, iframe_url));
-  iframe = content::ChildFrameAt(web_contents(), 0);
-  ASSERT_TRUE(iframe);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  auto* iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+
+  auto main_frame_shw_token = GetRendererTokenFromSharedWorker(web_contents());
   auto iframe_shw_token = GetRendererTokenFromSharedWorker(iframe);
 
   if (should_browsing_mode_have_token()) {
@@ -792,6 +786,174 @@ IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
   }
 
   EXPECT_EQ(iframe_shw_token, main_frame_shw_token);
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerSameOriginUpdatesSameToken) {
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(GetBrowser()->profile());
+  const GURL url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto shw_token = GetRendererTokenFromSharedWorker(web_contents());
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(shw_token, std::nullopt);
+    // TODO(https://crbug.com/442616874): Change to EXPECT_EQ once we key canvas
+    // noise tokens with StorageKey.
+    EXPECT_NE(shw_token, GetBrowserTokenFromPage(web_contents()));
+  } else {
+    EXPECT_EQ(shw_token, std::nullopt);
+  }
+
+  // Adding tracking protection settings for this url means we bypass canvas
+  // noising, therefore the updated token should be changed to nullopt and
+  // passed to the shared worker.
+  tracking_protection_settings->AddTrackingProtectionException(url);
+  // Refresh the page to simulate user bypass behavior.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  auto flipped_shw_token = GetRendererTokenFromSharedWorker(web_contents());
+
+  EXPECT_EQ(flipped_shw_token, std::nullopt);
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(shw_token, flipped_shw_token);
+  } else {
+    // Adding/removing urls from TrackingProtectionSettings shouldn't do
+    // anything.
+    EXPECT_EQ(shw_token, flipped_shw_token);
+  }
+
+  // Now re-enable canvas noise for the top url.
+  tracking_protection_settings->RemoveTrackingProtectionException(url);
+  flipped_shw_token = GetRendererTokenFromSharedWorker(web_contents());
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(flipped_shw_token, std::nullopt);
+    // TODO(https://crbug.com/442616874): Change to EXPECT_EQ once we key canvas
+    // noise tokens with StorageKey.
+    EXPECT_NE(flipped_shw_token, GetBrowserTokenFromPage(web_contents()));
+  }
+
+  EXPECT_EQ(shw_token, flipped_shw_token);
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerSubframeUpdatesSameToken) {
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(GetBrowser()->profile());
+  const GURL main_frame_url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  const GURL iframe_url = embedded_https_test_server().GetURL(
+      "b.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+
+  auto main_frame_shw_token = GetRendererTokenFromSharedWorker(web_contents());
+  auto* iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+  auto iframe_shw_token = GetRendererTokenFromSharedWorker(iframe);
+
+  EXPECT_EQ(iframe_shw_token, main_frame_shw_token);
+
+  // Simulate user bypass behavior.
+  tracking_protection_settings->AddTrackingProtectionException(main_frame_url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+
+  auto flipped_main_frame_shw_token =
+      GetRendererTokenFromSharedWorker(web_contents());
+  auto flipped_iframe_shw_token = GetRendererTokenFromSharedWorker(iframe);
+  EXPECT_EQ(flipped_main_frame_shw_token, std::nullopt);
+  EXPECT_EQ(flipped_main_frame_shw_token, flipped_iframe_shw_token);
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(flipped_main_frame_shw_token, main_frame_shw_token);
+    EXPECT_NE(flipped_iframe_shw_token, iframe_shw_token);
+  } else {
+    // Adding/removing urls from TrackingProtectionSettings shouldn't do
+    // anything.
+    EXPECT_EQ(flipped_main_frame_shw_token, main_frame_shw_token);
+    EXPECT_EQ(flipped_iframe_shw_token, iframe_shw_token);
+  }
+
+  // Simulate user bypass behavior to re-enable canvas noise for
+  // |main_frame_url|.
+  tracking_protection_settings->RemoveTrackingProtectionException(
+      main_frame_url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
+  iframe = CreateChildFrameAndNavigateToURL(web_contents(), iframe_url);
+
+  flipped_main_frame_shw_token =
+      GetRendererTokenFromSharedWorker(web_contents());
+  flipped_iframe_shw_token = GetRendererTokenFromSharedWorker(iframe);
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(flipped_main_frame_shw_token, std::nullopt);
+  } else {
+    // Adding/removing urls from TrackingProtectionSettings shouldn't do
+    // anything.
+    EXPECT_EQ(flipped_main_frame_shw_token, std::nullopt);
+  }
+
+  EXPECT_EQ(flipped_main_frame_shw_token, main_frame_shw_token);
+  EXPECT_EQ(flipped_iframe_shw_token, iframe_shw_token);
+  EXPECT_EQ(flipped_main_frame_shw_token, flipped_iframe_shw_token);
+}
+
+IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,
+                       SharedWorkerDifferentTabUpdatesSameToken) {
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(GetBrowser()->profile());
+  const GURL url = embedded_https_test_server().GetURL(
+      "a.com",
+      "/workers/create_shared_worker.html?worker_url=/"
+      "fingerprinting_protection/canvas_noise_token_shared_worker.js");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::WebContents* other_tab = chrome::AddAndReturnTabAt(
+      GetBrowser(), url, /*index=*/-1, /*foreground=*/true);
+  EXPECT_TRUE(content::WaitForLoadStop(other_tab));
+
+  auto first_tab_token = GetRendererTokenFromSharedWorker(web_contents());
+  auto second_tab_token = GetRendererTokenFromSharedWorker(other_tab);
+
+  EXPECT_EQ(first_tab_token, second_tab_token);
+
+  // Simulate user bypass. However, the |other_tab| is not expected to refresh
+  // automatically.
+  tracking_protection_settings->AddTrackingProtectionException(url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto flipped_first_tab_token =
+      GetRendererTokenFromSharedWorker(web_contents());
+  auto flipped_second_tab_token = GetRendererTokenFromSharedWorker(other_tab);
+
+  if (should_browsing_mode_have_token()) {
+    EXPECT_NE(flipped_first_tab_token, first_tab_token);
+    EXPECT_NE(flipped_second_tab_token, second_tab_token);
+  } else {
+    EXPECT_EQ(flipped_first_tab_token, first_tab_token);
+    EXPECT_EQ(flipped_second_tab_token, second_tab_token);
+  }
+
+  EXPECT_EQ(flipped_first_tab_token, flipped_second_tab_token);
+
+  // Revert user bypass. However, the |other_tab| is not expected to refresh
+  // automatically.
+  tracking_protection_settings->RemoveTrackingProtectionException(url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  flipped_first_tab_token = GetRendererTokenFromSharedWorker(web_contents());
+  flipped_second_tab_token = GetRendererTokenFromSharedWorker(other_tab);
+
+  EXPECT_EQ(flipped_first_tab_token, first_tab_token);
+  EXPECT_EQ(flipped_second_tab_token, second_tab_token);
 }
 
 IN_PROC_BROWSER_TEST_P(CanvasInterventionsBrowserTest,

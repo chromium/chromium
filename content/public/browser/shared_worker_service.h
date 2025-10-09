@@ -82,6 +82,11 @@ class CONTENT_EXPORT SharedWorkerService {
   //       OnClientAdded() for each worker's clients.
   virtual void EnumerateSharedWorkers(Observer* observer) = 0;
 
+  // Updates the canvas noise token for all Shared Workers that have the same
+  // `top_level_site` as their owning blink::StorageKey's top level site.
+  virtual void UpdateAllCanvasNoiseTokensFromTopLevelSite(
+      const GURL& top_level_site) = 0;
+
   // Terminates the given shared worker identified by its name, the URL of its
   // main script resource, the storage key, and the same_site_cookies setting.
   // Returns true on success.

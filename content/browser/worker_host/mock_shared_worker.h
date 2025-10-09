@@ -22,6 +22,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom.h"
@@ -123,7 +124,9 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           dip_reporting_observer,
-      std::optional<blink::NoiseToken> canvas_noise_token) override;
+      std::optional<blink::NoiseToken> canvas_noise_token,
+      mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer) override;
 
   struct CreateParams {
     CreateParams();

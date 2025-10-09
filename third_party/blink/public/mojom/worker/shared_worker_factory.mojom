@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
+import "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
@@ -124,5 +125,11 @@ interface SharedWorkerFactory {
       // This is the initial value used to indicate the enablement state of the
       // canvas noising feature and the initial seed value the noising should use,
       // and must be available to the renderer prior to JavaScript execution.
-      NoiseToken? canvas_noise_token);
+      NoiseToken? canvas_noise_token,
+
+      // Implemented by CanvasInterventionsHelper to update the canvas noise token
+      // for this SharedWorker's ExecutionContext. This is used to update the
+      // enablement of canvas noising in the renderer, or updating the seed value
+      // for generating a canvas noise.
+      pending_receiver<CanvasNoiseTokenUpdater> canvas_noise_token_observer);
 };

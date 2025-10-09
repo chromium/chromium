@@ -105,6 +105,9 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   StoragePartitionImpl* storage_partition() { return storage_partition_; }
 
+  void UpdateAllCanvasNoiseTokensFromTopLevelSite(
+      const GURL& top_level_site) override;
+
  private:
   friend class SharedWorkerHostTest;
   friend class SharedWorkerServiceImplTest;

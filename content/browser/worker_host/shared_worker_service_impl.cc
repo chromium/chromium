@@ -314,6 +314,16 @@ void SharedWorkerServiceImpl::NotifyClientRemoved(
   }
 }
 
+void SharedWorkerServiceImpl::UpdateAllCanvasNoiseTokensFromTopLevelSite(
+    const GURL& top_level_site) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto& host : worker_hosts_) {
+    if (host->GetStorageKey().top_level_site().IsSameSiteWith(top_level_site)) {
+      host->UpdateCanvasNoiseToken();
+    }
+  }
+}
+
 SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     RenderFrameHostImpl& creator,
     const SharedWorkerInstance& instance,

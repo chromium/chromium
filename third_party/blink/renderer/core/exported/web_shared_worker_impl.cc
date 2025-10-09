@@ -232,7 +232,9 @@ void WebSharedWorkerImpl::StartWorkerContext(
         coep_reporting_observer,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         dip_reporting_observer,
-    std::optional<blink::NoiseToken> canvas_noise_token) {
+    std::optional<blink::NoiseToken> canvas_noise_token,
+    CrossVariantMojoReceiver<mojom::CanvasNoiseTokenUpdaterInterfaceBase>
+        canvas_noise_token_observer) {
   DCHECK(IsMainThread());
   DCHECK(web_worker_fetch_context);
   CHECK(constructor_origin.Get()->CanAccessSharedWorkers());
@@ -296,7 +298,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       blink::SecurityOrigin::CreateFromUrlOrigin(
           url::Origin(origin_from_browser)),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      std::move(canvas_noise_token));
+      std::move(canvas_noise_token), std::move(canvas_noise_token_observer));
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =
@@ -383,7 +385,9 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
         coep_reporting_observer,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         dip_reporting_observer,
-    std::optional<blink::NoiseToken> canvas_noise_token) {
+    std::optional<blink::NoiseToken> canvas_noise_token,
+    CrossVariantMojoReceiver<mojom::CanvasNoiseTokenUpdaterInterfaceBase>
+        canvas_noise_token_observer) {
   auto worker =
       base::WrapUnique(new WebSharedWorkerImpl(token, std::move(host), client));
   worker->StartWorkerContext(
@@ -396,7 +400,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       std::move(policy_container), std::move(web_worker_fetch_context),
       ukm_source_id, require_cross_site_request_for_cookies,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      std::move(canvas_noise_token));
+      std::move(canvas_noise_token), std::move(canvas_noise_token_observer));
   return worker;
 }
 

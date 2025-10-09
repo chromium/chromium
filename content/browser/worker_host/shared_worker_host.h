@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
@@ -245,6 +246,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   storage::BucketClientInfo GetBucketClientInfo() const override;
 
+  // Canvas noise tokens can be updated through user bypass or removing browsing
+  // data. A new token value will be regenerated. This function ensures this new
+  // token is updated on the renderer.
+  void UpdateCanvasNoiseToken();
+
   // Helper to get or create a new canvas noise token for this worker.
   std::optional<blink::NoiseToken> GetOrCreateCanvasNoiseToken();
 
@@ -376,6 +382,12 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
+
+  // Remote to handle updates of the canvas noise token to its respective
+  // shared worker. This is bounded when the SharedWorker is started, and
+  // unbound when this class is destroyed.
+  mojo::Remote<blink::mojom::CanvasNoiseTokenUpdater>
+      canvas_noise_token_updater_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 };

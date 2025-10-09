@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
+#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-forward.h"
@@ -90,6 +91,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           dip_reporting_observer,
       std::optional<blink::NoiseToken> canvas_noise_token,
+      mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
+          canvas_noise_token_observer,
       const std::vector<std::string>& cors_exempt_header_list);
 
   EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;
