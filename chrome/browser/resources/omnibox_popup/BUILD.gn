@@ -19,7 +19,10 @@ build_webui("build") {
     "full_app.ts",
     "omnibox_popup.ts",
   ]
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "full_app.css",
+  ]
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

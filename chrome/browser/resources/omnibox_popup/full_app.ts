@@ -8,11 +8,16 @@ import '/strings.m.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './full_app.css.js';
 import {getHtml} from './full_app.html.js';
 
 export class OmniboxFullAppElement extends CrLitElement {
   static get is() {
     return 'omnibox-full-app';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {
