@@ -1,3 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/omnibox/ui",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 ]

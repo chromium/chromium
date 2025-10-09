@@ -18,6 +18,10 @@ source_set("coordinator") {
     "aim_prototype_entrypoint.h",
     "aim_prototype_navigation_mediator.h",
     "aim_prototype_navigation_mediator.mm",
+    "aim_prototype_tab_picker_coordinator.h",
+    "aim_prototype_tab_picker_coordinator.mm",
+    "aim_prototype_tab_picker_mediator.h",
+    "aim_prototype_tab_picker_mediator.mm",
     "aim_prototype_url_loader.h",
   ]
   deps = [
@@ -63,6 +67,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+    "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",

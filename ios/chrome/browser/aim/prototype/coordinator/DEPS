@@ -26,5 +26,9 @@ include_rules = [
   "+ios/chrome/browser/variations/model/client",
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h",
-  "+ios/chrome/browser/favicon/model/favicon_loader.h"
+  "+ios/chrome/browser/favicon/model/favicon_loader.h",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_mediator.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 ]
