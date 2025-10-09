@@ -35,7 +35,6 @@
 +org.chromium.chrome.browser.profiles.Profile
 +org.chromium.chrome.browser.profiles.ProfileManager
 +org.chromium.chrome.browser.profiles.ProfileManagerUtils
-+org.chromium.chrome.browser.rlz.RevenueStats
 +org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory
 +org.chromium.chrome.browser.searchwidget.SearchActivityUtils
 +org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator
