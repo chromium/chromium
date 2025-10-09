@@ -163,7 +163,7 @@ Path StyleShape::GetPath(const gfx::RectF& box_rect,
   // TODO(crbug.com/384870258): retain an LRU size->path cache.
   const gfx::Vector2dF offset = box_rect.OffsetFromOrigin();
   builder.Transform(
-      AffineTransform::Translation(offset.x(), offset.x()).Scale(path_scale));
+      AffineTransform::Translation(offset.x(), offset.y()).Scale(path_scale));
 
   return builder.Finalize();
 }
