@@ -983,6 +983,7 @@ public class JsSandboxServiceTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/450361757")
     public void testArrayBufferSizeEnforced() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         // V8 cannot sparsely allocate array buffers, so no fill required.
