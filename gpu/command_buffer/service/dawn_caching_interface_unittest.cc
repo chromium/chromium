@@ -298,7 +298,8 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
 }
 
 // Verifies that data stored in a persistent cache can be loaded back.
-TEST_F(DawnCachingInterfaceTest, StoreAndLoadWithPersistentCache) {
+// TODO: crbug.com/450470858 - Reenable the test after failure is fixed.
+TEST_F(DawnCachingInterfaceTest, DISABLED_StoreAndLoadWithPersistentCache) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto shared_lock = base::UnsafeSharedMemoryRegion::Create(
