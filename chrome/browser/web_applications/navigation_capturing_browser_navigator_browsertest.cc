@@ -149,7 +149,7 @@ class NavigationCapturingBrowserNavigatorBrowserTest
                             ui::PAGE_TRANSITION_LINK);
       params.disposition = WindowOpenDisposition::NEW_WINDOW;
       Navigate(&params);
-      second_app_browser = params.browser;
+      second_app_browser = params.browser->GetBrowserForMigrationOnly();
     }
     EXPECT_NE(nullptr, second_app_browser);
     EXPECT_NE(second_app_browser, app_browser_to_use);

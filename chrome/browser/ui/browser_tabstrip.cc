@@ -130,12 +130,14 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
     return;
   }
 
-  if (!nav_params->browser || !nav_params->browser->SupportsWindowFeature(
-                                  Browser::WindowFeature::FEATURE_TABSTRIP)) {
+  if (!nav_params->browser ||
+      !nav_params->browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
+          Browser::WindowFeature::FEATURE_TABSTRIP)) {
     return;
   }
 
-  TabStripModel* model = nav_params->browser->tab_strip_model();
+  TabStripModel* model =
+      nav_params->browser->GetBrowserForMigrationOnly()->tab_strip_model();
   DCHECK(model);
 
   const int source_index =

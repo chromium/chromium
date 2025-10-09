@@ -91,10 +91,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
   EXPECT_EQ(
-      GURL(chrome::kChromeUIVersionURL),
-      params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
+  EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
+            params.browser->GetBrowserForMigrationOnly()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetURL());
 }
 
 // Verify that page navigation is allowed in locked fullscreen mode when locked
@@ -120,10 +124,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-  ASSERT_EQ(1, params.browser->tab_strip_model()->count());
-  EXPECT_EQ(
-      kUrl,
-      params.browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
+  EXPECT_EQ(kUrl, params.browser->GetBrowserForMigrationOnly()
+                      ->tab_strip_model()
+                      ->GetActiveWebContents()
+                      ->GetURL());
 }
 
 // Subclass that tests navigation while in the Guest session.

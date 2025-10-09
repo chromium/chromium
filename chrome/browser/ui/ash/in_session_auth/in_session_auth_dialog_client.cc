@@ -365,7 +365,7 @@ aura::Window* InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
 
-  return params.browser->window()->GetNativeWindow();
+  return params.browser->GetWindow()->GetNativeWindow();
 }
 
 // AuthStatusConsumer:

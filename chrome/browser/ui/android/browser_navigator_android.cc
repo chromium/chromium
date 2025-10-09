@@ -17,11 +17,11 @@
 base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // PRE-CHECKS
   // TODO (crbug.com/441594986) Confirm this is correct.
-  DCHECK(params->browser_window_interface);
+  DCHECK(params->browser);
   DCHECK(!params->contents_to_insert);
   DCHECK(!params->switch_to_singleton_tab);
 
-  BrowserWindowInterface* source_browser = params->browser_window_interface;
+  BrowserWindowInterface* source_browser = params->browser;
   params->initiating_profile = source_browser->GetProfile();
   if (params->initiating_profile->ShutdownStarted()) {
     // Don't navigate when the profile is shutting down.
@@ -29,8 +29,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   DCHECK(params->initiating_profile);
 
-  TabListInterface* tab_list =
-      TabListInterface::From(params->browser_window_interface);
+  TabListInterface* tab_list = TabListInterface::From(params->browser);
 
   // HANDLE DISPOSITIONS
   // TODO (crbug.com/441594986) Clean this by breaking it into functions.

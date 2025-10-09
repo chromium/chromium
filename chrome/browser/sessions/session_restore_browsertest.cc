@@ -1813,9 +1813,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       params.browser);
 
   // Have the page trigger closing the browser.
-  ASSERT_TRUE(
-      content::ExecJs(params.browser->tab_strip_model()->GetActiveWebContents(),
-                      "window.open('', '_self').close()"));
+  ASSERT_TRUE(content::ExecJs(params.browser->GetBrowserForMigrationOnly()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents(),
+                              "window.open('', '_self').close()"));
 
   // Wait for the browser to close as a result of the single tab closing
   // itself.

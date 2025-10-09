@@ -262,9 +262,9 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(profile, params.url);
   if (capturing_system_app_type.has_value()) {
-    if (params.browser &&
-        ash::IsBrowserForSystemWebApp(params.browser,
-                                      capturing_system_app_type.value())) {
+    if (params.browser && ash::IsBrowserForSystemWebApp(
+                              params.browser->GetBrowserForMigrationOnly(),
+                              capturing_system_app_type.value())) {
       RecordInitialNavigationCapturingResult(
           NavigationCapturingInitialResult::kNotHandled);
       return nullptr;
@@ -316,7 +316,9 @@ NavigationCapturingProcess::NavigationCapturingProcess(
       source_browser_app_id_(
           params.browser &&
                   web_app::AppBrowserController::IsWebApp(params.browser)
-              ? std::optional(params.browser->app_controller()->app_id())
+              ? std::optional(params.browser->GetBrowserForMigrationOnly()
+                                  ->app_controller()
+                                  ->app_id())
               : std::nullopt),
       source_tab_app_id_(params.source_contents
                              ? base::OptionalFromPtr(WebAppTabHelper::GetAppId(
@@ -324,7 +326,9 @@ NavigationCapturingProcess::NavigationCapturingProcess(
                              : std::nullopt),
       navigation_params_url_(params.url),
       disposition_(params.disposition),
-      navigation_params_browser_(params.browser.get()) {
+      navigation_params_browser_(
+          params.browser ? params.browser->GetBrowserForMigrationOnly()
+                         : nullptr) {
   CHECK(AreWebAppsUserInstallable(&*profile_));
   CHECK(params.url.is_valid());
 
@@ -490,7 +494,10 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     return CapturingDisabled();
   }
   bool is_for_new_browser =
-      params.browser && params.browser->tab_strip_model()->count() == 0 &&
+      params.browser &&
+      params.browser->GetBrowserForMigrationOnly()
+              ->tab_strip_model()
+              ->count() == 0 &&
       (disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
        disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB);
   if (is_for_new_browser) {
@@ -596,10 +603,13 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
          (app_id == source_browser_app_id_ &&
           is_in_source_app_with_url_in_scope))) {
       if (source_browser_app_id_.has_value() &&
-          !params.browser->app_controller()->ShouldHideNewTabButton()) {
+          !params.browser->GetBrowserForMigrationOnly()
+               ->app_controller()
+               ->ShouldHideNewTabButton()) {
         // Apps that support tabbed mode can open a new tab in the current app
         // browser itself.
-        return ForcedNewAppContext(app_display_mode, params.browser);
+        return ForcedNewAppContext(
+            app_display_mode, params.browser->GetBrowserForMigrationOnly());
       }
       Browser* app_host_window;
       if (app_display_mode == DisplayMode::kBrowser) {
@@ -726,7 +736,9 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
       case WindowOpenDisposition::NEW_BACKGROUND_TAB:
         // If the browser window does not yet have any tabs, and we are
         // attempting to add the first tab to it, allow for it to be reused.
-        return iwa_browser && params.browser->tab_strip_model()->empty();
+        return iwa_browser && params.browser->GetBrowserForMigrationOnly()
+                                  ->tab_strip_model()
+                                  ->empty();
       case WindowOpenDisposition::CURRENT_TAB:
         return iwa_browser;
       case WindowOpenDisposition::NEW_WINDOW:

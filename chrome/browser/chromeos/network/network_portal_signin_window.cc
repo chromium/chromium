@@ -92,7 +92,7 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
     window_session_id_ = SessionID::InvalidValue();
     return;
   }
-  window_session_id_ = params.browser->session_id();
+  window_session_id_ = params.browser->GetSessionID();
   window_observer_ =
       std::make_unique<WindowObserver>(handle->GetWebContents(), this);
 }

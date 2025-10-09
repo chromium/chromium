@@ -191,7 +191,7 @@ protocol::Response TargetHandler::CreateTarget(
   }
 
   if (set_window_position) {
-    BrowserWindow* browser_window = params.browser->window();
+    ui::BaseWindow* browser_window = params.browser->GetWindow();
     CHECK(browser_window);
     gfx::Rect bounds = browser_window->GetBounds();
     if (left) {
@@ -211,9 +211,9 @@ protocol::Response TargetHandler::CreateTarget(
 
   if (set_window_state) {
     if (*window_state == protocol::Target::WindowStateEnum::Minimized) {
-      params.browser->window()->Minimize();
+      params.browser->GetWindow()->Minimize();
     } else if (*window_state == protocol::Target::WindowStateEnum::Maximized) {
-      params.browser->window()->Maximize();
+      params.browser->GetWindow()->Maximize();
     } else if (*window_state == protocol::Target::WindowStateEnum::Fullscreen) {
       params.browser->GetFeatures()
           .exclusive_access_manager()

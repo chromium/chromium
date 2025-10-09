@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params1.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params1);
 
-  Browser* iwa_browser = params1.browser;
+  Browser* iwa_browser = params1.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(iwa_browser, browser());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   ui_test_utils::NavigateToURL(&params3);
 
   // Navigating a tab outside of the app's scope should create a new browser.
-  Browser* new_iwa_browser = params3.browser;
+  Browser* new_iwa_browser = params3.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(iwa_browser, new_iwa_browser);
   EXPECT_NE(browser(), new_iwa_browser);
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   params3.disposition = GetParam();
   ui_test_utils::NavigateToURL(&params3);
 
-  Browser* new_iwa_browser = params3.browser;
+  Browser* new_iwa_browser = params3.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(new_iwa_browser, iwa_browser);
   EXPECT_NE(new_iwa_browser, browser());
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());

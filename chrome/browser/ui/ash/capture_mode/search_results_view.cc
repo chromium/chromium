@@ -53,8 +53,8 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   // Open the URL specified by `params` in a new tab.
-  NavigateParams new_tab_params(static_cast<Browser*>(nullptr), params.url,
-                                params.transition);
+  NavigateParams new_tab_params(static_cast<BrowserWindowInterface*>(nullptr),
+                                params.url, params.transition);
   switch (params.disposition) {
     case WindowOpenDisposition::UNKNOWN:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:

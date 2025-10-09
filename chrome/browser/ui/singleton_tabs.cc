@@ -75,8 +75,9 @@ void ShowSingletonTabOverwritingNTP(
 
 void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
   DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
-  content::WebContents* contents =
-      params->browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* contents = params->browser->GetBrowserForMigrationOnly()
+                                       ->tab_strip_model()
+                                       ->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::kChromeUINewTabURL ||
@@ -86,7 +87,9 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
         params->disposition = WindowOpenDisposition::CURRENT_TAB;
       } else {
         params->switch_to_singleton_tab =
-            params->browser->tab_strip_model()->GetWebContentsAt(tab_index);
+            params->browser->GetBrowserForMigrationOnly()
+                ->tab_strip_model()
+                ->GetWebContentsAt(tab_index);
       }
     }
   }

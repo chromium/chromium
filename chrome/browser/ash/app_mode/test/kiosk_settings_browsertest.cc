@@ -74,7 +74,8 @@ bool OpenPopup(const GURL& url) {
 Browser& NavigateInCurrentTab(const GURL& url) {
   auto params =
       NavigateAndReturnParams(url, WindowOpenDisposition::CURRENT_TAB);
-  return CHECK_DEREF(params.browser.get());
+  CHECK(params.browser);
+  return CHECK_DEREF(params.browser->GetBrowserForMigrationOnly());
 }
 
 GURL NavigateInBrowser(Browser& browser, const GURL& url) {

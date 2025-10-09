@@ -28,27 +28,17 @@ using content::WebContents;
 #if BUILDFLAG(IS_ANDROID)
 NavigateParams::NavigateParams(std::unique_ptr<WebContents> contents_to_insert)
     : contents_to_insert(std::move(contents_to_insert)) {}
-#else
-NavigateParams::NavigateParams(Browser* a_browser,
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+NavigateParams::NavigateParams(BrowserWindowInterface* a_browser,
                                const GURL& a_url,
                                ui::PageTransition a_transition)
     : url(a_url), transition(a_transition), browser(a_browser) {}
 
-NavigateParams::NavigateParams(Browser* a_browser,
+NavigateParams::NavigateParams(BrowserWindowInterface* a_browser,
                                std::unique_ptr<WebContents> contents_to_insert)
     : contents_to_insert(std::move(contents_to_insert)), browser(a_browser) {}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-NavigateParams::NavigateParams(BrowserWindowInterface* a_bwi,
-                               const GURL& a_url,
-                               ui::PageTransition a_transition)
-    : url(a_url), transition(a_transition), browser_window_interface(a_bwi) {}
-
-NavigateParams::NavigateParams(BrowserWindowInterface* a_bwi,
-                               std::unique_ptr<WebContents> contents_to_insert)
-    : contents_to_insert(std::move(contents_to_insert)),
-      browser_window_interface(a_bwi) {}
 #endif
 
 NavigateParams::NavigateParams(Profile* a_profile,

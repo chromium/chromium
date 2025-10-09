@@ -373,7 +373,7 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
     // The browser window might be on another user's desktop, and hence not
     // visible. Ensure the browser becomes visible on this user's desktop.
     multi_user_util::MoveWindowToCurrentDesktop(
-        navigate_params.browser->window()->GetNativeWindow());
+        navigate_params.browser->GetWindow()->GetNativeWindow());
   }
 
   auto* tab = navigate_params.navigated_or_inserted_contents.get();

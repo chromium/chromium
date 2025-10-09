@@ -153,7 +153,7 @@ NavigateParams BrowserNavigatorTest::MakeNavigateParams() const {
 }
 
 NavigateParams BrowserNavigatorTest::MakeNavigateParams(
-    Browser* browser) const {
+    BrowserWindowInterface* browser) const {
   NavigateParams params(browser, GetGoogleURL(), ui::PAGE_TRANSITION_LINK);
   params.window_action = NavigateParams::SHOW_WINDOW;
   return params;
@@ -341,7 +341,7 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
     new_tab_observer->Wait();
   }
 
-  return params.browser;
+  return params.browser->GetBrowserForMigrationOnly();
 }
 
 namespace {
@@ -501,9 +501,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, popup->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
-  EXPECT_TRUE(params.browser->is_type_normal());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_normal());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -521,14 +525,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup) {
   // TODO(stevenjb): Enable this test. See: crbug.com/79493
   EXPECT_TRUE(browser->window()->IsActive());
 #endif
-  EXPECT_TRUE(params.browser->is_type_popup());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 
   // We should have two windows, the browser() provided by the framework and the
   // new popup window.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -544,14 +552,19 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup_ExtensionId) {
   // Navigate() should have opened a new, focused TYPE_APP_POPUP window with no
   // toolbar.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_app_popup());
-  EXPECT_FALSE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(
+      params.browser->GetBrowserForMigrationOnly()->is_type_app_popup());
+  EXPECT_FALSE(params.browser->GetBrowserForMigrationOnly()
+                   ->window()
+                   ->IsToolbarVisible());
 
   // We should have two windows, the browser() provided by the framework and the
   // new popup window.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -570,15 +583,21 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupFromPopup) {
 
   // Navigate() should have opened a new normal popup window.
   EXPECT_NE(params1.browser, params2.browser);
-  EXPECT_TRUE(params2.browser->is_type_popup());
-  EXPECT_TRUE(params2.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params2.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(params2.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 
   // We should have three windows, the browser() provided by the framework,
   // the first popup window, and the second popup window.
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params1.browser->tab_strip_model()->count());
-  EXPECT_EQ(1, params2.browser->tab_strip_model()->count());
+  EXPECT_EQ(1, params1.browser->GetBrowserForMigrationOnly()
+                   ->tab_strip_model()
+                   ->count());
+  EXPECT_EQ(1, params2.browser->GetBrowserForMigrationOnly()
+                   ->tab_strip_model()
+                   ->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -594,15 +613,21 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Navigate() should have opened a new TYPE_APP_POPUP window with no toolbar.
   EXPECT_NE(app_browser, params.browser);
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_app_popup());
-  EXPECT_FALSE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(
+      params.browser->GetBrowserForMigrationOnly()->is_type_app_popup());
+  EXPECT_FALSE(params.browser->GetBrowserForMigrationOnly()
+                   ->window()
+                   ->IsToolbarVisible());
 
   // We should now have three windows, the app window, the app popup it created,
   // and the original browser() provided by the framework.
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, app_browser->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1, app_browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -623,16 +648,23 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupFromAppPopup) {
   // Navigate() should have opened a new popup app window.
   EXPECT_NE(browser(), params1.browser);
   EXPECT_NE(params1.browser, params2.browser);
-  EXPECT_TRUE(params2.browser->is_type_app_popup());
-  EXPECT_FALSE(params2.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(
+      params2.browser->GetBrowserForMigrationOnly()->is_type_app_popup());
+  EXPECT_FALSE(params2.browser->GetBrowserForMigrationOnly()
+                   ->window()
+                   ->IsToolbarVisible());
 
   // We should now have four windows, the app window, the first app popup,
   // the second app popup, and the original browser() provided by the framework.
   EXPECT_EQ(4u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
-  EXPECT_EQ(1, params1.browser->tab_strip_model()->count());
-  EXPECT_EQ(1, params2.browser->tab_strip_model()->count());
+  EXPECT_EQ(1, params1.browser->GetBrowserForMigrationOnly()
+                   ->tab_strip_model()
+                   ->count());
+  EXPECT_EQ(1, params2.browser->GetBrowserForMigrationOnly()
+                   ->tab_strip_model()
+                   ->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
@@ -654,8 +686,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupUnfocused) {
 
   // Navigate() should have opened a new, unfocused, popup window.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_popup());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 #if 0
 // TODO(stevenjb): Enable this test. See: crbug.com/79493
   EXPECT_FALSE(p.browser->window()->IsActive());
@@ -676,9 +710,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTrusted) {
   // Navigate() should have opened a new popup window of TYPE_POPUP with no
   // toolbar.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_popup());
-  EXPECT_TRUE(params.browser->is_trusted_source());
-  EXPECT_FALSE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(
+      params.browser->GetBrowserForMigrationOnly()->is_trusted_source());
+  EXPECT_FALSE(params.browser->GetBrowserForMigrationOnly()
+                   ->window()
+                   ->IsToolbarVisible());
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -698,8 +735,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Navigate() should have opened a new popup window of TYPE_POPUP with a
   // toolbar.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_popup());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
   EXPECT_TRUE(captive_portal::CaptivePortalTabHelper::FromWebContents(
                   params.navigated_or_inserted_contents)
                   ->is_captive_portal_window());
@@ -724,16 +763,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   // Verify the popup window is hidden.
-  EXPECT_FALSE(params.browser->window()->IsVisible());
+  EXPECT_FALSE(params.browser->GetWindow()->IsVisible());
 
   // Switch back to the original tab.
   browser()->tab_strip_model()->ActivateTabAt(0);
 
   // Verify the popup window is visible again.
-  EXPECT_TRUE(params.browser->window()->IsVisible());
+  EXPECT_TRUE(params.browser->GetWindow()->IsVisible());
 
   // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(params.browser->window()->IsTabModalPopupDeprecated());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsTabModalPopupDeprecated());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
@@ -745,14 +786,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewWindow) {
 
   // Navigate() should have opened a new toplevel window.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_normal());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_normal());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 
   // We should now have two windows, the browser() provided by the framework and
   // the new normal window.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
 // This test verifies that a source tab to the left of the target tab can
@@ -1044,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_Disposition_Incognito) {
   EXPECT_NE(browser(), params.browser);
   EXPECT_EQ(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      params.browser->profile());
+      params.browser->GetProfile());
 
   // |source_contents| should be set to NULL because the profile for the new
   // page is different from the originating page.
@@ -1054,7 +1099,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_Disposition_Incognito) {
   // the new incognito window.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 
 // This test verifies that navigating with WindowOpenDisposition = INCOGNITO
@@ -1119,8 +1166,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
 
   // Navigate() should have opened a new popup window.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_popup());
-  EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->window()
+                  ->IsToolbarVisible());
 
   // The web platform is weird. The window bounds specified in
   // `params.window_features.bounds` are used as follows:
@@ -1133,7 +1182,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
   // `params.window_features.bounds.origin()` - on Mac the window is offset from
   // the opener and on Linux it always opens at 0,0.
   EXPECT_EQ(params.window_features.bounds.origin(),
-            params.browser->window()->GetRestoredBounds().origin());
+            params.browser->GetWindow()->GetRestoredBounds().origin());
   // All platforms should respect size however provided width > 400 (Mac has a
   // minimum window width of 400).
   EXPECT_EQ(params.window_features.bounds.size(),
@@ -1143,7 +1192,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
   // framework.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, params.browser->tab_strip_model()->count());
+  EXPECT_EQ(
+      1,
+      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
 }
 #endif
 
@@ -2018,11 +2069,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   // Should not re-use the browser.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_picture_in_picture());
-  EXPECT_EQ(params.browser->app_name(), std::string());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->is_type_picture_in_picture());
+  EXPECT_EQ(params.browser->GetBrowserForMigrationOnly()->app_name(),
+            std::string());
 
   // The window should have respected the initial aspect ratio.
-  const gfx::Rect override_bounds = params.browser->override_bounds();
+  const gfx::Rect override_bounds =
+      params.browser->GetBrowserForMigrationOnly()->override_bounds();
   const double aspect_ratio = static_cast<double>(override_bounds.width()) /
                               static_cast<double>(override_bounds.height());
   EXPECT_DOUBLE_EQ(1.0, aspect_ratio);
@@ -2055,7 +2109,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // The bounds may have small adjustments for window decorations, since the
   // requested size is the inner size.  We can't get the inner size easily here,
   // so just verify that the aspect ratio is closer to 1.0 than 0.5.
-  const gfx::Rect override_bounds = params.browser->override_bounds();
+  const gfx::Rect override_bounds =
+      params.browser->GetBrowserForMigrationOnly()->override_bounds();
   float expected_aspect_ratio =
       static_cast<float>(override_bounds.width()) / override_bounds.height();
   EXPECT_NEAR(expected_aspect_ratio, 1.0f, 0.2);
@@ -2137,8 +2192,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   Navigate(&params);
 
   // Should be PiP, with an app name.
-  EXPECT_TRUE(params.browser->is_type_picture_in_picture());
-  EXPECT_NE(params.browser->app_name(), std::string());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
+                  ->is_type_picture_in_picture());
+  EXPECT_NE(params.browser->GetBrowserForMigrationOnly()->app_name(),
+            std::string());
 }
 
 // Test typical popin UX flow.
@@ -2744,8 +2801,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
     Navigate(&params);
 
     // The PiP window should also be on display 1.
-    EXPECT_TRUE(
-        display1.work_area().Contains(params.browser->window()->GetBounds()));
+    EXPECT_TRUE(display1.work_area().Contains(
+        params.browser->GetWindow()->GetBounds()));
   }
 
   {
@@ -2786,13 +2843,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
       // if the window is in the correct display without relying on bounds.
       const auto pip_window_display =
           display::Screen::Get()->GetDisplayNearestWindow(
-              params.browser->window()->GetNativeWindow());
+              params.browser->GetWindow()->GetNativeWindow());
       ASSERT_EQ(display2.id(), pip_window_display.id());
       return;
     }
 #endif
-    EXPECT_TRUE(
-        display2.work_area().Contains(params.browser->window()->GetBounds()));
+    EXPECT_TRUE(display2.work_area().Contains(
+        params.browser->GetWindow()->GetBounds()));
   }
 }
 

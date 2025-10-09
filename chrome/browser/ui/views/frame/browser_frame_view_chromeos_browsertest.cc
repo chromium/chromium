@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
     navigation_observer.StartWatchingNewWebContents();
     Navigate(&navigate_params);
     navigation_observer.WaitForNavigationFinished();
-    popup_browser = navigate_params.browser;
+    popup_browser = navigate_params.browser->GetBrowserForMigrationOnly();
   }
 
   BrowserView* browser_view =

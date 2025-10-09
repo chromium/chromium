@@ -30,7 +30,7 @@ class BrowserNavigatorTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override;
   NavigateParams MakeNavigateParams() const;
-  NavigateParams MakeNavigateParams(Browser* browser) const;
+  NavigateParams MakeNavigateParams(BrowserWindowInterface* browser) const;
 
   Browser* CreateEmptyBrowserForType(Browser::Type type, Profile* profile);
   Browser* CreateEmptyBrowserForApp(Profile* profile);
