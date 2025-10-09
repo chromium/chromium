@@ -36,12 +36,6 @@ void RunSuccessCallback(SuccessOrFailureCallback callback) {
   std::move(callback).Run(nullptr);
 }
 
-void RunWarningCallback(
-    crosapi::VpnServiceForExtensionAsh::SuccessCallback callback,
-    const std::string& /*warning*/) {
-  std::move(callback).Run();
-}
-
 void RunFailureCallback(SuccessOrFailureCallback callback,
                         const std::string& error_name,
                         const std::string& error_message) {
@@ -264,21 +258,6 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
               weak_factory_.GetWeakPtr(), std::move(failure)));
 }
 
-void VpnServiceForExtensionAsh::SetParameters(base::Value::Dict parameters,
-                                              SetParametersCallback callback) {
-  if (!OwnsActiveConfiguration()) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
-      active_configuration_->object_path(), std::move(parameters),
-      base::BindOnce(&RunWarningCallback, std::move(success)),
-      std::move(failure));
-}
-
 void VpnServiceForExtensionAsh::SendPacket(const std::vector<uint8_t>& data,
                                            SendPacketCallback callback) {
   if (!OwnsActiveConfiguration()) {
@@ -374,6 +353,14 @@ void VpnServiceForExtensionAsh::OnConfigurationRemoved(
 
   DispatchConfigRemovedEvent(configuration->configuration_name());
   DestroyConfigurationInternal(configuration);
+}
+
+std::optional<std::string>
+VpnServiceForExtensionAsh::GetActiveConfigurationObjectPath() const {
+  if (active_configuration_) {
+    return active_configuration_->object_path();
+  }
+  return std::nullopt;
 }
 
 bool VpnServiceForExtensionAsh::OwnsActiveConfiguration() const {

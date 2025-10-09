@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
+#include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -173,6 +174,19 @@ void VpnService::SendToExtension(const std::string& extension_id,
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
 
+bool VpnService::OwnsActiveConfiguration(
+    const std::string& extension_id) const {
+  return GetActiveConfigurationObjectPath(extension_id).has_value();
+}
+
+std::optional<std::string> VpnService::GetActiveConfigurationObjectPath(
+    const std::string& extension_id) const {
+  // Peek into VpnServiceAsh directly (this call does not go through mojo).
+  return GetVpnService()
+      ->GetVpnServiceForExtension(extension_id)
+      ->GetActiveConfigurationObjectPath();
+}
+
 void VpnService::SendOnPlatformMessageToExtension(
     const std::string& extension_id,
     const std::string& configuration_name,
@@ -207,9 +221,17 @@ void VpnService::SetParameters(const std::string& extension_id,
                                base::Value::Dict parameters,
                                SuccessCallback success,
                                FailureCallback failure) {
-  GetVpnServiceForExtension(extension_id)
-      ->SetParameters(std::move(parameters),
-                      AdaptCallback(std::move(success), std::move(failure)));
+  if (!OwnsActiveConfiguration(extension_id)) {
+    RunFailureCallback(std::move(failure), /*error_name=*/{},
+                       "Unauthorized access.");
+    return;
+  }
+
+  ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
+      GetActiveConfigurationObjectPath(extension_id).value(),
+      std::move(parameters),
+      base::IgnoreArgs<const std::string&>(std::move(success)),
+      std::move(failure));
 }
 
 void VpnService::SendPacket(const std::string& extension_id,
@@ -276,7 +298,7 @@ void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
 }
 
 // static
-crosapi::mojom::VpnService* VpnService::GetVpnService() {
+crosapi::VpnServiceAsh* VpnService::GetVpnService() {
   // CrosapiManager may not be initialized.
   // TODO(crbug.com/40225953): Assert it's only happening in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {

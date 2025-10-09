@@ -79,8 +79,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
                            CreateConfigurationCallback) override;
   void DestroyConfiguration(const std::string& configuration_name,
                             DestroyConfigurationCallback) override;
-  void SetParameters(base::Value::Dict parameters,
-                     SetParametersCallback) override;
   void SendPacket(const std::vector<uint8_t>& data,
                   SendPacketCallback) override;
   void NotifyConnectionStateChanged(
@@ -95,6 +93,10 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
+
+  // Returns the object path of the active configuration if it exists.
+  // Otherwise, returns std::nullopt.
+  std::optional<std::string> GetActiveConfigurationObjectPath() const;
 
   bool OwnsActiveConfiguration() const;
   bool HasConfigurationForServicePath(const std::string& service_path) const;
@@ -205,6 +207,10 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   void OnVpnExtensionsChanged(
       base::flat_set<std::string> vpn_extensions) override;
 
+  // Always returns a valid pointer.
+  VpnServiceForExtensionAsh* GetVpnServiceForExtension(
+      const std::string& extension_id);
+
  private:
   friend class chromeos::VpnProviderApiTest;
   friend class VpnServiceForExtensionAsh;
@@ -217,9 +223,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
       const std::string& service_path,
       std::optional<base::Value::Dict> configuration_properties);
 
-  // Always returns a valid pointer.
-  VpnServiceForExtensionAsh* GetVpnServiceForExtension(
-      const std::string& extension_id);
 
   // Ids of enabled vpn extensions.
   base::flat_set<std::string> vpn_extensions_;

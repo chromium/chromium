@@ -70,17 +70,7 @@ interface VpnServiceForExtension {
   DestroyConfiguration@1(string configuration_name)
       => (VpnErrorResponse? error);
 
-  // Set |parameters| for the active VPN configuration after verifying that it
-  // belongs to the extension.
-  // See chrome.vpnProvider.setParameters(...)
-  // We use mojo_base.mojom.DictionaryValue as the type because:
-  // * The shill counterpart is stable and expects base::Value with type=dict.
-  // * Both the supplier and consumer of this information uses a type
-  //   interchangeable with mojo_base.mojom.DictionaryValue. While we could add
-  //   a translation layer to a strongly typed mojom struct, this adds an
-  //   overhead and the potential for errors with no benefit.
-  SetParameters@2(mojo_base.mojom.DictionaryValue parameters)
-      => (VpnErrorResponse? error);
+  // SetParameters@2 was removed.
 
   // Sends an IP packet contained in |data| to the active VPN configuration
   // after verifying that it belongs to the extension.

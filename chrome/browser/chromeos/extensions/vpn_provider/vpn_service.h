@@ -39,6 +39,10 @@ class ExtensionRegistry;
 
 }  // namespace extensions
 
+namespace crosapi {
+class VpnServiceAsh;
+}
+
 namespace chromeos {
 
 class VpnServiceForExtension
@@ -125,7 +129,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
   friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
 
-  static crosapi::mojom::VpnService* GetVpnService();
+  static crosapi::VpnServiceAsh* GetVpnService();
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
   GetVpnServiceForExtension(const std::string& extension_id);
@@ -133,6 +137,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
   // Sends the given event to the given extension.
   void SendToExtension(const std::string& extension_id,
                        std::unique_ptr<extensions::Event> event);
+
+  bool OwnsActiveConfiguration(const std::string& extension_id) const;
+  std::optional<std::string> GetActiveConfigurationObjectPath(
+      const std::string& extension_id) const;
 
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
