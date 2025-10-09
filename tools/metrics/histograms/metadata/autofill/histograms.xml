@@ -7097,27 +7097,29 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
-<histogram name="Autofill.StoredProfileCount.WithAlternativeName"
-    units="Profiles" expires_after="2026-03-08">
-  <owner>jsobiech@google.com</owner>
-  <owner>sygiet@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of Autofill addresses with an alternative name set, measured at
-    launch time.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.StoredProfileCount.{Suffix}" units="Profiles"
-    expires_after="2026-03-01">
+    expires_after="2026-09-08">
+  <owner>piotrkotynia@google.com</owner>
+  <owner>sygiet@google.com</owner>
   <owner>battre@chromium.org</owner>
+  <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill addresses a user has stored of the given category or
     in total, measured at launch time.
+
+    {Suffix}
   </summary>
   <token key="Suffix" variants="StoredProfileCategories">
     <variant name="Total"/>
+    <variant name="TotalPostalAddressProfiles"
+        summary="The number of Autofill profiles that are considered to be
+                 postal addresses, measured at launch time. A profile is
+                 counted as a postal address if at least two of the following
+                 are set: city, state, street address, or zip code."/>
+    <variant name="WithAlternativeName"
+        summary="The number of Autofill addresses with an alternative name
+                 set, measured at launch time."/>
   </token>
 </histogram>
 

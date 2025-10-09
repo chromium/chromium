@@ -219,6 +219,19 @@ DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
   return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
 }
 
+bool IsPostalAddress(const AutofillProfile& profile) {
+  static constexpr FieldTypeSet kPostalAddressFieldTypes = {
+      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_ZIP};
+  int number_of_set_fields = 0;
+  for (FieldType type : kPostalAddressFieldTypes) {
+    if (!profile.GetRawInfo(type).empty()) {
+      number_of_set_fields++;
+    }
+  }
+  return number_of_set_fields >= 2;
+}
+
 bool ShouldLogAutofillSuggestionShown(
     AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {

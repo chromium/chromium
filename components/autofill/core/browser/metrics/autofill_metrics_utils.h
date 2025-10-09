@@ -113,6 +113,11 @@ DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form);
 
+// Returns true if `profile` has at least 2 fields of the types
+// `ADDRESS_HOME_CITY`, `ADDRESS_HOME_STATE`, `ADDRESS_HOME_STREET_ADDRESS` or
+// `ADDRESS_HOME_ZIP` set.
+bool IsPostalAddress(const AutofillProfile& profile);
+
 // Returns whether the caller should log autofill suggestions shown metrics.
 // Some suggestions can be "displayed" without a direct user action (i.e. typing
 // into a field or unfocusing a text area with a previous
