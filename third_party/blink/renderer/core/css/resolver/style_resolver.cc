@@ -876,18 +876,9 @@ void MatchStyleAttribute(const Element& element,
                          StyleRuleUsageTracker* tracker) {
   if (element.IsStyledElement() && element.InlineStyle() &&
       collector.GetPseudoId() == kPseudoIdNone) {
-    // Do not add styles depending on style attributes to the
-    // MatchedPropertiesCache (MPC) if they have been modified after parsing.
-    // The reason is that these are typically used for animations by modifying
-    // the style attribute every frame, and making the style cacheable would
-    // effectively just fill up the MPC with unnecessary ComputedStyles.
-    //
-    // Note that we have a special fast path for modifying certain independent
-    // attributes on inline style, which also bypasses the MPC.
-    bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
     collector.AddElementStyleProperties(
         element.InlineStyle(), CascadeOrigin::kAuthor,
-        is_inline_style_cacheable, true /* is_inline_style */);
+        /*is_cacheable=*/true, /*is_inline_style=*/true);
   }
 }
 
