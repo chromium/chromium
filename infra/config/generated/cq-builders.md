@@ -894,6 +894,9 @@ as required builders.
 * [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
   * Experiment percentage: 10.0
 
+* [linux-presubmit](https://ci.chromium.org/p/chromium/builders/try/linux-presubmit) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-presubmit""))
+  * Experiment percentage: 5.0
+
 * [linux-rel-test-selection](https://ci.chromium.org/p/chromium/builders/try/linux-rel-test-selection) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-test-selection""))
   * Experiment percentage: 10.0
 

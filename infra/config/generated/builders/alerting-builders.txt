@@ -612,6 +612,7 @@ try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
 try/linux-oi-rel
 try/linux-perfetto-rel
+try/linux-presubmit
 try/linux-rel
 try/linux-rel-cft
 try/linux-rel-test-selection

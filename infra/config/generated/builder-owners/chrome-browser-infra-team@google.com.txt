@@ -12,5 +12,6 @@ try/chromeos-structured-test-ids-amd64-generic-rel-gtest-and-tast-fyi
 try/gn-args-verifier
 try/ios-structured-test-ids-simulator-fyi
 try/linux-clobber-rel
+try/linux-presubmit
 try/linux-structured-test-ids-rel-fyi
 try/mega-cq-launcher
