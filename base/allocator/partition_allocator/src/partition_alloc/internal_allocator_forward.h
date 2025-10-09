@@ -46,7 +46,7 @@ class InternalAllocator {
   }
 
   template <typename U>
-  bool operator==(const InternalAllocator<U>&) {
+  bool operator==(const InternalAllocator<U>&) const {
     // InternalAllocator<T> can free allocations made by InternalAllocator<U>.
     return true;
   }
