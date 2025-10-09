@@ -495,6 +495,9 @@
         parseSetLocaleOverrideParams(params) {
             return params;
         }
+        parseSetNetworkConditionsParams(params) {
+            return params;
+        }
         parseSetScreenOrientationOverrideParams(params) {
             return params;
         }
@@ -1275,7 +1278,34 @@
                     userAgent: params.userAgent,
                 });
             }
-            await Promise.all(browsingContexts.map(async (context) => await context.setUserAgentOverrideParams(params.userAgent)));
+            await Promise.all(browsingContexts.map(async (context) => await context.setUserAgentOverride(params.userAgent)));
+            return {};
+        }
+        async setNetworkConditions(params) {
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts, true);
+            for (const browsingContextId of params.contexts ?? []) {
+                this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, {
+                    emulatedNetworkConditions: params.networkConditions,
+                });
+            }
+            for (const userContextId of params.userContexts ?? []) {
+                this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+                    emulatedNetworkConditions: params.networkConditions,
+                });
+            }
+            if (params.contexts === undefined && params.userContexts === undefined) {
+                this.#contextConfigStorage.updateGlobalConfig({
+                    emulatedNetworkConditions: params.networkConditions,
+                });
+            }
+            if (params.networkConditions !== null &&
+                params.networkConditions.type !== 'offline') {
+                throw new UnsupportedOperationException(`Unsupported network conditions ${params.networkConditions.type}`);
+            }
+            await Promise.all(browsingContexts.map(async (context) => {
+                const emulatedNetworkConditions = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext).emulatedNetworkConditions ?? null;
+                await context.setEmulatedNetworkConditions(emulatedNetworkConditions);
+            }));
             return {};
         }
     }
@@ -4884,7 +4914,7 @@
                     return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParameters(command.params));
                 case 'browser.setClientWindowState':
                     this.#parser.parseSetClientWindowStateParameters(command.params);
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
                 case 'browser.setDownloadBehavior':
                     return await this.#browserProcessor.setDownloadBehavior(this.#parser.parseSetDownloadBehaviorParameters(command.params));
                 case 'browsingContext.activate':
@@ -4919,11 +4949,13 @@
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
                 case 'emulation.setForcedColorsModeThemeOverride':
                     this.#parser.parseSetForcedColorsModeThemeOverrideParams(command.params);
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
                 case 'emulation.setGeolocationOverride':
                     return await this.#emulationProcessor.setGeolocationOverride(this.#parser.parseSetGeolocationOverrideParams(command.params));
                 case 'emulation.setLocaleOverride':
                     return await this.#emulationProcessor.setLocaleOverride(this.#parser.parseSetLocaleOverrideParams(command.params));
+                case 'emulation.setNetworkConditions':
+                    return await this.#emulationProcessor.setNetworkConditions(this.#parser.parseSetNetworkConditionsParams(command.params));
                 case 'emulation.setScreenOrientationOverride':
                     return await this.#emulationProcessor.setScreenOrientationOverride(this.#parser.parseSetScreenOrientationOverrideParams(command.params));
                 case 'emulation.setScriptingEnabled':
@@ -4979,7 +5011,7 @@
                 case 'script.removePreloadScript':
                     return await this.#scriptProcessor.removePreloadScript(this.#parser.parseRemovePreloadScriptParams(command.params));
                 case 'session.end':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    throw new UnsupportedOperationException(`Method ${command.method} is not implemented.`);
                 case 'session.new':
                     return await this.#sessionProcessor.new(command.params);
                 case 'session.status':
@@ -5448,6 +5480,7 @@
         acceptInsecureCerts;
         devicePixelRatio;
         downloadBehavior;
+        emulatedNetworkConditions;
         extraHeaders;
         geolocation;
         locale;
@@ -7734,8 +7767,11 @@
         async setScriptingEnabled(scriptingEnabled) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setScriptingEnabled(scriptingEnabled)));
         }
-        async setUserAgentOverrideParams(userAgent) {
+        async setUserAgentOverride(userAgent) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setUserAgent(userAgent)));
+        }
+        async setEmulatedNetworkConditions(networkConditions) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setEmulatedNetworkConditions(networkConditions)));
         }
     }
     _a$5 = BrowsingContextImpl;
@@ -8620,6 +8656,9 @@
                     ignore: config.acceptInsecureCerts,
                 }));
             }
+            if (config.emulatedNetworkConditions !== undefined) {
+                promises.push(this.setEmulatedNetworkConditions(config.emulatedNetworkConditions));
+            }
             await Promise.all(promises);
         }
         get topLevelId() {
@@ -8763,6 +8802,30 @@
             await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
                 userAgent: userAgent ?? '',
             });
+        }
+        async setEmulatedNetworkConditions(networkConditions) {
+            if (networkConditions !== null && networkConditions.type !== 'offline') {
+                throw new UnsupportedOperationException(`Unsupported network conditions ${networkConditions.type}`);
+            }
+            await Promise.all([
+                this.cdpClient.sendCommand('Network.emulateNetworkConditionsByRule', {
+                    offline: networkConditions?.type === 'offline',
+                    matchedNetworkConditions: [
+                        {
+                            urlPattern: '',
+                            latency: 0,
+                            downloadThroughput: -1,
+                            uploadThroughput: -1,
+                        },
+                    ],
+                }),
+                this.cdpClient.sendCommand('Network.overrideNetworkState', {
+                    offline: networkConditions?.type === 'offline',
+                    latency: 0,
+                    downloadThroughput: -1,
+                    uploadThroughput: -1,
+                }),
+            ]);
         }
     }
 
@@ -16712,6 +16775,7 @@
         Emulation$1.SetForcedColorsModeThemeOverrideSchema,
         Emulation$1.SetGeolocationOverrideSchema,
         Emulation$1.SetLocaleOverrideSchema,
+        Emulation$1.SetNetworkConditionsSchema,
         Emulation$1.SetScreenOrientationOverrideSchema,
         Emulation$1.SetScriptingEnabledSchema,
         Emulation$1.SetTimezoneOverrideSchema,
@@ -16817,6 +16881,30 @@
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.SetLocaleOverrideResultSchema = z.lazy(() => EmptyResultSchema);
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetNetworkConditionsSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setNetworkConditions'),
+            params: Emulation.SetNetworkConditionsParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetNetworkConditionsParametersSchema = z.lazy(() => z.object({
+            networkConditions: z.union([Emulation.NetworkConditionsSchema, z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.NetworkConditionsSchema = z.lazy(() => Emulation.NetworkConditionsOfflineSchema);
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.NetworkConditionsOfflineSchema = z.lazy(() => z.object({
+            type: z.literal('offline'),
+        }));
     })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.SetScreenOrientationOverrideSchema = z.lazy(() => z.object({
@@ -18769,6 +18857,10 @@
             return parseObject(params, Emulation$1.SetLocaleOverrideParametersSchema);
         }
         Emulation.parseSetLocaleOverrideParams = parseSetLocaleOverrideParams;
+        function parseSetNetworkConditionsParams(params) {
+            return parseObject(params, Emulation$1.SetNetworkConditionsParametersSchema);
+        }
+        Emulation.parseSetNetworkConditionsParams = parseSetNetworkConditionsParams;
         function parseSetScreenOrientationOverrideParams(params) {
             return parseObject(params, Emulation$1.SetScreenOrientationOverrideParametersSchema);
         }
@@ -19024,6 +19116,9 @@
         }
         parseSetLocaleOverrideParams(params) {
             return Emulation.parseSetLocaleOverrideParams(params);
+        }
+        parseSetNetworkConditionsParams(params) {
+            return Emulation.parseSetNetworkConditionsParams(params);
         }
         parseSetScreenOrientationOverrideParams(params) {
             return Emulation.parseSetScreenOrientationOverrideParams(params);
