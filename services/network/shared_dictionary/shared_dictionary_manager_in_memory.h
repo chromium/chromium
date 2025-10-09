@@ -52,6 +52,8 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
       override;
+  void HandleMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {}
 
   void MaybeRunCacheEvictionPerSite(const net::SchemefulSite& top_frame_site);
   void MaybeRunCacheEviction();

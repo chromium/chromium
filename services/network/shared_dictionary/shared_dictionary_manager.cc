@@ -158,6 +158,8 @@ void SharedDictionaryManager::OnMemoryPressure(
     cached_storages_.Clear();
     preloaded_dictionaries_set_.clear();
   }
+
+  HandleMemoryPressure(level);
 }
 
 size_t SharedDictionaryManager::GetStorageCountForTesting() {

@@ -493,12 +493,6 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kDisableSharedDictionaryStorageCleanupForTesting)) {
   dictionary_cache_ = base::MakeRefCounted<SharedDictionaryCache>();
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kSharedDictionaryManagerOnDisk,
-          base::BindRepeating(&SharedDictionaryManagerOnDisk::OnMemoryPressure,
-                              weak_factory_.GetWeakPtr()));
   disk_cache_.Initialize(cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
                          app_status_listener_getter,
@@ -591,6 +585,13 @@ void SharedDictionaryManagerOnDisk::GetOriginsBetween(
                 result.value_or(std::vector<url::Origin>()));
           },
           std::move(callback)));
+}
+
+void SharedDictionaryManagerOnDisk::HandleMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_NONE) {
+    dictionary_cache_->Clear();
+  }
 }
 
 scoped_refptr<SharedDictionaryWriter>
@@ -831,13 +832,6 @@ void SharedDictionaryManagerOnDisk::MaybePostExpiredDictionaryDeletionTask() {
             }
           },
           weak_factory_.GetWeakPtr())));
-}
-
-void SharedDictionaryManagerOnDisk::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  if (level != base::MEMORY_PRESSURE_LEVEL_NONE) {
-    dictionary_cache_->Clear();
-  }
 }
 
 }  // namespace network

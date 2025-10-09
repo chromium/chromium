@@ -51,7 +51,8 @@ enum class MemoryPressureListenerTag {
   kResourcePool = 21,
   kOnDeviceTailModelService = 22,
   kGpuChannelManager = 23,
-  kSharedDictionaryManagerOnDisk = 24,
+  // Deprecated.
+  // kSharedDictionaryManagerOnDisk = 24,
   kSharedDictionaryManager = 25,
   kHistoryBackend = 26,
   kMediaUrlIndex = 27,

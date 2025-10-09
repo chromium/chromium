@@ -97,6 +97,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       base::Time start_time,
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback) = 0;
+  virtual void HandleMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) = 0;
 
   net::SharedDictionaryGetter MaybeCreateSharedDictionaryGetter(
       int request_load_flags,
