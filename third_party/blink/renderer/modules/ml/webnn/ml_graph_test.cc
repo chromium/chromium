@@ -354,20 +354,14 @@ class MLGraphTest : public testing::Test {
 
 class WebNNContextHelper {
  public:
-  WebNNContextHelper() = default;
-  ~WebNNContextHelper() = default;
+  WebNNContextHelper();
+  ~WebNNContextHelper();
 
   void ConnectWebNNTensorImpl(const blink::WebNNTensorToken& handle,
-                              std::unique_ptr<FakeWebNNTensor> tensor) {
-    const auto it = tensor_impls_.find(handle);
-    ASSERT_TRUE(it == tensor_impls_.end());
-    tensor_impls_.try_emplace(handle, std::move(tensor));
-  }
+                              std::unique_ptr<FakeWebNNTensor> tensor);
 
   void DisconnectAndDestroyWebNNTensorImpl(
-      const blink::WebNNTensorToken& handle) {
-    tensor_impls_.erase(handle);
-  }
+      const blink::WebNNTensorToken& handle);
 
  private:
   std::map<blink::WebNNTensorToken, std::unique_ptr<FakeWebNNTensor>>
@@ -449,6 +443,22 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
 
   mojo_base::BigBuffer buffer_;
 };
+
+WebNNContextHelper::WebNNContextHelper() = default;
+WebNNContextHelper::~WebNNContextHelper() = default;
+
+void WebNNContextHelper::ConnectWebNNTensorImpl(
+    const blink::WebNNTensorToken& handle,
+    std::unique_ptr<FakeWebNNTensor> tensor) {
+  const auto it = tensor_impls_.find(handle);
+  ASSERT_TRUE(it == tensor_impls_.end());
+  tensor_impls_.try_emplace(handle, std::move(tensor));
+}
+
+void WebNNContextHelper::DisconnectAndDestroyWebNNTensorImpl(
+    const blink::WebNNTensorToken& handle) {
+  tensor_impls_.erase(handle);
+}
 
 class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
  public:

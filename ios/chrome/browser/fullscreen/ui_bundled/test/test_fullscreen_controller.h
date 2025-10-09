@@ -72,7 +72,7 @@ class TestFullscreenController : public FullscreenController {
 
  private:
   // The model.
-  std::unique_ptr<FullscreenModel> model_ = std::make_unique<FullscreenModel>();
+  std::unique_ptr<FullscreenModel> model_;
   // The broadcaster.
   ChromeBroadcaster* broadcaster_ = nil;
   // The observers.

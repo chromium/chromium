@@ -43,7 +43,7 @@ struct CronetMetrics final {
   // not giving us a choice.
   // https://www.chromium.org/developers/coding-style/chromium-style-checker-errors/#constructordestructor-errors
   CronetMetrics();
-  CronetMetrics(CronetMetrics& metrics);
+  CronetMetrics(const CronetMetrics& metrics);
   ~CronetMetrics();
 };
 

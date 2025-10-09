@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
+#include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
