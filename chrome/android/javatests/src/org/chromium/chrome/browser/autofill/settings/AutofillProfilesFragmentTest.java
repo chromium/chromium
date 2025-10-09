@@ -345,6 +345,7 @@ public class AutofillProfilesFragmentTest {
 
         // Edit a profile.
         ThreadUtils.runOnUiThreadBlocking(profilePreference::performClick);
+        rule.setEditorDialogAndWait(fragment.getEditorDialogForTest());
 
         // Mock the intent that should be fired.
         Instrumentation.ActivityResult result =
