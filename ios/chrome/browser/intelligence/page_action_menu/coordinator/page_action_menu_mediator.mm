@@ -355,6 +355,22 @@ const CGFloat kFeatureRowIconSize = 20;
   [self.consumer updateFeatureRowsAvailability];
 }
 
+- (void)revertTranslation {
+  if (!_webState) {
+    return;
+  }
+
+  ChromeIOSTranslateClient* translateClient =
+      ChromeIOSTranslateClient::FromWebState(_webState);
+  if (!translateClient || !translateClient->GetTranslateManager()) {
+    return;
+  }
+
+  translateClient->GetTranslateManager()->RevertTranslation();
+
+  [self.consumer updateFeatureRowsAvailability];
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {

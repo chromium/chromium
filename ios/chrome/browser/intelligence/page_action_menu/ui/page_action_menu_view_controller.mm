@@ -958,7 +958,7 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
 
   switch (featureType) {
     case PageActionMenuTranslate:
-      // TODO(crbug.com/447649727): Handle translate "Show original" action.
+      [self.mutator revertTranslation];
       break;
     case PageActionMenuPopupBlocker:
       [self.mutator allowBlockedPopups];
