@@ -105,6 +105,13 @@ void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
 
 void TabStateStorageService::OnTabCreated(int storage_id,
                                           const TabInterface* tab) {
+  if (tab == nullptr) {
+    // TODO(https://crbug.com/448151790): Consider removing from the database.
+    // Though if a complete post-initialization raze is coming, maybe it
+    // doesn't matter.
+    return;
+  }
+
   tab_handle_to_storage_id_[tab->GetHandle().raw_value()] = storage_id;
 }
 

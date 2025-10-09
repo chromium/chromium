@@ -23,9 +23,9 @@ public class TabStateStorageService {
     /** Simple data container for a TabState and its corresponding creation callback. */
     public static class LoadedTabState {
         public final TabState tabState;
-        public final Callback<Tab> onTabCreationCallback;
+        public final Callback<@Nullable Tab> onTabCreationCallback;
 
-        public LoadedTabState(TabState tabState, Callback<Tab> onTabCreationCallback) {
+        public LoadedTabState(TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
             this.tabState = tabState;
             this.onTabCreationCallback = onTabCreationCallback;
         }
@@ -64,7 +64,7 @@ public class TabStateStorageService {
 
     @CalledByNative
     public static LoadedTabState createLoadedTabState(
-            TabState tabState, Callback<Tab> onTabCreationCallback) {
+            TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
         return new LoadedTabState(tabState, onTabCreationCallback);
     }
 

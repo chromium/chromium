@@ -154,6 +154,7 @@ public class TabStateStore {
             TabState tabState = loadedTabStates[i].tabState;
             if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
                 Log.i(TAG, " Tab %d: no state", i);
+                loadedTabStates[i].onTabCreationCallback.onResult(null);
                 continue;
             }
 
@@ -166,7 +167,8 @@ public class TabStateStore {
                     contentsState.getDisplayTitleFromState(),
                     contentsState.buffer().limit());
 
-            // TODO(https://crbug.com/448150631): Run onTabCreationCallback once tabs are created.
+            // TODO(https://crbug.com/448150631): Create a tab.
+            loadedTabStates[i].onTabCreationCallback.onResult(null);
         }
     }
 }
