@@ -267,6 +267,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_ANDROID = 68;
   // Target for the text+image AIv4 notifications permission feature model.
   OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_ANDROID = 69;
+  // Target for on-device speech recognition.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION = 70;
 }
 
 // The model engine versions that can be used to do model inference.

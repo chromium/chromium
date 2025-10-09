@@ -274,6 +274,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kSummarize:
     case ModelBasedCapabilityKey::kWritingAssistanceApi:
     case ModelBasedCapabilityKey::kProofreaderApi:
+    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       // On-device only feature.
       NOTREACHED();
   }
@@ -319,6 +320,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
     case ModelBasedCapabilityKey::kAmountExtraction:
+    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(

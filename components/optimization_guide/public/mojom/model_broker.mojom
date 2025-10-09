@@ -25,6 +25,7 @@ enum ModelBasedCapabilityKey {
   kFormsClassifications = 20,
   kEnhancedCalendar = 23,
   kZeroStateSuggestions = 24,
+  kOnDeviceSpeechRecognition = 25,
 };
 
 // Describes how a particular set of models can be used to implement a

@@ -53,6 +53,8 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_WALLETABLE_PASS_EXTRACTION,
   kAmountExtraction =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_AMOUNT_EXTRACTION,
+  kOnDeviceSpeechRecognition = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -98,6 +100,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "WalletablePassExtraction";
     case ModelBasedCapabilityKey::kAmountExtraction:
       return out << "AmountExtraction";
+    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
+      return out << "OnDeviceSpeechRecognition";
   }
   return out;
 }
@@ -124,6 +128,7 @@ inline constexpr auto kAllModelBasedCapabilityKeys =
         ModelBasedCapabilityKey::kZeroStateSuggestions,
         ModelBasedCapabilityKey::kWalletablePassExtraction,
         ModelBasedCapabilityKey::kAmountExtraction,
+        ModelBasedCapabilityKey::kOnDeviceSpeechRecognition,
     });
 
 // A "real" feature implemented by a model-based capability.
@@ -201,6 +206,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kEnhancedCalendar;
     case mojom::ModelBasedCapabilityKey::kZeroStateSuggestions:
       return ModelBasedCapabilityKey::kZeroStateSuggestions;
+    case mojom::ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
+      return ModelBasedCapabilityKey::kOnDeviceSpeechRecognition;
   }
 }
 
@@ -256,6 +263,9 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_AMOUNT_EXTRACTION:
       return ModelBasedCapabilityKey::kAmountExtraction;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
+      return ModelBasedCapabilityKey::kOnDeviceSpeechRecognition;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -319,6 +329,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kAmountExtraction:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_AMOUNT_EXTRACTION;
+    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
   }
 }
 

@@ -144,6 +144,9 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
           OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
     case ModelBasedCapabilityKey::kProofreaderApi:
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API;
+    case ModelBasedCapabilityKey::kOnDeviceSpeechRecognition:
+      return proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
     // The below capabilities never support on-device execution.
     case ModelBasedCapabilityKey::kFormsClassifications:
     case ModelBasedCapabilityKey::kTabOrganization:

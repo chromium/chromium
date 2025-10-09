@@ -75,6 +75,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsClassifications" summary="Forms Classifications"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
+  <variant name="OnDeviceSpeechRecognition"
+      summary="On-device Speech Recognition"/>
   <variant name="PasswordChangeSubmission"
       summary="Password Change Submission"/>
   <variant name="PermissionsAi" summary="Permissions AI"/>

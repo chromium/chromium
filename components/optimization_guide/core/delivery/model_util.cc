@@ -167,6 +167,9 @@ std::string GetStringNameForOptimizationTarget(
       return "PermissionsAiv4NotificationsAndroid";
     case proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY:
       return "GeneralizedSafety";
+    case proto::
+        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
+      return "OnDeviceSpeechRecognition";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
