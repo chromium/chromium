@@ -33,7 +33,6 @@
 #include "content/renderer/discardable_memory_utils.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/shell/browser/shell.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -78,7 +78,6 @@
 #include "third_party/webrtc/modules/video_coding/svc/create_scalability_structure.h"
 #include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace {
 
