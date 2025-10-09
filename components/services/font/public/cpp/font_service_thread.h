@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <set>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
@@ -74,7 +73,6 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   bool MatchFontByPostscriptNameOrFullFontName(
       std::string postscript_name_or_full_font_name,
       mojom::FontIdentityPtr* out_identity);
-  std::vector<std::string> ListFamilies();
 
 #if BUILDFLAG(ENABLE_PDF)
   void MatchFontWithFallback(std::string family,
@@ -170,11 +168,6 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
       bool* out_valid,
       mojom::FontIdentityPtr* out_font_identity,
       mojom::FontIdentityPtr font_identity);
-  void ListFamiliesImpl(base::WaitableEvent* done_event,
-                        std::vector<std::string>* families);
-  void OnListFamiliesComplete(base::WaitableEvent* done_event,
-                              std::vector<std::string>* families,
-                              const std::vector<std::string>& response);
 
 #if BUILDFLAG(ENABLE_PDF)
   void MatchFontWithFallbackImpl(base::WaitableEvent* done_event,
