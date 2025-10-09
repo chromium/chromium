@@ -289,8 +289,8 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       // Data in an AudioBus is already in planar float format; just copy each
       // channel into the result buffer in order.
       float* ptr = reinterpret_cast<float*>(result->writable_data());
-      for (int c = 0; c < bus->channels(); ++c) {
-        std::copy_n(bus->channel(c), num_frames, ptr);
+      for (auto channel : bus->AllChannels()) {
+        std::copy_n(channel.data(), num_frames, ptr);
         ptr += num_frames;
       }
     } else {
