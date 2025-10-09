@@ -260,15 +260,21 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     size_t payload_size() const;
 
     size_t num_handles() const;
-    bool has_handles() const;
+
+    // Overridden in IpczMessage and TrivialMessage.
+    virtual bool has_handles() const;
 
     // Returns true iff the LegacyHeader is in use for this message.
     virtual bool is_legacy_message() const;
 
     LegacyHeader* legacy_header();
     const LegacyHeader* legacy_header() const;
-    Header* header();
-    const Header* header() const;
+
+    // The header() methods are overridden as NOTREACHED() in IpczMessage and
+    // TrivialMessage to disallow other methods calling header() in those two
+    // subclasses.
+    virtual Header* header();
+    virtual const Header* header() const;
 
     // Note: SetHandles() and TakeHandles() invalidate any previous value of
     // handles().
@@ -276,8 +282,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     virtual void SetHandles(
         std::vector<PlatformHandleInTransit> new_handles) = 0;
     virtual std::vector<PlatformHandleInTransit> TakeHandles() = 0;
-
-    void SetVersionForTest(uint16_t version_number);
 
    protected:
     Message() = default;

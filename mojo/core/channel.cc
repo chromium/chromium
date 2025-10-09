@@ -98,7 +98,7 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
 // The type of message always used by a Channel which backs an ipcz transport.
 // Most of the inherited Message interface is unused since it's only called by
 // the original Mojo Core implementation.
-struct IpczMessage : public Channel::Message {
+struct IpczMessage final : public Channel::Message {
   IpczMessage(base::span<const uint8_t> data,
               std::vector<PlatformHandle> handles) {
     size_ = sizeof(IpczHeader) + data.size();
@@ -122,7 +122,20 @@ struct IpczMessage : public Channel::Message {
   }
   ~IpczMessage() override = default;
 
-  // Channel::Message:
+  // Channel::Message impl:
+  base::span<const char> data_span() const override { return data_; }
+  base::span<char> mutable_data_span() override { NOTREACHED(); }
+  size_t capacity() const override { return size_; }
+
+  // Overridden because ChannelLinux::Write() needs to fallback to ChannelPosix
+  // when a handle is present.
+  bool has_handles() const override { return !handles_.empty(); }
+
+  bool is_legacy_message() const override { NOTREACHED(); }
+
+  Header* header() override { NOTREACHED(); }
+  const Header* header() const override { NOTREACHED(); }
+
   void SetHandles(std::vector<PlatformHandle>) override { NOTREACHED(); }
   void SetHandles(std::vector<PlatformHandleInTransit>) override {
     NOTREACHED();
@@ -131,10 +144,6 @@ struct IpczMessage : public Channel::Message {
     return std::move(handles_);
   }
 
-  base::span<const char> data_span() const override { return data_; }
-  base::span<char> mutable_data_span() override { NOTREACHED(); }
-  size_t capacity() const override { return size_; }
-
   bool ExtendPayload(size_t) override { NOTREACHED(); }
 
  private:
@@ -142,8 +151,8 @@ struct IpczMessage : public Channel::Message {
   std::vector<PlatformHandleInTransit> handles_;
 };
 
-// A complex message can be large or contain file handles.
-struct ComplexMessage : public Channel::Message {
+// A complex message can be large or contain file handles. Not used with ipcz.
+struct ComplexMessage final : public Channel::Message {
   ComplexMessage() = default;
   ComplexMessage(size_t capacity,
                  size_t max_handles,
@@ -193,7 +202,7 @@ struct ComplexMessage : public Channel::Message {
 // A Message with fixed capacity for payload and no support for carrying
 // handles. Allocated instead of IpczMessage for small messages to reduce the
 // number of memory allocations.
-struct TrivialMessage : public Channel::Message {
+struct TrivialMessage final : public Channel::Message {
   TrivialMessage(const TrivialMessage&) = delete;
   TrivialMessage& operator=(const TrivialMessage&) = delete;
 
@@ -203,21 +212,20 @@ struct TrivialMessage : public Channel::Message {
   // if |data| is too large to fit.
   static Channel::MessagePtr TryConstruct(base::span<const uint8_t> data);
 
-  // Message impl:
+  // Channel::Message impl:
   base::span<const char> data_span() const override {
     return base::as_chars(base::span(trivial_data_));
   }
   base::span<char> mutable_data_span() override {
     return base::as_writable_chars(base::span(trivial_data_));
   }
-
-  bool is_legacy_message() const override { return false; }
-
   size_t capacity() const override;
 
-  // ExtendPayload is not used with ipcz. NOTREACHED allows not worrying about
-  // zero-fill for the hypothetical extended part.
-  bool ExtendPayload(size_t new_payload_size) override { NOTREACHED(); }
+  // Overridden because ChannelLinux::Write() needs to fallback to ChannelPosix
+  // when a handle is present.
+  bool has_handles() const override { return false; }
+
+  bool is_legacy_message() const override { NOTREACHED(); }
 
   // Not supported by this class. Not used with ipcz. Implemented as NOTREACHED
   // to match IpczMessage.
@@ -233,6 +241,10 @@ struct TrivialMessage : public Channel::Message {
   // class in PartitionAlloc (256) minus the space that can be reserved for
   // MiraclePtr (8).
   static constexpr size_t kIntendedMessageSize = 248;
+
+  // ExtendPayload is not used with ipcz. NOTREACHED allows not worrying about
+  // zero-fill for the hypothetical extended part.
+  bool ExtendPayload(size_t new_payload_size) override { NOTREACHED(); }
 
  private:
   TrivialMessage() = default;
