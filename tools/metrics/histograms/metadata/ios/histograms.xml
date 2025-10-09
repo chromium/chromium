@@ -3331,16 +3331,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.MainFrameNavigationIsInLockdownMode" enum="Boolean"
-    expires_after="2025-10-06">
-  <owner>joemerramos@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    Records whether Lockdown Mode is enabled for a main-frame navigation action.
-    This is recorded once for every allowed main-frame navigation action.
-  </summary>
-</histogram>
-
 <histogram name="IOS.MemoryExperimenter.AllocationTime" units="ms"
     expires_after="2025-11-09">
   <owner>rohitrao@google.com</owner>
