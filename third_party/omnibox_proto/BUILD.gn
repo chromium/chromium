@@ -10,6 +10,7 @@ if (is_android) {
 
 _proto_files = [
   "aim_eligibility_response.proto",
+  "aim_tools_and_models.proto",
   "answer_data.proto",
   "answer_type.proto",
   "chrome_aim_entry_point.proto",
