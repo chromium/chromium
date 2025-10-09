@@ -1362,9 +1362,6 @@ BASE_FEATURE(kSafetyHubUnifiedPasswordsModule,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables Safety Hub services on start up feature.
-BASE_FEATURE(kSafetyHubServicesOnStartUp, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",

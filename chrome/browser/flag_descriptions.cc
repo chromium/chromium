@@ -3738,14 +3738,6 @@ const char kSafetyHubHaTSOneOffSurveyDescription[] =
     "Enables one-off HaTS surveys for Safety Check v2 on Desktop.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kSafetyHubServicesOnStartUpName[] =
-    "Create Safety Hub services on start up";
-const char kSafetyHubServicesOnStartUpDescription[] =
-    "When enabled, Safety Hub services are created on start up enabling its "
-    "checks to start right away.";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";
 const char kSameAppWindowCycleDescription[] =
     "Use Alt+` to cycle through the windows of the active application.";

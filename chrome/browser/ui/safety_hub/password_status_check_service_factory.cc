@@ -67,5 +67,5 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
+  return true;
 }
