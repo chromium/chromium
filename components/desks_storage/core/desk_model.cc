@@ -39,7 +39,7 @@ DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries)
     : status(status), entries(std::move(entries)) {}
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
-    GetAllEntriesResult& other) = default;
+    const GetAllEntriesResult& other) = default;
 DeskModel::GetAllEntriesResult::~GetAllEntriesResult() = default;
 
 DeskModel::GetEntryByUuidResult::GetEntryByUuidResult(

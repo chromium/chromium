@@ -14,12 +14,9 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
-
-namespace gfx {
-class GpuFence;
-}  // namespace gfx
 
 namespace ui {
 

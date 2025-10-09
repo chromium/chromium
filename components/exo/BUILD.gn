@@ -241,6 +241,7 @@ source_set("test_support") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//cc/mojo_embedder",
     "//chromeos/ui/base",
     "//components/exo/wayland:ui_controls_protocol_stub",
     "//components/viz/service",
