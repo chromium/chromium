@@ -177,7 +177,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     static class ContextMenuUma {
         // Note: these values must match the ContextMenuOptionAndroid enum in enums.xml.
         // Only add values to the end, right before NUM_ENTRIES!
-        // LINT.IfChange(Action)
+        // LINT.IfChange(ContextMenuUma.Action)
         @IntDef({
             Action.OPEN_IN_NEW_TAB,
             Action.OPEN_IN_INCOGNITO_TAB,
@@ -226,6 +226,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.ENTER_PICTURE_IN_PICTURE,
             Action.EXIT_PICTURE_IN_PICTURE,
             Action.OPEN_IN_INCOGNITO_WINDOW,
+            Action.VIEW_PAGE_SOURCE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -281,7 +282,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int ENTER_PICTURE_IN_PICTURE = 49;
             int EXIT_PICTURE_IN_PICTURE = 50;
             int OPEN_IN_INCOGNITO_WINDOW = 51;
-            int NUM_ENTRIES = 52;
+            int VIEW_PAGE_SOURCE = 52;
+            int NUM_ENTRIES = 53;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -422,6 +424,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         getProfile(), mItemDelegate.getWebContents())
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
+    }
+
+    @VisibleForTesting
+    boolean shouldShowViewPageSourceMenu() {
+        return DevToolsWindowAndroid.canViewSource(getProfile(), mItemDelegate.getWebContents());
     }
 
     @Override
@@ -714,6 +721,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (shouldShowDeveloperMenu()) {
             ModelList developerGroup = new ModelList();
+            if (mParams.isPage()
+                    && shouldShowEmptySpaceContextMenu()
+                    && shouldShowViewPageSourceMenu()) {
+                developerGroup.add(createListItem(Item.VIEW_PAGE_SOURCE));
+            }
             developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
             groupedItems.add(developerGroup);
         }
@@ -1075,6 +1087,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getReferrer(),
                     /* navigateToTab= */ true,
                     /* additionalNavigationParams= */ null);
+        } else if (itemId == R.id.contextmenu_view_page_source) {
+            recordContextMenuSelection(ContextMenuUma.Action.VIEW_PAGE_SOURCE);
+            mItemDelegate.getWebContents().getMainFrame().viewSource();
         } else if (itemId == R.id.contextmenu_inspect_element) {
             recordContextMenuSelection(ContextMenuUma.Action.INSPECT_ELEMENT);
             mNativeDelegate.inspectElement(

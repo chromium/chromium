@@ -2957,6 +2957,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_UNPIN" desc="This string is shown in the context menu to remove an existing Custom Tile.">
         Unpin
       </message>
+      <message name="IDS_CONTEXTMENU_VIEW_PAGE_SOURCE" desc="This string is shown in the context menu to display non-editable HTML source code for the current page. [CHAR_LIMIT=30]">
+        View page source
+      </message>
       <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="This string is shown in the context menu to inspect an element in a web page using the developer tools. [CHAR_LIMIT=30]">
         Inspect
       </message>

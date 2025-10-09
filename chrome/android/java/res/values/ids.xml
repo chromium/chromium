@@ -59,6 +59,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_share_page" />
     <item type="id" name="contextmenu_print_page" />
     <item type="id" name="contextmenu_inspect_element" />
+    <item type="id" name="contextmenu_view_page_source" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />
