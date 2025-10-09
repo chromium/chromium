@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -23,35 +22,38 @@ namespace updater {
 
 // AppCommandRunner loads and runs a pre-registered command line from the
 // registry.
-class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
+class AppCommandRunner {
  public:
   AppCommandRunner();
+  AppCommandRunner(const AppCommandRunner&);
+  AppCommandRunner& operator=(const AppCommandRunner&);
+  ~AppCommandRunner();
 
   // Creates an instance of `AppCommandRunner` object corresponding to `app_id`
   // and `command_id`.
-  static HResultOr<scoped_refptr<AppCommandRunner>> LoadAppCommand(
+  static HResultOr<AppCommandRunner> LoadAppCommand(
       UpdaterScope scope,
       const std::wstring& app_id,
       const std::wstring& command_id);
 
   // Loads and returns a vector of `AppCommandRunner` objects corresponding to
   // "AutoRunOnOsUpgradeAppCommands" for `app_id`.
-  static std::vector<scoped_refptr<AppCommandRunner>>
-  LoadAutoRunOnOsUpgradeAppCommands(UpdaterScope scope,
-                                    const std::wstring& app_id);
+  static std::vector<AppCommandRunner> LoadAutoRunOnOsUpgradeAppCommands(
+      UpdaterScope scope,
+      const std::wstring& app_id);
 
   // Runs the AppCommand with the provided `substitutions` and populates
   // `process` if successful.
   HRESULT Run(base::span<const std::wstring> substitutions,
-              base::Process& process);
-
-  std::string output();
-
- protected:
-  friend class base::RefCountedThreadSafe<AppCommandRunner>;
-  virtual ~AppCommandRunner();
+              base::Process& process) const;
 
  private:
+  // Starts a process with separate `executable` and `parameters` components.
+  // `executable` needs to be an absolute path.
+  static HRESULT StartProcess(const base::FilePath& executable,
+                              const std::wstring& parameters,
+                              base::Process& process);
+
   // Separates a command line in `command_format` into an `executable` and
   // `parameters`. `executable` needs to be an absolute path, and additionally
   // needs to be under %programfiles% for System `scope`. Parameters on the
@@ -90,12 +92,15 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
       const std::vector<std::wstring>& parameters,
       base::span<const std::wstring> substitutions);
 
+  // Helper method that calls `FormatAppCommandLine` and then `StartProcess`.
+  static HRESULT ExecuteAppCommand(const base::FilePath& executable,
+                                   const std::vector<std::wstring>& parameters,
+                                   base::span<const std::wstring> substitutions,
+                                   base::Process& process);
+
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
-  std::optional<base::Process> process_;
-  std::optional<HRESULT> hr_;
 
-  friend class base::RefCountedThreadSafe<AppCommandRunner>;
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsInvalidPathsTest,
                            TestCases);
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsProgramFilesPathsTest,
