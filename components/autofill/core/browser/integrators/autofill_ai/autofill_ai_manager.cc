@@ -487,8 +487,7 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
 
 bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
                                          FieldGlobalId field_id) const {
-  // TODO(crbug.com/450060416): Do an EntityType-specific
-  // MayPerformAutofillAiAction() check.
+  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn)) {
     return false;
   }
@@ -520,7 +519,9 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
     if (base::Contains(fields_and_types, focused_field->global_id(),
                        [](const AutofillFieldWithAttributeType& f) {
                          return f.field->global_id();
-                       })) {
+                       }) &&
+        MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn,
+                                   entity)) {
       attributes_in_form[entity].insert_all(
           DenseSet(fields_and_types, &AutofillFieldWithAttributeType::type));
     }
