@@ -1804,6 +1804,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     kFeedBackgroundRefreshVariations,
                                     "FeedBackgroundRefresh")},
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
+    {"tab-grid-drag-and-drop", flag_descriptions::kTabGridDragAndDropName,
+     flag_descriptions::kTabGridDragAndDropDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridDragAndDrop)},
     {"tab-grid-new-transitions", flag_descriptions::kTabGridNewTransitionsName,
      flag_descriptions::kTabGridNewTransitionsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridNewTransitions)},

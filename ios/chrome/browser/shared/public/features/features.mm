@@ -232,6 +232,8 @@ BASE_FEATURE(kTCRexKillSwitch,
              "kTCRexKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridDragAndDrop, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGridEmptyThumbnail, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGridEmptyThumbnailUIEnabled() {

@@ -9603,6 +9603,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-grid-drag-and-drop",
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-grid-empty-thumbnail",
     "owners": [ "thegreenfrog@google.com" ],
     "expiry_milestone": 150

@@ -334,6 +334,9 @@ bool IsTabGridEmptyThumbnailUIEnabled();
 // When enabled uses new transitions in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 
+// Feature flag for the tab grid drag and drop functionality.
+BASE_DECLARE_FEATURE(kTabGridDragAndDrop);
+
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();
 

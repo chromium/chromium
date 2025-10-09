@@ -948,6 +948,9 @@ extern const char kEnableLensOverlayDescription[];
 extern const char kEnableLensViewFinderUnifiedExperienceName[];
 extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
 
+extern const char kTabGridDragAndDropName[];
+extern const char kTabGridDragAndDropDescription[];
+
 extern const char kTabGridNewTransitionsName[];
 extern const char kTabGridNewTransitionsDescription[];
 
