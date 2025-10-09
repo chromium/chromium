@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/callback_forward.h"
@@ -29,12 +30,22 @@ namespace tabs {
 
 namespace {
 
+base::OnceCallback<void(TabAndroid*)> WrapCallbackForJni(
+    TabStateStorageService::OnTabInterfaceCreation&& callback) {
+  return base::BindOnce(
+      [](TabStateStorageService::OnTabInterfaceCreation inner_cb,
+         TabAndroid* tab) { std::move(inner_cb).Run(tab); },
+      std::move(callback));
+}
+
 void RunJavaCallbackLoadAllTabs(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_callback,
-    std::vector<tabs_pb::TabState> tab_states) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tab_state_vector;
-  for (tabs_pb::TabState& tab_state : tab_states) {
+    std::vector<TabStateStorageService::LoadedTabState> loaded_tabs) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>>
+      j_loaded_tab_state_vector;
+  for (auto& loaded_tab : loaded_tabs) {
+    tabs_pb::TabState& tab_state = loaded_tab.first;
     base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer;
     long j_web_contents_state_string_pointer = 0;
     if (tab_state.has_web_contents_state_bytes()) {
@@ -54,6 +65,10 @@ void RunJavaCallbackLoadAllTabs(
     base::android::ScopedJavaLocalRef<jobject> j_tab_group_id =
         base::android::TokenAndroid::Create(env, tab_group_token);
 
+    base::android::ScopedJavaLocalRef<jobject> j_on_tab_created_callback =
+        base::android::ToJniCallback(
+            env, WrapCallbackForJni(std::move(loaded_tab.second)));
+
     base::android::ScopedJavaLocalRef<jobject> j_tab_state =
         Java_TabStateStorageService_createTabState(
             env, tab_state.parent_id(), tab_state.root_id(),
@@ -65,15 +80,19 @@ void RunJavaCallbackLoadAllTabs(
             tab_state.last_navigation_committed_timestamp_millis(),
             j_tab_group_id, tab_state.tab_has_sensitive_content(),
             tab_state.is_pinned());
-    j_tab_state_vector.push_back(j_tab_state);
+
+    base::android::ScopedJavaLocalRef<jobject> j_loaded_tab_state =
+        Java_TabStateStorageService_createLoadedTabState(
+            env, j_tab_state, j_on_tab_created_callback);
+    j_loaded_tab_state_vector.push_back(j_loaded_tab_state);
   }
 
-  base::android::ScopedJavaLocalRef<jclass> type =
-      base::android::GetClass(env, "org/chromium/chrome/browser/tab/TabState");
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_state_array =
-      base::android::ToTypedJavaArrayOfObjects(env, j_tab_state_vector,
+  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env, "org/chromium/chrome/browser/tab/LoadedTabState");
+  base::android::ScopedJavaLocalRef<jobjectArray> j_loaded_tab_state_array =
+      base::android::ToTypedJavaArrayOfObjects(env, j_loaded_tab_state_vector,
                                                type.obj());
-  base::android::RunObjectCallbackAndroid(j_callback, j_tab_state_array);
+  base::android::RunObjectCallbackAndroid(j_callback, j_loaded_tab_state_array);
 }
 
 }  // namespace

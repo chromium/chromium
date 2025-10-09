@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageService.LoadedTabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -141,15 +142,16 @@ public class TabStateStore {
 
     private void loadAllTabsFromService() {
         long loadStartTime = SystemClock.elapsedRealtime();
-        mTabStateStorageService.loadAllTabs((tabStates) -> onTabsLoaded(tabStates, loadStartTime));
+        mTabStateStorageService.loadAllTabs(
+                (loadedTabStates) -> onTabsLoaded(loadedTabStates, loadStartTime));
     }
 
-    private void onTabsLoaded(TabState[] tabStates, long loadStartTime) {
+    private void onTabsLoaded(LoadedTabState[] loadedTabStates, long loadStartTime) {
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
-        Log.i(TAG, "Loaded %d tabs in %dms", tabStates.length, duration);
+        Log.i(TAG, "Loaded %d tabs in %dms", loadedTabStates.length, duration);
 
-        for (int i = 0; i < tabStates.length; i++) {
-            TabState tabState = tabStates[i];
+        for (int i = 0; i < loadedTabStates.length; i++) {
+            TabState tabState = loadedTabStates[i].tabState;
             if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
                 Log.i(TAG, " Tab %d: no state", i);
                 continue;
@@ -163,6 +165,8 @@ public class TabStateStore {
                     contentsState.getVirtualUrlFromState(),
                     contentsState.getDisplayTitleFromState(),
                     contentsState.buffer().limit());
+
+            // TODO(https://crbug.com/448150631): Run onTabCreationCallback once tabs are created.
         }
     }
 }

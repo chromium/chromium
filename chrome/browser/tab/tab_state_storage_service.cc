@@ -85,19 +85,27 @@ void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
 
 void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
                                              std::vector<NodeState> entries) {
-  std::vector<tabs_pb::TabState> tab_states;
+  std::vector<LoadedTabState> loaded_tabs;
   int max_storage_id = 0;
   for (auto& entry : entries) {
     max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromString(entry.payload)) {
-        tab_states.emplace_back(std::move(tab_state));
+        loaded_tabs.emplace_back(
+            std::move(tab_state),
+            base::BindOnce(&TabStateStorageService::OnTabCreated,
+                           base::Unretained(this), entry.id));
       }
     }
   }
   next_storage_id_ = max_storage_id + 1;
-  std::move(callback).Run(std::move(tab_states));
+  std::move(callback).Run(std::move(loaded_tabs));
+}
+
+void TabStateStorageService::OnTabCreated(int storage_id,
+                                          const TabInterface* tab) {
+  tab_handle_to_storage_id_[tab->GetHandle().raw_value()] = storage_id;
 }
 
 }  // namespace tabs

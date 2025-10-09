@@ -31,8 +31,10 @@ class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
                                public StorageIdMapping {
  public:
+  using OnTabInterfaceCreation = base::OnceCallback<void(const TabInterface*)>;
+  using LoadedTabState = std::pair<tabs_pb::TabState, OnTabInterfaceCreation>;
   using LoadAllTabsCallback =
-      base::OnceCallback<void(std::vector<tabs_pb::TabState>)>;
+      base::OnceCallback<void(std::vector<LoadedTabState>)>;
 
   explicit TabStateStorageService(
       std::unique_ptr<TabStateStorageBackend> tab_backend,
@@ -56,6 +58,8 @@ class TabStateStorageService : public KeyedService,
  private:
   void OnAllTabsLoaded(LoadAllTabsCallback callback,
                        std::vector<NodeState> entries);
+
+  void OnTabCreated(int storage_id, const TabInterface* tab);
 
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
