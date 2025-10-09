@@ -49,8 +49,8 @@ def GetPylintConfiguration(input_api, output_api) -> List:
         disabled_warnings=disabled_warnings)
 
 
-def _CheckHistograms(input_api, output_api):
-    """Checks if the histograms.txt file is up to date."""
+def _CheckUmaMetrics(input_api, output_api):
+    """Checks if the UMA metric lists are up to date."""
     # Path to the directory containing segmentation platform models.
     model_dir = input_api.os_path.join('components', 'segmentation_platform',
                                        'embedder', 'default_model')
@@ -73,22 +73,29 @@ def _CheckHistograms(input_api, output_api):
         old_sys_path = input_api.sys.path
         sys_path_to_add = input_api.os_path.join(cwd, 'tools')
         input_api.sys.path.insert(0, sys_path_to_add)
-        import check_histograms
+        import generate_histogram_list
     finally:
         input_api.sys.path = old_sys_path
 
-    expected_histograms = (check_histograms.GetExpectedHistogramsFileContent())
-    actual_histograms = check_histograms.GetActualHistogramsFileContent()
+    warnings = []
+    expected_histograms = (
+        generate_histogram_list.GetExpectedHistogramsFileContent())
+    actual_histograms = generate_histogram_list.GetActualHistogramsFileContent(
+    )
+    expected_user_actions = (
+        generate_histogram_list.GetExpectedUserActionsFileContent())
+    actual_user_actions = (
+        generate_histogram_list.GetActualUserActionsFileContent())
 
-    if expected_histograms != actual_histograms:
+    if (expected_user_actions != actual_user_actions
+            or expected_histograms != actual_histograms):
         error_message = (
-            'The histograms.txt file is out of date.'
-            '\n\nPlease run:\n'
-            'python3 components/segmentation_platform/tools/check_histograms.py'
-        )
-        return [output_api.PresubmitPromptWarning(error_message, [])]
+            'The Segmentation histogram list is out of date.\n\n'
+            'Please run:\npython3 components/segmentation_platform'
+            '/tools/generate_histogram_list.py')
+        warnings.append(output_api.PresubmitPromptWarning(error_message, []))
 
-    return []
+    return warnings
 
 
 def _CommonChecks(input_api, output_api):
@@ -104,7 +111,7 @@ def _CommonChecks(input_api, output_api):
                 'The test launcher filter file does not match the ' +
                 f'available tests.\n\nPlease run:\n{tool_help_path}', []))
 
-    output.extend(_CheckHistograms(input_api, output_api))
+    output.extend(_CheckUmaMetrics(input_api, output_api))
     return output
 
 

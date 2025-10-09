@@ -21,6 +21,7 @@
 
 namespace segmentation_platform {
 
+// LINT.IfChange
 namespace features {
 
 // Defines default values for a feature.
@@ -254,6 +255,7 @@ constexpr Feature UMAAggregate(const char* name,
 }
 
 }  // namespace features
+// LINT.ThenChange(//components/segmentation_platform/tools/generate_histogram_list.py)
 
 template <typename EnumType>
 using FeaturePair = std::pair<EnumType, const features::Feature>;
