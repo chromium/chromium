@@ -2297,7 +2297,7 @@
       // See crbug.com/421690393.
       name: "FileSystemAccessRevokeReadOnRemove",
       depends_on: ["FileSystemAccessWriteMode"],
-      status: "test",
+      status: "stable",
     },
     {
       // Controls the internal write-only mode for various FileSystemAccess API.
@@ -2305,7 +2305,7 @@
       // user visible APIs.
       // This flag is part of crbug.com/421690393 and crbug.com/328458680.
       name: "FileSystemAccessWriteMode",
-      status: "test",
+      status: "stable",
     },
     {
       // The FileSystemObserver interface for the File System Access API.

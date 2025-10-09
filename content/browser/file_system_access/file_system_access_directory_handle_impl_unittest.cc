@@ -477,11 +477,14 @@ class FileSystemAccessDirectoryHandleImplRemoveTest
  public:
   FileSystemAccessDirectoryHandleImplRemoveTest() {
     if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
     }
   }
 
@@ -511,6 +514,10 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, HasWriteAccess) {
   base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
   ASSERT_TRUE(base::CreateDirectory(dir));
 
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
+
   auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
 
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
@@ -527,6 +534,9 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, Recurse_NonEmpty) {
   ASSERT_TRUE(base::CreateDirectory(dir));
   base::FilePath file = dir.AppendASCII("test_file.txt");
   ASSERT_TRUE(base::WriteFile(file, "test data"));
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
 
   auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
 
@@ -576,7 +586,9 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest,
   auto handle = CreateHandle();
   auto test_dir_path = dir_.GetPath().AppendASCII("test_dir");
 
-  if (!GetParam().is_feature_enabled) {
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  } else {
     SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
                            FileSystemAccessPermissionGrant::
                                PermissionRequestOutcome::kUserGranted);
@@ -609,11 +621,14 @@ class FileSystemAccessDirectoryHandleImplRemoveEntryTest
  public:
   FileSystemAccessDirectoryHandleImplRemoveEntryTest() {
     if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
     }
   }
 
@@ -635,6 +650,10 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest, RemoveEntry) {
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType wfs_siloed_lock_type = manager_->GetWFSSiloedLockType();
+
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
 
   // Calling removeEntry() on an unlocked file should succeed.
   {
@@ -736,6 +755,9 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
   ASSERT_TRUE(base::CreateDirectory(subdir_path));
   base::FilePath file_path = subdir_path.AppendASCII("test_file.txt");
   ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
 
   base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
   handle_->RemoveEntry("subdir", /*recurse=*/true, future.GetCallback());
@@ -772,7 +794,9 @@ TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
   base::FilePath file_path = test_dir.AppendASCII("test_file.txt");
   ASSERT_TRUE(base::WriteFile(file_path, "test data"));
 
-  if (!GetParam().is_feature_enabled) {
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  } else {
     SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
                            FileSystemAccessPermissionGrant::
                                PermissionRequestOutcome::kUserGranted);

@@ -649,6 +649,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
           kFrameId, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
+  EXPECT_CALL(permission_context_, NotifyEntryModified(_, _)).Times(1);
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -699,6 +700,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
         sb_callback = std::move(callback);
         loop.Quit();
       });
+  EXPECT_CALL(permission_context_, NotifyEntryModified(_, _)).Times(1);
 
   handle_->Close(base::DoNothing());
   loop.Run();
@@ -849,11 +851,14 @@ class FileSystemAccessFileWriterImplPermissionTest
  public:
   FileSystemAccessFileWriterImplPermissionTest() {
     if (GetParam().is_feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kFileSystemAccessWriteMode);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
     }
   }
 
