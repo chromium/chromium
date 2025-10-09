@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabResolver.java",
     "java/src/org/chromium/chrome/browser/tab/TabState.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributes.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateExtractor.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageFlagHelper.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
