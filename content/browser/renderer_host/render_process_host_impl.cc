@@ -149,6 +149,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/gpu_client.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
@@ -2343,8 +2344,22 @@ void RenderProcessHostImpl::CreateOOPVideoDecoder(
   if (!video_decoder_factory_remote_.is_bound()) {
     auto creation_cb = GetVideoDecoderFactoryCreationCB();
     if (creation_cb.is_null()) {
+      mojo::PendingRemote<viz::mojom::Gpu> gpu_remote;
+      if (base::FeatureList::IsEnabled(media::kUseSharedImageInOOPVDProcess)) {
+        if (!oop_video_decoder_gpu_client_) {
+          mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
+              gpu_remote.InitWithNewPipeAndPassReceiver();
+          oop_video_decoder_gpu_client_ = content::CreateGpuClient(
+              std::move(gpu_receiver),
+              /*enable_extra_handles_validation=*/true);
+        } else {
+          oop_video_decoder_gpu_client_->Add(
+              gpu_remote.InitWithNewPipeAndPassReceiver());
+        }
+      }
       LaunchOOPVideoDecoderFactory(
-          video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+          video_decoder_factory_remote_.BindNewPipeAndPassReceiver(),
+          std::move(gpu_remote));
     } else {
       creation_cb.Run(
           video_decoder_factory_remote_.BindNewPipeAndPassReceiver());

@@ -70,7 +70,7 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     if (!render_process_host_) {
       if (!vd_factory_remote_.is_bound()) {
         LaunchOOPVideoDecoderFactory(
-            vd_factory_remote_.BindNewPipeAndPassReceiver());
+            vd_factory_remote_.BindNewPipeAndPassReceiver(), /*gpu_remote=*/{});
         vd_factory_remote_.reset_on_disconnect();
       }
 

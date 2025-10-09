@@ -113,8 +113,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
-    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "media/capture/capture_switches.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
@@ -376,19 +375,8 @@ auto RunOOPArcVideoAcceleratorFactoryService(
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 auto RunOOPVideoDecoderFactoryProcessService(
     mojo::PendingReceiver<media::mojom::VideoDecoderFactoryProcess> receiver) {
-  auto service = std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
-      std::move(receiver));
-
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
-  UtilityThread::Get()->BindHostReceiver(
-      remote_gpu.InitWithNewPipeAndPassReceiver());
-  std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
-      std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
-  service->SetVizGpu(std::move(viz_gpu));
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
-  return service;
+  return std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
+      std::move(receiver), ChildProcess::current()->io_task_runner());
 }
 
 auto RunVideoEncodeAcceleratorProviderFactory(

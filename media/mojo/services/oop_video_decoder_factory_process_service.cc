@@ -12,9 +12,11 @@
 namespace media {
 
 OOPVideoDecoderFactoryProcessService::OOPVideoDecoderFactoryProcessService(
-    mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver)
+    mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : receiver_(this, std::move(receiver)),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      io_task_runner_(std::move(io_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -28,8 +30,12 @@ OOPVideoDecoderFactoryProcessService::~OOPVideoDecoderFactoryProcessService() {
 
 void OOPVideoDecoderFactoryProcessService::InitializeVideoDecoderFactory(
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    mojo::PendingReceiver<mojom::InterfaceFactory> receiver) {
+    mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
+    mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (gpu_remote.is_valid()) {
+    viz_gpu_ = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
+  }
 
   // The browser process ensures this is called only once.
   DCHECK(!factory_);
@@ -70,8 +76,7 @@ void OOPVideoDecoderFactoryProcessService::OnGpuChannelLostTask() {
 
 scoped_refptr<gpu::ClientSharedImageInterface>
 OOPVideoDecoderFactoryProcessService::GetSharedImageInterface() {
-  if (!base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess) ||
-      !viz_gpu_) {
+  if (!viz_gpu_) {
     return nullptr;
   }
   if (shared_image_interface_ &&
@@ -88,11 +93,6 @@ OOPVideoDecoderFactoryProcessService::GetSharedImageInterface() {
   shared_image_interface_ =
       gpu_channel_host->CreateClientSharedImageInterface();
   return shared_image_interface_;
-}
-
-void OOPVideoDecoderFactoryProcessService::SetVizGpu(
-    std::unique_ptr<viz::Gpu> viz_gpu) {
-  viz_gpu_ = std::move(viz_gpu);
 }
 
 void OOPVideoDecoderFactoryProcessService::OnFactoryDisconnected() {

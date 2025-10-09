@@ -1533,6 +1533,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
       file_system_manager_impl_;
   std::unique_ptr<viz::GpuClient> gpu_client_;
   std::unique_ptr<PushMessagingManager> push_messaging_manager_;
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter>
+      oop_video_decoder_gpu_client_{nullptr,
+                                    base::OnTaskRunnerDeleter(nullptr)};
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   std::unique_ptr<EmbeddedFrameSinkProviderImpl> embedded_frame_sink_provider_;
 #if BUILDFLAG(ENABLE_PLUGINS)

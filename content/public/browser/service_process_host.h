@@ -116,8 +116,7 @@ class CONTENT_EXPORT ServiceProcessHost {
     // platforms where that is supported. This option will be removed in future.
     // Prefer to avoid setting this option and instead bind the client directly
     // by passing a `pending_receiver<viz.mojom.Gpu>` to the service via mojo.
-    Options& WithGpuClient(bool enable_extra_handles_validation,
-                           base::PassKey<ServiceProcessHostGpuClient> passkey);
+    Options& WithGpuClient(base::PassKey<ServiceProcessHostGpuClient> passkey);
 
     // Passes the contents of this Options object to a newly returned Options
     // value. This must be called when moving a built Options object into a call
@@ -133,7 +132,6 @@ class CONTENT_EXPORT ServiceProcessHost {
     std::vector<base::FilePath> preload_libraries;
 #endif  // BUILDFLAG(IS_WIN)
     std::optional<bool> allow_gpu_client;
-    std::optional<bool> extra_handles_validation;
   };
 
   // An interface which can be implemented and registered/unregistered with

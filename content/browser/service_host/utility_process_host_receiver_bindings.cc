@@ -15,8 +15,7 @@
 #include "content/browser/font_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
-    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "components/viz/host/gpu_client.h"
 #include "content/public/browser/gpu_client.h"
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
@@ -31,13 +30,12 @@ void UtilityProcessHost::BindHostReceiver(
     return;
   }
 #endif
-#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE) || \
-    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   if (options_.allowed_gpu_) {
     // TODO(crbug.com/328099369) Remove once all clients get this directly.
     if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
       gpu_client_ = content::CreateGpuClient(
-          std::move(gpu_receiver), options_.extra_handles_validation_);
+          std::move(gpu_receiver), /*enable_extra_handles_validation=*/false);
       return;
     }
   }

@@ -29,7 +29,8 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
       public gpu::GpuChannelLostObserver {
  public:
   explicit OOPVideoDecoderFactoryProcessService(
-      mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver);
+      mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   OOPVideoDecoderFactoryProcessService(
       const OOPVideoDecoderFactoryProcessService&) = delete;
   OOPVideoDecoderFactoryProcessService& operator=(
@@ -39,12 +40,12 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
   // mojom::VideoDecoderFactoryProcess implementation.
   void InitializeVideoDecoderFactory(
       const gpu::GpuFeatureInfo& gpu_feature_info,
-      mojo::PendingReceiver<mojom::InterfaceFactory> receiver) final;
+      mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
+      mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) final;
 
   // gpu::GpuChannelLostObserver implementation.
   void OnGpuChannelLost() final;
 
-  void SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu);
   void OnFactoryDisconnected();
 
  private:
@@ -59,6 +60,7 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   std::unique_ptr<viz::Gpu> viz_gpu_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<OOPVideoDecoderFactoryProcessService> weak_ptr_factory_{

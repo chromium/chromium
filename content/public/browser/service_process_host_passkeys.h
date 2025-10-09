@@ -30,7 +30,6 @@ class OnDeviceTranslationServiceController;
 
 namespace content {
 class VideoCaptureServiceLauncher;
-class OOPVideoDecoderFactoryProcessLauncher;
 shape_detection::mojom::ShapeDetectionService* GetShapeDetectionService();
 
 class ServiceProcessHostPreloadLibraries {
@@ -70,7 +69,6 @@ class ServiceProcessHostGpuClient {
   // Service launchers using `ServiceProcessHost::Options::WithGpuClient`
   // should be added here and must be reviewed by the security team.
   friend class content::VideoCaptureServiceLauncher;
-  friend class content::OOPVideoDecoderFactoryProcessLauncher;
 };
 
 }  // namespace content

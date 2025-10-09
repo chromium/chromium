@@ -105,6 +105,10 @@ mojom("mojom") {
     "//url/mojom:url_mojom_origin",
   ]
 
+  if (allow_oop_video_decoder) {
+    public_deps += [ "//services/viz/public/mojom" ]
+  }
+
   if (is_mac) {
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
     # remove this dependency.

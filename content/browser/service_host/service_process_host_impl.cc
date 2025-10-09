@@ -66,8 +66,7 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
 #endif  // BUILDFLAG(IS_WIN)
   if (service_options.allow_gpu_client.has_value() &&
       service_options.allow_gpu_client.value()) {
-    utility_options.WithGpuClientAllowed(
-        service_options.extra_handles_validation.value_or(false));
+    utility_options.WithGpuClientAllowed();
   }
 
   utility_options.WithBoundServiceInterfaceOnChildProcess(std::move(receiver));
