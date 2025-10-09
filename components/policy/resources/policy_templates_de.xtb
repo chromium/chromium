@@ -1307,6 +1307,17 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine personenbezogene
 
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="1878535132109943599">Wenn diese Richtlinie aktiviert ist, werden bei Anfragen vom Typ „<ph name="LOCAL_NETWORK_ACCESS" />“ in den <ph name="CHROME_DEVTOOLS_NAME" /> nur Warnungen aufgrund fehlgeschlagener „<ph name="LOCAL_NETWORK_ACCESS" />“-Prüfungen angezeigt.
+
+Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden Anfragen vom Typ „<ph name="LOCAL_NETWORK_ACCESS" />“ gemäß dem standardmäßigen Verarbeitungsprozess für diesen Anfragetyp verarbeitet.
+
+Informationen zu Einschränkungen für den <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Diese Unternehmensrichtlinie ist nur vorübergehend verfügbar und wird nach M146 entfernt.
+
+Langfristig kann die Richtlinie „<ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />“ verwendet werden, um URL-Muster auf die Zulassungsliste zu setzen, für die automatisch die Berechtigung „<ph name="LOCAL_NETWORK_ACCESS" />“ gewährt werden soll.
+
+Wenn die Richtlinie „<ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" />“ aktiviert ist, hat sie Vorrang vor dieser Richtlinie.</translation>
 <translation id="187961648719201562">Vorhandene lokale Dateien löschen (wird seit Version 137 unterstützt)</translation>
 <translation id="1883274744253492031">Automatisches Upgrade für gemischte Inhalte aktivieren</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
@@ -7598,6 +7609,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Wenn die Richtlinie auf <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (Wert 3) gesetzt ist, wird dem Nutzer standardmäßig eine Benachrichtigung angezeigt, wenn die Berechtigung für lokale Schriftarten angefragt wird. Wenn Nutzer die Berechtigung gewähren, erweitert das die Fähigkeit von Websites, Informationen zu lokalen Schriftarten zu sehen.
 
       Wenn diese Richtlinie nicht konfiguriert ist, sieht der Nutzer standardmäßig eine Benachrichtigung, kann die Einstellung aber ändern.</translation>
+<translation id="6203014458380972093">Einschränkungen für Anfragen an lokale Netzwerkendpunkte vorübergehend deaktivieren</translation>
 <translation id="6203715554101884845">Wenn diese Richtlinie konfiguriert ist, kann eine Liste mit Website-URLs erstellt werden, denen automatisch die Berechtigung für den Zugriff auf ein HID-Gerät mit den angegebenen Anbieter- und Produkt-IDs auf dem Anmeldebildschirm gewährt wird. Für jeden Eintrag sind die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ erforderlich, damit er gültig ist. Sonst wird er ignoriert. Für jeden Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ ist das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ erforderlich. „<ph name="PRODUCT_ID_FIELD_NAME" />“ ist optional. Wird das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ weggelassen, wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Einträge, für die das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ angegeben ist, „<ph name="VENDOR_ID_FIELD_NAME" />“ aber fehlt, sind ungültig und werden ignoriert.
 
 Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet (kein automatischer Zugriff).</translation>
@@ -10187,6 +10199,7 @@ Diese Richtlinie ist vorübergehend und wird in Zukunft entfernt.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Android-Berichterstellung aktivieren</translation>
+<translation id="798671159602573821">Legt fest, ob Einschränkungen für den Zugriff auf das lokale Netzwerk (vorübergehend) deaktiviert werden sollen</translation>
 <translation id="7990280274626154329"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aktivieren</translation>
 <translation id="7991022023019679916">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 

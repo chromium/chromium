@@ -3910,7 +3910,7 @@
 <translation id="7442389976360981500">ハンド トラッキングを許可しますか？</translation>
 <translation id="7442725080345379071">ライトオレンジ</translation>
 <translation id="7444046173054089907">このサイトはブロックされています</translation>
-<translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{今日から Cookie のブロックを再開します}=1{明日から Cookie のブロックを再開します}other{# 日後に Cookie のブロックを再開します}}</translation>
 <translation id="7447234474237738389">服飾サービス</translation>
 <translation id="7447625772313191651"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> mm）</translation>
 <translation id="7450577240311017924">[同期を管理] ボタンです。実行すると、Chrome の設定で同期する情報を管理できます</translation>
@@ -4433,7 +4433,7 @@
 <translation id="8289355894181816810">確認方法がわからない場合は、ネットワーク管理者までお問い合わせください。</translation>
 <translation id="829335040383910391">音声</translation>
 <translation id="8294431847097064396">ソース</translation>
-<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
+<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" />をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8298399736867690281">カードはデバイスのみに保存されました</translation>
 <translation id="8301894345671534559">コードの入力</translation>

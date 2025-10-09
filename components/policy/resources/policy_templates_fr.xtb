@@ -1305,6 +1305,17 @@ Si cette règle est définie sur "False", aucune information pouvant servir à i
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="1878535132109943599">Si cette règle est activée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> n'afficheront des avertissements dans <ph name="CHROME_DEVTOOLS_NAME" /> qu'en cas d'échec des vérifications <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Cette règle d'entreprise est temporaire et sera supprimée après M146.
+
+À long terme, la règle <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> peut être utilisée pour ajouter à la liste d'autorisation les formats d'URL auxquels l'autorisation <ph name="LOCAL_NETWORK_ACCESS" /> doit être automatiquement accordée.
+
+Notez que si la règle <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" /> est activée, elle prévaut sur cette règle.</translation>
 <translation id="187961648719201562">Supprimer les fichiers locaux existants (pris en charge depuis la version 137)</translation>
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
@@ -7611,6 +7622,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si cette règle est définie sur <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valeur 3), l'utilisateur reçoit par défaut une invite lorsque l'autorisation d'utiliser des polices locales est demandée. Si les utilisateurs accordent l'autorisation, cela étend la capacité des sites à voir les informations sur les polices locales.
 
       Si cette règle n'est pas configurée, le comportement par défaut (invite envoyée à l'utilisateur) s'applique. Les utilisateurs peuvent toutefois modifier ce paramètre.</translation>
+<translation id="6203014458380972093">Désactiver temporairement les restrictions sur les requêtes à des points de terminaison du réseau local</translation>
 <translation id="6203715554101884845">Cette règle permet de lister les URL indiquant quels sites sont automatiquement autorisés à accéder à un appareil HID à l'aide des ID de fournisseur et de produit indiqués sur l'écran de connexion. Pour être valide, chaque élément listé doit comporter les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> sous peine d'être ignoré. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> doit avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et peut avoir un champ <ph name="PRODUCT_ID_FIELD_NAME" />. Si le champ <ph name="PRODUCT_ID_FIELD_NAME" /> est omis, une règle est créée, laquelle établit une correspondance avec n'importe quel appareil ayant l'ID de fournisseur spécifié. Un élément qui a un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" />, n'est pas valide et est ignoré.
 
 Si cette règle n'est pas configurée, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
@@ -10209,6 +10221,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Activer la création de rapports Android</translation>
+<translation id="798671159602573821">Indique si les restrictions d'accès au réseau local doivent être (temporairement) désactivées</translation>
 <translation id="7990280274626154329">Activer <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 

@@ -1378,6 +1378,21 @@ Si la estableces como falsa, no se recopilarán los datos que permiten identific
 
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="1878535132109943599">Si habilitas esta política, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />
+solo mostrarán advertencias en <ph name="CHROME_DEVTOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si la inhabilitas o no la estableces, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el
+manejo predeterminado de estas solicitudes.
+
+Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/.
+
+Esta política empresarial es temporal y se quitará después de la versión M146.
+
+A largo plazo, la política <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+se puede usar para crear una lista de entidades permitidas de patrones de URL a los que se les debe otorgar automáticamente
+el permiso <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Ten en cuenta que si se habilita la política <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" />, tendrá prioridad sobre esta política.</translation>
 <translation id="187961648719201562">Borrar los archivos locales existentes (compatible a partir de la versión 137)</translation>
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre el contenido promocional en la pestaña completa</translation>
@@ -7905,6 +7920,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si estableces la política con el valor <ph name="ASK_LOCAL_FONTS_POLICY_NAME" /> (valor 3), se notificará al usuario cuando se solicite el permiso de fuentes locales de forma predeterminada. Si los usuarios otorgan el permiso, se ampliará la capacidad de los sitios para ver la información sobre las fuentes locales.
 
       Si no estableces la política, se aplicará el comportamiento predeterminado por el cual se notifica al usuario. Los usuarios pueden cambiar esta configuración.</translation>
+<translation id="6203014458380972093">Inhabilitar temporalmente las restricciones en las solicitudes a extremos de red locales</translation>
 <translation id="6203715554101884845">Si estableces la política, podrás crear una lista de URLs donde se indiquen los sitios a los cuales se les otorga permiso automáticamente para acceder a un dispositivo HID con los IDs del producto y del proveedor especificados en la pantalla de acceso. Para que cada elemento de la lista sea válido, debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" /> completos. De lo contrario, se ignorará el elemento. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> debe tener especificado el campo <ph name="VENDOR_ID_FIELD_NAME" /> y puede tener el campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si omites el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo que tenga el ID de proveedor especificado. Los elementos que tengan especificado el campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tengan el campo <ph name="VENDOR_ID_FIELD_NAME" /> no serán válidos y se ignorarán.
 
 Si no estableces la política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
@@ -10642,6 +10658,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Widgets de consulta rápida en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Habilitar los informes de Android</translation>
+<translation id="798671159602573821">Especificar si se deben inhabilitar (temporalmente) las restricciones de acceso a la red local</translation>
 <translation id="7990280274626154329">Habilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

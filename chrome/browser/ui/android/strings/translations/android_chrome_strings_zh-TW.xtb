@@ -15,7 +15,7 @@
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1052842760770519282">無法存取部分密碼</translation>
 <translation id="1058669287135776095">你已離線。請檢查網際網路連線，然後再試一次。</translation>
-<translation id="1066338698580889414">提示通知的宣傳內容已開啟，並顯示在整個畫面</translation>
+<translation id="1066338698580889414">提示通知的宣傳內容已顯示在整個畫面</translation>
 <translation id="1070689840697074178">你可以在這裡下載 PDF</translation>
 <translation id="107147699690128016">如果變更副檔名，這個檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1087799850623149508">按住網址列即可移到底部</translation>
@@ -1418,7 +1418,7 @@
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用輕觸搜尋功能時，納入較多網頁文字也許能找到更相關的結果。你隨時可以前往<ph name="BEGIN_LINK" />設定頁面<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
-<translation id="7384486627147155832">提示通知的宣傳內容已開啟，並顯示在畫面下半部</translation>
+<translation id="7384486627147155832">提示通知的宣傳內容顯示在畫面下半部</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{其他，清單中有 1 個檔案}other{其他，清單中有 # 個檔案}}</translation>
 <translation id="7400418766976504921">網址</translation>

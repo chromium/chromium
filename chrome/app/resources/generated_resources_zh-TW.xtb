@@ -392,7 +392,7 @@
 <translation id="125097549534200450">清除</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">正在掃描行動數據網路…</translation>
-<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="125220115284141797">預設值</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
@@ -7462,7 +7462,7 @@
 <translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6185151644843671709">已儲存密碼金鑰並建立 PIN 碼</translation>
-<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="6186177419203903310">這麼做會啟用系統中所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6192333916571137726">下載檔案</translation>
@@ -10217,7 +10217,7 @@
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
-<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
 <translation id="8090513782447872344">你可以日後隨時返回查看</translation>
 <translation id="8090686009202681725">使用 AI 建立主題</translation>
@@ -11268,7 +11268,7 @@
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
 <translation id="8811923271770626905">這項擴充功能可能會在背景執行</translation>
-<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 個密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
@@ -11312,7 +11312,7 @@
 <translation id="8838770651474809439">漢堡</translation>
 <translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
-<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}other{這 {ITEM_COUNT} 個項目只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。這麼做也會清理所有重複項目。}}</translation>
+<translation id="8839975272851327869">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {ITEM_COUNT} 個項目只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8841843049738266382">讀取及變更列入許可清單的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除這個指紋</translation>

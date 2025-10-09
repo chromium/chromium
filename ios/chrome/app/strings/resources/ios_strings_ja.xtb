@@ -386,7 +386,7 @@
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2434918313224755415">左にスクロールすると、シークレット モードでブラウジングできます。</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
-<translation id="2458827363789845126">{count,plural, =1{{count} 件の履歴アイテム}other{{count} 件の履歴アイテム}}</translation>
+<translation id="2458827363789845126">{count,plural, =1{{count} 件の履歴}other{{count} 件の履歴}}</translation>
 <translation id="2461070143328828326">パスワードの設定</translation>
 <translation id="2462736546165239215">こちらですべての閲覧履歴を確認できます。</translation>
 <translation id="2466518891828668184">パスワードを保存すると、サイトやアプリに簡単にログインできます。</translation>
@@ -1309,7 +1309,7 @@
 <translation id="6074656473835429958">通知を受け取る</translation>
 <translation id="607620096698446287"><ph name="FILENAME" />（<ph name="FILESIZE" />）をアップロードできませんでした</translation>
 <translation id="6077126322656614846">カメラへのアクセスが許可されています</translation>
-<translation id="607730456154980869">Gemini in Chrome で回答をすばやく入手</translation>
+<translation id="607730456154980869">知りたいことがすぐにわかる、Gemini in Chrome</translation>
 <translation id="6078236141387574983">シートの高さを再調整する</translation>
 <translation id="6084848228346514841">タブを選択</translation>
 <translation id="6089212833343035912">Google パスワード マネージャーの PIN</translation>
@@ -1511,7 +1511,7 @@
 <translation id="6729493062119577923">共有タブグループのアクティビティ</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6746338529702829275">アカウントのデータを確認します</translation>
-<translation id="6750456911389438250">{count,plural, =1{{count} 件の履歴アイテムをインポートしました}other{{count} 件の履歴アイテムをインポートしました}}</translation>
+<translation id="6750456911389438250">{count,plural, =1{{count} 件の履歴をインポートしました}other{{count} 件の履歴をインポートしました}}</translation>
 <translation id="6755200887046212842">アカウントを管理</translation>
 <translation id="6755733078693946548">すべてのアプリからパスワードとパスキーにアクセスする</translation>
 <translation id="6759709389246683070">このタブを長押しすると、後で再度アクセスするようリマインダーを設定できます</translation>

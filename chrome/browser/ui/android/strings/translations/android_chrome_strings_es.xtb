@@ -1832,7 +1832,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
 <translation id="9189607089796819144">¿Quieres descargar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de todos modos?</translation>
 <translation id="9190276265094487094">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>
-<translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de Incógnito seleccionada fija</translation>
+<translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de Incógnito fija seleccionada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
 <translation id="9204836675896933765">1 archivo restante</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a buscarla en <ph name="SEARCH_ENGINE" />.</translation>
