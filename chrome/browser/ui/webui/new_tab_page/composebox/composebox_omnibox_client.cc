@@ -9,6 +9,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/omnibox/composebox/contextual_session_service.h"
+#include "net/base/url_util.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace composebox {
@@ -47,11 +48,10 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match) {
   const std::map<std::string, std::string>& additional_params =
       lens::GetParametersMapWithoutQuery(destination_url);
-  // Use text for regular query (verbatim match) or use
-  // matches input text for dropdown matches.
-  composebox_handler_->SubmitQuery(
-      base::UTF16ToUTF8(text.empty() ? match.fill_into_edit : text),
-      disposition, additional_params);
+
+  std::string query_text;
+  net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  composebox_handler_->SubmitQuery(query_text, disposition, additional_params);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
