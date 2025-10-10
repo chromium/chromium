@@ -328,4 +328,74 @@ suite('FeedbackToastUpdated', () => {
     // Feedback toast should appear.
     assertTrue(isRendered(getFeedbackToast()));
   });
+
+  test('FeedbackToastReshowsOnAimResultChange', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Toast should not be visible immediately.
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Call the timeout.
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should appear.
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Reset the show feedback toast callback.
+    showFeedbackToastCallback = () => {};
+
+    // Changing to AIM results should reshow the toast.
+    callbackRouterRemote.aimResultsChanged(true);
+    await waitAfterNextRender(lensSidePanelElement);
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+  });
+
+  test('FeedbackToastReshowsOnFocusResultsFrame', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    // Toast should not be visible immediately.
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Call the timeout.
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should appear.
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Reset the show feedback toast callback.
+    showFeedbackToastCallback = () => {};
+
+
+    // Focusing the results frame should reshow the toast.
+    callbackRouterRemote.focusResultsFrame();
+    await waitAfterNextRender(lensSidePanelElement);
+    showFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+  });
 });
