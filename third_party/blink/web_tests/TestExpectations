@@ -9757,6 +9757,9 @@ crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-
 # crbug.com/449751911 failure pass for linux debug, crbug.com/805756 for timeouts on all platforms.
 crbug.com/449751911 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout ]
 
+# WebAudio AudioWorklet test failure in MSAN
+crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Timeout Pass ]
+
 # Gardener 2025-10-10
 crbug.com/450592015 [ Mac12-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
 crbug.com/450592015 [ Mac13-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
