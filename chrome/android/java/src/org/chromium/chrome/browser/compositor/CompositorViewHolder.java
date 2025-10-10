@@ -349,8 +349,7 @@ public class CompositorViewHolder extends FrameLayout
 
                 @Override
                 public void onTouchDown() {
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)) {
+                    if (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()) {
                         mInTouch = true;
                         updateInMotion();
                     }
@@ -358,8 +357,7 @@ public class CompositorViewHolder extends FrameLayout
 
                 @Override
                 public void onTouchUp() {
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)) {
+                    if (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()) {
                         mInTouch = false;
                         updateInMotion();
                     }
@@ -784,7 +782,7 @@ public class CompositorViewHolder extends FrameLayout
     private void updateInMotion() {
         // TODO(crbug.com/40244051): Track fling as well.
         boolean inMotion = mContentViewScrolling;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)) {
+        if (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()) {
             inMotion |= mInTouch;
         } else if (ChromeFeatureList.sSuppressToolbarCapturesAtGestureEnd.isEnabled()) {
             inMotion |= mNumGestureActiveTouches > 0;

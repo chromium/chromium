@@ -857,7 +857,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 }
             } else if (Boolean.TRUE.equals(compositorInMotion)
                     && super.isDirty()
-                    && (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+                    && (ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
                             || mControlContainerIsVisibleSupplier.getAsBoolean())) {
                 CaptureReadinessResult captureReadinessResult = mToolbar.isReadyForTextureCapture();
                 CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);

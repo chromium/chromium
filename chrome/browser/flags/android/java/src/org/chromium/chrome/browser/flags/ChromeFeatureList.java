@@ -1071,6 +1071,11 @@ public abstract class ChromeFeatureList {
                     TOOLBAR_SNAPSHOT_REFACTOR,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sToolbarStaleCaptureBugFix =
+            newCachedFlag(
+                    TOOLBAR_STALE_CAPTURE_BUG_FIX,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarTabletResizeRefactor =
             newCachedFlag(TOOLBAR_TABLET_RESIZE_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sTopControlsRefactor =
@@ -1242,6 +1247,7 @@ public abstract class ChromeFeatureList {
                     sTabletTabStripAnimation,
                     sToolbarPhoneAnimationRefactor,
                     sToolbarSnapshotRefactor,
+                    sToolbarStaleCaptureBugFix,
                     sToolbarTabletResizeRefactor,
                     sTopControlsRefactor,
                     sTopControlsRefactorV2,
