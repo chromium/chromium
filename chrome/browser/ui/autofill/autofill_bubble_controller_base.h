@@ -46,7 +46,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   // BubbleControllerBase:
   void ShowBubble() override;
-  void HideBubble() override;
+  void HideBubble(bool initiated_by_bubble_manager) override;
   bool CanBeReshown() const override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
@@ -84,6 +84,15 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void ResetBubbleViewAndInformBubbleManager();
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
+
+  // True if anytime, the bubble was shown to the user in the lifecycle of the
+  // bubble.
+  // TODO(crbug.com/432429605): Remove this state and log a separate enum for
+  // the cases where bubble is discarded by bubble manager.
+  bool was_bubble_shown_ = false;
+
+  // True when the hide bubble is requested by the BubbleManager.
+  bool bubble_hide_initiated_by_bubble_manager_ = false;
 
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.

@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -22,7 +21,10 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     : content::WebContentsObserver(web_contents) {}
 
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
-  HideBubble();
+  if (IsShowingBubble()) {
+    bubble_view_->Hide();
+    bubble_view_ = nullptr;
+  }
 }
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
@@ -33,14 +35,14 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
   }
 
   if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    ResetBubbleViewAndInformBubbleManager();
+    bubble_view_ = nullptr;
   }
 }
 
@@ -56,16 +58,20 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 }
 
 void AutofillBubbleControllerBase::ShowBubble() {
+  was_bubble_shown_ = true;
   UpdatePageActionIcon();
   DoShowBubble();
   UpdatePageActionIcon();
 }
 
-void AutofillBubbleControllerBase::HideBubble() {
+void AutofillBubbleControllerBase::HideBubble(
+    bool initiated_by_bubble_manager) {
   if (IsShowingBubble()) {
+    bubble_hide_initiated_by_bubble_manager_ = initiated_by_bubble_manager;
     bubble_view_->Hide();
     ResetBubbleViewAndInformBubbleManager();
   }
+  bubble_hide_initiated_by_bubble_manager_ = false;
 }
 
 bool AutofillBubbleControllerBase::CanBeReshown() const {

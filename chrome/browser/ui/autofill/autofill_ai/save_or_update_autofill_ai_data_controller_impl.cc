@@ -160,6 +160,7 @@ void SaveOrUpdateAutofillAiDataControllerImpl::SetupPrompt(
     std::optional<EntityInstance> old_entity,
     AutofillClient::EntitySaveOrUpdatePromptResultCallback
         save_prompt_acceptance_callback) {
+  was_bubble_shown_ = false;
   new_entity_ = std::move(new_entity);
   old_entity_ = std::move(old_entity);
   save_prompt_acceptance_callback_ = std::move(save_prompt_acceptance_callback);
@@ -331,12 +332,14 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
         close_reason) {
   // Make sure competing close calls does not lead to emitting metrics twice.
-  if (bubble_view()) {
+  if (!bubble_hide_initiated_by_bubble_manager_ && bubble_view()) {
     EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(), close_reason);
   }
   ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
-  if (!save_prompt_acceptance_callback_.is_null()) {
+
+  if (!bubble_hide_initiated_by_bubble_manager_ &&
+      !save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)
         .Run({DidUserDeclineExplicitly(close_reason),
               /*entity=*/close_reason == AutofillAiBubbleClosedReason::kAccepted
@@ -346,7 +349,15 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
 }
 
 void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(),
+                          was_bubble_shown_
+                              ? SaveOrUpdateAutofillAiDataController::
+                                    AutofillAiBubbleClosedReason::kNotInteracted
+                              : SaveOrUpdateAutofillAiDataController::
+                                    AutofillAiBubbleClosedReason::kUnknown);
+  if (!save_prompt_acceptance_callback_.is_null()) {
+    std::move(save_prompt_acceptance_callback_).Run({false, std::nullopt});
+  }
 }
 
 std::optional<PageActionIconType>

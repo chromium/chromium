@@ -91,7 +91,7 @@ class MockBubbleController : public BubbleControllerBase {
   }
 
   MOCK_METHOD(void, ShowBubble, (), (override));
-  MOCK_METHOD(void, HideBubble, (), (override));
+  MOCK_METHOD(void, HideBubble, (bool), (override));
   MOCK_METHOD(void, OnBubbleDiscarded, (), (override));
   MOCK_METHOD(bool, CanBeReshown, (), (const, override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
@@ -189,7 +189,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
 
   {
     InSequence sequence;
-    EXPECT_CALL(*address_controller, HideBubble());
+    EXPECT_CALL(*address_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*card_controller, ShowBubble());
   }
 
@@ -236,7 +237,7 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   bubble_manager().OnBubbleHiddenByController(*card_controller);
 
   // The state of the card controller should now be false.
-  card_controller->HideBubble();
+  card_controller->HideBubble(/*initiated_by_bubble_manager=*/true);
 
   EXPECT_FALSE(card_controller->IsShowingBubble());
   EXPECT_TRUE(address_controller->IsShowingBubble());
@@ -268,7 +269,8 @@ TEST_F(BubbleManagerImplTest,
   // card bubble.
   {
     InSequence sequence;
-    EXPECT_CALL(*card_controller, HideBubble());
+    EXPECT_CALL(*card_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*password_controller, ShowBubble());
   }
 
@@ -297,7 +299,9 @@ TEST_F(BubbleManagerImplTest, RequestShow_LowerPriority_QueuesRequest) {
   ASSERT_TRUE(card_controller->IsShowingBubble());
 
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
-  EXPECT_CALL(*card_controller, HideBubble()).Times(0);
+  EXPECT_CALL(*card_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true))
+      .Times(0);
   bubble_manager().RequestShowController(*address_controller,
                                          /*force_show=*/false);
 
@@ -324,7 +328,8 @@ TEST_F(BubbleManagerImplTest,
 
   {
     InSequence sequence;
-    EXPECT_CALL(*password_controller_1, HideBubble());
+    EXPECT_CALL(*password_controller_1,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*password_controller_2, ShowBubble());
   }
 
@@ -457,7 +462,9 @@ TEST_F(BubbleManagerImplTest,
 
   // Card bubble should not be shown, address bubble should not be hidden.
   EXPECT_CALL(*card_controller, ShowBubble()).Times(0);
-  EXPECT_CALL(*address_controller, HideBubble()).Times(0);
+  EXPECT_CALL(*address_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true))
+      .Times(0);
   bubble_manager().RequestShowController(*card_controller,
                                          /*force_show=*/false);
 
@@ -576,7 +583,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_ForceShow_PreemptsActiveBubble) {
   // Expect the active bubble to be hidden and the new one shown.
   {
     InSequence sequence;
-    EXPECT_CALL(*card_controller, HideBubble());
+    EXPECT_CALL(*card_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*address_controller, ShowBubble());
   }
 
@@ -605,7 +613,8 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_HidesAndQueuesBubble) {
   ASSERT_TRUE(card_controller->IsShowingBubble());
 
   // Expect the bubble to be hidden when visibility changes.
-  EXPECT_CALL(*card_controller, HideBubble());
+  EXPECT_CALL(*card_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true));
 
   // Simulate the tab becoming hidden.
   tab_interface()->Deactivate();
@@ -640,7 +649,8 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Visible_ShowsPendingBubble) {
 
   // Hide the active bubble and simulate the tab becoming hidden.
   // This leaves the address bubble in the queue.
-  EXPECT_CALL(*card_controller, HideBubble());
+  EXPECT_CALL(*card_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true));
   tab_interface()->Deactivate();
   ASSERT_FALSE(card_controller->IsShowingBubble());
 
@@ -659,7 +669,9 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_NoActiveBubble) {
   // We can create a controller but never show it.
   std::unique_ptr<MockBubbleController> card_controller =
       CreateController(BubbleType::kSaveUpdateCard);
-  EXPECT_CALL(*card_controller, HideBubble()).Times(0);
+  EXPECT_CALL(*card_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true))
+      .Times(0);
 
   // Simulate the tab becoming hidden. The test will fail if any unexpected
   // methods are called.
@@ -686,7 +698,8 @@ TEST_F(BubbleManagerImplTest,
   ON_CALL(*card_controller, IsMouseHovered).WillByDefault(Return(true));
   {
     InSequence sequence;
-    EXPECT_CALL(*card_controller, HideBubble());
+    EXPECT_CALL(*card_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*address_controller, ShowBubble());
   }
 
@@ -711,7 +724,8 @@ TEST_F(BubbleManagerImplTest, TabDeactivated_ActiveBubbleIsQueuedAndHidden) {
   ASSERT_TRUE(address_controller->IsShowingBubble());
 
   // Deactivating the tab should hide the bubble.
-  EXPECT_CALL(*address_controller, HideBubble());
+  EXPECT_CALL(*address_controller,
+              HideBubble(/*initiated_by_bubble_manager=*/true));
   tab_interface()->Deactivate();
   EXPECT_FALSE(address_controller->IsShowingBubble());
 
@@ -847,7 +861,8 @@ TEST_F(BubbleManagerImplTest,
   // Expect the confirmation bubble to be hidden and the new one shown.
   {
     InSequence sequence;
-    EXPECT_CALL(*confirmation_controller, HideBubble());
+    EXPECT_CALL(*confirmation_controller,
+                HideBubble(/*initiated_by_bubble_manager=*/true));
     EXPECT_CALL(*password_controller, ShowBubble());
   }
 

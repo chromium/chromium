@@ -217,7 +217,7 @@ void BubbleManagerImpl::HideActiveBubbleForPreemption() {
   // call will be a no-op for starting the next bubble because we are inside a
   // show request (`handling_show_request_` is true).
   AddToPendingQueue(active_bubble_controller_);
-  active_bubble_controller_->HideBubble();
+  active_bubble_controller_->HideBubble(/*initiated_by_bubble_manager=*/true);
 }
 
 void BubbleManagerImpl::AddToPendingQueue(
@@ -382,7 +382,7 @@ void BubbleManagerImpl::TabWillEnterBackground(
     base::UmaHistogramEnumeration("Autofill.Bubble.HideDueToTabHide",
                                   active_bubble_controller_->GetBubbleType());
     AddToPendingQueue(active_bubble_controller_);
-    active_bubble_controller_->HideBubble();
+    active_bubble_controller_->HideBubble(/*initiated_by_bubble_manager=*/true);
     active_bubble_controller_ = nullptr;
   }
 }

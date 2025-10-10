@@ -62,7 +62,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.
   if (bubble_view()) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
   if (!MaySetUpBubble()) {
@@ -86,6 +86,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
 
 void FilledCardInformationBubbleControllerImpl::SetupBubbleState(
     FilledCardInformationBubbleOptions options) {
+  was_bubble_shown_ = false;
   DCHECK(options.IsValid());
   options_ = std::move(options);
   is_user_gesture_ = false;
@@ -230,7 +231,9 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
 }
 
 void FilledCardInformationBubbleControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  LogBubbleCloseMetrics(was_bubble_shown_
+                            ? PaymentsUiClosedReason::kNotInteracted
+                            : PaymentsUiClosedReason::kUnknown);
 }
 
 void FilledCardInformationBubbleControllerImpl::LogBubbleCloseMetrics(
@@ -256,7 +259,9 @@ void FilledCardInformationBubbleControllerImpl::LogBubbleCloseMetrics(
 void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
-  LogBubbleCloseMetrics(closed_reason);
+  if (!bubble_hide_initiated_by_bubble_manager_) {
+    LogBubbleCloseMetrics(closed_reason);
+  }
   UpdatePageActionIcon();
 }
 
@@ -362,7 +367,7 @@ void FilledCardInformationBubbleControllerImpl::PrimaryPageChanged(
   should_icon_be_visible_ = false;
   bubble_has_been_shown_ = false;
   UpdatePageActionIcon();
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
 }
 
 void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
@@ -379,7 +384,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
       should_icon_be_visible_) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 }
 

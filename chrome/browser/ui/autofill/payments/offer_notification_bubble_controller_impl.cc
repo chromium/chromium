@@ -161,6 +161,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 void OfferNotificationBubbleControllerImpl::SetupOfferNotification(
     AutofillOfferData offer,
     const CreditCard* card) {
+  was_bubble_shown_ = false;
   offer_ = std::move(offer);
 
   DCHECK(IsIconVisible());
@@ -269,7 +270,7 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
       should_show_icon ? BubbleState::kShowingIcon : BubbleState::kHidden;
   UpdatePageAction();
   UpdatePageActionIcon();
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   bubble_shown_timestamp_ = std::nullopt;
 }
 

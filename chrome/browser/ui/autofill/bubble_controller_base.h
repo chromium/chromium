@@ -47,7 +47,7 @@ class BubbleControllerBase {
   virtual void ShowBubble() = 0;
 
   // Instructs the controller to hide the bubble view.
-  virtual void HideBubble() = 0;
+  virtual void HideBubble(bool initiated_by_bubble_manager) = 0;
 
   // Instructs the controller that its pending request to show has been
   // discarded and will not be shown. This can happen on timeout or teardown.

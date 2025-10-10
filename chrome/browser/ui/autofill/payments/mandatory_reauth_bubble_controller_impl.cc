@@ -67,6 +67,7 @@ void MandatoryReauthBubbleControllerImpl::SetupBubble(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {
+  was_bubble_shown_ = false;
   is_reshow_ = false;
   accept_mandatory_reauth_callback_ =
       std::move(accept_mandatory_reauth_callback);
@@ -141,7 +142,11 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
 }
 
 void MandatoryReauthBubbleControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
+    LogBubbleCloseOptInMetrics(was_bubble_shown_
+                                   ? PaymentsUiClosedReason::kNotInteracted
+                                   : PaymentsUiClosedReason::kUnknown);
+  }
 }
 
 void MandatoryReauthBubbleControllerImpl::LogBubbleCloseOptInMetrics(
@@ -169,9 +174,6 @@ void MandatoryReauthBubbleControllerImpl::LogBubbleCloseOptInMetrics(
       metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
       break;
   }
-
-  CHECK_NE(metric,
-           autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown);
   autofill_metrics::LogMandatoryReauthOptInBubbleResult(metric, is_reshow_);
 }
 
@@ -186,7 +188,9 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
 #endif
 
   if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
-    LogBubbleCloseOptInMetrics(closed_reason);
+    if (!bubble_hide_initiated_by_bubble_manager_) {
+      LogBubbleCloseOptInMetrics(closed_reason);
+    }
 
     switch (closed_reason) {
       case PaymentsUiClosedReason::kAccepted:

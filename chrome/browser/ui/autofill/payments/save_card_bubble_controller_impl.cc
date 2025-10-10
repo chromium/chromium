@@ -115,7 +115,7 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   // If the confirmation view is still showing, close it before showing the new
   // offer.
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
   // Don't show the bubble if it's already visible.
@@ -138,6 +138,7 @@ void SaveCardBubbleControllerImpl::SetupLocalSave(
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
         save_card_prompt_callback) {
+  was_bubble_shown_ = false;
   is_upload_save_ = false;
   is_reshow_ = false;
   is_triggered_by_user_gesture_ = false;
@@ -161,7 +162,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   // If the confirmation view is still showing, close it before showing the new
   // offer.
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
   // Don't show the bubble if it's already visible.
@@ -186,6 +187,7 @@ void SaveCardBubbleControllerImpl::SetupUploadSave(
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
         save_card_prompt_callback) {
+  was_bubble_shown_ = false;
   is_upload_save_ = true;
   is_reshow_ = false;
   is_triggered_by_user_gesture_ = false;
@@ -237,7 +239,7 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
         payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
   // Hide the current bubble if still showing.
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
 
   is_reshow_ = false;
   is_triggered_by_user_gesture_ = false;
@@ -535,7 +537,9 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
 }
 
 void SaveCardBubbleControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  LogBubbleCloseMetrics(was_bubble_shown_
+                            ? PaymentsUiClosedReason::kNotInteracted
+                            : PaymentsUiClosedReason::kUnknown);
 }
 
 void SaveCardBubbleControllerImpl::LogBubbleCloseMetrics(
@@ -592,7 +596,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     return;
   }
 
-  LogBubbleCloseMetrics(closed_reason);
+  if (!bubble_hide_initiated_by_bubble_manager_) {
+    LogBubbleCloseMetrics(closed_reason);
+  }
 
   // If the bubble is closed with the current_bubble_type_ as
   // kUploadComplete, transition the current_bubble_type_ to kInactive, reset
@@ -688,7 +694,7 @@ bool SaveCardBubbleControllerImpl::
 }
 
 void SaveCardBubbleControllerImpl::HideSaveCardBubble() {
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
@@ -768,7 +774,7 @@ void SaveCardBubbleControllerImpl::OnVisibilityChanged(
        current_bubble_type_ == PaymentsBubbleType::kUploadComplete)) {
     ReshowBubble(/*is_user_gesture=*/false);
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 }
 
@@ -933,7 +939,7 @@ bool SaveCardBubbleControllerImpl::IsWebContentsActive() {
 }
 
 void SaveCardBubbleControllerImpl::EndSaveCardPromptFlow() {
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   current_bubble_type_ = PaymentsBubbleType::kInactive;
   confirmation_ui_params_.reset();
   UpdatePageActionIcon();

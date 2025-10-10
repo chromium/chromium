@@ -202,7 +202,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
 
  private:
   void UpdateBubbleAndIconVisibility() override;
-  void HideBubble() override;
+  void HideBubble(bool initiated_by_bubble_manager) override;
 
   bool opened_automatic_bubble_ = false;
 };
@@ -229,7 +229,8 @@ void TestManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
   }
 }
 
-void TestManagePasswordsUIController::HideBubble() {
+void TestManagePasswordsUIController::HideBubble(
+    bool initiated_by_bubble_manager) {
   opened_automatic_bubble_ = false;
   if (std::exchange(opened_automatic_bubble_, false) &&
       !web_contents()->IsBeingDestroyed()) {

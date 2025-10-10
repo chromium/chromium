@@ -99,7 +99,7 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
     autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
   }
 #else  // !BUILDFLAG(IS_ANDROID)
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   ResetBubble();
   UpdatePageActionIcon();
   if (result == PaymentsRpcResult::kClientSideTimeout) {
@@ -138,7 +138,7 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardBubbleView() const {
 
 #if !BUILDFLAG(IS_ANDROID)
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   ResetBubble();
   UpdatePageActionIcon();
 }
@@ -209,7 +209,9 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  LogBubbleCloseMetrics(was_bubble_shown_
+                            ? PaymentsUiClosedReason::kNotInteracted
+                            : PaymentsUiClosedReason::kUnknown);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::LogBubbleCloseMetrics(
@@ -276,7 +278,9 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     return;
   }
 
-  LogBubbleCloseMetrics(closed_reason);
+  if (!bubble_hide_initiated_by_bubble_manager_) {
+    LogBubbleCloseMetrics(closed_reason);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // If the bubble is closed with the enrollment_status_ as
@@ -325,7 +329,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
     if (bubble_state_ != BubbleState::kShowingIcon) {
       bubble_state_ = BubbleState::kHidden;
     }
@@ -350,7 +354,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view()) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
   bubble_state_ = BubbleState::kShowingIconAndBubble;

@@ -511,7 +511,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
 
   // Hide the manage passwords bubble if currently shown.
   if (IsShowingBubble()) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   } else {
     ClearPopUpFlagForBubble();
   }
@@ -1371,7 +1371,7 @@ void ManagePasswordsUIController::OnVisibilityChanged(
   }
 
   if (visibility == content::Visibility::HIDDEN) {
-    HideBubble();
+    HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 }
 
@@ -1417,7 +1417,7 @@ void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
 }
 
 void ManagePasswordsUIController::DestroyPopups() {
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   if (dialog_controller_ && dialog_controller_->IsShowingAccountChooser()) {
     dialog_controller_.reset();
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
@@ -1435,7 +1435,7 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store) {
     account_password_store->RemoveObserver(this);
   }
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   web_contents()->RemoveUserData(UserDataKey());
   // `this` is now destroyed - do not add code here.
 }
@@ -1502,7 +1502,7 @@ void ManagePasswordsUIController::ShowBubble() {
   }
 }
 
-void ManagePasswordsUIController::HideBubble() {
+void ManagePasswordsUIController::HideBubble(bool initiated_by_bubble_manager) {
   is_mouse_hovered_ = false;
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->HideManagePasswordsBubble();

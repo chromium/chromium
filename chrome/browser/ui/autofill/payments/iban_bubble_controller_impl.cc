@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -86,6 +87,7 @@ void IbanBubbleControllerImpl::SetupLocalSave(
     Iban iban,
     payments::PaymentsAutofillClient::SaveIbanPromptCallback
         save_iban_prompt_callback) {
+  was_bubble_shown_ = false;
   iban_ = std::move(iban);
   is_reshow_ = false;
   is_upload_save_ = false;
@@ -101,6 +103,7 @@ void IbanBubbleControllerImpl::SetupUploadSave(
     LegalMessageLines legal_message_lines,
     payments::PaymentsAutofillClient::SaveIbanPromptCallback
         save_iban_prompt_callback) {
+  was_bubble_shown_ = false;
   iban_ = std::move(iban);
   is_reshow_ = false;
   is_upload_save_ = true;
@@ -133,7 +136,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     bool iban_saved,
     bool hit_max_strikes) {
   // Hide the current bubble if still showing.
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
 
   is_reshow_ = false;
   current_bubble_type_ = IbanBubbleType::kUploadCompleted;
@@ -155,7 +158,8 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     auto_close_confirmation_timer_.Start(
         FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
         base::BindOnce(&IbanBubbleControllerImpl::HideBubble,
-                       base::Unretained(this)));
+                       base::Unretained(this),
+                       /*initiated_by_bubble_manager=*/false));
   }
 }
 
@@ -306,7 +310,9 @@ void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
 }
 
 void IbanBubbleControllerImpl::OnBubbleDiscarded() {
-  // TODO(crbug.com/432429605): Implement.
+  LogBubbleCloseMetrics(was_bubble_shown_
+                            ? PaymentsUiClosedReason::kNotInteracted
+                            : PaymentsUiClosedReason::kUnknown);
 }
 
 void IbanBubbleControllerImpl::LogBubbleCloseMetrics(
@@ -368,7 +374,9 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 
   ResetBubbleViewAndInformBubbleManager();
 
-  LogBubbleCloseMetrics(closed_reason);
+  if (!bubble_hide_initiated_by_bubble_manager_) {
+    LogBubbleCloseMetrics(closed_reason);
+  }
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
     current_bubble_type_ = IbanBubbleType::kInactive;

@@ -230,7 +230,7 @@ class ManagePasswordsUIController
 
   // BubbleControllerBase:
   void ShowBubble() override;
-  void HideBubble() override;
+  void HideBubble(bool initiated_by_bubble_manager) override;
   void OnBubbleDiscarded() override {}
   bool CanBeReshown() const override;
   autofill::BubbleType GetBubbleType() const override;
