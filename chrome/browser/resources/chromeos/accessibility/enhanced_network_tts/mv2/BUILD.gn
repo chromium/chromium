@@ -7,7 +7,6 @@ import("//build/config/features.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
@@ -101,45 +100,4 @@ copy("copy_background") {
 copy("stage_ts_build") {
   sources = ts_modules
   outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-  assert(enable_extensions)
-
-  deps = [ ":enhanced_network_tts_extjs_tests" ]
-
-  data = [
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv2/background.html",
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv2/background.js",
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv2/enhanced_network_tts.js",
-    "//chrome/browser/resources/chromeos/accessibility/common/",
-    "//chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/mv2/",
-  ]
-  data += js2gtest_js_libraries
-}
-
-js2gtest("enhanced_network_tts_extjs_tests") {
-  test_type = "extension"
-  sources = [
-    "enhanced_network_tts_unittest.js",
-    "error_handling_unittest.js",
-  ]
-  gen_include_files = [
-    "../../common/testing/accessibility_test_base.js",
-    "../../common/testing/e2e_test_base.js",
-    "enhanced_network_tts_e2e_test_base.js",
-    "mock_mojo_private.js",
-  ]
-
-  # The test base classes generate C++ code with these deps.
-  deps = [
-    "//ash",
-    "//base",
-    "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/system_web_apps",
-    "//chrome/common",
-  ]
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
