@@ -282,6 +282,9 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
 
   Element& container = GetElementById(AtomicString("container"));
   gfx::Size bubble_size = container.VisibleBoundsInLocalRoot().size();
+  if (bubble_size.IsEmpty()) {
+    return;
+  }
 
   bool show_bottom_arrow = false;
   double bubble_y = anchor_rect.bottom();

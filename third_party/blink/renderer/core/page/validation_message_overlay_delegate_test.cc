@@ -68,6 +68,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
 
   // Trigger the overlay animations.
   delegate_ptr->UpdateFrameViewState(*overlay);
+  delegate_ptr->UpdateFrameViewState(*overlay);
 
   // Now find the related animations, and make sure they weren't composited.
   Document* internal_document =
