@@ -9,7 +9,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {

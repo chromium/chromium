@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "ui/gfx/buffer_format_util.h"
 
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"

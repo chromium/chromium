@@ -33,7 +33,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"  //nogncheck
 #endif
 

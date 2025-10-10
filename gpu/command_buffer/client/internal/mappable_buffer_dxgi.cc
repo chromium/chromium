@@ -22,7 +22,6 @@
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 

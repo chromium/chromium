@@ -39,7 +39,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"

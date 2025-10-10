@@ -16,7 +16,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
