@@ -172,25 +172,9 @@ void SVGAElement::DefaultEventHandler(Event& event) {
           ClientNavigationReason::kAnchorClick);
       frame_request.SetSourceElement(this);
 
-      // TODO(dmangal): Create a common interface with HTMAnchorElement and move
-      // navigation related code to that interface.
-      if (HasRel(kRelationNoReferrer)) {
-        frame_request.SetNoReferrer();
-        frame_request.SetNoOpener();
-      }
-      if (HasRel(kRelationNoOpener) ||
-          (EqualIgnoringASCIICase(target, "_blank") &&
-           !HasRel(kRelationOpener) &&
-           frame->GetSettings()
-               ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
-        frame_request.SetNoOpener();
-      }
-      if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
-              GetExecutionContext()) &&
-          HasRel(kRelationOpener) &&
-          !frame_request.GetWindowFeatures().noopener) {
-        frame_request.SetExplicitOpener();
-      }
+      AnchorElementUtils::HandleRelAttribute(
+          frame_request, frame->GetSettings(), GetExecutionContext(), target,
+          link_relations_);
 
       frame_request.SetTriggeringEventInfo(
           event.isTrusted()
@@ -299,33 +283,12 @@ void SVGAElement::SynchronizeAllSVGAttributes() const {
 
 void SVGAElement::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == svg_names::kRelAttr) {
-    SetRel(params.new_value);
+    link_relations_ =
+        AnchorElementUtils::ParseRelAttribute(params.new_value, GetDocument());
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
   } else {
     SVGGraphicsElement::ParseAttribute(params);
   }
-}
-
-bool SVGAElement::HasRel(uint32_t relation) const {
-  return link_relations_ & relation;
-}
-
-void SVGAElement::SetRel(const AtomicString& value) {
-  link_relations_ = 0;
-  SpaceSplitString new_link_relations(value.LowerASCII());
-  if (new_link_relations.Contains(AtomicString("noreferrer"))) {
-    link_relations_ |= kRelationNoReferrer;
-  }
-  if (new_link_relations.Contains(AtomicString("noopener"))) {
-    link_relations_ |= kRelationNoOpener;
-  }
-  if (new_link_relations.Contains(AtomicString("opener"))) {
-    link_relations_ |= kRelationOpener;
-  }
-  // Adding or removing a value here whose processing model is web-visible
-  // (e.g. if the value is listed as a "supported token" for `<a>`'s `rel`
-  // attribute in HTML) also requires you to update the list of tokens in
-  // RelList::SupportedTokensAnchorAndAreaAndForm().
 }
 
 }  // namespace blink

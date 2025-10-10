@@ -293,7 +293,8 @@ void HTMLAnchorElementBase::ParseAttribute(
   } else if (params.name == html_names::kTitleAttr) {
     // Do nothing.
   } else if (params.name == html_names::kRelAttr) {
-    SetRel(params.new_value);
+    link_relations_ =
+        AnchorElementUtils::ParseRelAttribute(params.new_value, GetDocument());
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
     if (isConnected() && IsLink() && params.old_value != params.new_value) {
       if (auto* document_rules =
@@ -386,42 +387,6 @@ void HTMLAnchorElementBase::setHref(const String& value) {
   SetHref(AtomicString(value));
 }
 
-bool HTMLAnchorElementBase::HasRel(uint32_t relation) const {
-  return link_relations_ & relation;
-}
-
-void HTMLAnchorElementBase::SetRel(const AtomicString& value) {
-  link_relations_ = 0;
-  SpaceSplitString new_link_relations(value.LowerASCII());
-  // FIXME: Add link relations as they are implemented
-  if (new_link_relations.Contains(AtomicString("noreferrer"))) {
-    link_relations_ |= kRelationNoReferrer;
-  }
-  if (new_link_relations.Contains(AtomicString("noopener"))) {
-    link_relations_ |= kRelationNoOpener;
-  }
-  if (new_link_relations.Contains(AtomicString("opener"))) {
-    link_relations_ |= kRelationOpener;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelOpener);
-  }
-
-  // These don't currently have web-facing behavior, but embedders may wish to
-  // expose their presence to users:
-  if (new_link_relations.Contains(AtomicString("privacy-policy"))) {
-    link_relations_ |= kRelationPrivacyPolicy;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelPrivacyPolicy);
-  }
-  if (new_link_relations.Contains(AtomicString("terms-of-service"))) {
-    link_relations_ |= kRelationTermsOfService;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelTermsOfService);
-  }
-
-  // Adding or removing a value here whose processing model is web-visible
-  // (e.g. if the value is listed as a "supported token" for `<a>`'s `rel`
-  // attribute in HTML) also requires you to update the list of tokens in
-  // RelList::SupportedTokensAnchorAndAreaAndForm().
-}
-
 const AtomicString& HTMLAnchorElementBase::GetName() const {
   return GetNameAttribute();
 }
@@ -501,21 +466,11 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   frame_request.SetSourceElement(this);
   const AtomicString& target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());
-  if (HasRel(kRelationNoReferrer)) {
-    frame_request.SetNoReferrer();
-    frame_request.SetNoOpener();
-  }
-  if (HasRel(kRelationNoOpener) ||
-      (EqualIgnoringASCIICase(target, "_blank") && !HasRel(kRelationOpener) &&
-       frame->GetSettings()
-           ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
-    frame_request.SetNoOpener();
-  }
-  if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
-          GetExecutionContext()) &&
-      HasRel(kRelationOpener) && !frame_request.GetWindowFeatures().noopener) {
-    frame_request.SetExplicitOpener();
-  }
+
+  AnchorElementUtils::HandleRelAttribute(frame_request, frame->GetSettings(),
+                                         GetExecutionContext(), target,
+                                         link_relations_);
+
   if (completed_url.ProtocolIs("blob")) {
     auto blob_url_site =
         BlinkSchemefulSite(SecurityOrigin::Create(completed_url));
@@ -580,7 +535,8 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
                       WebFeature::kHTMLAnchorElementHrefTranslateAttribute);
   }
 
-  if (target_frame == frame && HasRel(kRelationOpener)) {
+  if (target_frame == frame &&
+      AnchorElementUtils::HasRel(link_relations_, kRelationOpener)) {
     // TODO(https://crbug.com/1431495): rel=opener is currently only meaningful
     // with target=_blank. Applying it to same-frame navigations is a potential
     // opt-out for issue 1431495, but how many sites would trigger this opt-out
@@ -634,7 +590,7 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
       SecurityPolicy::ReferrerPolicyFromString(
           FastGetAttribute(html_names::kReferrerpolicyAttr),
           kSupportReferrerPolicyLegacyKeywords, &policy) &&
-      !HasRel(kRelationNoReferrer)) {
+      !AnchorElementUtils::HasRel(link_relations_, kRelationNoReferrer)) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLAnchorElementReferrerPolicyAttribute);
     request.SetReferrerPolicy(policy);

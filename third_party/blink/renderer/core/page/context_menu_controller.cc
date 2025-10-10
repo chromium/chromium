@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -792,8 +793,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     // If the anchor wants to suppress the referrer, update the referrerPolicy
     // accordingly.
-    if (anchor->HasRel(kRelationNoReferrer))
+    if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                   kRelationNoReferrer)) {
       data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    }
 
     data.link_text = anchor->innerText().Utf8();
   }
@@ -823,7 +826,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     // If the anchor wants to suppress the referrer, update the referrerPolicy
     // accordingly.
-    if (anchor->HasRel(kRelationNoReferrer)) {
+    if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                   kRelationNoReferrer)) {
       data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
     }
     data.link_text = anchor->innerText().Utf8();

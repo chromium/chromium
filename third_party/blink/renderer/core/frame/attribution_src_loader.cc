@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -591,7 +592,8 @@ void AttributionSrcLoader::RegisterFromContextMenuNavigation(
 
   // Adapted from `HTMLAnchorElementBase::HandleClick()`.
   auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (anchor->HasRel(kRelationNoReferrer)) {
+  if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                 kRelationNoReferrer)) {
     referrer_policy = network::mojom::ReferrerPolicy::kNever;
   } else if (anchor->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
     SecurityPolicy::ReferrerPolicyFromString(
