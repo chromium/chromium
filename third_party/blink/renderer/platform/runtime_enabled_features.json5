@@ -2063,7 +2063,16 @@
       depends_on: ["CSSPseudoElementInterface"],
     },
     {
+      // See: crbug.com/40887145
+      "name": "EventTargetStringIdentifierUsesQuotes",
+      "status": "stable",
+    },
+    {
       name: "EventTimingInteractionCount",
+      status: "experimental",
+    },
+    {
+      name: "EventTimingTargetIdentifier",
       status: "experimental",
     },
     {

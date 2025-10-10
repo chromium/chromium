@@ -635,9 +635,8 @@ void WindowPerformance::EventTimingProcessingStart(
   // `target` can be non-null but detached from DOM and GC-ed before observer
   // fires.
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-      event_type, reporting_info, event.cancelable(),
-      hit_test_target ? hit_test_target->ToNode() : nullptr, DomWindow(),
-      NavigationId());
+      event_type, reporting_info, event.cancelable(), hit_test_target,
+      DomWindow(), NavigationId());
 
   event_timing_entries_.push_back(entry);
   current_event_ = &event;
@@ -699,7 +698,7 @@ void WindowPerformance::EventTimingProcessingEnd(
     // `event->target()` is assigned as part of EventDispatch, and will be unset
     // whenever we skip dispatch. (See: crbug.com/1367329).
     // Note: target may be dom detached, and even GC-ed, before Observer fires.
-    entry->SetTarget(event.RawTarget()->ToNode());
+    entry->SetTarget(event.RawTarget());
   }
 
   // Request presentation time first, because this might increment presentation

@@ -102,6 +102,8 @@ blink_core_sources_timing = [
   "task_attribution_timing.h",
   "third_party_script_detector.cc",
   "third_party_script_detector.h",
+  "timing_utils.cc",
+  "timing_utils.h",
   "time_clamper.cc",
   "time_clamper.h",
   "visibility_state_entry.cc",

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/third_party_script_detector.h"
+#include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -837,24 +838,7 @@ void AnimationFrameTimingMonitor::Did(
 
   info->SetPropertyLikeName(probe_data.event->type());
   EventTarget* target = probe_data.event->currentTarget();
-  if (Node* node = target->ToNode()) {
-    StringBuilder builder;
-    builder.Append(node->nodeName());
-    if (Element* element = DynamicTo<Element>(node)) {
-      if (element->HasID()) {
-        builder.Append("#");
-        builder.Append(element->GetIdAttribute());
-      } else if (element->hasAttribute(html_names::kSrcAttr)) {
-        builder.Append("[src=");
-        builder.Append(element->getAttribute(html_names::kSrcAttr));
-        builder.Append("]");
-      }
-    }
-
-    info->SetClassLikeName(builder.ToAtomicString());
-  } else {
-    info->SetClassLikeName(target->InterfaceName());
-  }
+  info->SetClassLikeName(EventTargetToString(target));
 }
 
 void AnimationFrameTimingMonitor::Will(

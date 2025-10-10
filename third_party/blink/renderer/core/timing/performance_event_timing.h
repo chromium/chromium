@@ -17,6 +17,7 @@ class EventTiming;
 
 namespace blink {
 
+class EventTarget;
 class Frame;
 
 enum class FallbackReason {
@@ -91,10 +92,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   };
 
   static PerformanceEventTiming* Create(const AtomicString& event_type,
-                                        EventTimingReportingInfo reporting_info,
+                                        EventTimingReportingInfo,
                                         bool cancelable,
-                                        Node* target,
-                                        DOMWindow* source,
+                                        EventTarget*,
+                                        DOMWindow*,
                                         uint32_t navigation_id);
 
   static PerformanceEventTiming* CreateFirstInputTiming(
@@ -104,10 +105,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   PerformanceEventTiming(const AtomicString& event_type,
                          const AtomicString& entry_type,
-                         EventTimingReportingInfo repoerting_info,
+                         EventTimingReportingInfo,
                          bool cancelable,
-                         Node* target,
-                         DOMWindow* source,
+                         EventTarget*,
+                         DOMWindow*,
                          uint32_t navigation_id);
 
   ~PerformanceEventTiming() override;
@@ -122,11 +123,13 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   Node* target() const;
 
-  void SetTarget(Node* target);
+  void SetTarget(EventTarget* target);
 
   uint64_t interactionId() const;
 
   void SetInteractionId(uint64_t interaction_id);
+
+  const AtomicString& targetIdentifier() const;
 
   bool HasKnownInteractionID() const;
 
@@ -169,6 +172,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   mutable DOMHighResTimeStamp processing_end_ = 0;
   bool cancelable_;
   WeakMember<Node> target_;
+  AtomicString target_identifier_;
   std::optional<uint64_t> interaction_id_ = std::nullopt;
   uint32_t interaction_offset_ = 0;
 

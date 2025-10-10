@@ -7088,6 +7088,7 @@ interface PerformanceEventTiming : PerformanceEntry
     getter processingEnd
     getter processingStart
     getter target
+    getter targetIdentifier
     method constructor
     method toJSON
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
@@ -22,7 +23,7 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     const AtomicString& event_type,
     EventTimingReportingInfo reporting_info,
     bool cancelable,
-    Node* target,
+    EventTarget* target,
     DOMWindow* source,
     uint32_t navigation_id) {
   CHECK(source);
@@ -74,7 +75,7 @@ PerformanceEventTiming::PerformanceEventTiming(
     const AtomicString& entry_type,
     EventTimingReportingInfo reporting_info,
     bool cancelable,
-    Node* target,
+    EventTarget* target,
     DOMWindow* source,
     uint32_t navigation_id)
     : PerformanceEntry(
@@ -87,8 +88,9 @@ PerformanceEventTiming::PerformanceEventTiming(
           navigation_id),
       entry_type_(entry_type),
       cancelable_(cancelable),
-      target_(target),
-      reporting_info_(reporting_info) {}
+      reporting_info_(reporting_info) {
+  SetTarget(target);
+}
 
 PerformanceEventTiming::~PerformanceEventTiming() = default;
 
@@ -122,8 +124,9 @@ Node* PerformanceEventTiming::target() const {
   return Performance::CanExposeNode(target_) ? target_ : nullptr;
 }
 
-void PerformanceEventTiming::SetTarget(Node* target) {
-  target_ = target;
+void PerformanceEventTiming::SetTarget(EventTarget* target) {
+  target_identifier_ = EventTargetToString(target);
+  target_ = target ? target->ToNode() : nullptr;
 }
 
 uint64_t PerformanceEventTiming::interactionId() const {
@@ -136,6 +139,10 @@ uint64_t PerformanceEventTiming::interactionId() const {
 
 void PerformanceEventTiming::SetInteractionId(uint64_t interaction_id) {
   interaction_id_ = interaction_id;
+}
+
+const AtomicString& PerformanceEventTiming::targetIdentifier() const {
+  return target_identifier_;
 }
 
 bool PerformanceEventTiming::HasKnownInteractionID() const {
@@ -192,6 +199,9 @@ void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("processingStart", processingStart());
   builder.AddNumber("processingEnd", processingEnd());
   builder.AddBoolean("cancelable", cancelable_);
+  if (RuntimeEnabledFeatures::EventTimingTargetIdentifierEnabled()) {
+    builder.AddString("targetIdentifier", targetIdentifier());
+  }
 }
 
 void PerformanceEventTiming::Trace(Visitor* visitor) const {
