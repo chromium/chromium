@@ -167,19 +167,15 @@ config("skia_library_config") {
   }
 
   # Let Skia know whether to use `libpng`-based or Rust-based PNG decoder and
-  # encoder in internal Skia code (e.g. in implementation of Fontations).
+  # encoder in internal Skia code (e.g. for PNG based emoji decoding).
   #
   # This currently mimics what is done in `third_party/skia/BUILD.gn`'s
-  # `png_decode_libpng` and `png_encode` targets.
-  #
-  # TODO(https://crbug.com/381900683): When Rust PNG ships, then switch to
-  # using `SK_CODEC_DECODES_PNG_WITH_RUST` and `SK_CODEC_ENCODES_PNG_WITH_RUST`
-  # defines from Skia's `png_encode_rust` and `png_decode_rust` targets.
+  # `png_decode_rust` and `png_encode_rust` targets.
   defines += [
     "SK_CODEC_DECODES_PNG",
-    "SK_CODEC_DECODES_PNG_WITH_LIBPNG",
+    "SK_CODEC_DECODES_PNG_WITH_RUST",
     "SK_CODEC_ENCODES_PNG",
-    "SK_CODEC_ENCODES_PNG_WITH_LIBPNG",
+    "SK_CODEC_ENCODES_PNG_WITH_RUST",
 
     # https://crbug.com/443057959
     #"SK_DISABLE_LEGACY_INIT_DECODERS",
