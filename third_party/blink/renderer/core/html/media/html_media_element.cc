@@ -4412,11 +4412,8 @@ void HTMLMediaElement::UpdateControlsVisibility() {
   if (!isConnected())
     return;
 
-  // TODO(crbug.com/448699375): Try to re-enable lazy initialization of media
-  // controls such that we only create the media controls when
-  // ShouldShowControls() or if the cast overlay button will be shown. Currently
-  // this information is only known in /modules/ that we can't access from
-  // /core/.
+  // It might be nice to lazily initialize only the controls we need when they
+  // are actually visible, but cursory tests don't show any memory improvements.
   if (!media_controls_) {
     ShadowRoot& shadow_root = EnsureUserAgentShadowRoot();
     UseCounterMuteScope scope(*this);
