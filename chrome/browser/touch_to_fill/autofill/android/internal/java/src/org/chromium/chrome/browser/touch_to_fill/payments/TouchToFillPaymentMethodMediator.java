@@ -717,14 +717,14 @@ class TouchToFillPaymentMethodMediator {
 
     private void onSelectedCreditCard(AutofillSuggestion suggestion) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
-        boolean is_virtual_card =
+        boolean isVirtualCard =
                 suggestion.getSuggestionType() == SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY;
         PaymentsPayload payload = suggestion.getPaymentsPayload();
         if (payload != null) {
-            mDelegate.creditCardSuggestionSelected(payload.getGuid(), is_virtual_card);
+            mDelegate.creditCardSuggestionSelected(payload.getGuid(), isVirtualCard);
         }
         recordTouchToFillCreditCardOutcomeHistogram(
-                is_virtual_card
+                isVirtualCard
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
                         : TouchToFillCreditCardOutcome.CREDIT_CARD);
         RecordHistogram.recordCount100Histogram(
@@ -941,13 +941,13 @@ class TouchToFillPaymentMethodMediator {
 
     private ListItem buildHeaderForLoyaltyCards(boolean firstTimeUsage) {
         @Nullable
-        final TouchToFillResourceProvider mResourceProvider =
+        final TouchToFillResourceProvider resourceProvider =
                 ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
         @DrawableRes
         final int headerImageId =
-                mResourceProvider == null
+                resourceProvider == null
                         ? R.drawable.touch_to_fill_default_header_image
-                        : mResourceProvider.getLoyaltyCardHeaderDrawableId();
+                        : resourceProvider.getLoyaltyCardHeaderDrawableId();
         PropertyModel.Builder headerBuilder =
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(IMAGE_DRAWABLE_ID, headerImageId)

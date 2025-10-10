@@ -396,14 +396,14 @@ class TouchToFillPaymentMethodViewBinder {
      */
     static void bindBnplSelectionProgressHeaderView(
             PropertyModel model, View view, PropertyKey propertyKey) {
-        ImageView back_button = view.findViewById(R.id.bnpl_header_back_button);
+        ImageView backButton = view.findViewById(R.id.bnpl_header_back_button);
 
         if (propertyKey == BNPL_BACK_BUTTON_ENABLED) {
             final boolean isEnabled = model.get(BNPL_BACK_BUTTON_ENABLED);
-            back_button.setEnabled(isEnabled);
-            back_button.setAlpha(isEnabled ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
+            backButton.setEnabled(isEnabled);
+            backButton.setAlpha(isEnabled ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
         } else if (propertyKey == BNPL_ON_BACK_BUTTON_CLICKED) {
-            back_button.setOnClickListener(
+            backButton.setOnClickListener(
                     unusedView -> model.get(BNPL_ON_BACK_BUTTON_CLICKED).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
