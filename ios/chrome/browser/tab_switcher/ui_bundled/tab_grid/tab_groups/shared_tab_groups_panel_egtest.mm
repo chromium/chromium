@@ -101,7 +101,15 @@ void AddSharedGroup(BOOL owner,
 }
 
 // Tests that deleting a shared tab group from groups panel works.
-- (void)testSharedTabGroupsPanelDeleteSharedGroup {
+// TODO:(crbug.com/450935810): The test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
+  FLAKY_testSharedTabGroupsPanelDeleteSharedGroup
+#else
+#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
+  testSharedTabGroupsPanelDeleteSharedGroup
+#endif
+- (void)MAYBE_testSharedTabGroupsPanelDeleteSharedGroup {
   AddSharedGroup(/*owner=*/YES, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
