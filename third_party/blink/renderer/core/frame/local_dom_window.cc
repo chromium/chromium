@@ -1265,7 +1265,7 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // local dispatch.
   MessageEvent* event = MessageEvent::Create(
       std::move(posted_message->channels), std::move(posted_message->data),
-      posted_message->source_origin->ToString(), message_origin_kind, String(),
+      std::move(posted_message->source_origin), message_origin_kind, String(),
       posted_message->source, posted_message->user_activation,
       posted_message->delegated_capability);
 

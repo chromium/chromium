@@ -93,8 +93,10 @@ MessageEvent::MessageEvent(const AtomicString& type,
       data_as_v8_value_.Set(initializer->data().GetIsolate(), data);
     }
   }
-  if (initializer->hasOrigin())
-    origin_ = initializer->origin();
+  if (initializer->hasOrigin()) {
+    potentially_invalid_origin_serialization_ = initializer->origin();
+    origin_ = SecurityOrigin::CreateFromString(initializer->origin());
+  }
   if (initializer->hasLastEventId())
     last_event_id_ = initializer->lastEventId();
   if (initializer->hasSource() && IsValidSource(initializer->source()))
@@ -106,13 +108,13 @@ MessageEvent::MessageEvent(const AtomicString& type,
   DCHECK(IsValidSource(source_.Get()));
 }
 
-MessageEvent::MessageEvent(const String& origin,
+MessageEvent::MessageEvent(scoped_refptr<const SecurityOrigin> origin,
                            const String& last_event_id,
                            EventTarget* source,
                            GCedMessagePortArray* ports)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeScriptValue),
-      origin_(origin),
+      origin_(std::move(origin)),
       last_event_id_(last_event_id),
       source_(source),
       ports_(ports) {
@@ -120,7 +122,7 @@ MessageEvent::MessageEvent(const String& origin,
 }
 
 MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
-                           const String& origin,
+                           scoped_refptr<const SecurityOrigin> origin,
                            MessageOriginKind message_origin_kind,
                            const String& last_event_id,
                            EventTarget* source,
@@ -132,7 +134,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
           SerializedScriptValue::Unpack(std::move(data))),
       data_is_from_untrusted_source_(message_origin_kind ==
                                      kMessageIsCrossOrigin),
-      origin_(origin),
+      origin_(std::move(origin)),
       last_event_id_(last_event_id),
       source_(source),
       ports_(ports),
@@ -144,7 +146,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
 
 MessageEvent::MessageEvent(
     scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     MessageOriginKind message_origin_kind,
     const String& last_event_id,
     EventTarget* source,
@@ -157,7 +159,7 @@ MessageEvent::MessageEvent(
           SerializedScriptValue::Unpack(std::move(data))),
       data_is_from_untrusted_source_(message_origin_kind ==
                                      kMessageIsCrossOrigin),
-      origin_(origin),
+      origin_(std::move(origin)),
       last_event_id_(last_event_id),
       source_(source),
       channels_(std::move(channels)),
@@ -168,37 +170,41 @@ MessageEvent::MessageEvent(
                                              SizeOfExternalMemoryInBytes());
 }
 
-MessageEvent::MessageEvent(const String& origin, EventTarget* source)
+MessageEvent::MessageEvent(scoped_refptr<const SecurityOrigin> origin,
+                           EventTarget* source)
     : Event(event_type_names::kMessageerror, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeNull),
-      origin_(origin),
+      origin_(std::move(origin)),
       source_(source) {
   DCHECK(IsValidSource(source_.Get()));
 }
 
-MessageEvent::MessageEvent(const String& data, const String& origin)
+MessageEvent::MessageEvent(const String& data,
+                           scoped_refptr<const SecurityOrigin> origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeString),
       data_as_string_(data),
-      origin_(origin) {
+      origin_(std::move(origin)) {
   serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                              SizeOfExternalMemoryInBytes());
 }
 
-MessageEvent::MessageEvent(Blob* data, const String& origin)
+MessageEvent::MessageEvent(Blob* data,
+                           scoped_refptr<const SecurityOrigin> origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeBlob),
       data_as_blob_(data),
-      origin_(origin) {
+      origin_(std::move(origin)) {
   serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                              SizeOfExternalMemoryInBytes());
 }
 
-MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
+MessageEvent::MessageEvent(DOMArrayBuffer* data,
+                           scoped_refptr<const SecurityOrigin> origin)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeArrayBuffer),
       data_as_array_buffer_(data),
-      origin_(origin) {
+      origin_(std::move(origin)) {
   serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                              SizeOfExternalMemoryInBytes());
 }
@@ -234,7 +240,8 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   data_type_ = kDataTypeScriptValue;
   data_as_v8_value_.Set(data.GetIsolate(), data.V8Value());
   is_data_dirty_ = true;
-  origin_ = origin;
+  potentially_invalid_origin_serialization_ = origin;
+  origin_ = SecurityOrigin::CreateFromString(origin);
   last_event_id_ = last_event_id;
   source_ = source;
   if (ports.empty()) {
@@ -250,7 +257,7 @@ void MessageEvent::initMessageEvent(
     bool bubbles,
     bool cancelable,
     scoped_refptr<SerializedScriptValue> data,
-    const String& origin,
+    scoped_refptr<const SecurityOrigin> origin,
     MessageOriginKind message_origin_kind,
     const String& last_event_id,
     EventTarget* source,
@@ -267,7 +274,7 @@ void MessageEvent::initMessageEvent(
       SerializedScriptValue::Unpack(std::move(data));
   is_data_dirty_ = true;
   data_is_from_untrusted_source_ = message_origin_kind == kMessageIsCrossOrigin;
-  origin_ = origin;
+  origin_ = std::move(origin);
   last_event_id_ = last_event_id;
   source_ = source;
   ports_ = ports;
@@ -282,7 +289,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
                                     bool bubbles,
                                     bool cancelable,
                                     const String& data,
-                                    const String& origin,
+                                    scoped_refptr<const SecurityOrigin> origin,
                                     const String& last_event_id,
                                     EventTarget* source,
                                     GCedMessagePortArray* ports) {
@@ -294,7 +301,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   data_type_ = kDataTypeString;
   data_as_string_ = data;
   is_data_dirty_ = true;
-  origin_ = origin;
+  origin_ = std::move(origin);
   last_event_id_ = last_event_id;
   source_ = source;
   ports_ = ports;
@@ -309,18 +316,16 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
   // https://github.com/mikewest/incentivize-origin-checks/.
   if (should_measure_data_access_before_origin_) {
     if (ExecutionContext* context = ExecutionContext::From(script_state)) {
-      scoped_refptr<SecurityOrigin> sending_origin =
-          SecurityOrigin::CreateFromString(origin_);
       const SecurityOrigin* receiving_origin = context->GetSecurityOrigin();
-      if (sending_origin->IsSameOriginWith(receiving_origin)) {
-        UseCounter::Count(context,
-                          WebFeature::kMessageEventDataBeforeSameOrigin);
-      } else if (sending_origin->IsSameSiteWith(receiving_origin)) {
-        UseCounter::Count(context,
-                          WebFeature::kMessageEventDataBeforeSameSiteOrigin);
-      } else if (sending_origin->IsOpaque()) {
+      if (!origin_ || origin_->IsOpaque()) {
         UseCounter::Count(context,
                           WebFeature::kMessageEventDataBeforeOpaqueOrigin);
+      } else if (origin_->IsSameOriginWith(receiving_origin)) {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeSameOrigin);
+      } else if (origin_->IsSameSiteWith(receiving_origin)) {
+        UseCounter::Count(context,
+                          WebFeature::kMessageEventDataBeforeSameSiteOrigin);
       } else {
         UseCounter::Count(context,
                           WebFeature::kMessageEventDataBeforeCrossSiteOrigin);
@@ -385,10 +390,16 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
   return ScriptValue(isolate, value);
 }
 
-const String& MessageEvent::originForBindings() {
+String MessageEvent::originForBindings() {
   data_is_from_untrusted_source_ = false;
   should_measure_data_access_before_origin_ = false;
-  return origin_;
+  if (!potentially_invalid_origin_serialization_.IsNull()) {
+    return potentially_invalid_origin_serialization_;
+  }
+
+  // If no origin was provided (e.g. we're generating this event via
+  // `MessagePort.postMessage`), then we'll serialize to the empty string.
+  return origin_ ? origin_->ToString() : "";
 }
 
 const AtomicString& MessageEvent::InterfaceName() const {

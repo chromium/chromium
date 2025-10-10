@@ -201,7 +201,7 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   port->Entangle(std::move(channel));
   MessageEvent* event =
       MessageEvent::Create(MakeGarbageCollected<GCedMessagePortArray>(1, port),
-                           String(), String(), port);
+                           /*origin=*/nullptr, String(), port);
   event->initEvent(event_type_names::kConnect, false, false);
   DispatchEvent(*event);
 }

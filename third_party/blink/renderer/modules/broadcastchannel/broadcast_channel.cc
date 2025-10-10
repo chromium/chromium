@@ -174,7 +174,7 @@ void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
        context->IsSameAgentCluster(message.sender_agent_cluster_id)) &&
       message.message->CanDeserializeIn(context)) {
     event = MessageEvent::Create(nullptr, std::move(message.message),
-                                 context->GetSecurityOrigin()->ToString(),
+                                 context->GetSecurityOrigin(),
                                  MessageEvent::kMessageIsSameOrigin,
                                  /* last_event_id=*/{}, /* source=*/nullptr);
   } else {

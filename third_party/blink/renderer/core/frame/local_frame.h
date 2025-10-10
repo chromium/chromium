@@ -769,10 +769,12 @@ class CORE_EXPORT LocalFrame final
   void AddInspectorIssue(AuditsIssue issue);
   void SaveImageAt(const gfx::Point& window_point);
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type);
+  // TODO(449581913): This, along with the mojo interface and its callers,
+  // should work with `SecurityOrigin` objects rather than strings.
   void PostMessageEvent(
       const std::optional<RemoteFrameToken>& source_frame_token,
-      const String& source_origin,
-      const String& target_origin,
+      const String& serialized_source_origin,
+      const String& serialized_target_origin,
       BlinkTransferableMessage message);
 
   void SetScaleFactor(float scale);

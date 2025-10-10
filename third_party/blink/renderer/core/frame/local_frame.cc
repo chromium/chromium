@@ -3842,18 +3842,19 @@ void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
 
 void LocalFrame::PostMessageEvent(
     const std::optional<RemoteFrameToken>& source_frame_token,
-    const String& source_origin,
-    const String& target_origin,
+    const String& serialized_source_origin,
+    const String& serialized_target_origin,
     BlinkTransferableMessage message) {
   probe::FrameRelatedTask probe(DomWindow());
   TRACE_EVENT0("blink", "LocalFrame::PostMessageEvent");
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
 
-  // We must pass in the target_origin to do the security check on this side,
-  // since it may have changed since the original postMessage call was made.
-  scoped_refptr<SecurityOrigin> target_security_origin;
-  if (!target_origin.empty()) {
-    target_security_origin = SecurityOrigin::CreateFromString(target_origin);
+  // We must pass in the serialized_target_origin to do the security check on
+  // this side, since it may have changed since the original postMessage call
+  // was made.
+  scoped_refptr<const SecurityOrigin> target_origin;
+  if (!serialized_target_origin.empty()) {
+    target_origin = SecurityOrigin::CreateFromString(serialized_target_origin);
   }
 
   // Preparation of the MessageEvent.
@@ -3878,9 +3879,17 @@ void LocalFrame::PostMessageEvent(
         message.user_activation->was_active);
   }
 
+  // `serialized_source_origin` will be an empty string for certain calls
+  // initiated from WebView; we handle that as a nullptr, not an opaque origin.
+  // See `org.chromium.android_webview.AwContents.postMessageToMainFrame()`.
+  scoped_refptr<const SecurityOrigin> source_origin;
+  if (!serialized_source_origin.empty()) {
+    source_origin = SecurityOrigin::CreateFromString(serialized_source_origin);
+  }
+
   const MessageEvent::MessageOriginKind message_origin_kind =
-      SecurityOrigin::CreateFromString(source_origin)
-              ->IsSameOriginWith(DomWindow()->GetSecurityOrigin())
+      (source_origin &&
+       source_origin->IsSameOriginWith(DomWindow()->GetSecurityOrigin()))
           ? MessageEvent::kMessageIsSameOrigin
           : MessageEvent::kMessageIsCrossOrigin;
   message_event->initMessageEvent(
@@ -3895,7 +3904,7 @@ void LocalFrame::PostMessageEvent(
 
   // Finally dispatch the message to the DOM Window.
   DomWindow()->DispatchMessageEventWithOriginCheck(
-      target_security_origin.get(), message_event,
+      target_origin.get(), message_event,
       MakeGarbageCollected<SourceLocation>(String(), String(), 0, 0, nullptr),
       message.sender_agent_cluster_id);
 }

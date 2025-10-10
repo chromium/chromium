@@ -44,7 +44,7 @@ WebDOMMessageEvent::WebDOMMessageEvent(
   // TODO(esprehn): Chromium always passes empty string for lastEventId, is that
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
-      event_type_names::kMessage, false, false, message_data, "",
+      event_type_names::kMessage, false, false, message_data, nullptr,
       MessageEvent::kMessageIsSameOrigin, "" /*lastEventId*/, nullptr, {},
       nullptr /*user_activation*/, mojom::blink::DelegatedCapability::kNone);
 }

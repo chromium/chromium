@@ -833,7 +833,7 @@ void ServiceWorkerContainer::DispatchMessageEvent(
          context->IsSameAgentCluster(msg.sender_agent_cluster_id)) &&
         msg.message->CanDeserializeIn(context)) {
       event = MessageEvent::Create(ports, std::move(msg.message),
-                                   context->GetSecurityOrigin()->ToString(),
+                                   context->GetSecurityOrigin(),
                                    MessageEvent::kMessageIsSameOrigin,
                                    String() /* lastEventId */, service_worker);
     } else {
