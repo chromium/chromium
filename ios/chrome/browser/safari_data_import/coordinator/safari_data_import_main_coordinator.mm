@@ -97,9 +97,11 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  if (_exportCoordinator) {
+    return;
+  }
   RecordSafariImportActionOnEntryPoint(
       SafariDataImportEntryPointAction::kImport, _entryPoint);
-  CHECK(!_exportCoordinator);
   [_mediator notifyUsedOrDismissed];
   _exportCoordinator = [[SafariDataImportExportCoordinator alloc]
       initWithBaseViewController:_viewController
