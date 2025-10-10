@@ -9,6 +9,7 @@ proto_library("protocol") {
   proto_in_dir = "//"
   sources = [
     "children.proto",
+    "split_collection_state.proto",
     "tab_state.proto",
   ]
 }
@@ -17,6 +18,7 @@ proto_java_library("proto_java") {
   proto_path = "//"
   sources = [
     "children.proto",
+    "split_collection_state.proto",
     "tab_state.proto",
   ]
 }

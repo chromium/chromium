@@ -8,6 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
+#include "components/tabs/public/split_tab_collection.h"
+
 namespace tabs {
 class TabInterface;
 class TabCollection;
@@ -32,6 +36,10 @@ class TabStoragePackager {
   // captured in this package.
   std::unique_ptr<StoragePackage> Package(const TabCollection* collection,
                                           StorageIdMapping& mapping);
+
+ private:
+  std::unique_ptr<Payload> PackageData(const SplitTabCollection* collection,
+                                       StorageIdMapping& mapping);
 };
 
 }  // namespace tabs
