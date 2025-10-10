@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `find-msvc-tools-0.1.2` crate.
+// `find-msvc-tools-0.1.4` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
