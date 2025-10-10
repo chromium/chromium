@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
-import {Runner} from './offline.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getRandomNum} from './utils.js';
 
@@ -68,6 +68,7 @@ export class BackgroundEl {
   private animTimer: number = 0;
   private spriteConfig: BackgroundElSpriteConfig;
   private switchFrames: boolean = false;
+  private imageSpriteProvider: ImageSpriteProvider;
 
 
   /**
@@ -76,18 +77,20 @@ export class BackgroundEl {
    */
   constructor(
       canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      containerWidth: number, type: string) {
+      containerWidth: number, type: string,
+      imageSpriteProvider: ImageSpriteProvider) {
     this.canvas = canvas;
     const canvasContext = this.canvas.getContext('2d');
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.spritePos = spritePos;
+    this.imageSpriteProvider = imageSpriteProvider;
     this.xPos = containerWidth;
     this.type = type;
     this.gap = getRandomNum(getGlobalConfig().minGap, getGlobalConfig().maxGap);
 
     const spriteConfig =
-        Runner.getInstance().getSpriteDefinition().backgroundEl[this.type];
+        imageSpriteProvider.getSpriteDefinition().backgroundEl[this.type];
     assert(spriteConfig);
     this.spriteConfig = spriteConfig;
     this.init();
@@ -117,7 +120,7 @@ export class BackgroundEl {
     let sourceX = this.spriteConfig.xPos;
     const outputWidth = sourceWidth;
     const outputHeight = sourceHeight;
-    const imageSprite = Runner.getInstance().getRunnerImageSprite();
+    const imageSprite = this.imageSpriteProvider.getRunnerImageSprite();
     assert(imageSprite);
 
     if (IS_HIDPI) {

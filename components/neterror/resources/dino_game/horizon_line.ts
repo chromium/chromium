@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {FPS, IS_HIDPI} from './constants.js';
 import type {Dimensions} from './dimensions.js';
-import {Runner} from './offline.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import type {SpritePosition} from './sprite_position.js';
 
 
@@ -27,12 +27,15 @@ export class HorizonLine {
   private spritePos: SpritePosition;
   private sourceDimensions: Dimensions;
   private dimensions: Dimensions;
+  private imageSpriteProvider: ImageSpriteProvider;
 
   /**
    * Horizon Line.
    * Consists of two connecting lines. Randomly assigns a flat / bumpy horizon.
    */
-  constructor(canvas: HTMLCanvasElement, lineConfig: HorizonLineConfig) {
+  constructor(
+      canvas: HTMLCanvasElement, lineConfig: HorizonLineConfig,
+      imageSpriteProvider: ImageSpriteProvider) {
     let sourceX = lineConfig.sourceX;
     let sourceY = lineConfig.sourceY;
 
@@ -46,6 +49,7 @@ export class HorizonLine {
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.dimensions = {width: lineConfig.width, height: lineConfig.height};
+    this.imageSpriteProvider = imageSpriteProvider;
 
     this.sourceXPos =
         [this.spritePos.x, this.spritePos.x + this.dimensions.width];
@@ -75,7 +79,7 @@ export class HorizonLine {
    * Draw the horizon line.
    */
   draw() {
-    const runnerImageSprite = Runner.getInstance().getRunnerImageSprite();
+    const runnerImageSprite = this.imageSpriteProvider.getRunnerImageSprite();
     assert(runnerImageSprite);
     this.canvasCtx.drawImage(
         runnerImageSprite, this.sourceXPos[0], this.spritePos.y,

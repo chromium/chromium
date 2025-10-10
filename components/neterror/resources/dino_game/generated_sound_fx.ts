@@ -4,6 +4,10 @@
 
 import {IS_IOS} from './constants.js';
 
+export interface GeneratedSoundFxProvider {
+  getGeneratedSoundFx(): GeneratedSoundFx|null;
+}
+
 /**
  * Generated sound FX class for audio cues.
  */

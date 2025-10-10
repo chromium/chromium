@@ -6,10 +6,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {BackgroundEl, getGlobalConfig as getBackgroundElGlobalConfig, setGlobalConfig as setBackgroundElGlobalConfig} from './background_el.js';
 import {Cloud} from './cloud.js';
 import type {Dimensions} from './dimensions.js';
+import type {ConfigProvider} from './game_config.js';
+import type {GameStateProvider} from './game_state_provider.js';
 import {HorizonLine} from './horizon_line.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import {NightMode} from './night_mode.js';
 import {Obstacle, setMaxGapCoefficient as setMaxObstacleGapCoefficient, setMaxObstacleLength} from './obstacle.js';
-import {Runner} from './offline.js';
 import type {ObstacleType, SpritePositions} from './offline_sprite_definitions.js';
 import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import {getRandomNum} from './utils.js';
@@ -25,13 +27,14 @@ export class Horizon {
   private config: HorizonConfig = horizonConfig;
   private dimensions: Dimensions;
   private gapCoefficient: number;
+  private resourceProvider: ImageSpriteProvider&ConfigProvider&
+      GameStateProvider;
   private obstacleHistory: Array<keyof SpritePositions> = [];
   private cloudFrequency: number;
   private spritePos: SpritePositions;
   private nightMode: NightMode;
   private altGameModeActive: boolean = false;
   private obstacleTypes: ObstacleType[] = [];
-
 
   // Cloud
   private clouds: Cloud[] = [];
@@ -46,13 +49,15 @@ export class Horizon {
 
   constructor(
       canvas: HTMLCanvasElement, spritePos: SpritePositions,
-      dimensions: Dimensions, gapCoefficient: number) {
+      dimensions: Dimensions, gapCoefficient: number,
+      resourceProvider: ImageSpriteProvider&ConfigProvider&GameStateProvider) {
     this.canvas = canvas;
     const canvasContext = canvas.getContext('2d');
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.dimensions = dimensions;
     this.gapCoefficient = gapCoefficient;
+    this.resourceProvider = resourceProvider;
     this.cloudFrequency = this.config.CLOUD_FREQUENCY;
     this.spritePos = spritePos;
     this.cloudSpeed = this.config.BG_CLOUD_SPEED;
@@ -60,17 +65,19 @@ export class Horizon {
     // Initialise the horizon. Just add the line and a cloud. No obstacles.
     this.obstacleTypes = spriteDefinitionByType.original.obstacles;
     this.addCloud();
-    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
+    const runnerSpriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(runnerSpriteDefinition);
 
     // Multiple Horizon lines
     for (let i = 0; i < runnerSpriteDefinition.lines.length; i++) {
-      this.horizonLines.push(
-          new HorizonLine(this.canvas, runnerSpriteDefinition.lines[i]!));
+      this.horizonLines.push(new HorizonLine(
+          this.canvas, runnerSpriteDefinition.lines[i]!,
+          this.resourceProvider));
     }
 
-    this.nightMode =
-        new NightMode(this.canvas, this.spritePos.moon, this.dimensions.height);
+    this.nightMode = new NightMode(
+        this.canvas, this.spritePos.moon, this.dimensions.height,
+        this.resourceProvider);
   }
 
   /**
@@ -78,7 +85,7 @@ export class Horizon {
    */
   adjustObstacleSpeed() {
     for (let i = 0; i < this.obstacleTypes.length; i++) {
-      if (Runner.getInstance().hasSlowdown) {
+      if (this.resourceProvider.hasSlowdown) {
         this.obstacleTypes[i]!.multipleSpeed =
             this.obstacleTypes[i]!.multipleSpeed / 2;
         this.obstacleTypes[i]!.minGap *= 1.5;
@@ -97,7 +104,7 @@ export class Horizon {
    * Update sprites to correspond to change in sprite sheet.
    */
   enableAltGameMode(spritePos: SpritePositions) {
-    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
+    const runnerSpriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(runnerSpriteDefinition);
 
     // Clear existing horizon objects.
@@ -117,8 +124,9 @@ export class Horizon {
 
     this.horizonLines = [];
     for (let i = 0; i < runnerSpriteDefinition.lines.length; i++) {
-      this.horizonLines.push(
-          new HorizonLine(this.canvas, runnerSpriteDefinition.lines[i]!));
+      this.horizonLines.push(new HorizonLine(
+          this.canvas, runnerSpriteDefinition.lines[i]!,
+          this.resourceProvider));
     }
     this.reset();
   }
@@ -132,7 +140,7 @@ export class Horizon {
   update(
       deltaTime: number, currentSpeed: number, updateObstacles: boolean,
       showNightMode: boolean) {
-    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
+    const runnerSpriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(runnerSpriteDefinition);
     if (this.altGameModeActive) {
       this.updateBackgroundEls(deltaTime);
@@ -247,7 +255,7 @@ export class Horizon {
     const obstacleCount =
         this.obstacleTypes[this.obstacleTypes.length - 1]!.type !==
                 'collectable' ||
-            (Runner.getInstance().isAltGameModeEnabled() &&
+            (this.resourceProvider.isAltGameModeEnabled() &&
                  !this.altGameModeActive ||
              this.altGameModeActive) ?
         this.obstacleTypes.length - 1 :
@@ -267,13 +275,13 @@ export class Horizon {
       this.obstacles.push(new Obstacle(
           this.canvasCtx, obstacleType, obstacleSpritePos, this.dimensions,
           this.gapCoefficient, currentSpeed, obstacleType.width,
-          this.altGameModeActive));
+          this.resourceProvider, this.altGameModeActive));
 
       this.obstacleHistory.unshift(obstacleType.type);
 
       if (this.obstacleHistory.length > 1) {
         const maxObstacleDuplicationValue =
-            Runner.getInstance().getConfig().maxObstacleDuplication;
+            this.resourceProvider.getConfig().maxObstacleDuplication;
         assert(maxObstacleDuplicationValue);
         this.obstacleHistory.splice(maxObstacleDuplicationValue);
       }
@@ -291,7 +299,7 @@ export class Horizon {
       duplicateCount = obstacle === nextObstacleType ? duplicateCount + 1 : 0;
     }
     const maxObstacleDuplicationValue =
-        Runner.getInstance().getConfig().maxObstacleDuplication;
+        this.resourceProvider.getConfig().maxObstacleDuplication;
     assert(maxObstacleDuplicationValue);
     return duplicateCount >= maxObstacleDuplicationValue;
   }
@@ -321,15 +329,16 @@ export class Horizon {
    * Add a new cloud to the horizon.
    */
   addCloud() {
-    this.clouds.push(
-        new Cloud(this.canvas, this.spritePos.cloud, this.dimensions.width));
+    this.clouds.push(new Cloud(
+        this.canvas, this.spritePos.cloud, this.dimensions.width,
+        this.resourceProvider));
   }
 
   /**
    * Add a random background element to the horizon.
    */
   addBackgroundEl() {
-    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
+    const runnerSpriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(runnerSpriteDefinition);
     const backgroundElTypes = Object.keys(runnerSpriteDefinition.backgroundEl);
 
@@ -345,8 +354,8 @@ export class Horizon {
 
       this.lastEl = type;
       this.backgroundEls.push(new BackgroundEl(
-          this.canvas, this.spritePos.backgroundEl, this.dimensions.width,
-          type));
+          this.canvas, this.spritePos.backgroundEl, this.dimensions.width, type,
+          this.resourceProvider));
     }
   }
 }

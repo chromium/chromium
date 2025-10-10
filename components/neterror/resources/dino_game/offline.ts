@@ -10,9 +10,13 @@ import {HIDDEN_CLASS} from '../constants.js';
 import {DEFAULT_DIMENSIONS, FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL} from './constants.js';
 import type {Dimensions} from './dimensions.js';
 import {DistanceMeter} from './distance_meter.js';
+import type {BaseConfig, Config, ConfigProvider, GameModeConfig} from './game_config.js';
 import {GameOverPanel} from './game_over_panel.js';
+import type {GameStateProvider} from './game_state_provider.js';
+import type {GeneratedSoundFxProvider} from './generated_sound_fx.js';
 import {GeneratedSoundFx} from './generated_sound_fx.js';
 import {Horizon} from './horizon.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import type {Obstacle} from './obstacle.js';
 import type {SpriteDefinition, SpriteDefinitionByType, SpritePositions} from './offline_sprite_definitions.js';
 import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline_sprite_definitions.js';
@@ -27,47 +31,6 @@ enum A11yStrings {
   JUMP = 'dinoGameA11yJump',
   STARTED = 'dinoGameA11yStartGame',
   SPEED_LABEL = 'dinoGameA11ySpeedToggle',
-}
-
-/**
- * Default game configuration.
- * Shared config for all versions of the game. Additional parameters are
- * defined in GameModeConfig.
- */
-interface BaseConfig {
-  audiocueProximityThreshold: number;
-  audiocueProximityThresholdMobileA11y: number;
-  bgCloudSpeed: number;
-  bottomPad: number;
-  // Scroll Y threshold at which the game can be activated.
-  canvasInViewOffset: number;
-  clearTime: number;
-  cloudFrequency: number;
-  fadeDuration: number;
-  flashDuration: number;
-  gameoverClearTime: number;
-  initialJumpVelocity: number;
-  invertFadeDuration: number;
-  maxBlinkCount: number;
-  maxClouds: number;
-  maxObstacleLength: number;
-  maxObstacleDuplication: number;
-  resourceTemplateId: string;
-  speed: number;
-  speedDropCoefficient: number;
-  arcadeModeInitialTopPosition: number;
-  arcadeModeTopPositionPercent: number;
-}
-
-interface GameModeConfig {
-  acceleration: number;
-  audiocueProximityThreshold: number;
-  audiocueProximityThresholdMobileA11y: number;
-  gapCoefficient: number;
-  invertDistance: number;
-  maxSpeed: number;
-  mobileSpeedCoefficient: number;
-  speed: number;
 }
 
 const defaultBaseConfig: BaseConfig = {
@@ -117,7 +80,6 @@ const slowModeConfig: GameModeConfig = {
   speed: 4.2,
 };
 
-type Config = BaseConfig&GameModeConfig;
 type TrexDebugConfigSetting = 'gravity'|'minJumpHeight'|'speedDropCoefficient'|
     'initialJumpVelocity'|'speed';
 
@@ -181,7 +143,8 @@ const RESOURCE_POSTFIX: string = 'offline-resources-';
 /**
  * T-Rex runner.
  */
-export class Runner {
+export class Runner implements ImageSpriteProvider, GameStateProvider,
+                               ConfigProvider, GeneratedSoundFxProvider {
   private outerContainerEl: HTMLElement;
   private containerEl: HTMLElement|null = null;
   // A div to intercept touch events. Only set while (playing && useTouch).
@@ -294,10 +257,12 @@ export class Runner {
     window.initializeEasterEggHighScore = this.initializeHighScore.bind(this);
   }
 
+  // GameStateProvider implementation.
   get hasSlowdown(): boolean {
     return this.hasSlowdownInternal;
   }
 
+  // GameStateProvider implementation.
   get hasAudioCues(): boolean {
     return this.hasAudioCuesInternal;
   }
@@ -306,6 +271,7 @@ export class Runner {
    * Whether an alternative game mode is enabled, returns true if the load time
    * data specifies it and its assets loaded successfully. Returns false
    * otherwise.
+   * GameStateProvider implementation.
    */
   isAltGameModeEnabled(): boolean {
     if (this.altGameAssetsFailedToLoad) {
@@ -314,33 +280,40 @@ export class Runner {
     return loadTimeData.valueExists('enableAltGameMode');
   }
 
+  // GeneratedSoundFxProvider implementation.
   getGeneratedSoundFx(): GeneratedSoundFx {
     assert(this.generatedSoundFx);
     return this.generatedSoundFx;
   }
 
+  // ImageSpriteProvider implementation.
   getSpriteDefinition(): SpriteDefinition {
     return this.spriteDefinition;
   }
 
+  // ImageSpriteProvider implementation.
   getOrigImageSprite(): HTMLImageElement {
     assert(this.origImageSprite);
     return this.origImageSprite;
   }
 
+  // ImageSpriteProvider implementation.
   getRunnerImageSprite(): HTMLImageElement {
     assert(this.imageSprite);
     return this.imageSprite;
   }
 
+  // ImageSpriteProvider implementation.
   getRunnerAltGameImageSprite(): HTMLImageElement|null {
     return this.altGameImageSprite;
   }
 
+  // ImageSpriteProvider implementation.
   getAltCommonImageSprite(): HTMLImageElement|null {
     return this.altCommonImageSprite;
   }
 
+  // ConfigProvider implementation.
   getConfig(): Config {
     return this.config;
   }
@@ -596,14 +569,16 @@ export class Runner {
     // Horizon contains clouds, obstacles and the ground.
     this.horizon = new Horizon(
         this.canvas, this.spriteDef, this.dimensions,
-        this.config.gapCoefficient);
+        this.config.gapCoefficient, /* resourceProvider= */ this);
 
     // Distance meter
     this.distanceMeter = new DistanceMeter(
-        this.canvas, this.spriteDef.textSprite, this.dimensions.width);
+        this.canvas, this.spriteDef.textSprite, this.dimensions.width,
+        /* imageSpriteProvider= */ this);
 
     // Draw t-rex
-    this.tRex = new Trex(this.canvas, this.spriteDef.tRex);
+    this.tRex = new Trex(
+        this.canvas, this.spriteDef.tRex, /* resourceProvider= */ this);
 
     this.outerContainerEl.appendChild(this.containerEl);
     this.outerContainerEl.appendChild(this.slowSpeedCheckboxLabel);
@@ -1390,12 +1365,12 @@ export class Runner {
         if (this.isAltGameModeEnabled()) {
           this.gameOverPanel = new GameOverPanel(
               this.canvas, origSpriteDef.textSprite, origSpriteDef.restart,
-              this.dimensions, origSpriteDef.altGameEnd,
-              this.altGameModeActive);
+              this.dimensions, /* imageSpriteProvider= */ this,
+              origSpriteDef.altGameEnd, this.altGameModeActive);
         } else {
           this.gameOverPanel = new GameOverPanel(
               this.canvas, origSpriteDef.textSprite, origSpriteDef.restart,
-              this.dimensions);
+              this.dimensions, /* imageSpriteProvider= */ this);
         }
       }
     }

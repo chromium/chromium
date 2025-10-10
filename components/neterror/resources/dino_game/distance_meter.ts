@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI, IS_RTL} from './constants.js';
-import {Runner} from './offline.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import type {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getTimeStamp} from './utils.js';
@@ -69,14 +69,13 @@ export class DistanceMeter {
    * Handles displaying the distance meter.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      canvasWidth: number) {
+      canvas: HTMLCanvasElement, spritePos: SpritePosition, canvasWidth: number,
+      imageSpriteProvider: ImageSpriteProvider) {
     this.canvas = canvas;
     const canvasContext = canvas.getContext('2d');
     assert(canvasContext);
     this.canvasCtx = canvasContext;
-    const runnerImageSprite = Runner.getInstance().getRunnerImageSprite();
-    this.image = runnerImageSprite;
+    this.image = imageSpriteProvider.getRunnerImageSprite();
     this.spritePos = spritePos;
 
     this.canvasWidth = canvasWidth;
