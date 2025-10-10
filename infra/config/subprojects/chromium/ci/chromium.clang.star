@@ -1881,7 +1881,6 @@ ci.builder(
             "has_native_resultdb_integration",
             "ios_restart_device",
             "limited_capacity_bot",
-            "mac_default_x64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_26_main",
