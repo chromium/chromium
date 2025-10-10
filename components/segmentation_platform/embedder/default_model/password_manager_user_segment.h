@@ -16,6 +16,17 @@ struct Config;
 // Model to predict if a user uses password manager features.
 class PasswordManagerUserModel : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeaturePasswordManagerReferrer,
+    kFeatureStoredPasswordCount,
+    kFeatureAssistedLoginCount,
+    kFeatureGeneratedPasswordCount,
+    kFeaturePasswordUIAcceptedCount,
+    kFeaturePasswordUIDismissedCount,
+    kFeatureIOSCredentialExtensionEnabled,
+    kFeatureCount
+  };
+
   PasswordManagerUserModel();
   ~PasswordManagerUserModel() override = default;
 
