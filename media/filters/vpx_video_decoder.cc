@@ -421,18 +421,11 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     const DecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!vpx_codec_alpha_ || !buffer->side_data() ||
-      buffer->side_data()->alpha_data.size() < 8) {
+      buffer->side_data()->alpha_data.empty()) {
     return kAlphaPlaneProcessed;
   }
 
-  // First 8 bytes of side data is |side_data_id| in big endian.
-  auto [alpha_data_id, alpha_data] =
-      buffer->side_data()->alpha_data.as_span().split_at<8u>();
-  const uint64_t side_data_id = base::U64FromBigEndian(alpha_data_id);
-  if (side_data_id != 1) {
-    return kAlphaPlaneProcessed;
-  }
-
+  auto& alpha_data = buffer->side_data()->alpha_data;
   // Try and decode buffer->raw_side_data() minus the first 8 bytes as a full
   // frame.
   {

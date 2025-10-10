@@ -519,10 +519,17 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           .subspan(data_offset);
   auto buffer = StreamParserBuffer::CopyFrom(data_span, is_keyframe,
                                              buffer_type, track_num);
-  if (additional_size) {
-    buffer->WritableSideData().alpha_data =
-        base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_TODO(
-            base::span<const uint8_t>(additional, additional_size)));
+  if (additional_size > 8) {
+    auto side_data =
+        UNSAFE_TODO(base::span<const uint8_t>(additional, additional_size));
+    // First 8 bytes of side data is the side_data_id in big endian. This is the
+    // same as the matroska BlockAddID whose values are documented here:
+    // https://www.matroska.org/technical/codec_specs.html#block-addition-mappings
+    const uint64_t side_data_id = base::U64FromBigEndian(side_data.first<8u>());
+    if (side_data_id == 1) {
+      buffer->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+    }
   }
 
   if (decrypt_config) {

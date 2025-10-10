@@ -457,9 +457,16 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // reference inner memory of FFmpeg.  As such we should transfer the packet
   // into memory we control.
   buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
-  if (side_data.size() > 0) {
-    buffer->WritableSideData().alpha_data =
-        base::HeapArray<uint8_t>::CopiedFrom(side_data);
+
+  if (side_data.size() > 8) {
+    // First 8 bytes of side data is the side_data_id in big endian. This is the
+    // same as the matroska BlockAddID whose values are documented here:
+    // https://www.matroska.org/technical/codec_specs.html#block-addition-mappings
+    const uint64_t side_data_id = base::U64FromBigEndian(side_data.first<8u>());
+    if (side_data_id == 1) {
+      buffer->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+    }
   }
 
   if (decrypt_config) {
