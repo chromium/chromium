@@ -167,6 +167,7 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
   Show(EmbedderType::kFloating, tab);
+  Close(EmbedderType::kSidePanel, tab);
 }
 
 void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
