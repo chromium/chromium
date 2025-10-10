@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/cc_export.h"
 #include "cc/paint/target_color_params.h"
 #include "cc/tiles/image_controller.h"
@@ -53,9 +54,7 @@ class CC_EXPORT DecodedImageTracker {
   // unlock them.
   void OnImagesUsedInDraw(const std::vector<DrawImage>& draw_images);
 
-  void SetTickClockForTesting(const base::TickClock* tick_clock) {
-    tick_clock_ = tick_clock;
-  }
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // Test only functions:
   size_t NumLockedImagesForTesting() const { return locked_images_.size(); }
@@ -69,7 +68,7 @@ class CC_EXPORT DecodedImageTracker {
                            ImageController::ImageDecodeRequestId request_id,
                            ImageController::ImageDecodeResult result);
   void OnTimeoutImages();
-  void EnqueueTimeout();
+  void StartTimer(base::TimeDelta);
 
   raw_ptr<ImageController> image_controller_;
 
@@ -92,11 +91,12 @@ class CC_EXPORT DecodedImageTracker {
     const base::TimeTicks expiration_;
   };
   base::flat_map<PaintImage::Id, std::unique_ptr<ImageLock>> locked_images_;
-  bool timeout_pending_ = false;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Defaults to base::TimeTicks::Now(), but overrideable for testing.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<const base::TickClock> tick_clock_;
+  std::unique_ptr<base::RepeatingTimer> expiration_timer_;
+  std::unique_ptr<base::RepeatingClosure> timer_closure_;
 
   base::WeakPtrFactory<DecodedImageTracker> weak_ptr_factory_{this};
 };
