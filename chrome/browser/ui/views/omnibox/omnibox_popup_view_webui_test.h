@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "ui/views/widget/widget.h"
 
 // Base class for omnibox browser and ui tests.

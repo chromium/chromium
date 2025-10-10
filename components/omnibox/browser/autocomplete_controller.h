@@ -32,13 +32,10 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
-#include "components/omnibox/browser/bookmark_provider.h"
-#include "components/omnibox/browser/omnibox_log.h"
-#include "components/omnibox/browser/open_tab_provider.h"
-#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
+class BookmarkProvider;
 class ClipboardProvider;
 class ContextualSearchProvider;
 class DocumentProvider;
@@ -49,10 +46,13 @@ class HistoryURLProvider;
 class KeywordProvider;
 class OmniboxTriggeredFeatureService;
 class OnDeviceHeadProvider;
+class OpenTabProvider;
 class SearchProvider;
+class TabGroupProvider;
 class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
+struct OmniboxLog;
 
 // The header used to report whether a navigation to google.com is coming from
 // omnibox. Only set when the navigation is initiated from the Gemini
@@ -118,7 +118,7 @@ class AutocompleteController : public AutocompleteProviderListener,
     kMatchDeletion,
   };
 
-  typedef std::vector<scoped_refptr<AutocompleteProvider>> Providers;
+  using Providers = std::vector<scoped_refptr<AutocompleteProvider>>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -316,10 +316,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // match into the result set, currently still needed only by iOS.
   size_t InjectAdHocMatch(AutocompleteMatch match);
 
+#if BUILDFLAG(IS_IOS)
   // Sets the position of the omnibox when it's in steady state (unfocused).
   // Only used on iOS for logging purposes.
   virtual void SetSteadyStateOmniboxPosition(
       metrics::OmniboxEventProto::OmniboxPosition position);
+#endif
 
  private:
   friend class FakeAutocompleteController;
@@ -555,42 +557,42 @@ class AutocompleteController : public AutocompleteProviderListener,
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.
-  std::unique_ptr<AutocompleteProviderClient> provider_client_;
+  const std::unique_ptr<AutocompleteProviderClient> provider_client_;
 
   // A list of all providers.
   Providers providers_;
 
-  raw_ptr<BookmarkProvider> bookmark_provider_;
+  raw_ptr<BookmarkProvider> bookmark_provider_ = nullptr;
 
-  raw_ptr<HistoryQuickProvider> history_quick_provider_;
+  raw_ptr<HistoryQuickProvider> history_quick_provider_ = nullptr;
 
-  raw_ptr<DocumentProvider> document_provider_;
+  raw_ptr<DocumentProvider> document_provider_ = nullptr;
 
-  raw_ptr<HistoryURLProvider> history_url_provider_;
+  raw_ptr<HistoryURLProvider> history_url_provider_ = nullptr;
 
-  raw_ptr<KeywordProvider> keyword_provider_;
+  raw_ptr<KeywordProvider> keyword_provider_ = nullptr;
 
-  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_;
+  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_ = nullptr;
 
-  raw_ptr<SearchProvider> search_provider_;
+  raw_ptr<SearchProvider> search_provider_ = nullptr;
 
-  raw_ptr<ZeroSuggestProvider> zero_suggest_provider_;
+  raw_ptr<ZeroSuggestProvider> zero_suggest_provider_ = nullptr;
 
-  raw_ptr<OnDeviceHeadProvider> on_device_head_provider_;
+  raw_ptr<OnDeviceHeadProvider> on_device_head_provider_ = nullptr;
 
-  raw_ptr<ClipboardProvider> clipboard_provider_;
+  raw_ptr<ClipboardProvider> clipboard_provider_ = nullptr;
 
-  raw_ptr<VoiceSuggestProvider> voice_suggest_provider_;
+  raw_ptr<VoiceSuggestProvider> voice_suggest_provider_ = nullptr;
 
-  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
+  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_ = nullptr;
 
-  raw_ptr<OpenTabProvider> open_tab_provider_;
+  raw_ptr<OpenTabProvider> open_tab_provider_ = nullptr;
 
-  raw_ptr<TabGroupProvider> tab_group_provider_;
+  raw_ptr<TabGroupProvider> tab_group_provider_ = nullptr;
 
-  raw_ptr<FeaturedSearchProvider> featured_search_provider_;
+  raw_ptr<FeaturedSearchProvider> featured_search_provider_ = nullptr;
 
-  raw_ptr<ContextualSearchProvider> contextual_search_provider_;
+  raw_ptr<ContextualSearchProvider> contextual_search_provider_ = nullptr;
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these
@@ -646,7 +648,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `done_` is set true; and the 1st call, i.e. the sync update, are immune to
   // this restriction. Calls not succeeding a result update (i.e. a call from
   // closing the popup) bypass the delay as well.
-  AutocompleteProviderDebouncer notify_changed_debouncer_;
+  AutocompleteProviderDebouncer notify_changed_debouncer_{false, 200};
 
   // Tracks if any delayed `RequestNotifyChanged()` call since the last
   // `NotifyChanged()` call changed the default match. Otherwise, if there have
@@ -660,7 +662,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // True if this instance of AutocompleteController is owned by the CrOS
   // launcher. This is currently used to determine whether to enable the Open
   // Tab provider always (CrOS launcher) or just in keyword mode (!launcher).
-  bool is_cros_launcher_;
+  const bool is_cros_launcher_;
 
   // Logs stability and timing metrics for updates.
   AutocompleteControllerMetrics metrics_{*this};
@@ -668,14 +670,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // True if the signal predicting a likely search has already been sent to the
   // service worker context during the current input session. False on
   // controller creation and after |ResetSession| is called.
-  bool search_service_worker_signal_sent_;
+  bool search_service_worker_signal_sent_ = false;
 
   // Used for chrome://omnibox/ml to force disable the ML feature state.
-  bool disable_ml_ = true;
+  const bool disable_ml_;
 
-  raw_ptr<TemplateURLService> template_url_service_;
+  const raw_ptr<TemplateURLService> template_url_service_;
 
-  raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
+  const raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
