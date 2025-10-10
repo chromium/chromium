@@ -6972,11 +6972,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint)},
 
-    {"aim-server-eligibility",
-     flag_descriptions::kOmniboxAimServerEligibilityName,
-     flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
-
     {"hide-aim-omnibox-entrypoint-on-user-input",
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputDescription,
@@ -7073,6 +7068,11 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox_feature_configs::AdjustOmniboxIndent::kAdjustOmniboxIndent)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
+
+    {"aim-server-eligibility",
+     flag_descriptions::kOmniboxAimServerEligibilityName,
+     flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"animate-suggestions-list-appearance",
