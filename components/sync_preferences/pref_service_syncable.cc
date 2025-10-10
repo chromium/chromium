@@ -154,10 +154,9 @@ void PrefServiceSyncable::ConnectAssociatorsAndRegisterPreferences() {
   }
 
   // Watch for syncable preferences registered after this point.
-  static_cast<user_prefs::PrefRegistrySyncable*>(pref_registry_.get())
-      ->SetSyncableRegistrationCallback(base::BindRepeating(
-          &PrefServiceSyncable::AddRegisteredSyncablePreference,
-          base::Unretained(this)));
+  pref_registry_->SetSyncableRegistrationCallback(base::BindRepeating(
+      &PrefServiceSyncable::AddRegisteredSyncablePreference,
+      base::Unretained(this)));
 }
 
 PrefServiceSyncable::~PrefServiceSyncable() {
