@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -884,14 +885,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
-      ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
-      CHECK(vdm);
+      const ValuablesDataManager& vdm =
+          CHECK_DEREF(manager_->client().GetValuablesDataManager());
       const std::string guid =
           std::get<Suggestion::Guid>(suggestion.payload).value();
-      if (std::optional<LoyaltyCard> loyaty_card =
-              vdm->GetLoyaltyCardById(ValuableId(guid))) {
+      if (std::optional<LoyaltyCard> loyalty_card =
+              vdm.GetLoyaltyCardById(ValuableId(guid))) {
         manager_->LogAndRecordLoyaltyCardFill(
-            *loyaty_card, query_form_.global_id(), query_field_.global_id());
+            *loyalty_card, query_form_.global_id(), query_field_.global_id());
       }
       break;
     }
@@ -1231,25 +1232,36 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       manager_->client().IsOffTheRecord());
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry: {
-      const bool email_and_plus_address_shown = [this] {
-        const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-        const bool triggered_on_email_field =
-            autofill_trigger_field &&
-            autofill_trigger_field->Type().GetGroups().contains(
-                FieldTypeGroup::kEmail);
-        // Email suggestions don't have a separate suggestion type. Check that
-        // the suggestions are triggered on an email field and that the popup
-        // contains a plus address filling suggestion as well.
-        return triggered_on_email_field &&
-               base::Contains(shown_suggestion_types_,
-                              SuggestionType::kFillExistingPlusAddress);
-      }();
-      if (AutofillPlusAddressDelegate* plus_address_delegate =
+      const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+
+      if (autofill_trigger_field &&
+          autofill_trigger_field->Type().GetLoyaltyCardType() ==
+              EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+          !manager_->client()
+               .GetValuablesDataManager()
+               ->GetLoyaltyCards()
+               .empty()) {
+        LogEmailOrLoyaltyCardSuggestionAccepted(
+            autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+                kEmailSelected);
+      }
+
+      // Email suggestions don't have a separate suggestion type. Check that
+      // the suggestions are triggered on an email field and that the popup
+      // contains a plus address filling suggestion as well.
+      const bool email_and_plus_address_shown =
+          autofill_trigger_field &&
+          autofill_trigger_field->Type().GetGroups().contains(
+              FieldTypeGroup::kEmail) &&
+          base::Contains(shown_suggestion_types_,
+                         SuggestionType::kFillExistingPlusAddress);
+      if (const AutofillPlusAddressDelegate* plus_address_delegate =
               manager_->client().GetPlusAddressDelegate();
           plus_address_delegate && email_and_plus_address_shown) {
         manager_->client().TriggerPlusAddressUserPerceptionSurvey(
             plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress);
       }
+
       AutofillForm(suggestion.type, suggestion.payload, metadata,
                    /*is_preview=*/false,
                    TriggerSourceFromSuggestionTriggerSource(trigger_source_));

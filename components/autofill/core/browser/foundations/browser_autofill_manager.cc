@@ -2765,25 +2765,14 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     const AutofillProfile& filled_profile,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
-  if (!trigger_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
-    if (is_refill) {
-      metrics_->address_form_event_logger.OnDidRefill(form_structure);
-    } else {
-      metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-          filled_profile, form_structure, trigger_field, trigger_source);
-    }
+  if (is_refill) {
+    metrics_->address_form_event_logger.OnDidRefill(form_structure);
+    return;
   }
-  if (!is_refill) {
-    client().GetPersonalDataManager().address_data_manager().RecordUseOf(
-        filled_profile);
-    if (trigger_field.Type().GetLoyaltyCardType() ==
-            EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
-        !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
-      LogEmailOrLoyaltyCardSuggestionAccepted(
-          autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
-              kEmailSelected);
-    }
-  }
+  metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
+      filled_profile, form_structure, trigger_field, trigger_source);
+  client().GetPersonalDataManager().address_data_manager().RecordUseOf(
+      filled_profile);
 }
 
 void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
