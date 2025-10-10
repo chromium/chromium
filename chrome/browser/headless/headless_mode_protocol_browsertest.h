@@ -52,6 +52,7 @@ class HeadlessModeProtocolBrowserTest
   // HeadlessModeDevTooledBrowserTest:
   void RunDevTooledTest() override;
 
+  void OnDevToolsProtocolExposed(base::Value::Dict params);
   void OnLoadEventFired(const base::Value::Dict& params);
   void OnEvaluateResult(base::Value::Dict params);
 

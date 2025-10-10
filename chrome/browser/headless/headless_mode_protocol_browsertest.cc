@@ -121,9 +121,15 @@ void HeadlessModeProtocolBrowserTest::RunDevTooledTest() {
   devtools_client_.SendCommand("Page.enable");
 
   // Expose DevTools protocol to the target.
-  browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
-                                       Param("targetId", agent_host->GetId()));
+  browser_devtools_client_.SendCommand(
+      "Target.exposeDevToolsProtocol", Param("targetId", agent_host->GetId()),
+      base::BindOnce(
+          &HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed,
+          base::Unretained(this)));
+}
 
+void HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed(
+    base::Value::Dict params) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
       "harness.test", "/protocol/inspector-protocol-test.html");
