@@ -109,6 +109,14 @@ bool BwgTabHelper::GetIsFirstRun() {
   return is_first_run_;
 }
 
+bool BwgTabHelper::ShouldPreventContextualPanelEntryPoint() {
+  return prevent_contextual_panel_entry_point_;
+}
+
+void BwgTabHelper::SetPreventContextualPanelEntryPoint(bool shouldPrevent) {
+  prevent_contextual_panel_entry_point_ = shouldPrevent;
+}
+
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }

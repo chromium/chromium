@@ -75,6 +75,13 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the state of `is_first_run`.
   bool GetIsFirstRun();
 
+  // Returns whether to prevent contextual panel entrypoint based on Gemini IPH
+  // criteria.
+  bool ShouldPreventContextualPanelEntryPoint();
+
+  // Setter for `prevent_contextual_panel_entry_point_`.
+  void SetPreventContextualPanelEntryPoint(bool should_prevent);
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
@@ -156,6 +163,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // The optimization guide decider for page metadata.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
+
+  // Whether to prevent contextual panel entry point.
+  bool prevent_contextual_panel_entry_point_ = false;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };

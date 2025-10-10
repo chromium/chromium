@@ -23,6 +23,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
