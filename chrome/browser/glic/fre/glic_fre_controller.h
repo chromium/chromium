@@ -98,6 +98,9 @@ class GlicFreController {
   // the same browser.
   void AcceptFre();
 
+  // Rejects the FRE dialog.
+  void RejectFre();
+
   // Closes the FRE dialog.
   void DismissFre(mojom::FreWebUiState panel);
 
