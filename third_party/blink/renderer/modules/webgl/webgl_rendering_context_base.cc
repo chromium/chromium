@@ -1835,17 +1835,6 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
     GetDrawingBuffer()->SetBufferClearNeeded(true);
 }
 
-bool WebGLRenderingContextBase::
-    CanUseDrawingBufferSIWithoutCopyForLowLatency() {
-  CHECK(GetDrawingBuffer());
-
-  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
-    return false;
-  }
-
-  return GetDrawingBuffer()->SupportsNoCopyExportForLowLatency();
-}
-
 void WebGLRenderingContextBase::PageVisibilityChanged() {
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
@@ -1883,7 +1872,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
+  if (SharedGpuContext::IsGpuCompositingEnabled() &&
+      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     auto resource = ExportLowLatencyCanvasResource(source_buffer);
     return resource ? resource->Bitmap() : nullptr;
   }
@@ -1972,7 +1962,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return nullptr;
   }
 
-  if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
+  if (SharedGpuContext::IsGpuCompositingEnabled() &&
+      GetDrawingBuffer()->SupportsNoCopyExportForLowLatency()) {
     return ExportLowLatencyCanvasResource(source_buffer);
   }
 

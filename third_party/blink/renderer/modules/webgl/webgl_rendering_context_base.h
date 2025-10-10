@@ -719,7 +719,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
-  bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
