@@ -4449,6 +4449,11 @@
     },
     {
       // https://issues.chromium.org/issues/40502558
+      name: "SelectionRemoveRangeNotFoundError",
+      status: "experimental",
+    },
+    {
+      // https://issues.chromium.org/issues/40502558
       name: "SelectionSetBaseAndExtentNonNullNode",
       status: "experimental",
       settable_from_internals: true,

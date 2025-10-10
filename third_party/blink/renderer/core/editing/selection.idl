@@ -41,7 +41,7 @@
     [MeasureAs=SelectionType] readonly attribute DOMString type;
     [MeasureAs=SelectionGetRangeAt, RaisesException] Range getRangeAt(unsigned long index);
     [MeasureAs=SelectionAddRange] void addRange(Range range);
-    void removeRange(Range range);
+    [RaisesException] void removeRange(Range range);
     [MeasureAs=SelectionRemoveAllRanges] void removeAllRanges();
     [MeasureAs=SelectionEmpty] void empty();
     [MeasureAs=SelectionCollapse, RaisesException] void collapse(Node? node, optional unsigned long offset = 0);

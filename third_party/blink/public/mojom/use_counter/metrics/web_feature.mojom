@@ -4988,6 +4988,7 @@ enum WebFeature {
   kSmartCardEstablishContext = 5673,
   kSmartCardConnect = 5674,
   kNavigatorCPUPerformance = 5675,
+  kSelectionRemoveRangeNotFoundWouldThrow = 5676,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
