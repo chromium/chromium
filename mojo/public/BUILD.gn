@@ -10,6 +10,7 @@ group("public") {
     "cpp/bindings",
     "cpp/test:test_mojom",
     "interfaces/bindings/tests:test_interfaces",
+    "rust:mojo_c_system_api",
   ]
 
   if (is_android) {
@@ -24,6 +25,7 @@ group("sdk") {
   deps = [
     "c/system",
     "cpp/bindings",
+    "rust:mojo_c_system_api",
   ]
 }
 
