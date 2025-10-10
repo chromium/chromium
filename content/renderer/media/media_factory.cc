@@ -662,15 +662,11 @@ MediaFactory::CreateRendererFactorySelector(
     GetInterfaceBroker().GetInterface(
         media_foundation_renderer_notifier.BindNewPipeAndPassReceiver());
 
-    media::ObserveOverlayStateCB observe_overlay_state_cb = base::BindRepeating(
-        &OverlayStateObserverImpl::Create,
-        base::RetainedRef(render_thread->GetOverlayStateServiceProvider()));
-
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             media_log, std::move(dcomp_texture_creation_cb),
-            std::move(observe_overlay_state_cb), CreateMojoRendererFactory(),
+            CreateMojoRendererFactory(),
             std::move(media_foundation_renderer_notifier)));
 
     if (use_mf_for_clear && !is_base_renderer_factory_set) {

@@ -1151,44 +1151,12 @@ BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of MediaFoundationRenderer for clear content on supported
-// systems.
+// systems. This is for testing purposes, and is not intended to be enabled
+// more broadly.
 BASE_FEATURE(kMediaFoundationClearPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
 BASE_FEATURE(kD3D11Vp9kSVCHWDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The Media Foundation Rendering Strategy determines which presentation mode
-// Media Foundation Renderer should use for presenting clear content. This
-// strategy has no impact for protected content, which must always use Direct
-// Composition.
-//
-// The strategy may be one of the following options:
-// 1.) Direct Composition: Media Foundation Renderer will use a Windowsless
-//     Swapchain to present directly to a Direct Composition surface.
-// 2.) Frame Server: Media Foundation Renderer will produce Video Frames that
-//     may be passed through the Chromium video frame rendering pipeline.
-// 3.) Dynamic: Media Foundation Renderer may freely switch between Direct
-//     Composition & Frame Server mode based on the current operating
-//     conditions.
-//
-// Command line invocation:
-// --enable-features=MediaFoundationClearRendering:strategy/direct-composition
-// --enable-features=MediaFoundationClearRendering:strategy/frame-server
-// --enable-features=MediaFoundationClearRendering:strategy/dynamic
-BASE_FEATURE(kMediaFoundationClearRendering, base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<MediaFoundationClearRenderingStrategy>::Option
-    kMediaFoundationClearRenderingStrategyOptions[] = {
-        {MediaFoundationClearRenderingStrategy::kDirectComposition,
-         "direct-composition"},
-        {MediaFoundationClearRenderingStrategy::kFrameServer, "frame-server"},
-        {MediaFoundationClearRenderingStrategy::kDynamic, "dynamic"}};
-
-const base::FeatureParam<MediaFoundationClearRenderingStrategy>
-    kMediaFoundationClearRenderingStrategyParam{
-        &kMediaFoundationClearRendering, "strategy",
-        MediaFoundationClearRenderingStrategy::kDynamic,
-        &kMediaFoundationClearRenderingStrategyOptions};
 
 BASE_FEATURE(kMediaFoundationBatchRead, base::FEATURE_DISABLED_BY_DEFAULT);
 

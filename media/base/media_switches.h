@@ -449,27 +449,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaFoundationFrameServerMode);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D11Vp9kSVCHWDecoding);
 
-// Strategy affecting how Media Foundation Renderer determines its rendering
-// mode when used with clear video media. This strategy does not impact
-// protected media which must always use Direct Composition mode.
-enum class MediaFoundationClearRenderingStrategy {
-  // The renderer will operate in Direct Composition mode (e.g. windowless
-  // swapchain).
-  kDirectComposition,
-  // The renderer will operate in Frame Server mode.
-  kFrameServer,
-  // The renderer is allowed to switch between Direct Composition & Frame Server
-  // mode at its discretion.
-  kDynamic,
-};
-
-// Under this feature, a given MediaFoundationClearRenderingStrategy param is
-// used by the Media Foundation Renderer for Clear content scenarios.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearRendering);
-MEDIA_EXPORT extern const base::FeatureParam<
-    MediaFoundationClearRenderingStrategy>
-    kMediaFoundationClearRenderingStrategyParam;
-
 // Enables the batch audio/video buffers reading for media playback.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationBatchRead);
 

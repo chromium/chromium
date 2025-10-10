@@ -23,13 +23,11 @@ namespace media {
 MediaFoundationRendererClientFactory::MediaFoundationRendererClientFactory(
     MediaLog* media_log,
     GetDCOMPTextureWrapperCB get_dcomp_texture_wrapper_cb,
-    ObserveOverlayStateCB observe_overlay_state_cb,
     std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
     mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
         media_foundation_renderer_notifier)
     : media_log_(media_log),
       get_dcomp_texture_wrapper_cb_(std::move(get_dcomp_texture_wrapper_cb)),
-      observe_overlay_state_cb_(std::move(observe_overlay_state_cb)),
       mojo_renderer_factory_(std::move(mojo_renderer_factory)),
       media_foundation_renderer_notifier_(
           std::move(media_foundation_renderer_notifier)) {
@@ -103,7 +101,7 @@ MediaFoundationRendererClientFactory::CreateRenderer(
       media_task_runner, media_log_->Clone(), std::move(mojo_renderer),
       std::move(renderer_extension_remote),
       std::move(client_extension_receiver), std::move(dcomp_texture_wrapper),
-      observe_overlay_state_cb_, video_renderer_sink,
+      video_renderer_sink,
       std::move(media_foundation_renderer_observer_remote));
 }
 

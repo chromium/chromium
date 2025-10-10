@@ -32,7 +32,6 @@
 #include "media/renderers/win/media_foundation_protection_manager.h"
 #include "media/renderers/win/media_foundation_renderer_extension.h"
 #include "media/renderers/win/media_foundation_source_wrapper.h"
-#include "media/renderers/win/media_foundation_texture_pool.h"
 
 namespace media {
 
@@ -91,7 +90,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   MediaFoundationRenderer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           std::unique_ptr<MediaLog> media_log,
                           LUID gpu_process_adapter_luid,
-                          bool force_dcomp_mode_for_testing = false);
+                          bool is_testing = false);
   MediaFoundationRenderer(const MediaFoundationRenderer&) = delete;
   MediaFoundationRenderer& operator=(const MediaFoundationRenderer&) = delete;
   ~MediaFoundationRenderer() override;
@@ -114,20 +113,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCB callback) override;
-  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
-  void RequestNextFrame() override;
-  void SetMediaFoundationRenderingMode(
-      MediaFoundationRenderingMode render_mode) override;
 
-  using FrameReturnCallback = base::RepeatingCallback<
-      void(const base::UnguessableToken&, const gfx::Size&, base::TimeDelta)>;
-  void SetFrameReturnCallbacks(
-      FrameReturnCallback frame_available_cb,
-      FramePoolInitializedCallback initialized_frame_pool_cb);
   void SetGpuProcessAdapterLuid(LUID gpu_process_adapter_luid);
-
-  // Testing verification
-  bool InFrameServerMode();
 
  private:
   HRESULT CreateMediaEngine(MediaResource* media_resource);
@@ -169,7 +156,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT SetSourceOnMediaEngine();
   HRESULT UpdateVideoStream(const gfx::Size rect_size);
   HRESULT PauseInternal();
-  HRESULT InitializeTexturePool(const gfx::Size& size);
   void OnVideoNaturalSizeChange();
 
   // Handles errors in MediaFoundationRenderer:
@@ -195,13 +181,10 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // handles between the two processes for Frame Server mode.
   LUID gpu_process_adapter_luid_;
 
-  // Once set, will force `mf_media_engine_` to use DirectComposition mode.
   // This is used for testing.
-  const bool force_dcomp_mode_for_testing_;
+  const bool is_testing_;
 
   raw_ptr<RendererClient> renderer_client_;
-  FrameReturnCallback frame_available_cb_;
-  FramePoolInitializedCallback initialized_frame_pool_cb_;
 
   Microsoft::WRL::ComPtr<IMFMediaEngine> mf_media_engine_;
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
@@ -247,15 +230,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>
       content_protection_manager_;
-
-  // Texture pool of ID3D11Texture2D for the media engine to draw video frames
-  // when the media engine is in frame server mode instead of Direct
-  // Composition mode.
-  MediaFoundationTexturePool texture_pool_;
-
-  // Rendering mode the Media Engine will use.
-  MediaFoundationRenderingMode rendering_mode_ =
-      MediaFoundationRenderingMode::DirectComposition;
 
   bool has_reported_playing_ = false;
   bool has_reported_significant_playback_ = false;

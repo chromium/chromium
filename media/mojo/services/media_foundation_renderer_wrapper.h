@@ -65,10 +65,6 @@ class MediaFoundationRendererWrapper final
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCallback callback) override;
-  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
-  void RequestNextFrame() override;
-  void SetMediaFoundationRenderingMode(
-      MediaFoundationRenderingMode mode) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
@@ -81,13 +77,6 @@ class MediaFoundationRendererWrapper final
   void OnDCOMPSurfaceHandleRegistered(
       GetDCOMPSurfaceCallback callback,
       const std::optional<base::UnguessableToken>& token);
-  void OnFrameGeneratedByMediaFoundation(
-      const base::UnguessableToken& frame_token,
-      const gfx::Size& frame_size,
-      base::TimeDelta frame_timestamp);
-  void OnFramePoolInitialized(
-      std::vector<MediaFoundationFrameInfo> frame_textures,
-      const gfx::Size& texture_size);
 
   raw_ptr<mojom::FrameInterfaceFactory, FlakyDanglingUntriaged>
       frame_interfaces_;

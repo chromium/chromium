@@ -153,11 +153,11 @@ MediaFoundationRenderer::MediaFoundationRenderer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<MediaLog> media_log,
     LUID gpu_process_adapter_luid,
-    bool force_dcomp_mode_for_testing)
+    bool is_testing)
     : task_runner_(std::move(task_runner)),
       media_log_(std::move(media_log)),
       gpu_process_adapter_luid_(gpu_process_adapter_luid),
-      force_dcomp_mode_for_testing_(force_dcomp_mode_for_testing) {
+      is_testing_(is_testing) {
   DVLOG_FUNC(1);
 }
 
@@ -204,34 +204,9 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
 
   renderer_client_ = client;
 
-  // Check the rendering strategy & whether we're operating on clear or
-  // protected content to determine the starting 'rendering_mode_'.
-  // If the Direct Composition strategy is specified or if we're operating on
-  // protected content then start in Direct Composition mode, else start in
-  // Frame Server mode. This behavior must match the logic in
-  // MediaFoundationRendererClient::Initialize.
-  auto rendering_strategy = kMediaFoundationClearRenderingStrategyParam.Get();
-  rendering_mode_ =
-      rendering_strategy ==
-              MediaFoundationClearRenderingStrategy::kDirectComposition
-          ? MediaFoundationRenderingMode::DirectComposition
-          : MediaFoundationRenderingMode::FrameServer;
-  for (DemuxerStream* stream : media_resource->GetAllStreams()) {
-    if (stream->type() == DemuxerStream::Type::VIDEO &&
-        stream->video_decoder_config().is_encrypted()) {
-      // This is protected content which only supports Direct Composition mode,
-      // update 'rendering_mode_' accordingly.
-      rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
-    }
-  }
-
-  // debug, force mode to dcomp
-  if (force_dcomp_mode_for_testing_) {
-    rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
-  }
-
+  // MediaFoundationRenderer now only support DirectComposition mode.
   MEDIA_LOG(INFO, media_log_)
-      << "Starting MediaFoundationRenderingMode: " << rendering_mode_;
+      << "Starting MediaFoundationRenderer: DirectComposition";
 
   HRESULT hr = CreateMediaEngine(media_resource);
   if (FAILED(hr)) {
@@ -324,29 +299,6 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     RETURN_IF_FAILED(creation_attributes->SetUnknown(
         MF_MEDIA_ENGINE_DXGI_MANAGER, dxgi_device_manager_.Get()));
 
-    // TODO(crbug.com/40808656): We'll investigate scenarios to see if we can
-    // use the on-screen video window size and not the native video size.
-    if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
-      gfx::Size max_video_size;
-      bool has_video = false;
-      for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
-        if (stream->type() == media::DemuxerStream::VIDEO) {
-          has_video = true;
-          gfx::Size video_size = stream->video_decoder_config().natural_size();
-          if (video_size.height() > max_video_size.height()) {
-            max_video_size.set_height(video_size.height());
-          }
-
-          if (video_size.width() > max_video_size.width()) {
-            max_video_size.set_width(video_size.width());
-          }
-        }
-      }
-
-      if (has_video) {
-        RETURN_IF_FAILED(InitializeTexturePool(max_video_size));
-      }
-    }
   }
 
   RETURN_IF_FAILED(
@@ -377,8 +329,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationSourceWrapper>(
       &mf_source_, media_resource, media_log_.get(), task_runner_));
 
-  if (force_dcomp_mode_for_testing_)
-    std::ignore = SetDCompModeInternal();
+  std::ignore = SetDCompModeInternal();
 
   if (!mf_source_->HasEncryptedStream()) {
     // Supports clear stream for testing.
@@ -606,57 +557,6 @@ void MediaFoundationRenderer::Flush(base::OnceClosure flush_cb) {
   std::move(flush_cb).Run();
 }
 
-void MediaFoundationRenderer::SetMediaFoundationRenderingMode(
-    MediaFoundationRenderingMode render_mode) {
-  ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
-  HRESULT hr = mf_media_engine_.As(&mf_media_engine_ex);
-
-  if (mf_media_engine_->HasVideo()) {
-    if (render_mode == MediaFoundationRenderingMode::FrameServer) {
-      // cannot change to frameserver if force_dcomp_mode_for_testing_ is true
-      DCHECK(!force_dcomp_mode_for_testing_);
-
-      // Make sure we reinitialize the texture pool
-      hr = InitializeTexturePool(native_video_size_);
-    } else if (render_mode == MediaFoundationRenderingMode::DirectComposition) {
-      // If needed renegotiate the DComp visual and send it to the client for
-      // presentation
-    } else {
-      DVLOG(1) << "Rendering mode: " << static_cast<int>(render_mode)
-               << " is unsupported";
-      MEDIA_LOG(ERROR, media_log_)
-          << "MediaFoundationRenderer SetMediaFoundationRenderingMode: "
-          << static_cast<int>(render_mode)
-          << " is not defined. No change to the rendering mode.";
-      hr = E_NOT_SET;
-    }
-
-    if (SUCCEEDED(hr)) {
-      hr = mf_media_engine_ex->EnableWindowlessSwapchainMode(
-          render_mode == MediaFoundationRenderingMode::DirectComposition);
-      if (SUCCEEDED(hr)) {
-        // Set the start time for the rendered video frame detection if for some
-        // reason EnableWindowlessSwapChainMode was set to 0 and back to 1
-        // during playback.
-        if (has_reported_playing_ == true &&
-            rendering_mode_ !=
-                MediaFoundationRenderingMode::DirectComposition &&
-            render_mode == MediaFoundationRenderingMode::DirectComposition) {
-          RestartRenderedVideoFrameDetectionTimerInNotReported();
-        }
-
-        rendering_mode_ = render_mode;
-        MEDIA_LOG(INFO, media_log_)
-            << "Set MediaFoundationRenderingMode: " << rendering_mode_;
-      }
-    }
-  }
-}
-
-bool MediaFoundationRenderer::InFrameServerMode() {
-  return rendering_mode_ == MediaFoundationRenderingMode::FrameServer;
-}
-
 void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   double current_time = time.InSecondsF();
   DVLOG_FUNC(2) << "current_time=" << current_time;
@@ -797,26 +697,6 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
   std::move(callback).Run(true);
 }
 
-HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
-  DXGIDeviceScopedHandle dxgi_device_handle(dxgi_device_manager_.Get());
-  ComPtr<ID3D11Device> d3d11_device = dxgi_device_handle.GetDevice();
-
-  if (d3d11_device.Get() == nullptr) {
-    return E_UNEXPECTED;
-  }
-
-  // TODO(crbug.com/40808656): change |size| to instead use the required
-  // size of the output (for example if the video is only 1280x720 instead
-  // of a source frame of 1920x1080 we'd use the 1280x720 texture size).
-  // However we also need to investigate the scenario of WebGL and 360 video
-  // where they need the original frame size instead of the window size due
-  // to later image processing.
-  RETURN_IF_FAILED(texture_pool_.Initialize(d3d11_device.Get(),
-                                            initialized_frame_pool_cb_, size));
-
-  return S_OK;
-}
-
 HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
   if (current_video_rect_size_ == rect_size) {
     return S_OK;
@@ -841,9 +721,6 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
   // Set the start time for the rendered video frame detection.
   RestartRenderedVideoFrameDetectionTimerInNotReported();
 
-  if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
-    RETURN_IF_FAILED(InitializeTexturePool(native_video_size_));
-  }
   return S_OK;
 }
 
@@ -1036,13 +913,6 @@ void MediaFoundationRenderer::SetVolume(float volume) {
   DVLOG_IF(1, FAILED(hr)) << "Failed to set volume: " << PrintHr(hr);
 }
 
-void MediaFoundationRenderer::SetFrameReturnCallbacks(
-    FrameReturnCallback frame_available_cb,
-    FramePoolInitializedCallback initialized_frame_pool_cb) {
-  frame_available_cb_ = std::move(frame_available_cb);
-  initialized_frame_pool_cb_ = std::move(initialized_frame_pool_cb);
-}
-
 void MediaFoundationRenderer::SetGpuProcessAdapterLuid(
     LUID gpu_process_adapter_luid) {
   // TODO(wicarr, crbug.com/1342621): When the GPU adapter changes or the GPU
@@ -1137,9 +1007,6 @@ void MediaFoundationRenderer::OnPlaying() {
   OnBufferingStateChange(
       BufferingState::BUFFERING_HAVE_ENOUGH,
       BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
-
-  // Earliest time to request first frame to screen
-  RequestNextFrame();
 
   // The OnPlaying callback from MediaEngineNotifyImpl lets us know that an
   // MF_MEDIA_ENGINE_EVENT_PLAYING message has been received. At this point we
@@ -1247,16 +1114,12 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
   }
 
   // TODO(frankli): Let test code to call `UpdateVideoStream()`.
-  if (force_dcomp_mode_for_testing_) {
+  if (is_testing_) {
     const gfx::Size test_size(/*width=*/640, /*height=*/320);
     // This invokes IMFMediaEngineEx::UpdateVideoStream() for video frames to
     // be presented. Otherwise, the Media Foundation video renderer will not
     // request video samples from our source.
     std::ignore = UpdateVideoStream(test_size);
-  }
-
-  if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
-    InitializeTexturePool(native_video_size_);
   }
 
   renderer_client_->OnVideoNaturalSizeChange(native_video_size_);
@@ -1324,67 +1187,6 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
     std::move(status_cb).Run(new_status);
   else
     renderer_client_->OnError(new_status);
-}
-
-void MediaFoundationRenderer::RequestNextFrame() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (rendering_mode_ != MediaFoundationRenderingMode::FrameServer) {
-    return;
-  }
-
-  LONGLONG presentation_timestamp_in_hns = 0;
-  // OnVideoStreamTick can return S_FALSE if there is no frame available.
-  if (dxgi_device_manager_ == nullptr ||
-      mf_media_engine_->OnVideoStreamTick(&presentation_timestamp_in_hns) !=
-          S_OK) {
-    return;
-  }
-
-  if (native_video_size_.IsEmpty()) {
-    MEDIA_LOG(WARNING, media_log_)
-        << "RequestNextFrame ignores empty native_video_size_";
-    return;
-  }
-
-  // TODO(crbug.com/40808656): Change the |native_video_size_| to get the
-  // correct output video size as determined by the output texture requirements.
-  gfx::Size video_size = native_video_size_;
-
-  base::UnguessableToken frame_token;
-  auto d3d11_video_frame = texture_pool_.AcquireTexture(&frame_token);
-  if (d3d11_video_frame.Get() == nullptr)
-    return;
-
-  RECT destination_frame_size = {0, 0, video_size.width(), video_size.height()};
-
-  ComPtr<IDXGIKeyedMutex> texture_mutex;
-  d3d11_video_frame.As(&texture_mutex);
-
-  if (texture_mutex->AcquireSync(0, INFINITE) != S_OK) {
-    texture_pool_.ReleaseTexture(frame_token);
-    return;
-  }
-
-  if (FAILED(mf_media_engine_->TransferVideoFrame(
-          d3d11_video_frame.Get(), nullptr, &destination_frame_size,
-          nullptr))) {
-    texture_mutex->ReleaseSync(0);
-    texture_pool_.ReleaseTexture(frame_token);
-    return;
-  }
-  texture_mutex->ReleaseSync(0);
-
-// Need access to GetCurrentTime on the Media Engine.
-#undef GetCurrentTime
-  auto frame_timestamp = base::Seconds(mf_media_engine_->GetCurrentTime());
-// Restore previous definition
-#define GetCurrentTime() GetTickCount()
-  frame_available_cb_.Run(frame_token, video_size, frame_timestamp);
-}
-
-void MediaFoundationRenderer::NotifyFrameReleased(
-    const base::UnguessableToken& frame_token) {
-  texture_pool_.ReleaseTexture(frame_token);
 }
 
 }  // namespace media
