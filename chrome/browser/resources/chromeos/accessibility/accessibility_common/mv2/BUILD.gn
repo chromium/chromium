@@ -229,7 +229,6 @@ source_set("browser_tests") {
 
   deps = [
     ":accessibility_common_extjs_tests",
-    ":facegaze_test_files",
     ":pumpkin_test_files",
   ]
 
@@ -263,11 +262,6 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/macros/dictation_macros_test.js",
     "dictation/parse/dictation_parse_test.js",
     "dictation/parse/dictation_pumpkin_parse_test.js",
-    "facegaze/facegaze_mediapipe_test.js",
-    "facegaze/facegaze_test.js",
-    "facegaze/facegaze_test_base.js",
-    "facegaze/metrics_utils_test.js",
-    "facegaze/scroll_mode_controller_test.js",
     "magnifier/magnifier_test.js",
   ]
 
@@ -322,27 +316,6 @@ action("pumpkin_test_files") {
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/pumpkin",
     rebase_path("../../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
-    string_join(",", files_to_extract),
-    out_dir,
-  ]
-  outputs = files_to_extract
-}
-
-# Extracts the FaceLandmarker model and WASM for testing purposes.
-action("facegaze_test_files") {
-  testonly = true
-  script = "../../tools/unpack_tar_archive.py"
-  sources = [ "../../common/testing/fake_facegaze_assets_dlc.tar.xz" ]
-  out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision/"
-  files_to_extract = [
-    "$out_dir" + "face_landmarker.task",
-    "$out_dir" + "vision_wasm_internal.wasm",
-  ]
-
-  args = [
-    "--dest-dir=resources/chromeos/accessibility/accessibility_common/mv2/third_party/mediapipe_task_vision",
-    rebase_path("../../common/testing/fake_facegaze_assets_dlc.tar.xz",
-                root_build_dir),
     string_join(",", files_to_extract),
     out_dir,
   ]

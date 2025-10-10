@@ -34,16 +34,10 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 namespace {
 
 const char* kDefaultDisplaySize = "1200x800";
-constexpr char kMediapipeMV2TestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/mv2/third_party/"
-    "mediapipe_task_vision";
 constexpr char kMediapipeMV3TestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
     "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
-constexpr char kTestSupportMV2Path[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/"
-    "facegaze/facegaze_test_support.js";
 constexpr char kTestSupportMV3Path[] =
     "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
     "facegaze/facegaze_test_support.js";
@@ -286,40 +280,25 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
       prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
       config.dialog_accepted());
 
-  const bool v3_manifest =
-      ::features::IsAccessibilityManifestV3EnabledForAccessibilityCommon();
-  FaceGazeTestUtils::SetUpMediapipeDir(v3_manifest ? kMediapipeMV3TestFilePath
-                                                   : kMediapipeMV2TestFilePath);
+  FaceGazeTestUtils::SetUpMediapipeDir(kMediapipeMV3TestFilePath);
   ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());
-
-  // Use ExtensionHostTestHelper to detect when the accessibility common
-  // extension loads.
-  extensions::ExtensionHostTestHelper host_helper(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kAccessibilityCommonExtensionId);
   // Watch events from an MV3 extension which runs in a service worker.
   extensions::ExtensionRegistryTestHelper observer(
       extension_misc::kAccessibilityCommonExtensionId,
       AccessibilityManager::Get()->profile());
   AccessibilityManager::Get()->EnableFaceGaze(true);
-  if (observer.WaitForManifestVersion() == 3) {
-    observer.WaitForServiceWorkerStart();
-  } else {
-    host_helper.WaitForHostCompletedFirstLoad();
-  }
+  observer.WaitForServiceWorkerStart();
 
   WaitForJSReady();
-  SetUpJSTestSupport(v3_manifest ? kTestSupportMV3Path : kTestSupportMV2Path);
+  SetUpJSTestSupport(kTestSupportMV3Path);
   if (config.dialog_accepted()) {
     // The FaceLandmarker will be automatically initialized after the dialog has
     // been accepted.
     WaitForFaceLandmarker();
-    if (v3_manifest) {
-      // There can be issues during teardown of the webcam stack in manifest
-      // v3. Since the webcam is not actually used during these tests, we
-      // preemptively turn it off.
-      StopWebCam();
-    }
+    // There can be issues during teardown of the webcam stack in manifest
+    // v3. Since the webcam is not actually used during these tests, we
+    // preemptively turn it off.
+    StopWebCam();
   }
 
   CancelMouseControllerInterval();
