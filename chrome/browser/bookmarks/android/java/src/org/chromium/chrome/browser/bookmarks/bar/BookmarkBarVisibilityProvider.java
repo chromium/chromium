@@ -52,9 +52,10 @@ public class BookmarkBarVisibilityProvider {
          * Called when the max width of a bookmark in the Bookmark Bar changes based on the
          * configuration of the device.
          *
+         * @param minWidth The new (now current) min width of a bookmark in the Bookmark Bar.
          * @param maxWidth The new (now current) max width of a bookmark in the Bookmark Bar.
          */
-        default void onMaxWidthChanged(int maxWidth) {}
+        default void onItemWidthConstraintsChanged(int minWidth, int maxWidth) {}
     }
 
     private final Activity mActivity;
@@ -142,10 +143,12 @@ public class BookmarkBarVisibilityProvider {
     }
 
     private void processConfigurationChange(Configuration configuration) {
+        int minWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width);
         int maxWidth =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
         for (BookmarkBarVisibilityObserver observer : mObservers) {
-            observer.onMaxWidthChanged(maxWidth);
+            observer.onItemWidthConstraintsChanged(minWidth, maxWidth);
         }
 
         // Configuration changes can also result in visibility changes (e.g. window size change).

@@ -115,26 +115,26 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
         verify(mObserver, never()).onVisibilityChanged(anyBoolean());
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
         // Case: Construct w/ feature disallowed and setting enabled.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
         verify(mObserver, never()).onVisibilityChanged(anyBoolean());
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
         // Case: Construct w/ feature allowed and setting disabled.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
@@ -142,26 +142,26 @@ public class BookmarkBarVisibilityProviderTest {
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
         verify(mObserver, never()).onVisibilityChanged(anyBoolean());
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
         // Case: Construct w/ feature allowed and setting enabled.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
         verify(mObserver, times(1)).onVisibilityChanged(true);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
         verify(mObserver, never()).onVisibilityChanged(anyBoolean());
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
     }
 
     @Test
@@ -177,14 +177,14 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, times(1)).onMaxWidthChanged(12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
         clearInvocations(mObserver);
 
         // Case: Configuration changed to allow feature.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(true);
-        verify(mObserver, times(1)).onMaxWidthChanged(12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
 
         // Clean up.
         provider.destroy();
@@ -203,14 +203,14 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         mSettingObserverCache.stream().forEach(PrefObserver::onPreferenceChange);
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Case: Preference changed to enable setting.
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         mSettingObserverCache.stream().forEach(PrefObserver::onPreferenceChange);
         verify(mObserver, times(1)).onVisibilityChanged(true);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
         // Clean up.
         provider.destroy();
@@ -229,14 +229,14 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         mProfileSupplier.set(null);
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
         // Case: Profile changed from `null`
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         mProfileSupplier.set(mProfile);
         verify(mObserver, times(1)).onVisibilityChanged(true);
-        verify(mObserver, never()).onMaxWidthChanged(anyInt());
+        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
 
         // Clean up.
         provider.destroy();

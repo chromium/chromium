@@ -208,6 +208,7 @@ found in the LICENSE file.
     <dimen name="bookmark_bar_button_icon_size">24dp</dimen>
     <dimen name="bookmark_bar_divider_height">20dp</dimen>
     <dimen name="bookmark_bar_divider_width">2dp</dimen>
+    <dimen name="bookmark_bar_item_min_width">84dp</dimen>
     <dimen name="bookmark_bar_item_max_width">124dp</dimen>
     <dimen name="bookmark_bar_item_spacing">4dp</dimen>
     <dimen name="bookmark_bar_padding">8dp</dimen>

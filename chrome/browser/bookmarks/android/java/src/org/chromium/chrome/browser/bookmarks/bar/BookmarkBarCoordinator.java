@@ -216,7 +216,8 @@ public class BookmarkBarCoordinator
                 mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_items_container);
         itemsContainer.setAdapter(mItemsAdapter);
         mBookmarkBarItemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
-        mBookmarkBarItemsLayoutManager.setItemMaxWidth(
+        mBookmarkBarItemsLayoutManager.setItemWidthConstraints(
+                activity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width),
                 activity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width));
         itemsContainer.setLayoutManager(mBookmarkBarItemsLayoutManager);
 
@@ -446,8 +447,8 @@ public class BookmarkBarCoordinator
     // BookmarkBarVisibilityObserver implementation:
 
     @Override
-    public void onMaxWidthChanged(int maxWidth) {
-        mBookmarkBarItemsLayoutManager.setItemMaxWidth(maxWidth);
+    public void onItemWidthConstraintsChanged(int minWidth, int maxWidth) {
+        mBookmarkBarItemsLayoutManager.setItemWidthConstraints(minWidth, maxWidth);
         mMediator.dismissPopupMenu();
     }
 
