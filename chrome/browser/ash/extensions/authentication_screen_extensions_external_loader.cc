@@ -64,17 +64,18 @@ bool IsLockScreenTakingOver() {
 AuthenticationScreenExtensionsExternalLoader::
     AuthenticationScreenExtensionsExternalLoader(Profile* profile)
     : profile_(profile),
-      // TODO(crbug.com/447583060): Separate cache for lock screen.
-      external_cache_(
-          base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_EXTENSIONS),
-          g_browser_process->shared_url_loader_factory(),
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-          this,
-          /*always_check_updates=*/true,
-          /*wait_for_cache_initialization=*/false,
-          /*allow_scheduled_updates=*/false) {
+      external_cache_(base::PathService::CheckedGet(
+                          ash::IsLockScreenBrowserContext(profile)
+                              ? ash::DIR_LOCK_PROFILE_EXTENSIONS
+                              : ash::DIR_SIGNIN_PROFILE_EXTENSIONS),
+                      g_browser_process->shared_url_loader_factory(),
+                      base::ThreadPool::CreateSequencedTaskRunner(
+                          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+                      this,
+                      /*always_check_updates=*/true,
+                      /*wait_for_cache_initialization=*/false,
+                      /*allow_scheduled_updates=*/false) {
   DCHECK(ash::IsSigninBrowserContext(profile) ||
          (chromeos::features::IsLockScreenBadgeAuthEnabled() &&
           ash::IsLockScreenBrowserContext(profile)));

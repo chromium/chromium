@@ -73,6 +73,9 @@ const base::FilePath::CharType kDevicePolicyScreensaverDataDir[] =
 const base::FilePath::CharType kDeviceLocalAccountIwaCacheDir[] =
     FILE_PATH_LITERAL("/var/cache/device_local_account_iwa");
 
+const base::FilePath::CharType kLockProfileExtensionsDir[] =
+    FILE_PATH_LITERAL("/var/cache/lock_profile_extensions");
+
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 const base::FilePath::CharType kCryptohomeMountRoot[] =
     FILE_PATH_LITERAL("/home/user");
@@ -168,6 +171,10 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     }
 
+    case DIR_LOCK_PROFILE_EXTENSIONS:
+      *result = base::FilePath(kLockProfileExtensionsDir);
+      break;
+
     default:
       return false;
   }
@@ -215,6 +222,9 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir) {
   base::PathService::Override(
       DIR_DEVICE_POLICY_SCREENSAVER_DATA,
       parent.AppendASCII("stub_device_policy_screensaver_data"));
+  base::PathService::Override(
+      DIR_LOCK_PROFILE_EXTENSIONS,
+      parent.AppendASCII("stub_lock_profile_extensions"));
 }
 
 }  // namespace ash

@@ -75,6 +75,9 @@ enum {
                                        // wallpapers reside.
   DIR_CUSTOM_WALLPAPERS,               // Directory where custom wallpapers
                                        // reside.
+  DIR_LOCK_PROFILE_EXTENSIONS,  // Directory under which a cache of
+                                // force-installed extensions is maintained for
+                                // the lock screen profile.
 
   PATH_END
 };
