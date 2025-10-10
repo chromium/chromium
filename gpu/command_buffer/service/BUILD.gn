@@ -655,8 +655,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_backing.h",
       "shared_image/dxgi_swap_chain_image_representation.cc",
       "shared_image/dxgi_swap_chain_image_representation.h",
-      "shared_image/gpu_memory_buffer_factory_dxgi.cc",
-      "shared_image/gpu_memory_buffer_factory_dxgi.h",
     ]
     libs = [
       "d3d11.lib",

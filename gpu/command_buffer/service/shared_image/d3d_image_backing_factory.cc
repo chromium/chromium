@@ -13,6 +13,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -20,7 +21,6 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
@@ -39,6 +39,90 @@
 namespace gpu {
 
 namespace {
+
+class GpuMemoryBufferFactoryDXGI {
+ public:
+  GpuMemoryBufferFactoryDXGI() { DETACH_FROM_THREAD(thread_checker_); }
+  ~GpuMemoryBufferFactoryDXGI() = default;
+
+  GpuMemoryBufferFactoryDXGI(const GpuMemoryBufferFactoryDXGI&) = delete;
+  GpuMemoryBufferFactoryDXGI& operator=(const GpuMemoryBufferFactoryDXGI&) =
+      delete;
+
+  // TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
+  // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
+  Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
+      // Reset device if it was removed.
+      d3d11_device_ = nullptr;
+      // Use same adapter as ANGLE device.
+      auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+      if (!angle_d3d11_device) {
+        DLOG(ERROR) << "Failed to get ANGLE D3D11 device";
+        return nullptr;
+      }
+
+      Microsoft::WRL::ComPtr<IDXGIDevice> angle_dxgi_device;
+      HRESULT hr = angle_d3d11_device.As(&angle_dxgi_device);
+      CHECK(SUCCEEDED(hr));
+
+      Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter = nullptr;
+      hr = FAILED(angle_dxgi_device->GetAdapter(&dxgi_adapter));
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "GetAdapter failed with error 0x" << std::hex << hr;
+        return nullptr;
+      }
+
+      // If adapter is not null, driver type must be D3D_DRIVER_TYPE_UNKNOWN
+      // otherwise D3D11CreateDevice will return E_INVALIDARG.
+      // See
+      // https://docs.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-d3d11createdevice#return-value
+      const D3D_DRIVER_TYPE driver_type =
+          dxgi_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE;
+
+      // It's ok to use D3D11_CREATE_DEVICE_SINGLETHREADED because this device
+      // is only ever used on the IO thread (verified by |thread_checker_|).
+      const UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
+
+      // Using D3D_FEATURE_LEVEL_11_1 is ok since we only support D3D11 when the
+      // platform update containing DXGI 1.2 is present on Win7.
+      const D3D_FEATURE_LEVEL feature_levels[] = {
+          D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0,
+          D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0,
+          D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
+          D3D_FEATURE_LEVEL_9_1};
+
+      hr = D3D11CreateDevice(dxgi_adapter.Get(), driver_type,
+                             /*Software=*/nullptr, flags, feature_levels,
+                             std::size(feature_levels), D3D11_SDK_VERSION,
+                             &d3d11_device_, /*pFeatureLevel=*/nullptr,
+                             /*ppImmediateContext=*/nullptr);
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "D3D11CreateDevice failed with error 0x" << std::hex
+                    << hr;
+        return nullptr;
+      }
+
+      const char* kDebugName = "GPUIPC_GpuMemoryBufferFactoryDXGI";
+      d3d11_device_->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                    strlen(kDebugName), kDebugName);
+    }
+    DCHECK(d3d11_device_);
+    return d3d11_device_;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture() {
+    return staging_texture_;
+  }
+
+ private:
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_
+      GUARDED_BY_CONTEXT(thread_checker_);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+  THREAD_CHECKER(thread_checker_);
+};
 
 GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI() {
   static auto* factory = new GpuMemoryBufferFactoryDXGI();
