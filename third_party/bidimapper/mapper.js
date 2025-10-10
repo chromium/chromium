@@ -3990,6 +3990,7 @@
                     params.userContext;
                 await this.#browserCdpClient.sendCommand('Browser.setPermission', {
                     origin: params.origin,
+                    embeddedOrigin: params.embeddedOrigin,
                     browserContextId: userContextId && userContextId !== 'default'
                         ? userContextId
                         : undefined,
