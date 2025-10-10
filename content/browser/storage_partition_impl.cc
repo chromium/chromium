@@ -2252,6 +2252,9 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
           // Get the document that initiated the navigation. Can be nullptr if
           // the initiator has gone away, in which case we should just block the
           // navigation.
+          //
+          // TODO(crbug.com/450007796): Figure out why this sometimes returns
+          // the parent frame instead of the iframe that is being navigated.
           RenderFrameHost* initiating_rfh =
               request->GetInitiatorFrameToken().has_value()
                   ? RenderFrameHost::FromFrameToken(
@@ -2259,11 +2262,13 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
                             request->GetInitiatorProcessId(),
                             request->GetInitiatorFrameToken().value()))
                   : nullptr;
-          // We additionally check that the initiator is a frame ancestor of the
-          // frame that is navigating, so that we don't try to pop up a
-          // permission prompt on a different tab/window than the one where the
-          // navigation is occurring.
-          RenderFrameHostImpl* current_frame = request->GetParentFrame();
+
+          // We additionally check that the initiator is the current frame or a
+          // frame ancestor of the frame that is navigating, so that we don't
+          // try to pop up a permission prompt on a different tab/window than
+          // the one where the navigation is occurring.
+          RenderFrameHostImpl* current_frame =
+              request->frame_tree_node()->current_frame_host();
           while (current_frame) {
             if (current_frame == initiating_rfh) {
               rfh = initiating_rfh;
