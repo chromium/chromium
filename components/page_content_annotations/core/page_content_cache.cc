@@ -144,22 +144,35 @@ void PageContentCache::CachePageContent(
   store_.AsyncCall(&optimization_guide::PageContentStore::AddPageContent)
       .WithArgs(url, page_context, visit_timestamp, extraction_timestamp,
                 std::make_optional(tab_id))
-      .Then(base::BindOnce([](bool success) {
-        base::UmaHistogramBoolean(
-            "OptimizationGuide.PageContentCache.AddPageContentResult", success);
-      }));
+      .Then(base::BindOnce(
+          [](base::WeakPtr<PageContentCache> cache, int64_t tab_id,
+             bool success) {
+            base::UmaHistogramBoolean(
+                "OptimizationGuide.PageContentCache.AddPageContentResult",
+                success);
+            if (cache && success) {
+              cache->observers_.Notify(&Observer::OnCachePopulated, tab_id);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), tab_id));
 }
 
 void PageContentCache::RemovePageContentForTab(int64_t tab_id) {
   store_
       .AsyncCall(&optimization_guide::PageContentStore::DeletePageContentForTab)
       .WithArgs(tab_id)
-      .Then(base::BindOnce([](bool success) {
-        base::UmaHistogramBoolean(
-            "OptimizationGuide.PageContentCache."
-            "RemovePageContentForTabResult",
-            success);
-      }));
+      .Then(base::BindOnce(
+          [](base::WeakPtr<PageContentCache> cache, int64_t tab_id,
+             bool success) {
+            base::UmaHistogramBoolean(
+                "OptimizationGuide.PageContentCache."
+                "RemovePageContentForTabResult",
+                success);
+            if (cache && success) {
+              cache->observers_.Notify(&Observer::OnCacheRemoved, tab_id);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), tab_id));
 }
 
 void PageContentCache::OnOsCryptAsyncReady(
@@ -168,6 +181,14 @@ void PageContentCache::OnOsCryptAsyncReady(
       .WithArgs(std::move(encryptor))
       .Then(base::BindOnce(&PageContentCache::OnStoreInitialized,
                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PageContentCache::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PageContentCache::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void PageContentCache::OnStoreInitialized() {

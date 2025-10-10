@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -28,6 +29,15 @@ namespace page_content_annotations {
 // Caches page content annotations and provides methods to interact with the
 // underlying store. All database operations are done on a background thread.
 class PageContentCache {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the content for `tab_id` has been added to the cache.
+    virtual void OnCachePopulated(int64_t tab_id) {}
+    // Called when the content for `tab_id` has been removed from the cache.
+    virtual void OnCacheRemoved(int64_t tab_id) {}
+  };
+
  public:
   PageContentCache(os_crypt_async::OSCryptAsync* os_crypt_async,
                    const base::FilePath& profile_dir);
@@ -61,6 +71,9 @@ class PageContentCache {
   // stored for the tab.
   void RemovePageContentForTab(int64_t tab_id);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   void OnOsCryptAsyncReady(os_crypt_async::Encryptor encryptor);
   void OnCacheSizeCalculated(std::set<int64_t> eligible_tab_ids,
@@ -82,6 +95,8 @@ class PageContentCache {
   std::vector<base::OnceClosure> pending_tasks_;
 
   base::SequenceBound<optimization_guide::PageContentStore> store_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<PageContentCache> weak_ptr_factory_{this};
 };

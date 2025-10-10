@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
@@ -18,6 +19,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -169,7 +171,9 @@ void AnnotatedPageContentRequest::DidStopLoading() {
   }
 
   if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType ||
-      web_contents_->GetVisibility() == content::Visibility::HIDDEN) {
+      web_contents_->GetVisibility() == content::Visibility::HIDDEN ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPageContentAnnotationsSkipFCPWaitForTesting)) {
     // Pdfs and hidden tabs don't provide a reliable FirstContentfulPaint
     // signal, so skip waiting for it for these Documents.
     waiting_for_fcp_ = false;
