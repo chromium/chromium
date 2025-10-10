@@ -60,6 +60,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final CipherFactory mCipherFactory;
 
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private TabCreatorManager mTabCreatorManager;
 
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     // ChromeTabbedActivity.
@@ -125,6 +126,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
+        mTabCreatorManager = tabCreatorManager;
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -248,7 +250,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             mTabStateStore =
                     new TabStateStore(
                             TabStateStorageServiceFactory.getForProfile(profile),
-                            mTabModelSelector);
+                            mTabModelSelector,
+                            mTabCreatorManager);
         }
     }
 

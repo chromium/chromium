@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.LoadedTabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -32,6 +33,7 @@ public class TabStateStore {
     private static final String TAG = "TabStateStore";
 
     private final TabStateStorageService mTabStateStorageService;
+    private final TabCreatorManager mTabCreatorManager;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
     private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
@@ -71,10 +73,14 @@ public class TabStateStore {
     /**
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in.
+     * @param tabCreatorManager Used to create new tabs on initial load.
      */
     public TabStateStore(
-            TabStateStorageService tabStateStorageService, TabModelSelector tabModelSelector) {
+            TabStateStorageService tabStateStorageService,
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager) {
         mTabStateStorageService = tabStateStorageService;
+        mTabCreatorManager = tabCreatorManager;
         mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(tabModelSelector);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
                 new InnerRegistrationObserver());
@@ -167,8 +173,11 @@ public class TabStateStore {
                     contentsState.getDisplayTitleFromState(),
                     contentsState.buffer().limit());
 
-            // TODO(https://crbug.com/448150631): Create a tab.
-            loadedTabStates[i].onTabCreationCallback.onResult(null);
+            Tab tab =
+                    mTabCreatorManager
+                            .getTabCreator(/* incognito= */ false)
+                            .createFrozenTab(tabState, loadedTabStates[i].tabId, i);
+            loadedTabStates[i].onTabCreationCallback.onResult(tab);
         }
     }
 }
