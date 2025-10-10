@@ -611,7 +611,8 @@ void AddSuggestionContentToView(
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty() ||
-      (suggestion.type == SuggestionType::kCreditCardEntry &&
+      ((suggestion.type == SuggestionType::kCreditCardEntry ||
+        suggestion.type == SuggestionType::kVirtualCreditCardEntry) &&
        base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableNewFopDisplayDesktop))) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
