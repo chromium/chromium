@@ -1562,9 +1562,17 @@ WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
       continue;
     }
 
-    const GURL scope = GetAppScope(app_id);
-    if (base::StartsWith(url.spec(), scope.spec(),
-                         base::CompareCase::SENSITIVE)) {
+    bool in_scope = false;
+    if (base::FeatureList::IsEnabled(
+            features::kPwaNavigationCapturingWithScopeExtensions)) {
+      in_scope = IsUrlInAppExtendedScope(url, app_id);
+    } else {
+      const GURL scope = GetAppScope(app_id);
+      in_scope = base::StartsWith(url.spec(), scope.spec(),
+                                  base::CompareCase::SENSITIVE);
+    }
+
+    if (in_scope) {
       all_controlling_apps.insert_or_assign(app_id, GetAppShortName(app_id));
     }
   }

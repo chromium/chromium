@@ -1518,6 +1518,41 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
                           Pair(outer_app_id, "ABC_Outer")));
 }
 
+TEST_F(WebAppRegistrarTest, GetAllAppsControllingUrl_ScopeExtensions) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPwaNavigationCapturingWithScopeExtensions);
+
+  StartWebAppProvider();
+
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/start"));
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info->scope = GURL("https://example.com/app/");
+  web_app_info->validated_scope_extensions = {
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://example.org")))};
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info));
+
+  const GURL url_in_scope("https://example.com/app/page.html");
+  const GURL url_in_extension("https://example.org/page.html");
+  const GURL url_outside("https://example.net/page.html");
+
+  auto controlling_apps_in_scope =
+      registrar().GetAllAppsControllingUrl(url_in_scope);
+  EXPECT_EQ(1u, controlling_apps_in_scope.size());
+  EXPECT_EQ(app_id, controlling_apps_in_scope.begin()->first);
+
+  auto controlling_apps_in_extension =
+      registrar().GetAllAppsControllingUrl(url_in_extension);
+  EXPECT_EQ(1u, controlling_apps_in_extension.size());
+  EXPECT_EQ(app_id, controlling_apps_in_extension.begin()->first);
+
+  auto controlling_apps_outside =
+      registrar().GetAllAppsControllingUrl(url_outside);
+  EXPECT_TRUE(controlling_apps_outside.empty());
+}
+
 TEST_F(WebAppRegistrarTest, GetTrustedIconsIfPopulatedSingleNoSize) {
   StartWebAppProvider();
   auto web_app = test::CreateWebApp(GURL("https://abc.com"),
