@@ -68,6 +68,7 @@ class AddressBubblesController
   AutofillBubbleBase* GetBubbleView() const override;
 
   // BubbleControllerBase:
+  void OnBubbleDiscarded() override {}
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 

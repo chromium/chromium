@@ -534,6 +534,10 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
                               chrome::kPaymentsSubPage);
 }
 
+void SaveCardBubbleControllerImpl::OnBubbleDiscarded() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
 void SaveCardBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
   autofill_metrics::LegacySaveCardPromptResult legacy_metric =

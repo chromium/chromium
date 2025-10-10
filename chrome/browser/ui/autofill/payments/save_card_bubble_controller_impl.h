@@ -159,6 +159,7 @@ class SaveCardBubbleControllerImpl
   int GetSaveSuccessAnimationStringId() const override;
 
   // BubbleControllerBase:
+  void OnBubbleDiscarded() override;
   bool CanBeReshown() const override;
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;

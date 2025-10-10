@@ -345,6 +345,10 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
   }
 }
 
+void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleDiscarded() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
 std::optional<PageActionIconType>
 SaveOrUpdateAutofillAiDataControllerImpl::GetPageActionIconType() {
   return std::nullopt;

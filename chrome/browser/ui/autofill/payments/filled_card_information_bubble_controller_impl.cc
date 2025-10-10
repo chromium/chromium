@@ -229,6 +229,10 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
       /*navigation_handle_callback=*/{});
 }
 
+void FilledCardInformationBubbleControllerImpl::OnBubbleDiscarded() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
 void FilledCardInformationBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
   // Log bubble result according to the closed reason.

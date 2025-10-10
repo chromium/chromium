@@ -208,6 +208,10 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 #endif
 }
 
+void VirtualCardEnrollBubbleControllerImpl::OnBubbleDiscarded() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
 void VirtualCardEnrollBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
   auto get_metric = [](PaymentsUiClosedReason reason) {

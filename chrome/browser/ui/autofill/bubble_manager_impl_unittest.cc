@@ -92,6 +92,7 @@ class MockBubbleController : public BubbleControllerBase {
 
   MOCK_METHOD(void, ShowBubble, (), (override));
   MOCK_METHOD(void, HideBubble, (), (override));
+  MOCK_METHOD(void, OnBubbleDiscarded, (), (override));
   MOCK_METHOD(bool, CanBeReshown, (), (const, override));
   MOCK_METHOD(BubbleType, GetBubbleType, (), (const, override));
   MOCK_METHOD(bool, IsShowingBubble, (), (const, override));
@@ -144,6 +145,8 @@ class BubbleManagerImplTest : public ::testing::Test {
   FakeTabInterface* tab_interface() const { return tab_interface_.get(); }
 
   TestingProfile* profile() { return &profile_; }
+
+  void ResetBubbleManager() { bubble_manager_.reset(); }
 
   base::HistogramTester histogram_tester_;
 
@@ -384,6 +387,10 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
                                          /*force_show=*/false);
 
   FastForwardBy(base::Seconds(3601));
+
+  // When adding `address_controller_2`, the manager should see that
+  // `address_controller_1` has timed out and call the new method.
+  EXPECT_CALL(*address_controller_1, OnBubbleDiscarded());
   bubble_manager().RequestShowController(*address_controller_2,
                                          /*force_show=*/false);
 
@@ -546,6 +553,7 @@ TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_TimedOut) {
   // Hiding the current bubble will trigger processing the pending bubbles.
   // The address bubble should be timed out and not shown.
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
+  EXPECT_CALL(*address_controller, OnBubbleDiscarded());
   bubble_manager().OnBubbleHiddenByController(*password_controller);
 
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.TimedOut",
@@ -759,6 +767,35 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_LogsTimeInQueue) {
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.Bubble.Queue.TimeInQueue.SaveUpdateAddress", base::Seconds(5),
       1);
+}
+
+// Test that on bubble manager destruction, pending bubbles are timed out.
+TEST_F(BubbleManagerImplTest,
+       BubbleManagerDestruction_PendingBubbleIsTimedOut) {
+  // Create a high-priority controller to occupy the active slot.
+  std::unique_ptr<MockBubbleController> password_controller =
+      CreateController(BubbleType::kPassword);
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  // Show the high-priority bubble. It becomes the active one.
+  EXPECT_CALL(*password_controller, ShowBubble());
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(password_controller->IsShowingBubble());
+
+  // Now, request the address bubble. Because a higher-priority bubble is
+  // active, this one will be placed in the pending queue.
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  ASSERT_FALSE(address_controller->IsShowingBubble());
+  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+      BubbleType::kSaveUpdateAddress));
+
+  EXPECT_CALL(*address_controller, OnBubbleDiscarded());
+
+  // Destroy the bubble manager.
+  ResetBubbleManager();
 }
 
 // Test that a confirmation bubble is dropped if requested while another bubble

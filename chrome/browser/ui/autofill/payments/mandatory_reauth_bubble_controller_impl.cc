@@ -140,6 +140,10 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
   }
 }
 
+void MandatoryReauthBubbleControllerImpl::OnBubbleDiscarded() {
+  // TODO(crbug.com/432429605): Implement.
+}
+
 void MandatoryReauthBubbleControllerImpl::LogBubbleCloseOptInMetrics(
     PaymentsUiClosedReason closed_reason) {
   autofill_metrics::MandatoryReauthOptInBubbleResult metric =
@@ -165,6 +169,7 @@ void MandatoryReauthBubbleControllerImpl::LogBubbleCloseOptInMetrics(
       metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown;
       break;
   }
+
   CHECK_NE(metric,
            autofill_metrics::MandatoryReauthOptInBubbleResult::kUnknown);
   autofill_metrics::LogMandatoryReauthOptInBubbleResult(metric, is_reshow_);

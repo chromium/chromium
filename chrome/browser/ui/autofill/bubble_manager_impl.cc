@@ -130,7 +130,13 @@ BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab)
       &BubbleManagerImpl::TabDidEnterForeground, base::Unretained(this))));
 }
 
-BubbleManagerImpl::~BubbleManagerImpl() = default;
+BubbleManagerImpl::~BubbleManagerImpl() {
+  std::ranges::for_each(pending_bubbles_queue_, [](const auto& request) {
+    if (request.controller) {
+      request.controller->OnBubbleDiscarded();
+    }
+  });
+}
 
 void BubbleManagerImpl::RequestShowController(
     BubbleControllerBase& controller_to_show,
@@ -243,6 +249,7 @@ void BubbleManagerImpl::AddToPendingQueue(
     if (ShouldAlwaysPreemptSameType(new_bubble_type) || bubble_has_timed_out) {
       if (bubble_has_timed_out) {
         if (it->controller) {
+          it->controller->OnBubbleDiscarded();
           base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
                                         it->controller->GetBubbleType());
         }
@@ -276,6 +283,7 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
   std::ranges::for_each(pending_bubbles_queue_, [&now](const auto& request) {
     if (request.controller &&
         (now - request.time_added) > kPendingRequestTimeout) {
+      request.controller->OnBubbleDiscarded();
       // Log timed-out bubbles.
       base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
                                     request.controller->GetBubbleType());

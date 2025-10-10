@@ -65,6 +65,7 @@ class FilledCardInformationBubbleControllerImpl
   bool EducationalBodyHasLearnMoreLink() const override;
 
   // BubbleControllerBase:
+  void OnBubbleDiscarded() override;
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
