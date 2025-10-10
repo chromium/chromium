@@ -80,6 +80,40 @@ void RecordSpareRendererAvailability(bool is_oom_kill,
   base::UmaHistogramEnumeration(target_uma_name, availability);
 }
 
+void RecordMemoryPressureMetricsOnProcessKill(
+    const ChildExitObserver::TerminationInfo& info) {
+  if (!info.memory_pressure_metrics) {
+    return;
+  }
+
+  std::string_view process_type_suffix;
+  if (info.process_type == content::PROCESS_TYPE_GPU) {
+    process_type_suffix = "Gpu";
+  } else if (info.process_type == content::PROCESS_TYPE_RENDERER &&
+             info.renderer_has_visible_clients) {
+    process_type_suffix = "VisibleRenderer";
+  } else {
+    return;
+  }
+
+  base::UmaHistogramMemoryLargeMB(
+      base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
+                    process_type_suffix, ".AvailableMemory"}),
+      info.memory_pressure_metrics->available_memory.InMiB());
+  base::UmaHistogramMemoryLargeMB(
+      base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
+                    process_type_suffix, ".TotalPrivateFootprint"}),
+      info.memory_pressure_metrics->total_private_footprint.InMiB());
+  base::UmaHistogramCounts100(
+      base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
+                    process_type_suffix, ".TotalProcessCount"}),
+      info.memory_pressure_metrics->total_process_count);
+  base::UmaHistogramCounts100(
+      base::StrCat({"Browser.Memory.Experimental.MemoryPressureOnProcessKill.",
+                    process_type_suffix, ".VisibleRendererCount"}),
+      info.memory_pressure_metrics->visible_renderer_count);
+}
+
 void RecordProcessKillSinceSpareCreation(
     const ChildExitObserver::TerminationInfo& info) {
   if (!info.last_spare_renderer_creation_info) {
@@ -169,6 +203,7 @@ void CrashMetricsReporter::ChildProcessExited(
                                   info.is_spare_renderer,
                                   info.has_spare_renderer);
   RecordProcessKillSinceSpareCreation(info);
+  RecordMemoryPressureMetricsOnProcessKill(info);
 
   if (app_foreground && android_oom_kill) {
     if (info.process_type == content::PROCESS_TYPE_GPU) {

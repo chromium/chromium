@@ -37,7 +37,7 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
 
-namespace memory_pressure {
+namespace content {
 
 namespace {
 constexpr base::TimeDelta kFirstMeasurementInterval = base::Minutes(1);
@@ -93,6 +93,15 @@ base::ByteCount MemoryThresholdParamFor6GbDevices() {
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize() {
+  // The metrics only feature will override the memory pressure signal features
+  // on all devices to determine the most suitable memory heuristics. Memory
+  // pressure signals will not be sent in the experiment group.
+  if (base::FeatureList::IsEnabled(
+          content::features::kUserLevelMemoryPressureSignalMetricsOnly)) {
+    UserLevelMemoryPressureSignalGenerator::Get().StartMetricsCollection();
+    return;
+  }
+
   if (content::features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor3GbDevices(), MeasurementIntervalFor3GbDevices(),
@@ -118,6 +127,12 @@ void UserLevelMemoryPressureSignalGenerator::Initialize() {
 }
 
 // static
+std::optional<content::UserLevelMemoryPressureMetrics>
+UserLevelMemoryPressureSignalGenerator::GetLatestMemoryMetrics() {
+  return Get().latest_metrics_;
+}
+
+// static
 UserLevelMemoryPressureSignalGenerator&
 UserLevelMemoryPressureSignalGenerator::Get() {
   static base::NoDestructor<UserLevelMemoryPressureSignalGenerator> instance;
@@ -139,6 +154,47 @@ void UserLevelMemoryPressureSignalGenerator::Start(
   UserLevelMemoryPressureSignalGenerator::Get().StartPeriodicTimer(
       kFirstMeasurementInterval);
 }
+
+void UserLevelMemoryPressureSignalGenerator::StartMetricsCollection() {
+  periodic_measuring_timer_.Start(
+      FROM_HERE, kDefaultMeasurementInterval,
+      base::BindRepeating(
+          &UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics,
+          base::Unretained(this)));
+}
+
+void UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics() {
+  base::SystemMemoryInfo meminfo;
+  base::GetSystemMemoryInfo(&meminfo);
+
+  int total_process_count = 0;
+  int visible_renderer_count = 0;
+
+  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    total_process_count++;
+  }
+
+  for (content::RenderProcessHost::iterator iter =
+           content::RenderProcessHost::AllHostsIterator();
+       !iter.IsAtEnd(); iter.Advance()) {
+    total_process_count++;
+    content::RenderProcessHost* host = iter.GetCurrentValue();
+    if (host && host->IsInitializedAndNotDead() &&
+        host->GetEffectiveChildBindingState() >=
+            base::android::ChildBindingState::VISIBLE) {
+      visible_renderer_count++;
+    }
+  }
+
+  latest_metrics_ = content::UserLevelMemoryPressureMetrics{
+      .total_private_footprint =
+          GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers(),
+      .available_memory = meminfo.available,
+      .total_process_count = total_process_count,
+      .visible_renderer_count = visible_renderer_count,
+  };
+}
+
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   base::TimeDelta interval = measure_interval_;
   base::ByteCount total_pmf =
@@ -371,5 +427,4 @@ UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
   return CalculateProcessMemoryFootprint(statm_file, status_file);
 }
 
-}  // namespace memory_pressure
-
+}  // namespace content

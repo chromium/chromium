@@ -34,6 +34,7 @@ void PopulateTerminationInfo(
   info->has_spare_renderer = content_info.has_spare_renderer;
   info->last_spare_renderer_creation_info =
       content_info.last_spare_renderer_creation_info;
+  info->memory_pressure_metrics = content_info.memory_pressure_metrics;
 }
 
 }  // namespace

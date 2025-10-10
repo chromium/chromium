@@ -850,6 +850,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Browser.Memory.Experimental.MemoryPressureOnProcessKill.{ProcessType}.{MetricName}"
+    units="MB" expires_after="2026-04-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records memory pressure metrics when a process is killed. The UMA is
+    recorded only on the Android platform when a process kill matching the type
+    happens. The metric is only available on Android experiment groups under the
+    feature kUserLevelMemoryPressureSignalMetricsOnly. Details: {ProcessType} -
+    {MetricName}
+  </summary>
+  <token key="ProcessType">
+    <variant name="Gpu" summary="GPU process kill"/>
+    <variant name="VisibleRenderer" summary="Visible renderer process kill"/>
+  </token>
+  <token key="MetricName">
+    <variant name="AvailableMemory" summary="Available memory"/>
+    <variant name="TotalPrivateFootprint"
+        summary="Total private memory footprint"/>
+    <variant name="TotalProcessCount" summary="Total process count"/>
+    <variant name="VisibleRendererCount" summary="Visible renderer count"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
     expires_after="2026-04-05">
   <owner>ckitagawa@chromium.org</owner>
