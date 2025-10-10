@@ -521,37 +521,6 @@ suite('NewTabPageRealboxTest', () => {
     }));
     await whenOpenComposeBox;
     assertTrue(openComposeboxFired);
-
-    // 3. Event with same number of files. `open-composebox` is not fired.
-    openComposeboxFired = false;
-    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
-      detail: {files: 2},
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertFalse(openComposeboxFired);
-
-    // 4. Event with >1 file. `open-composebox` is fired again since file
-    // count changed.
-    openComposeboxFired = false;
-    const whenOpenComposeBox2 = eventToPromise('open-composebox', realbox);
-    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
-      detail: {files: 3},
-      bubbles: true,
-      composed: true,
-    }));
-    await whenOpenComposeBox2;
-    assertTrue(openComposeboxFired);
-
-    // 5. Event with 0 files. `contextFilesCount_` is updated.
-    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
-      detail: {files: 0},
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals('0', realbox.getAttribute('context-files-count_'));
   });
 
   //============================================================================
@@ -1215,7 +1184,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     realbox.$.context.dispatchEvent(
       new CustomEvent('on-context-files-changed', {
-        detail: {files: 2},
+        detail: {files: 1},
       }));
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(

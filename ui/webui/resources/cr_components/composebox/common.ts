@@ -14,4 +14,6 @@ export interface ComposeboxFile {
   type: string;
   status: FileUploadStatus;
   url: Url|null;
+  file: File|null;
+  tabId: number|null;
 }

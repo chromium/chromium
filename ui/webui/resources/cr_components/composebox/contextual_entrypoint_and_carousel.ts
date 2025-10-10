@@ -132,6 +132,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
+  setContextFiles(files: ComposeboxFile[]) {
+    for (const file of files) {
+      if (file.type === 'tab') {
+        this.addTabContext_(
+          new CustomEvent('addTabContext', {
+            detail: {id: file.tabId!, title: file.name, url: file.url!}}));
+      } else {
+        this.addFileContext_([file.file!], file.objectUrl !== null);
+      }
+    }
+  }
+
   updateFileStatus(
       token: UnguessableToken, status: FileUploadStatus,
       errorType: FileUploadErrorType) {
@@ -167,8 +179,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return {file, errorMessage};
   }
 
-  resetContextFiles() {
+  resetContextFiles(): ComposeboxFile[] {
+    const existingFiles = Array.from(this.files_.values());
     this.files_ = new Map();
+    this.showFileCarousel_ = false;
+    return existingFiles;
   }
 
   resetModes() {
@@ -242,13 +257,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
       filesToUpload.push(file);
     }
+    this.addFileContext_(filesToUpload, input === this.$.imageInput);
+    input.value = '';
+  }
+
+  protected addFileContext_(filesToUpload: File[], isImage: boolean) {
     this.fire('add-file-context', {
       files: filesToUpload,
-      isImage: input === this.$.imageInput,
+      isImage: isImage,
       onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => {
         this.files_ = new Map([...this.files_.entries(), ...files.entries()]);
         this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);
-        input.value = '';
       },
     });
   }

@@ -13,6 +13,7 @@ import 'chrome://resources/cr_components/composebox/composebox.js';
 
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
@@ -389,6 +390,8 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
+  private pendingComposeboxContextFiles_: ComposeboxFile[] = [];
+  private pendingComposeboxText_: string = '';
 
   constructor() {
     performance.mark('app-creation-start');
@@ -652,6 +655,21 @@ export class AppElement extends AppElementBase {
         changedPrivateProperties.has('showComposebox_')) {
       this.updateOneGoogleBarAppearance_();
     }
+
+    if (changedPrivateProperties.has('showComposebox_') &&
+        this.showComposebox_) {
+      const composebox =
+          this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
+      assert(composebox);
+      if (this.pendingComposeboxContextFiles_.length > 0) {
+        composebox.setContext(this.pendingComposeboxContextFiles_);
+        this.pendingComposeboxContextFiles_ = [];
+      }
+      if (this.pendingComposeboxText_) {
+        composebox.setText(this.pendingComposeboxText_);
+        this.pendingComposeboxText_ = '';
+      }
+    }
   }
 
   // Called to update the OGB of relevant NTP state changes.
@@ -725,6 +743,18 @@ export class AppElement extends AppElementBase {
     }
   }
 
+  protected openComposebox_(e: CustomEvent<{
+      searchboxText: string, contextFiles: ComposeboxFile[],
+  }>) {
+    if (e.detail.searchboxText) {
+      this.pendingComposeboxText_ = e.detail.searchboxText;
+    }
+    if (e.detail.contextFiles && e.detail.contextFiles.length > 0) {
+      this.pendingComposeboxContextFiles_ = e.detail.contextFiles;
+    }
+    this.toggleComposebox_();
+  }
+
   protected toggleComposebox_() {
     this.showComposebox_ = !this.showComposebox_;
     if (!this.wasComposeboxOpened_) {
@@ -740,7 +770,10 @@ export class AppElement extends AppElementBase {
         this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
     assert(composebox);
     const closeComposebox = new CustomEvent('closeComposebox', {
-      detail: {composeboxText: composebox.getText()},
+      detail: {
+        composeboxText: composebox.getText(),
+        contextFiles: composebox.getAndResetContextFiles(),
+      },
       bubbles: true,
       cancelable: true,
     });
@@ -750,14 +783,18 @@ export class AppElement extends AppElementBase {
 
   protected closeComposebox_(e: CustomEvent) {
     const composeboxText = e.detail.composeboxText;
+    const contextFiles = e.detail.contextFiles;
 
     if (composeboxText && composeboxText.trim()) {
       this.$.searchbox.setInputText(composeboxText);
     }
+    if (contextFiles.length > 0) {
+      this.$.searchbox.setContext(contextFiles);
+    }
     const composebox =
         this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
     assert(composebox);
-    composebox.resetText();
+    composebox.setText('');
     composebox.resetModes();
     this.toggleComposebox_();
     this.logoColor_ = this.computeLogoColor_();

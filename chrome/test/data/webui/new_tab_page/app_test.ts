@@ -1213,12 +1213,35 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Act.
-      $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+      $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
       await microtasksFinished();
 
       // Assert.
       const composebox = app.shadowRoot.querySelector('ntp-composebox');
       assertTrue(!!composebox);
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
+    });
+    test('searchbox text carries over to composebox', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: 'text', contextFiles: []},
+          }));
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.querySelector('ntp-composebox');
+      assertTrue(!!composebox);
+      assertEquals(
+          'text',
+          composebox.shadowRoot.querySelector<HTMLInputElement>('#input')!.value);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
     test(
@@ -1293,7 +1316,10 @@ suite('NewTabPageAppTest', () => {
 
     test('Propagate composebox text when closed', async () => {
       searchboxHandler.reset();
-      $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+      $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
       await microtasksFinished();
       const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
       ntpComposebox!.shadowRoot.querySelector<HTMLInputElement>(
@@ -1323,7 +1349,10 @@ suite('NewTabPageAppTest', () => {
         searchboxHandler.reset();
         assertEquals(
             searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-        $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+        $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
         await microtasksFinished();
         const escapeKeyEvent = new KeyboardEvent('keydown', {
           key: 'Escape',
@@ -1344,7 +1373,10 @@ suite('NewTabPageAppTest', () => {
         searchboxHandler.reset();
         assertEquals(
             searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
-        $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+        $$(app, '#searchbox')!.dispatchEvent(
+          new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
         await microtasksFinished();
         const composeboxScrim =
             app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');

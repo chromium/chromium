@@ -679,6 +679,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
     const event = await whenCloseComposebox;
     assertEquals(event.detail.composeboxText, 'test');
+    assertEquals(event.detail.contextFiles.length, 0);
   });
 
   test('session abandoned on cancel button click', async () => {
@@ -693,7 +694,9 @@ suite('NewTabPageComposeboxTest', () => {
     const cancelIcon = $$<HTMLElement>(composeboxElement, '#cancelIcon');
     assertTrue(!!cancelIcon);
     cancelIcon.click();
-    await whenCloseComposebox;
+    const event = await whenCloseComposebox;
+    assertEquals(event.detail.composeboxText, '');
+    assertEquals(event.detail.contextFiles.length, 0);
   });
 
   test('submit button click leads to handler called', async () => {
@@ -1377,6 +1380,18 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(files.length, 1);
       assertEquals(files[0]!.type, 'tab');
       assertEquals(files[0]!.name, sampleTabTitle);
+
+      // Close composebox by escaping, and ensure files are returned.
+      const whenCloseComposebox =
+          eventToPromise('close-composebox', composeboxElement);
+      composeboxElement.$.composebox.dispatchEvent(
+          new KeyboardEvent('keydown', {key: 'Escape'}));
+      await microtasksFinished();
+      const event = await whenCloseComposebox;
+      assertEquals(event.detail.composeboxText, '');
+      assertEquals(event.detail.contextFiles.length, 1);
+      assertEquals(event.detail.contextFiles[0].type, 'tab');
+      assertEquals(event.detail.contextFiles[0].name, sampleTabTitle);
     });
   });
 });
