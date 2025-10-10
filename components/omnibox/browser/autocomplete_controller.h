@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -83,6 +84,9 @@ inline constexpr base::TimeDelta kAutocompleteDefaultStopTimerDuration =
 // matches from a series of providers into one AutocompleteResult.
 class AutocompleteController : public AutocompleteProviderListener,
                                public base::trace_event::MemoryDumpProvider {
+  // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Describes an autocomplete pass.
   enum class UpdateType {

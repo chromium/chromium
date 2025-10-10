@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/safety_checks.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -38,6 +39,9 @@ class TemplateURLService;
 // what the default match should be if the user doesn't manually select another
 // match.
 class AutocompleteResult {
+  // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
