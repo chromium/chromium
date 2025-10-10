@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
@@ -195,6 +197,13 @@ void LazyInitIcuDataFile() {
     g_debug_icu_pf_last_error = ::GetLastError();
     g_debug_icu_pf_error_details = file.error_details();
     UNSAFE_TODO(wcscpy_s(g_debug_icu_pf_filename, data_path.value().c_str()));
+    static auto* const path_crash_key = debug::AllocateCrashKeyString(
+        "icu-open-file-path", debug::CrashKeySize::Size256);
+    debug::SetCrashKeyString(path_crash_key, data_path.AsUTF8Unsafe());
+    static auto* const error_crash_key = debug::AllocateCrashKeyString(
+        "icu-open-file-error", debug::CrashKeySize::Size32);
+    debug::SetCrashKeyString(error_crash_key,
+                             NumberToString(g_debug_icu_pf_last_error));
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
