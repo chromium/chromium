@@ -259,8 +259,8 @@ TEST_F(BnplUtilTest, GetBnplUiFooterText) {
   EXPECT_THAT(
       GetBnplUiFooterText(),
       testing::FieldsAre(
-          text,
-          gfx::Range(offset, offset + kPaymentSettingsLinkText.length())));
+          text, gfx::Range(offset, offset + kPaymentSettingsLinkText.length()),
+          testing::_));
 }
 
 // Verify that if the triggering field is CVC, the BNPL option should not be

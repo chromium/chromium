@@ -190,7 +190,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
         return Set.of(
                 TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD,
                 TouchToFillPaymentMethodProperties.ItemType.IBAN,
-                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD);
+                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD,
+                TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT);
     }
 
     @Override

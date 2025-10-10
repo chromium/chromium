@@ -31,6 +31,38 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TouchToFillPaymentMethodViewBridge_jni.h"
 #include "components/autofill/android/main_autofill_jni_headers/LoyaltyCard_jni.h"
+#include "components/autofill/android/payments_jni_headers/BnplIssuerTosDetail_jni.h"
+
+using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
+
+namespace {
+
+static base::android::ScopedJavaLocalRef<jobject>
+ConvertTextWithLinkToJavaObject(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const autofill::payments::TextWithLink& link_text) {
+  return autofill::Java_TouchToFillPaymentMethodViewBridge_getSpannableString(
+      env, obj, ConvertUTF16ToJavaString(env, link_text.text),
+      static_cast<int>(link_text.offset.start()),
+      static_cast<int>(link_text.offset.end()),
+      ConvertUTF8ToJavaString(env, link_text.url.spec()));
+}
+
+static base::android::ScopedJavaLocalRef<jobject>
+ConvertBnplIssuerTosDetailToJavaObject(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const autofill::payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
+  return Java_BnplIssuerTosDetail_Constructor(
+      env, ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.review_text),
+      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.approve_text),
+      ConvertTextWithLinkToJavaObject(env, obj,
+                                      bnpl_issuer_tos_detail.link_text));
+}
+
+}  // namespace
 
 namespace autofill {
 
@@ -229,6 +261,22 @@ bool TouchToFillPaymentMethodViewImpl::ShowErrorScreen(
   // `IsReadyToShow()` to show the error screen.
   Java_TouchToFillPaymentMethodViewBridge_showErrorScreen(env, java_object_,
                                                           title, description);
+
+  return true;
+}
+
+bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuerTos(
+    const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
+  if (!java_object_) {
+    return false;  // View should already be shown.
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  Java_TouchToFillPaymentMethodViewBridge_showBnplIssuerTos(
+      env, java_object_,
+      ConvertBnplIssuerTosDetailToJavaObject(env, java_object_,
+                                             bnpl_issuer_tos_detail));
 
   return true;
 }

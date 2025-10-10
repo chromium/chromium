@@ -13,6 +13,7 @@ namespace autofill {
 
 namespace payments {
 struct BnplIssuerContext;
+struct BnplIssuerTosDetail;
 }  // namespace payments
 
 class Iban;
@@ -47,6 +48,8 @@ class TouchToFillPaymentMethodView {
       TouchToFillPaymentMethodViewController* controller,
       const std::u16string& title,
       const std::u16string& description) = 0;
+  virtual bool ShowBnplIssuerTos(
+      const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) = 0;
   virtual void Hide() = 0;
 };
 

@@ -78,6 +78,10 @@ class MockTouchToFillPaymentMethodController
                const std::u16string& title,
                const std::u16string& description),
               (override));
+  MOCK_METHOD(bool,
+              ShowBnplIssuerTos,
+              (const payments::BnplIssuerTosDetail&),
+              (override));
   MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
   MOCK_METHOD(void, ScanCreditCard, (JNIEnv*), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (JNIEnv*), (override));

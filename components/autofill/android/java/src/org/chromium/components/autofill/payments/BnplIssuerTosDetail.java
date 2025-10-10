@@ -6,6 +6,8 @@ package org.chromium.components.autofill.payments;
 
 import android.text.SpannableString;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Detailed BNPL issuer ToS to show in the BNPL issuer ToS bottonsheet. */
@@ -27,6 +29,7 @@ public class BnplIssuerTosDetail {
      * @param approveText String for eligibility check message.
      * @param linkText String for account link/unlink message.
      */
+    @CalledByNative
     public BnplIssuerTosDetail(String reviewText, String approveText, SpannableString linkText) {
         mReviewText = reviewText;
         mApproveText = approveText;

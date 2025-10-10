@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -58,6 +59,29 @@ struct BnplIssuerContext {
 struct TextWithLink {
   std::u16string text;
   gfx::Range offset;
+  GURL url;
+};
+
+// A struct containing a BNPL ToS info to be shown on the bottomsheet screen.
+struct BnplIssuerTosDetail {
+ public:
+  BnplIssuerTosDetail(std::u16string review_text,
+                      std::u16string approve_text,
+                      TextWithLink link_text);
+  BnplIssuerTosDetail(const BnplIssuerTosDetail& other);
+  BnplIssuerTosDetail(BnplIssuerTosDetail&&);
+  BnplIssuerTosDetail& operator=(const BnplIssuerTosDetail& other);
+  BnplIssuerTosDetail& operator=(BnplIssuerTosDetail&&);
+  ~BnplIssuerTosDetail();
+
+  // Sign-in/create account message.
+  std::u16string review_text;
+
+  // Eligibility check message.
+  std::u16string approve_text;
+
+  // Account link/unlink message.
+  TextWithLink link_text;
 };
 
 // Returns the selection option text for a given BNPL issuer.

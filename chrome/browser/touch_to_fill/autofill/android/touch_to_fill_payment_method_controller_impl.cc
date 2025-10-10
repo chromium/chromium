@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
@@ -206,6 +207,16 @@ bool TouchToFillPaymentMethodControllerImpl::ShowErrorScreen(
   }
 
   delegate_ = delegate;
+  return true;
+}
+
+bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuerTos(
+    const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
+  if (!view_ || !view_->ShowBnplIssuerTos(bnpl_issuer_tos_detail)) {
+    ResetJavaObject();
+    return false;
+  }
+
   return true;
 }
 

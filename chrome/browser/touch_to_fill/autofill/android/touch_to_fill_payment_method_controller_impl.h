@@ -22,6 +22,7 @@ namespace autofill {
 
 namespace payments {
 struct BnplIssuerContext;
+struct BnplIssuerTosDetail;
 }  // namespace payments
 
 class ContentAutofillClient;
@@ -70,6 +71,8 @@ class TouchToFillPaymentMethodControllerImpl
                        base::WeakPtr<TouchToFillDelegate> delegate,
                        const std::u16string& title,
                        const std::u16string& description) override;
+  bool ShowBnplIssuerTos(
+      const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) override;
   void Hide() override;
 
   // content::WebContentsObserver:

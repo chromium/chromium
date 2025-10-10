@@ -28,6 +28,8 @@ source_set("android") {
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
     "//components/autofill/android:main_autofill_jni_headers",
+    "//components/autofill/android:payments_autofill_cc",
+    "//components/autofill/android:payments_jni_headers",
     "//components/autofill/core/common:features",
     "//content/public/browser",
     "//third_party/libaddressinput:util",

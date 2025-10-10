@@ -54,6 +54,26 @@ bool BnplIssuerContext::IsEligible() const {
   NOTREACHED();
 }
 
+BnplIssuerTosDetail::BnplIssuerTosDetail(std::u16string review_text,
+                                         std::u16string approve_text,
+                                         TextWithLink link_text)
+    : review_text(std::move(review_text)),
+      approve_text(std::move(approve_text)),
+      link_text(std::move(link_text)) {}
+
+BnplIssuerTosDetail::BnplIssuerTosDetail(const BnplIssuerTosDetail& other) =
+    default;
+
+BnplIssuerTosDetail::BnplIssuerTosDetail(BnplIssuerTosDetail&&) = default;
+
+BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(
+    const BnplIssuerTosDetail& other) = default;
+
+BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(BnplIssuerTosDetail&&) =
+    default;
+
+BnplIssuerTosDetail::~BnplIssuerTosDetail() = default;
+
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
     const std::string& app_locale,

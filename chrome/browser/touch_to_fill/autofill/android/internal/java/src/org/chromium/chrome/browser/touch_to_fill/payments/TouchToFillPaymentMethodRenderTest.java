@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirt
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
+import android.text.SpannableString;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,6 +56,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -441,6 +443,11 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* selectionText= */ "Purchase must be under $10,000.00",
                     /* isLinked= */ false,
                     /* isEligible= */ false);
+    private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
+            new BnplIssuerTosDetail(
+                    /* reviewText= */ "Review text for affirm",
+                    /* approveText= */ "Approve text for affirm",
+                    /* linkText= */ new SpannableString("Link text for affirm"));
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -795,6 +802,20 @@ public class TouchToFillPaymentMethodRenderTest {
         mRenderTestRule.render(
                 bottomSheetView,
                 "touch_to_fill_bnpl_issuer_selection_screen_with_unlinked_issuers");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsBnplIssuerTosScreen() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_bnpl_issuer_tos_screen");
     }
 
     @Test

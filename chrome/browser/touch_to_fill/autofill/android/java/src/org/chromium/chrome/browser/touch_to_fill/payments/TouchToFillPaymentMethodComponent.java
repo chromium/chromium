@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -155,6 +156,13 @@ interface TouchToFillPaymentMethodComponent {
      * @param description The description to be displayed on the error screen.
      */
     void showErrorScreen(String title, String description);
+
+    /**
+     * Displays a new BNPL issuer ToS bottom sheet.
+     *
+     * @param bnplIssuerTosDetail The struct that holds info for showing the ToS screen.
+     */
+    void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

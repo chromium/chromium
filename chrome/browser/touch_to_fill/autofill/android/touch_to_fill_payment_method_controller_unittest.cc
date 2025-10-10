@@ -28,19 +28,38 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 
 namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAreArray;
+using ::testing::Field;
 using ::testing::Return;
+
+testing::Matcher<const payments::BnplIssuerTosDetail&> EqualBnplIssuerTosDetail(
+    const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
+  return AllOf(Field(&payments::BnplIssuerTosDetail::review_text,
+                     bnpl_issuer_tos_detail.review_text),
+               Field(&payments::BnplIssuerTosDetail::approve_text,
+                     bnpl_issuer_tos_detail.approve_text),
+               Field(&payments::BnplIssuerTosDetail::link_text,
+                     AllOf(Field(&payments::TextWithLink::text,
+                                 bnpl_issuer_tos_detail.link_text.text),
+                           Field(&payments::TextWithLink::offset,
+                                 bnpl_issuer_tos_detail.link_text.offset),
+                           Field(&payments::TextWithLink::url,
+                                 bnpl_issuer_tos_detail.link_text.url))));
+}
 
 class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
  public:
   MockTouchToFillPaymentMethodViewImpl() {
     ON_CALL(*this, ShowPaymentMethods).WillByDefault(Return(true));
     ON_CALL(*this, ShowIbans).WillByDefault(Return(true));
+    ON_CALL(*this, ShowBnplIssuerTos).WillByDefault(Return(true));
   }
   ~MockTouchToFillPaymentMethodViewImpl() override = default;
 
@@ -75,6 +94,9 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               (TouchToFillPaymentMethodViewController * controller,
                const std::u16string& title,
                const std::u16string& description));
+  MOCK_METHOD(bool,
+              ShowBnplIssuerTos,
+              (const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -430,6 +452,31 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
                                               bnpl_issuer_contexts_);
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowBnplIssuerTosPassesTextsAndIconsToTheView) {
+  const std::u16string review_text = u"test BNPL issuer ToS review text";
+  const std::u16string approve_text = u"test BNPL issuer ToS approve text";
+  payments::TextWithLink link_text;
+  link_text.text = u"test BNPL issuer ToS link text with link";
+  // Index of text with redirect link;
+  link_text.offset = gfx::Range(36, link_text.text.length());
+  link_text.url = GURL("https://wallet.google.com/");
+  const payments::BnplIssuerTosDetail bnpl_issuer_tos_detail(
+      review_text, approve_text, link_text);
+
+  // Test that the BNPL issuer ToS info have propagated to the view.
+  EXPECT_CALL(
+      *mock_view_,
+      ShowBnplIssuerTos(EqualBnplIssuerTosDetail(bnpl_issuer_tos_detail)));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+  payment_method_controller().ShowBnplIssuerTos(bnpl_issuer_tos_detail);
   OnAfterAskForValuesToFill();
 }
 

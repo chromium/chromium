@@ -17,6 +17,7 @@ namespace autofill {
 
 namespace payments {
 struct BnplIssuerContext;
+struct BnplIssuerTosDetail;
 }  // namespace payments
 
 class ContentAutofillClient;
@@ -105,6 +106,11 @@ class TouchToFillPaymentMethodController
       base::WeakPtr<TouchToFillDelegate> delegate,
       const std::u16string& title,
       const std::u16string& description) = 0;
+
+  // Shows the Touch To Fill BNPL issuer Terms of Service screen. Returns
+  // whether the surface was successfully shown.
+  virtual bool ShowBnplIssuerTos(
+      const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) = 0;
 
   // Hides the surface if it is currently shown.
   virtual void Hide() = 0;

@@ -4,9 +4,17 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.net.Uri;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -22,6 +30,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -35,6 +44,7 @@ import java.util.List;
 @NullMarked
 class TouchToFillPaymentMethodViewBridge {
     private final TouchToFillPaymentMethodComponent mComponent;
+    private final Context mContext;
 
     private TouchToFillPaymentMethodViewBridge(
             TouchToFillPaymentMethodComponent.Delegate delegate,
@@ -49,6 +59,7 @@ class TouchToFillPaymentMethodViewBridge {
                 bottomSheetController,
                 delegate,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
+        mContext = context;
     }
 
     @CalledByNative
@@ -118,6 +129,11 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail) {
+        mComponent.showBnplIssuerTos(bnplIssuerTosDetail);
+    }
+
+    @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
     }
@@ -144,5 +160,30 @@ class TouchToFillPaymentMethodViewBridge {
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setPayload(payload)
                 .build();
+    }
+
+    @CalledByNative
+    private SpannableString getSpannableString(
+            String text, int spanStart, int spanEnd, String url) {
+        SpannableString textWithLink = new SpannableString(text);
+        textWithLink.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        openLink(url);
+                    }
+                },
+                spanStart,
+                spanEnd,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        return textWithLink;
+    }
+
+    private void openLink(String url) {
+        assumeNonNull(mContext);
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(mContext, Uri.parse(url));
     }
 }

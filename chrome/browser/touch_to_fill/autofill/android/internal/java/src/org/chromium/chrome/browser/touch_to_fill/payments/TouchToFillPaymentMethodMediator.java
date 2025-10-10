@@ -616,6 +616,7 @@ class TouchToFillPaymentMethodMediator {
      */
     public void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail) {
         ModelList sheetItems = new ModelList();
+
         sheetItems.add(
                 new ListItem(
                         BNPL_TOS_TEXT,
@@ -632,8 +633,20 @@ class TouchToFillPaymentMethodMediator {
                         createBnplIssuerTosTextItemModel(
                                 R.drawable.add_link, bnplIssuerTosDetail.getLinkText())));
 
+        mModel.set(
+                SHEET_CONTENT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description);
+        mModel.set(
+                SHEET_HALF_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_half_height);
+        mModel.set(
+                SHEET_FULL_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_tos_bottom_sheet_full_height);
+        mModel.set(
+                SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_issuer_tos_bottom_sheet_closed);
         mModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
         mModel.set(SHEET_ITEMS, sheetItems);
+        mModel.set(VISIBLE, true);
     }
 
     void hideSheet() {
