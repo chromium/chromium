@@ -59,13 +59,14 @@
 #   }
 # }
 
-import json
 from datetime import datetime
 import io
-import os.path
-import sys
+import json
 import optparse
+import os.path
 import re
+import sys
+
 _script_path = os.path.realpath(__file__)
 
 sys.path.insert(0, os.path.normpath(_script_path + "/../../json_comment_eater"))
@@ -91,7 +92,7 @@ HEAD = u"""// Copyright %d The Chromium Authors
 // GENERATED FROM THE SCHEMA DEFINITION AND DESCRIPTION IN
 //   %s
 //   %s
-// DO NOT EDIT.
+// using json_to_struct.py. DO NOT EDIT.
 
 """
 
@@ -143,7 +144,7 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
     if aggregation.kind == AggregationKind.MAP:
       headers.append("base/containers/fixed_flat_map.h")
 
-    for header in sorted(headers):
+    for header in sorted(set(headers)):
       f.write(u'#include "%s"\n' % header)
     f.write(u'\n')
 

@@ -5,7 +5,7 @@
 // GENERATED FROM THE SCHEMA DEFINITION AND DESCRIPTION IN
 //   field_trial_testing_config_schema.json
 //   test_config.json
-// DO NOT EDIT.
+// using json_to_struct.py. DO NOT EDIT.
 
 #include "test_output.h"
 
