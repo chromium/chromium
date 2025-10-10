@@ -113,6 +113,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -2212,14 +2213,19 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
   if (settings_.TreesInVizInClientProcess() &&
       !static_cast<PictureLayerImpl&>(*layer_impl)
            .should_batch_updated_tiles()) {
+    gpu::SharedImageInterface* sii = nullptr;
+    if (viz::RasterContextProvider* context_provider =
+            layer_tree_frame_sink_->context_provider()) {
+      sii = context_provider->SharedImageInterface();
+    }
+
     // In TreesInViz mode, send this tile update directly to Viz only if the
     // layer is not batching its updates. A layer stops batching updates
     // (should_batch_updated_tiles() becomes false) after it has been
     // successfully sent to Viz via UpdateDisplayTree().
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
-        *resource_provider(), layer_tree_frame_sink_->context_provider(),
-        update_damage);
+        *resource_provider(), sii, update_damage);
   }
 
   if (set_needs_redraw && !client_->IsInsideDraw() &&
@@ -3424,9 +3430,14 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   DCHECK(settings_.TreesInVizInClientProcess());
   DCHECK(layer_context_);
 
+  gpu::SharedImageInterface* sii = nullptr;
+  if (viz::RasterContextProvider* context_provider =
+          layer_tree_frame_sink_->context_provider()) {
+    sii = context_provider->SharedImageInterface();
+  }
+
   return layer_context_->UpdateDisplayTreeFrom(
-      *active_tree(), *resource_provider(),
-      layer_tree_frame_sink_->context_provider(), viewport_damage_rect_,
+      *active_tree(), *resource_provider(), sii, viewport_damage_rect_,
       target_local_surface_id_);
 }
 

@@ -14,10 +14,13 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace gpu {
+class SharedImageInterface;
+}  // namespace gpu
+
 namespace viz {
 class ClientResourceProvider;
 class LocalSurfaceId;
-class RasterContextProvider;
 }  // namespace viz
 
 namespace cc {
@@ -39,16 +42,17 @@ class CC_EXPORT LayerContext {
   virtual base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
-      viz::RasterContextProvider* context_provider,
+      gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
-  virtual void UpdateDisplayTile(PictureLayerImpl& layer,
-                                 const Tile& tile,
-                                 viz::ClientResourceProvider& resource_provider,
-                                 viz::RasterContextProvider* context_provider,
-                                 bool update_damage) = 0;
+  virtual void UpdateDisplayTile(
+      PictureLayerImpl& layer,
+      const Tile& tile,
+      viz::ClientResourceProvider& resource_provider,
+      gpu::SharedImageInterface* shared_image_interface,
+      bool update_damage) = 0;
 };
 
 }  // namespace cc

@@ -19,14 +19,14 @@ class TestLayerContext : public LayerContext {
   base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
-      viz::RasterContextProvider* context_provider,
+      gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id) override;
 
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,
                          viz::ClientResourceProvider& resource_provider,
-                         viz::RasterContextProvider* context_provider,
+                         gpu::SharedImageInterface* shared_image_interface,
                          bool update_damage) override;
 };
 
