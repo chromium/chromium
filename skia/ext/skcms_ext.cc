@@ -10,22 +10,69 @@
 #include "base/check.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
+namespace skcms {
+
 namespace {
 
-// Evaluate the specified transfer function. This can be replaced by
-// skcms_TransferFunction_eval when https://crbug.com/331320414 is fixed.
-float skcmsTrFnEvalExt(const skcms_TransferFunction* fn, float x) {
-  float sign = x < 0 ? -1 : 1;
-  x *= sign;
-  if (x >= fn->d && fn->a * x + fn->b < 0) {
-    return sign * fn->e;
+// Use skcms_TransferFunction_eval and skcms_TransferFunction_invert once they
+// produce correct results.
+// https://crbug.com/450045076
+float TransferFunction_eval(const skcms_TransferFunction& fn, float x) {
+  const float sign = x < 0 ? -1 : 1;
+  const float abs_x = std::abs(x);
+  float y = 0.f;
+  if (abs_x <= fn.d) {
+    return sign * (fn.c * abs_x + fn.f);
   }
-  return sign * skcms_TransferFunction_eval(fn, x);
+  float base = std::max(fn.a * abs_x + fn.b, 0.f);
+  if (fn.g == 1.f) {
+    return sign * (base + fn.e);
+  }
+  return sign * (std::pow(base, fn.g) + fn.e);
+}
+
+// This is a direct copy-paste of skcms_TransferFunction_invert, but with the
+// std math functions instead of the inaccurate approximations.
+bool TransferFunction_invert(const skcms_TransferFunction& src,
+                             skcms_TransferFunction& inv) {
+  inv = skcms_TransferFunction({0, 0, 0, 0, 0, 0, 0});
+  float d_l = src.c * src.d + src.f,
+        d_r = std::pow(src.a * src.d + src.b, src.g) + src.e;
+  if (std::abs(d_l - d_r) > 1 / 512.0f) {
+    return false;
+  }
+  inv.d = d_l;
+  if (inv.d > 0) {
+    inv.c = 1.0f / src.c;
+    inv.f = -src.f / src.c;
+  }
+  float k = std::pow(src.a, -src.g);
+  inv.g = 1.0f / src.g;
+  inv.a = k;
+  inv.b = -k * src.e;
+  inv.e = -src.b / src.a;
+  if (inv.a < 0) {
+    return false;
+  }
+  if (inv.a * inv.d + inv.b < 0) {
+    inv.b = -inv.a * inv.d;
+  }
+  float s = TransferFunction_eval(src, 1.0f);
+  if (!std::isfinite(s)) {
+    return false;
+  }
+  float sign = s < 0 ? -1.0f : 1.0f;
+  s *= sign;
+  if (s < inv.d) {
+    inv.f = 1.0f - sign * inv.c * s;
+  } else {
+    inv.e = 1.0f - sign * std::pow(inv.a * s + inv.b, inv.g);
+  }
+  return true;
 }
 
 }  // namespace
 
-namespace skcms {
 
 Vector3 Matrix3x3_apply(const skcms_Matrix3x3& m, const Vector3& v) {
   return Vector3{{
@@ -62,9 +109,9 @@ skcms_Matrix3x3 Matrix3x3_invert(const skcms_Matrix3x3& m, bool* succeeded) {
 Vector3 TransferFunction_apply(const skcms_TransferFunction& trfn,
                                const Vector3& v) {
   return Vector3{{
-      skcmsTrFnEvalExt(&trfn, v.vals[0]),
-      skcmsTrFnEvalExt(&trfn, v.vals[1]),
-      skcmsTrFnEvalExt(&trfn, v.vals[2]),
+      TransferFunction_eval(trfn, v.vals[0]),
+      TransferFunction_eval(trfn, v.vals[1]),
+      TransferFunction_eval(trfn, v.vals[2]),
   }};
 }
 
@@ -76,7 +123,7 @@ Vector3 TransferFunction_apply_inverse(const skcms_TransferFunction& trfn,
     return v;
   }
   skcms_TransferFunction trfn_inv = SkNamedTransferFn::kLinear;
-  bool result = skcms_TransferFunction_invert(&trfn, &trfn_inv);
+  bool result = TransferFunction_invert(trfn, trfn_inv);
   if (succeeded) {
     *succeeded = result;
   } else {

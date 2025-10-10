@@ -505,9 +505,14 @@ std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
 }
 
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
-  skcms::Vector3 c{{r, g, b}};
-  c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
-  return SkColor4f{c.vals[0], c.vals[1], c.vals[2], alpha};
+  // Several SVG rendering tests expect the inaccurate results from this
+  // formulation and need to be rebaselined.
+  // https://crbug.com/450045076
+  skcms_TransferFunction tf_inv;
+  skcms_TransferFunction_invert(&SkNamedTransferFn::kSRGB, &tf_inv);
+  return SkColor4f{skcms_TransferFunction_eval(&tf_inv, r),
+                   skcms_TransferFunction_eval(&tf_inv, g),
+                   skcms_TransferFunction_eval(&tf_inv, b), alpha};
 }
 
 SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha) {
