@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo_ephemeral_module.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
@@ -11,15 +12,28 @@
 
 namespace segmentation_platform::home_modules {
 
-const char kIsDefaultBrowserSignalKey[] = "is_default_browser_chrome_ios";
+constexpr char kIsDefaultBrowserSignalKey[] = "is_default_browser_chrome_ios";
+
+// Defines the signals that must all evaluate to false for
+// `DefaultBrowserPromoEphemeralModule` to be shown.
+constexpr auto kDisqualifyingSignals =
+    base::MakeFixedFlatSet<std::string_view>({
+        segmentation_platform::kIsNewUser,
+        kIsDefaultBrowserSignalKey,
+    });
 
 DefaultBrowserPromoEphemeralModule::DefaultBrowserPromoEphemeralModule()
     : CardSelectionInfo(kDefaultBrowserPromoEphemeralModule) {}
 
 std::map<SignalKey, FeatureQuery>
 DefaultBrowserPromoEphemeralModule::GetInputs() {
-  return {{kIsDefaultBrowserSignalKey,
-           CreateFeatureQueryFromCustomInputName(kIsDefaultBrowserChromeIos)}};
+  return {
+      {segmentation_platform::kIsNewUser,
+       CreateFeatureQueryFromCustomInputName(
+           segmentation_platform::kIsNewUser)},
+      {kIsDefaultBrowserSignalKey,
+       CreateFeatureQueryFromCustomInputName(kIsDefaultBrowserChromeIos)},
+  };
 }
 
 CardSelectionInfo::ShowResult
@@ -40,18 +54,21 @@ DefaultBrowserPromoEphemeralModule::ComputeCardResult(
   CardSelectionInfo::ShowResult result;
   result.result_label = kDefaultBrowserPromoEphemeralModule;
 
-  std::optional<bool> resultForIsDefaultBrowserChromeIos =
-      signals.GetSignal(kIsDefaultBrowserSignalKey);
+  // Prevent the card from showing if the user is a new user or they have
+  // Chrome set as their default browser.
+  for (const auto& signal : kDisqualifyingSignals) {
+    std::optional<float> currentSignal = signals.GetSignal(std::string(signal));
 
-  // Show the card if the user does not have Chrome set as their default
-  // browser.
-  if (resultForIsDefaultBrowserChromeIos.has_value() &&
-      resultForIsDefaultBrowserChromeIos.value() == false) {
-    result.position = EphemeralHomeModuleRank::kTop;
-    return result;
+    // All signals must have a value and must evaluate to false. Otherwise, the
+    // card will not be shown.
+    if (!currentSignal.has_value() || currentSignal.value() > 0) {
+      return ShowResult(EphemeralHomeModuleRank::kNotShown);
+    }
   }
 
-  result.position = EphemeralHomeModuleRank::kNotShown;
+  // Show the card if the user is not a new user and they do not have Chrome
+  // set as their default browser.
+  result.position = EphemeralHomeModuleRank::kTop;
   return result;
 }
 

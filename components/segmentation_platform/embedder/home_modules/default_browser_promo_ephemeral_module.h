@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_DEFAULT_BROWSER_PROMO_EPHEMERAL_MODULE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_DEFAULT_BROWSER_PROMO_EPHEMERAL_MODULE_H_
 
+#include <string_view>
+
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 
 namespace segmentation_platform::home_modules {

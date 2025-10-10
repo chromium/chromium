@@ -49,23 +49,91 @@ TEST_F(DefaultBrowserPromoEphemeralModuleTest,
        TestGetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 1u);
+  EXPECT_EQ(inputs.size(), 2u);
 
   // Verify that the inputs map contains the expected keys.
+  EXPECT_NE(inputs.find(segmentation_platform::kIsNewUser), inputs.end());
   EXPECT_NE(inputs.find(kIsDefaultBrowserSignalKey), inputs.end());
 }
 
-// Tests that `ComputerCardResult()` returns `kTop` with the correct signals and
-// returns `kNotShown` otherwise.
-TEST_F(DefaultBrowserPromoEphemeralModuleTest, TestComputeCardResult) {
-  // If Chrome is not the user's default browser, the card should be shown.
-  // Otherwise, the card should be hidden.
-  TestComputeCardResultImpl(
-      /* isDefaultBrowserChromeIos == */ false,
-      /* expectedRank */ EphemeralHomeModuleRank::kTop);
-  TestComputeCardResultImpl(
-      /* isDefaultBrowserChromeIos == */ true,
-      /* expectedRank */ EphemeralHomeModuleRank::kNotShown);
+// Tests that `ComputerCardResult()` returns `kTop` with the correct signals.
+TEST_F(DefaultBrowserPromoEphemeralModuleTest,
+       TestComputeCardResultShowsCardForValidSignals) {
+  // Show the card if the user is not new and Chrome is not their default
+  // browser.
+  auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kIsNewUser */ 0,
+                      /* isDefaultBrowserChromeIos == */ false,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kDefaultBrowserPromoEphemeralModule);
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(result.position, EphemeralHomeModuleRank::kTop);
+}
+
+// Tests that `ComputerCardResult()` returns `kNotShown` when a user is new.
+TEST_F(DefaultBrowserPromoEphemeralModuleTest,
+       TestComputeCardResultDoesNotShowCardIfNewUser) {
+  // Do not show the card if the user is new.
+  auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kIsNewUser */ 1,
+                      /* isDefaultBrowserChromeIos == */ false,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kDefaultBrowserPromoEphemeralModule);
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(result.position, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Tests that `ComputerCardResult()` returns `kNotShown` when a user has Chrome
+// set as their default browser.
+TEST_F(DefaultBrowserPromoEphemeralModuleTest,
+       TestComputeCardResultDoesNotShowIfAlreadyDefaultBrowser) {
+  // Do not show the card if the user has Chrome as their default browser.
+  auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kIsNewUser */ 0,
+                      /* isDefaultBrowserChromeIos == */ true,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kDefaultBrowserPromoEphemeralModule);
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(result.position, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Tests that `ComputerCardResult()` returns `kNotShown` when a user is new and
+// has Chrome set as their default browser.
+TEST_F(DefaultBrowserPromoEphemeralModuleTest,
+       TestComputeCardResultForDisqualifyingSignals) {
+  // Do not show the card if the user is new or has Chrome as their default
+  // browser.
+  auto card = std::make_unique<DefaultBrowserPromoEphemeralModule>();
+  AllCardSignals signals = CreateAllCardSignals(
+      card.get(), {
+                      /* kIsNewUser */ 1,
+                      /* isDefaultBrowserChromeIos == */ true,
+                  });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kDefaultBrowserPromoEphemeralModule);
+  CardSelectionInfo::ShowResult result =
+      card->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(result.position, EphemeralHomeModuleRank::kNotShown);
 }
 
 // Tests that `IsEnabled()` returns `true` when under the impression limit and
