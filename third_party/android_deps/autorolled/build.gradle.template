@@ -23,10 +23,10 @@ repositories {
 
 dependencies {
     // Use testCompile to have requires_robolectric = true set on targets.
-    testCompileLatest "org.robolectric:robolectric:+"
+    testCompileLatest 'org.robolectric:robolectric:+'
 
-    compileLatest "com.google.guava:guava:+"
-    buildCompileLatest "com.google.guava:guava:+"
+    compileLatest 'com.google.guava:guava:+'
+    buildCompileLatest 'com.google.guava:guava:+'
 
     // Libraries from Google:
     compileLatest 'com.google.protobuf:protobuf-javalite:+'
@@ -45,50 +45,52 @@ dependencies {
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
     // order to be auto-rolled and not manually rolled.
-    compileLatest "com.google.ar:impress:+"
+    compileLatest 'com.google.ar:impress:+'
 
     // Play Services & Firebase
-    compileLatest "com.google.android.gms:play-services-auth-api-phone:+"
-    compileLatest "com.google.android.gms:play-services-auth-base:+"
-    compileLatest "com.google.android.gms:play-services-auth-blockstore:+"
-    compileLatest "com.google.android.gms:play-services-auth:+"
-    compileLatest "com.google.android.gms:play-services-base:+"
-    compileLatest "com.google.android.gms:play-services-basement:+"
-    compileLatest "com.google.android.gms:play-services-cast-framework:+"
-    compileLatest "com.google.android.gms:play-services-cast:+"
-    compileLatest "com.google.android.gms:play-services-fido:+"
-    compileLatest "com.google.android.gms:play-services-gcm:+"
-    compileLatest "com.google.android.gms:play-services-identity-credentials:+"
-    compileLatest "com.google.android.gms:play-services-iid:+"
-    compileLatest "com.google.android.gms:play-services-instantapps:+"
-    compileLatest "com.google.android.gms:play-services-location:+"
-    compileLatest "com.google.android.gms:play-services-tasks:+"
-    compileLatest "com.google.android.gms:play-services-vision-common:+"
-    compileLatest "com.google.android.gms:play-services-vision:+"
-    compileLatest "com.google.firebase:firebase-messaging:+"
+    compileLatest 'com.google.android.gms:play-services-auth-api-phone:+'
+    compileLatest 'com.google.android.gms:play-services-auth-base:+'
+    compileLatest 'com.google.android.gms:play-services-auth-blockstore:+'
+    compileLatest 'com.google.android.gms:play-services-auth:+'
+    compileLatest 'com.google.android.gms:play-services-base:+'
+    compileLatest 'com.google.android.gms:play-services-basement:+'
+    compileLatest 'com.google.android.gms:play-services-cast-framework:+'
+    compileLatest 'com.google.android.gms:play-services-cast:+'
+    compileLatest 'com.google.android.gms:play-services-fido:+'
+    compileLatest 'com.google.android.gms:play-services-gcm:+'
+    compileLatest 'com.google.android.gms:play-services-identity-credentials:+'
+    compileLatest 'com.google.android.gms:play-services-iid:+'
+    compileLatest 'com.google.android.gms:play-services-instantapps:+'
+    compileLatest 'com.google.android.gms:play-services-location:+'
+    compileLatest 'com.google.android.gms:play-services-tasks:+'
+    compileLatest 'com.google.android.gms:play-services-vision-common:+'
+    compileLatest 'com.google.android.gms:play-services-vision:+'
+    compileLatest 'com.google.firebase:firebase-messaging:+'
 
     // Other libraries
     compileLatest 'com.airbnb.android:lottie:+'
-    compileLatest "com.google.errorprone:error_prone_annotations:+"
-    compileLatest "org.jspecify:jspecify:+"
-    compileLatest "javax.inject:javax.inject:+"
+    compileLatest 'com.google.errorprone:error_prone_annotations:+'
+    compileLatest 'org.jspecify:jspecify:+'
+    compileLatest 'javax.inject:javax.inject:+'
     compileLatest 'javax.annotation:javax.annotation-api:+'
-    buildCompileLatest "org.ow2.asm:asm:+"
-    buildCompileLatest "org.ow2.asm:asm-commons:+"
+    compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
+    androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
+    buildCompileLatest 'org.ow2.asm:asm:+'
+    buildCompileLatest 'org.ow2.asm:asm-commons:+'
     buildCompileLatest 'com.android.extensions.xr:extensions-xr:+'
 
     // Needed by internal targets
     compileLatest 'com.google.auto.service:auto-service-annotations:+'
-    compileLatest "com.google.code.findbugs:jsr305:+"
-    compileLatest "com.google.j2objc:j2objc-annotations:+"
-    compileLatest "com.squareup.okio:okio-jvm:+"
-    compileLatest "io.reactivex.rxjava2:rxandroid:+"
-    compileLatest "org.checkerframework:checker-qual:+"
-    compileLatest "org.checkerframework:checker-util:+"
-    compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
-    compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
-    compileLatest "org.reactivestreams:reactive-streams:+"
+    compileLatest 'com.google.code.findbugs:jsr305:+'
+    compileLatest 'com.google.j2objc:j2objc-annotations:+'
+    compileLatest 'com.squareup.okio:okio-jvm:+'
+    compileLatest 'io.reactivex.rxjava2:rxandroid:+'
+    compileLatest 'org.checkerframework:checker-qual:+'
+    compileLatest 'org.checkerframework:checker-util:+'
+    compileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
+    compileLatest 'org.reactivestreams:reactive-streams:+'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
