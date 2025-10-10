@@ -949,11 +949,7 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
     for (auto& observer : sync_observer_list_->observers) {
-      const std::optional<ServiceWorkerRunningInfo> running_info =
-          wrapper_->GetRunningServiceWorkerInfo(id);
-      if (running_info.has_value()) {
-        observer.OnStoppedSync(id, version->scope());
-      }
+      observer.OnStoppedSync(id, version->scope());
     }
   }
 
@@ -1021,10 +1017,9 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnDeleteAndStartOver);
   for (const auto& live_version_itr : live_versions_) {
     ServiceWorkerVersion* live_version = live_version_itr.second;
-    for (auto& observer : sync_observer_list_->observers) {
-      const std::optional<ServiceWorkerRunningInfo> running_info =
-          wrapper_->GetRunningServiceWorkerInfo(live_version->version_id());
-      if (running_info.has_value()) {
+    if (live_version->running_status() !=
+        blink::EmbeddedWorkerStatus::kStopped) {
+      for (auto& observer : sync_observer_list_->observers) {
         observer.OnStoppedSync(live_version->version_id(),
                                live_version->scope());
       }
@@ -1253,11 +1248,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        const std::optional<ServiceWorkerRunningInfo> running_info =
-            wrapper_->GetRunningServiceWorkerInfo(version->version_id());
-        if (running_info.has_value()) {
-          observer.OnStoppedSync(version->version_id(), version->scope());
-        }
+        observer.OnStoppedSync(version->version_id(), version->scope());
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:
@@ -1277,11 +1268,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
       for (auto& observer : sync_observer_list_->observers) {
-        const std::optional<ServiceWorkerRunningInfo> running_info =
-            wrapper_->GetRunningServiceWorkerInfo(version->version_id());
-        if (running_info.has_value()) {
-          observer.OnStoppingSync(version->version_id(), version->scope());
-        }
+        observer.OnStoppingSync(version->version_id(), version->scope());
       }
       break;
   }

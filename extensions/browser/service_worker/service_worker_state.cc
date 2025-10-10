@@ -49,6 +49,7 @@ void ServiceWorkerState::Reset() {
   worker_id_.reset();
   browser_state_ = BrowserState::kNotActive;
   renderer_state_ = RendererState::kNotActive;
+  worker_starting_ = false;
 }
 
 bool ServiceWorkerState::IsStarting() const {
