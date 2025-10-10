@@ -72,6 +72,11 @@ bool AgentClusterKey::IsOriginKeyed() const {
   return std::holds_alternative<url::Origin>(key_);
 }
 
+bool AgentClusterKey::IsOriginKeyedDueToOAC() const {
+  return oac_status_ == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+         oac_status_ == AgentClusterKey::OACStatus::kOriginKeyedByDefault;
+}
+
 const GURL& AgentClusterKey::GetSite() const {
   CHECK(IsSiteKeyed());
   return std::get<GURL>(key_);

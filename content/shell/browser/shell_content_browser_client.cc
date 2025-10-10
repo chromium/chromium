@@ -491,7 +491,16 @@ bool ShellContentBrowserClient::IsIsolatedContextAllowedForUrl(
     const GURL& lock_url) {
   static base::flat_set<url::Origin> isolated_context_origins =
       GetIsolatedContextOriginSetFromFlag();
-  return isolated_context_origins.contains(url::Origin::Create(lock_url));
+  // Origin-keyed contexts, including cross-origin isolated contexts, have their
+  // origin as lock URL. This origin contains a port number, which is not passed
+  // by the flag (since it is different on each run of the test runner). Create
+  // an origin based on the lock URL without port number in order to compare
+  // with the set of isolated context origins.
+  GURL::Replacements replacements;
+  replacements.ClearPort();
+  GURL lock_url_without_port = lock_url.ReplaceComponents(replacements);
+  return isolated_context_origins.contains(
+      url::Origin::Create(lock_url_without_port));
 }
 
 bool ShellContentBrowserClient::IsSharedStorageAllowed(

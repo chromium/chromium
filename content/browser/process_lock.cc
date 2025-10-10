@@ -21,14 +21,23 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
           web_exposed_isolation_info);
 
-  AgentClusterKey agent_cluster_key =
-      cross_origin_isolation_key.has_value()
-          ? AgentClusterKey::CreateWithCrossOriginIsolationKey(
-                SiteInfo::GetOriginForUnlockedProcess(),
-                cross_origin_isolation_key.value(),
-                AgentClusterKey::OACStatus::kSiteKeyedByDefault)
-          : AgentClusterKey::CreateSiteKeyed(
-                GURL(), AgentClusterKey::OACStatus::kSiteKeyedByDefault);
+  AgentClusterKey agent_cluster_key;
+  if (cross_origin_isolation_key.has_value()) {
+    agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        SiteInfo::GetOriginForUnlockedProcess(),
+        cross_origin_isolation_key.value(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
+  } else if (web_exposed_isolation_info.is_isolated()) {
+    // TODO(crbug.com/342365083): AgentClusterKeys for pages with COOP and COEP
+    // should use an appropriate CrossOriginIsolationKey instead of being
+    // created as just origin-keyed here.
+    agent_cluster_key = AgentClusterKey::CreateOriginKeyed(
+        SiteInfo::GetOriginForUnlockedProcess(),
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
+  } else {
+    agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
+        GURL(), AgentClusterKey::OACStatus::kSiteKeyedByDefault);
+  }
 
   return ProcessLock(SiteInfo(
       agent_cluster_key,

@@ -7308,16 +7308,17 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndCOEP) {
       web_contents()->GetPrimaryMainFrame()->cross_origin_opener_policy().value,
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep);
 
-  // Make sure that site isolation for coop.com was triggered and that the
-  // navigation ended up in a site-locked process.
+  // Make sure that site isolation for coop.com was triggered. Because the page
+  // is cross-origin isolated, and the navigation should end up in a
+  // origin-locked process.
   SiteInstanceImpl* coop_instance =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
   auto lock = coop_instance->GetProcess()->GetProcessLock();
   EXPECT_TRUE(lock.GetWebExposedIsolationInfo().is_isolated());
   EXPECT_TRUE(lock.IsLockedToSite());
-  EXPECT_TRUE(
-      lock.MatchesOrigin(url::Origin::Create(GURL("https://coop.com"))));
+  EXPECT_TRUE(lock.MatchesOrigin(url::Origin::Create(coop_url)));
+  EXPECT_TRUE(lock.agent_cluster_key().IsOriginKeyed());
 }
 
 // Check that when a site triggers both COOP isolation and OriginAgentCluster,
