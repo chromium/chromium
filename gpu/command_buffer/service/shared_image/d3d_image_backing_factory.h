@@ -50,6 +50,11 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
 
   ~D3DImageBackingFactory() override;
 
+  // `io_runner` is needed in order to create GpuMemoryBufferHandles on the
+  // correct thread. GpuServiceImpl calls into this class on the IO thread when
+  // processing IPC requests, so we need to ensure that other callers are able
+  // to thread-hop to that runner when creating GMBHandles (so far, the other
+  // caller for whom it matters is `FrameSinkVideoCapturerImpl` on Windows).
   static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       scoped_refptr<base::SingleThreadTaskRunner> io_runner,
       const gfx::Size& size,
@@ -57,7 +62,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       gfx::BufferUsage usage);
 
   static bool CopyNativeBufferToSharedMemoryAsync(
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory);
 

@@ -4,41 +4,21 @@
 
 #include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/logging.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace gpu {
 
-GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner)
-    : io_runner_(std::move(io_runner)) {
+GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI() {
   DETACH_FROM_THREAD(thread_checker_);
 }
-GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() {
-  // Ensure that IO-thread specific state is destroyed on the IO thread. Note
-  // that it is valid to be *accessing* this state on the Viz thread here as the
-  // owner of this instance must have guaranteed all calls to this class on the
-  // IO thread are finished before destroying this object on the Viz thread (or
-  // else those calls would inherently race with destroying this object). Note
-  // also that that we need to be holding the ThreadChecker to access
-  // `d3d11_device_`.
-  DETACH_FROM_THREAD(thread_checker_);
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (io_runner_) {
-    io_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-               Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture) {},
-            std::move(d3d11_device_), std::move(staging_texture_)));
-  }
-}
+
+GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 
 // TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
 // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
-  DCHECK(!io_runner_ || io_runner_->BelongsToCurrentThread());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {

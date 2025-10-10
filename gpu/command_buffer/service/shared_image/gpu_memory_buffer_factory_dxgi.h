@@ -9,27 +9,14 @@
 #include <dxgi.h>
 #include <wrl/client.h>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
-#include "ui/gfx/buffer_types.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
 class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI {
  public:
-  // Creates new instance of GpuMemoryBufferFactoryDXGI. `io_runner` is needed
-  // in order to create GpuMemoryBuffers on the correct thread. GpuServiceImpl
-  // calls into this class from IO runner (when processing IPC requests), so
-  // we need to ensure that other callers are able to thread-hop to that runner
-  // when creating GMBs (so far, the other caller for whom it matters is
-  // `FrameSinkVideoCapturerImpl` when running in GMB mode on Windows).
-  explicit GpuMemoryBufferFactoryDXGI(
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
+  GpuMemoryBufferFactoryDXGI();
   ~GpuMemoryBufferFactoryDXGI();
 
   GpuMemoryBufferFactoryDXGI(const GpuMemoryBufferFactoryDXGI&) = delete;
@@ -46,9 +33,6 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactoryDXGI {
       GUARDED_BY_CONTEXT(thread_checker_);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
-
-  // May be null for testing:
-  scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
 
   THREAD_CHECKER(thread_checker_);
 };

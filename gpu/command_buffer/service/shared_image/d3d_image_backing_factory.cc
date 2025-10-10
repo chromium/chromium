@@ -40,9 +40,8 @@ namespace gpu {
 
 namespace {
 
-GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner) {
-  static auto* factory = new GpuMemoryBufferFactoryDXGI(io_runner);
+GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI() {
+  static auto* factory = new GpuMemoryBufferFactoryDXGI();
   return factory;
 }
 
@@ -273,8 +272,7 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
   TRACE_EVENT0("gpu", "D3DImageBackingFactory::CrceateGpuMemoryBufferHandle");
 
   gfx::GpuMemoryBufferHandle handle;
-  auto d3d11_device =
-      GetGpuMemoryBufferFactoryDXGI(io_runner)->GetOrCreateD3D11Device();
+  auto d3d11_device = GetGpuMemoryBufferFactoryDXGI()->GetOrCreateD3D11Device();
   if (!d3d11_device) {
     return handle;
   }
@@ -335,11 +333,10 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
 
 // static
 bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
   DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
-  auto* gmb_factory = GetGpuMemoryBufferFactoryDXGI(io_runner);
+  auto* gmb_factory = GetGpuMemoryBufferFactoryDXGI();
 
   auto d3d11_device = gmb_factory->GetOrCreateD3D11Device();
   if (!d3d11_device) {

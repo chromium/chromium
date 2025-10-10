@@ -728,8 +728,7 @@ bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
     base::UnsafeSharedMemoryRegion shared_memory) {
 #if BUILDFLAG(IS_WIN)
   return D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
-      shared_image_manager_->io_runner(), std::move(buffer_handle),
-      std::move(shared_memory));
+      std::move(buffer_handle), std::move(shared_memory));
 #else
   return false;
 #endif
