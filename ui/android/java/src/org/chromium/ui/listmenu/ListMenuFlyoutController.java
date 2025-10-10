@@ -141,13 +141,13 @@ public class ListMenuFlyoutController<T> {
                 // receive an {@code ACTION_HOVER_ENTER} event on the flyout view. If we faithfully
                 // follow these, the parent item momentarily loses the hover style, so we ignore the
                 // first exit event in case it's immediately followed by an enter event.
+                cancelFlyoutDelay(view);
                 mPendingHoverExitRunnable =
                         () -> {
                             if (item.model.get(IS_HIGHLIGHTED)) {
                                 updateHighlights(
                                         highlightPath.subList(0, highlightPath.size() - 1));
                             }
-                            cancelFlyoutDelay(view);
                             mPendingHoverExitRunnable = null;
                         };
                 mHoverExitDelayHandler = view.getHandler();
