@@ -336,9 +336,15 @@ Element* InvokerForOpenPopover(const Node* node) {
 }
 
 const Element* InclusiveAncestorOpenPopoverWithInvoker(const Element* element) {
-  for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
-    if (InvokerForOpenPopover(element)) {
-      return element;  // Return the popover
+  for (const Element* current = element; current;
+       current = FlatTreeTraversal::ParentElement(*current)) {
+    if (RuntimeEnabledFeatures::
+            OpenPopoverInvokerRestrictToSameTreeScopeEnabled() &&
+        element->GetTreeScope() != current->GetTreeScope()) {
+      break;
+    }
+    if (InvokerForOpenPopover(current)) {
+      return current;  // Return the popover
     }
   }
   return nullptr;

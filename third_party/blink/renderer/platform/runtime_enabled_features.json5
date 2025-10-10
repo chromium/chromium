@@ -3419,6 +3419,13 @@
       status: "stable",
     },
     {
+      // Restrict popover invoker lookup to the same TreeScope as the element.
+      // This will be shipped in M142, and it can be removed in M144.
+      // See https://issues.chromium.org/issues/443031270.
+      name: "OpenPopoverInvokerRestrictToSameTreeScope",
+      status: "stable",
+    },
+    {
       name: "OrientationEvent",
       status: {"Android": "stable"},
     },
