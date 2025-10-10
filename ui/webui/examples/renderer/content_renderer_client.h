@@ -5,6 +5,7 @@
 #ifndef UI_WEBUI_EXAMPLES_RENDERER_CONTENT_RENDERER_CLIENT_H_
 #define UI_WEBUI_EXAMPLES_RENDERER_CONTENT_RENDERER_CLIENT_H_
 
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
 
 namespace webui_examples {
@@ -20,6 +21,11 @@ class ContentRendererClient : public content::ContentRendererClient {
   // content::ContentRendererClient:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RenderThreadStarted() override;
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  bool OverrideCreatePlugin(content::RenderFrame* render_frame,
+                            const blink::WebPluginParams& params,
+                            blink::WebPlugin** plugin) override;
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 };
 
 }  // namespace webui_examples

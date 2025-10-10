@@ -41,6 +41,7 @@ class BrowserProxy {
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
   private guestContentsId: number;
+  private attached: boolean = false;
 
   constructor() {
     super();
@@ -49,12 +50,56 @@ class WebviewElement extends HTMLElement {
     this.iframeElement.style.margin = "0";
     this.iframeElement.style.padding = "0";
     this.iframeElement.style.flex = '1';
-    this.appendChild(this.iframeElement);
     this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
     console.log('guest-contents-id', this.guestContentsId);
-    const iframeContentWindow = this.iframeElement.contentWindow;
-    webshell.attachIframeGuest(this.guestContentsId,
-                               iframeContentWindow);
+  }
+
+  connectedCallback() {
+    if (!this.attached) {
+      this.appendChild(this.iframeElement);
+      this.attached = true;
+      const iframeContentWindow = this.iframeElement.contentWindow;
+      webshell.attachIframeGuest(this.guestContentsId,
+                                iframeContentWindow);
+    }
+  }
+
+  navigate(src: MojoUrl) {
+    BrowserProxy.getInstance().navigate(this.guestContentsId, src);
+  }
+
+  goBack() {
+    BrowserProxy.getInstance().goBack(this.guestContentsId);
+  }
+
+  goForward() {
+    BrowserProxy.getInstance().goForward(this.guestContentsId);
+  }
+}
+
+class SecureEmbedElement extends HTMLElement {
+  public embedElement: HTMLEmbedElement;
+  private guestContentsId: number;
+  private attached: boolean = false;
+
+  constructor() {
+    super();
+    this.embedElement = document.createElement('embed');
+    this.embedElement.style.border = '0px';
+    this.embedElement.style.margin = "0";
+    this.embedElement.style.padding = "0";
+    this.embedElement.style.flex = '1';
+    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    console.log('secure-embed guest-contents-id', this.guestContentsId);
+    this.embedElement.setAttribute('data-content-id', this.guestContentsId.toString());
+    this.embedElement.setAttribute('type', 'application/x-google-chrome-secure-embed');
+  }
+
+  connectedCallback() {
+    if (!this.attached) {
+      this.appendChild(this.embedElement);
+      this.attached = true;
+    }
   }
 
   navigate(src: MojoUrl) {
@@ -72,19 +117,55 @@ class WebviewElement extends HTMLElement {
 
 webshell.allowWebviewElementRegistration(() => {
   customElements.define("webview", WebviewElement);
+  customElements.define("secureembed", SecureEmbedElement);
 });
 
+let currentEmbedElement: WebviewElement | SecureEmbedElement | null = null;
+
+function attachViaGuestContents() {
+  if (currentEmbedElement) {
+    currentEmbedElement.remove();
+  }
+
+  // Create and attach WebviewElement
+  const webview = document.createElement("webview") as WebviewElement;
+  webview.id = "webview";
+  document.body.appendChild(webview);
+  currentEmbedElement = webview;
+}
+
+function attachViaSecureEmbed() {
+  if (currentEmbedElement) {
+    currentEmbedElement.remove();
+  }
+
+  // Create and attach SecureEmbedElement
+  const secureEmbed = document.createElement("secureembed") as SecureEmbedElement;
+  secureEmbed.id = "webview";
+  document.body.appendChild(secureEmbed);
+  currentEmbedElement = secureEmbed;
+}
+
+const attachGuestButton = document.getElementById("attach-guest");
+if (attachGuestButton) {
+  attachGuestButton.addEventListener("click", attachViaGuestContents);
+}
+
+const attachSecureEmbedButton = document.getElementById("attach-secure-embed");
+if (attachSecureEmbedButton) {
+  attachSecureEmbedButton.addEventListener("click", attachViaSecureEmbed);
+}
+
 function navigateToAddressBarUrl() {
-  const webview = document.getElementById("webview") as WebviewElement;
   const addressBar = document.getElementById("address") as HTMLInputElement;
-  if (webview && addressBar) {
+  if (currentEmbedElement && addressBar) {
     try {
       // Validate the URL before converting it to a Mojo URL to avoid a Mojo
       // validation error when sending this call to the browser. Successful
       // construction indicates a valid URL.
       const src = new URL(addressBar.value);
       const mojoSrc: MojoUrl = {url: src.toString()};
-      webview.navigate(mojoSrc);
+      currentEmbedElement.navigate(mojoSrc);
     } catch (error) {
       console.error(error);
     }
@@ -109,9 +190,8 @@ if (addressBar) {
 const backButton = document.getElementById("back");
 if (backButton) {
   backButton.addEventListener("click", ()=>{
-    const webview = document.getElementById("webview") as WebviewElement;
-    if (webview) {
-      webview.goBack();
+    if (currentEmbedElement) {
+      currentEmbedElement.goBack();
     }
   });
 }
@@ -119,9 +199,8 @@ if (backButton) {
 const forwardButton = document.getElementById("forward");
 if (forwardButton) {
   forwardButton.addEventListener("click", ()=>{
-    const webview = document.getElementById("webview") as WebviewElement;
-    if (webview) {
-      webview.goForward();
+    if (currentEmbedElement) {
+      currentEmbedElement.goForward();
     }
   });
 }

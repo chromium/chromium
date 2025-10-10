@@ -43,7 +43,16 @@ void AllowCustomElementNameRegistration(v8::Local<v8::Function> callback) {
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   blink::WebCustomElement::EmbedderNamesAllowedScope embedder_names_scope;
-  callback->Call(context, context->Global(), 0, nullptr).ToLocalChecked();
+  v8::TryCatch try_catch(isolate);
+  v8::MaybeLocal<v8::Value> result =
+      callback->Call(context, context->Global(), 0, nullptr);
+  if (result.IsEmpty()) {
+    v8::String::Utf8Value exception(isolate, try_catch.Exception());
+    v8::String::Utf8Value stack_trace(
+        isolate, try_catch.StackTrace(context).ToLocalChecked());
+    LOG(ERROR) << "AllowCustomElementNameRegistration failed:" << *exception
+               << "\nStack trace: " << *stack_trace;
+  }
 }
 
 content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {

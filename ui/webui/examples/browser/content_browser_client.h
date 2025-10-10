@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace webui_examples {
@@ -32,6 +33,11 @@ class ContentBrowserClient : public content::ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
   std::string GetUserAgent() override;
 
   raw_ptr<BrowserMainParts, AcrossTasksDanglingUntriaged> browser_main_parts_ =

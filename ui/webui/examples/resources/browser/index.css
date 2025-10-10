@@ -28,3 +28,10 @@ webview {
 
   flex: 1;
 }
+
+secureembed {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+}
