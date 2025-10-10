@@ -1843,7 +1843,7 @@ bool WebGLRenderingContextBase::
     return false;
   }
 
-  return GetDrawingBuffer()->SupportsConcurrentReadWrite();
+  return GetDrawingBuffer()->SupportsNoCopyExportForLowLatency();
 }
 
 void WebGLRenderingContextBase::PageVisibilityChanged() {
