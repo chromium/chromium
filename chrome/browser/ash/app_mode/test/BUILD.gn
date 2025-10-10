@@ -43,6 +43,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",

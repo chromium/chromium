@@ -231,7 +231,7 @@ void TestServiceWorkerTaskQueueObserver::WaitForWorkerStarted(
   }
 
   base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  started_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 
@@ -329,8 +329,8 @@ int TestServiceWorkerTaskQueueObserver::GetRequestedWorkerStartedCount(
 void TestServiceWorkerTaskQueueObserver::DidStartWorker(
     const ExtensionId& extension_id) {
   started_set_.insert(extension_id);
-  if (quit_closure_) {
-    std::move(quit_closure_).Run();
+  if (started_quit_closure_) {
+    std::move(started_quit_closure_).Run();
   }
 }
 

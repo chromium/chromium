@@ -9,6 +9,8 @@ include_rules = [
   "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/signin",
   "+chrome/browser/ash/accessibility/accessibility_manager.h",
+  "+chrome/browser/ash/accessibility/accessibility_test_utils.h",
+  "+chrome/browser/ash/accessibility/chromevox_test_utils.h",
   "+chrome/browser/device_identity",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",

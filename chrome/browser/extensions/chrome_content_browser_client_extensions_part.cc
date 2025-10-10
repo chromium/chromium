@@ -92,6 +92,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -653,7 +654,13 @@ bool ChromeContentBrowserClientExtensionsPart::
   // of e.g. throwing errors in response to installation events (where the
   // worker is registered, but then immediately unregistered).
   if (!registered_version.IsValid()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // Make an exception for kiosk mode, since kiosk sessions use temporary
+    // profiles, which are discarded when a session ends.
+    return !user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+#else
     return true;
+#endif
   }
 
   // Don't allow the unregistration of a valid, enabled service worker-based

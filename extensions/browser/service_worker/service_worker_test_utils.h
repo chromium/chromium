@@ -222,6 +222,8 @@ class TestServiceWorkerTaskQueueObserver
 
   base::OnceClosure quit_closure_;
 
+  base::OnceClosure started_quit_closure_;
+
   base::OnceClosure untrack_quit_closure_;
 };
 
