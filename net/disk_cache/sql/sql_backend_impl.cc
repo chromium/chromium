@@ -784,6 +784,7 @@ void SqlBackendImpl::HandleOnExternalCacheHitOperation(
 }
 
 void SqlBackendImpl::OnBrowserIdle() {
+  store_->MaybeLoadInMemoryIndex(base::DoNothing());
   store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
   store_->MaybeRunCheckpoint(base::DoNothing());
 }

@@ -66,17 +66,27 @@ struct StoreStatus {
 
 // The result of a successful initialization.
 struct InitResult {
-  InitResult(int64_t max_bytes,
-             SqlPersistentStoreInMemoryIndex&& index,
-             std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
-      : max_bytes(max_bytes),
-        index(std::move(index)),
-        doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
+  explicit InitResult(int64_t max_bytes) : max_bytes(max_bytes) {}
   ~InitResult() = default;
   InitResult(InitResult&& other) = default;
   InitResult& operator=(InitResult&& other) = default;
 
   int64_t max_bytes = 0;
+};
+
+// A struct to hold the in-memory index and the list of doomed resource IDs.
+// This is used to return both from the backend task that loads them.
+struct InMemoryIndexAndDoomedResIds {
+  InMemoryIndexAndDoomedResIds(
+      SqlPersistentStoreInMemoryIndex&& index,
+      std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids)
+      : index(std::move(index)),
+        doomed_entry_res_ids(std::move(doomed_entry_res_ids)) {}
+  ~InMemoryIndexAndDoomedResIds() = default;
+  InMemoryIndexAndDoomedResIds(InMemoryIndexAndDoomedResIds&& other) = default;
+  InMemoryIndexAndDoomedResIds& operator=(
+      InMemoryIndexAndDoomedResIds&& other) = default;
+
   SqlPersistentStoreInMemoryIndex index;
   std::vector<SqlPersistentStore::ResId> doomed_entry_res_ids;
 };
@@ -102,6 +112,8 @@ using IntOrError = SqlPersistentStore::IntOrError;
 using InitResultOrError = base::expected<InitResult, Error>;
 using ResIdList = std::vector<ResId>;
 using ResIdListOrError = base::expected<ResIdList, Error>;
+using InMemoryIndexAndDoomedResIdsOrError =
+    base::expected<InMemoryIndexAndDoomedResIds, Error>;
 
 // A helper struct to bundle an operation's result with a flag indicating
 // whether an eviction check is needed. This allows the background sequence,
@@ -198,6 +210,11 @@ void PopulateTraceDetails(
 void PopulateTraceDetails(const ResIdList& result,
                           perfetto::TracedDictionary& dict) {
   dict.Add("doomed_entry_count", result.size());
+}
+void PopulateTraceDetails(const InMemoryIndexAndDoomedResIds& result,
+                          perfetto::TracedDictionary& dict) {
+  dict.Add("index_size", result.index.size());
+  dict.Add("doomed_entry_count", result.doomed_entry_res_ids.size());
 }
 void PopulateTraceDetails(Error error,
                           const StoreStatus& store_status,
@@ -398,6 +415,7 @@ class Backend {
   ResIdListOrErrorAndEvictionRequested RunEviction(
       base::flat_set<ResId> excluded_res_ids,
       base::TimeTicks start_time);
+  InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
   bool MaybeRunCheckpoint();
 
   void EnableStrictCorruptionCheckForTesting() {
@@ -468,6 +486,7 @@ class Backend {
   ResIdListOrError RunEvictionInternal(
       const base::flat_set<ResId>& excluded_res_ids,
       bool& corruption_detected);
+  InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndexInternal();
 
   // Trims blobs that overlap with the new write range [offset, end), and
   // updates the total size delta.
@@ -602,8 +621,7 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   }
 
   return *db_init_status_ == Error::kOk
-             ? InitResultOrError(InitResult(max_bytes_, std::move(index),
-                                            std::move(doomed_entry_res_ids)))
+             ? InitResultOrError(InitResult(max_bytes_))
              : base::unexpected(*db_init_status_);
 }
 
@@ -658,31 +676,6 @@ Error Backend::InitializeInternal(bool& corruption_detected,
     return Error::kFailedToInitializeMetaTable;
   }
 
-  {
-    base::ElapsedTimer timer;
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        GetQuery(
-            Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources)));
-    while (statement.Step()) {
-      const auto res_id = ResId(statement.ColumnInt64(0));
-      const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt(1));
-      const bool doomed = statement.ColumnBool(2);
-      if (doomed) {
-        doomed_entry_res_ids.emplace_back(res_id);
-      } else {
-        index.Insert(key_hash, res_id);
-      }
-    }
-    // TODO(crbug.com/443171275): If this process takes a very long time,
-    // load the in-memory index when the browser is idle.
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat({kHistogramPrefix, "LoadInMemoryIndexTime"}),
-        timer.Elapsed());
-  }
-
-  // TODO(crbug.com/443171275): Use `index.size()` and remove
-  // `kSqlBackendMetaTableKeyEntryCount` metadata.
   int64_t tmp_entry_count = 0;
   if (!GetOrInitializeMetaValue(meta_table_, kSqlBackendMetaTableKeyEntryCount,
                                 tmp_entry_count,
@@ -2411,6 +2404,47 @@ int64_t Backend::CalculateTotalSize() {
   return result;
 }
 
+InMemoryIndexAndDoomedResIdsOrError Backend::LoadInMemoryIndex() {
+  TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.LoadInMemoryIndex");
+  auto result = LoadInMemoryIndexInternal();
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.LoadInMemoryIndex", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, store_status_, dict);
+                   });
+  return result;
+}
+
+InMemoryIndexAndDoomedResIdsOrError Backend::LoadInMemoryIndexInternal() {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
+  if (!db_init_status_.has_value() || *db_init_status_ != Error::kOk) {
+    return base::unexpected(Error::kNotInitialized);
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  ResIdList doomed_entry_res_ids;
+  base::ElapsedTimer timer;
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources)));
+  while (statement.Step()) {
+    const auto res_id = ResId(statement.ColumnInt64(0));
+    const auto key_hash = CacheEntryKey::Hash(statement.ColumnInt(1));
+    const bool doomed = statement.ColumnBool(2);
+    if (doomed) {
+      doomed_entry_res_ids.emplace_back(res_id);
+    } else {
+      index.Insert(key_hash, res_id);
+    }
+  }
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kHistogramPrefix, "LoadInMemoryIndexTime"}),
+      timer.Elapsed());
+  return InMemoryIndexAndDoomedResIds(std::move(index),
+                                      std::move(doomed_entry_res_ids));
+}
+
 bool Backend::MaybeRunCheckpoint() {
   TRACE_EVENT("disk_cache", "SqlBackend.MaybeRunCheckpoint");
   if (!db_.is_open()) {
@@ -2492,9 +2526,6 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
               if (weak_ptr) {
                 if (result.has_value()) {
                   weak_ptr->SetMaxSize(result->max_bytes);
-                  weak_ptr->index_ = std::move(result->index);
-                  weak_ptr->to_be_deleted_res_ids_ =
-                      std::move(result->doomed_entry_res_ids);
                 }
                 std::move(callback).Run(result.has_value() ? Error::kOk
                                                            : result.error());
@@ -2536,8 +2567,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                CacheEntryKey::Hash key_hash, ResId res_id,
                ErrorCallback callback, ErrorAndEvictionRequested result) {
               if (weak_ptr) {
-                if (result.result == Error::kOk) {
-                  CHECK(weak_ptr->index_.has_value());
+                if (result.result == Error::kOk &&
+                    weak_ptr->index_.has_value()) {
                   if (!weak_ptr->index_->Remove(key_hash, res_id)) {
                     weak_ptr->RecordIndexMismatch(
                         IndexMismatchLocation::kDoomEntry);
@@ -2572,8 +2603,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
             [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
                ErrorCallback callback, ErrorAndEvictionRequested result) {
               if (weak_ptr) {
-                if (result.result == Error::kOk) {
-                  CHECK(weak_ptr->index_.has_value());
+                if (result.result == Error::kOk &&
+                    weak_ptr->index_.has_value()) {
                   weak_ptr->index_->Clear();
                 }
                 // We should not run the callback when `this` was deleted.
@@ -2681,8 +2712,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                ResIdListOrErrorAndEvictionRequested result) {
               if (weak_ptr) {
                 weak_ptr->eviction_in_progress_ = false;
-                if (result.result.has_value()) {
-                  CHECK(weak_ptr->index_.has_value());
+                if (result.result.has_value() && weak_ptr->index_.has_value()) {
                   for (ResId res_id : *result.result) {
                     if (!weak_ptr->index_->Remove(res_id)) {
                       weak_ptr->RecordIndexMismatch(
@@ -2704,6 +2734,30 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void GetSizeOfAllEntries(Int64Callback callback) const override {
     backend_.AsyncCall(&Backend::GetSizeOfAllEntries).Then(std::move(callback));
+  }
+  bool MaybeLoadInMemoryIndex(ErrorCallback callback) override {
+    if (in_memory_load_trigered_) {
+      return false;
+    }
+    in_memory_load_trigered_ = true;
+    backend_.AsyncCall(&Backend::LoadInMemoryIndex)
+        .Then(base::BindOnce(
+            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+               ErrorCallback callback,
+               InMemoryIndexAndDoomedResIdsOrError result) {
+              if (weak_ptr) {
+                if (result.has_value()) {
+                  weak_ptr->index_ = std::move(result->index);
+                  weak_ptr->to_be_deleted_res_ids_ =
+                      std::move(result->doomed_entry_res_ids);
+                }
+                std::move(callback).Run(result.has_value() ? Error::kOk
+                                                           : result.error());
+              }
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+
+    return true;
   }
   bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) override {
     if (to_be_deleted_res_ids_.empty()) {
@@ -2788,13 +2842,12 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
            IndexMismatchLocation location,
            EntryInfoOrErrorAndEvictionRequested result) {
           if (weak_ptr) {
-            if (result.result.has_value()) {
-              CHECK(weak_ptr->index_.has_value());
+            if (result.result.has_value() && weak_ptr->index_.has_value()) {
               if (!result.result->opened) {
                 if (!weak_ptr->index_->Insert(key_hash,
                                               result.result->res_id)) {
                   weak_ptr->RecordIndexMismatch(location);
-                };
+                }
               }
             }
             weak_ptr->eviction_requested_ = result.eviction_requested;
@@ -2813,8 +2866,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
            ErrorCallback callback, IndexMismatchLocation location,
            ResIdListOrErrorAndEvictionRequested result) {
           if (weak_ptr) {
-            if (result.result.has_value()) {
-              CHECK(weak_ptr->index_.has_value());
+            if (result.result.has_value() && weak_ptr->index_.has_value()) {
               for (ResId res_id : result.result.value()) {
                 if (!weak_ptr->index_->Remove(res_id)) {
                   weak_ptr->RecordIndexMismatch(location);
@@ -2844,6 +2896,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   bool eviction_requested_ = false;
   bool strict_corruption_check_enabled_ = false;
 
+  // Whether loading of the in-memory index has been triggered.
+  bool in_memory_load_trigered_ = false;
+
+  // The in-memory index of cache entries. This is loaded asynchronously after
+  // MaybeLoadInMemoryIndex() is called.
   std::optional<SqlPersistentStoreInMemoryIndex> index_;
 
   // A list of resource IDs for entries that were doomed in a previous session

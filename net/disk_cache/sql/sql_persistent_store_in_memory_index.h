@@ -33,6 +33,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   bool Remove(CacheEntryKey::Hash hash, SqlPersistentStore::ResId res_id);
   void Clear();
 
+  size_t size() const { return res_id_to_hash_map_.size(); }
+
  private:
   using HashResIdSet =
       IndexedPairSet<CacheEntryKey::Hash, SqlPersistentStore::ResId>;

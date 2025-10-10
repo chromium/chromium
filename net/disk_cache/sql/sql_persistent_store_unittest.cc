@@ -116,6 +116,18 @@ class SqlPersistentStoreTest : public testing::Test {
     ASSERT_TRUE(base::MakeFileUnwritable(GetDatabaseFilePath()));
   }
 
+  bool LoadInMemoryIndex(SqlPersistentStore::Error expected_result =
+                             SqlPersistentStore::Error::kOk) {
+    CHECK(store_);
+    base::test::TestFuture<SqlPersistentStore::Error> future;
+    auto ret = store_->MaybeLoadInMemoryIndex(future.GetCallback());
+    if (ret) {
+      CHECK_EQ(future.Get(), expected_result);
+      return true;
+    }
+    return false;
+  }
+
   // Synchronously gets the entry count.
   int32_t GetEntryCount() {
     base::test::TestFuture<int32_t> future;
@@ -1345,6 +1357,9 @@ TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntries) {
   ClearStore();
   CreateAndInitStore();
 
+  // Load the in-memory index to get the list of doomed entry.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
   base::HistogramTester histogram_tester;
   base::test::TestFuture<SqlPersistentStore::Error> future;
   EXPECT_TRUE(store_->MaybeRunCleanupDoomedEntries(future.GetCallback()));
@@ -1589,6 +1604,7 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   ASSERT_EQ(GetEntryCount(), 5);
   int64_t initial_total_size = GetSizeOfAllEntries();
 
+  EXPECT_TRUE(LoadInMemoryIndex());
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashFound);
   EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
@@ -3513,6 +3529,8 @@ TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
 
   CreateStore(kMaxBytes);
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  // Load the in memory index to make GetIndexStateForHash() work.
+  EXPECT_TRUE(LoadInMemoryIndex());
 
   // Add entries until size > high watermark.
   std::vector<CacheEntryKey> keys;
@@ -3827,7 +3845,17 @@ TEST_F(SqlPersistentStoreTest, IndexState) {
             SqlPersistentStore::IndexState::kNotReady);
   ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
 
-  // After initialization with an empty store, hash is not found.
+  // Even after the initialization finished, index is not ready.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  // Load the in memory index.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // In memory index load process should not be triggered twice.
+  EXPECT_FALSE(LoadInMemoryIndex());
+
+  // After loading the in memory index, returns kHashNotFound.
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
   EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
@@ -3889,6 +3917,8 @@ TEST_F(SqlPersistentStoreTest, IndexReloads) {
   const CacheEntryKey kKey2("key2");
 
   CreateAndInitStore();
+  // Load the in memory index.
+  EXPECT_TRUE(LoadInMemoryIndex());
 
   // Create two entries.
   ASSERT_TRUE(this->CreateEntry(kKey1).has_value());
@@ -3903,6 +3933,8 @@ TEST_F(SqlPersistentStoreTest, IndexReloads) {
   // Close and reopen the store.
   ClearStore();
   CreateAndInitStore();
+  // Load the in memory index.
+  EXPECT_TRUE(LoadInMemoryIndex());
 
   // The index should be re-populated.
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
@@ -3911,6 +3943,11 @@ TEST_F(SqlPersistentStoreTest, IndexReloads) {
             SqlPersistentStore::IndexState::kHashFound);
   EXPECT_EQ(store_->GetIndexStateForHash(CacheEntryKey("other").hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
+}
+
+TEST_F(SqlPersistentStoreTest, IndexLoadNotInitializedFailure) {
+  CreateStore();
+  EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kNotInitialized));
 }
 
 TEST_F(SqlPersistentStoreTest, SimulateDbFailureInitializationFailure) {
@@ -3974,6 +4011,8 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
   ASSERT_FALSE(read_data_result.has_value());
   EXPECT_EQ(read_data_result.error(),
             SqlPersistentStore::Error::kFailedForTesting);
+
+  EXPECT_TRUE(LoadInMemoryIndex(SqlPersistentStore::Error::kFailedForTesting));
 
   store_->SetSimulateDbFailureForTesting(false);
 

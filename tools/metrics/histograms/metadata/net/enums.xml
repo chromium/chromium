@@ -3037,6 +3037,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="15" label="BodyEndMismatch"/>
   <int value="16" label="FailedForTesting"/>
   <int value="17" label="Aborted"/>
+  <int value="18" label="NotInitialized"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->

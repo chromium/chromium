@@ -69,7 +69,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kBodyEndMismatch = 15,
     kFailedForTesting = 16,
     kAborted = 17,
-    kMaxValue = kAborted
+    kNotInitialized = 18,
+    kMaxValue = kNotInitialized
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -316,6 +317,11 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Asynchronously retrieves the total size of all entries.
   virtual void GetSizeOfAllEntries(Int64Callback callback) const = 0;
+
+  // Loads the in-memory index. This is a no-op if the index has already been
+  // loaded or if a load is already in progress. Returns true if a load was
+  // initiated.
+  virtual bool MaybeLoadInMemoryIndex(ErrorCallback callback) = 0;
 
   // If there are entries that were doomed in a previous session, this method
   // triggers a task to delete them from the database. The cleanup is performed
