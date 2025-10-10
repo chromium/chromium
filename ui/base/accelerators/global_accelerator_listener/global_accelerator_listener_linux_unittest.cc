@@ -11,7 +11,9 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/read_value.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/utils/write_value.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
@@ -48,7 +50,8 @@ MATCHER_P2(MatchMethod, interface, member, "") {
 
 }  // namespace
 
-using DbusShortcuts = DbusArray<DbusStruct<DbusString, DbusDictionary>>;
+using DbusDictionary = std::map<std::string, dbus_utils::Variant>;
+using DbusShortcuts = std::vector<std::tuple<std::string, DbusDictionary>>;
 
 class MockObserver final : public GlobalAcceleratorListener::Observer {
  public:
@@ -204,10 +207,11 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 dbus::Signal signal(interface_name, signal_name);
                 dbus::MessageWriter writer(&signal);
                 writer.AppendUint32(kResponseSuccess);
-                MakeDbusDictionary(
-                    "session_handle",
-                    DbusString(session_proxy->object_path().value()))
-                    .Write(&writer);
+                DbusDictionary dict;
+                dict.emplace("session_handle",
+                             dbus_utils::Variant::Wrap<"s">(
+                                 session_proxy->object_path().value()));
+                dbus_utils::WriteValue(writer, dict);
                 signal_callback.Run(&signal);
               });
       return create_session_request_proxy.get();
@@ -238,7 +242,11 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 dbus::MessageWriter writer(&signal);
                 writer.AppendUint32(kResponseSuccess);
                 // Simulate empty list of shortcuts
-                MakeDbusDictionary("shortcuts", DbusShortcuts()).Write(&writer);
+                DbusDictionary dict;
+                dict.emplace(
+                    "shortcuts",
+                    dbus_utils::Variant::Wrap<"a(sa{sv})">(DbusShortcuts()));
+                dbus_utils::WriteValue(writer, dict);
                 signal_callback.Run(&signal);
               });
       return list_shortcuts_request_proxy.get();
@@ -268,7 +276,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 dbus::Signal signal(interface_name, signal_name);
                 dbus::MessageWriter writer(&signal);
                 writer.AppendUint32(kResponseSuccess);
-                DbusDictionary().Write(&writer);
+                dbus_utils::WriteValue(writer, DbusDictionary());
                 signal_callback.Run(&signal);
               });
       return bind_shortcuts_request_proxy.get();
@@ -294,13 +302,14 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
             [&](dbus::MethodCall* method_call, int timeout_ms,
                 dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
               dbus::MessageReader reader(method_call);
-              DbusDictionary options;
-              EXPECT_TRUE(options.Read(&reader));
-              auto* token = options.GetAs<DbusString>("session_handle_token");
+              auto options = dbus_utils::ReadValue<DbusDictionary>(reader);
+              ASSERT_TRUE(options);
+              auto it = options->find("session_handle_token");
+              ASSERT_NE(it, options->end());
+              auto token = std::move(it->second).Take<std::string>();
               ASSERT_TRUE(token);
               std::string session_path_str =
-                  base::nix::XdgDesktopPortalSessionPath(kBusName,
-                                                         token->value());
+                  base::nix::XdgDesktopPortalSessionPath(kBusName, *token);
               EXPECT_EQ(dbus::ObjectPath(session_path_str),
                         session_proxy->object_path());
 
@@ -324,8 +333,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           dbus::MessageReader reader(method_call);
           dbus::ObjectPath session_path;
           EXPECT_TRUE(reader.PopObjectPath(&session_path));
-          DbusDictionary options;
-          EXPECT_TRUE(options.Read(&reader));
+          auto options = dbus_utils::ReadValue<DbusDictionary>(reader);
+          EXPECT_TRUE(options);
 
           auto response = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
@@ -346,10 +355,10 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           dbus::MessageReader reader(method_call);
           dbus::ObjectPath session_path;
           EXPECT_TRUE(reader.PopObjectPath(&session_path));
-          DbusShortcuts shortcuts;
-          EXPECT_TRUE(shortcuts.Read(&reader));
-          DbusString parent_window;
-          EXPECT_TRUE(parent_window.Read(&reader));
+          auto shortcuts = dbus_utils::ReadValue<DbusShortcuts>(reader);
+          EXPECT_TRUE(shortcuts);
+          std::string parent_window;
+          EXPECT_TRUE(reader.PopString(&parent_window));
 
           auto response = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response.get());
