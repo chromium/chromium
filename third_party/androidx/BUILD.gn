@@ -149,6 +149,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
       "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
@@ -960,7 +961,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_annotation_annotation_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
     ]
   }
 
