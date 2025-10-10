@@ -126,12 +126,12 @@
       ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
     _navigationController.sheetPresentationController.prefersGrabberVisible =
         YES;
+    // TODO(crbug.com/441764702): Add `mediumDetent` back.
     _navigationController.sheetPresentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
       [UISheetPresentationControllerDetent largeDetent],
     ];
     _navigationController.sheetPresentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierMedium;
+        UISheetPresentationControllerDetentIdentifierLarge;
   } else {
     _navigationController.sheetPresentationController.prefersGrabberVisible =
         NO;
