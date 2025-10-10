@@ -412,19 +412,25 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     accumulated_root_overscroll_.set_y(0);
   }
 
-  gfx::Vector2dF unused_root_delta;
-  if (GetViewport().ShouldScroll(scroll_node)) {
-    unused_root_delta =
-        gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y());
-  }
+  gfx::Vector2dF unused_scroll_delta(scroll_state.delta_x(),
+                                     scroll_state.delta_y());
+  const bool is_root_scroller = GetViewport().ShouldScroll(scroll_node);
+  if (is_root_scroller) {
+    // When inner viewport is unscrollable, disable overscrolls.
+    if (auto* inner_viewport_scroll_node = InnerViewportScrollNode()) {
+      unused_scroll_delta =
+          UserScrollableDelta(*inner_viewport_scroll_node, unused_scroll_delta);
+    }
 
-  // When inner viewport is unscrollable, disable overscrolls.
-  if (auto* inner_viewport_scroll_node = InnerViewportScrollNode()) {
-    unused_root_delta =
-        UserScrollableDelta(*inner_viewport_scroll_node, unused_root_delta);
+    accumulated_root_overscroll_ += unused_scroll_delta;
   }
-
-  accumulated_root_overscroll_ += unused_root_delta;
+  // Reset non-root scroll delta if overscroll effect on non root scrollers is
+  // disabled. Does not modify the value in any cases if it is a root scroller.
+  if (!base::FeatureList::IsEnabled(
+          ::features::kOverscrollEffectOnNonRootScrollers) &&
+      !is_root_scroller) {
+    unused_scroll_delta = gfx::Vector2dF();
+  }
 
   bool did_scroll_top_controls =
       initial_top_controls_offset !=
@@ -432,9 +438,12 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   InputHandlerScrollResult scroll_result;
   scroll_result.did_scroll = did_scroll_content || did_scroll_top_controls;
-  scroll_result.did_overscroll_root = !unused_root_delta.IsZero();
+  // TODO(crbug.com/41102897): Refactor did_root_overscroll to instead store the
+  // ElementId of scroller that consumed the overscroll.
+  scroll_result.did_overscroll_root =
+      is_root_scroller && !unused_scroll_delta.IsZero();
   scroll_result.accumulated_root_overscroll = accumulated_root_overscroll_;
-  scroll_result.unused_scroll_delta = unused_root_delta;
+  scroll_result.unused_scroll_delta = unused_scroll_delta;
   scroll_result.overscroll_behavior =
       scroll_state.is_scroll_chain_cut()
           ? OverscrollBehavior(OverscrollBehavior::Type::kNone)

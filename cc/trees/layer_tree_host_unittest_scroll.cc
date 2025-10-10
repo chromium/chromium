@@ -3489,5 +3489,131 @@ class LayerTreeHostScrollTestScrollFrameIntervalInputs
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestScrollFrameIntervalInputs);
 
+struct OverscrollTestState {
+  bool enable_overscroll_effect_on_non_root = false;
+  gfx::Point input_point;
+  gfx::Vector2dF expected_unused_scroll_delta;
+  bool expected_did_overscroll_root = false;
+};
+class LayerTreeHostScrollTestOverscroll : public LayerTreeHostScrollTest {
+ public:
+  explicit LayerTreeHostScrollTestOverscroll(OverscrollTestState state)
+      : state_(state) {
+    scoped_feature_list_.InitWithFeatureState(
+        ::features::kOverscrollEffectOnNonRootScrollers,
+        state_.enable_overscroll_effect_on_non_root);
+  }
+  void SetupTree() override {
+    // Set up viewport.
+    SetInitialRootBounds(gfx::Size(100, 100));
+    LayerTreeHostScrollTest::SetupTree();
+
+    Layer* root = layer_tree_host()->root_layer();
+    ASSERT_TRUE(root);
+    Layer* root_scroll_layer =
+        layer_tree_host()->OuterViewportScrollLayerForTesting();
+
+    // Non-root scrollable child inside the viewport.
+    child_ = Layer::Create();
+    child_->SetElementId(LayerIdToElementIdForTesting(child_->id()));
+    child_->SetIsDrawable(true);
+    child_->SetHitTestable(true);
+    child_->SetBounds(gfx::Size(200, 200));
+    CopyProperties(root_scroll_layer, child_.get());
+    CreateTransformNode(child_.get()).post_translation =
+        gfx::Vector2dF(5.f, 5.f);
+    CreateScrollNode(child_.get(), root->bounds());
+    root->AddChild(child_);
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
+    if (impl->active_tree()->source_frame_number() != 0) {
+      return;
+    }
+    const gfx::Vector2dF latch_delta(1.f, 1.f);
+    const gfx::Vector2dF overscroll_delta(-10.f, -10.f);
+
+    auto& input_handler = impl->GetInputHandler();
+
+    {
+      auto state = BeginState(state_.input_point, latch_delta);
+      InputHandler::ScrollStatus status = input_handler.ScrollBegin(
+          state.get(), ui::ScrollInputType::kTouchscreen);
+      EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    }
+
+    const gfx::Vector2dF scroll_delta = -latch_delta + overscroll_delta;
+    // We are expecting overscroll only.
+    EXPECT_FALSE(
+        input_handler
+            .ScrollUpdate(UpdateState(state_.input_point, scroll_delta))
+            .did_scroll);
+
+    const InputHandlerScrollResult result = input_handler.ScrollUpdate(
+        UpdateState(state_.input_point, overscroll_delta));
+    EXPECT_FALSE(result.did_scroll);
+    EXPECT_EQ(result.unused_scroll_delta, state_.expected_unused_scroll_delta);
+    EXPECT_EQ(result.did_overscroll_root, state_.expected_did_overscroll_root);
+
+    input_handler.ScrollEnd();
+    EndTest();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_refptr<Layer> child_;
+  const OverscrollTestState state_;
+};
+
+class LayerTreeHostScrollTestOverscroll_Root
+    : public LayerTreeHostScrollTestOverscroll {
+ public:
+  LayerTreeHostScrollTestOverscroll_Root()
+      : LayerTreeHostScrollTestOverscroll{
+            OverscrollTestState{.input_point = {0, 0},
+                                .expected_unused_scroll_delta = {-10, -10},
+                                .expected_did_overscroll_root = true}} {}
+};
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestOverscroll_Root);
+
+class LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Root
+    : public LayerTreeHostScrollTestOverscroll {
+ public:
+  LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Root()
+      : LayerTreeHostScrollTestOverscroll{
+            OverscrollTestState{.enable_overscroll_effect_on_non_root = true,
+                                .input_point = {0, 0},
+                                .expected_unused_scroll_delta = {-10, -10},
+                                .expected_did_overscroll_root = true}} {}
+};
+MULTI_THREAD_TEST_F(
+    LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Root);
+
+class LayerTreeHostScrollTestOverscroll_Child
+    : public LayerTreeHostScrollTestOverscroll {
+ public:
+  LayerTreeHostScrollTestOverscroll_Child()
+      : LayerTreeHostScrollTestOverscroll{
+            OverscrollTestState{.input_point = {10, 10},
+                                .expected_unused_scroll_delta = {0, 0},
+                                .expected_did_overscroll_root = false}} {}
+};
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestOverscroll_Child);
+
+class LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Child
+    : public LayerTreeHostScrollTestOverscroll {
+ public:
+  LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Child()
+      : LayerTreeHostScrollTestOverscroll{
+            OverscrollTestState{.enable_overscroll_effect_on_non_root = true,
+                                .input_point = {10, 10},
+                                .expected_unused_scroll_delta = {-10, -10},
+                                .expected_did_overscroll_root = false}} {}
+};
+MULTI_THREAD_TEST_F(
+    LayerTreeHostScrollTestOverscroll_EnableNonRootOverscroll_Child);
+
 }  // namespace
 }  // namespace cc

@@ -149,9 +149,13 @@ void ElasticOverscrollController::ObserveGestureEventAndResult(
                                  -gesture_event.data.scroll_update.delta_y);
       bool has_momentum = gesture_event.data.scroll_update.inertial_phase ==
                           WebGestureEvent::InertialPhaseState::kMomentum;
-      ObserveScrollUpdate(event_delta, scroll_result.unused_scroll_delta,
-                          event_timestamp, scroll_result.overscroll_behavior,
-                          has_momentum);
+      // TODO(crbug.com/41102897): Replace check of did root overscroll with
+      // passing in the ElementId to which the unused scroll delta applies to.
+      const gfx::Vector2dF unused_root_delta =
+          scroll_result.did_overscroll_root ? scroll_result.unused_scroll_delta
+                                            : gfx::Vector2dF{};
+      ObserveScrollUpdate(event_delta, unused_root_delta, event_timestamp,
+                          scroll_result.overscroll_behavior, has_momentum);
       break;
     }
     case WebInputEvent::Type::kGestureScrollEnd: {
