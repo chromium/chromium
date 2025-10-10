@@ -86,7 +86,7 @@ static_assert(
 }  // namespace
 
 LocalHotkeyManager::LocalHotkeyManager(
-    base::WeakPtr<GlicWindowController> window_controller,
+    base::WeakPtr<GlicWindowControllerInterface> window_controller,
     std::unique_ptr<Delegate> delegate)
     : window_controller_(window_controller), delegate_(std::move(delegate)) {
   CHECK(delegate_);

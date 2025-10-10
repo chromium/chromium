@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
   GlicKeyedService* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  ASSERT_FALSE(glic_keyed_service->window_controller().IsShowing());
+  ASSERT_FALSE(glic_keyed_service->IsWindowShowing());
 
   RunTestSequence(
       ObserveState(test::internal::kGlicWindowControllerState,
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, MAYBE_Show) {
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
   GlicKeyedService* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  ASSERT_FALSE(glic_keyed_service->window_controller().IsShowing());
+  ASSERT_FALSE(glic_keyed_service->IsWindowShowing());
 
   RunTestSequence(ObserveState(test::internal::kGlicWindowControllerState,
                                std::ref(window_controller())),

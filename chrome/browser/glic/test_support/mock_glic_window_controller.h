@@ -13,7 +13,7 @@
 namespace glic {
 
 class MockGlicWindowController
-    : public testing::NiceMock<GlicWindowController> {
+    : public testing::NiceMock<GlicWindowControllerInterface> {
  public:
   MockGlicWindowController();
   ~MockGlicWindowController();
@@ -44,7 +44,7 @@ class MockGlicWindowController
               ());
   MOCK_METHOD(void, EnableDragResize, (bool), ());
   MOCK_METHOD(void, MaybeSetWidgetCanResize, (), (override));
-  MOCK_METHOD(gfx::Size, GetSize, (), (override));
+  MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
   MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
   MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
@@ -55,7 +55,7 @@ class MockGlicWindowController
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));
   MOCK_METHOD(bool, IsActive, (), (override));
   MOCK_METHOD(bool, IsShowing, (), (const));
-  MOCK_METHOD(bool, IsAttached, (), (const, override));
+  MOCK_METHOD(bool, IsAttached, (), (override));
   MOCK_METHOD(bool, IsDetached, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               AddWindowActivationChangedCallback,
@@ -89,8 +89,10 @@ class MockGlicWindowController
               (LastActiveInstanceChangedCallback callback),
               (override));
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
+  MOCK_METHOD(Host&, host, (), (override));
+  MOCK_METHOD(const InstanceId&, id, (), (const, override));
 
-  base::WeakPtr<GlicWindowController> GetWeakPtr() override {
+  base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

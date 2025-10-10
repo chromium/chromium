@@ -1489,7 +1489,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     request_to_show_credential_selection_dialog_subscription_ = {};
     request_to_show_user_confirmation_dialog_subscription_ = {};
     browser_attach_observation_.reset();
-    glic_service_->zero_state_suggestions_manager().Reset();
+    if (glic_service_->zero_state_suggestions_manager()) {
+      glic_service_->zero_state_suggestions_manager()->Reset();
+    }
   }
 
   void WebClientDisconnected() { Uninstall(); }

@@ -42,6 +42,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void Focus() override;
   views::View* GetView() override;
   mojom::PanelState GetPanelState() const override;
+  gfx::Size GetPanelSize() override;
 
   // Host::EmbedderDelegate:
   void Resize(const gfx::Size& size,

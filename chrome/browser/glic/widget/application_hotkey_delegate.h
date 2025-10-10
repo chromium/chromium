@@ -11,7 +11,7 @@
 
 namespace glic {
 
-class GlicWindowController;
+class GlicWindowControllerInterface;
 
 // Manages hotkeys that are active application-wide when Glic is relevant.
 // This class acts as a delegate for a LocalHotkeyManager instance, configuring
@@ -21,7 +21,7 @@ class GlicWindowController;
 class ApplicationHotkeyDelegate : public LocalHotkeyManager::Delegate {
  public:
   explicit ApplicationHotkeyDelegate(
-      base::WeakPtr<GlicWindowController> window_controller);
+      base::WeakPtr<GlicWindowControllerInterface> window_controller);
   ~ApplicationHotkeyDelegate() override;
 
   // LocalHotkeyManager::Delegate:
@@ -39,12 +39,12 @@ class ApplicationHotkeyDelegate : public LocalHotkeyManager::Delegate {
   }
 
  private:
-  base::WeakPtr<GlicWindowController> window_controller_;
+  base::WeakPtr<GlicWindowControllerInterface> window_controller_;
   base::WeakPtrFactory<ApplicationHotkeyDelegate> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<GlicWindowController> window_controller);
+    base::WeakPtr<GlicWindowControllerInterface> window_controller);
 
 }  // namespace glic
 

@@ -29,10 +29,10 @@ mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr() {
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
     GlicSharingManager* sharing_manager,
-    GlicWindowController* window_controller,
+    GlicInstance* glic_instance,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),
-      window_controller_(window_controller),
+      glic_instance_(glic_instance),
       contextual_cueing_service_(contextual_cueing_service) {}
 
 GlicZeroStateSuggestionsManager::~GlicZeroStateSuggestionsManager() = default;
@@ -41,7 +41,7 @@ Host& GlicZeroStateSuggestionsManager::host() {
   // TODO(refactor): Eventually GlicInstance should own a
   // GlicZeroStateSuggestionsManager, and that GlicInstance's host should be
   // used.
-  return window_controller_->GetInstances()[0]->host();
+  return glic_instance_->host();
 }
 
 void GlicZeroStateSuggestionsManager::
@@ -49,7 +49,7 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const mojom::TabData* focused_tab_data) {
-  if (!window_controller_->IsShowing()) {
+  if (!glic_instance_->IsShowing()) {
     return;
   }
 
@@ -87,7 +87,7 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const std::vector<content::WebContents*>& pinned_tab_data) {
-  if (!window_controller_->IsShowing()) {
+  if (!glic_instance_->IsShowing()) {
     return;
   }
 

@@ -281,7 +281,7 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
   }
 
   bool IsGlicWindowShowing() const {
-    return border_view_->GetGlicService()->window_controller().IsShowing();
+    return border_view_->GetGlicService()->IsWindowShowing();
   }
 
   bool IsTabInCurrentView(const content::WebContents* tab) const {

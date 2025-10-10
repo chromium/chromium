@@ -59,7 +59,7 @@ class GlicPanelScopedHotkeyRegistration
 }  // namespace
 
 GlicPanelHotkeyDelegate::GlicPanelHotkeyDelegate(
-    base::WeakPtr<GlicWindowController> window_controller)
+    base::WeakPtr<GlicWindowControllerInterface> window_controller)
     : window_controller_(window_controller) {}
 
 GlicPanelHotkeyDelegate::~GlicPanelHotkeyDelegate() = default;
@@ -107,7 +107,7 @@ GlicPanelHotkeyDelegate::CreateScopedHotkeyRegistration(
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
-    base::WeakPtr<GlicWindowController> window_controller) {
+    base::WeakPtr<GlicWindowControllerInterface> window_controller) {
   return std::make_unique<LocalHotkeyManager>(
       window_controller,
       std::make_unique<GlicPanelHotkeyDelegate>(window_controller));

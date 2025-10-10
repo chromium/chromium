@@ -135,6 +135,17 @@ bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();
 }
 
+bool GlicInstanceImpl::IsAttached() {
+  return GetPanelState().kind == mojom::PanelState_Kind::kAttached;
+}
+
+gfx::Size GlicInstanceImpl::GetPanelSize() {
+  if (auto* embedder = GetActiveEmbedder()) {
+    return embedder->GetPanelSize();
+  }
+  return gfx::Size();
+}
+
 void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   if (type == EmbedderType::kSidePanel && tab && !tab->IsActivated()) {
     ShowInactiveSidePanelEmbedderFor(tab);

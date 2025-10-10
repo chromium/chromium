@@ -39,16 +39,28 @@ bool CheckFreStatus(Profile* profile, prefs::FreStatus status) {
          static_cast<int>(status);
 }
 
+class DummyDelegateImpl : public GlicMetrics::Delegate {
+ public:
+  gfx::Size GetWindowSize() const override { return {}; }
+  bool IsWindowShowing() const override { return false; }
+  bool IsWindowAttached() const override { return false; }
+  content::WebContents* GetContents() override { return nullptr; }
+  ActiveTabSharingState GetActiveTabSharingState() override {
+    return ActiveTabSharingState::kNoTabCanBeShared;
+  }
+  int32_t GetNumPinnedTabs() const override { return 0; }
+};
+
 class DelegateImpl : public GlicMetrics::Delegate {
  public:
-  explicit DelegateImpl(GlicWindowController* window_controller,
+  explicit DelegateImpl(GlicWindowControllerInterface* window_controller,
                         GlicSharingManager* sharing_manager,
                         PrefService* pref_service)
       : window_controller_(window_controller),
         sharing_manager_(sharing_manager),
         pref_service_(pref_service) {}
   gfx::Size GetWindowSize() const override {
-    return window_controller_->GetSize();
+    return window_controller_->GetPanelSize();
   }
   bool IsWindowShowing() const override {
     return window_controller_->IsShowing();
@@ -77,7 +89,48 @@ class DelegateImpl : public GlicMetrics::Delegate {
   }
 
  private:
-  raw_ptr<GlicWindowController> window_controller_;
+  raw_ptr<GlicWindowControllerInterface> window_controller_;
+  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<PrefService> pref_service_;
+};
+
+class DelegateMultiInstanceImpl : public GlicMetrics::Delegate {
+ public:
+  explicit DelegateMultiInstanceImpl(GlicInstance* glic_instance,
+                                     GlicSharingManager* sharing_manager,
+                                     PrefService* pref_service)
+      : glic_instance_(glic_instance),
+        sharing_manager_(sharing_manager),
+        pref_service_(pref_service) {}
+  gfx::Size GetWindowSize() const override {
+    return glic_instance_->GetPanelSize();
+  }
+  bool IsWindowShowing() const override { return glic_instance_->IsShowing(); }
+  bool IsWindowAttached() const override {
+    return glic_instance_->IsAttached();
+  }
+  content::WebContents* GetContents() override {
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
+  }
+  ActiveTabSharingState GetActiveTabSharingState() override {
+    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
+      return ActiveTabSharingState::kTabContextPermissionNotGranted;
+    }
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    if (ftd.is_focus()) {
+      return ActiveTabSharingState::kActiveTabIsShared;
+    } else if (ftd.unfocused_tab()) {
+      return ActiveTabSharingState::kCannotShareActiveTab;
+    }
+    return ActiveTabSharingState::kNoTabCanBeShared;
+  }
+  int32_t GetNumPinnedTabs() const override {
+    return sharing_manager_->GetNumPinnedTabs();
+  }
+
+ private:
+  raw_ptr<GlicInstance> glic_instance_;
   raw_ptr<GlicSharingManager> sharing_manager_;
   raw_ptr<PrefService> pref_service_;
 };
@@ -687,12 +740,22 @@ void GlicMetrics::LogGetContextFromFocusedTabError(
       error);
 }
 
-void GlicMetrics::SetControllers(GlicWindowController* window_controller,
-                                 GlicSharingManager* sharing_manager) {
+void GlicMetrics::SetControllers(
+    GlicWindowControllerInterface* window_controller,
+    GlicSharingManager* sharing_manager) {
   delegate_ = std::make_unique<DelegateImpl>(window_controller, sharing_manager,
                                              profile_->GetPrefs());
 }
 
+void GlicMetrics::SetControllersWithInstance(
+    GlicInstance* glic_instance,
+    GlicSharingManager* sharing_manager) {
+  delegate_ = std::make_unique<DelegateMultiInstanceImpl>(
+      glic_instance, sharing_manager, profile_->GetPrefs());
+}
+void GlicMetrics::ClearControllers() {
+  delegate_ = std::make_unique<DummyDelegateImpl>();
+}
 void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }

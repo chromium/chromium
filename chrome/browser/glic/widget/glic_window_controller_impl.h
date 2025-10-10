@@ -56,13 +56,12 @@ class ScopedGlicButtonIndicator;
 // standalone. See |IsAttached|
 class GlicWindowControllerImpl
     : public display::DisplayObserver,
-      public GlicWindowController,
+      public GlicWindowControllerInterface,
       public views::WidgetObserver,
       public Host::EmbedderDelegate,
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost,
-      public GlicInstance {
+      public web_modal::WebContentsModalDialogHost {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
@@ -81,7 +80,7 @@ class GlicWindowControllerImpl
   void FocusIfOpen() override;
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
-  gfx::Size GetSize() override;
+  gfx::Size GetPanelSize() override;
   void Close() override;
   bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
@@ -90,14 +89,15 @@ class GlicWindowControllerImpl
   void RemoveStateObserver(StateObserver* observer) override;
 
   bool IsActive() override;
-  bool IsAttached() const override;
+  bool IsAttached() override;
+  bool IsAttached() const;
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
   void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
-  base::WeakPtr<GlicWindowController> GetWeakPtr() override;
+  base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override;
 
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;

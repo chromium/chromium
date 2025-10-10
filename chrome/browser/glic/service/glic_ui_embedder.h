@@ -59,6 +59,9 @@ class GlicUiEmbedder {
 
   // Returns the current panel state.
   virtual mojom::PanelState GetPanelState() const = 0;
+
+  // Returns the size of the panel.
+  virtual gfx::Size GetPanelSize() = 0;
 };
 
 }  // namespace glic

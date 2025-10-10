@@ -59,6 +59,13 @@ mojom::PanelState GlicFloatingUi::GetPanelState() const {
   return panel_state_;
 }
 
+gfx::Size GlicFloatingUi::GetPanelSize() {
+  if (auto* glic_widget = GetGlicWidget()) {
+    return glic_widget->GetSize();
+  }
+  return gfx::Size();
+}
+
 GlicWidget* GlicFloatingUi::GetGlicWidget() const {
   return glic_widget_.get();
 }

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/tabs/public/tab_interface.h"
@@ -57,6 +59,15 @@ Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
 
 mojom::PanelState GlicSidePanelUi::GetPanelState() const {
   return panel_state_;
+}
+
+gfx::Size GlicSidePanelUi::GetPanelSize() {
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (!glic_side_panel_coordinator || !glic_side_panel_coordinator->GetView()) {
+    return {};
+  }
+
+  return glic_side_panel_coordinator->GetView()->size();
 }
 
 void GlicSidePanelUi::Resize(const gfx::Size& size,

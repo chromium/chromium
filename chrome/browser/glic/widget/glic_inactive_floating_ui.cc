@@ -50,6 +50,10 @@ views::View* GlicInactiveFloatingUi::GetView() {
   return nullptr;
 }
 
+gfx::Size GlicInactiveFloatingUi::GetPanelSize() {
+  return gfx::Size();
+}
+
 mojom::PanelState GlicInactiveFloatingUi::GetPanelState() const {
   mojom::PanelState state;
   state.kind = glic::mojom::PanelState::Kind::kHidden;

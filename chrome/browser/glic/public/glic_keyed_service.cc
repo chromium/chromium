@@ -114,12 +114,13 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
     GlicWindowController* window_controller,
     GlicMetrics* metrics) {
   if (UseDefaultWindowController()) {
-    return std::make_unique<GlicSharingManagerImpl>(profile, window_controller,
-                                                    metrics);
+    return std::make_unique<GlicSharingManagerImpl>(
+        profile, static_cast<GlicWindowControllerImpl*>(window_controller),
+        metrics);
   }
 
-  return std::make_unique<GlicActiveBrowserSharingManager>(profile,
-                                                           window_controller);
+  return std::make_unique<GlicActiveBrowserSharingManager>(
+      profile, static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
 }  // namespace
@@ -150,16 +151,27 @@ GlicKeyedService::GlicKeyedService(
                                                         /*use_for_fre=*/false)),
       occlusion_notifier_(
           std::make_unique<GlicOcclusionNotifier>(window_controller())),
-      zero_state_suggestions_manager_(
-          std::make_unique<GlicZeroStateSuggestionsManager>(
-              sharing_manager_.get(),
-              &window_controller(),
-              contextual_cueing_service)),
       contextual_cueing_service_(contextual_cueing_service),
       actor_keyed_service_(actor_keyed_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   CHECK(actor_keyed_service_);
-  metrics_->SetControllers(&window_controller(), sharing_manager_.get());
+
+  if (UseDefaultWindowController()) {
+    // TODO: Create the zero state suggestions manager on each instance.
+    zero_state_suggestions_manager_ =
+        std::make_unique<GlicZeroStateSuggestionsManager>(
+            sharing_manager_.get(), &GetSingleInstanceWindowController(),
+            contextual_cueing_service);
+  }
+
+  if (UseDefaultWindowController()) {
+    metrics_->SetControllers(&GetSingleInstanceWindowController(),
+                             sharing_manager_.get());
+  } else {
+    // TODO(crbug.com/450026474): Consider not constructing this metrics
+    // instance.
+    metrics_->ClearControllers();
+  }
 
   memory_pressure_listener_registration_ =
       std::make_unique<base::MemoryPressureListenerRegistration>(
@@ -285,6 +297,12 @@ GlicWindowController& GlicKeyedService::window_controller() const {
   return *window_controller_.get();
 }
 
+GlicWindowControllerInterface&
+GlicKeyedService::GetSingleInstanceWindowController() const {
+  CHECK(UseDefaultWindowController());
+  return static_cast<GlicWindowControllerInterface&>(window_controller());
+}
+
 GlicFreController& GlicKeyedService::fre_controller() {
   CHECK(fre_controller_);
   return *fre_controller_.get();
@@ -349,7 +367,13 @@ void GlicKeyedService::GetZeroStateSuggestionsAndSubscribe(
     const mojom::ZeroStateSuggestionsOptions& options,
     mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
         callback) {
-  zero_state_suggestions_manager().ObserveZeroStateSuggestions(
+  if (!zero_state_suggestions_manager()) {
+    NOTIMPLEMENTED()
+        << "Zero state suggestions not implemented for multi-instance.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  zero_state_suggestions_manager()->ObserveZeroStateSuggestions(
       has_active_subscription, options.is_first_run, options.supported_tools,
       std::move(callback));
 }
@@ -359,7 +383,12 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
 }
 
 bool GlicKeyedService::IsWindowShowing() const {
-  return window_controller().IsShowing();
+  if (UseDefaultWindowController()) {
+    return GetSingleInstanceWindowController().IsShowing();
+  }
+  // TODO: Investigate if this is needed for multi-instance.
+  NOTIMPLEMENTED() << "IsWindowShowing not implemented for multi-instance.";
+  return false;
 }
 
 bool GlicKeyedService::IsWindowDetached() const {
@@ -367,7 +396,7 @@ bool GlicKeyedService::IsWindowDetached() const {
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return window_controller().IsShowing() || fre_controller_->IsShowingDialog();
+  return IsWindowShowing() || fre_controller_->IsShowingDialog();
 }
 
 base::CallbackListSubscription

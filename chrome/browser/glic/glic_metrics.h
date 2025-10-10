@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/display.h"
@@ -247,7 +248,7 @@ enum class ActiveTabSharingState {
 
 class GlicEnabling;
 class GlicSharingManager;
-class GlicWindowController;
+class GlicWindowControllerInterface;
 
 namespace internal {
 class BrowserActivityObserver;
@@ -342,10 +343,14 @@ class GlicMetrics {
   void LogGetContextFromFocusedTabError(
       GlicGetContextFromFocusedTabError error);
 
-  // Must be called immediately after constructor before any calls from
-  // glic.mojom.
-  void SetControllers(GlicWindowController* window_controller,
+  // One of these three must be called immediately after constructor before any
+  // calls from glic.mojom.
+  void SetControllers(GlicWindowControllerInterface* window_controller,
                       GlicSharingManager* sharing_manager);
+  void SetControllersWithInstance(GlicInstance* glic_instance,
+                                  GlicSharingManager* sharing_manager);
+  void ClearControllers();
+
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
   // Must be called when context is requested.

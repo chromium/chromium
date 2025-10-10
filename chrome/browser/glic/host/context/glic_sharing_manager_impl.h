@@ -24,7 +24,7 @@ class GlicMetrics;
 class GlicSharingManagerImpl : public GlicSharingManager {
  public:
   GlicSharingManagerImpl(Profile* profile,
-                         GlicWindowController* window_controller,
+                         GlicWindowControllerInterface* window_controller,
                          GlicMetrics* metrics);
   GlicSharingManagerImpl(
       std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,

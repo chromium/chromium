@@ -191,12 +191,6 @@ void GlicInstanceCoordinatorImpl::MaybeSetWidgetCanResize() {
   NOTIMPLEMENTED();
 }
 
-gfx::Size GlicInstanceCoordinatorImpl::GetSize() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return gfx::Size();
-}
-
 void GlicInstanceCoordinatorImpl::Close() {
   // TODO(crbug.com/450286204): This is likely needed, or needed to be
   // refactored.
@@ -236,18 +230,6 @@ bool GlicInstanceCoordinatorImpl::IsActive() {
   return false;
 }
 
-bool GlicInstanceCoordinatorImpl::IsShowing() const {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool GlicInstanceCoordinatorImpl::IsAttached() const {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool GlicInstanceCoordinatorImpl::IsDetached() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
@@ -279,7 +261,8 @@ bool GlicInstanceCoordinatorImpl::IsWarmed() const {
   return false;
 }
 
-base::WeakPtr<GlicWindowController> GlicInstanceCoordinatorImpl::GetWeakPtr() {
+base::WeakPtr<GlicInstanceCoordinatorImpl>
+GlicInstanceCoordinatorImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -349,13 +332,6 @@ void GlicInstanceCoordinatorImpl::SidePanelShown(
   // GlicWindowController implements, and will not be called when
   // kGlicMultiInstance is enabled.
   NOTREACHED();
-}
-
-base::CallbackListSubscription GlicInstanceCoordinatorImpl::RegisterStateChange(
-    StateChangeCallback callback) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
 }
 
 base::CallbackListSubscription

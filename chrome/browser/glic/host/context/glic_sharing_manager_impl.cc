@@ -50,7 +50,7 @@ GlicGetContextResult TransformFetcherResult(
 
 GlicSharingManagerImpl::GlicSharingManagerImpl(
     Profile* profile,
-    GlicWindowController* window_controller,
+    GlicWindowControllerInterface* window_controller,
     GlicMetrics* metrics)
     : focused_browser_manager_(
           std::make_unique<GlicFocusedBrowserManager>(window_controller)),

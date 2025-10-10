@@ -7,14 +7,14 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace glic {
 
 GlicActiveBrowserSharingManager::GlicActiveBrowserSharingManager(
     Profile* profile,
-    GlicWindowController* instance_coordinator)
+    GlicInstanceCoordinator* instance_coordinator)
     : active_tab_tracker_(profile), profile_(profile) {
   active_tab_subscription_ = active_tab_tracker_.AddActiveTabChangedCallback(
       base::BindRepeating(&GlicActiveBrowserSharingManager::OnActiveTabChanged,

@@ -35,14 +35,18 @@ class TabInterface;
 }
 
 namespace gfx {
-class Size;
 class Point;
 }  // namespace gfx
 
 namespace glic {
-class GlicInstanceCoordinatorImpl
+
+// An interface to GlicInstanceCoordinatorImpl. Should be used instead of direct
+// access to GlicInstanceCoordinatorImpl to allow for test fakes.
+class GlicInstanceCoordinator
     : public GlicWindowController,
-      public GlicInstanceImpl::InstanceCoordinatorDelegate {
+      public GlicInstanceImpl::InstanceCoordinatorDelegate {};
+
+class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -76,7 +80,6 @@ class GlicInstanceCoordinatorImpl
   void FocusIfOpen() override;
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
-  gfx::Size GetSize() override;
   void Close() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
@@ -84,17 +87,15 @@ class GlicInstanceCoordinatorImpl
   void RemoveStateObserver(StateObserver* observer) override;
 
   mojom::PanelState GetPanelState() override;
-  bool IsShowing() const override;
 
   bool IsActive() override;
-  bool IsAttached() const override;
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
   void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
-  base::WeakPtr<GlicWindowController> GetWeakPtr() override;
+  base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
@@ -110,8 +111,6 @@ class GlicInstanceCoordinatorImpl
       tabs::TabInterface& tab) override;
   void SidePanelShown(BrowserWindowInterface* browser) override;
 
-  base::CallbackListSubscription RegisterStateChange(
-      StateChangeCallback callback) override;
   base::CallbackListSubscription RegisterLastActiveInstanceChangedCallback(
       LastActiveInstanceChangedCallback callback) override;
 

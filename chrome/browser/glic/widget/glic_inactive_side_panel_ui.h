@@ -48,6 +48,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void Focus() override;
   views::View* GetView() override;
   mojom::PanelState GetPanelState() const override;
+  gfx::Size GetPanelSize() override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;

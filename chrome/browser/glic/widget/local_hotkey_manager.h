@@ -14,7 +14,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 namespace glic {
-class GlicWindowController;
+class GlicWindowControllerInterface;
 
 // Manages hotkeys that are active within a specific local scope, such as the
 // Glic window itself or the broader Chrome application when Glic is relevant.
@@ -80,7 +80,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   };
 
   explicit LocalHotkeyManager(
-      base::WeakPtr<GlicWindowController> window_controller,
+      base::WeakPtr<GlicWindowControllerInterface> window_controller,
       std::unique_ptr<Delegate> delegate);
   ~LocalHotkeyManager() override;
 
@@ -117,7 +117,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   std::vector<ui::Accelerator> GetAccelerators(Hotkey hotkey);
   void RegisterHotkey(Hotkey hotkey_enum);
 
-  base::WeakPtr<GlicWindowController> window_controller_;
+  base::WeakPtr<GlicWindowControllerInterface> window_controller_;
   std::unique_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_registrar_;

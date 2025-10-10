@@ -125,6 +125,10 @@ mojom::PanelState GlicInactiveSidePanelUi::GetPanelState() const {
   return state;
 }
 
+gfx::Size GlicInactiveSidePanelUi::GetPanelSize() {
+  return gfx::Size();
+}
+
 std::unique_ptr<GlicUiEmbedder>
 GlicInactiveSidePanelUi::CreateInactiveEmbedder() const {
   NOTREACHED() << "The embedder is already inactive.";

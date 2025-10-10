@@ -17,7 +17,7 @@ class ContextualCueingService;
 
 namespace glic {
 class GlicSharingManager;
-class GlicWindowController;
+class GlicInstance;
 class Host;
 
 // A class for managing sending zero state suggestions through the mojo api.
@@ -25,7 +25,7 @@ class GlicZeroStateSuggestionsManager {
  public:
   GlicZeroStateSuggestionsManager(
       GlicSharingManager* sharing_manager,
-      GlicWindowController* window_controller,
+      GlicInstance* glic_instance,
       contextual_cueing::ContextualCueingService* contextual_cueing_service);
   virtual ~GlicZeroStateSuggestionsManager();
 
@@ -79,7 +79,7 @@ class GlicZeroStateSuggestionsManager {
 
   // Owned by the glic_keyed_service.
   raw_ptr<GlicSharingManager> sharing_manager_;
-  raw_ptr<GlicWindowController> window_controller_;
+  raw_ptr<GlicInstance> glic_instance_;
   raw_ptr<Host> host_;
 
   // This passed by the glic_keyed_service.

@@ -81,7 +81,7 @@ class ApplicationScopedHotkeyRegistration
 }  // namespace
 
 ApplicationHotkeyDelegate::ApplicationHotkeyDelegate(
-    base::WeakPtr<GlicWindowController> window_controller)
+    base::WeakPtr<GlicWindowControllerInterface> window_controller)
     : window_controller_(window_controller) {}
 
 ApplicationHotkeyDelegate::~ApplicationHotkeyDelegate() = default;
@@ -117,7 +117,7 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<GlicWindowController> window_controller) {
+    base::WeakPtr<GlicWindowControllerInterface> window_controller) {
   auto hotkey_manager = std::make_unique<LocalHotkeyManager>(
       window_controller,
       std::make_unique<ApplicationHotkeyDelegate>(window_controller));

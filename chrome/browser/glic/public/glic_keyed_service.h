@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -128,6 +129,7 @@ class GlicKeyedService : public KeyedService,
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicFreController& fre_controller();
   GlicWindowController& window_controller() const;
+  GlicWindowControllerInterface& GetSingleInstanceWindowController() const;
   GlicSharingManager& sharing_manager() override;
 
   // Called when a webview guest is created within a chrome://glic WebUI.
@@ -252,9 +254,12 @@ class GlicKeyedService : public KeyedService,
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   HostManager& host_manager();
-  GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
-    return *zero_state_suggestions_manager_;
+
+  // Null in multi-instance mode.
+  GlicZeroStateSuggestionsManager* zero_state_suggestions_manager() {
+    return zero_state_suggestions_manager_.get();
   }
+
   // Returns whether this process host is either the Glic FRE WebUI or the Glic
   // main WebUI.
   bool IsProcessHostForGlic(content::RenderProcessHost* process_host);

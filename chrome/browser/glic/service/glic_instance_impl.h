@@ -82,7 +82,11 @@ class GlicInstanceImpl : public GlicInstance,
   GlicSharingManager& sharing_manager() override;
 
   void CloseInstanceAndShutdown();
+
+  // GlicInstance implementation.
   bool IsShowing() const override;
+  bool IsAttached() override;
+  gfx::Size GetPanelSize() override;
 
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(EmbedderType type, tabs::TabInterface* tab);

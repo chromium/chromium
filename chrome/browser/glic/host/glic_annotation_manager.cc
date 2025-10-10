@@ -232,7 +232,7 @@ void GlicAnnotationManager::ScrollTo(
 
   // Note: `GlicWindowController::IsShowing()` will be false when
   // `GlicWindowController` is running the close animation.
-  if (!service_->window_controller().IsShowing()) {
+  if (!service_->IsWindowShowing()) {
     std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }

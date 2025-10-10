@@ -34,7 +34,6 @@ namespace content {
 class RenderFrameHost;
 }
 namespace gfx {
-class Size;
 class Point;
 }  // namespace gfx
 
@@ -49,20 +48,20 @@ class GlicWidget;
 class GlicKeyedService;
 enum class AttachChangeReason;
 
-// This class owns and manages the glic window. This class has the same lifetime
-// as the GlicKeyedService, so it exists if and only if the profile exists.
+// MIGRATION IN PROGRESS - WARNING
 //
-// See the |State| enum below for the lifecycle of the window. When the glic
-// window is open |attached_browser_| indicates if the window is attached or
-// standalone. See |IsAttached|
-class GlicWindowController : public GlicInstance::UIDelegate,
-                             public Host::InstanceInterfaceForMigration {
+// GlicWindowController is a misleading name!
+//
+// GlicWindowController exists as a temporary compatibility interface
+// implemented by GlicWindowControllerImpl and GlicInstanceCoordinatorImpl.
+class GlicWindowController : public Host::InstanceInterfaceForMigration {
  public:
   using StateObserver = PanelStateObserver;
   using PanelStateContext = ::glic::PanelStateContext;
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
+  virtual ~GlicWindowController() = default;
 
   virtual HostManager& host_manager() = 0;
   virtual std::vector<GlicInstance*> GetInstances() = 0;
@@ -92,9 +91,6 @@ class GlicWindowController : public GlicInstance::UIDelegate,
   // the widget size changes because the widget is resizable.
   virtual void MaybeSetWidgetCanResize() = 0;
 
-  // Returns the current size of the glic window.
-  virtual gfx::Size GetSize() = 0;
-
   // Close the panel but keep the glic WebContents alive in the background.
   virtual void Close() = 0;
 
@@ -111,9 +107,6 @@ class GlicWindowController : public GlicInstance::UIDelegate,
   // Returns whether the views::Widget associated with the glic window is active
   // (e.g. will receive keyboard events).
   virtual bool IsActive() = 0;
-
-  // Returns whether or not the glic window is currently attached to a browser.
-  virtual bool IsAttached() const = 0;
 
   // Returns wehether or not the glic window is currently showing detached.
   // When True |GetGlicWidget| will return a valid ptr.
@@ -136,10 +129,6 @@ class GlicWindowController : public GlicInstance::UIDelegate,
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
   virtual bool IsWarmed() const = 0;
-
-  // Returns a WeakPtr to this instance. It can be destroyed at any time if the
-  // profile is deleted or if the browser shuts down.
-  virtual base::WeakPtr<GlicWindowController> GetWeakPtr() = 0;
 
   virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
 
@@ -180,6 +169,7 @@ class GlicWindowController : public GlicInstance::UIDelegate,
 
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
 
+  // TODO: Move to GlicInstanceCoordinator.
   using LastActiveInstanceChangedCallback =
       base::RepeatingCallback<void(GlicInstance* new_instance)>;
   virtual base::CallbackListSubscription
@@ -191,6 +181,20 @@ class GlicWindowController : public GlicInstance::UIDelegate,
     return base::FeatureList::IsEnabled(features::kGlicDetached) &&
            !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
   }
+};
+
+// This class owns and manages the glic window. This class has the same lifetime
+// as the GlicKeyedService, so it exists if and only if the profile exists.
+//
+// See the |State| enum below for the lifecycle of the window. When the glic
+// window is open |attached_browser_| indicates if the window is attached or
+// standalone. See |IsAttached|
+class GlicWindowControllerInterface : public GlicWindowController,
+                                      public GlicInstance {
+ public:
+  // Returns a WeakPtr to this instance. It can be destroyed at any time if the
+  // profile is deleted or if the browser shuts down.
+  virtual base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() = 0;
 };
 
 }  // namespace glic

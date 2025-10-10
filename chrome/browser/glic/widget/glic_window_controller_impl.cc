@@ -1044,7 +1044,7 @@ void GlicWindowControllerImpl::MaybeSetWidgetCanResize() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-gfx::Size GlicWindowControllerImpl::GetSize() {
+gfx::Size GlicWindowControllerImpl::GetPanelSize() {
   if (IsDetached()) {
     return GetGlicWidget()->GetSize();
   }
@@ -1417,6 +1417,10 @@ bool GlicWindowControllerImpl::IsAttached() const {
   return IsShowing() && attached_browser_;
 }
 
+bool GlicWindowControllerImpl::IsAttached() {
+  return const_cast<const GlicWindowControllerImpl*>(this)->IsAttached();
+}
+
 bool GlicWindowControllerImpl::IsDetached() const {
   return IsShowing() && glic_widget_;
 }
@@ -1443,7 +1447,8 @@ bool GlicWindowControllerImpl::IsWarmed() const {
   return const_cast<Host&>(host_).contents_container();
 }
 
-base::WeakPtr<GlicWindowController> GlicWindowControllerImpl::GetWeakPtr() {
+base::WeakPtr<GlicWindowControllerInterface>
+GlicWindowControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

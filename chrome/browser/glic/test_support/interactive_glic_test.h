@@ -422,15 +422,30 @@ class InteractiveGlicTestT : public T {
 
   auto CheckControllerShowing(bool expect_showing) {
     return Api::CheckResult(
-        [this]() { return window_controller().IsShowing(); }, expect_showing,
-        "CheckControllerShowing");
+        [this]() {
+          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+            return GetGlicUiEmbedder() && GetGlicUiEmbedder()->IsShowing();
+          } else {
+            return GetWindowControllerImpl().IsShowing();
+          }
+        },
+        expect_showing, "CheckControllerShowing");
   }
 
   auto CheckControllerWidgetMode(GlicWindowMode mode) {
     return Api::CheckResult(
         [this]() {
-          return window_controller().IsAttached() ? GlicWindowMode::kAttached
-                                                  : GlicWindowMode::kDetached;
+          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+            if (!GetGlicInstance()) {
+              return GlicWindowMode::kAttached;
+            }
+            return GetGlicInstance()->IsAttached() ? GlicWindowMode::kAttached
+                                                   : GlicWindowMode::kDetached;
+          } else {
+            return GetWindowControllerImpl().IsAttached()
+                       ? GlicWindowMode::kAttached
+                       : GlicWindowMode::kDetached;
+          }
         },
         mode, "CheckControllerWidgetMode");
   }

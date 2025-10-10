@@ -439,7 +439,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   }
 
   bool IsGlicWindowShowing() const {
-    return underline_view_->GetGlicService()->window_controller().IsShowing();
+    return underline_view_->GetGlicService()->IsWindowShowing();
   }
 
   bool IsTabInCurrentWindow(const content::WebContents* tab) const {

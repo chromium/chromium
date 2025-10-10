@@ -42,7 +42,7 @@ void GlicFocusedBrowserManager::SetTestingModeForTesting(bool testing_mode) {
 }
 
 GlicFocusedBrowserManager::GlicFocusedBrowserManager(
-    GlicWindowController* window_controller)
+    GlicWindowControllerInterface* window_controller)
     : window_controller_(*window_controller) {
   BrowserList::GetInstance()->AddObserver(this);
   window_activation_subscription_ =
