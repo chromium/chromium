@@ -64,6 +64,10 @@ void RecordSafariDataImportInvalidPasswordDisplay();
 // successfully displayed.
 void RecordSafariDataImportFailure(bool alert_displayed);
 
+// Records the current stage of import when the user taps the "back" button.
+// Only applicable for users who reach the import screen.
+void RecordSafariDataImportTapsBackAtImportStage(SafariDataImportStage stage);
+
 // Records the current stage of import when the user exits the workflow. Only
 // applicable for users who reach the import screen.
 void RecordSafariDataImportEndsAtImportStage(SafariDataImportStage stage);

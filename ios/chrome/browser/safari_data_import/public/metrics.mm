@@ -34,6 +34,11 @@ void RecordActionOnSafariExportEducationScreen(
                                 action);
 }
 
+void RecordSafariDataImportTapsBackAtImportStage(SafariDataImportStage stage) {
+  base::UmaHistogramEnumeration("IOS.SafariImport.Import.TapBackOnStage",
+                                stage);
+}
+
 void RecordSafariDataImportEndsAtImportStage(SafariDataImportStage stage) {
   base::UmaHistogramEnumeration("IOS.SafariImport.Import.ExitOnStage", stage);
 }

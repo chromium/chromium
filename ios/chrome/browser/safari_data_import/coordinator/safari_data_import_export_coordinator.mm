@@ -80,8 +80,10 @@
        didShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
   CHECK_EQ(navigationController, _navigationController);
-  if (viewController == _navigationController.viewControllers[0]) {
+  if (_importCoordinator &&
+      viewController == _navigationController.viewControllers[0]) {
     /// Handle user going back from import stage.
+    RecordSafariDataImportTapsBackAtImportStage(_importCoordinator.importStage);
     [_importCoordinator stop];
     _importCoordinator = nil;
   }
