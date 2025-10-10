@@ -52,8 +52,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.blink.mojom.EventType;
@@ -1589,6 +1591,7 @@ public class ImeAdapterImpl
             float insertionMarkerHorizontal,
             float insertionMarkerTop,
             float insertionMarkerBottom) {
+        View containerView = getContainerView();
         mCursorAnchorInfoController.onUpdateFrameInfo(
                 scaleFactor,
                 contentOffsetYPix,
@@ -1597,7 +1600,29 @@ public class ImeAdapterImpl
                 insertionMarkerHorizontal,
                 insertionMarkerTop,
                 insertionMarkerBottom,
-                getContainerView());
+                containerView);
+
+        // Request view system keeps caret on screen
+        if (hasInsertionMarker) {
+            int caretHorizontal = (int) (insertionMarkerHorizontal * scaleFactor);
+            int caretTop = (int) (insertionMarkerTop * scaleFactor + contentOffsetYPix);
+            int caretBottom = (int) (insertionMarkerBottom * scaleFactor + contentOffsetYPix);
+            android.graphics.Rect caretBounds =
+                    new android.graphics.Rect(
+                            caretHorizontal, caretTop, caretHorizontal, caretBottom);
+
+            // TODO(crbug.comb/450540343): when Baklava 36.1 support lands in Clank, remove delegate
+            // indirection and inline `requestRectangleOnScreen()` call.
+            AconfigFlaggedApiDelegate delegate =
+                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+            if (delegate != null
+                    && delegate.requestTextCursorOnScreen(containerView, caretBounds)) {
+                /* action in condition */
+            } else if (ContentFeatureList.sAccessibilityMagnificationFollowsTextCursor
+                    .isEnabled()) {
+                containerView.requestRectangleOnScreen(caretBounds);
+            }
+        }
     }
 
     @CalledByNative

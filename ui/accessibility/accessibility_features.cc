@@ -373,6 +373,13 @@ bool IsAccessibilityMagnificationFollowsInputEnabled() {
       ::features::kAccessibilityMagnificationFollowsInputFocus);
 }
 
+BASE_FEATURE(kAccessibilityMagnificationFollowsTextCursor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMagnificationFollowsTextCursorEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityMagnificationFollowsTextCursor);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

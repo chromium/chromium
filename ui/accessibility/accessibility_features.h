@@ -291,10 +291,18 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityInlineLineSeparators);
 AX_BASE_EXPORT bool IsAccessibilityInlineLineSeparatorsEnabled();
 
 // Propagate bounding rectangles of input events to the Android platform to
-// allow Magnification to follow them
+// allow Magnification to follow them. Only applies pre-Baklava 36.1, when a
+// system API was added to allow this.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityMagnificationFollowsInputFocus);
 AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsInputFocusEnabled();
+
+// Propagate bounding rectangles of cursor moves to the Android platform to
+// allow Magnification to follow them. Only applies pre-Baklava 36.1, when a
+// system API was added to allow this.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityMagnificationFollowsTextCursor);
+AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsTextCursorEnabled();
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
 
 import java.util.List;
 
@@ -81,6 +82,12 @@ public class ContentFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sAccessibilityDeprecateJavaNodeCacheDisableCache =
                     sAccessibilityDeprecateJavaNodeCache.newBooleanParam("disable_cache", false);
+
+    public static final MutableFlagWithSafeDefault sAccessibilityMagnificationFollowsTextCursor =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_TEXT_CURSOR,
+                    false);
 
     public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =
             new MutableFlagWithSafeDefault(

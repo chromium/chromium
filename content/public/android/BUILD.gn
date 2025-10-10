@@ -112,6 +112,7 @@ android_library("content_main_dex_java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   sources = [
@@ -173,6 +174,7 @@ android_library("content_full_java") {
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base:process_launcher_java",
     "//base:service_loader_java",
     "//build/android:build_java",
