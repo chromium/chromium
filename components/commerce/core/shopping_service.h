@@ -23,7 +23,6 @@
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/cluster_manager.h"
@@ -116,12 +115,13 @@ namespace metrics {
 class ScheduledMetricsManager;
 }  // namespace metrics
 
+class AccountChecker;
 class BookmarkUpdateManager;
 class DiscountInfosStorage;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
-class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
+class ShoppingPowerBookmarkDataProvider;
 class SubscriptionsManager;
 class SubscriptionsObserver;
 class WebWrapper;
