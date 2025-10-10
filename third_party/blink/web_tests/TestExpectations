@@ -2962,7 +2962,7 @@ crbug.com/450532078 external/wpt/css/css-overflow/overflow-clip-margin-border-ra
 crbug.com/450513406 external/wpt/css/css-writing-modes/text-shadow-sideways-001.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect [ Pass Timeout ]
 crbug.com/450555241 external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect3 [ Skip Timeout ]
-crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Failure ]
+crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Failure Crash ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/global.py [ Failure ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/invalid.py [ Failure ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/network_conditions_offline.py [ Failure ]
