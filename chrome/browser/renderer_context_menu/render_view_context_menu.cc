@@ -239,6 +239,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
@@ -276,6 +277,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -2058,8 +2060,15 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
     // Ensure we're in a tab for these items.
     if (tab) {
-      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
-                                      IDS_CONTENT_CONTEXT_GLICSHAREIMAGE);
+      menu_model_.AddItemWithIcon(
+          IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
+          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_GLICSHAREIMAGE),
+          ui::ImageModel::FromImageSkia(
+              gfx::ImageSkiaOperations::CreateResizedImage(
+                  *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                      IDR_GLIC_SHARE_IMAGE_ICON),
+                  skia::ImageOperations::RESIZE_BEST,
+                  gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize))));
       menu_model_.SetElementIdentifierAt(
           menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE)
               .value(),
