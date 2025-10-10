@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
+#include "components/dbus/utils/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/menus/simple_menu_model.h"
@@ -51,38 +52,40 @@ const char kSignalLayoutUpdated[] = "LayoutUpdated";
 
 // Creates a variant with the default value for |property_name|, or an empty
 // variant if |property_name| is invalid.
-DbusVariant CreateDefaultPropertyValue(const std::string& property_name) {
+dbus_utils::Variant CreateDefaultPropertyValue(
+    const std::string& property_name) {
   if (property_name == "type") {
-    return MakeDbusVariant(DbusString("standard"));
+    return dbus_utils::Variant::Wrap<"s">("standard");
   }
   if (property_name == "label") {
-    return MakeDbusVariant(DbusString(""));
+    return dbus_utils::Variant::Wrap<"s">("");
   }
   if (property_name == "enabled") {
-    return MakeDbusVariant(DbusBoolean(true));
+    return dbus_utils::Variant::Wrap<"b">(true);
   }
   if (property_name == "visible") {
-    return MakeDbusVariant(DbusBoolean(true));
+    return dbus_utils::Variant::Wrap<"b">(true);
   }
   if (property_name == "icon-name") {
-    return MakeDbusVariant(DbusString(""));
+    return dbus_utils::Variant::Wrap<"s">("");
   }
   if (property_name == "icon-data") {
-    return MakeDbusVariant(DbusByteArray());
+    return dbus_utils::Variant::Wrap<"ay">(std::vector<uint8_t>());
   }
   if (property_name == "shortcut") {
-    return MakeDbusVariant(DbusArray<DbusArray<DbusString>>());
+    return dbus_utils::Variant::Wrap<"aas">(
+        std::vector<std::vector<std::string>>());
   }
   if (property_name == "toggle-type") {
-    return MakeDbusVariant(DbusString(""));
+    return dbus_utils::Variant::Wrap<"s">("");
   }
   if (property_name == "toggle-state") {
-    return MakeDbusVariant(DbusInt32(-1));
+    return dbus_utils::Variant::Wrap<"i">(-1);
   }
   if (property_name == "children-display") {
-    return MakeDbusVariant(DbusString(""));
+    return dbus_utils::Variant::Wrap<"s">("");
   }
-  return DbusVariant();
+  return dbus_utils::Variant();
 }
 
 const char* DbusTextDirection() {
@@ -106,7 +109,7 @@ void WriteRemovedProperties(dbus::MessageWriter* writer,
 }  // namespace
 
 DbusMenu::MenuItem::MenuItem(int32_t id,
-                             std::map<std::string, DbusVariant>&& properties,
+                             MenuItemProperties&& properties,
                              std::vector<int32_t>&& children,
                              ui::MenuModel* menu,
                              ui::MenuModel* containing_menu,
@@ -195,10 +198,10 @@ DbusMenu::~DbusMenu() = default;
 void DbusMenu::SetModel(ui::MenuModel* model, bool send_signal) {
   items_.clear();
 
-  std::map<std::string, DbusVariant> properties;
+  MenuItemProperties properties;
   std::vector<int32_t> children;
   if (model) {
-    properties["children-display"] = MakeDbusVariant(DbusString("submenu"));
+    properties["children-display"] = dbus_utils::Variant::Wrap<"s">("submenu");
     children = ConvertMenu(model);
   }
   items_[0] = std::make_unique<MenuItem>(
@@ -395,7 +398,7 @@ void DbusMenu::OnGetGroupProperties(ScopedMethodResponse* response) {
       dbus::MessageWriter dict_entry_writer(nullptr);
       property_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(property_pair.first);
-      property_pair.second.Write(&dict_entry_writer);
+      property_pair.second.Write(dict_entry_writer);
       property_writer.CloseContainer(&dict_entry_writer);
     }
     struct_writer.CloseContainer(&property_writer);
@@ -454,12 +457,12 @@ void DbusMenu::OnGetProperty(ScopedMethodResponse* response) {
   MenuItem* item = item_it->second.get();
   auto property_it = item->properties.find(name);
   if (property_it == item->properties.end()) {
-    DbusVariant default_value = CreateDefaultPropertyValue(name);
-    if (default_value) {
-      default_value.Write(&response->Writer());
+    dbus_utils::Variant default_value = CreateDefaultPropertyValue(name);
+    if (!default_value.signature().empty()) {
+      default_value.Write(response->Writer());
     }
   } else {
-    property_it->second.Write(&response->Writer());
+    property_it->second.Write(response->Writer());
   }
 }
 
@@ -557,7 +560,7 @@ void DbusMenu::WriteMenuItem(const MenuItem* item,
       dbus::MessageWriter dict_entry_writer(nullptr);
       properties_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(property.first);
-      property.second.Write(&dict_entry_writer);
+      property.second.Write(dict_entry_writer);
       properties_writer.CloseContainer(&dict_entry_writer);
     }
   }
@@ -596,7 +599,7 @@ void DbusMenu::WriteUpdatedProperties(
       dbus::MessageWriter dict_entry_writer(nullptr);
       array_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(key);
-      item->properties[key].Write(&dict_entry_writer);
+      item->properties[key].Write(dict_entry_writer);
       array_writer.CloseContainer(&dict_entry_writer);
     }
     struct_writer.CloseContainer(&array_writer);

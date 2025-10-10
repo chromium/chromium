@@ -6,12 +6,13 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
@@ -208,16 +209,16 @@ TEST(MenuPropertyListTest, ComputePropertiesBasic) {
 TEST(MenuPropertyListTest, ComputePropertiesCheck) {
   auto menu = TestMenuModelBuilder().SetType(ui::MenuModel::TYPE_CHECK).Build();
   MenuItemProperties props;
-  props["toggle-type"] = MakeDbusVariant(DbusString("checkmark"));
-  props["toggle-state"] = MakeDbusVariant(DbusInt32(0));
+  props["toggle-type"] = dbus_utils::Variant::Wrap<"s">("checkmark");
+  props["toggle-state"] = dbus_utils::Variant::Wrap<"i">(0);
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
 TEST(MenuPropertyListTest, ComputePropertiesRadio) {
   auto menu = TestMenuModelBuilder().SetType(ui::MenuModel::TYPE_RADIO).Build();
   MenuItemProperties props;
-  props["toggle-type"] = MakeDbusVariant(DbusString("radio"));
-  props["toggle-state"] = MakeDbusVariant(DbusInt32(0));
+  props["toggle-type"] = dbus_utils::Variant::Wrap<"s">("radio");
+  props["toggle-state"] = dbus_utils::Variant::Wrap<"i">(0);
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -231,12 +232,12 @@ TEST(MenuPropertyListTest, ComputePropertiesCheckedState) {
 
   // Radio and check buttons should have the toggle-state set.
   menu = builder.SetType(ui::MenuModel::TYPE_RADIO).Build();
-  props["toggle-type"] = MakeDbusVariant(DbusString("radio"));
-  props["toggle-state"] = MakeDbusVariant(DbusInt32(1));
+  props["toggle-type"] = dbus_utils::Variant::Wrap<"s">("radio");
+  props["toggle-state"] = dbus_utils::Variant::Wrap<"i">(1);
   EXPECT_EQ(menu->ComputeProperties(), props);
 
   menu = builder.SetType(ui::MenuModel::TYPE_CHECK).Build();
-  props["toggle-type"] = MakeDbusVariant(DbusString("checkmark"));
+  props["toggle-type"] = dbus_utils::Variant::Wrap<"s">("checkmark");
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -244,7 +245,7 @@ TEST(MenuPropertyListTest, ComputePropertiesSeparator) {
   auto menu =
       TestMenuModelBuilder().SetType(ui::MenuModel::TYPE_SEPARATOR).Build();
   MenuItemProperties props;
-  props["type"] = MakeDbusVariant(DbusString("separator"));
+  props["type"] = dbus_utils::Variant::Wrap<"s">("separator");
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -252,7 +253,7 @@ TEST(MenuPropertyListTest, ComputePropertiesSubmenu) {
   auto builder = TestMenuModelBuilder();
   auto menu = builder.SetType(ui::MenuModel::TYPE_SUBMENU).Build();
   MenuItemProperties props;
-  props["children-display"] = MakeDbusVariant(DbusString("submenu"));
+  props["children-display"] = dbus_utils::Variant::Wrap<"s">("submenu");
   EXPECT_EQ(menu->ComputeProperties(), props);
 
   // Same for ACTIONABLE_SUBMENU.
@@ -270,7 +271,7 @@ TEST(MenuPropertyListTest, ComputePropertiesEnabledState) {
 
   // Disabled.
   menu = builder.SetEnabled(false).Build();
-  props["enabled"] = MakeDbusVariant(DbusBoolean(false));
+  props["enabled"] = dbus_utils::Variant::Wrap<"b">(false);
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -284,7 +285,7 @@ TEST(MenuPropertyListTest, ComputePropertiesVisibleState) {
 
   // Hidden.
   menu = builder.SetVisible(false).Build();
-  props["visible"] = MakeDbusVariant(DbusBoolean(false));
+  props["visible"] = dbus_utils::Variant::Wrap<"b">(false);
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -298,7 +299,7 @@ TEST(MenuPropertyListTest, ComputePropertiesLabel) {
 
   // Non-empty label.
   menu = builder.SetLabel("label value").Build();
-  props["label"] = MakeDbusVariant(DbusString("label value"));
+  props["label"] = dbus_utils::Variant::Wrap<"s">("label value");
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -318,7 +319,10 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, 1.0f));
   gfx::Image icon(image_skia);
   menu = builder.SetIcon(icon).Build();
-  props["icon-data"] = MakeDbusVariant(DbusByteArray(icon.As1xPNGBytes()));
+  auto png_bytes = icon.As1xPNGBytes();
+  auto span = base::as_byte_span(*png_bytes);
+  props["icon-data"] = dbus_utils::Variant::Wrap<"ay">(
+      std::vector<uint8_t>(span.begin(), span.end()));
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
@@ -332,8 +336,8 @@ TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
 
   // Set a key.
   menu = builder.SetAccelerator(ui::Accelerator(ui::VKEY_A, 0)).Build();
-  props["shortcut"] =
-      MakeDbusVariant(MakeDbusArray(MakeDbusArray(DbusString("a"))));
+  props["shortcut"] = dbus_utils::Variant::Wrap<"aas">(
+      std::vector<std::vector<std::string>>{{"a"}});
   EXPECT_EQ(menu->ComputeProperties(), props);
 
   // Add modifiers.
@@ -342,22 +346,21 @@ TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
                  ui::VKEY_A,
                  ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN))
              .Build();
-  props["shortcut"] = MakeDbusVariant(
-      MakeDbusArray(MakeDbusArray(DbusString("Control"), DbusString("Alt"),
-                                  DbusString("Shift"), DbusString("a"))));
+  props["shortcut"] = dbus_utils::Variant::Wrap<"aas">(
+      std::vector<std::vector<std::string>>{{"Control", "Alt", "Shift", "a"}});
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
 TEST(MenuPropertyListTest, ComputePropertyChanges) {
   MenuItemProperties old_props;
-  old_props["1"] = MakeDbusVariant(DbusInt32(1));  // Remains the same.
-  old_props["2"] = MakeDbusVariant(DbusInt32(2));  // Updates to -2.
-  old_props["3"] = MakeDbusVariant(DbusInt32(3));  // Removed.
+  old_props["1"] = dbus_utils::Variant::Wrap<"i">(1);  // Remains the same.
+  old_props["2"] = dbus_utils::Variant::Wrap<"i">(2);  // Updates to -2.
+  old_props["3"] = dbus_utils::Variant::Wrap<"i">(3);  // Removed.
 
   MenuItemProperties new_props;
-  new_props["1"] = MakeDbusVariant(DbusInt32(1));
-  new_props["2"] = MakeDbusVariant(DbusInt32(-2));
-  new_props["4"] = MakeDbusVariant(DbusInt32(4));  // Added.
+  new_props["1"] = dbus_utils::Variant::Wrap<"i">(1);
+  new_props["2"] = dbus_utils::Variant::Wrap<"i">(-2);
+  new_props["4"] = dbus_utils::Variant::Wrap<"i">(4);  // Added.
 
   MenuPropertyList updated;
   MenuPropertyList removed;
