@@ -108,6 +108,7 @@ class IdlCompiler(object):
 
         # Merge partial definitions.
         self._record_defined_in_partial_and_mixin()
+        self._record_defined_across_component()
         self._propagate_extattrs_per_idl_fragment()
         self._determine_blink_headers()
         self._merge_partial_interface_likes()
@@ -311,6 +312,51 @@ class IdlCompiler(object):
             for member in new_ir.iter_all_members():
                 member.code_generator_info.set_defined_in_partial(is_partial)
 
+    def _record_defined_across_component(self):
+
+        def check_across_component(original_ir, extended_ir):
+            return ("core" in original_ir.components
+                    and "modules" in extended_ir.components)
+
+        def set_defined_across_component(ir, value):
+            ir.code_generator_info.set_defined_across_component(value)
+            for member in ir.iter_all_members():
+                member.code_generator_info.set_defined_across_component(value)
+
+        interfaces = self._ir_map.find_by_kind(IRMap.IR.Kind.INTERFACE)
+        mixins = self._ir_map.find_by_kind(IRMap.IR.Kind.INTERFACE_MIXIN)
+        includes = self._ir_map.find_by_kind(IRMap.IR.Kind.INCLUDES)
+        partials = self._ir_map.irs_of_kinds(
+            IRMap.IR.Kind.PARTIAL_INTERFACE,
+            IRMap.IR.Kind.PARTIAL_INTERFACE_MIXIN)
+        interfaces_or_mixins = interfaces | mixins
+
+        self._ir_map.move_to_new_phase()
+
+        # TODO(crbug.com/449800522): Remove `WebGL2RenderingContextBase`
+        # condition after WebGL2RenderingContextBase follows the spec.
+        across_component_mixins = {
+            mixins[include.mixin_identifier]
+            for include_list in includes.values()
+            for include in include_list
+            if include.interafce_identifier != "WebGL2RenderingContextBase" and
+            check_across_component(interfaces[include.interafce_identifier],
+                                   mixins[include.mixin_identifier])
+        }
+
+        for old_ir in mixins.values():
+            new_ir = make_copy(old_ir)
+            self._ir_map.add(new_ir)
+            is_across_component = old_ir in across_component_mixins
+            set_defined_across_component(new_ir, is_across_component)
+
+        for old_ir in partials:
+            new_ir = make_copy(old_ir)
+            self._ir_map.add(new_ir)
+            is_across_component = check_across_component(
+                interfaces_or_mixins[new_ir.identifier], old_ir)
+            set_defined_across_component(new_ir, is_across_component)
+
     def _propagate_extattrs_per_idl_fragment(self):
         def propagate_extattr(extattr_key_and_attr_name,
                               bag=None,
@@ -423,7 +469,9 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
 
-            if new_ir.is_mixin and not new_ir.is_partial:
+            if (new_ir.is_mixin
+                    and not new_ir.code_generator_info.defined_across_component
+                    and not new_ir.is_partial):
                 continue
 
             basepath, _ = posixpath.splitext(
