@@ -49,14 +49,11 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class AbstractWebAppDatabaseFactory;
 class AppLock;
 class ScopedRegistryUpdate;
 class WebApp;
-class WebAppCommandManager;
-class WebAppInstallManager;
+class WebAppProvider;
 class WebAppRegistryUpdate;
-class WebAppCommandScheduler;
 enum class ApiApprovalState;
 struct RegistryUpdateData;
 
@@ -118,10 +115,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   WebAppSyncBridge& operator=(const WebAppSyncBridge&) = delete;
   ~WebAppSyncBridge() override;
 
-  void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
-                     WebAppCommandManager* command_manager,
-                     WebAppCommandScheduler* command_scheduler,
-                     WebAppInstallManager* install_manager);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   using RepeatingUninstallCallback =
@@ -291,12 +285,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
-  raw_ptr<WebAppCommandManager, AcrossTasksDanglingUntriaged> command_manager_ =
-      nullptr;
-  raw_ptr<WebAppCommandScheduler, AcrossTasksDanglingUntriaged>
-      command_scheduler_ = nullptr;
-  raw_ptr<WebAppInstallManager, AcrossTasksDanglingUntriaged> install_manager_ =
-      nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::OneShotEvent on_sync_connected_;
 

@@ -416,12 +416,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  // TODO(https://issuetracker.google.com/283816014): Replace SetSubsystems()
-  // with SetProvider().
-  sync_bridge_->SetSubsystems(database_factory_.get(), command_manager_.get(),
-                              command_scheduler_.get(), install_manager_.get());
-
   base::PassKey<WebAppProvider> pass_key;
+  sync_bridge_->SetProvider(pass_key, *this);
   icon_manager_->SetProvider(pass_key, *this);
   install_finalizer_->SetProvider(pass_key, *this);
   manifest_update_manager_->SetProvider(pass_key, *this);
