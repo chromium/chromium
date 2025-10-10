@@ -452,7 +452,7 @@ void WebAppRegistrar::NotifyWebAppUserLinkCapturingPreferencesChanged(
 void WebAppRegistrar::NotifyPendingUpdateInfoChanged(
     const webapps::AppId& app_id,
     bool pending_update_available,
-    base::PassKey<ManifestSilentUpdateCommand>) {
+    PendingUpdateInfoChangePassKey) {
   DVLOG(1) << "NotifyPendingUpdateInfoChanged " << app_id << ", "
            << pending_update_available;
   for (WebAppRegistrarObserver& observer : observers_) {

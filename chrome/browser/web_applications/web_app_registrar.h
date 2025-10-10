@@ -23,6 +23,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -61,11 +62,11 @@ enum InstallState : int;
 }
 
 class IsolatedWebAppUrlInfo;
-class ManifestSilentUpdateCommand;
 class WebApp;
 class WebAppProvider;
 class WebAppRegistrarObserver;
 class WebAppScope;
+class AppLock;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -584,10 +585,19 @@ class WebAppRegistrar {
       bool is_preferred);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  void NotifyPendingUpdateInfoChanged(
-      const webapps::AppId& app_id,
-      bool pending_update_available,
-      base::PassKey<ManifestSilentUpdateCommand>);
+  // Mimic base::PassKey<T> to ensure only certain call sites have the privilege
+  // of triggering a pending update info change.
+  class PendingUpdateInfoChangePassKey {
+    friend class ManifestSilentUpdateCommand;
+    friend void SetWebAppPendingUpdateAsIgnored(const webapps::AppId&,
+                                                AppLock& lock,
+                                                base::Value::Dict& debug_value);
+    PendingUpdateInfoChangePassKey() = default;
+  };
+
+  void NotifyPendingUpdateInfoChanged(const webapps::AppId& app_id,
+                                      bool pending_update_available,
+                                      PendingUpdateInfoChangePassKey);
 
   // A filter must return false to skip the |web_app|.
   using Filter = bool (*)(const WebApp& web_app);

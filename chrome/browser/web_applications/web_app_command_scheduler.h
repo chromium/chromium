@@ -692,6 +692,13 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
       const base::Location& location = FROM_HERE);
 
+  // Marks whether the pending update available for the app is ignored by the
+  // user, and notifies changes to the WebAppRegistrar.
+  void MarkAppPendingUpdateAsIgnored(
+      const webapps::AppId& app_id,
+      base::OnceClosure done,
+      const base::Location& location = FROM_HERE);
+
   // TODO(crbug.com/40215411): expose all commands for web app
   // operations.
 

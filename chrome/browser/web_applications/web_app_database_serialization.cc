@@ -1353,7 +1353,8 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         proto.pending_update_info().trusted_icons().empty() &&
         proto.pending_update_info().manifest_icons().empty() &&
         proto.pending_update_info().downloaded_trusted_icons().empty() &&
-        proto.pending_update_info().downloaded_manifest_icons().empty()) {
+        proto.pending_update_info().downloaded_manifest_icons().empty() &&
+        !proto.pending_update_info().has_was_ignored()) {
       return nullptr;
     }
 
@@ -1398,6 +1399,14 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         }
       }
     }
+
+    // The `was_ignored` field should always be set, and default initialized by
+    // database migration in case of proto version differences. This not being
+    // set is an error case.
+    if (!proto.pending_update_info().has_was_ignored()) {
+      return nullptr;
+    }
+
     web_app->SetPendingUpdateInfo(proto.pending_update_info());
   }
 
@@ -1960,6 +1969,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
         CHECK(icon.has_url() && icon.has_size_in_px() && icon.has_purpose());
       }
     }
+    CHECK(web_app.pending_update_info()->has_was_ignored());
     *local_data->mutable_pending_update_info() = *web_app.pending_update_info();
   }
 

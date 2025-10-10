@@ -97,7 +97,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-  return 3;
+  return 4;
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -167,6 +167,14 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
     MigrateToRelativeManifestIdNoFragment(state, changed_apps);
     base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 3);
     state.metadata.set_version(3);
+    did_change_metadata = true;
+  }
+
+  // Upgrade from version 3 to version 4.
+  if (state.metadata.version() < 4 && GetCurrentDatabaseVersion() >= 4) {
+    MigratePendingUpdateInfoWasIgnored(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 4);
+    state.metadata.set_version(4);
     did_change_metadata = true;
   }
 
@@ -486,6 +494,30 @@ void WebAppDatabase::MigrateToRelativeManifestIdNoFragment(
   base::UmaHistogramCounts1000(
       "WebApp.Migrations.RelativeManifestIdPopulatedOrFixed",
       apps_migrated_count);
+}
+
+void WebAppDatabase::MigratePendingUpdateInfoWasIgnored(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 3 to version 4.
+  CHECK_LT(state.metadata.version(), 4);
+  int apps_migrated_count = 0;
+
+  for (auto& [app_id, app_proto] : state.apps) {
+    // Bypass apps that don't have a pending update info, or has the
+    // `was_ignored` field set.
+    if (!app_proto.has_pending_update_info() ||
+        app_proto.pending_update_info().has_was_ignored()) {
+      continue;
+    }
+
+    apps_migrated_count++;
+    app_proto.mutable_pending_update_info()->set_was_ignored(false);
+    changed_apps.insert(app_id);
+  }
+  // Record histograms correctly.
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.PendingInfoWasIgnoredMigrated", apps_migrated_count);
 }
 
 void WebAppDatabase::OnDatabaseOpened(

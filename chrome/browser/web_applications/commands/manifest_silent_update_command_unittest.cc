@@ -709,6 +709,11 @@ TEST_F(ManifestSilentUpdateCommandTest, AppNameChangedPendingUpdateInfoSaved) {
   ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
   EXPECT_TRUE(pending_update_info->has_name());
   EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
+
+  // New pending updates always come with a clean slate, and needs to show up on
+  // the UX.
+  EXPECT_TRUE(pending_update_info->has_was_ignored());
+  EXPECT_FALSE(pending_update_info->was_ignored());
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
               BucketsAre(base::Bucket(
@@ -990,6 +995,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
             sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 30);
 
+  EXPECT_TRUE(pending_update_info->has_was_ignored());
+  EXPECT_FALSE(pending_update_info->was_ignored());
+
   // There are 6 sizes that will be generated as per SizesToGenerate() in the
   // web app icon manager. With the new icon of size 30, that will be 7
   // downloaded icon sizes in total.
@@ -1071,6 +1079,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
             sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
 
+  EXPECT_TRUE(pending_update_info->has_was_ignored());
+  EXPECT_FALSE(pending_update_info->was_ignored());
+
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
       base::PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
@@ -1139,6 +1150,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
             sync_pb::WebAppIconInfo_Purpose_ANY);
   EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
+
+  EXPECT_TRUE(pending_update_info->has_was_ignored());
+  EXPECT_FALSE(pending_update_info->was_ignored());
 
   // Verify pending update icon bitmaps are written to disk.
   EXPECT_TRUE(
@@ -1517,9 +1531,6 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
-
-  std::optional<proto::PendingUpdateInfo> pending_update_info =
-      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
   ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
@@ -1560,8 +1571,6 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
 
-  std::optional<proto::PendingUpdateInfo> pending_update_info =
-      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
   ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
 
   // Verify pending update icon bitmaps are not written to disk.

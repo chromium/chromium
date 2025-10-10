@@ -108,7 +108,7 @@ void WebAppMenuButton::OnAppRegistrarDestroyed() {
 }
 
 void WebAppMenuButton::UpdateStateForTesting() {
-  UpdateTextAndHighlightColor(HasPendingUpdate());
+  UpdateTextAndHighlightColor(CanShowPendingUpdate());
 }
 
 base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
@@ -123,7 +123,7 @@ void WebAppMenuButton::ShowMenu(int run_types) {
 }
 
 void WebAppMenuButton::OnThemeChanged() {
-  UpdateTextAndHighlightColor(HasPendingUpdate());
+  UpdateTextAndHighlightColor(CanShowPendingUpdate());
   AppMenuButton::OnThemeChanged();
 }
 
@@ -164,12 +164,12 @@ void WebAppMenuButton::FadeHighlightOff() {
   }
 }
 
-bool WebAppMenuButton::HasPendingUpdate() {
+bool WebAppMenuButton::CanShowPendingUpdate() {
   web_app::AppBrowserController* app_controller =
       browser_view_->browser()->app_controller();
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
-  return app_controller && app_controller->HasPendingUpdate();
+  return app_controller && app_controller->HasPendingUpdateNotIgnoredByUser();
 }
 
 void WebAppMenuButton::UpdateTextAndHighlightColor(bool is_pending_update) {

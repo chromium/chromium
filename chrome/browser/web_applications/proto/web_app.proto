@@ -206,6 +206,7 @@ message PendingUpdateInfo {
   repeated sync_pb.WebAppIconInfo trusted_icons = 4;
   repeated DownloadedIconSizeInfo downloaded_manifest_icons = 5;
   repeated DownloadedIconSizeInfo downloaded_trusted_icons = 6;
+  optional bool was_ignored = 7;
 }
 
 // Full WebApp object data. See detailed comments in

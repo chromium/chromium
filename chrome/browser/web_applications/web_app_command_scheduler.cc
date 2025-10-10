@@ -65,6 +65,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/jobs/update_ignore_state.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -830,6 +831,16 @@ void WebAppCommandScheduler::ReadAppUpdateDataFromDisk(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<AppUpdateDataReadCommand>(app_id, std::move(callback)),
       location);
+}
+
+void WebAppCommandScheduler::MarkAppPendingUpdateAsIgnored(
+    const webapps::AppId& app_id,
+    base::OnceClosure done,
+    const base::Location& location) {
+  ScheduleCallback(
+      "MarkAppPendingUpdateAsIgnored", AppLockDescription(app_id),
+      base::BindOnce(::web_app::SetWebAppPendingUpdateAsIgnored, app_id),
+      std::move(done), location);
 }
 
 void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,

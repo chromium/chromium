@@ -867,5 +867,77 @@ TEST_F(WebAppDatabaseMigrationTest, MigrateToRelativeManifestIdNoFragment) {
   VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
 }
 
+TEST_F(WebAppDatabaseMigrationTest, MigratePendingUpdateInfoWasIgnored) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, everything set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(true);
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Pending update info exists (correct otherwise), no `was_ignored`
+  // state.
+  GURL start_url3("https://app3.com/start");
+  proto::WebApp app_incorrect_pending_info =
+      CreateWebAppProtoForTesting("App 3", start_url3);
+  app_incorrect_pending_info.mutable_pending_update_info()->set_name(
+      "App 3 Update");
+
+  database_factory->WriteProtos({app_correct_pending_info, app_no_pending_info,
+                                 app_incorrect_pending_info});
+
+  // Set version to 3 to trigger the migration to version 4.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(3);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingInfoWasIgnoredMigrated"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_incorrect_pending_info));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Check that app1's `was_ignored` field wasn't updated.
+  EXPECT_TRUE(migrated_app1->pending_update_info()->has_was_ignored());
+  EXPECT_TRUE(migrated_app1->pending_update_info()->was_ignored());
+
+  // Check that app2 did not have a pending update info set.
+  EXPECT_FALSE(migrated_app2->pending_update_info().has_value());
+
+  // Check that app3 now has the `was_ignored` field default set to false.
+  EXPECT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+  EXPECT_FALSE(migrated_app3->pending_update_info()->was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
 }  // namespace
 }  // namespace web_app

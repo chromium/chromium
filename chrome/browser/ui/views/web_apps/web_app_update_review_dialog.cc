@@ -135,16 +135,16 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
     std::move(callback_).Run(WebAppIdentityUpdateResult::kAccept);
   }
 
-  // Close the dialog if the "Ignore" button is clicked.
-  // TODO(crbug.com/445179433): Store state in DB to prevent the three dot menu
-  // from being updated.
+  // Close the dialog if the "Ignore" button is clicked after storing that state
+  // for the web app.
   void OnIgnoreButtonClicked(const ui::Event& event) {
+    CHECK(web_app_provider_);
+    CHECK(callback_);
+    web_app_provider_->scheduler().MarkAppPendingUpdateAsIgnored(
+        app_id_, base::BindOnce(std::move(callback_),
+                                WebAppIdentityUpdateResult::kIgnore));
     CHECK(dialog_model() && dialog_model()->host());
-    // `callback_` is being moved out to the stack because `Close()`
-    // synchronously deletes `this`.
-    auto callback = std::move(callback_);
     dialog_model()->host()->Close();
-    std::move(callback).Run(WebAppIdentityUpdateResult::kIgnore);
   }
 
   void OnUninstallButtonClicked() {

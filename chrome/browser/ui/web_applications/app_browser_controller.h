@@ -255,6 +255,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns true if there is a pending update available for this app.
   virtual bool HasPendingUpdate() const;
 
+  // Returns true if there is a pending update available for this app that has
+  // not been ignored by the user.
+  virtual bool HasPendingUpdateNotIgnoredByUser() const;
+
   // Constructs the metadata required for app identity updating and triggers the
   // corresponding dialog.
   virtual void CreateMetadataAndTriggerAppUpdateDialog(

@@ -1236,6 +1236,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       }
     }
 
+    pending_update_info.set_was_ignored(random.next_bool());
     app->SetPendingUpdateInfo(pending_update_info);
   }
 

@@ -79,7 +79,9 @@ class WebAppMenuButton : public AppMenuButton,
  private:
   void FadeHighlightOff();
 
-  bool HasPendingUpdate();
+  // Determines whether a pending update is available and can be shown on the
+  // UX, based on whether the update is new and hasn't been ignored by the user.
+  bool CanShowPendingUpdate();
 
   void UpdateTextAndHighlightColor(bool is_pending_update);
 

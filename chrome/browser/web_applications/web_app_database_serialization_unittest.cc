@@ -570,8 +570,19 @@ TEST_F(WebAppDatabaseSerializationTest,
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   auto* fix = proto.mutable_pending_update_info();
   fix->set_name("Pending Update Name");
+  fix->set_was_ignored(false);
 
   EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_HasPendingUpdateInfo_NoIgnore) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* fix = proto.mutable_pending_update_info();
+  fix->set_name("Pending Update Name");
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 
 TEST_F(WebAppDatabaseSerializationTest,
@@ -579,6 +590,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
+  fix->set_was_ignored(true);
 
   sync_pb::WebAppIconInfo* icon1 = fix->add_manifest_icons();
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());
@@ -603,7 +615,6 @@ TEST_F(WebAppDatabaseSerializationTest,
   manifest_icon_info->set_purpose(
       sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
   manifest_icon_info->add_icon_sizes(256);
-
   EXPECT_THAT(ParseWebAppProto(proto), NotNull());
 }
 
@@ -612,6 +623,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   GURL start_url("https://example.com/");
   proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
   auto* fix = proto.mutable_pending_update_info();
+  fix->set_was_ignored(false);
 
   sync_pb::WebAppIconInfo* icon1 = fix->add_manifest_icons();
   icon1->set_url(start_url.Resolve(std::string("/icon") + "1000").spec());

@@ -231,6 +231,18 @@ bool WebAppBrowserController::HasPendingUpdate() const {
   return app && app->pending_update_info().has_value();
 }
 
+bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+    return false;
+  }
+  const WebApp* app = registrar().GetAppById(app_id());
+  if (!app || !app->pending_update_info().has_value()) {
+    return false;
+  }
+  CHECK(app->pending_update_info()->has_was_ignored());
+  return !app->pending_update_info()->was_ignored();
+}
+
 void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
     base::TimeTicks start_time) const {
   provider_->scheduler().ReadAppUpdateDataFromDisk(

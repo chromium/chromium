@@ -323,7 +323,8 @@
          "purpose": "MONOCHROME",
          "size_in_px": 512,
          "url": "https://example.com/icons3978233549"
-      } ]
+      } ],
+      "was_ignored": true
    },
    "permissions_policy": [ {
       "allowed_origins": [ "https://app-15481569330.com" ],

@@ -461,6 +461,10 @@ bool AppBrowserController::HasPendingUpdate() const {
   return false;
 }
 
+bool AppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
+  return false;
+}
+
 void AppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
     base::TimeTicks start_time) const {}
 

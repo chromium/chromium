@@ -1062,6 +1062,13 @@ void ManifestSilentUpdateCommand::WritePendingUpdateToWebAppUpdateObservers(
     CHECK(app_to_update);
     trigger_pending_update_observers =
         app_to_update->pending_update_info() != pending_update;
+
+    // This is used to ensure that the update is shown to the user as an
+    // expanded chip. At this point, it is guaranteed to be a pending update
+    // that the user has not seen before, and thus hasn't ignored it.
+    if (pending_update.has_value()) {
+      pending_update->set_was_ignored(false);
+    }
     app_to_update->SetPendingUpdateInfo(pending_update);
   }
 
@@ -1070,7 +1077,7 @@ void ManifestSilentUpdateCommand::WritePendingUpdateToWebAppUpdateObservers(
   if (trigger_pending_update_observers) {
     app_lock_->registrar().NotifyPendingUpdateInfoChanged(
         app_id_, pending_update.has_value(),
-        base::PassKey<ManifestSilentUpdateCommand>());
+        WebAppRegistrar::PendingUpdateInfoChangePassKey());
   }
 }
 

@@ -1927,6 +1927,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Migrations.PendingInfoWasIgnoredMigrated" units="count"
+    expires_after="2026-10-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps whose ignore state in pending manifest update
+    information was not set during database migration v3 to v4. Migration occurs
+    once per user profile that existed before database version 4 was introduced.
+    It occurs on database open, which happens on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Migrations.RelativeManifestIdFragmentRemoved"
     units="count" expires_after="2026-04-18">
   <owner>dmurph@chromium.org</owner>

@@ -123,6 +123,12 @@ class WebAppDatabase {
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 
+  // Ensures that `pending_update_info.was_ignored` field exists and is default
+  // initialized to `false`.
+  void MigratePendingUpdateInfoWasIgnored(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::DataTypeStore> store);

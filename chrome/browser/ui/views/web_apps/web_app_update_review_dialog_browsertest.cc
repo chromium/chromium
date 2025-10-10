@@ -20,13 +20,18 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_identity_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -146,18 +151,6 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   }
 
  protected:
-  void ClickIgnoreButtonOnDialog(views::Widget* dialog_widget) {
-    views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_widget);
-    views::ElementTrackerViews* tracker_views =
-        views::ElementTrackerViews::GetInstance();
-    ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForWidget(dialog_widget);
-    views::Button* button = tracker_views->GetUniqueViewAs<views::Button>(
-        kWebAppUpdateReviewIgnoreButton, context);
-    views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
-    destroyed_waiter.Wait();
-  }
-
   SkBitmap old_icon_;
   SkBitmap new_icon_;
   WebAppIdentityUpdate update_;
@@ -475,15 +468,92 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
   EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Ignore) {
+IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, IgnoreRemovesMenuLabel) {
   views::NamedWidgetShownWaiter update_dialog_waiter(
       views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
-  InstallAppAndTriggerAppUpdateDialog();
+  const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
-  ClickIgnoreButtonOnDialog(dialog_widget);
+
+  BrowserWindowInterface* app_browser =
+      AppBrowserController::FindForWebApp(*profile(), app_id);
+  ASSERT_NE(app_browser, nullptr);
+  BrowserView* app_browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ASSERT_NE(app_browser_view, nullptr);
+  // Verify that the dialog is showing in the browser, and that the menu button
+  // is present and expanded.
+  EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
+
+  // Trigger the ignore button and verify that the expanded label disappears.
+  {
+    base::test::TestFuture<void> menu_update_future;
+    base::CallbackListSubscription subscription =
+        menu_button->AwaitLabelTextUpdated(
+            menu_update_future.GetRepeatingCallback());
+    ClickIgnoreButtonOnDialog(dialog_widget);
+    EXPECT_TRUE(menu_update_future.Wait());
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
   EXPECT_THAT(tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
               BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kIgnore, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
+                       NewPendingUpdatePostIgnoreExpandsButton) {
+  views::NamedWidgetShownWaiter update_dialog_waiter(
+      views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
+  const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
+  views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(nullptr, dialog_widget);
+
+  BrowserWindowInterface* app_browser =
+      AppBrowserController::FindForWebApp(*profile(), app_id);
+  ASSERT_NE(app_browser, nullptr);
+  BrowserView* app_browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ASSERT_NE(app_browser_view, nullptr);
+  // Verify that the dialog is showing in the browser, and that the menu button
+  // is present and expanded.
+  EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
+
+  // Trigger the ignore button and verify that the expanded label disappears.
+  {
+    base::test::TestFuture<void> menu_update_future;
+    base::CallbackListSubscription subscription =
+        menu_button->AwaitLabelTextUpdated(
+            menu_update_future.GetRepeatingCallback());
+    ClickIgnoreButtonOnDialog(dialog_widget);
+    EXPECT_TRUE(menu_update_future.Wait());
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+
+  // Trigger another update with security sensitive changes, verify that the
+  // menu button is now in the expanded state with the label. The first update
+  // was from index.html to new_icon_page_masking.html. Now, trigger an update
+  // to new_icon_page.html.
+  const GURL update_url2 =
+      https_server()->GetURL("/web_apps/updating/new_icon_page.html");
+  {
+    base::test::TestFuture<void> update_future;
+    UpdateAwaiter awaiter(provider().install_manager());
+    auto subscription = menu_button->AwaitLabelTextUpdated(
+        update_future.GetRepeatingCallback());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url2));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all observers are notified.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    EXPECT_TRUE(update_future.Wait());
+  }
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
 }
 
 }  // namespace

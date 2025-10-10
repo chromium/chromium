@@ -232,8 +232,10 @@ void CheckValidPendingUpdateInfo(
       CHECK(!pending_update_info->downloaded_manifest_icons().empty() &&
             !pending_update_info->downloaded_trusted_icons().empty());
     }
+    CHECK(pending_update_info->has_was_ignored());
   }
 }
+
 }  // namespace
 
 WebApp::CachedDerivedData::CachedDerivedData() = default;
