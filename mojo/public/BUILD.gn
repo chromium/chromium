@@ -10,7 +10,7 @@ group("public") {
     "cpp/bindings",
     "cpp/test:test_mojom",
     "interfaces/bindings/tests:test_interfaces",
-    "rust:mojo_c_system_api",
+    "rust:all",
   ]
 
   if (is_android) {

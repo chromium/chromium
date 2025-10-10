@@ -3,6 +3,15 @@
 # found in the LICENSE file.
 import("//build/rust/rust_bindgen.gni")
 
+group("all") {
+  # Meta target, don't depend on it from production code
+  testonly = true
+  deps = [
+    ":mojo_c_system_api",
+    "mojom_parser",
+  ]
+}
+
 rust_bindgen("mojo_c_system_api") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
