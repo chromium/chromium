@@ -180,6 +180,7 @@ fuzzer_test("paint_op_raster_fuzzer") {
     "//cc/paint",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/service:gles2",
+    "//gpu/skia_bindings",
   ]
 }
 
