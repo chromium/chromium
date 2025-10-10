@@ -11,8 +11,9 @@
   --cr-searchbox-icon-container-size: 28px;
   --cr-searchbox-match-padding: 6px;
   --cr-searchbox-match-padding-inline-start: 16px;
-  --cr-searchbox-results-margin-bottom: 0;
+  --cr-searchbox-match-text-padding-inline-start: 12px;
   --cr-searchbox-min-width: 75%;
+  --cr-searchbox-results-margin-bottom: 0;
   --cr-searchbox-width: 100%;
   font-size: 14.6px; /* closely resembles the omnibox input font size. */
   /* Colors used in the cr-searchbox results dropdown */
