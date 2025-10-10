@@ -24,10 +24,6 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
   InMemoryMetadataChangeList();
   ~InMemoryMetadataChangeList() override;
 
-  // Moves all currently accumulated changes into `*other`, resetting the state
-  // of `*this` to the default, empty state.
-  void TransferChangesTo(MetadataChangeList* other);
-
   // Allows ignoring metadata changes reported by the processor, for advanced
   // cases where ignoring a change should also ignore changes to tracked
   // metadata.
@@ -40,6 +36,7 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
+  void TransferChangesTo(MetadataChangeList* other) override;
 
  private:
   enum ChangeType { UPDATE, CLEAR };

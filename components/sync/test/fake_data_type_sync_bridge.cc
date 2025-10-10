@@ -63,6 +63,8 @@ class TestMetadataChangeList : public MetadataChangeList {
     db_->RemoveMetadata(storage_key);
   }
 
+  void TransferChangesTo(MetadataChangeList* other) override { NOTREACHED(); }
+
  private:
   const raw_ptr<FakeDataTypeSyncBridge::Store> db_;
 };

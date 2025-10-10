@@ -98,6 +98,8 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
     leveldb_write_batch_->Delete(FormatMetadataKey(storage_key));
   }
 
+  void TransferChangesTo(MetadataChangeList* other) override { NOTREACHED(); }
+
  private:
   // Format key for metadata records with given id.
   std::string FormatMetadataKey(const std::string& id) const {

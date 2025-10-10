@@ -167,8 +167,7 @@ DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::GetMetadataChangeList() {
 template <typename Entry>
 void DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::
     TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl) {
-  static_cast<InMemoryMetadataChangeList*>(mcl.get())->TransferChangesTo(
-      GetMetadataChangeList());
+  mcl->TransferChangesTo(GetMetadataChangeList());
 }
 
 template <typename Entry>
