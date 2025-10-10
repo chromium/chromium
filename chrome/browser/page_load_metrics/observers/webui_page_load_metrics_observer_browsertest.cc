@@ -42,7 +42,7 @@ class WebUIPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     auto metrics_waiter = CreatePageLoadMetricsTestWaiter();
     metrics_waiter->AddPageExpectation(
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
-            kFirstContentfulPaint);
+            kLargestContentfulPaint);
     // Navigate to the specified URL.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     metrics_waiter->Wait();
