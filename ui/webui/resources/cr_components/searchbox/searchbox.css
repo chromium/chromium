@@ -403,6 +403,10 @@ cr-searchbox-icon {
   padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
 
+:host([ntp-realbox-next-enabled]) #errorScrim {
+  border-radius: inherit;
+}
+
 :host([realbox-layout-mode^='Tall']) {
   --cr-searchbox-compose-button-position-top: 12px;
   --cr-searchbox-dropdown-padding-top: 60px;
@@ -469,10 +473,6 @@ cr-searchbox-icon {
   --cr-button-height: 36px;
 }
 
-:host-context([realbox-layout-mode^='Tall']) #errorScrim {
-  border-radius: inherit;
-}
-
 :host-context([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
   margin-top: 10px;
 }
@@ -480,6 +480,7 @@ cr-searchbox-icon {
 :host([realbox-layout-mode='Compact']) {
   --cr-searchbox-dropdown-padding-top: 12px;
   --cr-searchbox-height: 56px;
+  --error-scrim-flex-direction: row;
 }
 
 :host([realbox-layout-mode='Compact']) #inputWrapper {

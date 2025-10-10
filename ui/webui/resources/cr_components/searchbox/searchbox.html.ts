@@ -9,7 +9,7 @@ import type {SearchboxElement} from './searchbox.js';
 export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.realboxLayoutMode === 'TallTopContext' || this.realboxLayoutMode === 'TallBottomContext' ? html`
+${this.ntpRealboxNextEnabled ? html`
 <ntp-error-scrim id="errorScrim"></ntp-error-scrim>` : ''}
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
