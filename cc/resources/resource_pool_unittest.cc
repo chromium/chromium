@@ -242,9 +242,11 @@ TEST_F(ResourcePoolTest, LostResource) {
 
   std::vector<viz::ResourceId> export_ids = {resource.resource_id_for_export()};
   std::vector<viz::TransferableResource> transferable_resources;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       export_ids, &transferable_resources,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
   auto returned_resources =
       viz::TransferableResource::ReturnResources(transferable_resources);
   ASSERT_EQ(1u, returned_resources.size());
@@ -277,9 +279,11 @@ TEST_F(ResourcePoolTest, BusyResourcesNotFreed) {
       resource, viz::TransferableResource::ResourceSource::kTest));
 
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   resource_pool_->ReleaseResource(std::move(resource));
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
@@ -325,9 +329,11 @@ TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {
   EXPECT_TRUE(resource_pool_->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest));
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   resource_pool_->ReleaseResource(std::move(resource));
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
@@ -546,9 +552,11 @@ TEST_F(ResourcePoolTest, PurgedMemory) {
   // Export the resource to the display compositor, so it will be busy once
   // released.
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // Release the resource making it busy.
   resource_pool_->ReleaseResource(std::move(resource));
@@ -613,9 +621,11 @@ TEST_F(ResourcePoolTest, InvalidateResources) {
   // Export the first resource to the display compositor, so it will be busy
   // once released.
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {busy_resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // Release the resource making it busy.
   resource_pool_->ReleaseResource(std::move(busy_resource));
@@ -701,9 +711,11 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
       resource, viz::TransferableResource::ResourceSource::kTest));
 
   std::vector<viz::TransferableResource> transfer;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfer,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // The verified_flush flag will be set by the ResourceProvider when it exports
   // the resource.

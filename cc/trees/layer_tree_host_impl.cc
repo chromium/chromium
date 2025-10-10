@@ -3355,9 +3355,15 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
-    resource_provider_->PrepareSendToParent(
-        resources, &compositor_frame.resource_list,
-        layer_tree_frame_sink_->context_provider());
+
+  gpu::SharedImageInterface* sii = nullptr;
+  if (auto* context_provider = layer_tree_frame_sink_->context_provider()) {
+    sii = context_provider->SharedImageInterface();
+  }
+
+  resource_provider_->PrepareSendToParent(resources,
+                                          &compositor_frame.resource_list, sii);
+
   compositor_frame.render_pass_list = std::move(frame->render_passes);
 
   // We should always have a valid LocalSurfaceId in LayerTreeImpl unless we
