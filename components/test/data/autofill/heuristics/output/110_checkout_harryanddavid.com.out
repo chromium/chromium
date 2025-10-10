@@ -1,39 +1,39 @@
-UNKNOWN_TYPE |  | Gift Card Number | Χ  | -default
-UNKNOWN_TYPE | GiftCardNumber | Gift Card Number |  | GiftCardNumber_1
-UNKNOWN_TYPE |  | PIN* | Χ  | -default
-UNKNOWN_TYPE | GiftCardPin | PIN* |  | GiftCardNumber_1
-UNKNOWN_TYPE |  | Card Number | Χ  | -default
+UNKNOWN_TYPE |  | Gift Card Number | Χ  | _1
+UNKNOWN_TYPE | GiftCardNumber | Gift Card Number |  | _1
+UNKNOWN_TYPE |  | PIN* | Χ  | _1
+UNKNOWN_TYPE | GiftCardPin | PIN* |  | _1
+UNKNOWN_TYPE |  | Card Number | Χ  | _1
 CREDIT_CARD_NUMBER | clearTextAccount | Card Number |  | clearTextAccount_2
 CREDIT_CARD_EXP_MONTH | expire_month | Expiration Date | 01 | clearTextAccount_2
 CREDIT_CARD_EXP_4_DIGIT_YEAR | expire_year | Expiration Date | 2014 | clearTextAccount_2
 
 UNKNOWN_TYPE | personTitle | Title |  | personTitle_1
 UNKNOWN_TYPE | recipientRelation | Relationship | 0 | personTitle_1
-UNKNOWN_TYPE |  | Company name* | Χ  | -default
+UNKNOWN_TYPE |  | Company name* | Χ  | personTitle_1
 COMPANY_NAME | organizationName | Company name* |  | personTitle_1
-UNKNOWN_TYPE |  | Attn. Line* | Χ  | -default
+UNKNOWN_TYPE |  | Attn. Line* | Χ  | personTitle_1
 UNKNOWN_TYPE | businessTitle | Attn. Line* |  | personTitle_1
-UNKNOWN_TYPE |  | First Name* | Χ  | -default
+UNKNOWN_TYPE |  | First Name* | Χ  | personTitle_1
 NAME_FIRST | firstName | First Name* |  | personTitle_1
-UNKNOWN_TYPE |  | Last Name* | Χ  | -default
+UNKNOWN_TYPE |  | Last Name* | Χ  | personTitle_1
 NAME_LAST | lastName | Last Name* |  | personTitle_1
-UNKNOWN_TYPE |  | Additional info | Χ  | -default
+UNKNOWN_TYPE |  | Additional info | Χ  | personTitle_1
 NAME_MIDDLE | middleName | Additional info |  | personTitle_1
-UNKNOWN_TYPE |  | Street address* | Χ  | -default
+UNKNOWN_TYPE |  | Street address* | Χ  | personTitle_1
 ADDRESS_HOME_LINE1 | address1 | Street address* |  | personTitle_1
-UNKNOWN_TYPE |  | Apt.,suite, bldg. | Χ  | -default
+UNKNOWN_TYPE |  | Apt.,suite, bldg. | Χ  | personTitle_1
 ADDRESS_HOME_LINE2 | address2 | Apt.,suite, bldg. |  | personTitle_1
 ADDRESS_HOME_COUNTRY | country | Country* | US | personTitle_1
-UNKNOWN_TYPE |  | City* | Χ  | -default
+UNKNOWN_TYPE |  | City* | Χ  | personTitle_1
 ADDRESS_HOME_CITY | city | City* |  | personTitle_1
 ADDRESS_HOME_STATE | state | State* | AL | personTitle_1
-UNKNOWN_TYPE |  | ZIP* | Χ  | -default
+UNKNOWN_TYPE |  | ZIP* | Χ  | personTitle_1
 ADDRESS_HOME_ZIP | zipCode | ZIP* |  | personTitle_1
-UNKNOWN_TYPE |  | Phone number | Χ  | -default
+UNKNOWN_TYPE |  | Phone number | Χ  | personTitle_1
 PHONE_HOME_CITY_AND_NUMBER | phone1 | Phone number |  | personTitle_1
-UNKNOWN_TYPE |  | Ext | Χ  | -default
+UNKNOWN_TYPE |  | Ext | Χ  | personTitle_1
 PHONE_HOME_EXTENSION | phone2 | Ext |  | personTitle_1
-UNKNOWN_TYPE |  | Email address* | Χ  | -default
+UNKNOWN_TYPE |  | Email address* | Χ  | personTitle_1
 EMAIL_ADDRESS | email1 | Email address* |  | personTitle_1
-UNKNOWN_TYPE |  | Confirm email address* | Χ  | -default
-EMAIL_ADDRESS | logonId | Confirm email address* |  | personTitle_1
+UNKNOWN_TYPE |  | Confirm email address* | Χ  | personTitle_1
+EMAIL_ADDRESS | logonId | Confirm email address* |  | logonId_2

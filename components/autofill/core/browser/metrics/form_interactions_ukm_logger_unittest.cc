@@ -70,23 +70,23 @@ class FormInteractionsUkmLoggerTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 };
 
-// Test that we log the skip decisions for hidden/representational fields
-// correctly.
+// Test that we log the skip decisions for hidden fields correctly.
 TEST_F(FormInteractionsUkmLoggerTest,
        LogHiddenRepresentationalFieldSkipDecision) {
   RecreateProfile();
 
+  // Metric is going to be recorded only for non-focusable select fields.
   FormData form = CreateForm({
       CreateTestFormField("Name", "name", "",
-                          FormControlType::kInputText),  // no decision
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("Street", "street", "",
-                          FormControlType::kInputText),  // skips
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("City", "city", "",
-                          FormControlType::kInputText),  // skips
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("State", "state", "",
-                          FormControlType::kSelectOne),  // doesn't skip
+                          FormControlType::kSelectOne),  // record
       CreateTestFormField("Country", "country", "",
-                          FormControlType::kSelectOne)  // doesn't skip
+                          FormControlType::kSelectOne)  // don't record
   });
 
   test_api(form).field(1).set_is_focusable(false);
@@ -118,23 +118,12 @@ TEST_F(FormInteractionsUkmLoggerTest,
               Each(form.main_frame_origin().GetURL()));
   EXPECT_THAT(
       GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
-      UkmEventsAre({{// First event.
-                     {Ukm::kFormSignatureName, form_signature.value()},
+      UkmEventsAre({{{Ukm::kFormSignatureName, form_signature.value()},
                      {Ukm::kFieldSignatureName, field_signature[2].value()},
                      {Ukm::kFieldTypeGroupName, FieldTypeGroup::kAddress},
                      {Ukm::kFieldOverallTypeName, ADDRESS_HOME_STATE},
                      {Ukm::kHeuristicTypeName, ADDRESS_HOME_STATE},
                      {Ukm::kServerTypeName, ADDRESS_HOME_STATE},
-                     {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
-                     {Ukm::kHtmlFieldModeName, HtmlFieldMode::kNone},
-                     {Ukm::kIsSkippedName, false}},
-                    {// Second event.
-                     {Ukm::kFormSignatureName, form_signature.value()},
-                     {Ukm::kFieldSignatureName, field_signature[3].value()},
-                     {Ukm::kFieldTypeGroupName, FieldTypeGroup::kAddress},
-                     {Ukm::kFieldOverallTypeName, ADDRESS_HOME_COUNTRY},
-                     {Ukm::kHeuristicTypeName, ADDRESS_HOME_COUNTRY},
-                     {Ukm::kServerTypeName, ADDRESS_HOME_COUNTRY},
                      {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
                      {Ukm::kHtmlFieldModeName, HtmlFieldMode::kNone},
                      {Ukm::kIsSkippedName, false}}}));

@@ -183,9 +183,7 @@ class FormFieldData {
 
   // Returns true if the field is focusable to the user.
   // This is an approximation of visibility with false positives.
-  bool IsFocusable() const {
-    return is_focusable() && role() != RoleAttribute::kPresentation;
-  }
+  bool IsFocusable() const;
 
   // NOTE: Update `DeepEqual()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.

@@ -1469,11 +1469,14 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_HiddenFieldShouldNotCount) {
   EXPECT_EQ(u"6505554567", filled_fields[2].value());
 }
 
-// Tests that only hidden/presentational select fields are filled.
-TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
+// Tests that non-focusable fields are not filled unless they are select
+// elements.
+TEST_F(FormFillerTest, FillNonFocusableFields) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
 
+  // <input role="presentation"> were considered unfillable in the past but are
+  // now fillable.
   test_api(form).Append(
       test::CreateTestSelectField("Country", "country", "", "country",
                                   {"CA", "US"}, {"Canada", "United States"}));
@@ -1503,7 +1506,7 @@ TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
   EXPECT_THAT(filled_fields[1], AutofilledWith(u"US"));
   EXPECT_THAT(filled_fields[2], AutofilledWith(u"CA"));
   EXPECT_FALSE(filled_fields[3].is_autofilled());
-  EXPECT_FALSE(filled_fields[4].is_autofilled());
+  EXPECT_TRUE(filled_fields[4].is_autofilled());
 }
 
 TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {

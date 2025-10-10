@@ -339,7 +339,7 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   form.set_fields({CreateTestField(), CreateTestField(), CreateTestField()});
   test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kPresentation);
   test_api(form).field(1).set_is_focusable(false);
-  EXPECT_FALSE(form.fields()[0].IsFocusable());
+  EXPECT_TRUE(form.fields()[0].IsFocusable());
   EXPECT_FALSE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
   FormDataAndroid form_android(form, kSampleSessionId);
@@ -351,13 +351,12 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
 
   // `form_android` created a copy of `form` - therefore modifying the fields
   // here does not change the values inside `form_android`.
-  test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kOther);
   test_api(form).field(1).set_is_focusable(true);
   EXPECT_TRUE(form.fields()[0].IsFocusable());
   EXPECT_TRUE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
 
-  EXPECT_CALL(*field_bridges()[0], UpdateFocusable(true));
+  EXPECT_CALL(*field_bridges()[0], UpdateFocusable).Times(0);
   EXPECT_CALL(*field_bridges()[1], UpdateFocusable(true));
   EXPECT_CALL(*field_bridges()[2], UpdateFocusable).Times(0);
   form_android.UpdateFieldVisibilities(form);

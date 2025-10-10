@@ -511,6 +511,13 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/369503318): Clean up when launched.
 BASE_FEATURE(kAutofillSupportSplitZipCode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If true, FormFieldData::IsFocusable will allow returning false
+// for fields with role="presentation" html attribute.
+// TODO(crbug.com/444754999): Clean up after confirming this is safe after M143
+// release.
+BASE_FEATURE(kAutofillSupportPresentationRole,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Kill switch: If true, AutofillManager::AfterParsingFinishesDeprecated()
 // becomes the identity function. That is, it does not delay the callback until
 // after parsing has finished.
