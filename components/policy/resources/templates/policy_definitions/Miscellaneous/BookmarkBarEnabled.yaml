@@ -10,6 +10,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 items:
 - caption: Enable bookmark bar
