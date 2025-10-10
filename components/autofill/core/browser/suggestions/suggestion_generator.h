@@ -21,6 +21,9 @@
 #include "components/autofill/core/browser/suggestions/one_time_passwords/one_time_password_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/autofill/core/browser/suggestions/payments/save_and_fill_suggestion.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/create_plus_address_suggestion.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address.h"
+#include "components/autofill/core/browser/suggestions/plus_addresses/plus_address_for_address_suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
@@ -64,6 +67,9 @@ class SuggestionGenerator {
     kLoyaltyCard,
     kIdentityCredential,
     kPasskey,
+    kPlusAddress,
+    kCreatePlusAddress,
+    kPlusAddressForAddress,
     kCompose,
     kOneTimePassword,
     kMaxValue = kOneTimePassword
@@ -86,7 +92,10 @@ class SuggestionGenerator {
                                       IdentityCredential,
                                       HybridPasskeyAvailability,
                                       SaveAndFillSuggestion,
-                                      OneTimePasswordSuggestionData>;
+                                      OneTimePasswordSuggestionData,
+                                      PlusAddress,
+                                      CreatePlusAddressSuggestion,
+                                      PlusAddressForAddressSuggestion>;
 
   // Obtains data that will be used to generate suggestions on a given
   // `trigger_field` that belongs to `form`.
