@@ -10272,6 +10272,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "user-value-default-browser-strings",
+    "owners": [
+      "aisulu@google.com",
+      "arabm@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "vc-background-replace",
     "owners": [ "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
     "expiry_milestone": 126

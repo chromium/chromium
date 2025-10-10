@@ -2653,6 +2653,9 @@ extern const char kShowTabGroupsMacSystemMenuDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
+extern const char kUserValueDefaultBrowserStringsName[];
+extern const char kUserValueDefaultBrowserStringsDescription[];
+
 extern const char kEnableUnsafeSwiftShaderName[];
 extern const char kEnableUnsafeSwiftShaderDescription[];
 

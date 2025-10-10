@@ -1215,6 +1215,9 @@ BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kUserValueDefaultBrowserStrings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
 BASE_FEATURE(kPushMessagingBackgroundMode, base::FEATURE_DISABLED_BY_DEFAULT);

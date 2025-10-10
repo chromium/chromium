@@ -9118,6 +9118,7 @@ from previous Chrome versions.
   <int value="-1827136280" label="AndroidComposeplate:disabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
+  <int value="-1824913297" label="UserValueDefaultBrowserStrings:enabled"/>
   <int value="-1824647193" label="HelpAppOnboardingRevamp:disabled"/>
   <int value="-1824540307" label="NotificationWidthIncrease:enabled"/>
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
@@ -19103,6 +19104,7 @@ from previous Chrome versions.
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
   <int value="1726621836" label="AndroidWindowPopupResizeAfterSpawn:disabled"/>
   <int value="1727201171" label="EventBasedLogUpload:enabled"/>
+  <int value="1727685815" label="UserValueDefaultBrowserStrings:disabled"/>
   <int value="1728616693" label="WebRtcWgcRequireBorder:disabled"/>
   <int value="1728763346" label="TabStorageSqlitePrototype:disabled"/>
   <int value="1728816382" label="SeaPenEnterprise:disabled"/>

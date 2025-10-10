@@ -13294,6 +13294,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kServiceWorkerSyntheticResponseDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kServiceWorkerSyntheticResponse)},
 
+    {"user-value-default-browser-strings",
+     flag_descriptions::kUserValueDefaultBrowserStringsName,
+     flag_descriptions::kUserValueDefaultBrowserStringsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kUserValueDefaultBrowserStrings)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

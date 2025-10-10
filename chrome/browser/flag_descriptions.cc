@@ -4560,6 +4560,11 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
+const char kUserValueDefaultBrowserStringsName[] =
+    "Default Browser settings page - updated strings";
+const char kUserValueDefaultBrowserStringsDescription[] =
+    "Improves the flow and the wording on the Default Browser settings page.";
+
 const char kEnableUnsafeSwiftShaderName[] =
     "Enable unsafe SwiftShader fallback";
 const char kEnableUnsafeSwiftShaderDescription[] =
