@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -34,6 +36,9 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics() {
   specifics.mutable_flight_reservation()->set_passenger_name("John Doe");
   specifics.mutable_flight_reservation()->set_departure_airport("MUC");
   specifics.mutable_flight_reservation()->set_arrival_airport("BEY");
+  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
+      base::Time::FromSecondsSinceUnixEpoch(60).InMillisecondsSinceUnixEpoch() *
+      1000);
 
   ChromeValuablesMetadata metadata;
   ChromeValuablesMetadataEntry& entry = *metadata.add_metadata_entries();
@@ -50,8 +55,6 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics() {
 
   return specifics;
 }
-
-}  // namespace
 
 // TODO(crbug.com/40100455): Add tests for Vehicle entity.
 
@@ -92,6 +95,25 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
   EXPECT_EQ(name.GetRawInfo(FieldType::NAME_FULL), u"Joe Smith");
   EXPECT_EQ(name.GetVerificationStatus(FieldType::NAME_FULL),
             VerificationStatus::kServerParsed);
+  EXPECT_EQ(
+      test_api(*flight_reservation).frecency_override(),
+      base::TimeFormatAsIso8601(base::Time::FromSecondsSinceUnixEpoch(60)));
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function correctly
+// deserializes the flight reservation entity when departure time is empty.
+TEST(EntitySyncUtilTest,
+     CreateEntityInstanceFromSpecifics_FlightReservation_EmptyDepartureTime) {
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestFlightReservationSpecifics();
+  specifics.mutable_flight_reservation()
+      ->clear_departure_date_unix_epoch_micros();
+
+  std::optional<EntityInstance> flight_reservation =
+      CreateEntityInstanceFromSpecifics(specifics);
+
+  ASSERT_TRUE(flight_reservation.has_value());
+  EXPECT_EQ(test_api(*flight_reservation).frecency_override(), "");
 }
 
 // Tests that the `CreateSpecificsFromEntityInstance` function correctly
@@ -124,6 +146,23 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_FlightReservation) {
   EXPECT_EQ(GetStringValue(flight_reservation,
                            AttributeTypeName::kFlightReservationArrivalAirport),
             specifics.flight_reservation().arrival_airport());
+  EXPECT_FALSE(
+      specifics.flight_reservation().has_departure_date_unix_epoch_micros());
+}
+
+// Tests that the `CreateSpecificsFromEntityInstance` function ignores the
+// departure time when serializing the flight reservation entity.
+TEST(EntitySyncUtilTest,
+     CreateSpecificsFromEntityInstance_FlightReservation_IgnoresDepartureTime) {
+  EntityInstance flight_reservation = test::GetFlightReservationEntityInstance({
+      .departure_time = base::Time::UnixEpoch() + base::Seconds(1000),
+  });
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(flight_reservation);
+
+  EXPECT_FALSE(
+      specifics.flight_reservation().has_departure_date_unix_epoch_micros());
 }
 
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly sets
@@ -171,4 +210,5 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_IsEditable) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

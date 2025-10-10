@@ -271,7 +271,8 @@ EntityInstance::EntityInstance(
     size_t use_count,
     base::Time use_date,
     RecordType record_type,
-    AreAttributesReadOnly are_attributes_read_only)
+    AreAttributesReadOnly are_attributes_read_only,
+    std::string frecency_override)
     : type_(type),
       attributes_(std::move(attributes)),
       guid_(std::move(guid)),
@@ -280,7 +281,8 @@ EntityInstance::EntityInstance(
       use_count_(use_count),
       use_date_(use_date),
       record_type_(record_type),
-      are_attributes_read_only_(are_attributes_read_only) {
+      are_attributes_read_only_(are_attributes_read_only),
+      frecency_override_(std::move(frecency_override)) {
   DCHECK(!attributes_.empty());
   DCHECK(std::ranges::all_of(attributes_, [this](const AttributeInstance& a) {
     return type_ == a.type().entity_type();
@@ -520,6 +522,11 @@ EntityInstance::FrecencyOrder::FrecencyOrder(base::Time now) : now_(now) {}
 bool EntityInstance::FrecencyOrder::operator()(
     const EntityInstance& lhs,
     const EntityInstance& rhs) const {
+  if (!lhs.frecency_override_.empty() || !rhs.frecency_override_.empty()) {
+    return std::pair(lhs.frecency_override_.empty(), lhs.frecency_override_) <
+           std::pair(rhs.frecency_override_.empty(), rhs.frecency_override_);
+  }
+
   // At days_since_last_use = 0, use_count = 0, the score is -1.
   // As days_since_last_use increases, the score becomes more negative.
   // As use_count increases, the score approaches 0.

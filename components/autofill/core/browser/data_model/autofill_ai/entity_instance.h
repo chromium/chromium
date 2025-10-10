@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -42,6 +43,7 @@ namespace autofill {
 class AttributeInstance;
 struct AutofillFormatString;
 class EntityInstance;
+class EntityInstanceTestApi;
 class EntityTable;
 
 // An attribute instance is a typed string value with additional metadata.
@@ -225,8 +227,8 @@ class EntityInstance final {
                  size_t use_count,
                  base::Time use_date,
                  RecordType record_type,
-                 AreAttributesReadOnly are_attributes_read_only =
-                     AreAttributesReadOnly(false));
+                 AreAttributesReadOnly are_attributes_read_only,
+                 std::string frecency_override);
 
   EntityInstance(const EntityInstance&);
   EntityInstance& operator=(const EntityInstance&);
@@ -238,6 +240,10 @@ class EntityInstance final {
   struct CompareByGuid;
 
   // Comparator that returns the entity with the higher frecency score.
+  // If both entities have non-empty frecency override, the one with the lowest
+  // lexicographical order of the override string will be first.
+  // If one entity has a non-empty frecency override and the other does not,
+  // the entity with the override will be first.
   struct FrecencyOrder {
    public:
     explicit FrecencyOrder(base::Time now);
@@ -302,6 +308,12 @@ class EntityInstance final {
   // Returns the type of storage used for the specific entity.
   RecordType record_type() const { return record_type_; }
 
+  // Returns the ordering override for the specific entity.
+  const std::string& frecency_override(
+      base::PassKey<EntityTable> pass_key) const {
+    return frecency_override_;
+  }
+
   struct EntityMergeability {
     EntityMergeability();
     EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
@@ -344,6 +356,8 @@ class EntityInstance final {
                          const EntityInstance&) = default;
 
  private:
+  friend class EntityInstanceTestApi;
+
   EntityType type_;
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes_;
@@ -354,6 +368,7 @@ class EntityInstance final {
   base::Time use_date_;
   RecordType record_type_;
   AreAttributesReadOnly are_attributes_read_only_;
+  std::string frecency_override_;
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);

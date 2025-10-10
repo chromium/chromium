@@ -369,6 +369,37 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
   EXPECT_EQ(entities[0].guid(), top_entity.guid());
 }
 
+// Tests that frecency override takes precedence over frecency.
+TEST(AutofillEntityInstanceTest, FrecencyOrder_EntitiesWithFrecencyOverride) {
+  EntityInstance first_flight = test::GetFlightReservationEntityInstance(
+      {.departure_time = test::kJune2017});
+  EntityInstance second_flight = test::GetFlightReservationEntityInstance(
+      {.departure_time = test::kJune2017 + base::Days(1)});
+  second_flight.RecordEntityUsed(test::kJune2017);
+  std::vector<EntityInstance> entities = {first_flight, second_flight};
+
+  EntityInstance::FrecencyOrder comp(test::kJune2017 + base::Days(2));
+  std::ranges::sort(entities, comp);
+
+  EXPECT_EQ(entities[0].guid(), first_flight.guid());
+}
+
+// Tests that if one entity has a non-empty frecency override, while other has
+// empty override, the non-empty takes precedence.
+TEST(AutofillEntityInstanceTest,
+     FrecencyOrder_EntityWithFrecencyOverrideTakesPrecedence) {
+  EntityInstance flight = test::GetFlightReservationEntityInstance(
+      {.departure_time = test::kJune2017});
+  EntityInstance passport = test::GetPassportEntityInstance();
+  passport.RecordEntityUsed(test::kJune2017);
+  std::vector<EntityInstance> entities = {flight, passport};
+
+  EntityInstance::FrecencyOrder comp(test::kJune2017 + base::Days(2));
+  std::ranges::sort(entities, comp);
+
+  EXPECT_EQ(entities[0].guid(), flight.guid());
+}
+
 TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForReadOnlyEntity) {
   EntityInstance entity = test::GetPassportEntityInstance(
       {.are_attributes_read_only =

@@ -1145,6 +1145,7 @@ static_library("test_support") {
     "data_model/addresses/autofill_structured_address_component_test_api.h",
     "data_model/addresses/autofill_structured_address_test_utils.cc",
     "data_model/addresses/autofill_structured_address_test_utils.h",
+    "data_model/autofill_ai/entity_instance_test_api.h",
     "data_model/payments/credit_card_benefit_test_api.h",
     "data_quality/addresses/profile_token_quality_test_api.cc",
     "data_quality/addresses/profile_token_quality_test_api.h",

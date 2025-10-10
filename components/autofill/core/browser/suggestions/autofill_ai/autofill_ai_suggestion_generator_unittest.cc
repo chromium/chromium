@@ -180,6 +180,13 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   std::optional<FormStructure> form_structure_;
 };
 
+std::u16string GetFlightReservationName(const EntityInstance& entity) {
+  return entity
+      .attribute(
+          AttributeType(AttributeTypeName::kFlightReservationPassengerName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
 std::u16string GetPassportName(const EntityInstance& entity) {
   return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
       ->GetCompleteInfo(kAppLocaleUS);
@@ -566,6 +573,37 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                           HasMainText(GetPassportName(passport1)),
                           HasMainText(GetDriversLicenseName(driversLicense1)),
                           HasMainText(GetDriversLicenseName(driversLicense2))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_CustomOrderingForFlightReservation) {
+  EntityInstance passport1 = test::GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Bruno", .use_count = 16});
+  EntityInstance passport2 = test::GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe", .number = u"927908CYGAS1", .use_count = 15});
+  EntityInstance flight_reservation1 =
+      test::GetFlightReservationEntityInstanceWithRandomGuid(
+          {.name = u"Peter",
+           .departure_time = base::Time::UnixEpoch(),
+           .use_count = 10});
+  EntityInstance flight_reservation2 =
+      test::GetFlightReservationEntityInstanceWithRandomGuid(
+          {.name = u"Jacob",
+           .departure_time = base::Time::UnixEpoch() + base::Days(1),
+           .use_count = 12});
+  SetEntities({passport1, passport2, flight_reservation1, flight_reservation2});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, FLIGHT_RESERVATION_FLIGHT_NUMBER});
+
+  // Flight reservation entities come before Passport entities, because they
+  // have frecency_override set. `flight_reservation1` comes before
+  // `flight_reservation2` since the entities are sorted by departure date.
+  std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      res,
+      SuggestionsAre(HasMainText(GetFlightReservationName(flight_reservation1)),
+                     HasMainText(GetFlightReservationName(flight_reservation2)),
+                     HasMainText(GetPassportName(passport1)),
+                     HasMainText(GetPassportName(passport2))));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field

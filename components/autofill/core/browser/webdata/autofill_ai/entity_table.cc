@@ -62,6 +62,7 @@ constexpr char kUseCount[] = "use_count";
 constexpr char kUseDate[] = "use_date";
 constexpr char kRecordType[] = "record_type";
 constexpr char kAttributesReadOnly[] = "attributes_read_only";
+constexpr char kFrecencyOverride[] = "frecency_override";
 }  // namespace entities
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
@@ -120,7 +121,9 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
             base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000")),
         "My passport", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
         /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal));
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kDriversLicense),
@@ -133,7 +136,9 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
             base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000")),
         "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
         /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal));
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kVehicle),
@@ -148,7 +153,9 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
             base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000")),
         "My wroom wroom car", /*date_modified=*/base::Time::Now(),
         /*use_count=*/0, /*use_date=*/base::Time::FromTimeT(0),
-        EntityInstance::RecordType::kLocal));
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
   }
 }
 
@@ -199,10 +206,12 @@ bool EntityTable::CreateTablesIfNecessary() {
          {entities::kEntityType, "TEXT NOT NULL"},
          {entities::kNickname, "TEXT NOT NULL"},
          {entities::kDateModified, "INTEGER NOT NULL"},
+         // TODO(crbug.com/450685388): Make all columns not null.
          {entities::kUseCount, "INTEGER DEFAULT 0"},
          {entities::kUseDate, "INTEGER DEFAULT 0"},
          {entities::kRecordType, "INTEGER DEFAULT 0"},
-         {entities::kAttributesReadOnly, "INTEGER DEFAULT 0"}});
+         {entities::kAttributesReadOnly, "INTEGER DEFAULT 0"},
+         {entities::kFrecencyOverride, "TEXT NOT NULL DEFAULT ''"}});
   };
   return create_attributes_table() && create_entities_table();
 }
@@ -267,6 +276,11 @@ bool EntityTable::MigrateToVersion(int version,
       return AddColumn(db(), "autofill_ai_entities", "attributes_read_only",
                        "INTEGER DEFAULT 0");
     }
+    case 146: {
+      // In this version `frecency_override` was added.
+      return AddColumn(db(), "autofill_ai_entities", "frecency_override",
+                       "TEXT NOT NULL DEFAULT ''");
+    }
   }
   return true;
 }
@@ -317,11 +331,11 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 
   // Add the entity.
   sql::Statement s;
-  InsertBuilder(
-      db(), s, entities::kTableName,
-      {entities::kGuid, entities::kEntityType, entities::kNickname,
-       entities::kDateModified, entities::kUseCount, entities::kUseDate,
-       entities::kRecordType, entities::kAttributesReadOnly});
+  InsertBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
+                 entities::kDateModified, entities::kUseCount,
+                 entities::kUseDate, entities::kRecordType,
+                 entities::kAttributesReadOnly, entities::kFrecencyOverride});
   s.BindString(0, *entity.guid());
   s.BindString(1, entity.type().name_as_string());
   s.BindString(2, entity.nickname());
@@ -330,6 +344,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   s.BindTime(5, entity.use_date());
   s.BindInt(6, base::to_underlying(entity.record_type()));
   s.BindBool(7, entity.are_attributes_read_only().value());
+  s.BindString(8, entity.frecency_override(/*pass_key=*/{}));
 
   if (!s.Run()) {
     return false;
@@ -485,12 +500,12 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances(
   // previous query.
   std::vector<EntityInstance> entities;
   sql::Statement s;
-  SelectBuilder(
-      db(), s, entities::kTableName,
-      {entities::kGuid, entities::kEntityType, entities::kNickname,
-       entities::kDateModified, entities::kUseCount, entities::kUseDate,
-       entities::kRecordType, entities::kAttributesReadOnly},
-      where);
+  SelectBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
+                 entities::kDateModified, entities::kUseCount,
+                 entities::kUseDate, entities::kRecordType,
+                 entities::kAttributesReadOnly, entities::kFrecencyOverride},
+                where);
 
   while (s.Step()) {
     EntityInstance::EntityId guid(s.ColumnString(0));
@@ -503,12 +518,14 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances(
         s.ColumnInt(6);
     EntityInstance::AreAttributesReadOnly are_attributes_read_only =
         EntityInstance::AreAttributesReadOnly(s.ColumnBool(7));
+    std::string frecency_override = s.ColumnString(8);
 
     if (auto attributes = attribute_records.extract(guid)) {
       if (std::optional<EntityInstance> e = ValidateInstance(
               type_name, std::move(guid), std::move(nickname), date_modified,
               use_count, use_date, underlying_record_type,
-              std::move(attributes.mapped()), are_attributes_read_only)) {
+              std::move(attributes.mapped()), are_attributes_read_only,
+              std::move(frecency_override))) {
         entities.push_back(*std::move(e));
       }
     }
@@ -528,7 +545,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     base::Time use_date,
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type,
     std::map<std::string, std::vector<AttributeRecord>> attribute_records,
-    EntityInstance::AreAttributesReadOnly are_attributes_read_only) const {
+    EntityInstance::AreAttributesReadOnly are_attributes_read_only,
+    std::string frecency_override) const {
   // An attribute's field type must never be UNKNOWN_TYPE - otherwise we will
   // discard its value here.
   static_assert(
@@ -577,7 +595,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
 
   return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
                         std::move(nickname), date_modified, use_count, use_date,
-                        *record_type, are_attributes_read_only);
+                        *record_type, are_attributes_read_only,
+                        frecency_override);
 }
 
 }  // namespace autofill

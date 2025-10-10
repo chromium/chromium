@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/time_formatting.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -290,20 +291,26 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           EntityType(EntityTypeName::kVehicle),
           GetVehicleAttributesFromSpecifics(specifics), guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{},
-          /*record_type=*/EntityInstance::RecordType::kServerWallet,
-          /*are_attributes_read_only=*/
-          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()));
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          /*frecency_override=*/"");
     }
     case sync_pb::AutofillValuableSpecifics::kFlightReservation: {
+      std::string frecency_override;
+      if (specifics.flight_reservation()
+              .has_departure_date_unix_epoch_micros()) {
+        base::Time departure_time = base::Time::FromMillisecondsSinceUnixEpoch(
+            specifics.flight_reservation().departure_date_unix_epoch_micros() /
+            1000);
+        frecency_override = base::TimeFormatAsIso8601(departure_time);
+      }
       return EntityInstance(
           EntityType(EntityTypeName::kFlightReservation),
           GetFlightReservationAttributesFromSpecifics(specifics), guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{},
-          /*record_type=*/EntityInstance::RecordType::kServerWallet,
-          /*are_attributes_read_only=*/
-          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()));
+          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
+          frecency_override);
     }
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:

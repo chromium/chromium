@@ -260,7 +260,9 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
   return EntityInstance(
       std::move(entity_type), attribute_instances, std::move(guid),
       private_api_entity_instance.nickname, base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time::Now(), EntityInstance::RecordType::kLocal);
+      /*use_date=*/base::Time::Now(), EntityInstance::RecordType::kLocal,
+      EntityInstance::AreAttributesReadOnly(false),
+      /*frecency_override=*/"");
 }
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(

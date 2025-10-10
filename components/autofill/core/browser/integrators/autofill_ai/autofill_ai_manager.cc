@@ -134,7 +134,7 @@ EntityInstance CreateServerEntityFromLocal(const EntityInstance& local_entity) {
       // Entities that are migrated from local to server are never read-only,
       // since local entities can always be edited by the users, so can their
       // server counterpart.
-      EntityInstance::AreAttributesReadOnly(false));
+      EntityInstance::AreAttributesReadOnly(false), /*frecency_override=*/"");
 }
 }  // namespace
 
@@ -691,7 +691,9 @@ AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
           EntityInstance(saved_entity.type(), std::move(new_attributes),
                          saved_entity.guid(), saved_entity.nickname(),
                          base::Time::Now(), saved_entity.use_count(),
-                         base::Time::Now(), observed_entity.record_type()),
+                         base::Time::Now(), observed_entity.record_type(),
+                         EntityInstance::AreAttributesReadOnly(false),
+                         /*frecency_override=*/""),
           saved_entity);
     }
   }

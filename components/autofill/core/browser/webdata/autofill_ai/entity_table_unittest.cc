@@ -59,10 +59,15 @@ class EntityTableTest : public testing::Test {
 TEST_F(EntityTableTest, BasicWriteThenRead) {
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  // Flight reservation has frecency override set to departure time.
+  EntityInstance fr = test::GetFlightReservationEntityInstance({
+      .departure_time = test::kJune2017,
+  });
 
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
-  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, dl));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(fr));
+  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, dl, fr));
 }
 
 // Tests that AddOrUpdateEntityInstance() correctly adds entities with an id

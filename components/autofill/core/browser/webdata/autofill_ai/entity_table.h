@@ -153,7 +153,8 @@ class EntityTable : public WebDatabaseTable {
       std::underlying_type_t<EntityInstance::RecordType>
           underlying_storage_type,
       std::map<std::string, std::vector<AttributeRecord>> attribute_records,
-      EntityInstance::AreAttributesReadOnly are_attributes_read_only) const;
+      EntityInstance::AreAttributesReadOnly are_attributes_read_only,
+      std::string frecency_override) const;
 
   friend class EntityTableTestApi;
 };
