@@ -54,6 +54,7 @@ export class ContextMenuEntrypointElement extends
         reflect: true,
         type: Boolean,
       },
+      disabledTabIds: {type: Object},
       tabSuggestions_: {type: Array},
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
@@ -71,6 +72,7 @@ export class ContextMenuEntrypointElement extends
   accessor inputsDisabled: boolean = false;
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
+  accessor disabledTabIds: Set<number> = new Set();
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =

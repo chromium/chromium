@@ -132,6 +132,39 @@ suite('ContextMenuEntrypoint', () => {
         assertEquals('fileUpload', items[3]!.id);
       });
 
+  test('disabled tabs cannot be added as context', async () => {
+    // Arrange.
+    const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
+    $$(entrypoint, '#entrypoint')!.click();
+    const e = await refreshTabs;
+    e.detail.onRefreshComplete([
+      {
+        title: 'Tab 1',
+        url: {url: 'https://www.google.com'},
+        tabId: 1,
+        lastActive: { internalValue: BigInt(1) },
+      },
+      {
+        title: 'Tab 2',
+        url: {url: 'https://www.google.com'},
+        tabId: 2,
+        lastActive: { internalValue: BigInt(2) },
+      },
+    ]);
+    entrypoint.disabledTabIds = new Set([2]);
+    await microtasksFinished();
+    assertTrue(entrypoint.$.menu.open);
+
+    // Assert.
+    const items = entrypoint.$.menu.querySelectorAll('.dropdown-item');
+    const tab1 = items[0]! as HTMLButtonElement;
+    assertEquals('Tab 1', tab1.getAttribute('title'));
+    assertFalse(tab1.disabled);
+    const tab2 = items[1]! as HTMLButtonElement;
+    assertEquals('Tab 2', tab2.getAttribute('title'));
+    assertTrue(tab2.disabled);
+  });
+
   ([
     ['#fileUpload', 'open-file-upload'],
     ['#imageUpload', 'open-image-upload'],
