@@ -3943,23 +3943,6 @@
       status: "stable",
     },
     {
-      // crbug.com/427520278
-      // Fix looking for next keyboard focusable radio button. This was added
-      // in M140 and can be removed after M143. This flag is no longer needed
-      // after RadioKeyboardFocusableOptimize ships.
-      name: "RadioInputNextKeyboardFocusable",
-      status: "stable",
-    },
-    {
-      // https://issues.chromium.org/issues/421837104
-      // Optimize keyboard focusable for the radio element. Making
-      // the focus navigation of the radio group more reasonable and
-      // consistent with Firefox.
-      // This was added in M140 and can be removed after M143.
-      name: "RadioKeyboardFocusableOptimize",
-      status: "stable",
-    },
-    {
       name: "RasterInducingScroll",
       status: {
         "Linux": "stable",
