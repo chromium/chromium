@@ -2294,9 +2294,7 @@ CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
   if (EnumHasFlags(text_decoration, TextDecorationLine::kLineThrough)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLineThrough));
   }
-  if (RuntimeEnabledFeatures::
-          CssTextDecorationLineBlinkSerializationEnabled() &&
-      EnumHasFlags(text_decoration, TextDecorationLine::kBlink)) {
+  if (EnumHasFlags(text_decoration, TextDecorationLine::kBlink)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlink));
   }
 
