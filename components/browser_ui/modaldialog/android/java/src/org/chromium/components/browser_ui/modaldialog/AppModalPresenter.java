@@ -133,7 +133,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         } else if (dialogStyle == ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE) {
             dialogIndex = 2;
         } else if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG) {
-            dialogIndex = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 3 : 1;
+            dialogIndex = 3;
         }
         int buttonIndex = 0;
         int buttonStyle = mModel.get(ModalDialogProperties.BUTTON_STYLES);
