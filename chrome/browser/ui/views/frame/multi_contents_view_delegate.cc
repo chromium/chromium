@@ -126,9 +126,12 @@ void MultiContentsViewDelegateImpl::HandleTabDrop(
   const int new_tab_idx =
       tab_strip_model_->active_index() +
       (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
+
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
   const int inserted_tab_idx = tab_strip_model_->InsertDetachedTabAt(
-      new_tab_idx, std::move(detached_tab), AddTabTypes::ADD_NONE,
-      std::nullopt);
+      new_tab_idx, std::move(detached_tab),
+      active_tab->IsPinned() ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_NONE,
+      active_tab->GetGroup());
   tab_strip_model_->AddToNewSplit(
       {inserted_tab_idx}, split_data,
       split_tabs::SplitTabCreatedSource::kDragAndDropTab);
