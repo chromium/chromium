@@ -733,11 +733,44 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_CPE_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable the CPE.">
         Chrome Tip: Get your passwords in any app
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT1_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
+         Use Chrome by default
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT2_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
+         Make Chrome your default browser
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT3_BODY" desc="Text for the body of a Tips notification that encourages the user to set the app as their default browser">
+         Easily use Chrome anytime you tap links in messages or other apps.
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY" desc="Text for the body of a Tips notification that encourages the user to set the app as their default browser">
         Use Chrome anytime you tap links in messages or other apps.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE" desc="Text for the title of a Tips notification that encourages the user to set the app as their default browser">
         Chrome Tip: use Chrome by default
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Access Chrome faster from your iPad's Home Screen.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPHONE" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Access Chrome faster from your iPhone's Home Screen.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_TITLE" desc="Text for the title of a Tips notification that encourages the user to put the app into the iOS dock">
+         Chrome Tip: Move Chrome to your home screen
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT2_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Access Chrome faster from your iPad's Dock.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT2_BODY_IPHONE" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Access Chrome faster from your iPhone's Dock.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Open Chrome faster when you're ready to browse on your iPad.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_BODY_IPHONE" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
+         Open Chrome faster when you're ready to browse on your iPhone.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_TITLE" desc="Text for the title of a Tips notification that encourages the user to put the app into the iOS dock">
+        Move Chrome to your dock
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to put the app into the iOS dock">
         Access Chrome faster from your iPad's home screen dock.
@@ -748,11 +781,17 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE" desc="Text for the title of a Tips notification that encourages the user to put the app into the iOS dock">
         Chrome Tip: Move Chrome to the dock
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT1_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
+         Chrome Tip: Enhanced safe browsing will save your day
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing">
         Chrome Tip: Get Chrome's strongest security
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE_FROM_DESKTOP" desc="Text for the title of a Tips notification that encourages the user to enable Enhanced Safe Browsing.">
         Chrome Tip: Enhanced Safe Browsing
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_TITLE" desc="Text for the title of a Tips notification that encourages the user to search with Lens">
+         Chrome Tip: Search what you see with Google Lens
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_TITLE" desc="Text for the title of a Tips notification that encourages the user to use the Lens Overlay feature.">
         Chrome Tip: Search what you see
@@ -763,11 +802,23 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE" desc="Text for the title of a Tips notification that reminds the user to set their preferred omnibox position">
         Chrome Tip: Choose your address bar position
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT1_BODY_IPAD" desc="Text for the body of a Tips notification that encourages the user to complete the Set Up List">
+         Tap here to get the most out of Chrome on your iPad.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT1_BODY_IPHONE" desc="Text for the body of a Tips notification that encourages the user to complete the Set Up List">
+         Tap here to get the most out of Chrome on your iPhone.
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_ALT2_TITLE" desc="Text for the title of a Tips notification that encourages the user to complete the Set Up List">
+         You're almost finished setting up Chrome!
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_BODY" desc="Text for the body of a Tips notification that encourages the user to complete the Set Up List">
         Get the most out of Chrome by continuing setting up your browser.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SETUPLIST_CONTINUATION_TITLE" desc="Text for the title of a Tips notification that encourages the user to complete the Set Up List">
         Finish setting up Chrome
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT3_TITLE" desc="Text for the title of a Tips notification that encourages the user to sign in to their account">
+         Sign in to Chrome to get your stuff
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY" desc="Text for the body of a Tips notification that encourages the user to sign in to their account">
         Sign in with your Google Account to sync your passwords, bookmarks, and more.
@@ -777,6 +828,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_TITLE" desc="Text for the title of a Tips notification that starts a re-authentication flow, which will allow users to access their passwords.">
         Chrome Tip: Get your passwords
+      </message>
+      <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_ALT2_TITLE" desc="Text for the title of a Tips notification that takes the user to the Whats New page">
+         Check out what’s new in Chrome
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_WHATS_NEW_BODY" desc="Text for the body of a Tips notification that takes the user to the Whats New page">
         Explore new features that help you get the most out of Chrome.
