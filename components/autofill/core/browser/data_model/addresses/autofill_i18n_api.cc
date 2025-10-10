@@ -85,6 +85,19 @@ std::u16string GetFormattingExpressionOverrides(
   return u"";
 }
 
+// Returns true if a standalone parsing rule is available for the country and
+// type. This is used to enable parsing rules defined for countries without
+// custom hierarchy.
+bool IsStandaloneParsingRuleAvailable(AddressCountryCode country_code,
+                                      FieldType field_type) {
+  if (field_type == ADDRESS_HOME_ZIP && country_code.value() == "JP" &&
+      base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    return true;
+  }
+
+  return false;
+}
+
 // Returns an instance of the `AddressComponent` implementation that matches
 // the corresponding FieldType if exists. Otherwise, returns a default
 // `AddressComponent`.
@@ -418,7 +431,8 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
   // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).
   AddressCountryCode country_code_for_parsing =
-      IsCustomHierarchyAvailableForCountry(country_code)
+      (IsCustomHierarchyAvailableForCountry(country_code) ||
+       IsStandaloneParsingRuleAvailable(country_code, field_type))
           ? country_code
           : kLegacyHierarchyCountryCode;
 

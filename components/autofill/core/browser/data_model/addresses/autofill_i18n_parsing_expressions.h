@@ -44,23 +44,102 @@ inline constexpr char kRegularExpression_17[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET
 inline constexpr char kRegularExpression_18[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>(?:(?:(?:no|nr|°|º|numéro)[-.\\s]*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b|\\s*[\\/-]\\s*\\d+)?))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))))(?:(?:, |\\n|\\r|,)+\\s*(?P<ADDRESS_HOME_OVERFLOW>(?:[^\\r\\n]+)))?))"; // nocheck
 inline constexpr char kRegularExpression_19[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:(?:no|nr|°|º|numero)[-.\\s]*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b|\\s*[\\/-]\\s*\\d+)?))))"; // nocheck
 inline constexpr char kRegularExpression_20[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:(?:no|nr|°|º|numero)[-.\\s]*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b|\\s*[\\/-]\\s*\\d+)?)))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_OVERFLOW>(?:[^\\r\\n]+)))?))"; // nocheck
-inline constexpr char kRegularExpression_21[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_STREET_NAME>(?:calle\\s+\\d+\\s+[^\\d,\\n\\r]*?|(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:[,]?\\s+?(?:(?:#|No\\.?|número\\s)\\s*)?(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:(?:S/Num\\.?|S/N|Sin Nombre)|(?:KM\\s+)?\\d+\\w?)))))"; // nocheck
-inline constexpr char kRegularExpression_22[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b))\\b)))"; // nocheck
-inline constexpr char kRegularExpression_23[] = "(?m)(?i:(?:piso\\s*(?P<ADDRESS_HOME_FLOOR>\\d+)))"; // nocheck
-inline constexpr char kRegularExpression_24[] = "(?m)(?i:(?:\\b(?:x|Entre( Calles)?)\\s+(?P<ADDRESS_HOME_BETWEEN_STREETS>(?P<ADDRESS_HOME_BETWEEN_STREETS_1>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:\\s+y\\s+)(?P<ADDRESS_HOME_BETWEEN_STREETS_2>(?:[^,\\r\\n]+)))))"; // nocheck
-inline constexpr char kRegularExpression_25[] = "(?m)(?i:(?:(?:Cerca del)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+)))"; // nocheck
-inline constexpr char kRegularExpression_26[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))?(?:(?:^|\\s+)(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))"; // nocheck
-inline constexpr char kRegularExpression_27[] = "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:[1-9]\\d{3}))(?:(?:[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:[A-Z]{2}))?))"; // nocheck
-inline constexpr char kRegularExpression_28[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+))(?:(?:[-\\s/,]*)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_NUM>(?:\\w[\\w\\s-]*))))?))))"; // nocheck
-inline constexpr char kRegularExpression_29[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+))(?:(?:[-\\s/,]*)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_NUM>(?:\\w[\\w\\s-]*))))?)))))"; // nocheck
-inline constexpr char kRegularExpression_30[] = "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:\\d{2}))(?:(?:[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:\\d{3}))?))"; // nocheck
-inline constexpr char kRegularExpression_31[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>(?:(?:(?:ulica|ul\\.?)\\s*)?(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))?))))"; // nocheck
-inline constexpr char kRegularExpression_32[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>(?:(?:(?:ulica|ul\\.?)\\s*)?(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))?)))))"; // nocheck
-inline constexpr char kRegularExpression_33[] = "(?m)(?i:(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))?))"; // nocheck
-inline constexpr char kRegularExpression_34[] = "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b))))?)"; // nocheck
-inline constexpr char kRegularExpression_35[] = "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:\\d{5}))(?:(?:[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:\\d{4}))?))"; // nocheck
-inline constexpr char kRegularExpression_36[] = "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?:(?:(?:((no|°|º|number)(\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+\\w?))(th\\.|\\.)?)(?:(?:^|\\s+)(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))|(?P<ADDRESS_HOME_STREET_NAME__2>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:((no|°|º|number)(\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER__2>(?:\\d+\\w?))(th\\.|\\.)?))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_SUBPREMISE>(?:(?:(?:(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)(?P<ADDRESS_HOME_FLOOR>(?:(\\d{0,3}\\w?))))|(?:(?P<ADDRESS_HOME_FLOOR__2>(?:(\\d{1,3}\\w?|\\w)))(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)))(?:(?:^|[,\\s]+)(?:(?:(?:(apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_HOME_APT_NUM>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_NUM__2>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))?|(?:(?:(?:(apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_HOME_APT_NUM__3>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_NUM__4>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))))?))"; // nocheck
-
+inline constexpr char kRegularExpression_21[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?:(?:〒\\s*))?(?P<ADDRESS_HOME_ZIP_PREFIX>(?"
+    ":[0-9０-９]{3}))(?:(?:[\\s－-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:[0-9０-"
+    "９]{4}))))";  // nocheck
+inline constexpr char kRegularExpression_22[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>\\A\\s*(?P<ADDRESS_HOME_"
+    "STREET_NAME>(?:calle\\s+\\d+\\s+[^\\d,\\n\\r]*?|(?:[^\\s,]+(?:[^"
+    "\\S\\r\\n]+[^\\s,]+)*?)))(?:[,]?\\s+?(?:(?:#|No\\.?|número\\s)\\s*)?(?"
+    "P<ADDRESS_HOME_HOUSE_NUMBER>(?:(?:S/Num\\.?|S/N|Sin "
+    "Nombre)|(?:KM\\s+)?\\d+\\w?)))))";  // nocheck
+inline constexpr char kRegularExpression_23[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?"
+    "|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? "
+    "int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))(?:(?:^|\\s+)"
+    "(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b))\\b)))";  // nocheck
+inline constexpr char kRegularExpression_24[] =
+    "(?m)(?i:(?:piso\\s*(?P<ADDRESS_HOME_FLOOR>\\d+)))";  // nocheck
+inline constexpr char kRegularExpression_25[] =
+    "(?m)(?i:(?:\\b(?:x|Entre( "
+    "Calles)?)\\s+(?P<ADDRESS_HOME_BETWEEN_STREETS>(?P<ADDRESS_HOME_BETWEEN_"
+    "STREETS_1>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:\\s+y\\s+)(?P<"
+    "ADDRESS_HOME_BETWEEN_STREETS_2>(?:[^,\\r\\n]+)))))";  // nocheck
+inline constexpr char kRegularExpression_26[] =
+    "(?m)(?i:(?:(?:Cerca del)(?P<ADDRESS_HOME_LANDMARK>[^,\\n]+)))";  // nocheck
+inline constexpr char kRegularExpression_27[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:despacho|loc\\.?"
+    "|local|int(?:erior|\\.?)|n[uú]m(?:ero|\\.)? "
+    "int(?:erno|\\.)?|Apartamento|Apto\\.?|Departamento|apto\\.?))?(?:(?:^|\\s+"
+    ")(?P<ADDRESS_HOME_APT_NUM>(?:\\d+\\w?\\b|\\w\\b)))))";  // nocheck
+inline constexpr char kRegularExpression_28[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:[1-9]\\d{3}))("
+    "?:(?:[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:[A-Z]{2}))?))";  // nocheck
+inline constexpr char kRegularExpression_29[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>(?P<ADDRESS_HOME_STREET_NAME>(?:["
+    "^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_"
+    "NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+))(?:(?:[-\\s/"
+    ",]*)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_NUM>(?:\\w[\\w\\s-]*))))?)))"
+    ")";  // nocheck
+inline constexpr char kRegularExpression_30[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>("
+    "?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:"
+    "^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_"
+    "NUMBER>(?:\\d+))(?:(?:[-\\s/"
+    ",]*)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_NUM>(?:\\w[\\w\\s-]*))))?)))"
+    "))";  // nocheck
+inline constexpr char kRegularExpression_31[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:\\d{2}))(?:(?:"
+    "[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:\\d{3}))?))";  // nocheck
+inline constexpr char kRegularExpression_32[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_LOCATION>(?:(?:(?:ulica|ul\\.?)\\s*)?(?P<"
+    "ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?)))(?:(?:^|"
+    "\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>"
+    "\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/"
+    "\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|"
+    "lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+"
+    "\\w?\\b|\\w\\b)))))?))))";  // nocheck
+inline constexpr char kRegularExpression_33[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?P<ADDRESS_HOME_STREET_LOCATION>("
+    "?:(?:(?:ulica|ul\\.?)\\s*)?(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^"
+    "\\S\\r\\n]+[^\\s,]+)*?)))(?:(?:^|\\s+)(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_"
+    "APT>(?P<ADDRESS_HOME_HOUSE_NUMBER>\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/"
+    "\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|"
+    "lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+"
+    "\\w?\\b|\\w\\b)))))?)))))";  // nocheck
+inline constexpr char kRegularExpression_34[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_HOUSE_NUMBER_AND_APT>(?P<ADDRESS_HOME_HOUSE_"
+    "NUMBER>\\d+(?:\\s*[[:alpha:]]\\b)?)(?:(?:^|[/"
+    "\\s]+)(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?|"
+    "lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:\\d+"
+    "\\w?\\b|\\w\\b)))))?))";  // nocheck
+inline constexpr char kRegularExpression_35[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_APT>(?P<ADDRESS_HOME_APT_TYPE>(?:mieszkanie|m\\.?"
+    "|lokal|lok\\.?|apartment|apt\\.?)?)?(?:\\s*(?P<ADDRESS_HOME_APT_NUM>(?:"
+    "\\d+\\w?\\b|\\w\\b))))?)";  // nocheck
+inline constexpr char kRegularExpression_36[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_ZIP>(?P<ADDRESS_HOME_ZIP_PREFIX>(?:\\d{5}))(?:(?:"
+    "[\\s-]+))?(?P<ADDRESS_HOME_ZIP_SUFFIX>(?:\\d{4}))?))";  // nocheck
+inline constexpr char kRegularExpression_37[] =
+    "(?m)(?i:(?P<ADDRESS_HOME_STREET_ADDRESS>(?:(?:(?:((no|°|º|number)("
+    "\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER>(?:\\d+\\w?))(th\\.|"
+    "\\.)?)(?:(?:^|\\s+)(?P<ADDRESS_HOME_STREET_NAME>(?:[^\\s,]+(?:[^"
+    "\\S\\r\\n]+[^\\s,]+)*?)))|(?P<ADDRESS_HOME_STREET_NAME__2>(?:[^"
+    "\\s,]+(?:[^\\S\\r\\n]+[^\\s,]+)*?))(?:(?:^|[,\\s]+)(?:((no|°|º|"
+    "number)(\\.|-|\\s)*)?)(?P<ADDRESS_HOME_HOUSE_NUMBER__2>(?:\\d+\\w?"
+    "))(th\\.|\\.)?))(?:(?:^|[,\\s]+)(?P<ADDRESS_HOME_SUBPREMISE>(?:(?:"
+    "(?:(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|"
+    "untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)(?P<ADDRESS_HOME_"
+    "FLOOR>(?:(\\d{0,3}\\w?))))|(?:(?P<ADDRESS_HOME_FLOOR__2>(?:(\\d{1,"
+    "3}\\w?|\\w)))(?:(°|º|\\.|\\s|-)*(floor|flur|fl|og|obergeschoss|ug|"
+    "untergeschoss|geschoss|andar|piso|º)(\\.|\\s|-)*)))(?:(?:^|[,\\s]+"
+    ")(?:(?:(?:(apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_"
+    "HOME_APT_NUM>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_"
+    "NUM__2>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))?|(?:(?:(?:("
+    "apt|apartment|wohnung|apto|-)(\\.|\\s|-)*)(?P<ADDRESS_HOME_APT_"
+    "NUM__3>(?:(\\d{0,3}\\w?))))|(?:(-\\s*)?(?P<ADDRESS_HOME_APT_NUM__"
+    "4>(?:(\\d{1,3}\\w?|\\w)))(?:(\\.|\\s|-)*(ª)))?))))?))";  // nocheck
 
 // Section for singular decomposition(s).
 inline constexpr Decomposition kDecompositionList[] = {
@@ -81,8 +160,8 @@ inline constexpr Decomposition kDecompositionList[] = {
     Decomposition(kRegularExpression_19, true, true),
     Decomposition(kRegularExpression_20, true, true),
     Decomposition(kRegularExpression_21, true, true),
-    Decomposition(kRegularExpression_24, true, true),
-    Decomposition(kRegularExpression_26, true, true),
+    Decomposition(kRegularExpression_22, true, true),
+    Decomposition(kRegularExpression_25, true, true),
     Decomposition(kRegularExpression_27, true, true),
     Decomposition(kRegularExpression_28, true, true),
     Decomposition(kRegularExpression_29, true, true),
@@ -93,6 +172,7 @@ inline constexpr Decomposition kDecompositionList[] = {
     Decomposition(kRegularExpression_34, true, true),
     Decomposition(kRegularExpression_35, true, true),
     Decomposition(kRegularExpression_36, true, true),
+    Decomposition(kRegularExpression_37, true, true),
 };
 
 // Section for singular extract part(s).
@@ -102,11 +182,11 @@ inline constexpr ExtractPart kExtractPartList[]{
     ExtractPart("", kRegularExpression_10),
     ExtractPart("", kRegularExpression_11),
     ExtractPart("", kRegularExpression_7),
-    ExtractPart("", kRegularExpression_22),
     ExtractPart("", kRegularExpression_23),
-    ExtractPart("", kRegularExpression_25),
     ExtractPart("", kRegularExpression_24),
-    ExtractPart("", kRegularExpression_21),
+    ExtractPart("", kRegularExpression_26),
+    ExtractPart("", kRegularExpression_25),
+    ExtractPart("", kRegularExpression_22),
 };
 
 // Section for decomposition cascades and their alternatives.
@@ -133,49 +213,49 @@ inline constexpr ExtractParts kExtractParts_7 = ExtractParts("", kExtractParts_7
 
 // A lookup map for parsing expressions for countries and field types.
 inline constexpr auto kAutofillParsingRulesMap =
-    base::MakeFixedFlatMap<CountryAndFieldType, const AutofillParsingProcess*>({
-      {{"AU", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"AU", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[1]},
-      {{"AU", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[2]},
-      {{"AU", ADDRESS_HOME_SUBPREMISE}, &kDecompositionList[3]},
-      {{"AU", ADDRESS_HOME_APT}, &kDecompositionList[4]},
-      {{"BR", ADDRESS_HOME_ZIP}, &kDecompositionList[5]},
-      {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[6]},
-      {{"BR", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_0},
-      {{"BR", ADDRESS_HOME_OVERFLOW}, &kExtractParts_1},
-      {{"BR", ADDRESS_HOME_OVERFLOW_AND_LANDMARK}, &kExtractParts_2},
-      {{"BR", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_3},
-      {{"BR", ADDRESS_HOME_APT}, &kDecompositionList[7]},
-      {{"CA", ADDRESS_HOME_ZIP}, &kDecompositionList[8]},
-      {{"DE", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"DE", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[9]},
-      {{"DE", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionCascade_0},
-      {{"FR", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"FR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[12]},
-      {{"FR", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[13]},
-      {{"IT", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"IT", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[14]},
-      {{"IT", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[15]},
-      {{"MX", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"MX", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[16]},
-      {{"MX", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_4},
-      {{"MX", ADDRESS_HOME_BETWEEN_STREETS}, &kDecompositionList[17]},
-      {{"MX", ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK}, &kExtractParts_5},
-      {{"MX", ADDRESS_HOME_OVERFLOW}, &kExtractParts_6},
-      {{"MX", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_7},
-      {{"MX", ADDRESS_HOME_APT}, &kDecompositionList[18]},
-      {{"NL", ADDRESS_HOME_ZIP}, &kDecompositionList[19]},
-      {{"NL", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[20]},
-      {{"NL", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[21]},
-      {{"PL", ADDRESS_HOME_ZIP}, &kDecompositionList[22]},
-      {{"PL", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[23]},
-      {{"PL", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[24]},
-      {{"PL", ADDRESS_HOME_HOUSE_NUMBER_AND_APT}, &kDecompositionList[25]},
-      {{"PL", ADDRESS_HOME_APT}, &kDecompositionList[26]},
-      {{"US", ADDRESS_HOME_ZIP}, &kDecompositionList[27]},
-      {{"XX", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
-      {{"XX", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[28]}
-      });
+    base::MakeFixedFlatMap<CountryAndFieldType, const AutofillParsingProcess*>(
+        {{{"AU", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"AU", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[1]},
+         {{"AU", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[2]},
+         {{"AU", ADDRESS_HOME_SUBPREMISE}, &kDecompositionList[3]},
+         {{"AU", ADDRESS_HOME_APT}, &kDecompositionList[4]},
+         {{"BR", ADDRESS_HOME_ZIP}, &kDecompositionList[5]},
+         {{"BR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[6]},
+         {{"BR", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_0},
+         {{"BR", ADDRESS_HOME_OVERFLOW}, &kExtractParts_1},
+         {{"BR", ADDRESS_HOME_OVERFLOW_AND_LANDMARK}, &kExtractParts_2},
+         {{"BR", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_3},
+         {{"BR", ADDRESS_HOME_APT}, &kDecompositionList[7]},
+         {{"CA", ADDRESS_HOME_ZIP}, &kDecompositionList[8]},
+         {{"DE", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"DE", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[9]},
+         {{"DE", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionCascade_0},
+         {{"FR", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"FR", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[12]},
+         {{"FR", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[13]},
+         {{"IT", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"IT", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[14]},
+         {{"IT", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[15]},
+         {{"JP", ADDRESS_HOME_ZIP}, &kDecompositionList[16]},
+         {{"MX", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"MX", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[17]},
+         {{"MX", ADDRESS_HOME_SUBPREMISE}, &kExtractParts_4},
+         {{"MX", ADDRESS_HOME_BETWEEN_STREETS}, &kDecompositionList[18]},
+         {{"MX", ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK}, &kExtractParts_5},
+         {{"MX", ADDRESS_HOME_OVERFLOW}, &kExtractParts_6},
+         {{"MX", ADDRESS_HOME_STREET_ADDRESS}, &kExtractParts_7},
+         {{"MX", ADDRESS_HOME_APT}, &kDecompositionList[19]},
+         {{"NL", ADDRESS_HOME_ZIP}, &kDecompositionList[20]},
+         {{"NL", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[21]},
+         {{"NL", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[22]},
+         {{"PL", ADDRESS_HOME_ZIP}, &kDecompositionList[23]},
+         {{"PL", ADDRESS_HOME_STREET_LOCATION}, &kDecompositionList[24]},
+         {{"PL", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[25]},
+         {{"PL", ADDRESS_HOME_HOUSE_NUMBER_AND_APT}, &kDecompositionList[26]},
+         {{"PL", ADDRESS_HOME_APT}, &kDecompositionList[27]},
+         {{"US", ADDRESS_HOME_ZIP}, &kDecompositionList[28]},
+         {{"XX", ADDRESS_HOME_ZIP}, &kDecompositionList[0]},
+         {{"XX", ADDRESS_HOME_STREET_ADDRESS}, &kDecompositionList[29]}});
 
 }  // namespace autofill::i18n_model_definition
 
