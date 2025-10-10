@@ -47,8 +47,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -1259,7 +1263,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 
   // Zoom PDF via script.
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
-  EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
+  EXPECT_FALSE(ZoomBubbleCoordinator::From(browser())->bubble());
 #endif
   ASSERT_TRUE(content::ExecJs(extension_host,
                               "while (viewer.viewport.getZoom() < 1) {"
@@ -1271,7 +1275,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 
   watcher.Wait();
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
-  EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
+  EXPECT_FALSE(ZoomBubbleCoordinator::From(browser())->bubble());
 #endif
 }
 

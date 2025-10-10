@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,41 +32,44 @@ class ImageButton;
 
 // View used to display the zoom percentage when it has changed.
 class ZoomBubbleView : public LocationBarBubbleDelegateView,
-                       public ImmersiveModeController::Observer,
                        public extensions::IconImage::Observer {
   METADATA_HEADER(ZoomBubbleView, LocationBarBubbleDelegateView)
 
  public:
+  // Constructs ZoomBubbleView. Anchors the bubble to |anchor_view|, which must
+  // not be nullptr. The bubble will auto-close when |reason| is AUTOMATIC. If
+  // |immersive_mode_controller_| is present, the bubble will auto-close when
+  // the top-of-window views are revealed.
+  ZoomBubbleView(Browser* browser,
+                 views::View* anchor_view,
+                 content::WebContents* web_contents,
+                 DisplayReason reason);
+  ~ZoomBubbleView() override;
+
   ZoomBubbleView(const ZoomBubbleView&) = delete;
   ZoomBubbleView& operator=(const ZoomBubbleView&) = delete;
-
-  // Shows the bubble and automatically closes it after a short time period if
-  // |reason| is AUTOMATIC.
-  static void ShowBubble(content::WebContents* web_contents,
-                         DisplayReason reason);
-
-  // If the bubble is being shown for the given |web_contents|, refreshes it.
-  static bool RefreshBubbleIfShowing(const content::WebContents* web_contents);
-
-  // Closes the showing bubble (if one exists).
-  static void CloseCurrentBubble();
-
-  // Returns the zoom bubble if the zoom bubble is showing. Returns NULL
-  // otherwise.
-  static ZoomBubbleView* GetZoomBubble();
 
   // Refreshes the bubble by changing the zoom percentage appropriately and
   // resetting the timer if necessary.
   void Refresh();
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(ZoomBubbleBrowserTest, ImmersiveFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(ZoomBubbleBrowserTest,
-                           BubbleSuppressingExtensionRefreshesExistingBubble);
-  FRIEND_TEST_ALL_PREFIXES(ZoomBubbleBrowserTest, FocusPreventsClose);
-  FRIEND_TEST_ALL_PREFIXES(ZoomBubbleImmersiveDisabledBrowserTest,
-                           AnchorPositionsInFullscreen);
+  // Sets information about the extension that initiated the zoom change.
+  // Calling this method asserts that the extension |extension| did initiate
+  // the zoom change.
+  void SetExtensionInfo(const extensions::Extension* extension);
 
+  // Returns the ID of the extension that triggered the bubble, or an empty
+  // string if it was not triggered by an extension.
+  const std::string& extension_id() const { return extension_info_.id; }
+
+  // Helpers for testing.
+  std::u16string_view GetLabelForTesting() const;
+  base::OneShotTimer* GetAutoCloseTimerForTesting();
+  views::Button* GetResetButtonForTesting();
+  views::Button* GetZoomInButtonForTesting();
+  void OnKeyEventForTesting(ui::KeyEvent* event);
+
+ private:
   // Returns true if we can reuse the existing bubble for the given
   // |web_contents|.
   static bool CanRefresh(const content::WebContents* web_contents);
@@ -91,16 +93,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
     std::unique_ptr<const extensions::IconImage> icon_image;
   };
 
-  // Constructs ZoomBubbleView. Anchors the bubble to |anchor_view|, which must
-  // not be nullptr. The bubble will auto-close when |reason| is AUTOMATIC. If
-  // |immersive_mode_controller_| is present, the bubble will auto-close when
-  // the top-of-window views are revealed.
-  ZoomBubbleView(views::View* anchor_view,
-                 content::WebContents* web_contents,
-                 DisplayReason reason,
-                 ImmersiveModeController& immersive_mode_controller);
-  ~ZoomBubbleView() override;
-
   // LocationBarBubbleDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
   void OnFocus() override;
@@ -110,26 +102,15 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void Init() override;
-  void WindowClosing() override;
-  void CloseBubble() override;
-
-  // ImmersiveModeController::Observer
-  void OnImmersiveRevealStarted() override;
-  void OnImmersiveModeControllerDestroyed() override;
 
   // extensions::IconImage::Observer
   void OnExtensionIconImageChanged(extensions::IconImage* /* image */) override;
 
-  // Sets information about the extension that initiated the zoom change.
-  // Calling this method asserts that the extension |extension| did initiate
-  // the zoom change.
-  void SetExtensionInfo(const extensions::Extension* extension);
+  // Closes the bubble's widget.
+  void Close();
 
   // Updates |label_| with the up to date zoom.
   void UpdateZoomPercent();
-
-  // Updates visibility of the zoom icon.
-  void UpdateZoomBubbleStateAndIconVisibility(bool is_bubble_visible);
 
   // Starts a timer which will close the bubble if |auto_close_| is true.
   void StartTimerIfNecessary();
@@ -143,15 +124,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Called by ButtonPressed() when |image_button_| is pressed.
   void ImageButtonPressed();
 
-  // Gets the browser for `web_contents()`. May return null.
-  Browser* GetBrowser() const;
+  raw_ptr<Browser> browser_;
 
   ZoomBubbleExtensionInfo extension_info_;
-
-  // Singleton instance of the zoom bubble. The zoom bubble can only be shown on
-  // the active browser window, so there is no case in which it will be shown
-  // twice at the same time.
-  static ZoomBubbleView* zoom_bubble_;
 
   // Timer used to auto close the bubble.
   base::OneShotTimer auto_close_timer_;
@@ -179,16 +154,6 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // button presses, since pressing a button in the bubble should not trigger
   // closing.
   bool ignore_close_bubble_ = false;
-
-  // The immersive mode controller observation for the BrowserView containing
-  // |web_contents_|.
-  base::ScopedObservation<ImmersiveModeController,
-                          ImmersiveModeController::Observer>
-      scoped_observation_{this};
-
-  // The session of the Browser that triggered the bubble. This allows the zoom
-  // icon to be updated even if the WebContents is destroyed.
-  const SessionID session_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_
