@@ -557,6 +557,9 @@ class BookmarkManagerMediator
         mBookmarkUndoController.destroy();
         mBookmarkQueryHandler.destroy();
         mCallbackController.destroy();
+        if (mBatchUploadCardCoordinator != null) {
+            mBatchUploadCardCoordinator.destroy();
+        }
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
