@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -98,9 +99,15 @@ class CORE_EXPORT MessageEvent final : public Event {
         std::move(data), origin, message_origin_kind, last_event_id, source,
         std::move(channels), user_activation, delegated_capability);
   }
-  static MessageEvent* CreateError(const String& origin = String(),
+  static MessageEvent* CreateError() {
+    return MakeGarbageCollected<MessageEvent>(String(), nullptr);
+  }
+  static MessageEvent* CreateError(const MessageEvent* event) {
+    return MakeGarbageCollected<MessageEvent>(event->origin_, event->source());
+  }
+  static MessageEvent* CreateError(const SecurityOrigin* origin,
                                    EventTarget* source = nullptr) {
-    return MakeGarbageCollected<MessageEvent>(origin, source);
+    return MakeGarbageCollected<MessageEvent>(origin->ToString(), source);
   }
   static MessageEvent* Create(const String& data,
                               const String& origin = String()) {
@@ -182,7 +189,8 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   ScriptValue data(ScriptState*);
   bool IsDataDirty() const { return is_data_dirty_; }
-  const String& origin() const { return origin_; }
+  // This returns a serialized origin string (which might be "null") to support
+  // JavaScript bindings. Prefer `GetSecurityOrigin()` below for other uses.
   const String& originForBindings();
   const String& lastEventId() const { return last_event_id_; }
   EventTarget* source() const { return source_.Get(); }
@@ -224,6 +232,11 @@ class CORE_EXPORT MessageEvent final : public Event {
   void Trace(Visitor*) const override;
 
   void LockToAgentCluster();
+
+  // TODO(449581913): We should store a SecurityOrigin rather than a string.
+  scoped_refptr<const SecurityOrigin> GetSecurityOrigin() const {
+    return SecurityOrigin::CreateFromString(origin_);
+  }
 
  private:
   enum DataType {

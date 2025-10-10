@@ -141,7 +141,7 @@ DOMOrigin* DOMOrigin::from(ScriptState* script_state,
     // our handling of `null` is broken. We'll need to teach `MessageEvent`
     // to hold a `SecurityOrigin` instead.
     return MakeGarbageCollected<DOMOrigin>(
-        SecurityOrigin::CreateFromString(event->origin()));
+        SecurityOrigin::CreateFromString(event->originForBindings()));
   }
 
   // Origin

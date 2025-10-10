@@ -388,7 +388,7 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
 const String& MessageEvent::originForBindings() {
   data_is_from_untrusted_source_ = false;
   should_measure_data_access_before_origin_ = false;
-  return origin();
+  return origin_;
 }
 
 const AtomicString& MessageEvent::InterfaceName() const {

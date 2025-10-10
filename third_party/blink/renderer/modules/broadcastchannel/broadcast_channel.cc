@@ -178,7 +178,7 @@ void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
                                  MessageEvent::kMessageIsSameOrigin,
                                  /* last_event_id=*/{}, /* source=*/nullptr);
   } else {
-    event = MessageEvent::CreateError(context->GetSecurityOrigin()->ToString());
+    event = MessageEvent::CreateError(context->GetSecurityOrigin());
   }
 
   if (base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel) &&

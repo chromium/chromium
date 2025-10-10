@@ -1357,11 +1357,11 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     }
   }
 
+  scoped_refptr<const SecurityOrigin> sender_origin =
+      event->GetSecurityOrigin();
   if (event->IsOriginCheckRequiredToAccessData()) {
-    scoped_refptr<SecurityOrigin> sender_security_origin =
-        SecurityOrigin::CreateFromString(event->origin());
-    if (!sender_security_origin->IsSameOriginWith(GetSecurityOrigin())) {
-      event = MessageEvent::CreateError(event->origin(), event->source());
+    if (!sender_origin->IsSameOriginWith(GetSecurityOrigin())) {
+      event = MessageEvent::CreateError(event);
     }
   }
   if (event->IsLockedToAgentCluster()) {
@@ -1369,10 +1369,8 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
       UseCounter::Count(
           this,
           WebFeature::kMessageEventSharedArrayBufferDifferentAgentCluster);
-      event = MessageEvent::CreateError(event->origin(), event->source());
+      event = MessageEvent::CreateError(event);
     } else {
-      scoped_refptr<SecurityOrigin> sender_origin =
-          SecurityOrigin::CreateFromString(event->origin());
       if (!sender_origin->IsSameOriginWith(GetSecurityOrigin())) {
         UseCounter::Count(
             this, WebFeature::kMessageEventSharedArrayBufferSameAgentCluster);
@@ -1384,7 +1382,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
   }
 
   if (!event->CanDeserializeIn(this)) {
-    event = MessageEvent::CreateError(event->origin(), event->source());
+    event = MessageEvent::CreateError(event);
   }
 
   if (event->delegatedCapability() ==
