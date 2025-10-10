@@ -191,6 +191,8 @@ std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
 
 void SqliteBackendImpl::FinalizeStatement(
     std::unique_ptr<sql::Statement> statement) {
+  // Acquire the lock because destruction of the `sql::Statement` accesses this
+  // instance's `db_`.
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
   statement.reset();
 }
