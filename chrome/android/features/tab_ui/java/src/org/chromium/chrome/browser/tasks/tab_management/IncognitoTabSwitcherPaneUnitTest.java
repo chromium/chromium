@@ -131,6 +131,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         anyBoolean(),
                         any(),
                         any(),
+                        any(),
                         any());
 
         mTabList = List.of(mock(Tab.class));

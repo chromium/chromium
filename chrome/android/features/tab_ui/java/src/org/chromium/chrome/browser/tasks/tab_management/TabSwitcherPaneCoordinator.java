@@ -30,6 +30,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Function;
 import androidx.core.util.Pair;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -229,6 +231,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param undoBarThrottle Throttle to block undo snackbar.
      * @param setOverlayViewCallback Callback to set the current overlay view.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
+     * @param directionalScrollListener The {@link DirectionalScrollListener} to add to the tab
+     *     list.
      */
     public TabSwitcherPaneCoordinator(
             Activity activity,
@@ -257,7 +261,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             UndoBarThrottle undoBarThrottle,
             Callback<@Nullable View> setOverlayViewCallback,
-            @Nullable TabSwitcherDragHandler tabSwitcherDragHandler) {
+            @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
+            RecyclerView.@Nullable OnScrollListener searchBoxVisibilityScrollListener) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProvider = profileProvider;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -438,6 +443,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setBackgroundColor(Color.TRANSPARENT);
             recyclerView.addOnScrollListener(mTabListOnScrollListener);
+            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
+                    && searchBoxVisibilityScrollListener != null) {
+                recyclerView.addOnScrollListener(searchBoxVisibilityScrollListener);
+            }
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             containerViewModel, recyclerView, TabListContainerViewBinder::bind);

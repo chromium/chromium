@@ -45,6 +45,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -151,6 +152,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     private final boolean mIsIncognito;
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final TabGroupCreationUiDelegate mUiFlow;
+    private final DirectionalScrollListener mDirectionalScrollListener;
     private final HubLayoutAnimationListener mAnimationListener =
             new HubLayoutAnimationListener() {
                 @Override
@@ -212,6 +214,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mDirectionalScrollListener =
+                new DirectionalScrollListener(
+                        () -> mHubSearchBoxVisibilitySupplier.set(true),
+                        () -> mHubSearchBoxVisibilitySupplier.set(false));
     }
 
     @Override
@@ -652,7 +658,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     void createTabSwitcherPaneCoordinator() {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator != null) return;
-
         coordinator =
                 mFactory.create(
                         mRootView,
@@ -664,7 +669,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         mIsIncognito,
                         getOnTabGroupCreationRunnable(),
                         mEdgeToEdgeSupplier,
-                        (view) -> mOverlayViewSupplier.set(assumeNonNull(view)));
+                        (view) -> mOverlayViewSupplier.set(assumeNonNull(view)),
+                        mDirectionalScrollListener);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         mTabSwitcherCustomViewManager.setDelegate(
                 coordinator.getTabSwitcherCustomViewManagerDelegate());

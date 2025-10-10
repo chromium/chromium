@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -138,6 +139,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private DirectionalScrollListener mDirectionalScrollListener;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
@@ -235,7 +237,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
-                        mSetOverlayViewCallback);
+                        mSetOverlayViewCallback,
+                        mDirectionalScrollListener);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -261,7 +264,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
-                        mSetOverlayViewCallback);
+                        mSetOverlayViewCallback,
+                        mDirectionalScrollListener);
         assertNotNull(coordinator1);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -279,7 +283,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
-                        mSetOverlayViewCallback);
+                        mSetOverlayViewCallback,
+                        mDirectionalScrollListener);
         assertNotNull(coordinator2);
         assertEquals(messageManager, mFactory.getMessageManagerForTesting());
 
@@ -304,7 +309,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
-                        mSetOverlayViewCallback);
+                        mSetOverlayViewCallback,
+                        mDirectionalScrollListener);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();

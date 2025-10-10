@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.hub.SingleChildViewManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -147,6 +148,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock private DirectionalScrollListener mDirectionalScrollListener;
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -255,7 +257,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mTabBookmarkerSupplier,
                         mUndoBarThrottle,
                         mOverlayViewSupplier::set,
-                        /* tabSwitcherDragHandler= */ null);
+                        /* tabSwitcherDragHandler= */ null,
+                        mDirectionalScrollListener);
         watcher.assertExpected();
         mOverlayViewManager = new SingleChildViewManager(overlayView, mOverlayViewSupplier);
 

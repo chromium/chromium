@@ -60,6 +60,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.DirectionalScrollListener;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
@@ -254,6 +255,7 @@ public class TabSwitcherPaneUnitTest {
                         mOnTabClickedCallbackCaptor.capture(),
                         mHairlineVisibilityCallbackCaptor.capture(),
                         anyBoolean(),
+                        any(),
                         any(),
                         any(),
                         any());
@@ -1416,6 +1418,43 @@ public class TabSwitcherPaneUnitTest {
         verify(mMockBottomSheetController, never())
                 .requestShowContent(
                         any(ArchivedTabsAutoDeletePromoSheetContent.class), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testDirectionalScrollListener() {
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ArgumentCaptor<DirectionalScrollListener> listenerCaptor =
+                ArgumentCaptor.forClass(DirectionalScrollListener.class);
+        verify(mTabSwitcherPaneCoordinatorFactory)
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        mIsAnimatingSupplierCaptor.capture(),
+                        mOnTabClickedCallbackCaptor.capture(),
+                        mHairlineVisibilityCallbackCaptor.capture(),
+                        anyBoolean(),
+                        any(),
+                        any(),
+                        any(),
+                        listenerCaptor.capture());
+
+        DirectionalScrollListener listener = listenerCaptor.getValue();
+        assertNotNull(listener);
+
+        ObservableSupplier<Boolean> searchBoxVisibilitySupplier =
+                mTabSwitcherPane.getHubSearchBoxVisibilitySupplier();
+        assertNull(searchBoxVisibilitySupplier.get());
+
+        listener.onScrolled(null, 0, 20);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(searchBoxVisibilitySupplier.get());
+
+        listener.onScrolled(null, 0, -20);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(searchBoxVisibilitySupplier.get());
     }
 
     private void createSelectedTab() {
