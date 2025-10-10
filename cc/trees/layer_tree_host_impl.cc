@@ -809,6 +809,16 @@ void LayerTreeHostImpl::CommitComplete() {
   }
 
   UpdateSyncTreeAfterCommitOrImplSideInvalidation();
+
+  // Normally, we wait until tile tasks are updated (and draw images ref'ed)
+  // before incrementing DecodedImageTracker's frame number (which may evict
+  // decoded image data for un-ref'ed images). But if tile tasks are not dirty
+  // then we won't update them, so do it now.
+  if (!tile_priorities_dirty_) {
+    tile_manager_.decoded_image_tracker().SetSyncTreeFrameNumber(
+        sync_tree()->source_frame_number());
+  }
+
   micro_benchmark_controller_.DidCompleteCommit();
 
   if (mutator_host_->CurrentFrameHadRAF())
@@ -1139,6 +1149,10 @@ bool LayerTreeHostImpl::PrepareTiles() {
   bool did_prepare_tiles = tile_manager_.PrepareTiles(global_tile_state_);
   if (did_prepare_tiles)
     tile_priorities_dirty_ = false;
+  if (sync_tree()) {
+    tile_manager_.decoded_image_tracker().SetSyncTreeFrameNumber(
+        sync_tree()->source_frame_number());
+  }
   client_->DidPrepareTiles();
   return did_prepare_tiles;
 }

@@ -23,7 +23,8 @@ namespace cc {
 
 // This class is the main interface for the rest of the system to request
 // decodes. It is responsible for keeping the decodes locked for a number of
-// frames, specified as |kNumFramesToLock| in the implementation file.
+// tree commits (specified as |kNumCommitsToLock| in the implementation file) or
+// until a timer expires (with delay specified by |kTimeoutDurationMs|).
 //
 // Note that it is safe to replace ImageController's cache without doing
 // anything special with this class, since it retains only ids to the decode
@@ -54,7 +55,11 @@ class CC_EXPORT DecodedImageTracker {
   // unlock them.
   void OnImagesUsedInDraw(const std::vector<DrawImage>& draw_images);
 
-  void SetTickClockForTesting(const base::TickClock* tick_clock);
+  void SetSyncTreeFrameNumber(int frame_number);
+
+  void SetTickClockForTesting(
+      const base::TickClock* tick_clock,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Test only functions:
   size_t NumLockedImagesForTesting() const { return locked_images_.size(); }
@@ -64,10 +69,9 @@ class CC_EXPORT DecodedImageTracker {
 
   void ImageDecodeFinished(base::OnceCallback<void(bool)> callback,
                            PaintImage::Id image_id,
-                           bool speculative,
                            ImageController::ImageDecodeRequestId request_id,
                            ImageController::ImageDecodeResult result);
-  void OnTimeoutImages();
+  void CheckForExpiredDecodes();
   void StartTimer(base::TimeDelta);
 
   raw_ptr<ImageController> image_controller_;
@@ -78,22 +82,25 @@ class CC_EXPORT DecodedImageTracker {
    public:
     ImageLock(DecodedImageTracker* tracker,
               ImageController::ImageDecodeRequestId request_id,
-              base::TimeTicks expiration);
+              int expiration_frame,
+              base::TimeTicks expiration_time);
     ImageLock(const ImageLock&) = delete;
     ~ImageLock();
 
     ImageLock& operator=(const ImageLock&) = delete;
-    base::TimeTicks expiration() const { return expiration_; }
+    base::TimeTicks expiration_time() const { return expiration_time_; }
+    int expiration_frame() const { return expiration_frame_; }
 
    private:
     const raw_ptr<DecodedImageTracker> tracker_;
     const ImageController::ImageDecodeRequestId request_id_;
-    const base::TimeTicks expiration_;
+    int expiration_frame_;
+    const base::TimeTicks expiration_time_;
   };
   base::flat_map<PaintImage::Id, std::unique_ptr<ImageLock>> locked_images_;
 
-  // Defaults to base::TimeTicks::Now(), but overrideable for testing.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  int sync_tree_frame_number_ = -1;
+  // Defaults to base::TimeTicks::Now(), but overridable for testing.
   raw_ptr<const base::TickClock> tick_clock_;
   std::unique_ptr<base::RepeatingTimer> expiration_timer_;
   std::unique_ptr<base::RepeatingClosure> timer_closure_;
