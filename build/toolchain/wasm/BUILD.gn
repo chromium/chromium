@@ -19,9 +19,9 @@ gcc_toolchain("wasm") {
     _suffix = ".bat"
   }
 
-  cc = rebase_path("$emscripten_path/emcc$_suffix", root_build_dir)
-  cxx = rebase_path("$emscripten_path/em++$_suffix", root_build_dir)
-  ar = rebase_path("$emscripten_path/emar$_suffix", root_build_dir)
+  cc = rebase_path("$emscripten_path/emcc$_suffix")
+  cxx = rebase_path("$emscripten_path/em++$_suffix")
+  ar = rebase_path("$emscripten_path/emar$_suffix")
   nm = cc
   ld = cxx
 
