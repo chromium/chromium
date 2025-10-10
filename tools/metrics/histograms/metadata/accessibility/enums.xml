@@ -161,6 +161,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="User Enabled"/>
   <int value="2" label="OS Enabled"/>
   <int value="3" label="User Disabled"/>
+  <int value="4" label="Form Factor Enabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
