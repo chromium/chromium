@@ -36,23 +36,23 @@ using base::android::android_info::SDK_VERSION_P;
 namespace media {
 
 namespace {
-const char kMp3MimeType[] = "audio/mpeg";
-const char kAacMimeType[] = "audio/mp4a-latm";
-const char kOpusMimeType[] = "audio/opus";
-const char kVorbisMimeType[] = "audio/vorbis";
-const char kFLACMimeType[] = "audio/flac";
-const char kAc3MimeType[] = "audio/ac3";
-const char kEac3MimeType[] = "audio/eac3";
-const char kBitstreamAudioMimeType[] = "audio/raw";
-const char kAvcMimeType[] = "video/avc";
-const char kDolbyVisionMimeType[] = "video/dolby-vision";
-const char kHevcMimeType[] = "video/hevc";
-const char kVp8MimeType[] = "video/x-vnd.on2.vp8";
-const char kVp9MimeType[] = "video/x-vnd.on2.vp9";
-const char kAv1MimeType[] = "video/av01";
-const char kDtsMimeType[] = "audio/vnd.dts";
-const char kDtseMimeType[] = "audio/vnd.dts;profile=lbr";
-const char kDtsxP2MimeType[] = "audio/vnd.dts.uhd;profile=p2";
+constexpr char kMp3MimeType[] = "audio/mpeg";
+constexpr char kAacMimeType[] = "audio/mp4a-latm";
+constexpr char kOpusMimeType[] = "audio/opus";
+constexpr char kVorbisMimeType[] = "audio/vorbis";
+constexpr char kFLACMimeType[] = "audio/flac";
+constexpr char kAc3MimeType[] = "audio/ac3";
+constexpr char kEac3MimeType[] = "audio/eac3";
+constexpr char kBitstreamAudioMimeType[] = "audio/raw";
+constexpr char kAvcMimeType[] = "video/avc";
+constexpr char kDolbyVisionMimeType[] = "video/dolby-vision";
+constexpr char kHevcMimeType[] = "video/hevc";
+constexpr char kVp8MimeType[] = "video/x-vnd.on2.vp8";
+constexpr char kVp9MimeType[] = "video/x-vnd.on2.vp9";
+constexpr char kAv1MimeType[] = "video/av01";
+constexpr char kDtsMimeType[] = "audio/vnd.dts";
+constexpr char kDtseMimeType[] = "audio/vnd.dts;profile=lbr";
+constexpr char kDtsxP2MimeType[] = "audio/vnd.dts.uhd;profile=p2";
 }  // namespace
 
 static CodecProfileLevel MediaCodecProfileLevelToChromiumProfileLevel(
