@@ -31,6 +31,41 @@ public final class LocationRewriterTargetMethods {
                 "postDelayedTask",
                 "(Ljava/lang/Runnable;J)V",
                 /* isInterface= */ false);
+        // org.chromium.base.task.PostTask#post(int, Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/task/PostTask",
+                "postTask",
+                "(ILjava/lang/Runnable;)V",
+                /* isInterface= */ false);
+        // org.chromium.base.task.PostTask#postDelayedTask(int, Runnable, long)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/task/PostTask",
+                "postDelayedTask",
+                "(ILjava/lang/Runnable;J)V",
+                /* isInterface= */ false);
+        // org.chromium.base.task.PostTask#runOrPostTask(int, Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/task/PostTask",
+                "runOrPostTask",
+                "(ILjava/lang/Runnable;)V",
+                /* isInterface= */ false);
+        // org.chromium.base.task.PostTask#runSynchronously(int, Callable<T>)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/task/PostTask",
+                "runSynchronously",
+                "(ILjava/util/concurrent/Callable;)Ljava/lang/Object;",
+                /* isInterface= */ false);
+        // org.chromium.base.task.PostTask#runSynchronously(int, Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/task/PostTask",
+                "runSynchronously",
+                "(ILjava/lang/Runnable;)V",
+                /* isInterface= */ false);
     }
 
     private static void addRewriterTarget(
