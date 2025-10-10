@@ -91,8 +91,7 @@
         assert_equals(scroller.scrollTop, 0,
           "scroller is not scrolled, i.e. not within the trigger range");
 
-        trigger.addAnimation(animation1, "enter", "play-forwards");
-        trigger.addAnimation(animation1, "exit", "play-backwards");
+        trigger.addAnimation(animation1, "play-forwards", "play-backwards");
 
         assert_equals(animation1.playState, "paused",
           "animation1 is paused, awaiting trigger event");
@@ -102,8 +101,7 @@
         assert_equals(animation2.currentTime, null,
           "animations2's currentTime is null");
 
-        trigger.addAnimation(animation2, "enter", "play-forwards");
-        trigger.addAnimation(animation2, "exit", "play-backwards");
+        trigger.addAnimation(animation2, "play-forwards", "play-backwards");
 
         assert_equals(animation1.playState, "paused",
           "animation is paused, awaiting trigger event");

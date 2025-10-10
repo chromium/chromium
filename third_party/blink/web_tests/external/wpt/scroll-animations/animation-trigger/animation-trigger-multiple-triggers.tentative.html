@@ -96,10 +96,8 @@
         assert_equals(scroller.scrollTop, 0, "scroller is not scrolled, i.e. " +
           "not within the trigger range");
 
-        trigger1.addAnimation(animation, "enter", "play-forwards");
-        trigger1.addAnimation(animation, "exit", "reset");
-        trigger2.addAnimation(animation, "enter", "play-forwards");
-        trigger2.addAnimation(animation, "exit", "reset");
+        trigger1.addAnimation(animation, "play-forwards", "reset");
+        trigger2.addAnimation(animation, "play-forwards", "reset");
 
         // Test preconditions.
         assert_equals(animation.playState, "paused", "animation is idle");
@@ -146,10 +144,8 @@
         assert_equals(scroller.scrollTop, 0, "scroller is not scrolled, i.e. " +
           "not within the trigger range");
 
-        trigger1.addAnimation(animation, "enter", "play-forwards");
-        trigger1.addAnimation(animation, "exit", "reset");
-        trigger2.addAnimation(animation, "enter", "play-forwards");
-        trigger2.addAnimation(animation, "exit", "reset");
+        trigger1.addAnimation(animation, "play-forwards", "reset");
+        trigger2.addAnimation(animation, "play-forwards", "reset");
 
         // Test preconditions.
         assert_equals(animation.playState, "paused", "animation is paused");

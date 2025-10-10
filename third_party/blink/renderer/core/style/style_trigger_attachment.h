@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TRIGGER_ATTACHMENT_H_
 
 #include "third_party/blink/renderer/core/css/css_trigger_attachment_value.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -19,32 +19,31 @@ class AnimationTrigger;
 // animation trigger. It maps 1:1 with CSSTriggerAttachmentValue.
 class StyleTriggerAttachment : public GarbageCollected<StyleTriggerAttachment> {
  public:
-  StyleTriggerAttachment(
-      const ScopedCSSName* trigger_name,
-      const HeapVector<std::pair<AtomicString, AtomicString>>&
-          action_behavior_pairs)
+  StyleTriggerAttachment(const ScopedCSSName* trigger_name,
+                         EAnimationTriggerBehavior enter_behavior,
+                         std::optional<EAnimationTriggerBehavior> exit_behavior)
       : trigger_name_(trigger_name),
-        action_behavior_pairs_(std::move(action_behavior_pairs)) {}
+        enter_behavior_(enter_behavior),
+        exit_behavior_(exit_behavior) {}
 
   const ScopedCSSName* TriggerName() const { return trigger_name_.Get(); }
-  const HeapVector<std::pair<AtomicString, AtomicString>>& ActionBehaviorPairs()
-      const {
-    return action_behavior_pairs_;
+  EAnimationTriggerBehavior EnterBehavior() const { return enter_behavior_; }
+  std::optional<EAnimationTriggerBehavior> ExitBehavior() const {
+    return exit_behavior_;
   }
 
   void Attach(AnimationTrigger& trigger, Animation& animation) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(trigger_name_);
-    visitor->Trace(action_behavior_pairs_);
   }
 
  private:
   // Represents the name of the trigger to which the animation will be attached.
   Member<const ScopedCSSName> trigger_name_;
 
-  // Specifies a list of action-behavior pairs.
-  HeapVector<std::pair<AtomicString, AtomicString>> action_behavior_pairs_;
+  EAnimationTriggerBehavior enter_behavior_;
+  std::optional<EAnimationTriggerBehavior> exit_behavior_;
 };
 
 typedef GCedHeapVector<Member<const StyleTriggerAttachment>>

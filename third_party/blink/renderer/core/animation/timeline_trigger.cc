@@ -26,20 +26,6 @@ namespace blink {
 
 namespace {
 
-bool HasPausedCSSPlayState(Animation* animation) {
-  if (!animation->IsCSSAnimation()) {
-    return false;
-  }
-
-  CSSAnimation* css_animation = To<CSSAnimation>(animation);
-
-  if (css_animation->GetIgnoreCSSPlayState()) {
-    return false;
-  }
-
-  return animation->GetTriggerActionPlayState() == EAnimPlayState::kPaused;
-}
-
 bool ValidateBoundary(ExecutionContext* execution_context,
                       const TimelineTrigger::RangeBoundary* boundary,
                       ExceptionState& exception_state,
@@ -327,10 +313,10 @@ void TimelineTrigger::Update() {
 
   switch (state_) {
     case State::kPrimary:
-      PerformActionOnAnimations(AtomicString(TimelineTriggerAction::kEnter));
+      PerformActivate();
       break;
     case State::kInverse:
-      PerformActionOnAnimations(AtomicString(TimelineTriggerAction::kExit));
+      PerformDeactivate();
       break;
     default:
       NOTREACHED();
@@ -347,79 +333,75 @@ void TimelineTrigger::Trace(Visitor* visitor) const {
 }
 
 void TimelineTrigger::HandlePostTripAdd(Animation* animation,
-                                        const AtomicString& action,
-                                        Behavior new_behavior,
+                                        Behavior activate_behavior,
+                                        Behavior deactivate_behavior,
                                         ExceptionState& exception_state) {
-  DCHECK_NE(state_, State::kIdle);
-  if (HasPausedCSSPlayState(animation)) {
+  if (state_ == State::kIdle || HasPausedCSSPlayState(animation)) {
     return;
   }
 
+  // If the trigger has already tripped, we want the animation to affected as if
+  // it had been added when the tripping event occurred.
+  std::optional<Behavior> old_behavior_for_current_state;
+  std::optional<Behavior> new_behavior_for_current_state;
+  auto old_data_it = BehaviorMap().find(animation);
+
   switch (state_) {
     case State::kPrimary:
-      // kPrimary corresponds to the last action being an "enter". If this
-      // add request is for an "exit", do nothing.
-      if (action == AtomicString(TimelineTriggerAction::kEnter)) {
-        AnimationTrigger::PerformActionOnAnimation(*animation, action,
-                                                   exception_state);
+      // We last tripped into "activate"; we might need to act.
+      new_behavior_for_current_state = activate_behavior;
+      if (old_data_it != BehaviorMap().end()) {
+        old_behavior_for_current_state = old_data_it->value.first;
       }
       break;
     case State::kInverse:
-      // kInverse corresponds to the last action being an "exit". If this
-      // add request is for an "enter", do nothing.
-      if (action == AtomicString(TimelineTriggerAction::kExit)) {
-        AnimationTrigger::PerformActionOnAnimation(*animation, action,
-                                                   exception_state);
+      // We last tripped into "deactivate"; we might need to act.
+      new_behavior_for_current_state = deactivate_behavior;
+      if (old_data_it != BehaviorMap().end()) {
+        old_behavior_for_current_state = old_data_it->value.second;
       }
       break;
     default:
       NOTREACHED();
+  };
+
+  if (old_behavior_for_current_state != new_behavior_for_current_state) {
+    PerformBehavior(*animation, *new_behavior_for_current_state,
+                    exception_state);
+    animation->UpdateIfNecessary();
   }
 }
 
-bool TimelineTrigger::WillAddAnimation(Animation* animation,
-                                       const AtomicString& action,
+void TimelineTrigger::WillAddAnimation(Animation* animation,
+                                       Behavior activate_behavior,
+                                       Behavior deactivate_behavior,
                                        ExceptionState& exception_state) {
-  if (action != AtomicString(TimelineTriggerAction::kEnter) &&
-      action != AtomicString(TimelineTriggerAction::kExit)) {
-    // TimelineTrigger only supports enter and exit actions.
-    return false;
-  }
-
+  bool was_paused_for_trigger = animation->PausedForTrigger();
   if (animation->CalculateAnimationPlayState() ==
       V8AnimationPlayState::Enum::kIdle) {
     animation->PauseInternal(exception_state);
     if (exception_state.HadException()) {
-      return false;
+      return;
     }
     animation->SetPausedForTrigger(true);
+    animation->UpdateIfNecessary();
   }
 
-  return true;
+  HandlePostTripAdd(animation, activate_behavior, deactivate_behavior,
+                    exception_state);
+  if (exception_state.HadException()) {
+    animation->SetPausedForTrigger(was_paused_for_trigger);
+  }
 }
 
-void TimelineTrigger::DidAddAnimation(Animation* animation,
-                                      const AtomicString& action,
-                                      std::optional<Behavior> old_behavior,
-                                      Behavior new_behavior,
-                                      ExceptionState& exception_state) {
-  if (state_ != State::kIdle && old_behavior != new_behavior) {
-    HandlePostTripAdd(animation, action, new_behavior, exception_state);
-  }
-
-  if (exception_state.HadException()) {
-    return;
-  }
-
-  animation->UpdateIfNecessary();
-
-  if (timeline_ && ActionsMap().size() == 1) {
+void TimelineTrigger::DidAddAnimation() {
+  if (timeline_ && BehaviorMap().size() == 1) {
     timeline_->AddTrigger(this);
   }
 }
 
 void TimelineTrigger::DidRemoveAnimation(Animation* animation) {
-  if (timeline_ && ActionsMap().empty()) {
+  if (timeline_ && BehaviorMap().empty()) {
     timeline_->RemoveTrigger(this);
   }
 }

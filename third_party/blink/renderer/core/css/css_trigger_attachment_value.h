@@ -6,43 +6,42 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TRIGGER_ATTACHMENT_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class CSSIdentifierValue;
+
 namespace cssvalue {
 
 // Class to represent a single animation trigger attachment declaration.
-// This class corresponds to a single instance of trigger() declared within
-// animation-trigger. E.g:
-//   animation-trigger: trigger(--mytrigger, myaction mybehavior);
-// creates one instance of this class. This instance has a single entry in its
-// |action_behavior_pairs_|.
-// Another example:
-//   animation-trigger:
-//           trigger(--mytrigger, myaction1 mybehavior1, myaction2 mybehavior2);
-// creates one instance of this class with 2 items in |action_behavior_pairs_|.
-// And finally,
-// animation-trigger:
-//   trigger(--mytrigger1, myaction1 mybehavior1)
-//   trigger(--mytrigger2, myaction2 mybehavior2);
-// creates 2 instances of this class.
+// This class corresponds to a single instance of an animation-trigger
+// attachment declaration in the animation-trigger grammar:
+//   <animation-trigger-attachment>: <dashed-ident> <ident> [<ident>];
+//
+//   animation-trigger: [ [ <animation-trigger-attachment> ]+ ]#
+// E.g:
+//   animation-trigger: --mytrigger play reset;
+// creates one instance of this class with "play" as the enter behavior and
+// "reset" as the exit behavior.
 class CSSTriggerAttachmentValue : public CSSValue {
  public:
-  explicit CSSTriggerAttachmentValue(
-      const CSSCustomIdentValue* trigger_name,
-      const HeapVector<std::pair<Member<const CSSCustomIdentValue>,
-                                 Member<const CSSCustomIdentValue>>>&
-          action_behavior_pairs)
+  explicit CSSTriggerAttachmentValue(const CSSCustomIdentValue* trigger_name,
+                                     const CSSIdentifierValue* enter_behavior,
+                                     const CSSIdentifierValue* exit_behavior)
       : CSSValue(kTriggerAttachmentClass),
         trigger_name_(trigger_name),
-        action_behavior_pairs_(std::move(action_behavior_pairs)) {}
+        enter_behavior_(enter_behavior),
+        exit_behavior_(exit_behavior) {}
 
   const CSSCustomIdentValue* TriggerName() const { return trigger_name_.Get(); }
-  const HeapVector<std::pair<Member<const CSSCustomIdentValue>,
-                             Member<const CSSCustomIdentValue>>>&
-  ActionBehaviorPairs() const {
-    return action_behavior_pairs_;
+  const CSSIdentifierValue* EnterBehavior() const {
+    return enter_behavior_.Get();
+  }
+  const CSSIdentifierValue* ExitBehavior() const {
+    return exit_behavior_.Get();
   }
 
   String CustomCSSText() const;
@@ -51,9 +50,8 @@ class CSSTriggerAttachmentValue : public CSSValue {
 
  private:
   Member<const CSSCustomIdentValue> trigger_name_;
-  HeapVector<std::pair<Member<const CSSCustomIdentValue>,
-                       Member<const CSSCustomIdentValue>>>
-      action_behavior_pairs_;
+  Member<const CSSIdentifierValue> enter_behavior_;
+  Member<const CSSIdentifierValue> exit_behavior_;
 };
 
 }  // namespace cssvalue

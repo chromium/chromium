@@ -15,12 +15,13 @@ enum AnimationTriggerBehavior {
   "play-backwards",
   "play-pause",
   "replay",
+  "none",
 };
 
 [
     Exposed=Window,
     RuntimeEnabled=AnimationTrigger
 ] interface AnimationTrigger {
-  [RaisesException] void addAnimation(Animation animation, DOMString action, AnimationTriggerBehavior behavior);
+  [RaisesException] void addAnimation(Animation animation, AnimationTriggerBehavior activateBehavior, optional AnimationTriggerBehavior deactivateBehavior = "none");
   void removeAnimation(Animation animation);
 };

@@ -55,7 +55,10 @@ bool EventTrigger::IsEventTrigger() const {
 }
 
 void EventTrigger::Invoke() {
-  PerformActionOnAnimations(AtomicString(event_type_));
+  // TODO(441908430): EventTriggers should account for deactivate events &
+  // behaviors. When an event occurs, we should determine, based on the event
+  // and the trigger's state, whether activate or deactivate has occurred.
+  PerformActivate();
 }
 
 void EventTrigger::Trace(Visitor* visitor) const {
@@ -64,11 +67,7 @@ void EventTrigger::Trace(Visitor* visitor) const {
   AnimationTrigger::Trace(visitor);
 }
 
-void EventTrigger::DidAddAnimation(Animation* animation,
-                                   const AtomicString& action,
-                                   std::optional<Behavior> old_behavior,
-                                   Behavior new_behavior,
-                                   ExceptionState& exception_state) {
+void EventTrigger::DidAddAnimation() {
   if (event_target_ && !event_listener_) {
     auto* options = MakeGarbageCollected<AddEventListenerOptionsResolved>();
     options->SetAnimationTrigger(true);
@@ -79,7 +78,7 @@ void EventTrigger::DidAddAnimation(Animation* animation,
 }
 
 void EventTrigger::DidRemoveAnimation(Animation* animation) {
-  if (event_target_ && event_listener_ && ActionsMap().empty()) {
+  if (event_target_ && event_listener_ && BehaviorMap().empty()) {
     event_target_->removeEventListener(AtomicString(event_type_),
                                        event_listener_.Get(),
                                        /*use_capture=*/false);

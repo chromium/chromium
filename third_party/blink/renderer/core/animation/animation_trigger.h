@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -24,10 +25,14 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
  public:
   using Behavior = V8AnimationTriggerBehavior::Enum;
+  // Maps an Animation to its associated "activate" (first) and "deactivate"
+  // (second) behaviors.
+  using AnimationBehaviorMap =
+      HeapHashMap<WeakMember<Animation>, std::pair<Behavior, Behavior>>;
 
   void addAnimation(Animation* animation,
-                    const AtomicString& action,
-                    V8AnimationTriggerBehavior behavior,
+                    V8AnimationTriggerBehavior activate_behavior,
+                    V8AnimationTriggerBehavior deactivate_behavior,
                     ExceptionState& exception_state);
   void removeAnimation(Animation* animation);
 
@@ -37,43 +42,31 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
   void RemoveAnimations();
 
-  // Finds the behavior associated with a particular action for a particular
-  // animation. It expects to be called only with an animation which is known to
-  // be in the |animation_action_map_|.
-  void PerformActionOnAnimation(Animation& animation,
-                                const AtomicString& action,
-                                ExceptionState& exception_state);
-  // Executes PerformActionOnAnimation for all animations in
-  // |animation_action_map_| when the given |action| occurs.
-  void PerformActionOnAnimations(const AtomicString& action);
+  void UpdateBehaviorMap(Animation& animation,
+                         Behavior activate_behavior,
+                         Behavior deactivate_behavior);
+
+  static bool HasPausedCSSPlayState(Animation* animation);
 
   void Trace(Visitor* visitor) const override;
 
  protected:
-  using ActionBehaviorMap = HashMap<AtomicString, Behavior>;
-
-  const HeapHashMap<WeakMember<Animation>, ActionBehaviorMap>& ActionsMap()
-      const {
-    return animation_action_map_;
-  }
+  AnimationBehaviorMap& BehaviorMap() { return animation_behavior_map_; }
+  void PerformActivate();
+  void PerformDeactivate();
+  static void PerformBehavior(Animation& animation,
+                              Behavior behavior,
+                              ExceptionState& exception_state);
 
  private:
-  virtual bool WillAddAnimation(Animation* animation,
-                                const AtomicString& action,
+  virtual void WillAddAnimation(Animation* animation,
+                                Behavior activate_behavior,
+                                Behavior deactivate_behavior,
                                 ExceptionState& exception_state);
-  virtual void DidAddAnimation(Animation* animation,
-                               const AtomicString& action,
-                               std::optional<Behavior> old_behavior,
-                               Behavior new_behavior,
-                               ExceptionState& exception_state);
+  virtual void DidAddAnimation();
   virtual void DidRemoveAnimation(Animation* animation);
 
-  // Updates the behavior for a particular action for a particular animation.
-  std::optional<Behavior> UpdateActionMap(Animation* animation,
-                                          const AtomicString& action,
-                                          Behavior behavior);
-
-  HeapHashMap<WeakMember<Animation>, ActionBehaviorMap> animation_action_map_;
+  AnimationBehaviorMap animation_behavior_map_;
 };
 
 }  // namespace blink

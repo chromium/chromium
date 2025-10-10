@@ -708,6 +708,9 @@ CSSValue* ConsumeSingleTimelineTriggerName(CSSParserTokenStream& stream,
                                            const CSSParserContext& context);
 
 // https://drafts.csswg.org/css-animations-2/#animation-trigger
+CSSIdentifierValue* ConsumeAnimationTriggerBehavior(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context);
 CSSValue* ConsumeSingleAnimationTriggerAttachment(
     CSSParserTokenStream& stream,
     const CSSParserContext& context);

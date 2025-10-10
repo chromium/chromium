@@ -4398,59 +4398,40 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
                      CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
+CSSIdentifierValue* ConsumeAnimationTriggerBehavior(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  return ConsumeIdent<CSSValueID::kPlay, CSSValueID::kPause, CSSValueID::kReset,
+                      CSSValueID::kPlayOnce, CSSValueID::kPlayAlternate,
+                      CSSValueID::kPlayForwards, CSSValueID::kPlayBackwards,
+                      CSSValueID::kPlayPause, CSSValueID::kReplay,
+                      CSSValueID::kNone>(stream);
+}
+
 CSSValue* ConsumeSingleAnimationTriggerAttachment(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  if (stream.Peek().FunctionId() != CSSValueID::kTrigger) {
+  CSSCustomIdentValue* trigger_name = nullptr;
+
+  // Consume the trigger name.
+  trigger_name = ConsumeDashedIdent(stream, context);
+  if (!trigger_name) {
     return nullptr;
   }
 
-  CSSCustomIdentValue* trigger_name = nullptr;
-  HeapVector<std::pair<Member<const CSSCustomIdentValue>,
-                       Member<const CSSCustomIdentValue>>>
-      action_behavior_pairs;
-
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    // First get the trigger name.
-    trigger_name = ConsumeDashedIdent(stream, context);
-    if (!trigger_name) {
-      return nullptr;
-    }
-
-    stream.ConsumeWhitespace();
-
-    // Now get the action-behavior pairs.
-    while (!stream.AtEnd()) {
-      if (!ConsumeCommaIncludingWhitespace(stream)) {
-        return nullptr;
-      }
-
-      // TODO: separate this out into a ConsumeTriggerAction method, which can
-      // consume actions which are functions, e.g. keypress("Enter"). For now,
-      // we only support simple ident actions.
-      CSSCustomIdentValue* action = ConsumeCustomIdent(stream, context);
-      if (!action) {
-        return nullptr;
-      }
-
-      CSSCustomIdentValue* behavior = ConsumeCustomIdent(stream, context);
-      if (!behavior) {
-        return nullptr;
-      }
-
-      action_behavior_pairs.push_back(std::make_pair(action, behavior));
-    }
-  }
-  stream.ConsumeWhitespace();
-
-  if (!action_behavior_pairs.empty()) {
-    return MakeGarbageCollected<cssvalue::CSSTriggerAttachmentValue>(
-        trigger_name, action_behavior_pairs);
+  // Consume the enter-behavior.
+  const CSSIdentifierValue* enter_behavior =
+      ConsumeAnimationTriggerBehavior(stream, context);
+  if (!enter_behavior) {
+    return nullptr;
   }
 
-  return nullptr;
+  // Consume the (optional) exit-behavior.
+  const CSSIdentifierValue* exit_behavior =
+      ConsumeAnimationTriggerBehavior(stream, context);
+
+  return MakeGarbageCollected<cssvalue::CSSTriggerAttachmentValue>(
+      trigger_name, enter_behavior, exit_behavior);
 }
 
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream& stream) {

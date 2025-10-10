@@ -30,7 +30,9 @@
 
 #include <cstddef>
 #include <cstdint>
+
 #include "base/check_op.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -584,12 +586,7 @@ enum class TryTactic : uint8_t {
   kFlipStart,
 };
 
-enum class EAnimationTriggerBehavior : uint8_t {
-  kOnce,
-  kRepeat,
-  kAlternate,
-  kState,
-};
+typedef V8AnimationTriggerBehavior::Enum EAnimationTriggerBehavior;
 
 // TODO(crbug.com/332933527): Support anchors-valid.
 static const size_t kPositionVisibilityBits = 2;

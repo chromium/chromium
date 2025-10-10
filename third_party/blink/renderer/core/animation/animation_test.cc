@@ -2691,8 +2691,9 @@ TEST_P(AnimationAnimationTestCompositing,
 
     // Attach the trigger to the animation.
     trigger->addAnimation(
-        animation, AtomicString(TimelineTriggerAction::kEnter),
+        animation,
         V8AnimationTriggerBehavior(V8AnimationTriggerBehavior::Enum::kPlay),
+        V8AnimationTriggerBehavior(V8AnimationTriggerBehavior::Enum::kPause),
         ASSERT_NO_EXCEPTION);
     EXPECT_EQ(animation->CalculateAnimationPlayState(),
               V8AnimationPlayState::Enum::kPaused);
@@ -2776,7 +2777,7 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
           rangeStart: "contain 0%",
           rangeEnd: "contain 100%"});
 
-        trigger.addAnimation(animation, "enter", "play-forwards");
+        trigger.addAnimation(animation, "play-forwards", "play-backwards");
       }
 
       setupTriggeredAnimation();

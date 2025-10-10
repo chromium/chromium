@@ -672,23 +672,23 @@ const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
         for (const Member<const StyleTriggerAttachment>& attachment :
              *single_animation_attachments) {
           // Get the name.
-          Member<const CSSCustomIdentValue> trigger_name =
+          const CSSCustomIdentValue* trigger_name =
               MakeGarbageCollected<CSSCustomIdentValue>(
                   *attachment->TriggerName());
 
-          // Get the action-behavior settings.
-          HeapVector<std::pair<Member<const CSSCustomIdentValue>,
-                               Member<const CSSCustomIdentValue>>>
-              action_behavior_pairs;
-          for (const auto& pair : attachment->ActionBehaviorPairs()) {
-            action_behavior_pairs.push_back(std::make_pair(
-                MakeGarbageCollected<const CSSCustomIdentValue>(pair.first),
-                MakeGarbageCollected<const CSSCustomIdentValue>(pair.second)));
+          const CSSIdentifierValue* enter_behavior_value =
+              CSSIdentifierValue::Create(attachment->EnterBehavior());
+
+          const CSSIdentifierValue* exit_behavior_value = nullptr;
+          std::optional<EAnimationTriggerBehavior> exit_behavior =
+              attachment->ExitBehavior();
+          if (exit_behavior) {
+            exit_behavior_value = CSSIdentifierValue::Create(*exit_behavior);
           }
 
           attachment_valuelist_for_single_animation->Append(
               *MakeGarbageCollected<cssvalue::CSSTriggerAttachmentValue>(
-                  trigger_name.Get(), action_behavior_pairs));
+                  trigger_name, enter_behavior_value, exit_behavior_value));
         }
       } else {
         attachment_valuelist_for_single_animation->Append(

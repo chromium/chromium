@@ -1224,17 +1224,14 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
           animation-duration: 3s, 4s;
       }
       .single {
-        animation-trigger: trigger(--trigger, enter play);
+        animation-trigger: --trigger play;
       }
       .double {
-        animation-trigger: trigger(--trigger1, click play)
-                           trigger(--trigger2, dblclick pause);
+        animation-trigger: --trigger1 play --trigger2 pause;
       }
       .multiple_double {
-        animation-trigger: trigger(--trigger3, click play)
-                           trigger(--trigger4, dblclick pause),
-                           trigger(--trigger1, dblclick play)
-                           trigger(--trigger2, dblclick pause);
+        animation-trigger: --trigger3 play --trigger4 pause,
+                           --trigger1 play --trigger2 pause;
       }
     </style>
     <div id="target"></div>
@@ -2057,11 +2054,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
         animation: stretch 1s;
       }
       .trigger1 {
-        animation-trigger: trigger(--trigger1, enter play);
+        animation-trigger: --trigger1 play;
         timeline-trigger: --trigger1 view() contain 10% contain 90%;
       }
       .trigger2 {
-        animation-trigger: trigger(--trigger2, exit pause);
+        animation-trigger: --trigger2 pause;
         timeline-trigger: --trigger2 view() contain 10% contain 90%;
       }
      .scroller {

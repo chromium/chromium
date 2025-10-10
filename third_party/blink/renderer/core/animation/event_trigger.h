@@ -38,11 +38,7 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
   void Trace(Visitor* visitor) const override;
 
  private:
-  void DidAddAnimation(Animation* animation,
-                       const AtomicString& action,
-                       std::optional<Behavior> old_behavior,
-                       Behavior new_behavior,
-                       ExceptionState& exception_state) override;
+  void DidAddAnimation() override;
   void DidRemoveAnimation(Animation* animation) override;
   void ClearListenerIfNecessary();
 

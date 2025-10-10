@@ -11,37 +11,30 @@ namespace cssvalue {
 
 String CSSTriggerAttachmentValue::CustomCSSText() const {
   StringBuilder result;
-  result.Append("trigger(");
   result.Append(trigger_name_->CssText());
-  result.Append(", ");
+  result.Append(" ");
 
-  size_t num_pairs = action_behavior_pairs_.size();
-  for (size_t i = 0; i < num_pairs; i++) {
-    const auto& pair = action_behavior_pairs_[i];
-
-    result.Append(pair.first->CssText());
+  result.Append(enter_behavior_->CssText());
+  if (exit_behavior_) {
     result.Append(" ");
-    result.Append(pair.second->CssText());
-
-    if (i < num_pairs - 1) {
-      result.Append(", ");
-    }
+    result.Append(exit_behavior_->CssText());
   }
 
-  result.Append(")");
   return result.ReleaseString();
 }
 
 bool CSSTriggerAttachmentValue::Equals(
     const CSSTriggerAttachmentValue& other) const {
   return trigger_name_->Equals(*other.TriggerName()) &&
-         action_behavior_pairs_ == other.ActionBehaviorPairs();
+         enter_behavior_ == other.EnterBehavior() &&
+         exit_behavior_ == other.ExitBehavior();
 }
 
 void CSSTriggerAttachmentValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(trigger_name_);
-  visitor->Trace(action_behavior_pairs_);
+  visitor->Trace(enter_behavior_);
+  visitor->Trace(exit_behavior_);
 
   CSSValue::TraceAfterDispatch(visitor);
 }

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 
@@ -891,17 +893,22 @@ const StyleTriggerAttachment* MapSingleAnimationTriggerAttachment(
   const ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
       name_value->Value(), name_value->GetTreeScope());
 
-  HeapVector<std::pair<AtomicString, AtomicString>> action_behavior_pairs;
-  for (const auto& pair : attachment_value.ActionBehaviorPairs()) {
-    AtomicString action =
-        pair.first->ComputeIdent(state.CssToLengthConversionData());
-    AtomicString behavior =
-        pair.second->ComputeIdent(state.CssToLengthConversionData());
-    action_behavior_pairs.push_back(std::make_pair(action, behavior));
-  }
+  const CSSIdentifierValue* enter_value =
+      To<CSSIdentifierValue>(attachment_value.EnterBehavior());
+  EAnimationTriggerBehavior enter_behavior =
+      CssValueIDToPlatformEnum<EAnimationTriggerBehavior>(
+          enter_value->GetValueID());
 
-  return MakeGarbageCollected<StyleTriggerAttachment>(name,
-                                                      action_behavior_pairs);
+  const CSSIdentifierValue* exit_value =
+      DynamicTo<CSSIdentifierValue>(attachment_value.ExitBehavior());
+  std::optional<EAnimationTriggerBehavior> exit_behavior =
+      exit_value ? std::make_optional<>(
+                       CssValueIDToPlatformEnum<EAnimationTriggerBehavior>(
+                           exit_value->GetValueID()))
+                 : std::nullopt;
+
+  return MakeGarbageCollected<StyleTriggerAttachment>(name, enter_behavior,
+                                                      exit_behavior);
 }
 
 Member<StyleTriggerAttachmentVector>

@@ -544,14 +544,26 @@ inline CSSValueID PlatformEnumToCSSValueID(TryTactic v) {
 template <>
 inline EAnimationTriggerBehavior CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
-    case CSSValueID::kOnce:
-      return EAnimationTriggerBehavior::kOnce;
-    case CSSValueID::kRepeat:
-      return EAnimationTriggerBehavior::kRepeat;
-    case CSSValueID::kAlternate:
-      return EAnimationTriggerBehavior::kAlternate;
-    case CSSValueID::kState:
-      return EAnimationTriggerBehavior::kState;
+    case CSSValueID::kPlay:
+      return EAnimationTriggerBehavior::kPlay;
+    case CSSValueID::kPause:
+      return EAnimationTriggerBehavior::kPause;
+    case CSSValueID::kReset:
+      return EAnimationTriggerBehavior::kReset;
+    case CSSValueID::kPlayOnce:
+      return EAnimationTriggerBehavior::kPlayOnce;
+    case CSSValueID::kPlayAlternate:
+      return EAnimationTriggerBehavior::kPlayAlternate;
+    case CSSValueID::kPlayForwards:
+      return EAnimationTriggerBehavior::kPlayForwards;
+    case CSSValueID::kPlayBackwards:
+      return EAnimationTriggerBehavior::kPlayBackwards;
+    case CSSValueID::kPlayPause:
+      return EAnimationTriggerBehavior::kPlayPause;
+    case CSSValueID::kReplay:
+      return EAnimationTriggerBehavior::kReplay;
+    case CSSValueID::kNone:
+      return EAnimationTriggerBehavior::kNone;
     default:
       NOTREACHED();
   }
@@ -560,14 +572,26 @@ inline EAnimationTriggerBehavior CssValueIDToPlatformEnum(CSSValueID v) {
 template <>
 inline CSSValueID PlatformEnumToCSSValueID(EAnimationTriggerBehavior v) {
   switch (v) {
-    case EAnimationTriggerBehavior::kOnce:
-      return CSSValueID::kOnce;
-    case EAnimationTriggerBehavior::kRepeat:
-      return CSSValueID::kRepeat;
-    case EAnimationTriggerBehavior::kAlternate:
-      return CSSValueID::kAlternate;
-    case EAnimationTriggerBehavior::kState:
-      return CSSValueID::kState;
+    case EAnimationTriggerBehavior::kPlay:
+      return CSSValueID::kPlay;
+    case EAnimationTriggerBehavior::kPause:
+      return CSSValueID::kPause;
+    case EAnimationTriggerBehavior::kReset:
+      return CSSValueID::kReset;
+    case EAnimationTriggerBehavior::kPlayOnce:
+      return CSSValueID::kPlayOnce;
+    case EAnimationTriggerBehavior::kPlayAlternate:
+      return CSSValueID::kPlayAlternate;
+    case EAnimationTriggerBehavior::kPlayForwards:
+      return CSSValueID::kPlayForwards;
+    case EAnimationTriggerBehavior::kPlayBackwards:
+      return CSSValueID::kPlayBackwards;
+    case EAnimationTriggerBehavior::kPlayPause:
+      return CSSValueID::kPlayPause;
+    case EAnimationTriggerBehavior::kReplay:
+      return CSSValueID::kReplay;
+    case EAnimationTriggerBehavior::kNone:
+      return CSSValueID::kNone;
     default:
       NOTREACHED();
   }

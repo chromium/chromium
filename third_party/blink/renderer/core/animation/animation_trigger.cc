@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 
 namespace blink {
 
@@ -91,9 +92,12 @@ void PerformReplay(Animation& animation,
   animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
 }
 
-void PerformBehavior(Animation& animation,
-                     Behavior behavior,
-                     ExceptionState& exception_state) {
+}  // namespace
+
+// static
+void AnimationTrigger::PerformBehavior(Animation& animation,
+                                       Behavior behavior,
+                                       ExceptionState& exception_state) {
   V8AnimationPlayState::Enum play_state =
       animation.CalculateAnimationPlayState();
   switch (behavior) {
@@ -124,41 +128,59 @@ void PerformBehavior(Animation& animation,
     case Behavior::kReplay:
       PerformReplay(animation, play_state, exception_state);
       break;
+    case Behavior::kNone:
+      break;
     default:
       NOTREACHED();
   };
 }
 
-}  // namespace
+// static
+bool AnimationTrigger::HasPausedCSSPlayState(Animation* animation) {
+  if (!animation->IsCSSAnimation()) {
+    return false;
+  }
 
-void AnimationTrigger::addAnimation(Animation* animation,
-                                    const AtomicString& action,
-                                    V8AnimationTriggerBehavior behavior,
-                                    ExceptionState& exception_state) {
-  if (!WillAddAnimation(animation, action, exception_state)) {
+  CSSAnimation* css_animation = To<CSSAnimation>(animation);
+
+  if (css_animation->GetIgnoreCSSPlayState()) {
+    return false;
+  }
+
+  return animation->GetTriggerActionPlayState() == EAnimPlayState::kPaused;
+}
+
+void AnimationTrigger::addAnimation(
+    Animation* animation,
+    V8AnimationTriggerBehavior activate_behavior,
+    V8AnimationTriggerBehavior deactivate_behavior,
+    ExceptionState& exception_state) {
+  if (!animation) {
+    // TODO(390314945): Throw an exception maybe?
     return;
   }
 
-  std::optional<Behavior> old_behavior =
-      UpdateActionMap(animation, action, behavior.AsEnum());
+  WillAddAnimation(animation, activate_behavior.AsEnum(),
+                   deactivate_behavior.AsEnum(), exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  UpdateBehaviorMap(*animation, activate_behavior.AsEnum(),
+                    deactivate_behavior.AsEnum());
   animation->AddTrigger(this);
 
-  DidAddAnimation(animation, action, old_behavior, behavior.AsEnum(),
-                  exception_state);
+  DidAddAnimation();
 }
 
 void AnimationTrigger::removeAnimation(Animation* animation) {
-  animation_action_map_.erase(animation);
-  animation->RemoveTrigger(this);
-  DidRemoveAnimation(animation);
-}
-
-void AnimationTrigger::RemoveAnimations() {
-  HeapHashMap<WeakMember<Animation>, ActionBehaviorMap> animation_action_map;
-  animation_action_map_.swap(animation_action_map);
-  for (Animation* animation : animation_action_map.Keys()) {
-    removeAnimation(animation);
+  if (!animation) {
+    return;
   }
+
+  animation->RemoveTrigger(this);
+  animation_behavior_map_.erase(animation);
+  DidRemoveAnimation(animation);
 }
 
 bool AnimationTrigger::IsTimelineTrigger() const {
@@ -169,60 +191,50 @@ bool AnimationTrigger::IsEventTrigger() const {
   return false;
 }
 
-bool AnimationTrigger::WillAddAnimation(Animation* animation,
-                                        const AtomicString& action,
-                                        ExceptionState& exception_state) {
-  return true;
-}
-void AnimationTrigger::DidAddAnimation(Animation* animation,
-                                       const AtomicString& action,
-                                       std::optional<Behavior> old_behavior,
-                                       Behavior new_behavior,
-                                       ExceptionState& exception_state) {}
+void AnimationTrigger::WillAddAnimation(Animation* animation,
+                                        Behavior enter_behavior,
+                                        Behavior exit_behavior,
+                                        ExceptionState& exception_state) {}
+
+void AnimationTrigger::DidAddAnimation() {}
+
 void AnimationTrigger::DidRemoveAnimation(Animation* animation) {}
 
-void AnimationTrigger::PerformActionOnAnimation(
-    Animation& animation,
-    const AtomicString& action,
-    ExceptionState& exception_state) {
-  ActionBehaviorMap& action_behavior_map =
-      animation_action_map_.find(&animation)->value;
-  auto behavior_entry = action_behavior_map.find(action);
-  if (behavior_entry == action_behavior_map.end()) {
-    return;
-  }
-  PerformBehavior(animation, behavior_entry->value, exception_state);
-}
-
-void AnimationTrigger::PerformActionOnAnimations(const AtomicString& action) {
-  for (auto& [animation, action_map] : animation_action_map_) {
-    PerformActionOnAnimation(*animation, action, ASSERT_NO_EXCEPTION);
+void AnimationTrigger::RemoveAnimations() {
+  AnimationBehaviorMap animation_behavior_map;
+  animation_behavior_map_.swap(animation_behavior_map);
+  for (Animation* animation : animation_behavior_map.Keys()) {
+    removeAnimation(animation);
   }
 }
 
-std::optional<Behavior> AnimationTrigger::UpdateActionMap(
-    Animation* animation,
-    const AtomicString& action,
-    Behavior behavior) {
-  std::optional<Behavior> old_behavior;
-  auto action_map_it = animation_action_map_.find(animation);
-  if (action_map_it != animation_action_map_.end()) {
-    ActionBehaviorMap& behavior_map = action_map_it->value;
-    auto behavior_map_it = behavior_map.find(action);
-    old_behavior = (behavior_map_it == behavior_map.end())
-                       ? std::nullopt
-                       : std::make_optional<Behavior>(behavior_map_it->value);
-    behavior_map.Set(action, behavior);
-  } else {
-    ActionBehaviorMap behavior_map;
-    behavior_map.Set(action, behavior);
-    animation_action_map_.Set(animation, std::move(behavior_map));
+void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
+                                         Behavior activate_behavior,
+                                         Behavior deactivate_behavior) {
+  animation_behavior_map_.Set(
+      &animation, std::make_pair<>(activate_behavior, deactivate_behavior));
+}
+
+void AnimationTrigger::PerformActivate() {
+  for (auto [animation, behaviors] : animation_behavior_map_) {
+    if (HasPausedCSSPlayState(animation)) {
+      continue;
+    }
+    PerformBehavior(*animation, behaviors.first, ASSERT_NO_EXCEPTION);
   }
-  return old_behavior;
+}
+
+void AnimationTrigger::PerformDeactivate() {
+  for (auto [animation, behaviors] : animation_behavior_map_) {
+    if (HasPausedCSSPlayState(animation)) {
+      continue;
+    }
+    PerformBehavior(*animation, behaviors.second, ASSERT_NO_EXCEPTION);
+  }
 }
 
 void AnimationTrigger::Trace(Visitor* visitor) const {
-  visitor->Trace(animation_action_map_);
+  visitor->Trace(animation_behavior_map_);
   ScriptWrappable::Trace(visitor);
 }
 
