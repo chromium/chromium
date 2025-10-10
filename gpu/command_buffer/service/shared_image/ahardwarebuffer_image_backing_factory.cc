@@ -10,7 +10,6 @@
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
 #include <dawn/webgpu_cpp.h>
-#include <sync/sync.h>
 #include <unistd.h>
 
 #include <algorithm>

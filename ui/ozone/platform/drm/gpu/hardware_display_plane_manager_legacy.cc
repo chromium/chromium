@@ -10,7 +10,6 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
 #include <errno.h>
-#include <sync/sync.h>
 
 #include <memory>
 #include <utility>

@@ -17,8 +17,9 @@
 #include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <sync/sync.h>  // nogncheck
+
 #include "base/posix/eintr_wrapper.h"
-#include "third_party/libsync/src/include/sync/sync.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)

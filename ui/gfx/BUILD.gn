@@ -640,6 +640,7 @@ source_set("memory_buffer_sources") {
     ":native_widget_types_sources",
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
