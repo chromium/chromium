@@ -74,7 +74,8 @@ public class RedirectTabCreator extends ChromeTabCreator {
         Activity otherActivity =
                 MultiWindowUtils.getForegroundWindowActivityWithProfileType(mActivity, mIncognito);
         chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams, mActivity, Tab.INVALID_TAB_ID, otherActivity);
+                loadUrlParams, mActivity, Tab.INVALID_TAB_ID, otherActivity,
+                MultiWindowUtils.NewWindowEntryPoint.OTHER);
         return null;
     }
 }

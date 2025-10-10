@@ -1370,6 +1370,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Haip"/>
 </enum>
 
+<enum name="NewWindowAppSource">
+  <int value="0" label="Undefined app source."/>
+  <int value="1" label="Menu option (eg. app menu, context menu, etc.)"/>
+</enum>
+
 <enum name="NightMode">
   <int value="0" label="undefined"/>
   <int value="1" label="on"/>

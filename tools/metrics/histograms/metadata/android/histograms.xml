@@ -3429,6 +3429,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.NewWindow.AppSource"
+    enum="NewWindowAppSource" expires_after="2026-03-01">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records trigger source when a new window creation is requested.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.MultiWindowMode.PopupBoundsAdjustment.Delta{Axis}.Outcome.{CrossDisplay}"
     enum="Boolean" expires_after="M148">

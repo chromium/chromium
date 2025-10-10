@@ -13,6 +13,7 @@ import android.provider.Browser;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -66,12 +67,14 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
      * @param parentId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
      * @param otherActivity The activity to create a new tab in. This is non-null when we have a
      *     visible activity running adjacently.
+     * @param entryPoint The entry point of the new window used for metrics.
      */
     public void launchTabInOtherWindow(
             LoadUrlParams loadUrlParams,
             Activity activity,
             int parentId,
-            @Nullable Activity otherActivity) {
+            @Nullable Activity otherActivity,
+            @MultiWindowUtils.NewWindowEntryPoint int entryPoint) {
         Intent intent =
                 createNewTabIntent(
                         new AsyncTabCreationParams(loadUrlParams),
@@ -101,6 +104,10 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         activity.startActivity(intent);
+        RecordHistogram.recordEnumeratedHistogram(
+                    "Android.MultiWindowMode.NewWindow.AppSource",
+                    entryPoint,
+                    MultiWindowUtils.NewWindowEntryPoint.NUM_ENTRIES);
     }
 
     /**

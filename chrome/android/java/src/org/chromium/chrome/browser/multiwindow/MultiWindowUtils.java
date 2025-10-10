@@ -151,6 +151,17 @@ public class MultiWindowUtils implements ActivityStateListener {
         int INVALID_INSTANCE = 7;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({NewWindowEntryPoint.OTHER, NewWindowEntryPoint.MENU})
+    public @interface NewWindowEntryPoint {
+        int OTHER = 0;
+        int MENU = 1;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 2;
+    }
+
     protected MultiWindowUtils() {
         mMultiInstanceApi31Enabled = isMultiInstanceApi31Enabled();
     }

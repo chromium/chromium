@@ -290,7 +290,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                         : MultiWindowUtils.getForegroundWindowActivity(activity);
 
         chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams, activity, mTab.getParentId(), otherWindowActivity);
+                loadUrlParams,
+                activity,
+                mTab.getParentId(),
+                otherWindowActivity,
+                MultiWindowUtils.NewWindowEntryPoint.MENU);
     }
 
     /**

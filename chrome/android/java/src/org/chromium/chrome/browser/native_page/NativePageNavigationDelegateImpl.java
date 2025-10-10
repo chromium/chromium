@@ -107,7 +107,8 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 loadUrlParams,
                 mActivity,
                 mHost.getParentId(),
-                MultiWindowUtils.getForegroundWindowActivity(mActivity));
+                MultiWindowUtils.getForegroundWindowActivity(mActivity),
+                MultiWindowUtils.NewWindowEntryPoint.OTHER);
     }
 
     private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {
