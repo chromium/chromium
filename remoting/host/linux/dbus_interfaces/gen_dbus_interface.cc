@@ -130,13 +130,12 @@ int main(int argc, char* argv[]) {
   output << "#include \"remoting/host/linux/gvariant_type.h\"" << std::endl
          << std::endl;
 
-  output << "namespace remoting {" << std::endl << std::endl;
-
   for (GDBusInterfaceInfo** interface = node->interfaces;
        interface != nullptr && *interface != nullptr;
        UNSAFE_TODO(++interface)) {
     std::string namespace_name = Namespace((**interface).name);
-    output << "namespace " << namespace_name << " {" << std::endl << std::endl;
+    output << "namespace remoting::" << namespace_name << " {" << std::endl
+           << std::endl;
 
     for (GDBusMethodInfo** method = (**interface).methods;
          method != nullptr && *method != nullptr; UNSAFE_TODO(++method)) {
@@ -191,10 +190,9 @@ int main(int argc, char* argv[]) {
       output << "  };" << std::endl;
       output << "};" << std::endl << std::endl;
     }
-    output << "}  // namespace " << namespace_name << std::endl << std::endl;
+    output << "}  // namespace remoting::" << namespace_name << std::endl
+           << std::endl;
   }
-
-  output << "}  // namespace remoting" << std::endl << std::endl;
 
   output << "#endif  // " << header_guard << std::endl;
 
