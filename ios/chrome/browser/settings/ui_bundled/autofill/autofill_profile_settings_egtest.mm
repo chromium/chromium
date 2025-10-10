@@ -32,7 +32,6 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SearchBar;
 using chrome_test_util::SettingsDoneButton;
@@ -44,13 +43,6 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-// Expectation of how the saved Autofill profile looks like, a map from cell
-// name IDs to expected contents.
-struct DisplayStringIDToExpectedResult {
-  int display_string_id;
-  NSString* expected_result;
-};
-
 // Will be used to test the country selection logic.
 NSString* const kCountryForSelection = @"Germany";
 
@@ -58,28 +50,6 @@ constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 
 NSString* const kProfileLabel = @"John H. Doe, 666 Erebus St.";
 NSString* const kHomeProfileLabel = @"John H. Doe, 666 Erebus St., Home";
-
-// Expectation of how user-typed country names should be canonicalized.
-struct UserTypedCountryExpectedResultPair {
-  NSString* user_typed_country;
-  NSString* expected_result;
-};
-
-const UserTypedCountryExpectedResultPair kCountryTests[] = {
-    {@"Brasil", @"Brazil"},
-    {@"China", @"China mainland"},
-    {@"DEUTSCHLAND", @"Germany"},
-    {@"GREAT BRITAIN", @"United Kingdom"},
-    {@"IN", @"India"},
-    {@"JaPaN", @"Japan"},
-    {@"JP", @"Japan"},
-    {@"Nigeria", @"Nigeria"},
-    {@"TW", @"Taiwan"},
-    {@"U.S.A.", @"United States"},
-    {@"UK", @"United Kingdom"},
-    {@"USA", @"United States"},
-    {@"Nonexistia", @""},
-};
 
 // Return the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
