@@ -5,6 +5,7 @@
 #include "chrome/browser/platform_experience/installer/installer_win.h"
 
 #include "base/command_line.h"
+#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -50,6 +51,9 @@ bool PlatformExperienceHelperMightBeInstalled() {
 // Returns whether we should attempt installing the platform experience helper.
 bool ShouldInstallPlatformExperienceHelper() {
   if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return false;
+  }
+  if (base::IsManagedOrEnterpriseDevice()) {
     return false;
   }
   return !PlatformExperienceHelperMightBeInstalled();
