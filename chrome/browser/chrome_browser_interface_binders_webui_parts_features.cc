@@ -98,8 +98,14 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
   if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
     // Register binders for all eligible profiles.
-    RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
-                                           glic::GlicFreUI>(map);
+    if (glic::GlicEnabling::IsUnifiedFreEnabled(Profile::FromBrowserContext(
+            render_frame_host->GetProcess()->GetBrowserContext()))) {
+      RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
+                                             glic::GlicUI>(map);
+    } else {
+      RegisterWebUIControllerInterfaceBinder<glic::mojom::FrePageHandlerFactory,
+                                             glic::GlicFreUI>(map);
+    }
     // For GlicUI, the WebUI page will check whether Glic is policy-enabled and
     // restrict access if needed. This isn't required for the GlicFreUI.
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,

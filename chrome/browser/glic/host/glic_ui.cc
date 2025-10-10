@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
@@ -190,11 +191,23 @@ void GlicUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void GlicUI::BindInterface(
+    mojo::PendingReceiver<glic::mojom::FrePageHandlerFactory> receiver) {
+  fre_page_factory_receiver_.reset();
+  fre_page_factory_receiver_.Bind(std::move(receiver));
+}
+
 void GlicUI::CreatePageHandler(
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
     mojo::PendingRemote<glic::mojom::Page> page) {
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), std::move(receiver), std::move(page));
+}
+
+void GlicUI::CreatePageHandler(
+    mojo::PendingReceiver<glic::mojom::FrePageHandler> fre_receiver) {
+  fre_page_handler_ = std::make_unique<GlicFrePageHandler>(
+      web_ui()->GetWebContents(), std::move(fre_receiver));
 }
 
 }  // namespace glic
