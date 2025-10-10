@@ -353,6 +353,7 @@ if (!is_android) {
     ]
     if (enable_glic) {
       sources += [
+        "glic_actor_nudge_controller.h",
         "glic_actor_task_icon_controller.h",
         "glic_actor_task_icon_manager.h",
         "glic_actor_task_icon_manager_factory.h",
@@ -384,6 +385,7 @@ if (!is_android) {
     ]
     if (enable_glic) {
       sources += [
+        "glic_actor_nudge_controller.cc",
         "glic_actor_task_icon_controller.cc",
         "glic_actor_task_icon_manager.cc",
         "glic_actor_task_icon_manager_factory.cc",
