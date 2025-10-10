@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.InstrumentationRegistry;
@@ -144,6 +145,60 @@ public class TabStripPinUnpinTabsTest {
 
             // Verify the tab is unpinned, moved to the back and has correct width.
             verifyTabIsUnpinned(tabs, tabToUnpin, expectedDrawX, lastPinnedIndex);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseAndRestorePinnedTab() {
+        TabStripTestUtils.createTabs(
+                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        int lastPinnedIndex = 0;
+        float expectedDrawX = 0f;
+
+        // Pin all tabs one by one via tab context menu.
+        while (lastPinnedIndex < tabs.length) {
+            // Pinning from the back: verify tab is in the correct state, then open menu and pin.
+            showMenu(tabs.length - 1);
+            StripLayoutTab tabToPin = tabs[tabs.length - 1];
+            assertFalse("Tab should not be pinned.", tabToPin.getIsPinned());
+            onView(withText(mPinTabMenuLabel)).check(matches(isDisplayed()));
+            onView(withText(mPinTabMenuLabel)).perform(click());
+
+            // Verify the tab is pinned, moved to the front and has correct width.
+            verifyTabIsPinned(tabs, tabToPin, expectedDrawX, lastPinnedIndex);
+            expectedDrawX += PINNED_TAB_WIDTH_WITHOUT_OVERLAP;
+            lastPinnedIndex++;
+        }
+
+        String closeLabel =
+                mActivityTestRule.getActivity().getResources().getString(R.string.close);
+        String undoLabel = mActivityTestRule.getActivity().getResources().getString(R.string.undo);
+        for (int i = tabs.length - 1; i >= 0; i--) {
+            showMenu(i);
+
+            // Verify the "Close tab" option is showing in tab context menu, then close the tab.
+            onView(withText(closeLabel)).check(matches(isDisplayed()));
+            onView(withText(closeLabel)).perform(click());
+
+            // Verify the tab is closed.
+            assertEquals(
+                    "There are now four tabs present",
+                    4,
+                    getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
+
+            // Verify the "Undo" option is showing, then undo the closed tab.
+            onView(withText(undoLabel)).check(matches(isDisplayed()));
+            onView(withText(undoLabel)).perform(click());
+
+            // Verify the tab restored by undo is pinned.
+            assertEquals(
+                    "There are now five tabs present",
+                    5,
+                    getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
+            assertEquals("Tab should be pinned.", true, tabs[i].getIsPinned());
         }
     }
 
