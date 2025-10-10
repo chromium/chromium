@@ -54,15 +54,8 @@ void GlicButtonController::PanelStateChanged(
   if (GlicWindowController::AlwaysDetached()) {
     UpdateShowState(true);
   } else {
-    bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
-    if (detached) {
-      glic_controller_delegate_->SetGlicIcon(
-          GlicVectorIconManager::GetVectorIcon(
-              IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON));
-    } else {
-      glic_controller_delegate_->SetGlicIcon(
-          GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
-    }
+    const bool detached = panel_state.kind == mojom::PanelState_Kind::kDetached;
+    glic_controller_delegate_->SetGlicDetached(detached);
     UpdateShowState(detached);
   }
 }

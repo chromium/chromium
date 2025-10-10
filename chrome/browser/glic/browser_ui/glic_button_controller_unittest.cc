@@ -56,14 +56,14 @@ class MockGlicButtonControllerDelegate
     : public glic::GlicButtonControllerDelegate {
  public:
   void SetGlicShowState(bool show) override { show_state_ = show; }
-  void SetGlicIcon(const gfx::VectorIcon& icon) override { icon_ = &icon; }
+  void SetGlicDetached(bool detached) override { detached_ = detached; }
 
   bool show_state() const { return show_state_; }
-  const gfx::VectorIcon* icon() const { return icon_; }
+  bool detached() const { return detached_; }
 
  private:
   bool show_state_ = false;
-  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
+  bool detached_ = true;
 };
 
 }  // namespace

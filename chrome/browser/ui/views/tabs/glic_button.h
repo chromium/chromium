@@ -45,6 +45,9 @@ class GlicButton : public TabStripNudgeButton,
   void SetNudgeLabel(std::string label);
   void RestoreDefaultLabel();
 
+  // Update button for glic attachment state.
+  void SetGlicDetached(bool detached);
+
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
 
