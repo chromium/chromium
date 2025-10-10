@@ -274,6 +274,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.InteractionTime.Accepted" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed between the FRE being fully loaded (the Ready
+    state) and the user clicking the accept/continue button. This is logged when
+    the user accepts the FRE.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.InteractionTime.Dismissed" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed between the FRE being fully loaded (the Ready
+    state) and the user dismissing the dialog through an indirect action (e.g.,
+    closing the tab, pressing Esc, clicking outside the dialog).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.InteractionTime.NoThanks" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed between the FRE being fully loaded (the Ready
+    state) and the user explicitly clicking the No thanks button. This is logged
+    when the user rejects the FRE.
+  </summary>
+</histogram>
+
 <histogram name="Glic.FRE.InvocationSource" enum="GlicInvocationSource"
     expires_after="2026-03-22">
   <owner>cuianthony@google.com</owner>
@@ -281,6 +314,36 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the entry point used to trigger the opening of the glic FRE modal.
     Recorded when the FRE is shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.Accepted" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed from when the FRE is first opened until the user
+    accepts it.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.Dismissed" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed from when the FRE is first opened until it is
+    dismissed by the user (e.g. closing the tab).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.NoThanks" units="ms"
+    expires_after="2026-08-03">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@google.com</owner>
+  <summary>
+    Records the time elapsed from when the FRE is first opened until the user
+    clicks the No Thanks button.
   </summary>
 </histogram>
 
