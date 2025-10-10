@@ -122,7 +122,8 @@ class QueuedHistoryDBTask {
 class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                        public HistoryBackendForSync,
                        public HistoryBackendNotifier,
-                       public favicon::FaviconBackendDelegate {
+                       public favicon::FaviconBackendDelegate,
+                       public base::MemoryPressureListener {
  public:
   // Interface implemented by the owner of the HistoryBackend object. Normally,
   // the history service implements this to send stuff back to the main thread.
@@ -853,7 +854,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void InitImpl(const HistoryDatabaseParams& history_database_params);
 
   // Called when the system is under memory pressure.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Closes all databases managed by HistoryBackend. Commits any pending
   // transactions.

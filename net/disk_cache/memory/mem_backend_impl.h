@@ -36,7 +36,9 @@ namespace disk_cache {
 
 // This class implements the Backend interface. An object of this class handles
 // the operations of the cache without writing to disk.
-class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
+class NET_EXPORT_PRIVATE MemBackendImpl final
+    : public Backend,
+      public base::MemoryPressureListener {
  public:
   explicit MemBackendImpl(net::NetLog* net_log);
 
@@ -139,7 +141,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   void EvictTill(int target_size);
 
   // Called when we get low on memory.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   raw_ptr<base::Clock> custom_clock_for_testing_ = nullptr;  // usually nullptr.
 

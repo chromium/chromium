@@ -49,7 +49,8 @@ class TestDiscardableSharedMemoryManager;
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
-      public base::CurrentThread::DestructionObserver {
+      public base::CurrentThread::DestructionObserver,
+      public base::MemoryPressureListener {
  public:
   DiscardableSharedMemoryManager();
 
@@ -158,9 +159,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // Invalidate weak pointers for the mojo thread.
   void InvalidateMojoThreadWeakPtrs(base::WaitableEvent* event);
 
-  // Virtual for tests.
-  virtual void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void HandleMemoryPressureOnSequence(
       base::MemoryPressureLevel memory_pressure_level);

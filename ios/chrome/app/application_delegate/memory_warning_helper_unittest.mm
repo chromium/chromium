@@ -14,7 +14,8 @@
 using previous_session_info_constants::
     kDidSeeMemoryWarningShortlyBeforeTerminating;
 
-class MemoryWarningHelperTest : public PlatformTest {
+class MemoryWarningHelperTest : public PlatformTest,
+                                public base::MemoryPressureListener {
  public:
   MemoryWarningHelperTest(const MemoryWarningHelperTest&) = delete;
   MemoryWarningHelperTest& operator=(const MemoryWarningHelperTest&) = delete;
@@ -27,9 +28,7 @@ class MemoryWarningHelperTest : public PlatformTest {
     // is correct.
     memory_pressure_listener_registration_.reset(
         new base::SyncMemoryPressureListenerRegistration(
-            base::MemoryPressureListenerTag::kTest,
-            base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
-                                base::Unretained(this))));
+            base::MemoryPressureListenerTag::kTest, this));
     memory_pressure_level_ = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   }
 
@@ -45,7 +44,8 @@ class MemoryWarningHelperTest : public PlatformTest {
   }
 
   // Callback for `memory_pressure_listener_`.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     memory_pressure_level_ = memory_pressure_level;
   }
 

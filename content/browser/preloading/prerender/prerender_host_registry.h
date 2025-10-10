@@ -70,7 +70,9 @@ struct PrerenderAttributes;
 //   activation start by ReserveHostToActivate(), activate it by
 //   ActivateReservedHost(), and notify the registry of completion of the
 //   activation by OnActivationFinished().
-class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
+class CONTENT_EXPORT PrerenderHostRegistry
+    : public WebContentsObserver,
+      public base::MemoryPressureListener {
  public:
   // The time to allow prerendering kept alive in the background. All the hosts
   // that this PrerenderHostRegistry holds will be terminated when the timer
@@ -356,7 +358,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       GURL back_url,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void RecordPotentialPrerenderProcessReuse(bool has_machable_hosts,
                                             const GURL& naivgation_url);

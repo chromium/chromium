@@ -71,7 +71,8 @@ enum class NoSpareRendererReason {
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver,
-      public performance_scenarios::PerformanceScenarioObserver {
+      public performance_scenarios::PerformanceScenarioObserver,
+      public base::MemoryPressureListener {
  public:
   SpareRenderProcessHostManagerImpl();
   ~SpareRenderProcessHostManagerImpl() override;
@@ -189,7 +190,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   bool DestroyTimerWillFireBefore(base::TimeDelta timeout);
 
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // When the system is under memory pressure, this function is called every 5
   // minutes to determine when it ends.

@@ -51,7 +51,8 @@ class ShareableFileReference;
 // * Maintaining an LRU of memory items to choose candidates to page to disk
 //   (NotifyMemoryItemsUsed).
 // This class can only be interacted with on the IO thread.
-class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
+class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController
+    : public base::MemoryPressureListener {
  public:
   enum class Strategy {
     // We don't have enough memory for this blob.
@@ -122,7 +123,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   BlobMemoryController(const BlobMemoryController&) = delete;
   BlobMemoryController& operator=(const BlobMemoryController&) = delete;
 
-  ~BlobMemoryController();
+  ~BlobMemoryController() override;
 
   // Disables file paging. This cancels all pending file creations and paging
   // operations. Reason is recorded in UMA.
@@ -252,7 +253,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
       size_t total_items_size,
       std::pair<FileCreationInfo, int64_t /* avail_disk */> result);
 
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void GrantMemoryAllocations(
       std::vector<scoped_refptr<ShareableBlobDataItem>>* items,

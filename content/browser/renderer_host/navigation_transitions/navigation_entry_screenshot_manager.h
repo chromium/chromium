@@ -30,7 +30,8 @@ class NavigationEntryScreenshotCacheEvictor;
 // share the same manager. The manager should only be accessed by the
 // `NavigationEntryScreenshotCache` and tests.
 class CONTENT_EXPORT NavigationEntryScreenshotManager
-    : public display::DisplayObserver {
+    : public display::DisplayObserver,
+      public base::MemoryPressureListener {
  public:
   NavigationEntryScreenshotManager();
   NavigationEntryScreenshotManager(const NavigationEntryScreenshotManager&) =
@@ -96,7 +97,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager
 
   // Used by `listener_`. When the system memory is under critical pressure, all
   // screenshots under this `Profile` are purged.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
   FRIEND_TEST_ALL_PREFIXES(NavigationEntryScreenshotCacheTest,
                            OnMemoryPressureCritical);
 

@@ -34,12 +34,9 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnUserAction,
                               base::Unretained(this))),
       memory_pressure_listener_registration_(
-          std::make_unique<base::MemoryPressureListenerRegistration>(
-              FROM_HERE,
-              base::MemoryPressureListenerTag::kApplicationBreadcrumbsLogger,
-              base::BindRepeating(
-                  &ApplicationBreadcrumbsLogger::OnMemoryPressure,
-                  base::Unretained(this)))),
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kApplicationBreadcrumbsLogger,
+          this),
 #if defined(TOOLKIT_VIEWS)
       any_widget_observer_(views::AnyWidgetPasskey{}),
 #endif  // TOOLKIT_VIEWS

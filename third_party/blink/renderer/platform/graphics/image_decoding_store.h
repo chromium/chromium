@@ -212,14 +212,15 @@ struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
 //
 // All public methods can be used on any thread.
 
-class PLATFORM_EXPORT ImageDecodingStore final {
+class PLATFORM_EXPORT ImageDecodingStore final
+    : public base::MemoryPressureListener {
   USING_FAST_MALLOC(ImageDecodingStore);
 
  public:
   ImageDecodingStore();
   ImageDecodingStore(const ImageDecodingStore&) = delete;
   ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
-  ~ImageDecodingStore();
+  ~ImageDecodingStore() override;
 
   static ImageDecodingStore& Instance();
 
@@ -254,7 +255,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void Prune();
 
   // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // These helper methods are called while |lock_| is held.
   template <class T, class U, class V>

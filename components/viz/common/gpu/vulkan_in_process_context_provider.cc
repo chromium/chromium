@@ -80,8 +80,7 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
           base::MemoryPressureListenerTag::kVulkanInProcessContextProvider,
-          base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
-                              base::Unretained(this)));
+          this);
 }
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {

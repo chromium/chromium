@@ -335,9 +335,7 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSpareRenderProcessHostManagerImpl,
-          base::BindRepeating(
-              &SpareRenderProcessHostManagerImpl::OnMemoryPressure,
-              base::Unretained(this))),
+          this),
       check_memory_pressure_timer_(
           FROM_HERE,
           base::Minutes(5),

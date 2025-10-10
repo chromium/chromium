@@ -50,8 +50,7 @@ SSLClientSessionCache::SSLClientSessionCache(const Config& config)
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kSSLClientSessionCache,
-          base::BindRepeating(&SSLClientSessionCache::OnMemoryPressure,
-                              base::Unretained(this)));
+          this);
 }
 
 SSLClientSessionCache::~SSLClientSessionCache() {

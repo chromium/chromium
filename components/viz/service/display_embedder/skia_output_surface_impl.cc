@@ -104,8 +104,8 @@ namespace {
 
 // Records memory dumps and responds to memory pressure signals for Graphite Viz
 // via a global object.
-class GraphiteVizMemoryAssistant
-    : public base::trace_event::MemoryDumpProvider {
+class GraphiteVizMemoryAssistant : public base::trace_event::MemoryDumpProvider,
+                                   public base::MemoryPressureListener {
  public:
   static GraphiteVizMemoryAssistant& GetInstance() {
     static base::NoDestructor<GraphiteVizMemoryAssistant> instance;
@@ -125,8 +125,7 @@ class GraphiteVizMemoryAssistant
 
       memory_pressure_listener_registration_.emplace(
           FROM_HERE, base::MemoryPressureListenerTag::kSkiaOutputSurfaceImpl,
-          base::BindRepeating(&GraphiteVizMemoryAssistant::HandleMemoryPressure,
-                              base::Unretained(this)));
+          this);
     }
     num_clients_++;
   }
@@ -191,7 +190,8 @@ class GraphiteVizMemoryAssistant
     return true;
   }
 
-  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     switch (memory_pressure_level) {
       case base::MEMORY_PRESSURE_LEVEL_NONE:
         return;

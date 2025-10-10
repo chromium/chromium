@@ -37,7 +37,8 @@ class WorkingSetTrimmerPolicyChromeOSTest;
 // all frames frozen, additionally it will add working set trim under memory
 // pressure.
 class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
-                                        chromeos::PowerManagerClient::Observer {
+                                        chromeos::PowerManagerClient::Observer,
+                                        public base::MemoryPressureListener {
  public:
   // A delegate interface for checking ARCVM status. This interface allows us 1)
   // to test WorkingSetTrimmerPolicyChromeOS more easily, and 2) to have all the
@@ -103,8 +104,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
  protected:
   friend class WorkingSetTrimmerPolicyChromeOSTest;
 
-  // virtual for testing
-  virtual void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
   virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
 
   void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }

@@ -121,7 +121,8 @@ class CONTENT_EXPORT RenderThreadImpl
       public ChildThreadImpl,
       public mojom::Renderer,
       public viz::mojom::CompositingModeWatcher,
-      public base::trace_event::TraceLog::AsyncEnabledStateObserver {
+      public base::trace_event::TraceLog::AsyncEnabledStateObserver,
+      public base::MemoryPressureListener {
  public:
   static RenderThreadImpl* current();
 
@@ -423,7 +424,8 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetIsIsolatedContext(bool value) override;
   void SetWebUIResourceUrlToCodeCacheMap(
       const base::flat_map<GURL, int>& resource_map) override;
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   bool RendererIsHidden() const;
   void OnRendererHidden();

@@ -118,9 +118,7 @@ StagingBufferPool::StagingBufferPool(
 
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kStagingBufferPool,
-          base::BindRepeating(&StagingBufferPool::OnMemoryPressure,
-                              weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, base::MemoryPressureListenerTag::kStagingBufferPool, this);
 
   reduce_memory_usage_callback_ = base::BindRepeating(
       &StagingBufferPool::ReduceMemoryUsage, weak_ptr_factory_.GetWeakPtr());

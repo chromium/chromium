@@ -230,7 +230,7 @@ bool CompositorGpuThread::Initialize() {
   return init_succeeded_;
 }
 
-void CompositorGpuThread::HandleMemoryPressure(
+void CompositorGpuThread::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
@@ -256,8 +256,7 @@ void CompositorGpuThread::Init() {
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kCompositorGpuThread,
-          base::BindRepeating(&CompositorGpuThread::HandleMemoryPressure,
-                              base::Unretained(this))),
+          this),
   init_succeeded_ = true;
 }
 

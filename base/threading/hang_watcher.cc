@@ -609,8 +609,7 @@ HangWatcher::HangWatcher()
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kHangWatcher,
-          base::BindRepeating(&HangWatcher::OnMemoryPressure,
-                              base::Unretained(this))) {
+          this) {
   // |thread_checker_| should not be bound to the constructing thread.
   DETACH_FROM_THREAD(hang_watcher_thread_checker_);
 

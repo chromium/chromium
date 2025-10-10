@@ -10,12 +10,12 @@
 
 namespace base {
 
-class MockMemoryPressureListener {
+class MockMemoryPressureListener : public MemoryPressureListener {
  public:
   MockMemoryPressureListener();
-  ~MockMemoryPressureListener();
+  ~MockMemoryPressureListener() override;
 
-  MOCK_METHOD(void, OnMemoryPressure, (base::MemoryPressureLevel));
+  MOCK_METHOD(void, OnMemoryPressure, (base::MemoryPressureLevel), (override));
 };
 
 // Same as MockMemoryPressureListener, but automatically registers with the
@@ -23,7 +23,7 @@ class MockMemoryPressureListener {
 class RegisteredMockMemoryPressureListener : public MockMemoryPressureListener {
  public:
   RegisteredMockMemoryPressureListener();
-  ~RegisteredMockMemoryPressureListener();
+  ~RegisteredMockMemoryPressureListener() override;
 
  private:
   SyncMemoryPressureListenerRegistration registration_;
@@ -34,7 +34,7 @@ class RegisteredMockAsyncMemoryPressureListener
     : public MockMemoryPressureListener {
  public:
   RegisteredMockAsyncMemoryPressureListener();
-  ~RegisteredMockAsyncMemoryPressureListener();
+  ~RegisteredMockAsyncMemoryPressureListener() override;
 
  private:
   AsyncMemoryPressureListenerRegistration registration_;

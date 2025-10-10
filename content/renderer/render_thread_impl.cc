@@ -598,9 +598,7 @@ void RenderThreadImpl::Init() {
           ->BelongsToCurrentThread()) {
     memory_pressure_listener_registration_ =
         std::make_unique<base::SyncMemoryPressureListenerRegistration>(
-            base::MemoryPressureListenerTag::kRenderThreadImpl,
-            base::BindRepeating(&RenderThreadImpl::OnMemoryPressure,
-                                base::Unretained(this)));
+            base::MemoryPressureListenerTag::kRenderThreadImpl, this);
   }
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();

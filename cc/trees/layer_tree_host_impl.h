@@ -142,7 +142,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public MutatorHostClient,
                                     public ImageAnimationController::Client,
                                     public CompositorDelegateForInput,
-                                    public EventLatencyTracker {
+                                    public EventLatencyTracker,
+                                    public base::MemoryPressureListener {
  public:
   // This structure is used to build all the state required for producing a
   // single CompositorFrame. The |render_passes| list becomes the set of
@@ -1062,7 +1063,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // active tree.
   void ActivateStateForImages();
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   void AllocateLocalSurfaceId();
 

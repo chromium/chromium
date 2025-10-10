@@ -174,9 +174,7 @@ void GpuChildThread::Init(
 
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread,
-          base::BindRepeating(&GpuChildThread::OnMemoryPressure,
-                              base::Unretained(this)));
+          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread, this);
   if (sequence_manager &&
       base::FeatureList::IsEnabled(
           features::kBoostThreadsPriorityDuringInputScenario)) {

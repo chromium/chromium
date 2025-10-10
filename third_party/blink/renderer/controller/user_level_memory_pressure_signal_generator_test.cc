@@ -101,9 +101,12 @@ class DummyMainThreadScheduler : public MainThreadScheduler {
   void SetRendererBackgroundedForTesting(bool) override {}
 };
 
-class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
+class UserLevelMemoryPressureSignalGeneratorTest
+    : public testing::Test,
+      public base::MemoryPressureListener {
  public:
   UserLevelMemoryPressureSignalGeneratorTest() = default;
+  ~UserLevelMemoryPressureSignalGeneratorTest() override = default;
 
   void SetUp() override {
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -114,12 +117,9 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
     // If SequencedTaskRunner::HasCurrentDefault() returns true, async
     // OnMemoryPressure() is available, but the test environment seems not
     // to initialize it.
-    memory_pressure_listener_registration_ = std::make_unique<
-        base::SyncMemoryPressureListenerRegistration>(
-        base::MemoryPressureListenerTag::kTest,
-        blink::BindRepeating(
-            &UserLevelMemoryPressureSignalGeneratorTest::OnSyncMemoryPressure,
-            base::Unretained(this)));
+    memory_pressure_listener_registration_ =
+        std::make_unique<base::SyncMemoryPressureListenerRegistration>(
+            base::MemoryPressureListenerTag::kTest, this);
     base::MemoryPressureListener::SetNotificationsSuppressed(false);
     memory_pressure_count_ = 0;
   }
@@ -147,7 +147,7 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
   unsigned memory_pressure_count_ = 0;
 
  private:
-  void OnSyncMemoryPressure(base::MemoryPressureLevel) {
+  void OnMemoryPressure(base::MemoryPressureLevel) override {
     ++memory_pressure_count_;
   }
 };

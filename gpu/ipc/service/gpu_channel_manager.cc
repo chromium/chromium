@@ -360,8 +360,7 @@ GpuChannelManager::GpuChannelManager(
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kGpuChannelManager,
-          base::BindRepeating(&GpuChannelManager::HandleMemoryPressure,
-                              base::Unretained(this))),
+          this),
       dawn_caching_interface_factory_(dawn_caching_interface_factory),
       vulkan_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
@@ -820,7 +819,7 @@ void GpuChannelManager::PerformImmediateCleanup() {
 #endif
 }
 
-void GpuChannelManager::HandleMemoryPressure(
+void GpuChannelManager::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

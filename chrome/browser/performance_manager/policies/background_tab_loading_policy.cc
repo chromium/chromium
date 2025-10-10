@@ -152,8 +152,7 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBackgroundTabLoadingPolicy,
-          base::BindRepeating(&BackgroundTabLoadingPolicy::OnMemoryPressure,
-                              base::Unretained(this))) {
+          this) {
   DCHECK(!g_background_tab_loading_policy);
   g_background_tab_loading_policy = this;
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(

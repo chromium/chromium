@@ -55,7 +55,12 @@ class CATransactionGPUCoordinator;
 #endif
 
 class GpuProcessHost final : public BrowserChildProcessHostDelegate,
-                             public viz::GpuHostImpl::Delegate {
+                             public viz::GpuHostImpl::Delegate
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                             public base::MemoryPressureListener
+#endif
+{
  public:
   static int GetGpuCrashCount();
 
@@ -213,8 +218,8 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
   void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Memory pressure handler, called by |memory_pressure_listener_|.
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 #endif
 
   // The serial number of the GpuProcessHost.

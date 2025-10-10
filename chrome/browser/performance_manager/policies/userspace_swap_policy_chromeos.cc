@@ -72,9 +72,7 @@ void UserspaceSwapPolicy::OnPassedToGraph(Graph* graph) {
   // moderate pressure is enabled.
   if (config_->swap_on_moderate_pressure) {
     memory_pressure_listener_registration_.emplace(
-        FROM_HERE, base::MemoryPressureListenerTag::kUserspaceSwapPolicy,
-        base::BindRepeating(&UserspaceSwapPolicy::OnMemoryPressure,
-                            base::Unretained(this)));
+        FROM_HERE, base::MemoryPressureListenerTag::kUserspaceSwapPolicy, this);
   }
 }
 

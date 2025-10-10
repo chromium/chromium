@@ -426,14 +426,12 @@ class SimpleCache : public network::mojom::SimpleCache {
 
 class NetworkServiceTestHelper::NetworkServiceTestImpl
     : public network::mojom::NetworkServiceTest,
-      public base::CurrentThread::DestructionObserver {
+      public base::CurrentThread::DestructionObserver,
+      public base::MemoryPressureListener {
  public:
   NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
     memory_pressure_listener_registration_.emplace(
-        base::MemoryPressureListenerTag::kTest,
-        base::BindRepeating(
-            &NetworkServiceTestHelper::NetworkServiceTestImpl::OnMemoryPressure,
-            weak_factory_.GetWeakPtr()));
+        base::MemoryPressureListenerTag::kTest, this);
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kUseMockCertVerifierForTesting)) {
@@ -806,7 +804,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
  private:
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     latest_memory_pressure_level_ = memory_pressure_level;
   }
 

@@ -32,7 +32,9 @@ namespace viz {
 
 class VulkanContextProvider;
 
-class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
+class VIZ_SERVICE_EXPORT CompositorGpuThread
+    : public base::Thread,
+      public base::MemoryPressureListener {
  public:
   using GetVideoMemoryUsageStatsCallback =
       base::OnceCallback<void(const ::gpu::VideoMemoryUsageStats&)>;
@@ -91,7 +93,8 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
 
   bool Initialize();
 
-  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
   void OnBackgroundedOnCompositorGpuThread();
 
   raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;

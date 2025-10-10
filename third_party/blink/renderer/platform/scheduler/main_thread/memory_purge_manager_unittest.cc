@@ -15,7 +15,8 @@ namespace blink {
 
 namespace {
 
-class MemoryPurgeManagerTest : public testing::Test {
+class MemoryPurgeManagerTest : public testing::Test,
+                               public base::MemoryPressureListener {
  public:
   MemoryPurgeManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
@@ -27,9 +28,7 @@ class MemoryPurgeManagerTest : public testing::Test {
   void SetUp() override {
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kTest,
-            base::BindRepeating(&MemoryPurgeManagerTest::OnMemoryPressure,
-                                base::Unretained(this)));
+            FROM_HERE, base::MemoryPressureListenerTag::kTest, this);
     base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
 
@@ -55,7 +54,9 @@ class MemoryPurgeManagerTest : public testing::Test {
   unsigned memory_pressure_count_ = 0;
 
  private:
-  void OnMemoryPressure(base::MemoryPressureLevel) { memory_pressure_count_++; }
+  void OnMemoryPressure(base::MemoryPressureLevel) override {
+    memory_pressure_count_++;
+  }
 };
 
 // Verify that OnPageFrozen() triggers a memory pressure notification in a

@@ -127,8 +127,7 @@ NetworkServiceClient::NetworkServiceClient()
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kNetworkServiceClient,
-            base::BindRepeating(&NetworkServiceClient::OnMemoryPressure,
-                                base::Unretained(this)));
+            this);
   }
 
   webrtc_connections_observer_ =

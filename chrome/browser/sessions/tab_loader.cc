@@ -204,8 +204,7 @@ TabLoader::TabLoader()
     : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kTabLoader,
-          base::BindRepeating(&TabLoader::OnMemoryPressure,
-                              base::Unretained(this))),
+          this),
       clock_(GetDefaultTickClock()) {
   shared_tab_loader_ = this;
   this_retainer_ = this;

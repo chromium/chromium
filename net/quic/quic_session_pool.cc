@@ -544,9 +544,7 @@ QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
   DCHECK(quic_session_pool_);
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kQuicSessionPool,
-          base::BindRepeating(&QuicCryptoClientConfigOwner::OnMemoryPressure,
-                              base::Unretained(this)));
+          FROM_HERE, base::MemoryPressureListenerTag::kQuicSessionPool, this);
   config_.set_preferred_groups(
       quic_session_pool_->ssl_config_service_->GetSSLContextConfig()
           .GetSupportedGroups());

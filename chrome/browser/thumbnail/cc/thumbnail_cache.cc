@@ -93,9 +93,7 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   memory_pressure_listener_registration_ =
       std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kThumbnailCache,
-          base::BindRepeating(&ThumbnailCache::OnMemoryPressure,
-                              base::Unretained(this)));
+          FROM_HERE, base::MemoryPressureListenerTag::kThumbnailCache, this);
   ScheduleRecordCacheMetrics(base::Minutes(1));
 }
 

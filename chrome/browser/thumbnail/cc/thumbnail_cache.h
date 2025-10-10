@@ -48,7 +48,7 @@ class ThumbnailCacheObserver {
   virtual void OnFinishedThumbnailRead(TabId tab_id) = 0;
 };
 
-class ThumbnailCache : ThumbnailDelegate {
+class ThumbnailCache : ThumbnailDelegate, public base::MemoryPressureListener {
  public:
   ThumbnailCache(size_t default_cache_size,
                  size_t compression_queue_max_size,
@@ -159,7 +159,7 @@ class ThumbnailCache : ThumbnailDelegate {
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   // Default priority as most of the time there is a placeholder available.
   const scoped_refptr<base::SequencedTaskRunner>

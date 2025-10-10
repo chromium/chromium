@@ -48,8 +48,7 @@ MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kMemBackend,
-          base::BindRepeating(&MemBackendImpl::OnMemoryPressure,
-                              base::Unretained(this))) {}
+          this) {}
 
 MemBackendImpl::~MemBackendImpl() {
   while (!entries_.empty())

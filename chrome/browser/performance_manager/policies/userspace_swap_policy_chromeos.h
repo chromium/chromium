@@ -25,7 +25,9 @@ namespace performance_manager::policies {
 
 // UserspaceSwapPolicy is a policy which will trigger a renderer to swap itself
 // via userspace.
-class UserspaceSwapPolicy : public GraphOwned, public ProcessNodeObserver {
+class UserspaceSwapPolicy : public GraphOwned,
+                            public ProcessNodeObserver,
+                            public base::MemoryPressureListener {
  public:
   UserspaceSwapPolicy();
 
@@ -94,7 +96,7 @@ class UserspaceSwapPolicy : public GraphOwned, public ProcessNodeObserver {
   base::ByteCount backing_store_available_bytes_;
 
  private:
-  void OnMemoryPressure(base::MemoryPressureLevel new_level);
+  void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
 
   // A helper method which sets the last trim time to the specified time.
   void SetLastSwapTime(const ProcessNode* process_node, base::TimeTicks time);

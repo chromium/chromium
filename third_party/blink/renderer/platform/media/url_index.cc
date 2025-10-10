@@ -263,7 +263,7 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kMediaUrlIndex,
-          blink::BindRepeating(&UrlIndex::OnMemoryPressure, Unretained(this))),
+          this),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() = default;

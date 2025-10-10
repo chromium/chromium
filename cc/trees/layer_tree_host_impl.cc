@@ -544,8 +544,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     memory_pressure_listener_registration_ =
         std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kLayerTreeHostImpl,
-            base::BindRepeating(&LayerTreeHostImpl::OnMemoryPressure,
-                                base::Unretained(this)));
+            this);
   }
 
   SetDebugState(settings.initial_debug_state);

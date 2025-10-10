@@ -81,7 +81,8 @@ enum class GlicPrewarmingFreSource {
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
-                         public Host::InstanceDelegate {
+                         public Host::InstanceDelegate,
+                         public base::MemoryPressureListener {
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -248,7 +249,7 @@ class GlicKeyedService : public KeyedService,
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   HostManager& host_manager();
   GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {

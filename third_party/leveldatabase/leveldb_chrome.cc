@@ -52,7 +52,7 @@ std::string GetDumpNameForMemEnv(const leveldb::Env* memenv) {
 }
 
 // Singleton owning resources shared by Chrome's leveldb databases.
-class Globals {
+class Globals : public base::MemoryPressureListener {
  public:
   static Globals* GetInstance() {
     static base::NoDestructor<Globals> singleton;
@@ -71,11 +71,12 @@ class Globals {
         memory_pressure_listener_registration_(
             FROM_HERE,
             base::MemoryPressureListenerTag::kLevelDb,
-            base::BindRepeating(&Globals::OnMemoryPressure,
-                                base::Unretained(this))) {}
+            this) {}
 
   Globals(const Globals&) = delete;
   Globals& operator=(const Globals&) = delete;
+
+  ~Globals() override = default;
 
   Cache* web_block_cache() const {
     if (web_block_cache_)
@@ -86,7 +87,7 @@ class Globals {
   Cache* browser_block_cache() const { return browser_block_cache_.get(); }
 
   // Called when the system is under memory pressure.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) override {
     if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE)
       return;
     browser_block_cache()->Prune();
@@ -116,9 +117,6 @@ class Globals {
                           base::trace_event::ProcessMemoryDump* pmd);
 
  private:
-  // Instances are never destroyed.
-  ~Globals() = delete;
-
   std::unique_ptr<Cache> web_block_cache_;      // null on low end devices.
   std::unique_ptr<Cache> browser_block_cache_;  // Never null.
   mutable leveldb::port::Mutex env_mutex_;

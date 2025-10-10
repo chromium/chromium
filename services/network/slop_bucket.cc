@@ -225,7 +225,7 @@ class SlopBucket::Configuration {
 // SlopBucketManager tracks global state for SlopBuckets. It is thread-hostile.
 // TODO(ricea): Make this be owned by the NetworkService so that it can function
 // correctly if there are multiple NetworkServices on different threads.
-class SlopBucket::Manager {
+class SlopBucket::Manager : public base::MemoryPressureListener {
  public:
   // Prevent accidental use of the constructor.
   using PassKey = base::PassKey<Manager>;
@@ -256,13 +256,13 @@ class SlopBucket::Manager {
     // This use of base::Unretained() is safe because the callback won't be
     // called after `memory_pressure_listener_` is destroyed.
     memory_pressure_listener_registration_.emplace(
-        FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket,
-        base::BindRepeating(&Manager::OnMemoryPressure,
-                            base::Unretained(this)));
+        FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket, this);
   }
 
   Manager(const Manager&) = delete;
   Manager& operator=(const Manager&) = delete;
+
+  ~Manager() override = default;
 
   // True if SlopBucket is disabled, either by configuration or lack of memory.
   bool disabled() const {
@@ -392,7 +392,7 @@ class SlopBucket::Manager {
 
   // Responds to a memory pressure notification by emptying the free pool and
   // possibly disabling SlopBucket.
-  void OnMemoryPressure(base::MemoryPressureLevel level) {
+  void OnMemoryPressure(base::MemoryPressureLevel level) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
       return;

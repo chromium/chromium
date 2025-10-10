@@ -98,8 +98,7 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedDictionaryStorageOnDisk,
-          base::BindRepeating(&SharedDictionaryStorageOnDisk::OnMemoryPressure,
-                              weak_factory_.GetWeakPtr()));
+          this);
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
       base::BindOnce(

@@ -47,8 +47,7 @@ ImageDecodingStore::ImageDecodingStore()
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kImageDecodingStore,
-          blink::BindRepeating(&ImageDecodingStore::OnMemoryPressure,
-                               blink::Unretained(this))) {}
+          this) {}
 
 ImageDecodingStore::~ImageDecodingStore() {
 #if DCHECK_IS_ON()

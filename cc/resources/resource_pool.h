@@ -43,7 +43,8 @@ class RasterContextProvider;
 
 namespace cc {
 
-class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
+class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
+                               public base::MemoryPressureListener {
   class PoolResource;
 
  public:
@@ -286,7 +287,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   size_t GetTotalMemoryUsageForTesting() const {
     return total_memory_usage_bytes_;

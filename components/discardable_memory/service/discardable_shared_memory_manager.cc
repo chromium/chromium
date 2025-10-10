@@ -236,8 +236,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kDiscardableSharedMemoryManager,
-          base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
-                              base::Unretained(this))),
+          this),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::WithBaseSyncPrimitives()})) {
   DCHECK(!g_instance)

@@ -163,9 +163,7 @@ GlicKeyedService::GlicKeyedService(
 
   memory_pressure_listener_registration_ =
       std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
-          base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
-                              weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService, this);
   if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
     share_image_handler_ = std::make_unique<GlicShareImageHandler>(*this);
   }

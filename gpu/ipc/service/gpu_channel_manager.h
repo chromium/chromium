@@ -82,7 +82,8 @@ class DawnCachingInterfaceFactory;
 // managing the lifetimes of GPU channels and forwarding IPC requests from the
 // browser process to them based on the corresponding renderer ID.
 class GPU_IPC_SERVICE_EXPORT GpuChannelManager
-    : public raster::GrShaderCache::Client {
+    : public raster::GrShaderCache::Client,
+      public base::MemoryPressureListener {
  public:
   GpuChannelManager(
       const GpuPreferences& gpu_preferences,
@@ -299,7 +300,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void DoWakeUpGpu();
 #endif
 
-  void HandleMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // These objects manage channels to individual renderer processes. There is
   // one channel for each renderer process that has connected to this GPU

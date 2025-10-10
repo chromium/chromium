@@ -134,8 +134,7 @@ BFCachePolicy::BFCachePolicy()
     : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBFCachePolicy,
-          base::BindRepeating(&BFCachePolicy::OnMemoryPressure,
-                              base::Unretained(this))) {}
+          this) {}
 
 BFCachePolicy::~BFCachePolicy() = default;
 

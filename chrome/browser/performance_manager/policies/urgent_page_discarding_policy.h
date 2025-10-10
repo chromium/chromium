@@ -19,7 +19,8 @@ namespace performance_manager {
 namespace policies {
 
 // Urgently discard a tab when receiving a memory pressure signal.
-class UrgentPageDiscardingPolicy : public GraphOwned {
+class UrgentPageDiscardingPolicy : public GraphOwned,
+                                   public base::MemoryPressureListener {
  public:
   UrgentPageDiscardingPolicy();
   ~UrgentPageDiscardingPolicy() override;
@@ -35,7 +36,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned {
   static void DisableForTesting();
 
  private:
-  void OnMemoryPressure(base::MemoryPressureLevel new_level);
+  void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
 
   // Callback called when a discard attempt has completed.
   void PostDiscardAttemptCallback(bool success);

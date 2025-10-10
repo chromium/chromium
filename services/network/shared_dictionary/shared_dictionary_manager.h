@@ -43,7 +43,8 @@ class SharedDictionaryStorage;
 
 // This class is attached to NetworkContext and manages the dictionaries for
 // CompressionDictionaryTransport feature.
-class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
+class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager
+    : public base::MemoryPressureListener {
  public:
   // Returns a SharedDictionaryManager which keeps the whole dictionary
   // information in memory.
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   SharedDictionaryManager(const SharedDictionaryManager&) = delete;
   SharedDictionaryManager& operator=(const SharedDictionaryManager&) = delete;
 
-  virtual ~SharedDictionaryManager();
+  ~SharedDictionaryManager() override;
 
   // Returns a SharedDictionaryStorage for the `isolation_key`.
   scoped_refptr<SharedDictionaryStorage> GetStorage(
@@ -136,7 +137,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   size_t GetStorageCountForTesting();
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   void DeletePreloadedDictionaries(
       PreloadedDictionaries* preloaded_dictionaries);

@@ -121,8 +121,7 @@ OnDeviceTailModelService::OnDeviceTailModelService(
   memory_pressure_listener_registration_ =
       std::make_unique<base::MemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kOnDeviceTailModelService,
-          base::BindRepeating(&OnDeviceTailModelService::OnMemoryPressure,
-                              weak_ptr_factory_.GetWeakPtr()));
+          this);
 }
 
 OnDeviceTailModelService::OnDeviceTailModelService()

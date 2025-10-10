@@ -37,7 +37,8 @@ class SharedDictionaryCache;
 class SharedDictionaryManagerOnDisk;
 
 // A SharedDictionaryStorage which is managed by SharedDictionaryManagerOnDisk.
-class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
+class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
+                                      public base::MemoryPressureListener {
  public:
   class WrappedDictionaryInfo : public net::SharedDictionaryInfo {
    public:
@@ -131,7 +132,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   const std::map<
       url::SchemeHostPort,

@@ -229,8 +229,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
     memory_pressure_listener_registration_ =
         std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kHttpNetworkSession,
-            base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
-                                base::Unretained(this)));
+            this);
   }
 
   http_stream_pool_ = std::make_unique<HttpStreamPool>(

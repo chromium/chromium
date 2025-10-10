@@ -40,14 +40,14 @@ class DirectoryKey;
 
 // Class to facilitate a player creating and communicating with an instance of
 // PaintPreviewCompositor.
-class PlayerCompositorDelegate {
+class PlayerCompositorDelegate : public base::MemoryPressureListener {
  public:
   enum PressureLevelCount : size_t {
     kLevels = base::MemoryPressureLevel::kMaxValue + 1,
   };
 
   PlayerCompositorDelegate();
-  virtual ~PlayerCompositorDelegate();
+  ~PlayerCompositorDelegate() override;
 
   PlayerCompositorDelegate(const PlayerCompositorDelegate&) = delete;
   PlayerCompositorDelegate& operator=(const PlayerCompositorDelegate&) = delete;
@@ -107,8 +107,8 @@ class PlayerCompositorDelegate {
 
   // Called when under memory pressure. The default implementation kills the
   // compositor service and client under critical pressure.
-  virtual void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   gfx::Point GetRootFrameOffsets() const { return root_frame_offsets_; }
 

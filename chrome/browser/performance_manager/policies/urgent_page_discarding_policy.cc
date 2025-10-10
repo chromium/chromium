@@ -41,8 +41,7 @@ UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
     : memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
-          base::BindRepeating(&UrgentPageDiscardingPolicy::OnMemoryPressure,
-                              base::Unretained(this))) {}
+          this) {}
 UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {

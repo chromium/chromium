@@ -105,8 +105,7 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
   memory_pressure_listener_registration_ =
       std::make_unique<base::MemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
-          base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
-                              base::Unretained(this)));
+          this);
 
   // `partition_` can be null in test environments.
   if (!partition_) {

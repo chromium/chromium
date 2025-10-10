@@ -44,7 +44,8 @@ class FrameEvictionManagerClient {
 // clients can lock their frame to prevent it from being discarded, e.g. if the
 // tab is visible, or while capturing a screenshot.
 class VIZ_CLIENT_EXPORT FrameEvictionManager
-    : public base::trace_event::MemoryDumpProvider {
+    : public base::trace_event::MemoryDumpProvider,
+      public base::MemoryPressureListener {
  public:
   // Pauses frame eviction within its scope.
   class VIZ_CLIENT_EXPORT ScopedPause {
@@ -76,7 +77,8 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
 
   // React on memory pressure events to adjust the number of cached frames.
   // Please make this private when crbug.com/443824 has been fixed.
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Purges all unlocked frames, allowing us to reclaim resources.
   void PurgeAllUnlockedFrames();

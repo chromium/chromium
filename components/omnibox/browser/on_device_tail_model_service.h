@@ -18,7 +18,8 @@
 // The key service holds on device tail model executor and its model observer.
 class OnDeviceTailModelService
     : public KeyedService,
-      public optimization_guide::OptimizationTargetModelObserver {
+      public optimization_guide::OptimizationTargetModelObserver,
+      public base::MemoryPressureListener {
  public:
   using ResultCallback = base::OnceCallback<void(
       std::vector<OnDeviceTailModelExecutor::Prediction>)>;
@@ -46,7 +47,7 @@ class OnDeviceTailModelService
       ResultCallback result_callback);
 
   // Helper which unloads the executor from memory when memory pressure is high.
-  void OnMemoryPressure(base::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
  private:
   friend class OnDeviceTailModelServiceTest;

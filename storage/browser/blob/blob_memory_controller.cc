@@ -555,8 +555,7 @@ BlobMemoryController::BlobMemoryController(
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kBlobMemoryController,
-          base::BindRepeating(&BlobMemoryController::OnMemoryPressure,
-                              base::Unretained(this))) {}
+          this) {}
 
 BlobMemoryController::~BlobMemoryController() = default;
 

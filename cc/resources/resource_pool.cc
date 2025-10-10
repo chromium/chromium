@@ -188,9 +188,7 @@ ResourcePool::ResourcePool(
       this, "cc::ResourcePool", task_runner_.get());
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kResourcePool,
-          base::BindRepeating(&ResourcePool::OnMemoryPressure,
-                              weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, base::MemoryPressureListenerTag::kResourcePool, this);
 }
 
 ResourcePool::~ResourcePool() {

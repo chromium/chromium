@@ -27,7 +27,7 @@ class ApplicationBreadcrumbsLogger
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
   ApplicationBreadcrumbsLogger& operator=(const ApplicationBreadcrumbsLogger&) =
       delete;
-  ~ApplicationBreadcrumbsLogger();
+  ~ApplicationBreadcrumbsLogger() override;
 
  private:
   // Observes device orientation.

@@ -45,8 +45,7 @@ SharedStorageManager::SharedStorageManager(
       memory_pressure_listener_registration_(
           FROM_HERE,
           base::MemoryPressureListenerTag::kSharedStorageManager,
-          base::BindRepeating(&SharedStorageManager::OnMemoryPressure,
-                              base::Unretained(this))) {
+          this) {
   timer_.Start(FROM_HERE, options_->stale_purge_initial_interval,
                base::BindOnce(&SharedStorageManager::PurgeStale,
                               weak_ptr_factory_.GetWeakPtr()));

@@ -114,8 +114,7 @@ SharedDictionaryManager::SharedDictionaryManager()
   memory_pressure_listener_registration_ =
       std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
           FROM_HERE, base::MemoryPressureListenerTag::kSharedDictionaryManager,
-          base::BindRepeating(&SharedDictionaryManager::OnMemoryPressure,
-                              weak_factory_.GetWeakPtr()));
+          this);
 }
 SharedDictionaryManager::~SharedDictionaryManager() = default;
 
