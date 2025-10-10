@@ -11,15 +11,15 @@ emulator_package {
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-36/google_apis/x86_64"
-  version: "nS1z3ppjuBsshStsL6WRWB4FwUaUN9zjMA7M5baTrxwC"  # (v6) BP22.250325.006
+  version: "ZTEw8um1C8-hBLxgyv3ZdeNaJMiaStgcv5vFp1Ls-MsC"  # (v7) BE2A.250530.026.F3
 }
 system_image_name: "system-images;android-36;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-36/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8705163385740243089
+  # Created in https://ci.chromium.org/ui/b/8702355247321119617
   # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
-  version: "AUbPSGjcJWxf-AKxylFsZTy-CTqb0odgG-5jr6cRNLsC"
+  version: "Dj1HZfDZny8On27fGDYHq704t8MeJXhwaAF-grP2YooC"
 }
 avd_name: "android_36_google_apis_x64"
 
