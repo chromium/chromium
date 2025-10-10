@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_sync_bridge.h"
 #include "components/sync/base/data_type.h"
@@ -21,6 +22,12 @@ namespace autofill {
 namespace {
 constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
     "WALLET_PRIVACY_CONTEXTUAL_SURFACING";
+
+// TODO(crbug.com/441735283): Remove once the rollout starts.
+// Overrides the return value of
+// AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() to true.
+constexpr char kEnableAutofillWalletPrivacyContextualSurfacingForTesting[] =
+    "enable-autofill-wallet-privacy-contextual-surfacing";
 }
 
 AccountSettingService::AccountSettingService(
@@ -30,6 +37,10 @@ AccountSettingService::AccountSettingService(
 AccountSettingService::~AccountSettingService() = default;
 
 bool AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kEnableAutofillWalletPrivacyContextualSurfacingForTesting)) {
+    return true;
+  }
   if (!base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
     return false;
   }
