@@ -365,7 +365,8 @@ class ExtensionTabUtil {
   // Open the extension's options page. Returns true if an options page was
   // successfully opened (though it may not necessarily *load*, e.g. if the
   // URL does not exist).
-  static bool OpenOptionsPage(const Extension* extension, Browser* browser);
+  static bool OpenOptionsPage(const Extension* extension,
+                              BrowserWindowInterface* browser);
 
   // Returns true if the given Browser can report tabs to extensions.
   // Example of Browsers which don't support tabs include apps and devtools.
