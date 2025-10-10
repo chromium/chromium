@@ -404,6 +404,13 @@ const base::FeatureParam<size_t> kGlicActorIncrementalTypingLongTextThreshold{
     &kGlicActorIncrementalTyping,
     "glic-actor-incremental-typing-long-text-threshold", 45};
 
+// When incremental typing is enabled, for even longer text (as defined by this
+// threshold), directly paste the text instead of simulate typing.
+const base::FeatureParam<size_t>
+    kGlicActorIncrementalTypingLongTextPasteThreshold{
+        &kGlicActorIncrementalTyping, "glic-actor-long-text-paste-threshold",
+        200};
+
 // If the TypeTool is invoked with followed_by_enter, the enter key is
 // dispatched with this delay.
 const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{

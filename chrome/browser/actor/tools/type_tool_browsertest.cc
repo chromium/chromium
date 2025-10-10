@@ -70,7 +70,7 @@ class ActorTypeToolBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -800,6 +800,51 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
+class ActorTypeToolBrowserTestWithLongDelay : public ActorTypeToolBrowserTest {
+ public:
+  ActorTypeToolBrowserTestWithLongDelay() {
+    auto [paint_stability_mode, general_page_stability_mode] = GetParam();
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kActorPaintStabilityMode.name,
+          ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
+         {::features::kActorGeneralPageStabilityMode.name,
+          ::features::kActorGeneralPageStabilityMode.GetName(
+              general_page_stability_mode)},
+         {::features::kGlicActorKeyDownDuration.name, "10s"}});
+  }
+};
+
+// Ensure the type tool functions when typing very long string past the paste
+// threshold. The typing delay was set very long so the fact that action
+// finishes before time out indicates the usage of direct paste for long text.
+IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTestWithLongDelay,
+                       TypeTool_IncrementalTypingLongTextPaste) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
+    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
+  }
+
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string typed_string(
+      features::kGlicActorIncrementalTypingLongTextPasteThreshold.Get() + 1ul,
+      'a');
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/false);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
 // Ensure the type tool delays the final enter key by the expected amount.
 IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
@@ -845,6 +890,16 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorTypeToolBrowserTest,
+    testing::Combine(
+        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                        ::features::ActorPaintStabilityMode::kLogOnly,
+                        ::features::ActorPaintStabilityMode::kEnabled),
+        testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
+    ActorTypeToolBrowserTest::DescribeParams);
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorTypeToolBrowserTestWithLongDelay,
     testing::Combine(
         testing::Values(::features::ActorPaintStabilityMode::kDisabled,
                         ::features::ActorPaintStabilityMode::kLogOnly,

@@ -669,6 +669,12 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
 }
 
 bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
+  // Skip typing simulation for very long text.
+  if (action_->text.length() >
+      features::kGlicActorIncrementalTypingLongTextPasteThreshold.Get()) {
+    return false;
+  }
+
   const absl::flat_hash_map<char16_t, Composition>& composition_map =
       GetCompositionMap();
 
