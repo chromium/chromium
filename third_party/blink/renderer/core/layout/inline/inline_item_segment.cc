@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 
 namespace blink {
 

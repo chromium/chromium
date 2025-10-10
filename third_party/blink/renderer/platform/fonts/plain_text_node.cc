@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
@@ -151,6 +151,76 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
 }
 
 }  // namespace
+
+struct CharacterRangeContext {
+  const StringView& text;
+  const bool is_rtl;
+  int from;
+  int to;
+  float current_x;
+  unsigned total_num_characters = 0;
+  std::optional<float> from_x;
+  std::optional<float> to_x;
+  float min_y = 0;
+  float max_y = 0;
+
+  void ComputeRangeIn(const ShapeResult& result, const gfx::RectF& ink_bounds);
+};
+
+void CharacterRangeContext::ComputeRangeIn(const ShapeResult& result,
+                                           const gfx::RectF& ink_bounds) {
+  result.EnsureGraphemes(
+      StringView(text, total_num_characters, result.NumCharacters()));
+  if (is_rtl) {
+    // Convert logical offsets to visual offsets, because results are in
+    // logical order while runs are in visual order.
+    if (!from_x && from >= 0 &&
+        static_cast<unsigned>(from) < result.NumCharacters()) {
+      from = result.NumCharacters() - from - 1;
+    }
+    if (!to_x && to >= 0 &&
+        static_cast<unsigned>(to) < result.NumCharacters()) {
+      to = result.NumCharacters() - to - 1;
+    }
+    current_x -= result.Width();
+  }
+  for (const auto& run : result.RunsOrParts()) {
+    if (!run) {
+      continue;
+    }
+    DCHECK_EQ(is_rtl, run->IsRtl());
+    int num_characters = run->NumCharacters();
+    if (!from_x && from >= 0 && from < num_characters) {
+      from_x = run->XPositionForVisualOffset(from, AdjustMidCluster::kToStart) +
+               current_x;
+    } else {
+      from -= num_characters;
+    }
+
+    if (!to_x && to >= 0 && to < num_characters) {
+      to_x = run->XPositionForVisualOffset(to, AdjustMidCluster::kToEnd) +
+             current_x;
+    } else {
+      to -= num_characters;
+    }
+
+    if (from_x || to_x) {
+      min_y = std::min(min_y, ink_bounds.y());
+      max_y = std::max(max_y, ink_bounds.bottom());
+    }
+
+    if (from_x && to_x) {
+      break;
+    }
+    current_x += run->Width();
+  }
+  if (is_rtl) {
+    current_x -= result.Width();
+  }
+  total_num_characters += result.NumCharacters();
+}
+
+// ================================================================
 
 void PlainTextItem::Trace(Visitor* visitor) const {
   visitor->Trace(shape_result_);
@@ -428,14 +498,14 @@ CharacterRange PlainTextNode::ComputeCharacterRange(
   int from = absolute_from;
   int to = absolute_to;
 
-  ShapeResultBuffer::CharacterRangeContext context{
-      text_content_, is_rtl, from, to, is_rtl ? total_width : 0};
+  CharacterRangeContext context{text_content_, is_rtl, from, to,
+                                is_rtl ? total_width : 0};
   for (const auto& item : item_list_) {
     const ShapeResult* result = item.GetShapeResult();
     if (!result) {
       continue;
     }
-    ShapeResultBuffer::ComputeRangeIn(*result, item.InkBounds(), context);
+    context.ComputeRangeIn(*result, item.InkBounds());
   }
 
   // The position in question might be just after the text.

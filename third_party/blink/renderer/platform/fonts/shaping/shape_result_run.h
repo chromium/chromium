@@ -89,6 +89,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   unsigned NumCharacters() const { return num_characters_; }
+  float Width() const { return width_; }
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool HasLigatures() const { return NumGlyphs() < num_characters_; }
   hb_direction_t HbDirection() const {
@@ -425,7 +426,6 @@ struct PLATFORM_EXPORT ShapeResultRun final
   friend class GlyphDataRange;
   friend class HarfBuzzShaper;
   friend class ShapeResult;
-  friend class ShapeResultBuffer;
   friend class ShapeResultCursor;
   friend class ShapeResultTest;
   friend class ShapeResultTestInfo;

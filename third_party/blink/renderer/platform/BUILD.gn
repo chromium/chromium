@@ -789,8 +789,6 @@ component("platform") {
     "fonts/shaping/shape_result.h",
     "fonts/shaping/shape_result_bloberizer.cc",
     "fonts/shaping/shape_result_bloberizer.h",
-    "fonts/shaping/shape_result_buffer.cc",
-    "fonts/shaping/shape_result_buffer.h",
     "fonts/shaping/shape_result_cursor.cc",
     "fonts/shaping/shape_result_cursor.h",
     "fonts/shaping/shape_result_run.h",

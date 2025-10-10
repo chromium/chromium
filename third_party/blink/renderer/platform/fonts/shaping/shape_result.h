@@ -489,11 +489,11 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
  private:
   friend class HarfBuzzShaper;
-  friend class ShapeResultBuffer;
   friend class ShapeResultBloberizer;
   friend class ShapeResultView;
   friend class ShapeResultTest;
   friend class StretchyOperatorShaper;
+  friend struct CharacterRangeContext;
 
   static void AddRunInfoRanges(const ShapeResultRun& run_info,
                                float offset,
