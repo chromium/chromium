@@ -249,15 +249,14 @@ class BASE_EXPORT WaitableEvent {
     ~WaitableEventKernel();
   };
 
-  typedef std::pair<WaitableEvent*, size_t> WaiterAndIndex;
+  using WaiterAndIndex = std::pair<WaitableEvent*, size_t>;
 
   // When dealing with arrays of WaitableEvent*, we want to sort by the address
   // of the WaitableEvent in order to have a globally consistent locking order.
   // In that case we keep them, in sorted order, in an array of pairs where the
   // second element is the index of the WaitableEvent in the original,
   // unsorted, array.
-  static size_t EnqueueMany(WaiterAndIndex* waitables,
-                            size_t count,
+  static size_t EnqueueMany(base::span<WaiterAndIndex> waitables,
                             Waiter* waiter);
 
   bool SignalAll();

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -247,7 +247,7 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
 
   SyncWaiter sw;
 
-  const size_t r = EnqueueMany(waitables.data(), waitables.size(), &sw);
+  const size_t r = EnqueueMany(waitables, &sw);
   if (r < waitables.size()) {
     // One of the events is already signaled. The SyncWaiter has not been
     // enqueued anywhere.
@@ -311,35 +311,33 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables)
 // -----------------------------------------------------------------------------
 // static
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
-size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
-                                  size_t count,
+size_t WaitableEvent::EnqueueMany(base::span<WaiterAndIndex> waitables,
                                   Waiter* waiter) NO_THREAD_SAFETY_ANALYSIS {
-  size_t winner = count;
-  size_t winner_index = count;
-  for (size_t i = 0; i < count; ++i) {
-    auto& kernel = UNSAFE_TODO(waitables[i]).first->kernel_;
+  size_t winner = waitables.size();
+  size_t winner_index = waitables.size();
+  for (size_t i = 0; i < waitables.size(); ++i) {
+    auto& kernel = waitables[i].first->kernel_;
     kernel->lock_.Acquire();
-    if (kernel->signaled_ && UNSAFE_TODO(waitables[i]).second < winner) {
-      winner = UNSAFE_TODO(waitables[i]).second;
+    if (kernel->signaled_ && waitables[i].second < winner) {
+      winner = waitables[i].second;
       winner_index = i;
     }
   }
 
   // No events signaled. All locks acquired. Enqueue the Waiter on all of them
   // and return.
-  if (winner == count) {
-    for (size_t i = 0; i < count; ++i) {
-      UNSAFE_TODO(waitables[i]).first->Enqueue(waiter);
+  if (winner == waitables.size()) {
+    for (auto& w : waitables) {
+      w.first->Enqueue(waiter);
     }
-    return count;
+    return waitables.size();
   }
 
   // Unlock in reverse order and possibly clear the chosen winner's signal
   // before returning its index.
-  for (auto* w = UNSAFE_TODO(waitables + count - 1); w >= waitables;
-       UNSAFE_TODO(--w)) {
-    auto& kernel = w->first->kernel_;
-    if (w->second == winner) {
+  for (auto& w : base::Reversed(waitables)) {
+    auto& kernel = w.first->kernel_;
+    if (w.second == winner) {
       if (!kernel->manual_reset_) {
         kernel->signaled_ = false;
       }
