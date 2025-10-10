@@ -128,8 +128,7 @@ void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
                                         const gfx::ImageSkia& image,
                                         const gfx::Vector2d& image_offset,
                                         bool is_privileged) {
-  NSPoint offset = NSPointFromCGPoint(
-      gfx::PointAtOffsetFromOrigin(image_offset).ToCGPoint());
+  NSPoint offset = gfx::PointAtOffsetFromOrigin(image_offset).ToCGPoint();
   [ns_view_ startDragWithDropData:drop_data
                      sourceOrigin:source_origin
                 dragOperationMask:operation_mask

@@ -129,7 +129,7 @@ class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
     if (focused_now->GetClassName() == "WebView") {
       return;
     }
-    NSRect rect = NSRectFromCGRect(focused_now->GetBoundsInScreen().ToCGRect());
+    NSRect rect = focused_now->GetBoundsInScreen().ToCGRect();
     UAZoomChangeFocus(&rect, nullptr, kUAZoomFocusTypeOther);
   }
 };

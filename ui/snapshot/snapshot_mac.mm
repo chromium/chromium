@@ -115,13 +115,13 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
   NSView* view = native_view.GetNativeNSView();
   NSWindow* window = view.window;
   NSScreen* screen = NSScreen.screens.firstObject;
-  gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect(screen.frame));
+  gfx::Rect screen_bounds(screen.frame);
 
   // Get the view bounds relative to the screen.
   NSRect frame = [view convertRect:view.bounds toView:nil];
   frame = [window convertRectToScreen:frame];
 
-  gfx::Rect view_bounds = gfx::Rect(NSRectToCGRect(frame));
+  gfx::Rect view_bounds(frame);
 
   // Flip window coordinates based on the primary screen.
   view_bounds.set_y(screen_bounds.height() - view_bounds.y() -

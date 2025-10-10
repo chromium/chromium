@@ -216,7 +216,7 @@ void ImmersiveModeTabbedControllerCocoa::RemoveController() {
 void ImmersiveModeTabbedControllerCocoa::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(bounds);
-  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  NSRect frame = bounds.ToCGRect();
   [tab_titlebar_view_controller_.view
       setFrameSize:NSMakeSize(
                        frame.size.width,

@@ -93,13 +93,13 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   CGDirectDisplayID display_id =
       [screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue];
 
-  Display display(display_id, gfx::Rect(NSRectToCGRect(frame)));
+  Display display(display_id, gfx::Rect(frame));
   NSRect visible_frame = screen.visibleFrame;
   NSScreen* primary = NSScreen.screens.firstObject;
 
   // Convert work area's coordinate systems.
   if ([screen isEqual:primary]) {
-    gfx::Rect work_area = gfx::Rect(NSRectToCGRect(visible_frame));
+    gfx::Rect work_area(visible_frame);
     work_area.set_y(frame.size.height - visible_frame.origin.y -
                     visible_frame.size.height);
     display.set_work_area(work_area);
@@ -394,7 +394,7 @@ class ScreenMac : public Screen {
       return GetPrimaryDisplay();
     }
 
-    NSPoint ns_point = NSPointFromCGPoint(point.ToCGPoint());
+    NSPoint ns_point = point.ToCGPoint();
     NSScreen* primary = screens[0];
     ns_point.y = NSMaxY(primary.frame) - ns_point.y;
     for (NSScreen* screen in screens) {

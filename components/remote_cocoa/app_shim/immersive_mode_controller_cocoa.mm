@@ -303,7 +303,7 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   // Set the height of the AppKit fullscreen view. The width will be
   // automatically handled by AppKit.
-  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  NSRect frame = bounds.ToCGRect();
   NSView* overlay_view = immersive_mode_titlebar_view_controller_.view;
   NSSize size = overlay_view.window.frame.size;
   if (frame.size.height != size.height) {
