@@ -277,6 +277,69 @@ TEST_F(AutoEnrollmentControllerTest, ReportsSafeguardTimeout) {
                                     AutoEnrollmentSafeguardTimeoutError{})));
 }
 
+// Tests that the controller forwards
+// `AutoEnrollmentResult::kDeviceAlreadyOwned` to registered callbacks and does
+// not change block-devmode settings.
+TEST_F(AutoEnrollmentControllerTest, ReportsDeviceAlreadyOwned) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
+  auto controller = CreateController();
+
+  // Register progress callback to record reported state.
+  AutoEnrollmentState result;
+  auto subscription =
+      controller.RegisterProgressCallback(base::BindLambdaForTesting(
+          [&result](AutoEnrollmentState state) { result = state; }));
+
+  // Create mock state fetcher to allow reporting results.
+  controller.Start();
+
+  state_fetcher_factory_.ReportResult(
+      AutoEnrollmentResult::kDeviceAlreadyOwned);
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // Expect no changes to block-devmode
+  EXPECT_EQ(ash::FakeInstallAttributesClient::Get()
+                ->remove_firmware_management_parameters_from_tpm_call_count(),
+            0);
+  EXPECT_EQ(ash::FakeSessionManagerClient::Get()
+                ->clear_block_devmode_vpd_call_count(),
+            0);
+
+  // Expect result being passed to progress callbacks unchanged.
+  EXPECT_EQ(result, AutoEnrollmentResult::kDeviceAlreadyOwned);
+}
+
+// Tests that the controller forwards
+// `AutoEnrollmentResult::kNoEnrollment` to registered callbacks and
+// clears block-devmode settings.
+TEST_F(AutoEnrollmentControllerTest, ReportsNoEnrollment) {
+  SetupUnifiedStateDetermination(/*enabled=*/true);
+  auto controller = CreateController();
+
+  // Register progress callback to record reported state.
+  AutoEnrollmentState result;
+  auto subscription =
+      controller.RegisterProgressCallback(base::BindLambdaForTesting(
+          [&result](AutoEnrollmentState state) { result = state; }));
+
+  // Create mock state fetcher to allow reporting results.
+  controller.Start();
+
+  state_fetcher_factory_.ReportResult(AutoEnrollmentResult::kNoEnrollment);
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // Expect no changes to block-devmode
+  EXPECT_EQ(ash::FakeInstallAttributesClient::Get()
+                ->remove_firmware_management_parameters_from_tpm_call_count(),
+            1);
+  EXPECT_EQ(ash::FakeSessionManagerClient::Get()
+                ->clear_block_devmode_vpd_call_count(),
+            1);
+
+  // Expect result being passed to progress callbacks unchanged.
+  EXPECT_EQ(result, AutoEnrollmentResult::kNoEnrollment);
+}
+
 // Tests that the Safeguard Timeout is stopped in case state determination
 // reports an error, e.g. missing state keys.
 TEST_F(AutoEnrollmentControllerTest, TimeoutInterruptedByOtherError) {

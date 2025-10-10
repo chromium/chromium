@@ -417,7 +417,7 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipTaken) {
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
+  EXPECT_EQ(state, AutoEnrollmentResult::kDeviceAlreadyOwned);
 }
 
 TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {

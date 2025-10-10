@@ -71,6 +71,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
       case AutoEnrollmentResult::kEnrollment:
       case AutoEnrollmentResult::kSuggestedEnrollment:
         return kUMASuffixEnrollment;
+      case AutoEnrollmentResult::kDeviceAlreadyOwned:
       case AutoEnrollmentResult::kNoEnrollment:
         return kUMASuffixNoEnrollment;
       case AutoEnrollmentResult::kDisabled:
@@ -891,7 +892,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
       LOG(WARNING) << "Device ownership is already taken. Skipping enrollment";
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      return ReportResult(AutoEnrollmentResult::kDeviceAlreadyOwned);
     }
 
     oprf_.Request(context_, base::BindOnce(&Sequence::OnOprfRequestDone,
