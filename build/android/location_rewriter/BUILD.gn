@@ -12,7 +12,6 @@ java_binary("location_rewriter") {
 
 java_library("location_rewriter_java") {
   visibility = [ ":*" ]
-  skip_java_location_rewrite = true
   jacoco_never_instrument = true
   enable_errorprone = false
 

@@ -390,7 +390,7 @@ def __android_compile_java_handler(ctx, cmd):
 
     inputs = []
     for i, arg in enumerate(cmd.args):
-        for k in ["--classpath=", "--additional-siso-input=", "--processorpath="]:
+        for k in ["--classpath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 fn, v = __filearg(ctx, arg)

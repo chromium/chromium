@@ -3035,7 +3035,6 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
-      _should_rewrite_location = false
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
         inputs = [
@@ -3048,16 +3047,6 @@ if (enable_java_templates) {
       } else {
         script = "//build/android/gyp/compile_java.py"
         inputs = javac_paths_for_inputs
-
-        _should_rewrite_location =
-            enable_java_location_rewrite && invoker.chromium_code
-        if (defined(invoker.skip_java_location_rewrite) &&
-            invoker.skip_java_location_rewrite) {
-          _should_rewrite_location = false
-        } else if (defined(invoker.force_java_location_rewrite) &&
-                   invoker.force_java_location_rewrite) {
-          _should_rewrite_location = true
-        }
       }
 
       if (target_name == "chrome_java__header") {
@@ -3098,15 +3087,6 @@ if (enable_java_templates) {
           args += [ "--generated-dir=$_rebased_generated_dir" ]
         }
         inputs += _java_srcjars
-      }
-
-      if (_should_rewrite_location) {
-        foreach(_path, rebased_asm_params_path) {
-          args +=
-              [ "--additional-siso-input=@FileArg($_path:processed_jar_path)" ]
-        }
-        args += [ "--location-rewriter-path=$rebased_location_rewriter_path" ]
-        deps += [ "//build/android/location_rewriter" ]
       }
 
       inputs += invoker.source_files + [ _build_config ] + java_paths_for_inputs
@@ -3675,8 +3655,12 @@ if (enable_java_templates) {
         # Skip "process device" step if the step would be just a copy.
         _processed_jar_path = invoker.jar_path
       } else if (_has_sources) {
-        # Filter directly in compile_java.py when no other processing is required.
-        _processed_jar_path = _javac_jar_path
+        if (defined(invoker.bytecode_rewriter_target)) {
+          _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
+        } else {
+          # Filter directly in compile_java.py when no other processing is required.
+          _processed_jar_path = _javac_jar_path
+        }
       }
 
       if (_build_device_jar) {
@@ -4127,8 +4111,6 @@ if (enable_java_templates) {
                                _compile_java_forward_variables + [
                                      "jar_excluded_patterns",
                                      "jar_included_patterns",
-                                     "skip_java_location_rewrite",
-                                     "force_java_location_rewrite",
                                    ])
         main_target_name = _main_target_name
         output_jar_path = _javac_jar_path
@@ -4181,7 +4163,7 @@ if (enable_java_templates) {
       assert(_build_host_jar || _build_device_jar,
              "A host or device jar must be created to use bytecode rewriting")
 
-      _rewritten_jar = "$target_out_dir/${target_name}_rewritten.jar"
+      _rewritten_jar = "$target_out_dir/${target_name}.rewritten.jar"
       _rewritten_jar_target_name = "${target_name}__rewritten"
       _rewriter_path = root_build_dir + "/bin/helper/" +
                        get_label_info(invoker.bytecode_rewriter_target, "name")
@@ -4213,9 +4195,9 @@ if (enable_java_templates) {
                [ invoker.bytecode_rewriter_target ]
       }
 
-      _unprocessed_jar_deps = []
-      _unprocessed_jar_deps = [ ":$_rewritten_jar_target_name" ]
+      _unprocessed_jar_deps += [ ":$_rewritten_jar_target_name" ]
       _unprocessed_jar_path = _rewritten_jar
+      _process_jar_target_name = _rewritten_jar_target_name
     }
 
     if (_is_prebuilt) {

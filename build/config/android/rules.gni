@@ -1854,6 +1854,13 @@ if (!is_robolectric && enable_java_templates) {
           "*/R\$*.class",
         ]
       }
+
+      if ((defined(force_java_location_rewrite) &&
+           force_java_location_rewrite) || enable_java_location_rewrite) {
+        assert(!defined(invoker.bytecode_rewriter_target))
+        bytecode_rewriter_target =
+            "//build/android/location_rewriter:location_rewriter"
+      }
     }
   }
 
@@ -2792,6 +2799,7 @@ if (!is_robolectric && enable_java_templates) {
                                "apk_under_test",
                                "asset_deps",
                                "base_module_target",
+                               "bytecode_rewriter_target",
                                "chromium_code",
                                "deps",
                                "jacoco_never_instrument",
@@ -3348,6 +3356,7 @@ if (!is_robolectric && enable_java_templates) {
             "asset_deps",
             "build_config_include_product_version_resource",
             "bundles_supported",
+            "bytecode_rewriter_target",
             "chromium_code",
             "command_line_flags_file",
             "create_apk_script",
