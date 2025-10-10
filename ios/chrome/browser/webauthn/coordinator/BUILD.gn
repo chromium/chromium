@@ -24,8 +24,14 @@ source_set("export_coordinator") {
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
     "//components/password_manager/core/browser/ui",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webauthn/ui",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ui/base",
   ]
   frameworks = [ "Foundation.framework" ]

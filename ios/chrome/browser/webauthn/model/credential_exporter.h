@@ -21,6 +21,7 @@ class SavedPasswordsPresenter;
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
            (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+         securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
