@@ -9,16 +9,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 namespace glic {
 class GlicWindowController;
 
 // Owns the `WebContents` that houses the chrome://glic WebUI.
-class WebUIContentsContainer : public content::WebContentsDelegate,
-                               public content::WebContentsObserver {
+class WebUIContentsContainer : public content::WebContentsObserver {
  public:
   // `initially_hidden` value is only relevant when
   // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
@@ -32,25 +29,12 @@ class WebUIContentsContainer : public content::WebContentsDelegate,
   WebUIContentsContainer& operator=(const WebUIContentsContainer&) = delete;
 
  private:
-  // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(content::WebContents* source,
-                           const input::NativeWebKeyboardEvent& event) override;
-  void RequestMediaAccessPermission(
-      content::WebContents* web_contents,
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
-  void RunFileChooser(
-      content::RenderFrameHost* render_frame_host,
-      scoped_refptr<content::FileSelectListener> listener,
-      const blink::mojom::FileChooserParams& params) override;
-
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
   ScopedProfileKeepAlive profile_keep_alive_;
   const std::unique_ptr<content::WebContents> web_contents_;
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   // GlicWindowController owns this.
   const raw_ptr<GlicWindowController> glic_window_controller_;
 };

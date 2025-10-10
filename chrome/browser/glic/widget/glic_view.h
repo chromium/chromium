@@ -9,9 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -35,7 +37,19 @@ class GlicView : public views::WebView {
   ~GlicView() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
+  // content::WebContentsDelegate:
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
+  // views::WebView:
+  void SetWebContents(content::WebContents* web_contents) override;
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
   bool IsPointWithinDraggableArea(const gfx::Point& point);
@@ -60,6 +74,7 @@ class GlicView : public views::WebView {
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};
 };
 

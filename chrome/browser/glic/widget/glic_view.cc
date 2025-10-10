@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 
 #include "base/command_line.h"
+#include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,6 +45,35 @@ GlicView::GlicView(Profile* profile,
 }
 
 GlicView::~GlicView() = default;
+
+bool GlicView::HandleKeyboardEvent(content::WebContents* source,
+                                   const input::NativeWebKeyboardEvent& event) {
+  return GetWidget() && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+                            event, GetWidget()->GetFocusManager());
+}
+
+void GlicView::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr);
+}
+
+void GlicView::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
+}
+
+void GlicView::SetWebContents(content::WebContents* web_contents) {
+  views::WebView::SetWebContents(web_contents);
+  if (web_contents) {
+    web_contents->SetDelegate(this);
+  }
+}
 
 void GlicView::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {

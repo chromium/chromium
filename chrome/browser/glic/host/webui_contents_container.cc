@@ -8,18 +8,15 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -49,7 +46,6 @@ WebUIContentsContainer::WebUIContentsContainer(
       glic_window_controller_(glic_window_controller) {
   CHECK(web_contents_);
   Observe(web_contents_.get());
-  web_contents_->SetDelegate(this);
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
   web_contents_->GetController().LoadURLWithParams(
@@ -66,30 +62,6 @@ WebUIContentsContainer::~WebUIContentsContainer() {
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       glic_window_controller_->profile());
   glic_profile_manager->OnUnloadingClientForService(glic_service);
-}
-
-bool WebUIContentsContainer::HandleKeyboardEvent(
-    content::WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
-  GlicWidget* glic_widget = glic_window_controller_->GetGlicWidget();
-  return glic_widget && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-                            event, glic_widget->GetFocusManager());
-}
-
-void WebUIContentsContainer::RequestMediaAccessPermission(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), nullptr);
-}
-
-void WebUIContentsContainer::RunFileChooser(
-    content::RenderFrameHost* render_frame_host,
-    scoped_refptr<content::FileSelectListener> listener,
-    const blink::mojom::FileChooserParams& params) {
-  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
-                                   params);
 }
 
 void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
