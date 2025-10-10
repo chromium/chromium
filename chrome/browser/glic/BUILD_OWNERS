@@ -1,0 +1,7 @@
+# This file is used to grant ownership of the BUILD.gn file to all the owners
+# of the subdirectories of glic that do not have their own BUILD.gn file.
+
+file://chrome/browser/glic/OWNERS
+file://chrome/browser/glic/host/OWNERS
+file://chrome/browser/glic/service/OWNERS
+file://chrome/browser/glic/widget/OWNERS
