@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.1.0...chromium-bidi-v10.2.0) (2025-10-10)
+
+
+### Features
+
+* add `embeddedOrigin` in `permissions.setPermission` ([#3799](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3799)) ([fa1ea6f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fa1ea6f4a3a0df4f86be81c68081ae6e13396d59))
+
 ## [10.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.0.0...chromium-bidi-v10.1.0) (2025-10-09)
 
 
