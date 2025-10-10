@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace skia_bindings {
 
@@ -33,15 +33,6 @@ bool GLES2ImplementationWithGrContextSupport::HasGrContextSupport() const {
 
 void GLES2ImplementationWithGrContextSupport::ResetGrContextIfNeeded(
     uint32_t dirty_bits) {
-  if (gr_context_ && !using_gl_from_skia_) {
-    gr_context_->resetContext(dirty_bits);
-  }
-}
-
-void GLES2ImplementationWithGrContextSupport::SetGrContext(
-    GrDirectContext* gr) {
-  DCHECK(!gr || !gr_context_);  // Cant have multiple linked GrContexts
-  gr_context_ = gr;
 }
 
 void GLES2ImplementationWithGrContextSupport::WillCallGLFromSkia() {

@@ -106,10 +106,6 @@ class ContextSupport {
   // synchronization problems between the GLES2 interface and skia.
   virtual bool HasGrContextSupport() const = 0;
 
-  // Sets the GrDirectContext that is to receive resetContext signals when the
-  // GL state is modified via direct calls to the GLES2 interface.
-  virtual void SetGrContext(GrDirectContext* gr) = 0;
-
   virtual void WillCallGLFromSkia() = 0;
 
   virtual void DidCallGLFromSkia() = 0;

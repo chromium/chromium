@@ -403,8 +403,6 @@ void ImplementationBase::RunIfContextNotLost(base::OnceClosure callback) {
   }
 }
 
-void ImplementationBase::SetGrContext(GrDirectContext* gr) {}
-
 bool ImplementationBase::HasGrContextSupport() const {
   return false;
 }

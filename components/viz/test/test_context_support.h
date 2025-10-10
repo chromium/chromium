@@ -57,7 +57,6 @@ class TestContextSupport : public gpu::ContextSupport {
   bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const override;
   bool HasGrContextSupport() const override;
-  void SetGrContext(GrDirectContext* gr) override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
 
