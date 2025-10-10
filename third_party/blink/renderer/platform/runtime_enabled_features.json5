@@ -1567,7 +1567,7 @@
     {
       // https://drafts.csswg.org/css-conditional-5/#scrolled
       name: "CSSScrolledContainerQueries",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-initial-target
