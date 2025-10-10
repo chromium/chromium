@@ -17,15 +17,15 @@ found in the LICENSE file.
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="20dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="10dp">
+    android:orientation="vertical">
 
     <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="20dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginRight="20dp"
+      android:layout_marginBottom="2dp">
 
       <TextView
         android:id="@+id/signin_promo_title"
@@ -33,12 +33,13 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:lineHeight="20sp"
         tools:text="@string/signin_promo_title" />
 
       <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/signin_promo_dismiss_button"
         android:layout_width="24dp"
-        android:layout_height="20dp"
+        android:layout_height="24dp"
         android:layout_gravity="top|end"
         android:layout_toEndOf="@id/signin_promo_dismiss_button"
         android:layout_alignParentEnd="true"
@@ -56,21 +57,22 @@ found in the LICENSE file.
       android:id="@+id/signin_promo_description"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginEnd="16dp"
-      android:layout_marginBottom="16dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginTop="0dp"
+      android:layout_marginRight="20dp"
+      android:layout_marginBottom="12dp"
       android:gravity="center_horizontal"
-      android:lineSpacingMultiplier="1.25"
       android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+      android:lineHeight="20sp"
       tools:text="@string/signin_promo_description_recent_tabs" />
 
     <LinearLayout
       android:id="@+id/account_picker_selected_account"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginStart="12dp"
-      android:layout_marginEnd="12dp"
-      android:layout_marginBottom="12dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginEnd="20dp"
+      android:layout_marginBottom="8dp"
       android:foreground="?attr/selectableItemBackground"
       android:background="@drawable/account_row_background_rounded_all"
       android:gravity="center_vertical"
@@ -97,6 +99,9 @@ found in the LICENSE file.
       style="@style/FilledButton"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginBottom="12dp"
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/sync_promo_continue_as" />
