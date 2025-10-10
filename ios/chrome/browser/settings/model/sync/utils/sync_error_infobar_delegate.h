@@ -9,6 +9,7 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
@@ -57,6 +58,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Called when the infobar is dismissed through timing out.
   void InfoBarDismissedByTimeout() const;
@@ -67,6 +69,8 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
  private:
   const raw_ptr<ProfileIOS> profile_;
+  base::ScopedObservation<syncer::SyncService, SyncErrorInfoBarDelegate>
+      sync_observation_{this};
   const id<SyncPresenter> presenter_;
   const SyncErrorInfoBarTrigger trigger_;
   syncer::SyncService::UserActionableError error_state_;

@@ -12,6 +12,7 @@
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -66,17 +67,16 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
       syncer::SyncService* sync_service,
       const GetDisplayReasonCallback& get_display_reason_callback,
       base::OnceClosure on_list_known_callback)
-      : sync_service_(sync_service),
-        get_display_reason_callback_(get_display_reason_callback),
+      : get_display_reason_callback_(get_display_reason_callback),
         on_list_known_callback_(std::move(on_list_known_callback)) {
-    sync_service_->AddObserver(this);
-    OnStateChanged(sync_service_);
+    sync_observation_.Observe(sync_service);
+    OnStateChanged(sync_observation_.GetSource());
   }
 
   TargetDeviceListWaiter(const TargetDeviceListWaiter&) = delete;
   TargetDeviceListWaiter& operator=(const TargetDeviceListWaiter&) = delete;
 
-  ~TargetDeviceListWaiter() override { sync_service_->RemoveObserver(this); }
+  ~TargetDeviceListWaiter() override = default;
 
   void OnStateChanged(syncer::SyncService*) override {
     std::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
@@ -90,14 +90,19 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
         break;
       case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
-        sync_service_->RemoveObserver(this);
+        sync_observation_.Reset();
         std::move(on_list_known_callback_).Run();
         break;
     }
   }
 
+  void OnSyncShutdown(syncer::SyncService*) override {
+    sync_observation_.Reset();
+  }
+
  private:
-  const raw_ptr<syncer::SyncService> sync_service_;
+  base::ScopedObservation<syncer::SyncService, TargetDeviceListWaiter>
+      sync_observation_{this};
   const GetDisplayReasonCallback get_display_reason_callback_;
   base::OnceClosure on_list_known_callback_;
 };

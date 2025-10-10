@@ -96,14 +96,10 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
       base::SysNSStringToUTF16(GetSyncErrorButtonTitleForProfile(profile_));
 
   // Register for sync status changes.
-  sync_service->AddObserver(this);
+  sync_observation_.Observe(sync_service);
 }
 
-SyncErrorInfoBarDelegate::~SyncErrorInfoBarDelegate() {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  sync_service->RemoveObserver(this);
-}
+SyncErrorInfoBarDelegate::~SyncErrorInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SyncErrorInfoBarDelegate::GetIdentifier() const {
@@ -200,6 +196,10 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
           infobar, CreateConfirmInfoBar(std::move(new_infobar_delegate)));
     }
   }
+}
+
+void SyncErrorInfoBarDelegate::OnSyncShutdown(syncer::SyncService* sync) {
+  NOTREACHED();
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissedByTimeout() const {
