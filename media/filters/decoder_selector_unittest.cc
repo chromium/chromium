@@ -344,13 +344,14 @@ class DecoderSelectorTest : public ::testing::Test {
     }
   }
 
-  void CreateDecoderSelector(bool supports_config_changes = false) {
+  void CreateDecoderSelector(bool supports_config_changes = false,
+                             bool enable_priority_based_selection = true) {
     EXPECT_CALL(demuxer_stream_, SupportsConfigChanges())
         .WillRepeatedly(Return(supports_config_changes));
     decoder_selector_ = std::make_unique<Selector>(
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(&Self::CreateDecoders, base::Unretained(this)),
-        &media_log_);
+        &media_log_, enable_priority_based_selection);
     decoder_selector_->Initialize(
         traits_.get(), &demuxer_stream_, cdm_context_.get(),
         base::BindRepeating(&Self::OnWaiting, base::Unretained(this)));
@@ -515,7 +516,34 @@ TEST_F(VideoDecoderSelectorTest,
   // prioritized on any platform.
   this->demuxer_stream_.set_video_decoder_config(
       TestVideoConfig::Custom(gfx::Size(64, 64)));
-  this->CreateDecoderSelector(/*supports_config_changes=*/true);
+  this->CreateDecoderSelector(/*supports_config_changes=*/true,
+                              /*enable_priority_based_selection=*/true);
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
+  this->SelectNextDecoder();
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder2));
+  this->SelectNextDecoder();
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3));
+  this->SelectNextDecoder();
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder4));
+  this->SelectNextDecoder();
+  EXPECT_CALL(*this, NoDecoderSelected());
+  this->SelectNextDecoder();
+}
+
+TEST_F(VideoDecoderSelectorTest,
+       ClearStream_PrioritizeSoftwareDecodersFullyDisabled) {
+  this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
+  this->AddMockDecoder(kDecoder2, kClearOnly);
+  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
+  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
+
+  // Create a clear config that will cause software decoders to be
+  // prioritized on any platform.
+  this->demuxer_stream_.set_video_decoder_config(
+      TestVideoConfig::Custom(gfx::Size(64, 64)));
+  this->CreateDecoderSelector(/*supports_config_changes=*/false,
+                              /*enable_priority_based_selection=*/false);
 
   EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
   this->SelectNextDecoder();

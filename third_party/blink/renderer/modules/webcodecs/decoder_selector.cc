@@ -5,22 +5,19 @@
 #include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/channel_layout.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_switches.h"
 #include "media/base/sample_format.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-// TODO(crbug.com/368085608): Remove after M143 goes stable.
-BASE_FEATURE(kResolutionBasedDecoderPriority, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Demuxing isn't part of WebCodecs. This shim allows us to reuse decoder
 // selection logic from <video>.
@@ -56,7 +53,8 @@ class NullDemuxerStream : public media::DemuxerStream {
     // resolution when hardwareAcceleration == "no-preference". If it's instead
     // "prefer-hardware" or "prefer-software" the flag has no effect since only
     // the hardware or software factory is returned via `create_decoders_cb`.
-    return !base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority);
+    return !base::FeatureList::IsEnabled(
+        media::kResolutionBasedDecoderPriority);
   }
 
   void set_low_delay(bool low_delay) { low_delay_ = low_delay; }
@@ -92,7 +90,8 @@ DecoderSelector<StreamType>::DecoderSelector(
     typename Decoder::OutputCB output_cb)
     : impl_(std::move(task_runner),
             std::move(create_decoders_cb),
-            &null_media_log_),
+            &null_media_log_,
+            /*enable_priority_based_selection=*/true),
       demuxer_stream_(new NullDemuxerStream<StreamType>()),
       stream_traits_(CreateStreamTraits()),
       output_cb_(output_cb) {

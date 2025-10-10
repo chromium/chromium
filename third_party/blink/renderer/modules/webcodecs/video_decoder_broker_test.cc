@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -414,6 +415,8 @@ TEST_F(VideoDecoderBrokerTest, Init_DenyAcceleration) {
 }
 
 TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
+  base::test::ScopedFeatureList enabled_features_{
+      media::kResolutionBasedDecoderPriority};
   V8TestingScope v8_scope;
   ExecutionContext* execution_context = v8_scope.GetExecutionContext();
 

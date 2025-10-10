@@ -66,7 +66,8 @@ class MEDIA_EXPORT DecoderSelector {
   // characteristics of each decoder and config (resolution, platform, etc).
   DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
-                  MediaLog* media_log);
+                  MediaLog* media_log,
+                  bool enable_priority_based_selection = false);
 
   DecoderSelector(const DecoderSelector&) = delete;
   DecoderSelector& operator=(const DecoderSelector&) = delete;
@@ -152,6 +153,8 @@ class MEDIA_EXPORT DecoderSelector {
   // playback fails entirely, we have a root cause to point to, rather than
   // failing due to running out of more acceptable decoders.
   std::optional<DecoderStatus> decode_failure_reinit_cause_ = std::nullopt;
+
+  const bool enable_priority_based_selection_;
 
   // Indicates that the first decoder in `decoders_` is a platform decoder and
   // should maintain its place when FilterAndSortAvailableDecoders() runs.

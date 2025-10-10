@@ -929,6 +929,13 @@ BASE_FEATURE(kHardwareMediaKeyHandling,
 #endif
 );
 
+// Enables a platform-specific resolution cutoff for prioritizing platform
+// decoders over software decoders or vice-versa.
+//
+// Note: This feature is used by ChromeOS tests and shouldn't be removed even
+// though it has long been enabled by default.
+BASE_FEATURE(kResolutionBasedDecoderPriority, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture for websites with video playback (instead of only websites
 // using camera or microphone).
