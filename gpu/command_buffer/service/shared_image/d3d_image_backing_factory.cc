@@ -130,6 +130,14 @@ GpuMemoryBufferHandleSharedState* GetGpuMemoryBufferHandleSharedState() {
   return factory;
 }
 
+Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11DeviceForGMBHandles() {
+  return GetGpuMemoryBufferHandleSharedState()->GetOrCreateD3D11Device();
+}
+
+Microsoft::WRL::ComPtr<ID3D11Texture2D> GetStagingTextureForGMBHandleCopies() {
+  return GetGpuMemoryBufferHandleSharedState()->staging_texture();
+}
+
 // Formats supported by CreateSharedImage() for uploading initial data.
 bool IsFormatSupportedForInitialData(viz::SharedImageFormat format) {
   // The set of formats is artificially limited to avoid needing to handle
@@ -357,8 +365,7 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
   TRACE_EVENT0("gpu", "D3DImageBackingFactory::CrceateGpuMemoryBufferHandle");
 
   gfx::GpuMemoryBufferHandle handle;
-  auto d3d11_device =
-      GetGpuMemoryBufferHandleSharedState()->GetOrCreateD3D11Device();
+  auto d3d11_device = GetD3D11DeviceForGMBHandles();
   if (!d3d11_device) {
     return handle;
   }
@@ -422,9 +429,7 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
   DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
-  auto* shared_state = GetGpuMemoryBufferHandleSharedState();
-
-  auto d3d11_device = shared_state->GetOrCreateD3D11Device();
+  auto d3d11_device = GetD3D11DeviceForGMBHandles();
   if (!d3d11_device) {
     return false;
   }
@@ -437,7 +442,7 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
                                mapping.GetMemoryAsSpan<uint8_t>(),
                                d3d11_device.Get(),
-                               &shared_state->staging_texture());
+                               &GetStagingTextureForGMBHandleCopies());
 }
 
 // static
