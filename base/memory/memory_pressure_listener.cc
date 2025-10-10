@@ -87,10 +87,18 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
 SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
-    : memory_pressure_callback_(std::move(memory_pressure_callback)),
-      tag_(tag) {
+    : tag_(tag),
+      memory_pressure_callback_(std::move(memory_pressure_callback)) {
   MemoryPressureListenerRegistry::Get().AddObserver(this);
 }
+
+SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
+    MemoryPressureListenerTag tag,
+    MemoryPressureListener* memory_pressure_listener)
+    : SyncMemoryPressureListenerRegistration(
+          tag,
+          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
+                              base::Unretained(memory_pressure_listener))) {}
 
 SyncMemoryPressureListenerRegistration::
     ~SyncMemoryPressureListenerRegistration() {
@@ -167,6 +175,17 @@ AsyncMemoryPressureListenerRegistration::
 }
 
 AsyncMemoryPressureListenerRegistration::
+    AsyncMemoryPressureListenerRegistration(
+        const base::Location& creation_location,
+        MemoryPressureListenerTag tag,
+        MemoryPressureListener* memory_pressure_listener)
+    : AsyncMemoryPressureListenerRegistration(
+          creation_location,
+          tag,
+          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
+                              base::Unretained(memory_pressure_listener))) {}
+
+AsyncMemoryPressureListenerRegistration::
     ~AsyncMemoryPressureListenerRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (main_thread_) {
@@ -206,6 +225,16 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
           creation_location,
           tag,
           std::move(memory_pressure_callback))) {}
+
+MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
+    const Location& creation_location,
+    MemoryPressureListenerTag tag,
+    MemoryPressureListener* memory_pressure_listener)
+    : MemoryPressureListenerRegistration(
+          creation_location,
+          tag,
+          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
+                              base::Unretained(memory_pressure_listener))) {}
 
 MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() =
     default;
