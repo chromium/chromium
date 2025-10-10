@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransi
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -821,8 +820,9 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testForceBottomForFocusedOmnibox() {
+        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(true);
         boolean prefStateChanged = false;
         boolean ntpShowing = false;
         boolean tabSwitcherShowing = false;
