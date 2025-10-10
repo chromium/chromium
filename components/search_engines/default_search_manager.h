@@ -89,6 +89,7 @@ class DefaultSearchManager
   static const char kEnforcedByPolicy[];
 
   static const char kDefaultSearchEngineMirroredMetric[];
+  static const char kDefaultSearchEngineMirrorCheckOutcomeMetric[];
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
@@ -104,6 +105,20 @@ class DefaultSearchManager
     // Search engine recommended externally through enterprise configuration
     // management but allows for user modification.
     FROM_POLICY_RECOMMENDED,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // For the Search.DefaultSearchEngineMirrorCheckOutcome histogram.
+  // Keep in sync with enums.xml.
+  enum class DefaultSearchEngineMirrorCheckOutcomeType {
+    kNoTamperingDetected = 0,
+    kResetSkippedForEnterpriseDevice = 1,
+    kMirrorCheckReset = 2,
+    kRecentHmacReset = 3,
+    kStaleHmacReset = 4,
+    kMaxValue = kStaleHmacReset,
   };
 
   using ObserverCallback =
@@ -187,6 +202,18 @@ class DefaultSearchManager
 
   // search_engines::SearchEngineChoiceService::Observer
   void OnSavedGuestSearchChanged() override;
+
+  // Detects DSE tampering by comparing the DSE pref to
+  // a mirrored copy and resets the DSE pref if needed.
+  void HandleDefaultSearchEngineTampering(
+      const base::Value::Dict& url_dict,
+      const base::Value::Dict& mirrored_dict);
+
+  // Determines if there has been a recent pref reset (i.e., within the last
+  // hour).
+  // TODO: crbug.com/449238321 - add a check that DSE is in the list of reset
+  // prefs when the list is available
+  bool HasRecentPrefReset();
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<search_engines::SearchEngineChoiceService>

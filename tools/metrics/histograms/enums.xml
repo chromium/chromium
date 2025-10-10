@@ -3439,6 +3439,15 @@ shown properly on the user-facing crash UI.
   <int value="61" label="Content Transfer"/>
 </enum>
 
+<enum name="DefaultSearchEngineMirrorCheckOutcomeType">
+  <int value="0" label="Not reset, no tampering detected"/>
+  <int value="1"
+      label="Not reset, mirrored pref mismatch on enterprise device"/>
+  <int value="2" label="Reset, mirrored pref mismatch (non-enterprise device)"/>
+  <int value="3" label="Already reset, recent HMAC check"/>
+  <int value="4" label="Already reset, stale HMAC check"/>
+</enum>
+
 <enum name="DemoModeApp">
   <summary>
     Pre-installed app or other window type available in Chrome OS Demo Mode.

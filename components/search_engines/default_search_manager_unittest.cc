@@ -28,6 +28,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "services/preferences/tracked/pref_hash_filter.h"
 #include "template_url_prepopulate_data_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -100,6 +101,7 @@ class DefaultSearchManagerTest : public testing::Test {
     // Override the country checks to simulate being in the US.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "US");
+    PrefHashFilter::RegisterProfilePrefs(pref_service()->registry());
   }
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
@@ -465,6 +467,7 @@ TEST_F(DefaultSearchManagerTest,
 TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
 
   set_default_search_provider_data_pref("search_engine_A");
   set_mirrored_default_search_provider_data_pref("search_engine_B");
@@ -483,6 +486,14 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
               DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
           .empty());
 
+  // Mirror check reset recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kMirrorCheckReset),
+      1);
+
   // The DSE should now be the fallback.
   DefaultSearchManager::Source source;
   manager->GetDefaultSearchEngine(&source);
@@ -495,6 +506,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
       switches::kResetTamperedDefaultSearchEngine};
   // Simulate an enterprise device.
   base::win::ScopedDomainStateForTesting scoped_domain_state_(true);
+  base::HistogramTester histograms;
 
   auto user_data = set_default_search_provider_data_pref("search_engine_A");
   set_mirrored_default_search_provider_data_pref("search_engine_B");
@@ -512,6 +524,14 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
               DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
           .empty());
 
+  // DSE reset was skipped due to enterprise policy recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kResetSkippedForEnterpriseDevice),
+      1);
+
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
@@ -523,6 +543,7 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       switches::kResetTamperedDefaultSearchEngine);
+  base::HistogramTester histograms;
 
   auto user_data = set_default_search_provider_data_pref("search_engine_A");
   set_mirrored_default_search_provider_data_pref("search_engine_B");
@@ -540,6 +561,10 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
               DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
           .empty());
 
+  // Nothing recorded in DefaultSearchEngineTamperingReset metric.
+  histograms.ExpectTotalCount(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric, 0);
+
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
@@ -549,6 +574,7 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
 TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfPrefsMatch) {
   base::test::ScopedFeatureList feature_list{
       switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
 
   auto user_data = set_default_search_provider_data_pref("search_engine_A");
   pref_service()->SetDict(
@@ -569,9 +595,93 @@ TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfPrefsMatch) {
               DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
           .empty());
 
+  // No tampering detected recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kNoTamperingDetected),
+      1);
+
   // The DSE should not have been changed.
   DefaultSearchManager::Source source;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+TEST_F(DefaultSearchManagerTest, RecentHmacReset) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
+
+  // Empty DSE pref and a filled mirror pref to simulate DSE reset by HMAC
+  // check.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  set_mirrored_default_search_provider_data_pref("search_engine_A");
+  // Simulate the HMAC based reset happened now.
+  PrefHashFilter::SetResetTime(pref_service());
+
+  auto manager = create_manager();
+
+  // The original DSE prefs should still be empty.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  // The mirrored DSE pref should have been cleared.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // A recent HMAC reset was recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kRecentHmacReset),
+      1);
+}
+
+TEST_F(DefaultSearchManagerTest, StaleHmacReset) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  base::HistogramTester histograms;
+
+  // Empty DSE pref and a filled mirror pref to simulate DSE reset by HMAC
+  // check.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  set_mirrored_default_search_provider_data_pref("search_engine_A");
+  // Simulate the HMAC based reset happened previously.
+  PrefHashFilter::ClearResetTime(pref_service());
+
+  auto manager = create_manager();
+
+  // The original DSE prefs should still be empty.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  // The mirrored DSE pref should have been cleared.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // A stale HMAC reset was recorded.
+  histograms.ExpectUniqueSample(
+      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
+      static_cast<int>(
+          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
+              kStaleHmacReset),
+      1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

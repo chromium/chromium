@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
@@ -21,6 +22,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "services/preferences/tracked/pref_hash_filter.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
@@ -87,6 +89,9 @@ const char DefaultSearchManager::kEnforcedByPolicy[] = "enforced_by_policy";
 
 const char DefaultSearchManager::kDefaultSearchEngineMirroredMetric[] =
     "Search.DefaultSearchEngineMirrored";
+const char
+    DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric[] =
+        "Search.DefaultSearchEngineMirrorCheckOutcome";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
@@ -132,18 +137,7 @@ DefaultSearchManager::DefaultSearchManager(
     base::UmaHistogramBoolean(
         DefaultSearchManager::kDefaultSearchEngineMirroredMetric,
         mirrored_dict == url_dict);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(
-            switches::kResetTamperedDefaultSearchEngine)) {
-      // Reset DSE if tampering detected on non-enterprise devices.
-      if (mirrored_dict != url_dict && !base::IsEnterpriseDevice()) {
-        pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
-        // Reset the mirrored pref to eliminate a mismatch after clearing
-        // the tampered DSE.
-        pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
-      }
-    }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    HandleDefaultSearchEngineTampering(url_dict, mirrored_dict);
   }
 }
 
@@ -366,4 +360,55 @@ void DefaultSearchManager::NotifyObserver() {
     const TemplateURLData* data = GetDefaultSearchEngine(&source);
     change_observer_.Run(data, source);
   }
+}
+
+void DefaultSearchManager::HandleDefaultSearchEngineTampering(
+    const base::Value::Dict& url_dict,
+    const base::Value::Dict& mirrored_dict) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kResetTamperedDefaultSearchEngine)) {
+    return;
+  }
+
+  DefaultSearchEngineMirrorCheckOutcomeType outcome;
+  if (mirrored_dict == url_dict) {  // No tampering detected.
+    outcome = DefaultSearchEngineMirrorCheckOutcomeType::kNoTamperingDetected;
+  } else if (url_dict.empty()) {  // DSE reset by HMAC check.
+    if (HasRecentPrefReset()) {   // HMAC reset occurred recently.
+      outcome = DefaultSearchEngineMirrorCheckOutcomeType::kRecentHmacReset;
+    } else {
+      // HMAC reset occurred long ago, but mirrored pref was never cleared.
+      outcome = DefaultSearchEngineMirrorCheckOutcomeType::kStaleHmacReset;
+    }
+    // Clear the mirrored pref to eliminate future mismatch.
+    pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
+  } else {  // Tampering detected.
+    if (!base::IsEnterpriseDevice()) {
+      outcome = DefaultSearchEngineMirrorCheckOutcomeType::kMirrorCheckReset;
+      pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
+      // Clear the mirrored pref to eliminate future mismatch.
+      pref_service_->ClearPref(kMirroredDefaultSearchProviderDataPrefName);
+    } else {
+      outcome = DefaultSearchEngineMirrorCheckOutcomeType::
+          kResetSkippedForEnterpriseDevice;
+    }
+  }
+  base::UmaHistogramEnumeration(kDefaultSearchEngineMirrorCheckOutcomeMetric,
+                                outcome);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}
+
+bool DefaultSearchManager::HasRecentPrefReset() {
+  base::Time reset_time = PrefHashFilter::GetResetTime(pref_service_);
+
+  if (reset_time.is_null()) {
+    return false;
+  }
+  static constexpr base::TimeDelta kRecentResetThreshold = base::Hours(1);
+  // Time between when the reset occurred and when the DefaultSearchManager is
+  // aware of it.
+  const base::TimeDelta since_reset = base::Time::Now() - reset_time;
+  return since_reset < kRecentResetThreshold;
 }

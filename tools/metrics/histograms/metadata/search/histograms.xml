@@ -949,6 +949,21 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.DefaultSearchEngineMirrorCheckOutcome"
+    enum="DefaultSearchEngineMirrorCheckOutcomeType" expires_after="2026-09-30">
+  <owner>fikremengistu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome of default search engine (DSE) tampering detection done
+    at profile startup. The detection is done by comparing the DSE pref with its
+    mirror; a mismatch indicates tampering.
+
+    This metric is recorded exclusively on MacOS and Windows devices. It is
+    recorded each time a DefaultSearchManager is created, after the default
+    search engine is loaded from prefs.
+  </summary>
+</histogram>
+
 <histogram name="Search.DefaultSearchEngineMirrored" enum="Boolean"
     expires_after="2026-05-10">
   <owner>davidbienvenu@chromium.org</owner>
