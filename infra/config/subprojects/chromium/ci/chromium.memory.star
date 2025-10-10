@@ -1390,7 +1390,7 @@ ci.builder(
                     "--test-launcher-jobs=3",
                 ],
                 swarming = targets.swarming(
-                    shards = 12,
+                    shards = 18,
                 ),
             ),
             "net_unittests": targets.mixin(
