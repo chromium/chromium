@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_PREFS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_PREFS_H_
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 

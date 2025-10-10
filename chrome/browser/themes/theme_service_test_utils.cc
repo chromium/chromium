@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_service_test_utils.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"

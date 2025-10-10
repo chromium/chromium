@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"

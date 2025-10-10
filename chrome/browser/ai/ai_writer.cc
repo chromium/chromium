@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ai/ai_writer.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"

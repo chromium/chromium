@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ai/ai_rewriter.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"

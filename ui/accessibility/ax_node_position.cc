@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_node_position.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/buildflags.h"

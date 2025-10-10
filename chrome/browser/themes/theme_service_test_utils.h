@@ -8,7 +8,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/sync/model/sync_change.h"

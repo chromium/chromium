@@ -5,7 +5,6 @@
 #ifndef UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 #define UI_GTK_GTK_KEY_BINDINGS_HANDLER_H_
 
-#include "base/containers/fixed_flat_map.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"

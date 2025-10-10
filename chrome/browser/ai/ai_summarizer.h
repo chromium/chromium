@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_AI_AI_SUMMARIZER_H_
 #define CHROME_BROWSER_AI_AI_SUMMARIZER_H_
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
