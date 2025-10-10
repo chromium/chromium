@@ -1137,13 +1137,22 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
+     * Gets the content view of the {@link PopupWindow}.
+     *
+     * @return The content view.
+     */
+    public @Nullable View getContentView() {
+        return mContentView;
+    }
+
+    /**
      * Checks if the popup spec meets the minimal size requirements.
      *
      * <p>By default, this method ensures that the size is sufficient for users to see what they are
      * tapping. Popups can be very narrow (e.g. in landscape) and still be interactive. Use {@link
      * #setRequireTouchableSize(boolean)} to disable this check.
      *
-     * @return True iff the popup is large enough to be safely shown to users.
+     * @return True if the popup is large enough to be safely shown to users.
      */
     private boolean hasMinimalSize() {
         if (mAllowNonTouchableSize) {

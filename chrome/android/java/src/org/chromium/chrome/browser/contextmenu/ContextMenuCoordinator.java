@@ -407,6 +407,10 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
         mDialogs.subList(clearFromIndex, mDialogs.size()).clear();
         mListViews.subList(clearFromIndex, mListViews.size()).clear();
+
+        if (mDialogs.size() > 0) {
+            mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocus(true);
+        }
     }
 
     @Override
@@ -444,7 +448,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                             }
                         });
 
+        assert mDialogs.size() > 0;
+        mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocus(false);
+
+        dialog.setWindowFocus(true);
         dialog.show();
+
         mDialogs.add(new FlyoutPopupEntry(item, dialog));
     }
 

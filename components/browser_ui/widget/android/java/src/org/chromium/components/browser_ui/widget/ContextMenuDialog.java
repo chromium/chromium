@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,6 +32,7 @@ import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
@@ -401,5 +403,14 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     @Nullable
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
+    }
+
+    /**
+     * Set the focus state for this dialog's content view.
+     *
+     * @param hasFocus Whether this dialog's content should have focus.
+     */
+    public void setWindowFocus(boolean hasFocus) {
+        ListMenuUtils.setWindowFocus((ViewGroup) mContentView, hasFocus);
     }
 }

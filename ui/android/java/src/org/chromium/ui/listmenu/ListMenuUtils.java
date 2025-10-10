@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.annotation.StringRes;
@@ -434,6 +435,25 @@ public class ListMenuUtils {
             if (mHeaderView != null && mHeaderModelList != null && !mHeaderModelList.isEmpty())
                 mHeaderView.setSelection(0);
             mView.requestFocus();
+        }
+    }
+
+    /**
+     * Set the focus state for a given content view. This is to make sure that hover navigation,
+     * keyboard navigation and the combination of both work for flyout menus. We have to make sure
+     * that only the top flyout popup is focused, and that the {@code ListView} in the other popups
+     * don't get focus when the device exits touch mode due to e.g. keyboard activity.
+     *
+     * @param contentView The content view to change the focus settings for.
+     * @param hasFocus Whether this content view should have focus.
+     */
+    public static void setWindowFocus(ViewGroup contentView, boolean hasFocus) {
+        if (hasFocus) {
+            contentView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            contentView.requestFocus();
+        } else {
+            contentView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            contentView.clearFocus();
         }
     }
 }

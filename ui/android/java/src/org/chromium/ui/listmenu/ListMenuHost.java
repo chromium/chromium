@@ -244,6 +244,10 @@ public class ListMenuHost
         mRemovingPopups = false;
 
         mPopupMenus.subList(clearFromIndex, mPopupMenus.size()).clear();
+
+        if (mPopupMenus.size() > 0) {
+            setWindowFocus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, true);
+        }
     }
 
     @Override
@@ -282,8 +286,20 @@ public class ListMenuHost
                                 })
                         .build();
 
+        assert mPopupMenus.size() > 0;
+        setWindowFocus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, false);
+
+        setWindowFocus(popupMenu, true);
         popupMenu.show();
+
         mPopupMenus.add(new FlyoutPopupEntry(item, popupMenu));
+    }
+
+    private void setWindowFocus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
+        ViewGroup contentView = (ViewGroup) popupWindow.getContentView();
+        if (contentView == null) return;
+
+        ListMenuUtils.setWindowFocus(contentView, hasFocus);
     }
 
     public Rect calculateFlyoutAnchorRect(View itemView) {
