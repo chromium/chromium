@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Panning gesture scroll is an absolute scroll
-  assert_equals: expected "no" but got "yes"
-Harness: the test ran to completion.
-
