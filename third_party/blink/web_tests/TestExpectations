@@ -2954,7 +2954,12 @@ external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-
 # Flaky UUID in assertion failure
 external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py [ Failure ]
 
+# Flaky output
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Pass Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
+external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Timeout ]
 crbug.com/450555241 [ Win ] external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/450513405 external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
 crbug.com/450513405 external/wpt/css/css-anchor-position/position-area-overflow-icb-002.html [ Failure ]

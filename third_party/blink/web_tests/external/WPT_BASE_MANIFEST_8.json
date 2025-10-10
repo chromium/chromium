@@ -216227,6 +216227,19 @@
         {}
        ]
       ],
+      "segment-break-transformation-punctuation-003.html": [
+       "3b1cd77b0862dea7a0655b7d95beb5a85ae06d78",
+       [
+        null,
+        [
+         [
+          "/css/css-text/line-breaking/segment-break-transformation-punctuation-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "segment-break-transformation-removable-1.html": [
        "7c2b820bee0022c8ec93ca9c52f52e3f697af883",
        [
@@ -338976,6 +338989,16 @@
      []
     ]
    },
+   "cpu-performance": {
+    "DIR_METADATA": [
+     "e1a0e70f54c6a2b32e056562aba8680ed9465d9b",
+     []
+    ],
+    "META.yml": [
+     "5d829c8bb4c4f1b328158968daaf396e209ef250",
+     []
+    ]
+   },
    "credential-management": {
     "META.yml": [
      "7b1860921312cc9d9934aa803e3f639df21423a0",
@@ -350472,7 +350495,7 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "9c3bbf2d84d7cbc3f37a167ed8cb930d3d1e0e61",
+       "48d15a3f370d15e4fec605793b862a6f45f6a860",
        []
       ],
       "color-valid-color-function-expected.txt": [
@@ -350500,7 +350523,7 @@
        []
       ],
       "relative-color-out-of-gamut-expected.txt": [
-       "e8123ecb3d08a7a9ff9e56a405e754ffd0af6feb",
+       "bfc2a7d7c1ad82d2cfe043cc09d2643b78226a04",
        []
       ]
      },
@@ -375329,7 +375352,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "f2d2f67232ff3de1e51db8e45baccc23711fe793",
+      "f011d5da4e5bd24a3c411ccc088776f6646f6685",
       []
      ],
      "marker-and-other-pseudo-elements-ref.html": [
@@ -380555,6 +380578,10 @@
       ],
       "segment-break-transformation-punctuation-002-ref.html": [
        "0b747788304db02047c60261f545ae625e05d3c7",
+       []
+      ],
+      "segment-break-transformation-punctuation-003-ref.html": [
+       "c9c2bfeebd63179bf7c7cf7b3c4a10185d164cb1",
        []
       ],
       "segment-break-transformation-removable-ref.html": [
@@ -417183,7 +417210,7 @@
        "tentative": {
         "resources": {
          "focusgroup-utils.js": [
-          "9a1a14a301977b258de9f553f5c8340d96b3b4b0",
+          "0cdc146d4797bcfdee32a53380733903b18754f5",
           []
          ]
         }
@@ -421581,22 +421608,6 @@
        "12efbb6b1e4934de6b32df60304cd40a44548301",
        []
       ],
-      "popover-focus-5_commandfor-expected.txt": [
-       "f2164337f4d1bb8aadeefc7c3661592ebbeca89a",
-       []
-      ],
-      "popover-focus-5_commandforelement-expected.txt": [
-       "d4a3381ca6a88b955bf205ffd197bef48dcf58eb",
-       []
-      ],
-      "popover-focus-5_imperative-expected.txt": [
-       "93243f3b613d6a84386cd42e37599f9b4fb06987",
-       []
-      ],
-      "popover-focus-5_popovertargetelement-expected.txt": [
-       "e7b5535a3e171f544b03426a38703953e9a48a0f",
-       []
-      ],
       "popover-hidden-display-ref.html": [
        "2dc0d558b634279a09703798e9a531748215a563",
        []
@@ -421990,7 +422001,7 @@
          []
         ],
         "integrity-mismatches.js": [
-         "0406dbcca5a99a4cec99ae6551f7546d9df8a872",
+         "190eac555e1d511cad2d2bd9900feb96164264f1",
          []
         ],
         "load-error-events.py": [
@@ -442904,7 +442915,7 @@
      []
     ],
     "OWNERS": [
-     "04310353bd38261c2d6dd7702676e3e60e51331b",
+     "4392ef47220b8ea697837bcd0339e2d8b48e84ae",
      []
     ],
     "README.md": [
@@ -444615,7 +444626,7 @@
       ]
      },
      "required-properties-expected.txt": [
-      "b63555ab7fd2b63e671aba28376da38e5e129e26",
+      "eb80a9aeb9abba9b29628d1c7bdb679bd9a4dac5",
       []
      ],
      "stroke-color-inherit-link-visited-ref.svg": [
@@ -449010,7 +449021,7 @@
        []
       ],
       "audionode-expected.txt": [
-       "f3e7574ada75eca9daff4948e37836b64db92839",
+       "7ff4edd279b1742bd9f69fe3ee9e5067be8a0c6d",
        []
       ]
      },
@@ -451673,7 +451684,7 @@
       []
      ],
      "utils.js": [
-      "6b24f2d6efbc979c88721da04325eb32b3e2e384",
+      "82941300705d29d8150cbf244c65b338480fb4a3",
       []
      ],
      "utils_validation.js": [
@@ -484710,7 +484721,7 @@
       ]
      ],
      "detector.https.window.js": [
-      "0ccbe8955d3721416acaca62043d451f0acd5719",
+      "afb0530d1886f0ca8866b131548060cdc541f505",
       [
        "ai/language_detection/detector.https.window.html",
        {
@@ -485487,7 +485498,7 @@
       ]
      ],
      "translator.optional.https.window.js": [
-      "ceb7846bf3695dc9c2ff5c0037f026cc0235d139",
+      "daf0f3e9e0b2e542c231f50fe03174d1ff33a9de",
       [
        "ai/translator/translator.optional.https.window.html",
        {
@@ -508808,6 +508819,15 @@
      "73244288d412814bb312a1326902ad3213c542b5",
      [
       null,
+      {}
+     ]
+    ]
+   },
+   "cpu-performance": {
+    "cpu-performance.tentative.https.window.js": [
+     "6714ee19282deaada45740d425c9038a2df33c0d",
+     [
+      "cpu-performance/cpu-performance.tentative.https.window.html",
       {}
      ]
     ]
@@ -533786,6 +533806,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "events-on-pseudo-element.tentative.html": [
+      "b6ea343fcb466ed6cf80bb81f00e8f4661556967",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "file-selector-button-inherit.html": [
@@ -564085,6 +564114,13 @@
     ],
     "document.tentative.html": [
      "b75c0f0d66dacb47a825ae2aa00bb63a19616433",
+     [
+      null,
+      {}
+     ]
+    ],
+    "elements-are-parents-of-their-attributes.html": [
+     "63e6cfe4cc586c799a1b7f625407e64260e44b55",
      [
       null,
       {}
@@ -659795,7 +659831,7 @@
           ]
          ],
          "does-not-move-when-on-non-focusgroup-item.html": [
-          "b9640310c92d4aaa551b913bd80f646bb919bdae",
+          "d6bae237a8ffe51bea62538855b872d824461a65",
           [
            null,
            {
@@ -659840,8 +659876,8 @@
           ]
          ],
          "horizontal": {
-          "does-not-ascend-out-of-non-extending-focusgroup.html": [
-           "c06db4b53997e79df12fab326790ba0c0746a205",
+          "does-not-ascend-out-of-focusgroup.html": [
+           "1c3a7ac291612934e61a05e84a901f2a913206f9",
            [
             null,
             {
@@ -659905,7 +659941,7 @@
           ]
          ],
          "skips-non-focusgroup-subtree.html": [
-          "8f328fcda346001532f2faf318cdeb5485e0f6bd",
+          "6a07936dd4a1939d5603399f8b11b0ff328fe109",
           [
            null,
            {
@@ -659923,7 +659959,7 @@
           ]
          ],
          "skips-root-focusgroup.html": [
-          "1091bf2a893ecc6ce8d62ad58398424842941922",
+          "11b99d1eb6bf4ca9d2df876bb6740a09bc121fc1",
           [
            null,
            {
@@ -659932,8 +659968,8 @@
           ]
          ],
          "vertical": {
-          "does-not-ascend-out-of-non-extending-focusgroup.html": [
-           "8d720959998fb2ceeed59948a4428e5f8de82f57",
+          "does-not-ascend-out-of-focusgroup.html": [
+           "33be6021095c2585547c62505eaa3081f2b61d34",
            [
             null,
             {
@@ -660015,6 +660051,53 @@
           }
          ]
         ],
+        "descendant-navigation": {
+         "deeply-nested-items.html": [
+          "a8d7062bf3559cc26fa55571942f05c4040e8c46",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "mixed-content-navigation.html": [
+          "77059c5079c70345e1ff22a4ffc0503b03063924",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "simple-descendant-test.html": [
+          "3bcfcbe4febbda8431b71d43e60ae1cb55ff5651",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "various-element-types.html": [
+          "426d177cd39b0856dc456da6a6e3eba3b59104ec",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "wrapping-with-descendants.html": [
+          "8edc5421d89d34a6d2924adcb9ec84f9b00ea2c9",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ]
+        },
         "forward-navigation": {
          "does-not-move-when-on-focusgroup-root.html": [
           "548b391d7ffb0257dd5ca1dcf441b7e040bef9e2",
@@ -660026,7 +660109,7 @@
           ]
          ],
          "does-not-move-when-on-non-item.html": [
-          "b28ad33367a40d2aba5ac0b864e231b9a04dab2c",
+          "c2627dee476fb2a451d865e11f1a4535b225583a",
           [
            null,
            {
@@ -660304,6 +660387,46 @@
          ],
          "wraps-in-both-axes.html": [
           "809ee5364578321c7a37471f1885546dc910ee8d",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ]
+        },
+        "opt-out-barriers": {
+         "complex-nested-opt-out.html": [
+          "bd72e0e203dec320d776bd5aa94e0df2755ebfc3",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "none-creates-barriers.html": [
+          "5a9e5f359cbadb53567ef5adcd57c18ed75a636c",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ]
+        },
+        "shadow": {
+         "shadow-items-basic.html": [
+          "e6fb928d0ddf5b07f6f83aefd68a8cc7d6af4042",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "shadow-nested-scope.html": [
+          "154793ee89094ae6135b2a877987bb2ba5d08d7c",
           [
            null,
            {
@@ -663219,7 +663342,7 @@
          ]
         ],
         "resource-selection-invoke-in-sync-event.html": [
-         "1635598efdd28de1a9c40ab62d3a4f75b77d7ea4",
+         "196e6b98272d34df4b1c721d9ece7a169b4eb23f",
          [
           null,
           {}
@@ -672202,12 +672325,52 @@
         }
        ]
       ],
+      "popover-focus-across-slot.html": [
+       "25ccdb4edfb15de87dc76196c77d17dcacdcbebc",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "popover-focus-form-control.html": [
+       "9d7cbdf51759b4cf447e9ee84aefb82143aee278",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
       "popover-focus-harness.html": [
        "a22a68ea2bdf2cc5ded85f93fe451f8d2f418baa",
        [
         null,
         {
          "testdriver": true
+        }
+       ]
+      ],
+      "popover-focus-inside-shadow-dom.html": [
+       "a23bd7ef1b353a67f76e93ad92a53e135c7d0843",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "popover-focus-inside-slot.html": [
+       "40ff34b7f32b6bb5829560abb697126f899ca469",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
@@ -754886,7 +755049,7 @@
       ]
      ],
      "required-properties.svg": [
-      "37bf0fdf7e8ead12ab5b686b56844c82625e6591",
+      "9ee894e21aa489033107cb49d868d2a46f6323a2",
       [
        null,
        {}
@@ -775748,7 +775911,7 @@
        ]
       ],
       "audiobuffersource-multi-channels.html": [
-       "4e0de21e96fa8470f5305d9405bdccf8f937e660",
+       "d830070d670b64a8544fd4acd87b72d2d35a799e",
        [
         null,
         {}
@@ -776029,7 +776192,7 @@
        ]
       ],
       "audionode.html": [
-       "3d14cd5b01fb5ae976f05bfc9ddf99b9cb9080a7",
+       "9599c56ba41d2bdcb8a1f3e5d9eaa187a83df589",
        [
         null,
         {}
@@ -776199,7 +776362,7 @@
        ]
       ],
       "k-rate-audioworklet-connections.https.html": [
-       "4d2eb40d5520fd49310ab2dc16934890fdc858a2",
+       "8052f1320a7e5c25c2d07287bd2f1fb09409e5ac",
        [
         null,
         {}
@@ -795791,7 +795954,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "0e13391f231c6ae654e759565dcea76af4f4c98a",
+      "13aaccfe5c2ae6930dc178afe1d5880e209eb479",
       [
        "webnn/conformance_tests/matmul.https.any.html?cpu",
        {
@@ -801899,7 +802062,7 @@
       ]
      ],
      "subgraph.https.any.js": [
-      "990aa45a5e0c954efbdd8dd6dff79388963be9a1",
+      "190ad0bee94e9f6bd63ff4aebe4927cb1e12a2d0",
       [
        "webnn/conformance_tests/subgraph.https.any.html?cpu",
        {
@@ -862735,6 +862898,13 @@
         ],
         "invalid.py": [
          "963488865f95997449b856877cc10e0f36222c31",
+         [
+          null,
+          {}
+         ]
+        ],
+        "persistence.py": [
+         "4b59db61058d18b9965c6bdd62bb61b9baefd8fd",
          [
           null,
           {}
