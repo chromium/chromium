@@ -360,11 +360,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
-                        + "navigations"),
+                        + " navigations"),
         Flag.baseFeature(
                 ContentFeatures.USER_MEDIA_CAPTURE_ON_FOCUS,
                 "Enables GetUserMedia API will only resolve when the document calling it has"
-                        + "focus"),
+                        + " focus"),
         Flag.baseFeature(
                 ContentFeatures.COMPOSITE_BG_COLOR_ANIMATION,
                 "When enabled, the background-color animation runs on the compositor thread."),
@@ -492,8 +492,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,
                 "When enabled, reduces SubresourceResponseStarted IPC by sending"
-                        + "subresource notifications only if the user has allowed"
-                        + "HTTPS-related exceptions."),
+                        + " subresource notifications only if the user has allowed"
+                        + " HTTPS-related exceptions."),
         Flag.baseFeature("CanvasColorCache"),
         Flag.baseFeature(
                 ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
@@ -570,7 +570,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.SITE_INSTANCE_GROUPS_FOR_DATA_URLS,
                 "If enabled, puts data: URL subframes in a separate SiteInstance in the same"
-                        + "SiteInstanceGroup and process as its initiator"),
+                        + " SiteInstanceGroup and process as its initiator"),
         Flag.baseFeature(GpuFeatures.CONDITIONALLY_SKIP_GPU_CHANNEL_FLUSH),
         Flag.baseFeature(
                 GpuFeatures.SYNC_POINT_GRAPH_VALIDATION,
@@ -587,7 +587,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 VizFeatures.ON_BEGIN_FRAME_THROTTLE_VIDEO,
                 "Enables throttling OnBeginFrame for video frame sinks"
-                        + "with a preferred framerate defined."),
+                        + " with a preferred framerate defined."),
         Flag.baseFeature(
                 PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT,
                 "This flag won't block MIDI by default in WebView. In fact "
@@ -849,7 +849,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.DEFER_SPECULATIVE_RFH_CREATION,
                 "Enables deferring the speculative render frame host creation when the"
-                        + "navigation starts"),
+                        + " navigation starts"),
         Flag.baseFeature(ContentFeatures.PWA_NAVIGATION_CAPTURING),
         Flag.baseFeature("TransportSecurityFileWriterSchedule"),
         Flag.baseFeature(

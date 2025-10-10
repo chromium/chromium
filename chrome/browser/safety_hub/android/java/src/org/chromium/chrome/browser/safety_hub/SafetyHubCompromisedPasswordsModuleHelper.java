@@ -36,7 +36,7 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
         mUnifiedModule = unifiedModule;
         assert mAccountCompromisedPasswordsCount > 0 || mLocalCompromisedPasswordsCount > 0
                 : "Compromised passwords count is not greater than zero in"
-                        + "CompromisedPasswordsModuleHelper";
+                        + " CompromisedPasswordsModuleHelper";
     }
 
     @Override

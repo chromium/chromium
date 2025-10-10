@@ -196,7 +196,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 Log.w(
                         TAG,
                         "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
-                                + "targetSdkVersion<T");
+                                + " targetSdkVersion<T");
                 return;
             }
             mAwSettings.setAlgorithmicDarkeningAllowed(allow);
