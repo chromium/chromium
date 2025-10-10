@@ -1,6 +1,6 @@
 {
-  "version": "70.3",
-  "log_list_timestamp": "2025-10-09T12:53:23Z",
+  "version": "72.1",
+  "log_list_timestamp": "2025-10-10T12:53:16Z",
   "operators": [
     {
       "name": "Google",
@@ -251,6 +251,38 @@
           }
         },
         {
+          "description": "DigiCert 'Wyvern2027h1'",
+          "log_id": "ABpdGhwtk3W2SFV4+C9xoa5u7zl9KXyK4xV7yt7hoB4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEastxYj1mntGuyv74k4f+yaIx+ZEzlSJ+iVTYWlw8SpSKJ4TfxYWuBhnETlhpyG/5seJn0mOSnVgXsZ1JRflI7g==",
+          "url": "https://wyvern.ct.digicert.com/2027h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-10T18:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'Wyvern2027h2'",
+          "log_id": "N6oHzCFvLm2RnHCdJNj3MbAPKxR8YhzAkaX6GoTYFt0=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuOg8hcgaYT/MShxpag2Hige0zsLzz8vOLZXp6faCdzM+Mn/njyU9ROAuwDxuu88/Grxn46kmehdOKVDFexbdSg==",
+          "url": "https://wyvern.ct.digicert.com/2027h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-10T18:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
           "description": "DigiCert 'Sphinx2025h2' Log",
           "log_id": "pELFBklgYVSPD9TqnPt6LSZFTYepfy/fRVn2J086hFQ=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQYxQE1SxGQW3f0ogbqN1Y8o09Mx06jI7tosDFKhSfzKHXlmeD6sYnilstXJ3GidUhV3BeySoNOPNiM7UUBu+aQ==",
@@ -296,6 +328,38 @@
           "temporal_interval": {
             "start_inclusive": "2026-07-01T00:00:00Z",
             "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'sphinx2027h1'",
+          "log_id": "RqI5Z8YNtkaHxm89+ZmUdpOmphEghFfVVefj0KHZtkY=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvirIq1XPwgwG7BnbMh2zoUbEt+T8z8XAtg9lo8jma+aaTQl8iVCypUFXtLpt4/SHaoUzbvcjDX/6B1IbL3OoIQ==",
+          "url": "https://sphinx.ct.digicert.com/2027h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-10T18:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert 'sphinx2027h2'",
+          "log_id": "H7D4qS2K3aEhd2wF4qouFbrLxitlOTaVV2qqtS4R0R0=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEUCe23M889mAsUVeTTBcNsAmP374ZWQboLdR8RdGwM3VZ6P/sDwhrL7wK4zrXPh3HwLDDLxDjvRBeivUSbpZSwA==",
+          "url": "https://sphinx.ct.digicert.com/2027h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-10-10T18:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
           }
         }
       ],
@@ -974,8 +1038,8 @@
           "monitoring_url": "https://tuscolo2027h1.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-07-29T21:00:00Z"
+            "usable": {
+              "timestamp": "2025-10-08T21:00:00Z"
             }
           },
           "temporal_interval": {
@@ -991,8 +1055,8 @@
           "monitoring_url": "https://tuscolo2027h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-07-29T21:00:00Z"
+            "usable": {
+              "timestamp": "2025-10-08T21:00:00Z"
             }
           },
           "temporal_interval": {
