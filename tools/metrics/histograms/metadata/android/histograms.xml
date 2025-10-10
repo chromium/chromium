@@ -4876,6 +4876,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ReaderModeCpa.Shown" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Tells whether Reader Mode CPA button can be shown i.e. has the space in the
+    toolbar. Recorded when Contextual page action controller chooses Reader Mode
+    for the action to display as CPA.
+  </summary>
+</histogram>
+
 <histogram name="Android.Reparent.TabGroup.Duration" units="ms"
     expires_after="2026-04-30">
   <owner>zheliooo@google.com</owner>

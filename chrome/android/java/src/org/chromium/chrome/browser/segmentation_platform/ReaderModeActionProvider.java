@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationS
 import org.chromium.chrome.browser.dom_distiller.ReaderModeMetrics;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -132,6 +133,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                 destroy();
             }
         }
+
+        private boolean hasTimedOut() {
+            return mSignalAccumulator.hasTimedOut();
+        }
     }
 
     private @Nullable OneshotDistillabilityObserver mDistillabilityObserver;
@@ -180,33 +185,49 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     @Override
     public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
-        if (action != AdaptiveToolbarButtonVariant.READER_MODE || tab == null) return;
+        if (tab == null) return;
+
+        // Rule out the other action chosen from all the collected signals, but should still handle
+        // timed-out ones to give a chance to Message UI that could have been held off until now(
+        // only for MTB-CCT).
+        boolean isReaderMode = action == AdaptiveToolbarButtonVariant.READER_MODE;
+        if (!(isReaderMode
+                || (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && hasSignalTimedOut()))) {
+            return;
+        }
+
         // When on a distilled page, don't count the action as shown and return immediately.
         if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
                 && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             return;
         }
-        ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
-                ReaderModeMetrics.ReaderModeContextualPageActionEvent.SHOWN);
-        // Always notify the rate limiter that the action was shown to ensure the rate limiting
-        // logic is applied.
-        ReaderModeActionRateLimiter.getInstance().onActionShown();
+
+        if (isReaderMode) {
+            ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
+                    ReaderModeMetrics.ReaderModeContextualPageActionEvent.SHOWN);
+            // Always notify the rate limiter that the action was shown to ensure the rate limiting
+            // logic is applied.
+            ReaderModeActionRateLimiter.getInstance().onActionShown();
+        }
 
         new Handler(Looper.getMainLooper())
                 .postDelayed(
                         () -> {
-                            if (tab.isLoading() || tab.isDestroyed()) {
-                                return;
-                            }
+                            if (tab.isDestroyed()) return;
+
                             ReaderModeManager readerModeManager =
                                     tab.getUserDataHost()
                                             .getUserData(ReaderModeManager.USER_DATA_KEY);
                             if (readerModeManager != null) {
                                 readerModeManager.onContextualPageActionShown(
-                                        mButtonVisibilitySupplier);
+                                        mButtonVisibilitySupplier, isReaderMode);
                             }
                         },
                         /* delayMillis= */ 500);
+    }
+
+    private boolean hasSignalTimedOut() {
+        return mDistillabilityObserver != null && mDistillabilityObserver.hasTimedOut();
     }
 
     @Override
