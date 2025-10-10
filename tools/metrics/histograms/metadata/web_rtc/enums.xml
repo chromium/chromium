@@ -170,6 +170,23 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Public"/>
 </enum>
 
+<!-- LINT.IfChange(LocalNetworkAccessRequestType) -->
+
+<enum name="LocalNetworkAccessRequestType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="LoopbackToLoopback"/>
+  <int value="2" label="LoopbackToLocal"/>
+  <int value="3" label="LoopbackToPublic"/>
+  <int value="4" label="LocalToLoopback"/>
+  <int value="5" label="LocalToLocal"/>
+  <int value="6" label="LocalToPublic"/>
+  <int value="7" label="PublicToLoopback"/>
+  <int value="8" label="PublicToLocal"/>
+  <int value="9" label="PublicToPublic"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h:LocalNetworkAccessRequestType) -->
+
 <enum name="PeerConnectionBundlePolicy">
   <int value="0" label="balanced"/>
   <int value="1" label="max-bundle"/>

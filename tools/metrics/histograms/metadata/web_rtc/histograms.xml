@@ -1489,6 +1489,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.LocalNetworkAccess.RequestType"
+    enum="LocalNetworkAccessRequestType" expires_after="2026-10-01">
+  <owner>hta@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Records the pair of IP address spaces for each potential outbound WebRTC
+    connection, including to peers (ICE candidates) and intermediary servers
+    (STUN/TURN).
+
+    This metric is recorded just before the connection attempt, when checking if
+    Local Network Access permission is required. The pair consists of the IP
+    address space of the document that created the PeerConnection (originator)
+    and the IP address space of the target.
+
+    A permission prompt is shown to the user when a connection is attempted to
+    an address space that is more private than the originator's (e.g., a public
+    website connecting to a private IP). This metric is primarily used to
+    estimate how frequently this prompt will be shown to users.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
     enum="PeerConnectionProvisionalAnswer" expires_after="2024-06-30">
   <owner>hta@chromium.org</owner>

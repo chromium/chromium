@@ -22,6 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -136,13 +137,18 @@ CreateMojoVideoEncoderMetricsProviderFactory(LocalFrame* local_frame) {
 
 network::mojom::IPAddressSpace FromSocketAddress(
     const webrtc::SocketAddress socket_address) {
-  if (socket_address.IsLoopbackIP()) {
-    return network::mojom::IPAddressSpace::kLoopback;
+  switch (socket_address.GetIPAddressType()) {
+    case webrtc::IPAddressType::kAny:
+      return network::mojom::IPAddressSpace::kPublic;
+    case webrtc::IPAddressType::kLoopback:
+      return network::mojom::IPAddressSpace::kLoopback;
+    case webrtc::IPAddressType::kPrivate:
+      return network::mojom::IPAddressSpace::kLocal;
+    case webrtc::IPAddressType::kPublic:
+      return network::mojom::IPAddressSpace::kPublic;
+    case webrtc::IPAddressType::kUnknown:
+      return network::mojom::IPAddressSpace::kUnknown;
   }
-  if (socket_address.IsPrivateIP()) {
-    return network::mojom::IPAddressSpace::kLocal;
-  }
-  return network::mojom::IPAddressSpace::kPublic;
 }
 
 // PeerConnectionDependencies wants to own the factory, so we provide a simple
@@ -180,6 +186,57 @@ class ProxyAsyncDnsResolverFactory final
   raw_ptr<IpcPacketSocketFactory, DanglingUntriaged> ipc_psf_;
 };
 
+LocalNetworkAccessRequestType GetLocalNetworkAccessRequestType(
+    network::mojom::IPAddressSpace originator,
+    network::mojom::IPAddressSpace target) {
+  if (originator == network::mojom::IPAddressSpace::kUnknown ||
+      target == network::mojom::IPAddressSpace::kUnknown) {
+    return LocalNetworkAccessRequestType::kUnknown;
+  }
+
+  switch (originator) {
+    case network::mojom::IPAddressSpace::kLoopback:
+      switch (target) {
+        case network::mojom::IPAddressSpace::kLoopback:
+          return LocalNetworkAccessRequestType::kLoopbackToLoopback;
+        case network::mojom::IPAddressSpace::kLocal:
+          return LocalNetworkAccessRequestType::kLoopbackToLocal;
+        case network::mojom::IPAddressSpace::kPublic:
+          return LocalNetworkAccessRequestType::kLoopbackToPublic;
+        case network::mojom::IPAddressSpace::kUnknown:
+          NOTREACHED();
+      }
+      break;
+    case network::mojom::IPAddressSpace::kLocal:
+      switch (target) {
+        case network::mojom::IPAddressSpace::kLoopback:
+          return LocalNetworkAccessRequestType::kLocalToLoopback;
+        case network::mojom::IPAddressSpace::kLocal:
+          return LocalNetworkAccessRequestType::kLocalToLocal;
+        case network::mojom::IPAddressSpace::kPublic:
+          return LocalNetworkAccessRequestType::kLocalToPublic;
+        case network::mojom::IPAddressSpace::kUnknown:
+          NOTREACHED();
+      }
+      break;
+    case network::mojom::IPAddressSpace::kPublic:
+      switch (target) {
+        case network::mojom::IPAddressSpace::kLoopback:
+          return LocalNetworkAccessRequestType::kPublicToLoopback;
+        case network::mojom::IPAddressSpace::kLocal:
+          return LocalNetworkAccessRequestType::kPublicToLocal;
+        case network::mojom::IPAddressSpace::kPublic:
+          return LocalNetworkAccessRequestType::kPublicToPublic;
+        case network::mojom::IPAddressSpace::kUnknown:
+          NOTREACHED();
+      }
+      break;
+    case network::mojom::IPAddressSpace::kUnknown:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 class LocalNetworkAccessPermission final
     : public webrtc::LocalNetworkAccessPermissionInterface {
  public:
@@ -196,10 +253,19 @@ class LocalNetworkAccessPermission final
   bool ShouldRequestPermission(
       const webrtc::SocketAddress& candidate_address) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
+
+    const auto target_address_space = FromSocketAddress(candidate_address);
+    base::UmaHistogramEnumeration(
+        "WebRTC.PeerConnection.LocalNetworkAccess.RequestType",
+        GetLocalNetworkAccessRequestType(originator_address_space_,
+                                         target_address_space));
+
+    if (!RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
+      return false;
+    }
 
     const bool is_less_public = network::IsLessPublicAddressSpace(
-        FromSocketAddress(candidate_address), originator_address_space_);
+        target_address_space, originator_address_space_);
 
     if (network::features::kLocalNetworkAccessChecksWebRTCLoopbackOnly.Get()) {
       return candidate_address.IsLoopbackIP() && is_less_public;
@@ -268,8 +334,6 @@ class LocalNetworkAccessPermissionFactory final
 
   std::unique_ptr<webrtc::LocalNetworkAccessPermissionInterface> Create()
       override {
-    CHECK(RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled());
-
     mojo::Remote<mojom::blink::PermissionService> permission_service;
     PostCrossThreadTask(
         *main_thread_task_runner_.get(), FROM_HERE,
@@ -929,10 +993,8 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     dependencies.allocator = CreatePortAllocator(web_frame);
   }
   dependencies.async_dns_resolver_factory = CreateAsyncDnsResolverFactory();
-  if (RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
-    dependencies.lna_permission_factory =
-        std::make_unique<LocalNetworkAccessPermissionFactory>(this);
-  }
+  dependencies.lna_permission_factory =
+      std::make_unique<LocalNetworkAccessPermissionFactory>(this);
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
@@ -1035,15 +1097,9 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
         std::make_unique<blink::EmptyNetworkManager>(network_manager_.get());
   }
 
-  std::unique_ptr<LocalNetworkAccessPermissionFactory> lna_permission_factory;
-  if (RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
-    lna_permission_factory =
-        std::make_unique<LocalNetworkAccessPermissionFactory>(this);
-  }
-
   auto port_allocator = std::make_unique<P2PPortAllocator>(
       std::move(network_manager), socket_factory_.get(), port_config,
-      std::move(lna_permission_factory));
+      std::make_unique<LocalNetworkAccessPermissionFactory>(this));
   if (IsValidPortRange(min_port, max_port))
     port_allocator->SetPortRange(min_port, max_port);
 

@@ -56,6 +56,25 @@ class RTCPeerConnectionHandler;
 class WebLocalFrame;
 class WebRtcAudioDeviceImpl;
 
+// The enum is used for logging. Entries should not be renumbered or reused.
+// Keep in sync with the corresponding enum in
+// tools/metrics/histograms/metadata/web_rtc/enums.xml.
+// LINT.IfChange(LocalNetworkAccessRequestType)
+enum class LocalNetworkAccessRequestType {
+  kUnknown = 0,
+  kLoopbackToLoopback = 1,
+  kLoopbackToLocal = 2,
+  kLoopbackToPublic = 3,
+  kLocalToLoopback = 4,
+  kLocalToLocal = 5,
+  kLocalToPublic = 6,
+  kPublicToLoopback = 7,
+  kPublicToLocal = 8,
+  kPublicToPublic = 9,
+  kMaxValue = kPublicToPublic,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/web_rtc/enums.xml:LocalNetworkAccessRequestType)
+
 // Object factory for RTC PeerConnections.
 class MODULES_EXPORT PeerConnectionDependencyFactory
     : public GarbageCollected<PeerConnectionDependencyFactory>,
