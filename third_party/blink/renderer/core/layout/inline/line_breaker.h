@@ -440,7 +440,7 @@ class CORE_EXPORT LineBreaker {
 
   LazyLineBreakIterator break_iterator_;
   HarfBuzzShaper shaper_;
-  ShapeResultSpacing<String> spacing_;
+  ShapeResultSpacing spacing_;
   const Hyphenation* hyphenation_ = nullptr;
 
   std::optional<wtf_size_t> hyphen_index_;

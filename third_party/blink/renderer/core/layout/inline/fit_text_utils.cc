@@ -121,7 +121,7 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
                                       LayoutUnit epsilon,
                                       WritingMode writing_mode,
                                       HarfBuzzShaper& shaper,
-                                      ShapeResultSpacing<String>& spacing,
+                                      ShapeResultSpacing& spacing,
                                       const InlineCursor& line,
                                       float scale,
                                       std::optional<float> limit,
@@ -256,7 +256,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     const InlineItemsData& items_data =
         node.ItemsData(cursor.CurrentItem()->UsesFirstLineStyle());
     HarfBuzzShaper shaper(items_data.text_content);
-    ShapeResultSpacing<String> spacing(items_data.text_content);
+    ShapeResultSpacing spacing(items_data.text_content);
     const auto limit = ComputeSizeLimit(fit_text, is_grow, node);
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {

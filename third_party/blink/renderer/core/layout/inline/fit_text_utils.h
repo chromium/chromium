@@ -65,7 +65,7 @@ class LineFitter {
   LineInfo& line_info_;
   const InlineItemsData& items_data_;
   HarfBuzzShaper shaper_;
-  ShapeResultSpacing<String> spacing_;
+  ShapeResultSpacing spacing_;
   const double device_pixel_ratio_;
   const LayoutUnit epsilon_;
 };

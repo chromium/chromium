@@ -50,7 +50,7 @@ class InlineNodeForTest : public InlineNode {
   bool IsNGShapeCacheAllowed(const String& text_content,
                              const Font* override_font,
                              const InlineItems& items,
-                             ShapeResultSpacing<String>& spacing) const {
+                             ShapeResultSpacing& spacing) const {
     return InlineNode::IsNGShapeCacheAllowed(text_content, override_font, items,
                                              spacing);
   }
@@ -1734,7 +1734,7 @@ TEST_F(InlineNodeTest, ShapeCacheDisabled) {
 
   const String& text_content(node.Text().c_str());
   InlineItems& items = node.Items();
-  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+  ShapeResultSpacing spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(
       node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
@@ -1760,7 +1760,7 @@ TEST_F(InlineNodeTest, ShapeCacheLongString) {
 
     const String& text_content(node.Text().c_str());
     InlineItems& items = node.Items();
-    ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+    ShapeResultSpacing spacing(text_content, node.IsSvgText());
 
     EXPECT_EQ(node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing),
               text_length <= NGShapeCache::kMaxTextLengthOfEntries);
@@ -1777,7 +1777,7 @@ TEST_F(InlineNodeTest, ShapeCacheMultiItems) {
   const String& text_content(node.Text().c_str());
   InlineItems& items = node.Items();
   EXPECT_EQ(5u, items.size());
-  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+  ShapeResultSpacing spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(
       node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
@@ -1794,7 +1794,7 @@ TEST_F(InlineNodeTest, ShapeCacheSpacingRequired) {
 
   const String& text_content(node.Text().c_str());
   InlineItems& items = node.Items();
-  ShapeResultSpacing<String> spacing(text_content, node.IsSvgText());
+  ShapeResultSpacing spacing(text_content, node.IsSvgText());
 
   EXPECT_FALSE(
       node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));

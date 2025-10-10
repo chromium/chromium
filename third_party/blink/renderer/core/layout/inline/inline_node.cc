@@ -1395,11 +1395,10 @@ void InlineNode::SegmentBidiRuns(InlineNodeData* data) const {
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
-bool InlineNode::IsNGShapeCacheAllowed(
-    const String& text_content,
-    const Font* override_font,
-    const InlineItems& items,
-    ShapeResultSpacing<String>& spacing) const {
+bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
+                                       const Font* override_font,
+                                       const InlineItems& items,
+                                       ShapeResultSpacing& spacing) const {
   if (!RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()) {
     return false;
   }
@@ -1448,7 +1447,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
   InlineItem::CheckIndex(*items);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  ShapeResultSpacing<String> spacing(
+  ShapeResultSpacing spacing(
       text_content,
       /*allow_word_spacing_anywhere=*/IsSvgText() ||
           (RuntimeEnabledFeatures::WordSpacingWhiteSpacePreEnabled() &&

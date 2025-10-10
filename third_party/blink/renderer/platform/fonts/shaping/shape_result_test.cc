@@ -461,7 +461,7 @@ TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
   auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
 
   // Letter spacing should not be applied.
-  ShapeResultSpacing<String> spacing(string);
+  ShapeResultSpacing spacing(string);
   FontDescription font_description;
   font_description.SetLetterSpacing(Length::Fixed(5));
   font_description.SetWordSpacing(Length::Fixed(20));

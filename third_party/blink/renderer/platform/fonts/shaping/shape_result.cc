@@ -983,12 +983,8 @@ inline bool IsCursiveScript(hb_script_t script) {
 }
 }  // anonymous namespace
 
-// TODO(kojii): VC2015 fails to explicit instantiation of a member function.
-// Typed functions + this private function are to instantiate instances.
-template <typename TextContainerType>
-float ShapeResult::ApplySpacingImpl(
-    ShapeResultSpacing<TextContainerType>& spacing,
-    int text_start_offset) {
+float ShapeResult::ApplySpacingImpl(ShapeResultSpacing& spacing,
+                                    int text_start_offset) {
   float offset = 0;
   float total_advance = 0;
   TextRunLayoutUnit space;
@@ -1008,9 +1004,9 @@ float ShapeResult::ApplySpacingImpl(
         continue;
       }
 
-      typename ShapeResultSpacing<TextContainerType>::ComputeSpacingParameters
-          parameters{.index = run_start_index + glyph_data.character_index,
-                     .original_advance = glyph_data.advance};
+      ShapeResultSpacing::ComputeSpacingParameters parameters{
+          .index = run_start_index + glyph_data.character_index,
+          .original_advance = glyph_data.advance};
       space = spacing.ComputeSpacing(parameters, offset,
                                      IsCursiveScript(run->script_));
       glyph_data.AddAdvance(space);
@@ -1035,24 +1031,13 @@ float ShapeResult::ApplySpacingImpl(
   return space;
 }
 
-float ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
+float ShapeResult::ApplySpacing(ShapeResultSpacing& spacing,
                                 int text_start_offset) {
   // For simplicity, we apply spacing once only. If you want to do multiple
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
   return ApplySpacingImpl(spacing, text_start_offset);
-}
-
-ShapeResult* ShapeResult::ApplySpacingToCopy(
-    ShapeResultSpacing<TextRun>& spacing,
-    const TextRun& run) const {
-  unsigned index_of_sub_run = spacing.Text().IndexOfSubRun(run);
-  DCHECK_NE(std::numeric_limits<unsigned>::max(), index_of_sub_run);
-  ShapeResult* result = MakeGarbageCollected<ShapeResult>(*this);
-  if (index_of_sub_run != std::numeric_limits<unsigned>::max())
-    result->ApplySpacingImpl(spacing, index_of_sub_run);
-  return result;
 }
 
 void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {

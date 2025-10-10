@@ -4455,7 +4455,7 @@ void LineBreaker::SetCurrentStyle(const ComputedStyle& style) {
                      style.WordBreak() != EWordBreak::kAutoPhrase));
       DCHECK_EQ(break_iterator_.Locale(), style.GetFontDescription().Locale());
     }
-    ShapeResultSpacing<String> spacing(spacing_.Text(), is_svg_text_);
+    ShapeResultSpacing spacing(spacing_.Text(), is_svg_text_);
     spacing.SetSpacing(style.GetFont()->GetFontDescription());
     DCHECK_EQ(spacing.LetterSpacing(), spacing_.LetterSpacing());
     DCHECK_EQ(spacing.WordSpacing(), spacing_.WordSpacing());

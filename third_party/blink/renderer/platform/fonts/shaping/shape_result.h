@@ -67,9 +67,7 @@ struct CharacterRange;
 class Font;
 struct GlyphIndexResult;
 struct ShapeResultRun;
-template <typename TextContainerType>
-class PLATFORM_EXPORT ShapeResultSpacing;
-class TextRun;
+class ShapeResultSpacing;
 class ShapeResultView;
 struct TabSize;
 
@@ -266,9 +264,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // |StartIndex()| is larger than the text in |ShapeResultSpacing|.
   //
   // The function returns spacing amount on the right of the last glyph.
-  float ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
-  ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
-                                  const TextRun&) const;
+  float ApplySpacing(ShapeResultSpacing&, int text_start_offset = 0);
   // Add `expansion` space before the first glyph.
   void ApplyLeadingExpansion(LayoutUnit expansion);
   // Add `expansion` space after the last glyph.
@@ -420,9 +416,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void ComputePositionData() const;
   void RecalcCharacterPositions() const;
 
-  template <typename TextContainerType>
-  float ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
-                         int text_start_offset = 0);
+  float ApplySpacingImpl(ShapeResultSpacing&, int text_start_offset = 0);
   template <bool is_horizontal_run>
   void ComputeGlyphPositions(ShapeResultRun*,
                              unsigned start_glyph,
