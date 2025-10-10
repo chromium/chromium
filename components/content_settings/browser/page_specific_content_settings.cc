@@ -1042,8 +1042,8 @@ void PageSpecificContentSettings::OnTwoSitePermissionChanged(
     case CONTENT_SETTING_ALLOW:
     case CONTENT_SETTING_BLOCK: {
       bool is_allowed = content_setting == CONTENT_SETTING_ALLOW;
-      if (!site_map.contains(requesting_site) ||
-          site_map[requesting_site] != is_allowed) {
+      if (auto it = site_map.find(requesting_site);
+          it == site_map.end() || it->second != is_allowed) {
         site_map[requesting_site] = is_allowed;
         access_changed = true;
       }
@@ -1722,20 +1722,22 @@ const base::Time PageSpecificContentSettings::GetLastUsedTime(
 
 void PageSpecificContentSettings::OnActivityIndicatorBubbleOpened(
     ContentSettingsType type) {
-  if (indicators_hiding_delay_timer_.contains(type) &&
-      indicators_hiding_delay_timer_[type].IsRunning()) {
-    indicators_hiding_delay_timer_[type].Stop();
-  } else if (media_blocked_indicator_timer_.contains(type) &&
-             media_blocked_indicator_timer_[type].IsRunning()) {
-    media_blocked_indicator_timer_[type].Stop();
+  if (auto it = indicators_hiding_delay_timer_.find(type);
+      it != indicators_hiding_delay_timer_.end() && it->second.IsRunning()) {
+    it->second.Stop();
+  } else if (auto jt = media_blocked_indicator_timer_.find(type);
+             jt != media_blocked_indicator_timer_.end() &&
+             jt->second.IsRunning()) {
+    jt->second.Stop();
   }
 }
 
 void PageSpecificContentSettings::OnActivityIndicatorBubbleClosed(
     ContentSettingsType type) {
-  if (indicators_hiding_delay_timer_.contains(type)) {
+  if (auto it = indicators_hiding_delay_timer_.find(type);
+      it != indicators_hiding_delay_timer_.end()) {
     // In use indicator timer was stopped, relaunch.
-    indicators_hiding_delay_timer_[type].Start(
+    it->second.Start(
         FROM_HERE, kMediaIndicatorHoldAfterUseDuration,
         base::BindOnce(
             &PageSpecificContentSettings::OnCapturingStateChangedInternal,
