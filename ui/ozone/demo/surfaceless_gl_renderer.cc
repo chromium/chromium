@@ -55,7 +55,7 @@ OverlaySurfaceCandidate MakeOverlayCandidate(int z_order,
   // Use default display format since this should be compatible with most
   // devices.
   overlay_candidate.format =
-      viz::GetSharedImageFormat(display::DisplaySnapshot::PrimaryFormat());
+      display::DisplaySnapshot::PrimarySharedImageFormat();
 
   // The bounds rectangle of the candidate overlay buffer.
   overlay_candidate.buffer_size = bounds_rect.size();
