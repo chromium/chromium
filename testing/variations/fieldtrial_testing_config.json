@@ -23299,6 +23299,26 @@
             ]
         }
     ],
+    "SessionRestoreInfoBar": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ContinueDefault",
+                    "params": {
+                        "continue_session": "true"
+                    },
+                    "enable_features": [
+                        "SessionRestoreInfoBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "SettingSearchExplorationHaTS": [
         {
             "platforms": [
