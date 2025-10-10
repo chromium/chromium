@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -537,6 +538,12 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
 
   const EntityDataManager* entity_manager = client.GetEntityDataManager();
   if (!entity_manager || !form_structure || !trigger_autofill_field) {
+    callback({SuggestionDataSource::kAutofillAi, {}});
+    return;
+  }
+
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field)) {
     callback({SuggestionDataSource::kAutofillAi, {}});
     return;
   }

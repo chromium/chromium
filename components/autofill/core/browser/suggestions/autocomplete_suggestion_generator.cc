@@ -4,11 +4,15 @@
 
 #include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
 
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
 namespace autofill {
@@ -67,6 +71,20 @@ void AutocompleteSuggestionGenerator::FetchSuggestionData(
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!trigger_field.should_autocomplete()) {
+    std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
+    return;
+  }
+
+  auto is_autofillable = [](const std::unique_ptr<AutofillField>& field) {
+    return !field->ShouldSuppressSuggestionsAndFillingByDefault() &&
+           !field->Type().GetTypes().contains(UNKNOWN_TYPE);
+  };
+  // If Autofill (not Autocomplete) suggestions may be shown on some other field
+  // of the form, we want to suppress Autocomplete suggestions on this field.
+  if (trigger_autofill_field &&
+      SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field) &&
+      std::ranges::any_of(*form_structure, is_autofillable)) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }

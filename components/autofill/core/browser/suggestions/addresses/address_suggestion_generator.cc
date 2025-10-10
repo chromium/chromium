@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -928,6 +929,10 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field) {
   if (!form_structure || !trigger_autofill_field) {
+    return {};
+  }
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field)) {
     return {};
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

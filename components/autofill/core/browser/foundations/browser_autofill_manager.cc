@@ -143,6 +143,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/browser/suggestions/valuables/valuable_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
@@ -386,16 +387,6 @@ const char* SubmissionSourceToString(SubmissionSource source) {
   return "Unknown";
 }
 
-// Returns true if autocomplete=unrecognized (address) fields should receive
-// suggestions.
-bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return true;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-}
-
 // Checks if the `credit_card` needs to be fetched in order to complete the
 // current filling flow.
 // TODO(crbug.com/40227496): Only use parsed data.
@@ -572,8 +563,7 @@ SuggestionsContext BuildSuggestionsContext(
   context.filling_product =
       GetPreferredSuggestionFillingProduct(autofill_field->Type());
 
-  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields() &&
-      autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(*autofill_field)) {
     // If non-Autocomplete suggestions may be shown on some other field of the
     // form, we want to suppress Autocomplete suggestions on this field.
     // Setting `SuggestionsContext::suppress_reason` to

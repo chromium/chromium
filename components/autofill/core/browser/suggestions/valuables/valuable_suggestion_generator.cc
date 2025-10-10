@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -305,6 +306,12 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
   if (!trigger_autofill_field || !valuables_manager_ ||
       trigger_autofill_field->Type().GetTypes().contains_none(
           {LOYALTY_MEMBERSHIP_ID, EMAIL_OR_LOYALTY_MEMBERSHIP_ID})) {
+    callback({SuggestionDataSource::kLoyaltyCard, {}});
+    return;
+  }
+
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field)) {
     callback({SuggestionDataSource::kLoyaltyCard, {}});
     return;
   }

@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -163,6 +164,12 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
   // fields.
   if (trigger_field_type_ == UNKNOWN_TYPE ||
       trigger_field_type_ == NAME_FIRST) {
+    callback({SuggestionDataSource::kIdentityCredential, {}});
+    return;
+  }
+
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field)) {
     callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
