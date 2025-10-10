@@ -21,6 +21,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.command === 'check-readerable') {
     willRespondAsynchronously = true;
     handleCheckReaderable(request.tabId, sendResponse);
+  } else if (request.command === 'distill') {
+    willRespondAsynchronously = true;
+    handleDistill(request.tabId, /*inNewTab=*/ false, sendResponse);
+  } else if (request.command === 'distill-new') {
+    willRespondAsynchronously = true;
+    handleDistill(request.tabId, /*inNewTab=*/ true, sendResponse);
+  } else if (request.command === 'show-distilled-new') {
+    displayDistilledContent(request.data, null);
   }
 
   return willRespondAsynchronously;
@@ -59,6 +67,33 @@ function handleCheckReaderable(tabId, sendResponse) {
       });
 }
 
+function handleDistill(tabId, inNewTab, sendResponse) {
+  chrome.scripting.executeScript(
+      {
+        target: {tabId: tabId},
+        files: [
+          'Readability.js',
+          'dom_distiller_viewer.js',
+          'article_renderer.js',
+          'article_processor.js',
+          'distiller.js',
+        ]
+      },
+      (results) => {
+        if (chrome.runtime.lastError || !results || !results[0]) {
+          console.error(
+              chrome.runtime.lastError?.message || 'Script injection failed.');
+        } else {
+          const renderedHtml = results[0].result;
+          if (renderedHtml) {
+            const data = {html: renderedHtml};
+            displayDistilledContent(data, inNewTab ? null : tabId);
+          }
+        }
+        sendResponse({});
+      });
+}
+
 async function openClonedPageWithData(data) {
   // We can't pass the page content directly to the new tab, so we store it
   // in session storage with a temporary ID and pass that ID in the URL.
@@ -68,3 +103,20 @@ async function openClonedPageWithData(data) {
   chrome.tabs.create({url: clonedUrl});
 }
 
+/**
+ * Displays the given distilled content in a viewer tab.
+ * @param {object} data The data to display, typically {html: '...'}.
+ * @param {?number} tabId The ID of the tab to update. If null, a new tab
+ *     will be created.
+ */
+async function displayDistilledContent(data, tabId) {
+  const id = `viewer-${Date.now()}`;
+  await chrome.storage.session.set({[id]: data});
+  const viewerUrl = chrome.runtime.getURL(`viewer.html?id=${id}`);
+
+  if (tabId == null) {
+    chrome.tabs.create({url: viewerUrl});
+  } else {
+    chrome.tabs.update(tabId, {url: viewerUrl});
+  }
+}

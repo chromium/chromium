@@ -10,6 +10,7 @@
 const PageMode = {
   ORIGINAL: 'original',
   CLONED: 'cloned',
+  VIEWER: 'viewer',
   // Other modes will be added in subsequent CLs.
 };
 
@@ -23,13 +24,21 @@ const POPUP_CONFIG = {
     buttons: [
       {text: 'Clone', command: 'clone-new', target: 'runtime'},
       {text: 'Readerable?', command: 'check-readerable', target: 'runtime'},
+      {text: 'Distill', command: 'distill', target: 'runtime'},
+      {text: 'Distill New', command: 'distill-new', target: 'runtime'},
     ],
   },
   [PageMode.CLONED]: {
     message: 'This is a cloned page.',
     buttons: [
       {text: 'Readerable?', command: 'check-readerable', target: 'tab'},
+      {text: 'Distill', command: 'distill', target: 'tab'},
+      {text: 'Distill New', command: 'distill-new', target: 'tab'},
     ],
+  },
+  [PageMode.VIEWER]: {
+    message: 'This is a distilled page.',
+    buttons: [],
   },
 };
 
@@ -103,12 +112,15 @@ chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
   }
 
   const clonedUrl = chrome.runtime.getURL('cloned.html');
+  const viewerUrl = chrome.runtime.getURL('viewer.html');
   let pageMode = PageMode.ORIGINAL;
   if (tab.url.startsWith(clonedUrl)) {
     pageMode = PageMode.CLONED;
+  } else if (tab.url.startsWith(viewerUrl)) {
+    pageMode = PageMode.VIEWER;
   }
   // TODO(crrev.com/449799192): Add logic to detect other page modes (e.g.,
-  // viewer).
+  // metadata).
 
   const container = document.getElementById('popup-content');
   renderPopup(container, pageMode, tab.id);
