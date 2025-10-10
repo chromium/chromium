@@ -51,7 +51,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         <div class="image-container">
           <img class="sync-history-illustration" alt="">
         </div>
-        <div class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</div>
+        <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
         <div id="signed-out-sync-history-promo-desc"
             class="sync-history-promo-desc">
           $i18n{syncHistoryPromoBodySignedOut}
@@ -78,9 +78,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
           <img id="sign-in-pending-avatar" class="avatar"
               src="${this.accountInfo_.accountImageSrc.url}" alt="">
         </div>
-        <div class="sync-history-promo">
-          $i18n{turnOnSyncHistoryPromo}
-        </div>
+        <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
 
         ${this.isSignInState_(
           HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS) ? html`
@@ -106,9 +104,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
             <img id="signed-in-avatar" class="avatar"
                 src="${this.accountInfo_.accountImageSrc.url}" alt="">
           </div>
-          <div class="sync-history-promo">
-            $i18n{turnOnSyncHistoryPromo}
-          </div>
+          <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
           <div id="signed-in-sync-history-promo-desc"
               class="sync-history-promo-desc">
             $i18n{turnOnSignedInSyncHistoryPromoBodySignInSyncOff}
