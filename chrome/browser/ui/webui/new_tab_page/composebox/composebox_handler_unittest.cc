@@ -90,8 +90,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         mock_page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         std::move(contextual_session_handle), service_->GetSession(session_id),
-        std::move(metrics_recorder_ptr), profile(), web_contents(),
-        /*metrics_reporter=*/nullptr);
+        std::move(metrics_recorder_ptr), profile(), web_contents());
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }

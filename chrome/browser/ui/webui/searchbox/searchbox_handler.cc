@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -297,20 +296,17 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                             Profile* profile,
                                             bool enable_voice_search,
                                             bool enable_lens_search) {
-  // Embedders which are served from chrome-untrusted:// URLs should override
-  // this to false. The chrome.timeTicks capability that the metrics reporter
-  // depends on is not defined in chrome-untrusted environments and attempting
-  // to use it will lead to a renderer process crash. See
-  // http://g/chrome-webui/haW6I9yt-uA/38ckX-aGAgAJ for details.
-  source->AddBoolean("reportMetrics", true);
-
   // The WebUI Omnibox code will override this to `true` to adjust various
   // color and layout options.
   source->AddBoolean("isTopChromeSearchbox", false);
-
   // The lens searchboxes overrides this to true to adjust various color and
   // layout options.
   source->AddBoolean("isLensSearchbox", false);
+
+  source->AddBoolean("reportMetrics", false);
+  source->AddString("charTypedToPaintMetricName", "");
+  source->AddString("resultChangedToPaintMetricName", "");
+
   source->AddBoolean("forceHideEllipsis", false);
   source->AddBoolean("enableThumbnailSizingTweaks", false);
   source->AddBoolean("enableCsbMotionTweaks", false);
@@ -757,13 +753,10 @@ SearchboxHandler::SearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    MetricsReporter* metrics_reporter,
     std::unique_ptr<OmniboxController> controller)
     : profile_(profile),
       web_contents_(web_contents),
-      metrics_reporter_(metrics_reporter),
       owned_controller_(std::move(controller)),
-      page_set_(false),
       page_handler_(this, std::move(pending_page_handler)) {
   controller_ = owned_controller_.get();
 }
@@ -774,13 +767,15 @@ SearchboxHandler::~SearchboxHandler() {
 }
 
 bool SearchboxHandler::IsRemoteBound() const {
-  return page_set_;
+  return page_.is_bound();
 }
 
 void SearchboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
-  page_set_ = page_.is_bound();
+  if (page_is_bound_callback_for_testing_) {
+    std::move(page_is_bound_callback_for_testing_).Run();
+  }
 }
 
 void SearchboxHandler::OnFocusChanged(bool focused) {
@@ -971,9 +966,6 @@ void SearchboxHandler::GetPlaceholderConfig(
 
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
-  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
-    metrics_reporter_->Mark("ResultChanged");
-  }
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller()->input().text(),
       autocomplete_controller()->result(), edit_model(),
@@ -1034,6 +1026,15 @@ OmniboxController* SearchboxHandler::omnibox_controller() {
 
 AutocompleteController* SearchboxHandler::autocomplete_controller() {
   return omnibox_controller()->autocomplete_controller();
+}
+
+void SearchboxHandler::set_page_is_bound_callback_for_testing(
+    base::OnceClosure callback) {
+  if (page_.is_bound() && callback) {
+    std::move(callback).Run();
+    return;
+  }
+  page_is_bound_callback_for_testing_ = std::move(callback);
 }
 
 OmniboxEditModel* SearchboxHandler::edit_model() {

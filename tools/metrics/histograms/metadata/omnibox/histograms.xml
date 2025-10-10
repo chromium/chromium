@@ -2543,6 +2543,47 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.WebUI.ConstructionToFirstShownDuration"
+    units="ms" expires_after="2026-09-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the time between the WebUI page load which happens when the omnibox
+    popup presenter is constructed and the first time the popup widget is shown.
+    Given that the WebUI page begins the asynchronous process of loading its
+    resources, initialization, and binding immediately after it is loaded, this
+    metric can be seen as a time budget for the WebUI page remote to be bound
+    and ready to receive calls. Recorded at most once per browser window.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall"
+    enum="Boolean" expires_after="2026-09-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether WebUI page remote is bound and ready to receive calls when
+    the WebUI Handler attempts to make its first call to the WebUI Page.
+    Recorded at most once per browser window.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint"
+    units="ms" expires_after="2026-09-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the time between AutocompleteController::Observer's OnResultChanged
+    is called and the time when the &lt;cr-searchbox-dropdown&gt; is ready to
+    render the results. If there are multiple calls to OnResultChanged before
+    the results are rendered, logs the time since the earliest. This is
+    Comparable to Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint but excludes
+    the time taken to send the input to the browser and process it. Similarly
+    this does not take into account the time the DOM change task spends in the
+    message loop nor its duration.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ProviderTime2.{OmniboxProvider}" units="ms"
     expires_after="2026-03-22">
   <owner>jdonnelly@chromium.org</owner>
@@ -3967,32 +4008,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.WebUI.FirstUpdate" units="ms"
-    expires_after="2025-11-03">
-  <owner>orinj@chromium.org</owner>
+<histogram name="Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint" units="ms"
+    expires_after="2026-09-25">
+  <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Records the number of milliseconds between the webui omnibox popup
-    construction and its first UpdatePopupAppearance call. This measures how
-    long the popup existed before first use. Since the webui begins the
-    asynchronous process of initialization and remote binding immediately on
-    construction, this metric can be seen as a time budget for handler
-    preparation. See also Omnibox.WebUI.HandlerReadyOnFirstAccess.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.WebUI.HandlerReadyOnFirstAccess" enum="Boolean"
-    expires_after="2025-11-03">
-  <owner>orinj@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the ready state of the webui handler when first accessed. When this
-    is true, the page loaded and the handler was ready on time. When this is
-    false, it indicates that OmniboxPopupPresenter::GetHandler returned nullptr
-    at least once because the page wasn't loaded before the first attempt to
-    communicate via the handler. Recorded once per omnibox popup presenter
-    instantiation, when the webui omnibox popup page handler is first used; so,
-    at most once per browser window.
+    Records the time between a keystroke being typed in the &lt;cr-searchbox&gt;
+    and the time when the &lt;cr-searchbox-dropdown&gt; is ready to render the
+    results. If there are multiple keystrokes before the results are rendered,
+    logs the time since the earliest. This does not take into account the time
+    the DOM change task spends in the message loop nor its duration.
   </summary>
 </histogram>
 
@@ -4484,36 +4509,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
   <token key="NavigationPrefetchOnly" variants="NavigationPrefetchOnly"/>
-</histogram>
-
-<histogram name="Realbox.CharTypedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2026-03-15">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the time taken between a keystroke being typed in the NTP realbox
-    and the time when we're ready to render the results in the DOM. If there are
-    multiple keystrokes before the results are rendered, logs the time since the
-    earliest. This is comparable to Omnibox.CharTypedToRepaintLatency.ToPaint as
-    it does not take into account the time the DOM change task spends in the
-    message loop nor its duration.
-  </summary>
-</histogram>
-
-<histogram name="Realbox.ResultChangedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2025-01-05">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the time taken between AutocompleteController::Observer's
-    OnResultChanged is called and the time when we're ready to render the
-    results in the NTP realbox. If there are multiple calls to OnResultChanged
-    before the results are rendered, logs the time since the earliest. This is
-    comparable to Realbox.CharTypedToRepaintLatency.ToPaint but excludes the
-    time taken to send the input to the browser and process it. Similarly this
-    does not take into account the time the DOM change task spends in the
-    message loop nor its duration.
-  </summary>
 </histogram>
 
 <histogram name="ShortcutsProvider.DatabaseSize" units="units"

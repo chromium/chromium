@@ -25,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
-class MetricsReporter;
 class Profile;
 class SkBitmap;
 
@@ -66,7 +65,6 @@ class ContextualSearchboxHandler
           pending_searchbox_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter,
       std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
       std::unique_ptr<OmniboxController> controller,
       std::unique_ptr<ContextualSessionService::SessionHandle>

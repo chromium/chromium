@@ -104,13 +104,6 @@ bool OmniboxPopupPresenter::IsShown() const {
   return !!widget_;
 }
 
-WebuiOmniboxHandler* OmniboxPopupPresenter::GetHandler() {
-  if (auto* content = GetOmniboxPopupWebUIContent()) {
-    return content->GetHandler();
-  }
-  return nullptr;
-}
-
 void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
   if (widget_) {
     // The width is known, and is the basis for consistent web content rendering
@@ -151,10 +144,6 @@ void OmniboxPopupPresenter::OnWidgetClosed(
       AsViewClass<RoundedOmniboxResultsFrame>(widget_->GetContentsView())
           ->ExtractContents());
   widget_.reset();
-}
-
-bool OmniboxPopupPresenter::IsHandlerReady() {
-  return GetOmniboxPopupWebUIContent()->IsHandlerReady();
 }
 
 void OmniboxPopupPresenter::ReleaseWidget() {

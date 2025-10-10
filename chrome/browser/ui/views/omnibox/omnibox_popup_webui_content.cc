@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -41,21 +39,6 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
 }
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
-
-WebuiOmniboxHandler* OmniboxPopupWebUIContent::GetHandler() {
-  const bool ready = IsHandlerReady();
-  if (!requested_handler_) {
-    // Only log on first access.
-    requested_handler_ = true;
-    base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReadyOnFirstAccess", ready);
-  }
-  if (!ready) {
-    return nullptr;
-  }
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler();
-}
 
 void OmniboxPopupWebUIContent::AddedToWidget() {
   views::WebView::AddedToWidget();
@@ -95,13 +78,6 @@ bool OmniboxPopupWebUIContent::HandleKeyboardEvent(
     return controller_->edit_model()->OnEscapeKeyPressed();
   }
   return false;
-}
-
-bool OmniboxPopupWebUIContent::IsHandlerReady() {
-  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
-      GetWebContents()->GetWebUI()->GetController());
-  return omnibox_popup_ui->handler() &&
-         omnibox_popup_ui->handler()->IsRemoteBound();
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIContent)

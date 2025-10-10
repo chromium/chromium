@@ -42,10 +42,6 @@ class OmniboxPopupPresenter : public views::ViewObserver {
   // Tells whether the popup widget exists.
   bool IsShown() const;
 
-  // Get the handler for communicating with the WebUI interface.
-  // Returns nullptr if handler is not ready.
-  WebuiOmniboxHandler* GetHandler();
-
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
@@ -55,9 +51,6 @@ class OmniboxPopupPresenter : public views::ViewObserver {
   friend class OmniboxPopupViewWebUITest;
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
-
-  // Tells whether the WebUI handler is loaded and ready to receive calls.
-  bool IsHandlerReady();
 
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget();
@@ -76,9 +69,6 @@ class OmniboxPopupPresenter : public views::ViewObserver {
   // The popup widget that contains this WebView. Created and closed by `this`;
   // owned and destroyed by the OS.
   std::unique_ptr<views::Widget> widget_;
-
-  // Whether any call to `GetHandler` has been made.
-  bool requested_handler_ = false;
 
   // Whether or not the WebUI popup includes the `location_bar_view` cutout.
   bool include_location_bar_cutout_ = false;

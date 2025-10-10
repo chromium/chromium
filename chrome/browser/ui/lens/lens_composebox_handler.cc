@@ -33,7 +33,6 @@ LensComposeboxHandler::LensComposeboxHandler(
           std::move(pending_searchbox_handler),
           profile,
           web_contents,
-          /*metrics_reporter=*/nullptr,
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
               std::make_unique<composebox::ComposeboxOmniboxClient>(

@@ -28,13 +28,11 @@ ComposeboxHandler::ComposeboxHandler(
         secondary_contextual_session_handle,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
-    content::WebContents* web_contents,
-    MetricsReporter* metrics_reporter)
+    content::WebContents* web_contents)
     : ContextualSearchboxHandler(
           std::move(pending_searchbox_handler),
           profile,
           web_contents,
-          metrics_reporter,
           std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,

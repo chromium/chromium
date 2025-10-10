@@ -194,7 +194,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
         pending_searchbox_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    MetricsReporter* metrics_reporter,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     std::unique_ptr<OmniboxController> controller,
     std::unique_ptr<ContextualSessionService::SessionHandle>
@@ -202,7 +201,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        profile,
                        web_contents,
-                       metrics_reporter,
                        std::move(controller)),
       contextual_session_handle_(std::move(contextual_session_handle)),
       composebox_metrics_recorder_(std::move(composebox_metrics_recorder)),

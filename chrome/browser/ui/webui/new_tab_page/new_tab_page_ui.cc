@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -852,8 +851,6 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  MetricsReporterService* service =
-      MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   std::unique_ptr<ContextualSessionService::SessionHandle>
       contextual_session_handle;
   std::unique_ptr<ContextualSessionService::SessionHandle>
@@ -877,8 +874,7 @@ void NewTabPageUI::BindInterface(
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), std::move(contextual_session_handle),
       std::move(secondary_contextual_session_handle),
-      std::move(composebox_metrics_recorder), profile_, web_contents(),
-      service->metrics_reporter());
+      std::move(composebox_metrics_recorder), profile_, web_contents());
 }
 
 void NewTabPageUI::BindInterface(
@@ -1078,8 +1074,6 @@ void NewTabPageUI::CreatePageHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
-  MetricsReporterService* service =
-      MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   auto* contextual_session_service =
       ContextualSessionServiceFactory::GetForProfile(profile_);
   auto contextual_session_handle = contextual_session_service->CreateSession(
@@ -1096,7 +1090,7 @@ void NewTabPageUI::CreatePageHandler(
       std::move(secondary_contextual_session_handle),
       std::make_unique<ComposeboxMetricsRecorder>(
           kComposeboxMetricsReporterPrefName),
-      profile_, web_contents(), service->metrics_reporter());
+      profile_, web_contents());
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));

@@ -41,9 +41,16 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
-  WebuiOmniboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
   source->AddBoolean("isTopChromeSearchbox", true);
+
+  source->AddBoolean("reportMetrics", true);
+  source->AddString("charTypedToPaintMetricName",
+                    "Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint");
+  source->AddString(
+      "resultChangedToPaintMetricName",
+      "Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint");
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,

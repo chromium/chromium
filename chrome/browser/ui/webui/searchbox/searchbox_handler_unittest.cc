@@ -105,8 +105,8 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         /*contextual_session_handle=*/nullptr,
         /*secondary_contextual_session_handle=*/nullptr,
-        /*composebox_metrics_recorder=*/nullptr, profile(), web_contents_.get(),
-        /*metrics_reporter=*/nullptr);
+        /*composebox_metrics_recorder=*/nullptr, profile(),
+        web_contents_.get());
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -117,8 +117,8 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
 };
 
 TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
+  SearchboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile());
 
   EXPECT_EQ("CGQ", *source()->GetLocalizedStrings()->FindString(
                        "searchboxLensVariations"));
@@ -231,8 +231,7 @@ class LensSearchboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<LensSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
-        lens_searchbox_client_.get());
+        /*web_contents=*/nullptr, lens_searchbox_client_.get());
 
     handler_->SetPage(page_.BindAndGetRemote());
   }

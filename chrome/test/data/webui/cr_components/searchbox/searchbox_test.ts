@@ -128,6 +128,7 @@ suite('NewTabPageRealboxTest', () => {
       searchboxDefaultIcon: 'search.svg',
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
+      reportMetrics: true,
     });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/strings/utf_string_conversions.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,8 +82,8 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
     : SearchboxHandler(std::move(pending_page_handler),
                        profile,
                        web_contents,
-                       metrics_reporter,
-                       /*controller=*/nullptr) {
+                       /*controller=*/nullptr),
+      metrics_reporter_(metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the
   // `OmniboxView`.
   CHECK(omnibox_controller);
@@ -94,9 +94,41 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
 
+void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
+                                          bool default_match_changed) {
+  const bool ready = IsRemoteBound();
+  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("FirstAccess")) {
+    metrics_reporter_->Mark("FirstAccess");
+    base::UmaHistogramBoolean(
+        "Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall", ready);
+  }
+
+  // Ignore the call until the page remote is bound and ready to receive calls.
+  if (!ready) {
+    return;
+  }
+
+  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
+    metrics_reporter_->Mark("ResultChanged");
+  }
+  SearchboxHandler::OnResultChanged(controller, default_match_changed);
+}
+
 void WebuiOmniboxHandler::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection selection) {
+  const bool ready = IsRemoteBound();
+  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("FirstAccess")) {
+    metrics_reporter_->Mark("FirstAccess");
+    base::UmaHistogramBoolean("Omnibox.Popup.WebUI.PageIsReadyOnFirstCall",
+                              ready);
+  }
+
+  // Ignore the call until the page remote is bound and ready to receive calls.
+  if (!ready) {
+    return;
+  }
+
   page_->UpdateSelection(
       searchbox::mojom::OmniboxPopupSelection::New(
           old_selection.line, ConvertLineState(old_selection.state),

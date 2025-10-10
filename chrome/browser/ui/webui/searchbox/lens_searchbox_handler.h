@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 
-class MetricsReporter;
 class LensSearchboxClient;
 class Profile;
 
@@ -21,7 +20,6 @@ class LensSearchboxHandler : public SearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter,
       LensSearchboxClient* lens_searchbox_client);
 
   ~LensSearchboxHandler() override;

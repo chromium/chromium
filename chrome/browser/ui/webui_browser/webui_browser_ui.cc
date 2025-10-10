@@ -102,6 +102,13 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  // TODO(crbug.com/445510209): Uncomment after installing WebUIOmniboxHandler.
+  // source->AddBoolean("reportMetrics", true);
+  // source->AddString("charTypedToPaintMetricName",
+  //                   "Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint");
+  // source->AddString(
+  //     "resultChangedToPaintMetricName",
+  //     "Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint");
 }
 
 WebUIBrowserUI::~WebUIBrowserUI() = default;
@@ -128,11 +135,13 @@ void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   content::WebUI* webui = web_ui();
   content::WebContents* web_contents = webui->GetWebContents();
+  // TODO(crbug.com/445510209): Pass `metrics_reporter_` after installing a
+  // WebUIOmniboxHandler.
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), /*contextual_session_handle=*/nullptr,
       /*secondary_contextual_session_handle=*/nullptr,
-      /*composebox_metrics_recorder=*/nullptr,
-      Profile::FromWebUI(webui), web_contents, &metrics_reporter_);
+      /*composebox_metrics_recorder=*/nullptr, Profile::FromWebUI(webui),
+      web_contents);
 }
 
 void WebUIBrowserUI::BindInterface(

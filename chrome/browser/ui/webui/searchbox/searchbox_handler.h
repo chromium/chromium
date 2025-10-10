@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -20,7 +21,6 @@
 #include "ui/gfx/vector_icon_types.h"
 
 class GURL;
-class MetricsReporter;
 class OmniboxController;
 class Profile;
 class OmniboxEditModel;
@@ -108,6 +108,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                    bool meta_key,
                    bool shift_key) override {}
 
+  // Stores `callback` to be run when the page remote is bound and ready to
+  // receive calls. Runs `callback` immediately if the remote is already bound.
+  void set_page_is_bound_callback_for_testing(base::OnceClosure callback);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
@@ -117,7 +121,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter,
       std::unique_ptr<OmniboxController> controller);
   ~SearchboxHandler() override;
 
@@ -129,7 +132,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<MetricsReporter> metrics_reporter_;
   raw_ptr<OmniboxController> controller_;
   // Children classes should use `omnibox_controller()` or `controller_`.
   std::unique_ptr<OmniboxController> owned_controller_;
@@ -138,10 +140,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                           AutocompleteController::Observer>
       autocomplete_controller_observation_{this};
 
-  // Since mojo::Remote is not thread-safe, use an atomic to signal readiness.
-  std::atomic<bool> page_set_;
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
+  base::OnceClosure page_is_bound_callback_for_testing_;
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       const std::u16string& input,

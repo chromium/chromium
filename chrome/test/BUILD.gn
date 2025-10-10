@@ -1152,8 +1152,6 @@ static_library("test_support") {
       "../browser/ui/views/media_router/app_menu_test_api_views.cc",
       "../browser/ui/views/omnibox/omnibox_popup_view_views_test.cc",
       "../browser/ui/views/omnibox/omnibox_popup_view_views_test.h",
-      "../browser/ui/views/omnibox/omnibox_popup_view_webui_test.cc",
-      "../browser/ui/views/omnibox/omnibox_popup_view_webui_test.h",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.cc",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.h",
       "../browser/ui/views/profiles/profiles_pixel_test_utils.cc",
