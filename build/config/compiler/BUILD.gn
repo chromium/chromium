@@ -142,9 +142,14 @@ declare_args() {
   # needs to be evaluated before enabling it there as well.
   init_stack_vars = !(is_android && is_official_build)
 
-  # Zero init has favorable performance/size tradeoffs for Chrome OS
-  # but was not evaluated for other platforms.
-  init_stack_vars_zero = is_chromeos
+  # Specialization of `init_stack_vars` where locals are initialized with
+  # zeroes instead of patterns. Zero init is generally faster and can lead to
+  # better binary size due to being able to use instructions taking
+  # immediates. Patterns potentially have better signaling behavior though. We
+  # thus enable zero-init for all official builds that don't also enable
+  # DCHECKs explicitly or implicitly. Note that this intentionally also keeps
+  # the patterns for DCHECK Canary releases.
+  init_stack_vars_zero = is_official_build && !dcheck_always_on
 
   # This argument is to control whether enabling text section splitting in the
   # final binary. When enabled, the separated text sections with prefix
