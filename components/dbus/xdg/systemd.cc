@@ -4,7 +4,10 @@
 
 #include "components/dbus/xdg/systemd.h"
 
+#include <memory>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -17,8 +20,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/utils/name_has_owner.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/utils/write_value.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -29,8 +33,8 @@ namespace dbus_xdg {
 
 // Systemd dictionaries use structs instead of dict entries for some reason.
 template <typename T>
-using Dict = DbusArray<DbusStruct<DbusString, T>>;
-using VarDict = Dict<DbusVariant>;
+using Dict = std::vector<std::tuple<std::string, T>>;
+using VarDict = Dict<dbus_utils::Variant>;
 
 using SystemdUnitCallbacks = std::vector<SystemdUnitCallback>;
 using StatusOrCallbacks = std::variant<SystemdUnitStatus, SystemdUnitCallbacks>;
@@ -246,12 +250,13 @@ void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
   writer.AppendString(kModeReplace);
   // For now, only add this process to the new scope. It's possible to add all
   // PIDs in the process tree, but there's currently not a benefit.
-  auto pids = MakeDbusArray(DbusUint32(pid));
-  VarDict properties(
-      MakeDbusStruct(DbusString("PIDs"), MakeDbusVariant(std::move(pids))));
-  properties.Write(&writer);
+  std::vector<uint32_t> pids = {static_cast<uint32_t>(pid)};
+  VarDict properties;
+  properties.emplace_back("PIDs",
+                          dbus_utils::Variant::Wrap<"au">(std::move(pids)));
+  dbus_utils::WriteValue(writer, properties);
   // No auxiliary units.
-  Dict<VarDict>().Write(&writer);
+  dbus_utils::WriteValue(writer, Dict<VarDict>());
   systemd->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnStartTransientUnitResponse, std::move(bus), unit_name));
