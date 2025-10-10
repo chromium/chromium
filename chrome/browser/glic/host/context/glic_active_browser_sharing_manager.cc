@@ -36,11 +36,10 @@ void GlicActiveBrowserSharingManager::OnActiveTabChanged(
 
 void GlicActiveBrowserSharingManager::OnLastActiveInstanceChanged(
     GlicInstance* instance) {
-  if (!instance) {
-    SetDelegate(nullptr);
-    return;
-  }
-  SetDelegate(instance->host().sharing_manager().GetWeakPtr());
+  // We listen for this to trigger when the SP is opened or closed, or when the
+  // conversation switches, but we rely on UpdateDelegate to take all signals
+  // into consideration (e.g. active tab) at any given moment.
+  UpdateDelegate();
 }
 
 void GlicActiveBrowserSharingManager::UpdateDelegate() {

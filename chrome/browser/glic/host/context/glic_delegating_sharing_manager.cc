@@ -163,10 +163,8 @@ base::WeakPtr<GlicSharingManager> GlicDelegatingSharingManager::GetWeakPtr() {
 
 void GlicDelegatingSharingManager::SetDelegate(
     base::WeakPtr<GlicSharingManager> sharing_manager_delegate) {
-  // If the new delegate is already the delegate, do nothing, but watch for the
-  // case when the old delegate was invalidated and the new one is null (should
-  // still proceed).
-  if (sharing_manager_delegate &&
+  // Do nothing if the delegate hasn't changed.
+  if (!sharing_manager_delegate_.WasInvalidated() &&
       sharing_manager_delegate.get() == sharing_manager_delegate_.get()) {
     return;
   }
