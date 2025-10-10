@@ -892,6 +892,7 @@ No modifications.
                 // Classes are loaded both by reflection & by ServiceLoader.load(),
                 // so need to strip out the class and the configs.
                 sb.append('  # https://crbug.com/450243304.\n')
+                sb.append('  ignore_manifest = true\n')
                 sb.append('  jar_excluded_patterns = [\n')
                 sb.append('    "META-INF/services/io.grpc.NameResolverProvider",\n')
                 sb.append('    "io/grpc/binder/internal/IntentNameResolver*",\n')
