@@ -133,9 +133,12 @@ class TabDataObserver : public content::WebContentsObserver,
 // Either a focused tab, or an error string.
 class FocusedTabData {
  public:
+  // Creates FocusedTabData for a tab that can be focused.
   explicit FocusedTabData(tabs::TabInterface* tab);
-  // `unfocused_tab` can be nullptr. If it is not nullptr, it is the tab that
-  // would be focused but for some reason cannot be.
+  // Creates FocusedTabData when a tab cannot be focused. If `unfocused_tab` is
+  // provided, it represents the tab that would be focused but for some reason
+  // cannot be. If `unfocused_tab` is null there is no tab that could be
+  // focused.
   FocusedTabData(const std::string& error, tabs::TabInterface* unfocused_tab);
   ~FocusedTabData();
   FocusedTabData(const FocusedTabData& src) = delete;

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/glic_metrics.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -135,8 +138,8 @@ class DelegateMultiInstanceImpl : public GlicMetrics::Delegate {
   raw_ptr<PrefService> pref_service_;
 };
 
-constexpr char kHistogramGlicPanelPresentationTime[] =
-    "Glic.PanelPresentationTime2";
+constexpr char kHistogramGlicPanelPresentationTimePrefix[] =
+    "Glic.PanelPresentationTime2.";
 
 constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
 
@@ -172,6 +175,18 @@ ResponseSegmentation GetResponseSegmentation(bool attached,
 
   return static_cast<ResponseSegmentation>(baseIndex + offset);
 }
+
+std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
+  switch (input_mode) {
+    case mojom::WebClientMode::kText:
+      return "Text";
+    case mojom::WebClientMode::kAudio:
+      return "Audio";
+    case mojom::WebClientMode::kUnknown:
+      return "Unknown";
+  }
+}
+
 }  // namespace
 
 namespace internal {
@@ -391,20 +406,10 @@ void GlicMetrics::OnResponseStarted() {
   base::TimeDelta start_time =
       base::TimeTicks::Now() - turn_.input_submitted_time_;
   base::UmaHistogramMediumTimes("Glic.Response.StartTime", start_time);
-  switch (input_mode_) {
-    case mojom::WebClientMode::kUnknown:
-      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Unknown",
-                                    start_time);
-      break;
-    case mojom::WebClientMode::kText:
-      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Text",
-                                    start_time);
-      break;
-    case mojom::WebClientMode::kAudio:
-      base::UmaHistogramMediumTimes("Glic.Response.StartTime.InputMode.Audio",
-                                    start_time);
-      break;
-  }
+  std::string_view mode_string = GetInputModeString(input_mode_);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Glic.Response.StartTime.InputMode.", mode_string}),
+      start_time);
 
   if (turn_.did_request_context_) {
     base::UmaHistogramMediumTimes("Glic.Response.StartTime.WithContext",
@@ -551,17 +556,12 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   // Record the presentation time of showing the glic panel in an UMA histogram.
   base::TimeDelta presentation_time = base::TimeTicks::Now() - show_start_time_;
   base::UmaHistogramCustomTimes(
-      base::StrCat({kHistogramGlicPanelPresentationTime, ".All"}),
+      base::StrCat({kHistogramGlicPanelPresentationTimePrefix, "All"}),
       presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
   if (input_mode_ != mojom::WebClientMode::kUnknown) {
-    std::string input_mode;
-    if (input_mode_ == mojom::WebClientMode::kText) {
-      input_mode = ".Text";
-    } else if (input_mode_ == mojom::WebClientMode::kAudio) {
-      input_mode = ".Audio";
-    }
+    std::string_view mode_string = GetInputModeString(input_mode_);
     base::UmaHistogramCustomTimes(
-        base::StrCat({kHistogramGlicPanelPresentationTime, input_mode}),
+        base::StrCat({kHistogramGlicPanelPresentationTimePrefix, mode_string}),
         presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
   }
 
@@ -682,17 +682,11 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
   if (success && !scroll_input_submitted_time_.is_null()) {
     base::TimeDelta time_to_scroll =
         base::TimeTicks::Now() - scroll_input_submitted_time_;
-    switch (scroll_input_mode_) {
-      case mojom::WebClientMode::kAudio:
-        base::UmaHistogramMediumTimes(
-            "Glic.ScrollTo.UserPromptToScrollTime.Audio", time_to_scroll);
-        break;
-      case mojom::WebClientMode::kText:
-        base::UmaHistogramMediumTimes(
-            "Glic.ScrollTo.UserPromptToScrollTime.Text", time_to_scroll);
-        break;
-      case mojom::WebClientMode::kUnknown:
-        break;
+    if (scroll_input_mode_ != mojom::WebClientMode::kUnknown) {
+      std::string_view mode_string = GetInputModeString(scroll_input_mode_);
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Glic.ScrollTo.UserPromptToScrollTime.", mode_string}),
+          time_to_scroll);
     }
   }
   scroll_input_submitted_time_ = base::TimeTicks();
@@ -722,21 +716,24 @@ void GlicMetrics::OnShareImageComplete(ShareImageResult result) {
 }
 
 void GlicMetrics::LogGetContextFromFocusedTabError(
-    GlicGetContextFromFocusedTabError error) {
-  std::string mode_string;
-  switch (input_mode_) {
-    case mojom::WebClientMode::kText:
-      mode_string = "Text";
-      break;
-    case mojom::WebClientMode::kAudio:
-      mode_string = "Audio";
-      break;
-    case mojom::WebClientMode::kUnknown:
-      mode_string = "Unknown";
-      break;
-  }
+    GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(input_mode_);
   base::UmaHistogramEnumeration(
       base::StrCat({"Glic.Api.GetContextFromFocusedTab.Error.", mode_string}),
+      error);
+}
+
+void GlicMetrics::LogGetContextFromTabError(GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(input_mode_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Api.GetContextFromTab.Error.", mode_string}), error);
+}
+
+void GlicMetrics::LogGetContextForActorFromTabError(
+    GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(input_mode_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Api.GetContextForActorFromTab.Error.", mode_string}),
       error);
 }
 

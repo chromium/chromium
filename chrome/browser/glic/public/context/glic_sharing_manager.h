@@ -16,7 +16,7 @@ namespace glic {
 
 // The error returned by the GlicSharingManager when requesting context.
 struct GlicGetContextError {
-  GlicGetContextFromFocusedTabError error_code;
+  GlicGetContextFromTabError error_code;
   std::string message;
 };
 

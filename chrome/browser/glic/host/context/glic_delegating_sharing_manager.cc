@@ -118,9 +118,9 @@ void GlicDelegatingSharingManager::GetContextFromTab(
     const mojom::GetTabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   if (!sharing_manager_delegate_) {
-    std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::kPageContextNotEligible,
-        "tab not eligible"}));
+    std::move(callback).Run(base::unexpected(
+        GlicGetContextError{GlicGetContextFromTabError::kPageContextNotEligible,
+                            "tab not eligible"}));
     return;
   }
 
@@ -133,9 +133,9 @@ void GlicDelegatingSharingManager::GetContextForActorFromTab(
     const mojom::GetTabContextOptions& options,
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   if (!sharing_manager_delegate_) {
-    std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::kPageContextNotEligible,
-        "tab not eligible"}));
+    std::move(callback).Run(base::unexpected(
+        GlicGetContextError{GlicGetContextFromTabError::kPageContextNotEligible,
+                            "tab not eligible"}));
     return;
   }
 

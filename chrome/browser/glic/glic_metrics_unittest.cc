@@ -461,7 +461,7 @@ TEST_F(GlicMetricsTest, OnTabPinSharedUnsuccessfulNotValid) {
 TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_UnknownMode) {
   // Unknown is the default mode.
   metrics_->LogGetContextFromFocusedTabError(
-      GlicGetContextFromFocusedTabError::kTabNotFound);
+      GlicGetContextFromTabError::kTabNotFound);
 
   histogram_tester_.ExpectTotalCount(
       "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
@@ -469,24 +469,51 @@ TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_UnknownMode) {
       "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Api.GetContextFromFocusedTab.Error.Unknown",
-      GlicGetContextFromFocusedTabError::kTabNotFound, 1);
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicMetricsTest, LogGetContextFromTabError_UnknownMode) {
+  // Unknown is the default mode.
+  metrics_->LogGetContextFromTabError(GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text",
+                                     0);
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Audio",
+                                     0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicMetricsTest, LogGetContextForActorFromTabError_UnknownMode) {
+  // Unknown is the default mode.
+  metrics_->LogGetContextForActorFromTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Text", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextForActorFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
 }
 
 TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_ChangingModes) {
   // Simulates the client starting in text mode and later switching to audio.
   metrics_->SetStartingMode(mojom::WebClientMode::kText);
   metrics_->LogGetContextFromFocusedTabError(
-      GlicGetContextFromFocusedTabError::kWebContentsChanged);
+      GlicGetContextFromTabError::kWebContentsChanged);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics_->LogGetContextFromFocusedTabError(
-      GlicGetContextFromFocusedTabError::kPermissionDenied);
+      GlicGetContextFromTabError::kPermissionDenied);
 
   histogram_tester_.ExpectUniqueSample(
       "Glic.Api.GetContextFromFocusedTab.Error.Text",
-      GlicGetContextFromFocusedTabError::kWebContentsChanged, 1);
+      GlicGetContextFromTabError::kWebContentsChanged, 1);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Api.GetContextFromFocusedTab.Error.Audio",
-      GlicGetContextFromFocusedTabError::kPermissionDenied, 1);
+      GlicGetContextFromTabError::kPermissionDenied, 1);
   histogram_tester_.ExpectTotalCount(
       "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
 }
@@ -650,7 +677,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
   histogram_tester_.ExpectTotalCount(
       "Glic.OsEntrypoint.Settings.ShortcutStatus", 1);
   histogram_tester_.ExpectBucketCount(
-      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*true*/1,
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*true*/ 1,
       /*expected_count=*/1);
 
   local_state()->SetString(prefs::kGlicLauncherHotkey,
@@ -660,7 +687,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
   histogram_tester_.ExpectTotalCount(
       "Glic.OsEntrypoint.Settings.ShortcutStatus", 2);
   histogram_tester_.ExpectBucketCount(
-      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*false*/0,
+      "Glic.OsEntrypoint.Settings.ShortcutStatus", /*false*/ 0,
       /*expected_count=*/1);
 }
 

@@ -122,7 +122,7 @@ namespace glic {
 namespace {
 
 mojom::GetContextResultPtr LogErrorAndUnwrapResult(
-    base::OnceCallback<void(GlicGetContextFromFocusedTabError)> error_logger,
+    base::OnceCallback<void(GlicGetContextFromTabError)> error_logger,
     GlicGetContextResult result) {
   if (!result.has_value()) {
     std::move(error_logger).Run(result.error().error_code);
@@ -911,9 +911,19 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    auto* tab = sharing_manager().GetFocusedTabData().focus();
-    auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
+    FocusedTabData ftd = sharing_manager().GetFocusedTabData();
+    if (ftd.unfocused_tab()) {
+      CHECK(!ftd.focus());
+      // Fail early if the active tab is un-focusable.
+      glic_service_->metrics()->LogGetContextFromFocusedTabError(
+          GlicGetContextFromTabError::kPermissionDenied);
+      std::move(callback).Run(
+          mojom::GetContextResult::NewErrorReason("permission denied"));
+      return;
+    }
 
+    tabs::TabInterface* tab = ftd.focus();
+    auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
     sharing_manager().GetContextFromTab(
         tab_handle, *options,
         base::BindOnce(
@@ -929,7 +939,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // Extra activation gating is done in this function.
     sharing_manager().GetContextFromTab(
         tabs::TabHandle(tab_id), *options,
-        base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
+        base::BindOnce(
+            &LogErrorAndUnwrapResult,
+            base::BindOnce(&GlicMetrics::LogGetContextFromTabError,
+                           base::Unretained(glic_service_->metrics())))
             .Then(std::move(callback)));
   }
 
@@ -937,11 +950,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       int32_t tab_id,
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextForActorFromTabCallback callback) override {
-    // TODO(b/433328453): add GetContextForActorFromTab Error
-    // histogram.
     sharing_manager().GetContextForActorFromTab(
         tabs::TabHandle(tab_id), *options,
-        base::BindOnce(&LogErrorAndUnwrapResult, base::DoNothing())
+        base::BindOnce(
+            &LogErrorAndUnwrapResult,
+            base::BindOnce(&GlicMetrics::LogGetContextForActorFromTabError,
+                           base::Unretained(glic_service_->metrics())))
             .Then(std::move(callback)));
   }
 

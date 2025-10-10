@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="WebClientMode">
+  <variant name="Audio" summary="audio input mode"/>
+  <variant name="Text" summary="text input mode"/>
+  <variant name="Unknown" summary="an unknown mode"/>
+</variants>
+
 <histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
     expires_after="2026-08-29">
   <owner>dtapuska@google.com</owner>
@@ -43,22 +49,6 @@ chromium-metrics-reviews@google.com.
     Records the latency of fetching zero state suggestions whenever the glic web
     client requests zero state suggestions from Chrome.
   </summary>
-</histogram>
-
-<histogram name="Glic.Api.GetContextFromFocusedTab.Error.{Mode}"
-    enum="GlicGetContextFromFocusedTabError" expires_after="2026-03-22">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records an error that occurred while trying to get context from the focused
-    tab. The error is broken down by the last known user input mode.
-  </summary>
-  <token key="Mode">
-    <variant name="Audio"/>
-    <variant name="Text"/>
-    <variant name="Unknown"/>
-  </token>
 </histogram>
 
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
@@ -194,6 +184,28 @@ chromium-metrics-reviews@google.com.
     page. Recorded when a cross-document navigation completes, or when tab data
     is no longer observed.
   </summary>
+</histogram>
+
+<histogram name="Glic.Api.{TabContextOperation}.Error.{Mode}"
+    enum="GlicGetContextFromTabError" expires_after="2026-03-22">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <owner>bokan@chromium.org</owner>
+  <summary>
+    Records errors that occurred while attempting to extract tab context using
+    {TabContextOperation} while the web client was in {Mode}.
+  </summary>
+  <token key="TabContextOperation">
+    <variant name="GetContextForActorFromTab"
+        summary="GetContextForActorFromTab (context from an arbitrary tab for
+                 an actor)"/>
+    <variant name="GetContextFromFocusedTab"
+        summary="GetContextFromFocusedTab (context from the focused tab)"/>
+    <variant name="GetContextFromTab"
+        summary="GetContextFromTab (context from an arbitrary tab)"/>
+  </token>
+  <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
 <histogram name="Glic.AttachedToBrowser" enum="GlicAttachChangeReason"

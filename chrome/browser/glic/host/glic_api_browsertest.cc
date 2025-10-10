@@ -111,10 +111,14 @@
 
 namespace glic {
 namespace {
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::base::test::RunOnceCallbackRepeatedly;
-using testing::_;
-using testing::Contains;
-using testing::Pair;
+using ::testing::_;
+using ::testing::Contains;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -1076,17 +1080,61 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 // when the glic panel is hidden.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
                        testNoExtractionWhileHidden) {
-  // Attempt to extract context with the preloaded client.
+  // Attempt to extract focused tab context with the preloaded client.
   ExecuteJsTest();
 
-  // Open the glic panel and attempt to extract context.
+  // TODO(b/450923405): Metrics checks fail on win-rel.
+#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestHandlerException, 1);
+  histogram_tester->ExpectTotalCount("Glic.Api.RequestCounts.GetContextFromTab",
+                                     0);
+#endif
+
+  // Open the glic panel and attempt to extract focused and arbitrary tab
+  // context.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ContinueJsTest();
+  // TODO(b/450923405): Metrics checks fail on win-rel.
+#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestHandlerException, 1);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 0);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromTab",
+      GlicRequestEvent::kRequestHandlerException, 0);
+#endif
 
-  // Hide the glic panel again and attempt to extract context.
+  // Hide the glic panel again and attempt to extract focused and arbitrary tab
+  // context.
   RunTestSequence(CloseGlic());
   ContinueJsTest();
+  // TODO(b/450923405): Metrics checks fail on win-rel.
+#if !BUILDFLAG(IS_WIN) && !defined(DEBUG)
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 2);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromFocusedTab",
+      GlicRequestEvent::kRequestHandlerException, 2);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromTab",
+      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+  histogram_tester->ExpectBucketCount(
+      "Glic.Api.RequestCounts.GetContextFromTab",
+      GlicRequestEvent::kRequestHandlerException, 1);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
@@ -1165,21 +1213,25 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 
   // Should record the respective error to the text mode histogram.
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Api.GetContextFromFocusedTab.Error.Text",
-      GlicGetContextFromFocusedTabError::
-          kPermissionDeniedContextPermissionNotEnabled,
-      1);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  EXPECT_THAT(
+      histogram_tester->GetAllSamplesForPrefix(
+          "Glic.Api.GetContextFromFocusedTab.Error"),
+      UnorderedElementsAre(Pair(
+          "Glic.Api.GetContextFromFocusedTab.Error.Text",
+          BucketsAre(Bucket(GlicGetContextFromTabError::
+                                kPermissionDeniedContextPermissionNotEnabled,
+                            1)))));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromPinnedTabWithoutPermission) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
+
+  // No context error should have been recorded.
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromTab.Error"),
+              testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -1187,12 +1239,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 
   // No context error should have been recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromFocusedTab.Error"),
+              testing::IsEmpty());
 }
 
 // Win-ASAN is flaky.
@@ -1208,25 +1257,19 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 
   // No context error should have been recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromFocusedTab.Error"),
+              testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextForActorFromFocusedTabWithoutPermission) {
+                       testGetContextForActorFromTabWithoutPermission) {
   ExecuteJsTest();
 
   // No context error should have been recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextForActorFromTab.Error"),
+              testing::IsEmpty());
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1246,12 +1289,27 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 
   // No context error should have been recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromFocusedTab.Error"),
+              testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+                       testGetContextFromFocusedTabWithUnFocusablePage) {
+  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // Navigate to an un-focusable internal page.
+  RunTestSequence(NavigateWebContents(kFirstTab, chrome::GetSettingsUrl("")));
+
+  // Web client request focused tab contents.
+  ExecuteJsTest();
+
+  // Checks that the correct error was reported.
+  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromFocusedTab.Error"),
+              UnorderedElementsAre(Pair(
+                  "Glic.Api.GetContextFromFocusedTab.Error.Text",
+                  BucketsAre(Bucket(
+                      GlicGetContextFromTabError::kPermissionDenied, 1)))));
 }
 
 // TODO(harringtond): Fix this, it hangs.
@@ -1874,9 +1932,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromTabIgnorePermissionnWhenPinned) {
+                       testGetContextFromTabIgnorePermissionWhenPinned) {
   TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // Try to extract context from an arbitrary tab without permission, while it's
+  // unpinned and then pinned.
   ExecuteJsTest();
+
+  // Should have one error logged for tab context permission not granted.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamplesForPrefix(
+          "Glic.Api.GetContextFromTab.Error"),
+      UnorderedElementsAre(Pair(
+          "Glic.Api.GetContextFromTab.Error.Text",
+          BucketsAre(Bucket(GlicGetContextFromTabError::
+                                kPermissionDeniedContextPermissionNotEnabled,
+                            1)))));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -1890,6 +1960,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
   ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
                      "tabId", base::NumberToString(tab_id)))});
+
+  // Two different permission errors should have been reported.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamplesForPrefix(
+          "Glic.Api.GetContextFromTab.Error"),
+      UnorderedElementsAre(
+          Pair("Glic.Api.GetContextFromTab.Error.Text",
+               BucketsAre(
+                   Bucket(GlicGetContextFromTabError::
+                              kPermissionDeniedContextPermissionNotEnabled,
+                          1),
+                   Bucket(GlicGetContextFromTabError::kPermissionDenied, 1)))));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -1901,11 +1983,34 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
   ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
                      "tabId", base::NumberToString(tab_id)))});
+
+  // Should have one error logged for tab context permission not granted.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamplesForPrefix(
+          "Glic.Api.GetContextFromTab.Error"),
+      UnorderedElementsAre(Pair(
+          "Glic.Api.GetContextFromTab.Error.Text",
+          BucketsAre(Bucket(GlicGetContextFromTabError::
+                                kPermissionDeniedContextPermissionNotEnabled,
+                            1)))));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromTabFailsIfDoesNotExist) {
   ExecuteJsTest();
+
+  // TODO(b/450026474): Multi-instance fails the metrics check because the
+  // starting web client mode is not set.
+  if (GetParam().multi_instance) {
+    return;
+  }
+  // Should have one error logged for tab context permission not granted.
+  EXPECT_THAT(
+      histogram_tester->GetAllSamplesForPrefix(
+          "Glic.Api.GetContextFromTab.Error"),
+      UnorderedElementsAre(Pair(
+          "Glic.Api.GetContextFromTab.Error.Text",
+          BucketsAre(Bucket(GlicGetContextFromTabError::kTabNotFound, 1)))));
 }
 
 // TODO(crbug.com/441588906): Flaky on multiple platforms.

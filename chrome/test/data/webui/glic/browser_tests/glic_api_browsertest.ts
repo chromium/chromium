@@ -547,7 +547,26 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
   }
 
-  async testGetContextForActorFromFocusedTabWithoutPermission() {
+  async testGetContextFromFocusedTabWithUnFocusablePage() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.setTabContextPermissionState);
+
+    // Confirms that the current tab has an un-focusable page.
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    assertDefined(focus.hasNoFocus);
+    assertTrue(focusSequence.isEmpty());
+
+    // Focused tab extraction should fail for an un-focusable page.
+    await this.host.setTabContextPermissionState(true);
+    await assertRejects(this.host.getContextFromFocusedTab({}), {
+      withErrorMessage: 'tabContext failed: permission denied',
+    });
+  }
+
+  async testGetContextForActorFromTabWithoutPermission() {
     await this.host.setTabContextPermissionState(true);
     assertDefined(this.host.getFocusedTabStateV2);
     const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
@@ -1237,19 +1256,20 @@ class ApiTests extends ApiTestFixtureBase {
     return checkDefined(focus?.hasFocus?.tabData.tabId);
   }
 
-  async testGetContextFromTabIgnorePermissionnWhenPinned() {
+  async testGetContextFromTabIgnorePermissionWhenPinned() {
     assertDefined(this.host.getContextFromTab);
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);
 
+    // Fail getContextFromTab due to no tab context permission not granted.
     await this.host.setTabContextPermissionState(false);
     const tabId: string = this.getFocusedTabId();
-
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
       withErrorMessage: 'tabContext failed: permission denied:' +
           ' context permission not enabled',
     });
 
+    // Pinning the tab should allow ignoring the tab context permission.
     await this.host.pinTabs([tabId]);
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     pinnedTabsUpdates.waitFor(

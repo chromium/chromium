@@ -29,18 +29,17 @@ GlicGetContextResult TransformFetcherResult(
     return base::ok(std::move(result.value()));
   }
 
-  GlicGetContextFromFocusedTabError glic_error_code;
+  GlicGetContextFromTabError glic_error_code;
   switch (result.error().error_code) {
     case page_content_annotations::FetchPageContextError::kUnknown:
-      glic_error_code = GlicGetContextFromFocusedTabError::kUnknown;
+      glic_error_code = GlicGetContextFromTabError::kUnknown;
       break;
     case page_content_annotations::FetchPageContextError::kWebContentsChanged:
-      glic_error_code = GlicGetContextFromFocusedTabError::kWebContentsChanged;
+      glic_error_code = GlicGetContextFromTabError::kWebContentsChanged;
       break;
     case page_content_annotations::FetchPageContextError::
         kPageContextNotEligible:
-      glic_error_code =
-          GlicGetContextFromFocusedTabError::kPageContextNotEligible;
+      glic_error_code = GlicGetContextFromTabError::kPageContextNotEligible;
       break;
   }
   return base::unexpected(
@@ -210,7 +209,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
   auto* tab = tab_handle.Get();
   if (!tab) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::kTabNotFound, "tab not found"}));
+        GlicGetContextFromTabError::kTabNotFound, "tab not found"}));
     return;
   }
 
@@ -218,7 +217,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
   if (!is_pinned &&
       !profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::
+        GlicGetContextFromTabError::
             kPermissionDeniedContextPermissionNotEnabled,
         "permission denied: context permission not enabled"}));
     return;
@@ -228,8 +227,7 @@ void GlicSharingManagerImpl::GetContextFromTab(
   const bool is_shared = is_focused || is_pinned;
   if (!is_shared || !IsTabValidForSharing(tab->GetContents())) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::kPermissionDenied,
-        "permission denied"}));
+        GlicGetContextFromTabError::kPermissionDenied, "permission denied"}));
     return;
   }
   if (is_focused) {
@@ -248,7 +246,7 @@ void GlicSharingManagerImpl::GetContextForActorFromTab(
   auto* tab = tab_handle.Get();
   if (!tab) {
     std::move(callback).Run(base::unexpected(GlicGetContextError{
-        GlicGetContextFromFocusedTabError::kTabNotFound, "tab not found"}));
+        GlicGetContextFromTabError::kTabNotFound, "tab not found"}));
     return;
   }
 

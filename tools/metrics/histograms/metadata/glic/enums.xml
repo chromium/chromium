@@ -228,19 +228,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre_controller.h:GlicFreWidgetClosedReason) -->
 
-<!-- LINT.IfChange(GlicGetContextFromFocusedTabError) -->
+<!-- LINT.IfChange(GlicGetContextFromTabError) -->
 
-<enum name="GlicGetContextFromFocusedTabError">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="PermissionDeniedWindowNotShowing"/>
-  <int value="2" label="TabNotFound"/>
-  <int value="3" label="PermissionDeniedContextPermissionNotEnabled"/>
-  <int value="4" label="PermissionDenied"/>
-  <int value="5" label="WebContentsChanged"/>
-  <int value="6" label="PageContextNotEligible"/>
+<enum name="GlicGetContextFromTabError">
+  <int value="0" label="Unknown">Unknown error</int>
+  <int value="1" label="(Obsolete) PermissionDeniedWindowNotShowing">
+    (Obsolete) Can't request context while the window is hidden. Removed in
+    2025/08.
+  </int>
+  <int value="2" label="TabNotFound">Tab was not found</int>
+  <int value="3" label="PermissionDeniedContextPermissionNotEnabled">
+    Tab context permission was not granted
+  </int>
+  <int value="4" label="PermissionDenied">
+    Permission denied to access tab contents
+  </int>
+  <int value="5" label="WebContentsChanged">Tab's web contents changed</int>
+  <int value="6" label="PageContextNotEligible">
+    The tab contents are not eligible for context
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicGetContextFromFocusedTabError) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicGetContextFromTabError) -->
 
 <!-- LINT.IfChange(GlicHostApiRequestType) -->
 
