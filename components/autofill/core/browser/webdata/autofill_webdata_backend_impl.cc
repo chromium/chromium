@@ -385,13 +385,17 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
+  std::optional<AutofillProfile> db_profile =
+      table->GetAutofillProfile(profile.guid());
+  if (!db_profile) {
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
   // Notify observers.
   // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
   // database might perform operations like `FinalizeAfterImport()`. Notify
   // observers with `db_profile`.
-  AutofillProfile db_profile = *table->GetAutofillProfile(profile.guid());
   AutofillProfileChange change(AutofillProfileChange::ADD, profile.guid(),
-                               std::move(db_profile));
+                               std::move(*db_profile));
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
@@ -422,13 +426,17 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
+  std::optional<AutofillProfile> db_profile =
+      table->GetAutofillProfile(profile.guid());
+  if (!db_profile) {
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
   // Notify observers.
   // The `db_profile` is not guaranteed to be equivalent to `profile`, since the
   // database might perform operations like `FinalizeAfterImport()`. Notify
   // observers with `db_profile`.
-  AutofillProfile db_profile = *table->GetAutofillProfile(profile.guid());
   AutofillProfileChange change(AutofillProfileChange::UPDATE, profile.guid(),
-                               std::move(db_profile));
+                               std::move(*db_profile));
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 
