@@ -30,6 +30,16 @@ class DeviceExceptionCheckerTest(unittest.TestCase):
     self.assertRaises(exception_utils.FailedToInstallEmbeddedProfileError,
                       self.exception_checker.throw_first)
 
+  def test_developer_mode_disabled_error_raised(self):
+    log_message = ("name:iPhone, error:Developer Mode disabled To use iPhone" +
+                   " for development, enable Developer Mode in Settings → " +
+                   "Privacy & Security.")
+
+    self.exception_checker.check_line(log_message)
+
+    self.assertRaises(exception_utils.DeveloperModeDisabledError,
+                      self.exception_checker.throw_first)
+
 
 if __name__ == '__main__':
   logging.basicConfig(
