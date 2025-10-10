@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -474,9 +475,10 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     // Outset the rectangle and corner radius by half the stroke width
     // to draw an outer stroke.
     const float stroke_outset = stroke_width / 2;
-    const float corner_radius =
-        GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
-
+    float corner_radius = 0.0f;
+    if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "v60") {
+        corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
+    }
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(stroke_width);
 

@@ -93,6 +93,60 @@ bool GetNtbCustomStr(std::string& tabstr) {
     return true;
 }
 
+bool UserDefinedNtbClipRect(gfx::Rect& visibleRect, std::string& sectionContent) {
+    std::string::size_type pos = 0;
+    while ((pos = sectionContent.find("{", pos)) != std::string::npos) {
+        std::string::size_type endPos = sectionContent.find("}", pos);
+        if (endPos == std::string::npos) {
+            break;
+        }
+
+        std::string dataItemStr = sectionContent.substr(pos + 1, endPos - pos - 1);
+        std::string::size_type equalPos = dataItemStr.find('=');
+
+        if (equalPos != std::string::npos) {
+            DataItem dataItem;
+         std::string key = dataItemStr.substr(0, equalPos);
+         if(!std::all_of(key.begin(), key.end(), [](char c) {return c >= '0' && c <= '9';}))
+             break;
+            dataItem.datakey = std::stoi(key);
+            std::string valuesStr = dataItemStr.substr(equalPos + 1);
+
+            // Parse the values
+            std::istringstream valuesStream(valuesStr);
+            std::string value;
+            while (std::getline(valuesStream, value, ',')) {
+            if(!std::all_of(value.begin(), value.end(), [](char c) {return (c >= '0' && c <= '9') || c == '.';}))
+               break; // No exceptions, so we must verify that there are only integers in the value before continuing.
+                       // If not, the config file is considered to be "compromised" and needs to be replaced or fixed.
+                     // We will not tolerate any unexpected values in the data.
+            if(value.size() > 6)
+               break; // Any "unnecessarily large" numbers will also be blocked.
+            float val = std::stof(value);
+
+                dataItem.values.push_back(val);
+            }
+
+         if (dataItem.values.size() != 6)
+            break; // Fail if there is an incorrect quantity of values in the data item.
+
+         if (dataItem.datakey == 1) {
+            // bit 0 (0x1) is used to indicate that the line segment represented by the item should be visible;
+            // all other points will be clipped out of the visible rectangle.
+            visibleRect.SetRect(dataItem.values.at(0) < visibleRect.x() ? dataItem.values.at(0) : visibleRect.x()
+                            , dataItem.values.at(1) > visibleRect.y() ? dataItem.values.at(1) : visibleRect.y()
+                            , dataItem.values.at(4) > visibleRect.right() ? dataItem.values.at(4) : visibleRect.right()
+                            , dataItem.values.at(5) < visibleRect.bottom() ? dataItem.values.at(5) : visibleRect.bottom());
+         }
+
+        }
+
+        pos = endPos + 1;
+    }
+
+   return true;
+}
+
 bool UserDefinedNtbShape(SkPath& path, std::string& sectionContent) {
     std::string::size_type pos = 0;
     while ((pos = sectionContent.find("{", pos)) != std::string::npos) {
@@ -126,12 +180,6 @@ bool UserDefinedNtbShape(SkPath& path, std::string& sectionContent) {
 
                 dataItem.values.push_back(val);
             }
-         if (dataItem.datakey == 8) {
-            // bit 4 (0x8) is used to implement the directive to move the starting point of the path.
-            if (dataItem.values.size() != 2)
-               break; // Fail if there is an incorrect quantity of values in the data item.
-            path.moveTo(dataItem.values.at(0), dataItem.values.at(1));
-         }
 
          if (dataItem.values.size() != 6)
             break; // Fail if there is an incorrect quantity of values in the data item.
@@ -362,7 +410,15 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
     auto offset = GetContentsBounds().OffsetFromOrigin();
     path.offset(offset.x(), offset.y());
     canvas->ClipPath(path, /*do_anti_alias=*/true);
-
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch("enable-advanced-customization")) {
+      std::string tab_str;
+      gfx::Rect visible_rect;
+	  bool is_custom_str_available = GetNtbCustomStr(tab_str);
+      if (is_custom_str_available) {
+        UserDefinedNtbClipRect(visible_rect, tab_str);
+        canvas->ClipRect(visible_rect, SkClipOp::kIntersect);
+      }
+    }
     // But the background image itself must not be translated in order to align
     // with the same background image painted across different views.
     TopContainerBackground::PaintThemeAlignedImage(
