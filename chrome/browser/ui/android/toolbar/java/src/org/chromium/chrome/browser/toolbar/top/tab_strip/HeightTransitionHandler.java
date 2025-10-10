@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -22,6 +23,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
@@ -562,6 +564,16 @@ class HeightTransitionHandler {
         if (TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting != null) {
             return TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting;
         }
+
+        if (CommandLine.isInitialized()) {
+            String commandLineThreshold =
+                    CommandLine.getInstance()
+                            .getSwitchValue(
+                                    ChromeSwitches.TAB_STRIP_HEIGHT_TRANSITION_THRESHOLD, "0");
+            int threshold = Integer.parseInt(commandLineThreshold);
+            if (threshold > 0) return threshold;
+        }
+
         return TRANSITION_THRESHOLD_DP;
     }
 

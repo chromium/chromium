@@ -45,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -157,6 +158,24 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         setDeviceWidthDp(NARROW_NORMAL_WINDOW_WIDTH);
         Assert.assertEquals("Tab strip height is wrong.", 0, mObserver.heightRequested);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp")
+    @CommandLineFlags.Add("tab-strip-height-transition-threshold=700")
+    public void initWithWideWindow_CommandlineOverride() {
+        Assert.assertEquals(
+                "Init will not change the tab strip height.",
+                TEST_TAB_STRIP_HEIGHT,
+                mCoordinator.getTabStripHeight());
+        Assert.assertEquals(
+                "Tab strip height requested changing to 0.", 0, mObserver.heightRequested);
+
+        setDeviceWidthDp(800);
+        Assert.assertEquals(
+                "Changing the window to wide will request for full-size tab strip.",
+                TEST_TAB_STRIP_HEIGHT,
+                mObserver.heightRequested);
     }
 
     @Test
