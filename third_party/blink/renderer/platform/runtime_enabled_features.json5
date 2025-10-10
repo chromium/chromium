@@ -1532,8 +1532,6 @@
       status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
-
-
     {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
       // selectively enable resize corner for textarea via UA stylesheet, but
@@ -2720,7 +2718,6 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
-
     // Return a natural width/height of zero from
     // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
     // natural width/height set.
@@ -3223,7 +3220,6 @@
       name: "MessagePortCloseEvent",
       status: "test",
     },
-
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
@@ -3336,7 +3332,6 @@
       },
       base_feature: "none",
     },
-
     {
       // This turns off all font antialiasing for tests unless it is
       // explicitly required and enabled using the
@@ -3449,7 +3444,6 @@
       name: "OriginPolicy",
       status: "experimental",
     },
-
     // Define a sample API for testing integration with the Origin Trials
     // Framework. The sample API is used in both unit and web tests for the
     // Origin Trials Framework. Do not change this flag to stable, as it exists
@@ -4295,7 +4289,6 @@
       // https://github.com/WICG/view-transitions/blob/main/scoped-transitions.md
       name: "ScopedViewTransitions",
       status: "experimental"
-
     },
     {
       // https://github.com/w3c/window-management/issues/149
@@ -4445,7 +4438,6 @@
       name: "SelectedcontentelementAttribute",
       status: "test",
     },
-
     {
       // See https://crbug.com/40664519
       name: "SelectionAndFocusedVisiblePositionMatch",
@@ -4895,7 +4887,6 @@
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
-
     {
       name: "TestFeature",
       base_feature: "none",
