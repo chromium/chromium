@@ -5,8 +5,8 @@
 #ifndef CRYPTO_UNEXPORTABLE_KEY_WIN_H_
 #define CRYPTO_UNEXPORTABLE_KEY_WIN_H_
 
-#include "base/containers/span.h"
-#include "base/win/wincrypt_shim.h"
+#include <memory>
+
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
@@ -17,6 +17,19 @@ namespace crypto {
 // on success or an invalid handle on error.
 CRYPTO_EXPORT ScopedNCryptKey
 DuplicatePlatformKeyHandle(const UnexportableSigningKey& key);
+
+// Returns an `UnexportableKeyProvider` that is backed by the Windows TPM.
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
+
+// Returns an `UnexportableKeyProvider` that is backed by the Microsoft Software
+// Key Storage Provider.
+std::unique_ptr<UnexportableKeyProvider>
+GetMicrosoftSoftwareUnexportableKeyProviderWin();
+
+// Returns a `VirtualUnexportableKeyProvider` that is backed by the Windows
+// Credential Guard.
+std::unique_ptr<VirtualUnexportableKeyProvider>
+GetVirtualUnexportableKeyProviderWin();
 
 }  // namespace crypto
 
