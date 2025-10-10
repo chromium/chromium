@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -18,6 +19,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -30,7 +33,8 @@
 namespace {
 constexpr float kBlurRadius = 7.0f;
 constexpr float kScrimOpacity = 0.8f;
-constexpr float kBlurAspectRatioThreshold = 0.05f;
+constexpr float kBlurAspectRatioThreshold = 0.1f;
+constexpr base::TimeDelta kAnimationDuration = base::Seconds(2);
 
 // A simple view that gains focus on click.
 class FocusableView : public views::View {
@@ -54,7 +58,11 @@ END_METADATA
 
 }  // namespace
 
-InactiveViewController::InactiveViewController() = default;
+InactiveViewController::InactiveViewController() {
+  animation_ = std::make_unique<gfx::SlideAnimation>(this);
+  animation_->SetSlideDuration(kAnimationDuration);
+  animation_->SetTweenType(gfx::Tween::EASE_IN_OUT);
+}
 InactiveViewController::~InactiveViewController() = default;
 
 std::unique_ptr<views::View> InactiveViewController::CreateView() {
@@ -73,7 +81,7 @@ std::unique_ptr<views::View> InactiveViewController::CreateView() {
   auto scrim = std::make_unique<views::View>();
   scrim->SetPaintToLayer();
   scrim->layer()->SetFillsBoundsOpaquely(false);
-  scrim->layer()->SetOpacity(kScrimOpacity);
+  scrim->layer()->SetOpacity(1.0f);
   scrim_view_tracker_.SetView(scrim.get());
   image_view_container->AddChildView(std::move(scrim));
 
@@ -115,6 +123,9 @@ void InactiveViewController::CaptureScreenshot(
 
 void InactiveViewController::OnScreenshotCaptured(gfx::Image screenshot) {
   screenshot_ = screenshot.AsImageSkia();
+  CheckForImageDistortion();
+  animation_->Reset();
+  animation_->Show();
   UpdateImageView();
 }
 
@@ -123,6 +134,7 @@ base::WeakPtr<InactiveViewController> InactiveViewController::GetWeakPtr() {
 }
 
 void InactiveViewController::OnViewBoundsChanged(views::View* observed_view) {
+  CheckForImageDistortion();
   UpdateImageView();
 }
 
@@ -135,6 +147,15 @@ void InactiveViewController::OnViewThemeChanged(views::View* observed_view) {
   UpdateScrimColor();
 }
 
+void InactiveViewController::AnimationProgressed(
+    const gfx::Animation* animation) {
+  if (!animation) {
+    return;
+  }
+
+  UpdateScrimOpacity(animation_->GetCurrentValue());
+}
+
 void InactiveViewController::UpdateImageView() {
   if (!image_view_ || screenshot_.isNull()) {
     return;
@@ -143,20 +164,12 @@ void InactiveViewController::UpdateImageView() {
     return;
   }
 
-  // Get aspect ratios.
-  const float source_aspect_ratio =
-      static_cast<float>(screenshot_.width()) / screenshot_.height();
-  const float view_aspect_ratio =
-      static_cast<float>(image_view_->width()) / image_view_->height();
-
-  // Check if they are significantly different.
-  const bool should_blur = std::abs(source_aspect_ratio - view_aspect_ratio) >
-                           kBlurAspectRatioThreshold;
-  image_view_->layer()->SetLayerBlur(should_blur ? kBlurRadius : 0.0f);
-
   gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
       screenshot_, skia::ImageOperations::RESIZE_BEST, image_view_->size());
 
+  if (is_image_distorted_) {
+    image_view_->layer()->SetLayerBlur(kBlurRadius);
+  }
   image_view_->SetImage(ui::ImageModel::FromImageSkia(resized_image));
 }
 
@@ -176,4 +189,35 @@ void InactiveViewController::UpdateScrimColor() {
 
   scrim_view->SetBackground(
       views::CreateSolidBackground(color_utils::HSLToSkColor(hsl, 255)));
+}
+
+void InactiveViewController::UpdateScrimOpacity(double animation_value) {
+  views::View* scrim_view = scrim_view_tracker_.view();
+  if (!scrim_view) {
+    return;
+  }
+  const float opacity =
+      gfx::Tween::FloatValueBetween(animation_value, 0.0f, kScrimOpacity);
+  scrim_view->layer()->SetOpacity(opacity);
+}
+
+void InactiveViewController::CheckForImageDistortion() {
+  if (!image_view_ || screenshot_.isNull()) {
+    is_image_distorted_ = false;
+    return;
+  }
+  if (image_view_->size().IsEmpty()) {
+    is_image_distorted_ = false;
+    return;
+  }
+
+  // Get aspect ratios.
+  const float source_aspect_ratio =
+      static_cast<float>(screenshot_.width()) / screenshot_.height();
+  const float view_aspect_ratio =
+      static_cast<float>(image_view_->width()) / image_view_->height();
+
+  // Check if they are significantly different.
+  is_image_distorted_ = std::abs(source_aspect_ratio - view_aspect_ratio) >
+                        kBlurAspectRatioThreshold;
 }
