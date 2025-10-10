@@ -2861,7 +2861,8 @@ RedirectList HistoryBackend::QueryRedirectsFrom(const GURL& from_url) {
     return {};  // No visits for URL.
 
   RedirectList redirects;
-  GetRedirectsFromSpecificVisit(cur_visit, &redirects);
+  GetRedirectsFromSpecificVisit(cur_visit, &redirects,
+                                VisitQuery404sPolicy::kExclude404s);
   return redirects;
 }
 
@@ -2940,17 +2941,18 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
   return search_terms;
 }
 
-void HistoryBackend::GetRedirectsFromSpecificVisit(VisitID cur_visit,
-                                                   RedirectList* redirects) {
+void HistoryBackend::GetRedirectsFromSpecificVisit(
+    VisitID cur_visit,
+    RedirectList* redirects,
+    VisitQuery404sPolicy policy_for_404_visits) {
   // Follow any redirects from the given visit and add them to the list.
   // It *should* be impossible to get a circular chain here, but we check
   // just in case to avoid infinite loops.
   GURL cur_url;
   std::set<VisitID> visit_set;
   visit_set.insert(cur_visit);
-  // TODO: crbug.com/449755235 Take in a 404 policy param and pass it in here.
   while (db_->GetRedirectFromVisit(cur_visit, &cur_visit, &cur_url,
-                                   VisitQuery404sPolicy::kExclude404s)) {
+                                   policy_for_404_visits)) {
     if (visit_set.find(cur_visit) != visit_set.end()) {
       DUMP_WILL_BE_NOTREACHED() << "Loop in visit chain, giving up";
       return;

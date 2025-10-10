@@ -909,9 +909,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Returns a redirect-or-referral chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that
-  // this HistoryBackend object has been Init()ed successfully.
-  void GetRedirectsFromSpecificVisit(VisitID cur_visit,
-                                     RedirectList* redirects);
+  // this HistoryBackend object has been Init()ed successfully. Includes or
+  // excludes redirects that result in a 404 response based on
+  // `policy_for_404_visits`.
+  void GetRedirectsFromSpecificVisit(
+      VisitID cur_visit,
+      RedirectList* redirects,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Similar to the above function except returns a redirect-or-referral list
   // ending at `cur_visit`. E.g. if visit A redirected to visit B, which
