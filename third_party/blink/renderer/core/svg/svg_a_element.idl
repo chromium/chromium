@@ -30,8 +30,8 @@ interface SVGAElement : SVGGraphicsElement {
     [ImplementedAs=svgTarget, Measure] readonly attribute SVGAnimatedString target;
     [RuntimeEnabled=SvgAnchorElementDownloadAttribute, Reflect] attribute DOMString download;
 
-    [RuntimeEnabled=SvgAnchorElementRelAttributes, Reflect] attribute DOMString rel;
-    [RuntimeEnabled=SvgAnchorElementRelAttributes, SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
+    [Reflect] attribute DOMString rel;
+    [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
 };
 
 SVGAElement includes SVGURIReference;

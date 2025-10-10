@@ -823,10 +823,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     // If the anchor wants to suppress the referrer, update the referrerPolicy
     // accordingly.
-    if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
-      if (anchor->HasRel(kRelationNoReferrer)) {
-        data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
-      }
+    if (anchor->HasRel(kRelationNoReferrer)) {
+      data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
     }
     data.link_text = anchor->innerText().Utf8();
   }

@@ -4775,10 +4775,6 @@
       status: "stable",
     },
     {
-      name: "SvgAnchorElementRelAttributes",
-      status: "stable",
-    },
-    {
       name: "SvgAvoidCullingElementsWithTransformOperations",
       status: "stable",
     },

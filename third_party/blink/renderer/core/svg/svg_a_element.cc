@@ -174,24 +174,22 @@ void SVGAElement::DefaultEventHandler(Event& event) {
 
       // TODO(dmangal): Create a common interface with HTMAnchorElement and move
       // navigation related code to that interface.
-      if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
-        if (HasRel(kRelationNoReferrer)) {
-          frame_request.SetNoReferrer();
-          frame_request.SetNoOpener();
-        }
-        if (HasRel(kRelationNoOpener) ||
-            (EqualIgnoringASCIICase(target, "_blank") &&
-             !HasRel(kRelationOpener) &&
-             frame->GetSettings()
-                 ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
-          frame_request.SetNoOpener();
-        }
-        if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
-                GetExecutionContext()) &&
-            HasRel(kRelationOpener) &&
-            !frame_request.GetWindowFeatures().noopener) {
-          frame_request.SetExplicitOpener();
-        }
+      if (HasRel(kRelationNoReferrer)) {
+        frame_request.SetNoReferrer();
+        frame_request.SetNoOpener();
+      }
+      if (HasRel(kRelationNoOpener) ||
+          (EqualIgnoringASCIICase(target, "_blank") &&
+           !HasRel(kRelationOpener) &&
+           frame->GetSettings()
+               ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
+        frame_request.SetNoOpener();
+      }
+      if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
+              GetExecutionContext()) &&
+          HasRel(kRelationOpener) &&
+          !frame_request.GetWindowFeatures().noopener) {
+        frame_request.SetExplicitOpener();
       }
 
       frame_request.SetTriggeringEventInfo(
@@ -300,8 +298,7 @@ void SVGAElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGAElement::ParseAttribute(const AttributeModificationParams& params) {
-  if (params.name == svg_names::kRelAttr &&
-      RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
+  if (params.name == svg_names::kRelAttr) {
     SetRel(params.new_value);
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
   } else {
@@ -310,14 +307,10 @@ void SVGAElement::ParseAttribute(const AttributeModificationParams& params) {
 }
 
 bool SVGAElement::HasRel(uint32_t relation) const {
-  CHECK(RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled());
-
   return link_relations_ & relation;
 }
 
 void SVGAElement::SetRel(const AtomicString& value) {
-  CHECK(RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled());
-
   link_relations_ = 0;
   SpaceSplitString new_link_relations(value.LowerASCII());
   if (new_link_relations.Contains(AtomicString("noreferrer"))) {
