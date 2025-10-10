@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_CONTEXT_CONTROLLER_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -63,9 +64,12 @@ class ContextualTasksContextController : public KeyedService {
                                  const GURL& url) = 0;
 
   // Gets the context for a given task. The `context_callback` will receive the
-  // context if the task is found, or `nullptr` otherwise.
+  // a contextual task. If the `sources` set is empty, all available sources
+  // will be used. The callback will be invoked with the enriched context, or
+  // `nullptr` if the task is not found.
   virtual void GetContextForTask(
       const base::Uuid& task_id,
+      const std::set<ContextualTaskContextSource>& sources,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 

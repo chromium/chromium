@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
-#include "components/contextual_tasks/public/context_decorator.h"
+#include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/sessions/core/session_id.h"
@@ -25,8 +25,8 @@ namespace contextual_tasks {
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory data_type_store_factory,
-    std::unique_ptr<ContextDecorator> context_decorator)
-    : context_decorator_(std::move(context_decorator)) {
+    std::unique_ptr<CompositeContextDecorator> composite_context_decorator)
+    : composite_context_decorator_(std::move(composite_context_decorator)) {
   auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::AI_THREAD,
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
@@ -192,6 +192,7 @@ ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
 
 void ContextualTasksServiceImpl::GetContextForTask(
     const base::Uuid& task_id,
+    const std::set<ContextualTaskContextSource>& sources,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   auto it = tasks_.find(task_id);
@@ -202,8 +203,8 @@ void ContextualTasksServiceImpl::GetContextForTask(
     return;
   }
 
-  context_decorator_->DecorateContext(
-      std::make_unique<ContextualTaskContext>(it->second),
+  composite_context_decorator_->DecorateContext(
+      std::make_unique<ContextualTaskContext>(it->second), sources,
       std::move(context_callback));
 }
 

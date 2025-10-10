@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -24,6 +25,7 @@
 
 namespace contextual_tasks {
 
+class CompositeContextDecorator;
 struct ContextualTaskContext;
 
 class ContextualTasksServiceImpl : public ContextualTasksService,
@@ -32,7 +34,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   ContextualTasksServiceImpl(
       version_info::Channel channel,
       syncer::OnceDataTypeStoreFactory data_type_store_factory,
-      std::unique_ptr<ContextDecorator> context_decorator);
+      std::unique_ptr<CompositeContextDecorator> composite_context_decorator);
   ~ContextualTasksServiceImpl() override;
 
   ContextualTasksServiceImpl(const ContextualTasksServiceImpl&) = delete;
@@ -62,6 +64,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       SessionID session_id) const override;
   void GetContextForTask(
       const base::Uuid& task_id,
+      const std::set<ContextualTaskContextSource>& sources,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
   void AddObserver(ContextualTasksService::Observer* observer) override;
@@ -91,7 +94,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   std::map<SessionID, base::Uuid> session_to_task_;
 
   // The entry point for the decorator chain that enriches the context.
-  std::unique_ptr<ContextDecorator> context_decorator_;
+  std::unique_ptr<CompositeContextDecorator> composite_context_decorator_;
 
   // Obsevers of the model.
   base::ObserverList<ContextualTasksService::Observer> observers_;

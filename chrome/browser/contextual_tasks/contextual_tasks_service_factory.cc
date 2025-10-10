@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/contextual_tasks/internal/composite_context_decorator.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -64,7 +65,7 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
       DataTypeStoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
-      CreateDefaultContextDecorator(favicon_service));
+      CreateCompositeContextDecorator(favicon_service));
 }
 
 }  // namespace contextual_tasks

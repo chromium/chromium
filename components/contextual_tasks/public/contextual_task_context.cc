@@ -24,11 +24,11 @@ gfx::Image UrlAttachment::GetFavicon() const {
   return decorator_data_.favicon_data.image;
 }
 
-UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorDataForTesting() {
+UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorDataForTesting() {
   return decorator_data_;
 }
 
-UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorData() {
+UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorData() {
   return decorator_data_;
 }
 

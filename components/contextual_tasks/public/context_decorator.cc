@@ -15,9 +15,10 @@ std::vector<UrlAttachment>& ContextDecorator::GetMutableUrlAttachments(
   return task.GetMutableUrlAttachments();
 }
 
-UrlAttachmentDecoratorData& ContextDecorator::GetUrlAttachmentDecoratorData(
+UrlAttachmentDecoratorData&
+ContextDecorator::GetMutableUrlAttachmentDecoratorData(
     UrlAttachment& attachment) {
-  return attachment.GetDecoratorData();
+  return attachment.GetMutableDecoratorData();
 }
 
 }  // namespace contextual_tasks

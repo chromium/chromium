@@ -59,7 +59,7 @@ void FaviconContextDecorator::OnFaviconImageReady(
     const favicon_base::FaviconImageResult& favicon_image_result) {
   if (!favicon_image_result.image.IsEmpty()) {
     auto& favicon_data =
-        GetUrlAttachmentDecoratorData(*attachment).favicon_data;
+        GetMutableUrlAttachmentDecoratorData(*attachment).favicon_data;
     favicon_data.image = favicon_image_result.image;
     favicon_data.icon_url = favicon_image_result.icon_url;
   }

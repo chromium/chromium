@@ -72,6 +72,7 @@ class MockContextualTasksService : public ContextualTasksService {
   MOCK_METHOD(void,
               GetContextForTask,
               (const base::Uuid& task_id,
+               const std::set<ContextualTaskContextSource>& sources,
                base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                    context_callback),
               (override));
@@ -144,14 +145,15 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
     std::unique_ptr<ContextualTaskContext> result;
     base::RunLoop run_loop;
     controller_->GetContextForTask(
-        task_id, base::BindOnce(
-                     [](std::unique_ptr<ContextualTaskContext>* out_context,
-                        base::OnceClosure quit_closure,
-                        std::unique_ptr<ContextualTaskContext> context) {
-                       *out_context = std::move(context);
-                       std::move(quit_closure).Run();
-                     },
-                     &result, run_loop.QuitClosure()));
+        task_id, {},
+        base::BindOnce(
+            [](std::unique_ptr<ContextualTaskContext>* out_context,
+               base::OnceClosure quit_closure,
+               std::unique_ptr<ContextualTaskContext> context) {
+              *out_context = std::move(context);
+              std::move(quit_closure).Run();
+            },
+            &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
   }
@@ -295,9 +297,9 @@ TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
 
   ContextualTaskContext expected_context(task);
 
-  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _))
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _))
       .WillOnce(
-          [&](const base::Uuid&,
+          [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                   callback) {
             std::move(callback).Run(
@@ -316,9 +318,9 @@ TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _))
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _, _))
       .WillOnce(
-          [&](const base::Uuid&,
+          [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                   callback) { std::move(callback).Run(nullptr); });
 

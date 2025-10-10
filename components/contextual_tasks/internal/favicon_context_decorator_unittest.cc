@@ -74,13 +74,13 @@ TEST_F(FaviconContextDecoratorTest, DecorateContextWithFavicons) {
   ASSERT_EQ(attachments.size(), 2u);
 
   auto& attachment1_data =
-      attachments[0].GetDecoratorDataForTesting().favicon_data;
+      attachments[0].GetMutableDecoratorDataForTesting().favicon_data;
   EXPECT_FALSE(attachment1_data.image.IsEmpty());
   EXPECT_EQ(attachment1_data.icon_url, kIconUrl);
   EXPECT_TRUE(gfx::test::AreImagesEqual(attachment1_data.image, kTestImage));
 
   auto& attachment2_data =
-      attachments[1].GetDecoratorDataForTesting().favicon_data;
+      attachments[1].GetMutableDecoratorDataForTesting().favicon_data;
   EXPECT_TRUE(attachment2_data.image.IsEmpty());
   EXPECT_TRUE(attachment2_data.icon_url.is_empty());
 }
@@ -102,7 +102,7 @@ TEST_F(FaviconContextDecoratorTest, NoFaviconService) {
   auto& attachments = decorated_context->GetMutableUrlAttachmentsForTesting();
   ASSERT_EQ(attachments.size(), 1u);
   const auto& attachment_data =
-      attachments[0].GetDecoratorDataForTesting().favicon_data;
+      attachments[0].GetMutableDecoratorDataForTesting().favicon_data;
   EXPECT_TRUE(attachment_data.image.IsEmpty());
   EXPECT_TRUE(attachment_data.icon_url.is_empty());
 }

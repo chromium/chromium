@@ -15,6 +15,13 @@
 
 namespace contextual_tasks {
 
+// Enum representing the different sources that can contribute to the context of
+// a contextual task.
+enum class ContextualTaskContextSource {
+  kFallbackTitle,
+  kFaviconService,
+};
+
 class ContextualTask;
 
 // Data block for UrlAttachment, intended to be modified only by
@@ -25,6 +32,7 @@ struct UrlAttachmentDecoratorData {
   };
   FallbackTitleData fallback_title_data;
 
+  // Filled in by ContextualTaskContextSource::kFaviconService.
   struct FaviconData {
     gfx::Image image;
     GURL icon_url;
@@ -45,14 +53,14 @@ struct UrlAttachment {
   gfx::Image GetFavicon() const;
 
   // Gives access to internal data sources.
-  UrlAttachmentDecoratorData& GetDecoratorDataForTesting();
+  UrlAttachmentDecoratorData& GetMutableDecoratorDataForTesting();
 
  private:
   friend class ContextDecorator;
 
   // ContextDecorator implementation can access this method through a protected
   // method.
-  UrlAttachmentDecoratorData& GetDecoratorData();
+  UrlAttachmentDecoratorData& GetMutableDecoratorData();
 
   // The URL that is attached.
   GURL url_;
@@ -88,7 +96,6 @@ struct ContextualTaskContext {
 
  private:
   friend class ContextDecorator;
-  friend class ContextualTasksServiceImplTest;
 
   // Returns a mutable version of the URL attachments for the task.
   std::vector<UrlAttachment>& GetMutableUrlAttachments();

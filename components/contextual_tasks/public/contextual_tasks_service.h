@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXTUAL_TASKS_SERVICE_H_
 #define COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_CONTEXTUAL_TASKS_SERVICE_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -85,9 +86,12 @@ class ContextualTasksService : public KeyedService {
                                  const GURL& url) = 0;
 
   // Gets the context for a given task. The `context_callback` will receive the
-  // context if the task is found, or `nullptr`.
+  // a contextual task. If the `sources` set is empty, all available sources
+  // will be used. The callback will be invoked with the enriched context, or
+  // `nullptr` if the task is not found.
   virtual void GetContextForTask(
       const base::Uuid& task_id,
+      const std::set<ContextualTaskContextSource>& sources,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
 

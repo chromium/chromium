@@ -57,7 +57,7 @@ void FallbackTitleContextDecorator::DecorateContext(
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
   for (auto& attachment : GetMutableUrlAttachments(*context)) {
-    GetUrlAttachmentDecoratorData(attachment).fallback_title_data.title =
+    GetMutableUrlAttachmentDecoratorData(attachment).fallback_title_data.title =
         GetTitleFromUrlForDisplay(attachment.GetURL());
   }
 

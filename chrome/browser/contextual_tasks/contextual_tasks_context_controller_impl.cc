@@ -64,9 +64,10 @@ void ContextualTasksContextControllerImpl::DetachUrlFromTask(
 
 void ContextualTasksContextControllerImpl::GetContextForTask(
     const base::Uuid& task_id,
+    const std::set<ContextualTaskContextSource>& sources,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
         context_callback) {
-  service_->GetContextForTask(task_id, std::move(context_callback));
+  service_->GetContextForTask(task_id, sources, std::move(context_callback));
 }
 
 FeatureEligibility
