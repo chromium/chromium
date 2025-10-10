@@ -12,9 +12,12 @@
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
@@ -166,7 +169,26 @@ const CGFloat kFeatureRowIconSize = 20;
       return setting == CONTENT_SETTING_BLOCK && hasBlockedPopups;
     }
     case PageActionMenuPriceTracking: {
-      // TODO(crbug.com/447143165): Add price tracking detection.
+      ContextualPanelTabHelper* tabHelper =
+          ContextualPanelTabHelper::FromWebState(_webState);
+      if (!tabHelper) {
+        return NO;
+      }
+
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configs =
+          tabHelper->GetCurrentCachedConfigurations();
+
+      for (const auto& config_weak : configs) {
+        if (!config_weak) {
+          continue;
+        }
+
+        ContextualPanelItemConfiguration* config = config_weak.get();
+        if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
+          return YES;
+        }
+      }
+
       return NO;
     }
   }
@@ -429,10 +451,5 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
       ->current_language();
 }
 
-// Returns true if price tracking is currently active for the page.
-- (BOOL)isPriceTrackingAvailable {
-  // TODO(crbug.com/447143165): Implement price tracking detection.
-  return NO;
-}
 
 @end

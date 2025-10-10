@@ -48,9 +48,6 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Allows all blocked popups for the current site.
 - (void)allowBlockedPopups;
 
-// Returns whether price tracking is available for the current page.
-- (BOOL)isPriceTrackingAvailable;
-
 // Reverts the page translation to show the original language.
 - (void)revertTranslation;
 
