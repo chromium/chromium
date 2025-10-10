@@ -234,7 +234,7 @@ void HTMLSelectElement::UpdateUsesMenuList() {
       uses_menu_list_ =
           FastHasAttribute(html_names::kSizeAttr) ? size_ == 1 : false;
     } else {
-      uses_menu_list_ = size_ == 1;
+      uses_menu_list_ = size_ <= 1;
     }
     return;
   }
@@ -1604,6 +1604,7 @@ void HTMLSelectElement::ChangeRendering() {
   if (UsesMenuList() != old_uses_menu_list) {
     select_type_->WillBeDestroyed();
     select_type_ = SelectType::Create(*this);
+    PseudoStateChanged(CSSSelector::kPseudoListBox);
   }
   if (!InActiveDocument())
     return;
