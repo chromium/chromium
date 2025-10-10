@@ -37,6 +37,9 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   using OnReceiveResponseCallback = base::RepeatingCallback<void(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body)>;
+  using OnReceiveRedirectCallback = base::OnceCallback<void(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head)>;
   using OnCompleteCallback = base::OnceCallback<void(
       const network::URLLoaderCompletionStatus& status)>;
   using FetchCallback =
@@ -60,6 +63,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
                     uint32_t options,
                     const network::ResourceRequest& request,
                     OnReceiveResponseCallback receive_response_callback,
+                    OnReceiveRedirectCallback receive_redirect_callback,
                     OnCompleteCallback complete_callback);
   void StartSyntheticResponse(FetchCallback callback);
   SyntheticResponseStatus Status() const { return status_; }

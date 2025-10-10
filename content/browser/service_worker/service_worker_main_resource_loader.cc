@@ -1110,6 +1110,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
       base::BindRepeating(&ServiceWorkerMainResourceLoader::
                               OnReceiveResponseFromSyntheticNetworkRequest,
                           weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ServiceWorkerMainResourceLoader::
+                         OnReceiveRedirectFromSyntheticNetworkRequest,
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(
           &ServiceWorkerMainResourceLoader::OnCompleteSyntheticNetworkRequest,
           weak_factory_.GetWeakPtr()));
@@ -1157,6 +1160,15 @@ void ServiceWorkerMainResourceLoader::
   SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
   CHECK(url_loader_client_.is_bound());
   CommitResponseBody(response_head, std::move(body), std::nullopt);
+}
+
+void ServiceWorkerMainResourceLoader::
+    OnReceiveRedirectFromSyntheticNetworkRequest(
+        const net::RedirectInfo& redirect_info,
+        network::mojom::URLResponseHeadPtr response_head) {
+  CHECK(url_loader_client_.is_bound());
+  url_loader_client_->OnReceiveRedirect(redirect_info,
+                                        std::move(response_head));
 }
 
 void ServiceWorkerMainResourceLoader::OnCompleteSyntheticNetworkRequest(

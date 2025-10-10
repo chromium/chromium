@@ -199,8 +199,10 @@ class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
  public:
   SyntheticResponseURLLoaderClient(
       OnReceiveResponseCallback receive_response_callback,
+      OnReceiveRedirectCallback receive_redirect_callback,
       OnCompleteCallback complete_callback)
       : receive_response_callback_(std::move(receive_response_callback)),
+        receive_redirect_callback_(std::move(receive_redirect_callback)),
         complete_callback_(std::move(complete_callback)) {}
   SyntheticResponseURLLoaderClient(const SyntheticResponseURLLoaderClient&) =
       delete;
@@ -223,7 +225,10 @@ class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
   }
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr response_head) override {}
+      network::mojom::URLResponseHeadPtr response_head) override {
+    std::move(receive_redirect_callback_)
+        .Run(redirect_info, std::move(response_head));
+  }
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override {}
@@ -233,6 +238,7 @@ class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
   }
 
   OnReceiveResponseCallback receive_response_callback_;
+  OnReceiveRedirectCallback receive_redirect_callback_;
   OnCompleteCallback complete_callback_;
 
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
@@ -260,6 +266,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
     uint32_t options,
     const network::ResourceRequest& request,
     OnReceiveResponseCallback receive_response_callback,
+    OnReceiveRedirectCallback receive_redirect_callback,
     OnCompleteCallback complete_callback) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::StartRequest");
@@ -270,6 +277,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
       base::BindRepeating(
           &ServiceWorkerSyntheticResponseManager::OnReceiveResponse,
           weak_factory_.GetWeakPtr()),
+      std::move(receive_redirect_callback),
       base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnComplete,
                      weak_factory_.GetWeakPtr()));
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
