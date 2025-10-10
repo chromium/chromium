@@ -357,6 +357,122 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
         self.assertEqual(len(result), 0)
 
 
+class ReadPassKConfigUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_read_pass_k_config` function."""
+
+    def setUp(self):
+        """Sets up the fake filesystem."""
+        self.setUpPyfakefs()
+
+    def test_empty_config(self):
+        """Tests that default values are returned for an empty config."""
+        self.fs.create_file('test.yaml', contents='{}')
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_no_tests_key(self):
+        """Tests that default values are returned when 'tests' is missing."""
+        self.fs.create_file('test.yaml', contents='foo: bar')
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_empty_tests_list(self):
+        """Tests that default values are returned for an empty 'tests' list."""
+        self.fs.create_file('test.yaml', contents='tests: []')
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_no_metadata(self):
+        """Tests that default values are returned for tests with no metadata."""
+        self.fs.create_file('test.yaml', contents='tests:\n  - foo: bar')
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_empty_metadata(self):
+        """Tests that default values are returned for empty metadata."""
+        self.fs.create_file('test.yaml', contents='tests:\n  - metadata: {}')
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_with_settings(self):
+        """Tests that pass@k settings are read correctly."""
+        yaml_with_settings = """
+tests:
+  - metadata:
+      runs_per_test: 5
+      pass_k_threshold: 3
+"""
+        self.fs.create_file('test.yaml', contents=yaml_with_settings)
+        config = eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+        self.assertEqual(config.runs_per_test, 5)
+        self.assertEqual(config.pass_k_threshold, 3)
+
+    def test_first_test_has_settings(self):
+        """Tests that settings are read from the first test with metadata."""
+        yaml_first_test_has_settings = """
+tests:
+  - metadata:
+      runs_per_test: 5
+      pass_k_threshold: 3
+  - metadata:
+      runs_per_test: 10
+      pass_k_threshold: 8
+"""
+        self.fs.create_file('test.yaml', contents=yaml_first_test_has_settings)
+        with self.assertLogs(level='WARNING') as cm:
+            config = eval_prompts._read_pass_k_config(
+                pathlib.Path('test.yaml'))
+            self.assertIn('Settings on other tests will be ignored',
+                          cm.output[0])
+        self.assertEqual(config.runs_per_test, 5)
+        self.assertEqual(config.pass_k_threshold, 3)
+
+    def test_later_test_has_settings(self):
+        """Tests that settings are read from the first test with metadata."""
+        yaml_later_test_has_settings = """
+tests:
+  - {}
+  - metadata:
+      runs_per_test: 5
+      pass_k_threshold: 3
+"""
+        self.fs.create_file('test.yaml', contents=yaml_later_test_has_settings)
+        with self.assertLogs(level='WARNING') as cm:
+            config = eval_prompts._read_pass_k_config(
+                pathlib.Path('test.yaml'))
+            self.assertIn('Settings on other tests will be ignored',
+                          cm.output[0])
+        self.assertEqual(config.runs_per_test, 1)
+        self.assertEqual(config.pass_k_threshold, 1)
+
+    def test_invalid_runs_type(self):
+        """Tests that a ValueError is raised for a non-integer runs_per_test."""
+        yaml_invalid_runs = """
+tests:
+  - metadata:
+      runs_per_test: "5"
+"""
+        self.fs.create_file('test.yaml', contents=yaml_invalid_runs)
+        with self.assertRaisesRegex(ValueError, 'must be an integer'):
+            eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+
+    def test_invalid_threshold_type(self):
+        """Tests that a ValueError is raised for a non-integer value."""
+        yaml_invalid_threshold = """
+tests:
+  - metadata:
+      pass_k_threshold: 3.5
+"""
+        self.fs.create_file('test.yaml', contents=yaml_invalid_threshold)
+        with self.assertRaisesRegex(ValueError, 'must be an integer'):
+            eval_prompts._read_pass_k_config(pathlib.Path('test.yaml'))
+
+
 class PerformChromiumSetupUnittest(unittest.TestCase):
     """Unit tests for the `_perform_chromium_setup` function."""
 

@@ -5,6 +5,7 @@
 """A script to evaluate prompts using promptfoo."""
 
 import argparse
+import dataclasses
 import fnmatch
 import logging
 import os
@@ -12,6 +13,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+import yaml
 
 import checkout_helpers
 import constants
@@ -24,6 +26,13 @@ from agents.common import gemini_helpers
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
 _TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
+
+
+@dataclasses.dataclass
+class PassKConfig:
+    """Configuration for a pass@k test."""
+    runs_per_test: int
+    pass_k_threshold: int
 
 
 def _check_uncommitted_changes(cwd):
@@ -229,6 +238,42 @@ def _fetch_sandbox_image() -> bool:
             'because you are in an environment that does not support '
             'sandboxing. Try running with --no-sandbox.%s', image, e, output)
         return False
+
+
+def _read_pass_k_config(test_file: pathlib.Path) -> PassKConfig:
+    """Reads the pass@k config from the test file.
+
+    Args:
+        test_file: The path to the test file.
+
+    Returns:
+        A PassKConfig object with the pass@k settings.
+    """
+    with open(test_file, 'r', encoding='utf-8') as f:
+        config = yaml.safe_load(f)
+
+    runs_per_test = 1
+    pass_k_threshold = 1
+    if config.get('tests'):
+        if len(config['tests']) > 1:
+            logging.warning(
+                'Pass@k settings can only be specified on the first test in a '
+                'promptfoo config. Settings on other tests will be ignored.')
+
+        test = config['tests'][0]
+        if test.get('metadata'):
+            runs_per_test = test['metadata'].get('runs_per_test', 1)
+            if not isinstance(runs_per_test, int):
+                raise ValueError(
+                    f'runs_per_test in {test_file} must be an integer.')
+
+            pass_k_threshold = test['metadata'].get('pass_k_threshold', 1)
+            if not isinstance(pass_k_threshold, int):
+                raise ValueError(
+                    f'pass_k_threshold in {test_file} must be an integer.')
+
+    return PassKConfig(runs_per_test=runs_per_test,
+                       pass_k_threshold=pass_k_threshold)
 
 
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
