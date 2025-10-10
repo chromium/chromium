@@ -59,6 +59,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -101,7 +102,6 @@ import java.util.Set;
         shadows = {
             SearchActivityUnitTest.ShadowSearchActivityUtils.class,
             SearchActivityUnitTest.ShadowProfileManager.class,
-            SearchActivityUnitTest.ShadowRevenueStats.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
         })
 @EnableFeatures({
@@ -167,16 +167,6 @@ public class SearchActivityUnitTest {
         }
     }
 
-    @Implements(RevenueStats.class)
-    public static class ShadowRevenueStats {
-        static Callback<String> sSetCustomTabSearchClient;
-
-        @Implementation
-        public static void setCustomTabSearchClient(String client) {
-            sSetCustomTabSearchClient.onResult(client);
-        }
-    }
-
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TestSearchActivityUtils mUtils;
     private @Mock TemplateUrlService mTemplateUrlSvc;
@@ -187,7 +177,7 @@ public class SearchActivityUnitTest {
     private @Mock SearchActivity.SearchActivityDelegate mDelegate;
     private @Mock SearchActivityLocationBarLayout mLocationBar;
     private @Mock UmaActivityObserver mUmaObserver;
-    private @Mock Callback<String> mSetCustomTabSearchClient;
+    private @Mock Callback<@Nullable String> mSetCustomTabSearchClient;
     private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
     private ObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
@@ -231,7 +221,7 @@ public class SearchActivityUnitTest {
         ShadowSearchActivityUtils.sMockUtils = mUtils;
         WebContentsFactory.setWebContentsForTesting(mWebContents);
         ShadowTabBuilder.sMockTab = mTab;
-        ShadowRevenueStats.sSetCustomTabSearchClient = mSetCustomTabSearchClient;
+        RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
     }
 
     @After
