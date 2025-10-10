@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 #import "base/check.h"
-#import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 
 BASE_FEATURE(kEnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -162,6 +163,23 @@ bool IsPersistTabContextEnabled() {
     return true;
   }
   return base::FeatureList::IsEnabled(kPersistTabContext);
+}
+
+// The default Time-To-Live in days for persisted contexts.
+constexpr int kPersistTabContextDefaultTTL = 21;
+
+base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs) {
+  int persist_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      kPersistTabContext, "ttl_days", kPersistTabContextDefaultTTL);
+  if (persist_ttl_days < 0) {
+    // Fallback to a safe default if the Finch value is invalid.
+    persist_ttl_days = kPersistTabContextDefaultTTL;
+  }
+
+  base::TimeDelta persist_ttl = base::Days(persist_ttl_days);
+  base::TimeDelta inactive_tabs_ttl = InactiveTabsTimeThreshold(prefs);
+
+  return std::min(persist_ttl, inactive_tabs_ttl);
 }
 
 BASE_FEATURE(kGeminiNavigationPromo, base::FEATURE_DISABLED_BY_DEFAULT);

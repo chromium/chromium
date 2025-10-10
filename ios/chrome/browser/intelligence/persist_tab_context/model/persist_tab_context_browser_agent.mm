@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 
+#import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
@@ -25,9 +29,19 @@
 
 namespace {
 
+// Prefix used for filenames of persisted page context files.
 constexpr std::string kPageContextPrefix = "page_context_";
+
+// Suffix used for filenames of persisted page context files.
 constexpr std::string kProtoSuffix = ".proto";
+
+// The name of the subdirectory within the user's cache directory where
+// persisted tab contexts are stored.
 constexpr std::string kPersistedTabContexts = "persisted_tab_contexts";
+
+// The delay applied before the PurgeExpiredPageContexts task is executed
+// after the PersistTabContextBrowserAgent is initialized.
+constexpr base::TimeDelta kPurgeTaskDelay = base::Seconds(3);
 
 // Constructs the full file path for a given webstate_unique_id within the
 // storage directory.
@@ -169,12 +183,14 @@ ReadAndParseContextFromStorage(const base::FilePath& storage_directory_path,
   std::optional<std::string> serialized_data =
       ReadFileContents(storage_directory_path, webstate_unique_id);
   if (!serialized_data) {
+    DeleteContextFromStorage(webstate_unique_id, storage_directory_path);
     return std::nullopt;
   }
 
   std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
       page_context = ParsePageContext(*serialized_data);
   if (!page_context) {
+    DeleteContextFromStorage(webstate_unique_id, storage_directory_path);
     return std::nullopt;
   }
 
@@ -200,6 +216,36 @@ PersistTabContextBrowserAgent::PageContextMap DoMultipleContextReads(
   return result_map;
 }
 
+// Deletes page context proto files from `contexts_dir` whose last modified time
+// is older than the set time to live.
+void PurgeExpiredPageContexts(base::FilePath contexts_dir,
+                              base::TimeDelta ttl) {
+  if (!base::DirectoryExists(contexts_dir)) {
+    return;
+  }
+
+  base::Time now = base::Time::Now();
+  base::FileEnumerator enumerator(
+      contexts_dir, /*recursive=*/false, base::FileEnumerator::FILES,
+      base::StrCat({kPageContextPrefix, "*", kProtoSuffix}));
+  for (base::FilePath name = enumerator.Next(); !name.empty();
+       name = enumerator.Next()) {
+    base::FileEnumerator::FileInfo info = enumerator.GetInfo();
+    base::Time last_modified = info.GetLastModifiedTime();
+    base::TimeDelta age = now - last_modified;
+
+    if (age >= ttl) {
+      if (!base::DeleteFile(name)) {
+        // TODO(crbug.com/445963646): Add metrics logging to browser agent for
+        // cleanup functions.
+      } else {
+        // TODO(crbug.com/445963646): Add metrics logging to browser agent for
+        // cleanup functions.
+      }
+    }
+  }
+}
+
 }  // namespace
 
 #pragma mark - Public
@@ -223,6 +269,14 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
               &PersistTabContextBrowserAgent::OnSceneActivationLevelChanged,
               weak_factory_.GetWeakPtr())];
   [browser->GetSceneState() addObserver:persist_tab_context_state_agent_];
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+  base::TimeDelta ttl = GetPersistedContextEffectiveTTL(prefs);
+  // Schedule a cleanup task with a delay.
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PurgeExpiredPageContexts, storage_directory_path_, ttl),
+      kPurgeTaskDelay);
 }
 
 PersistTabContextBrowserAgent::~PersistTabContextBrowserAgent() {

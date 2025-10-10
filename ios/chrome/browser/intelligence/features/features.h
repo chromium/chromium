@@ -6,10 +6,13 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
 #import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
 
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+class PrefService;
 
 // Feature flag controlling whether enhanced calendar is enabled.
 BASE_DECLARE_FEATURE(kEnhancedCalendar);
@@ -134,6 +137,11 @@ bool IsPersistTabContextEnabled();
 
 // Feature flag to persist tab context.
 BASE_DECLARE_FEATURE(kPersistTabContext);
+
+// Returns the effective Time-To-Live (TTL) for persisted tab contexts.
+// This is the minimum of the `ttl_days` Finch parameter (with a default
+// fallback if it is invalid) and the TTL defined by the Inactive Tabs feature.
+base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs);
 
 // Feature flag for the automatic Gemini promo shown on navigation.
 BASE_DECLARE_FEATURE(kGeminiNavigationPromo);

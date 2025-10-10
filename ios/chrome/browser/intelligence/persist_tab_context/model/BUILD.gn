@@ -11,6 +11,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/persist_tab_context/metrics",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
