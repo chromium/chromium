@@ -486,7 +486,7 @@ public class InstanceSwitcherCoordinator {
         }
 
         ListMenu.Delegate moreMenuDelegate =
-                (model) -> {
+                (model, view) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.instance_switcher_close_window
                             || textId == R.string.close) {

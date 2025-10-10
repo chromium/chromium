@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
+
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -35,6 +37,7 @@ class ContextMenuItemWithIconButtonProperties extends ListMenuItemProperties {
                 CLICK_LISTENER,
                 HOVER_LISTENER,
                 IS_HIGHLIGHTED,
+                KEY_LISTENER,
                 START_ICON_DRAWABLE
             };
 }

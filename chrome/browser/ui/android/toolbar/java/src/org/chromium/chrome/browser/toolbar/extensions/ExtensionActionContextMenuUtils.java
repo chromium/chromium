@@ -53,11 +53,11 @@ public final class ExtensionActionContextMenuUtils {
         ListMenu.Delegate buttonDelegate =
                 new ListMenu.Delegate() {
                     @Override
-                    public void onItemSelected(PropertyModel model) {
+                    public void onItemSelected(PropertyModel model, View view) {
                         View.OnClickListener listener = model.get(CLICK_LISTENER);
 
                         if (listener != null) {
-                            listener.onClick(null);
+                            listener.onClick(view);
                         }
                     }
                 };

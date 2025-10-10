@@ -320,7 +320,7 @@ public class MessageBannerViewTest {
                             BrowserUiListMenuUtils.getBasicListMenu(
                                     sActivity,
                                     menuItems,
-                                    (PropertyModel menuItem) -> {
+                                    (PropertyModel menuItem, View view) -> {
                                         assertThat(menuItem)
                                                 .isSameInstanceAs(menuItems.get(0).model);
                                         called.set(true);

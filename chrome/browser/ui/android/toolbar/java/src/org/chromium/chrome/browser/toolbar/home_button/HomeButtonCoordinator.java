@@ -93,7 +93,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,
                             mMenuList,
-                            (model) -> mOnMenuClickCallback.onResult(mContext));
+                            (model, unusedView) -> mOnMenuClickCallback.onResult(mContext));
             mListMenuDelegate =
                     new ListMenuDelegate() {
                         @Override

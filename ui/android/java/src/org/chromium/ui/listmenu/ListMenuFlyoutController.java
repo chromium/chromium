@@ -144,7 +144,7 @@ public class ListMenuFlyoutController<T> {
                 mPendingHoverExitRunnable =
                         () -> {
                             if (item.model.get(IS_HIGHLIGHTED)) {
-                                updateHighlightPath(
+                                updateHighlights(
                                         highlightPath.subList(0, highlightPath.size() - 1));
                             }
                             cancelFlyoutDelay(view);
@@ -167,13 +167,55 @@ public class ListMenuFlyoutController<T> {
         }
     }
 
+    /**
+     * Trigger flyout immediately without the delay, e.g. when keyboard is used to navigate flyout
+     * menus.
+     *
+     * @param item The ListItem that is the target of the focus event.
+     * @param view The View associated with the hovered ListItem.
+     * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for root
+     *     items, 1 for sub-menu items).
+     * @param highlightPath The complete list of items from the root of the menu to the currently
+     *     hovered {@code item}, inclusive.
+     */
+    public void enterFlyoutWithoutDelay(
+            ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
+        updateHighlights(highlightPath);
+        cancelFlyoutDelay(view);
+        onFlyoutAfterDelay(item, view, levelOfHoveredItem);
+    }
+
+    /**
+     * Remove flyout windows with levels larger than or equal to {@code clearFromIndex} immediately,
+     * e.g. when keyboard is used to navigate flyout menus.
+     *
+     * @param clearFromIndex The minimum level of flyout popup to remove.
+     * @param view The View associated with the hovered ListItem.
+     * @param highlightPath The complete list of items from the root of the menu to the currently
+     *     hovered {@code item}, inclusive.
+     */
+    public void exitFlyoutWithoutDelay(
+            int clearFromIndex, View view, List<ListItem> highlightPath) {
+        // We do not dismiss the main, non-flyout popup here.
+        if (clearFromIndex == 0) {
+            return;
+        }
+
+        cancelFlyoutDelay(view);
+
+        // We need to remove hover from the popup currently in focus.
+        updateHighlights(highlightPath.subList(0, clearFromIndex - 1));
+
+        mFlyoutHandler.removeFlyoutWindows(clearFromIndex);
+    }
+
     private void onItemHovered(
             ListItem item,
             View view,
             int levelOfHoveredItem,
             @Nullable Boolean drillDownOverrideValue,
             List<ListItem> highlightPath) {
-        updateHighlightPath(highlightPath);
+        updateHighlights(highlightPath);
 
         if (shouldUseDrillDown(drillDownOverrideValue)) {
             return;
@@ -196,7 +238,16 @@ public class ListMenuFlyoutController<T> {
                 view.getContext().getResources().getInteger(R.integer.flyout_menu_delay_in_ms));
     }
 
-    private void updateHighlightPath(List<ListItem> highlightPath) {
+    /**
+     * Updates the highlight state of menu items based on the new hover path. The addition of flyout
+     * windows requires us to precisely control the hover states of the items. Specifically, when
+     * the user is hovering on an item inside a flyout popup, all of the ancestor items should
+     * remain highlighted, even when the hover itself is not on those items.
+     *
+     * @param highlightPath The list of {@link ListItem}s from the root to the currently hovered
+     *     item that should be highlighted.
+     */
+    private void updateHighlights(List<ListItem> highlightPath) {
         int forkIndex = -1;
 
         for (int i = 0; i < Math.min(mLastHighlightedPath.size(), highlightPath.size()); i++) {

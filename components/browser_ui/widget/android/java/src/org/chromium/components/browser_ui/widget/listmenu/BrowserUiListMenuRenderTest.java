@@ -95,7 +95,7 @@ public class BrowserUiListMenuRenderTest {
         mRenderTestRule.setNightModeEnabled(nightMode);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ListMenu.Delegate delegate = item -> {};
+                    ListMenu.Delegate delegate = (item, view) -> {};
                     BasicListMenu listMenu =
                             BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
                     listMenu.setupCallbacksRecursively(

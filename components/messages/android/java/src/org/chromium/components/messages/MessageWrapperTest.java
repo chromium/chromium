@@ -159,7 +159,7 @@ public class MessageWrapperTest {
                 messageSecondaryMenuItems.mMenuItems.size());
 
         // Select a secondary menu item.
-        message.onItemSelected(item1);
+        message.onItemSelected(item1, null);
         Mockito.verify(mNativeMock).handleSecondaryMenuItemSelected(nativePtr, 1);
 
         // Clear the secondary menu.

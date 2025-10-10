@@ -196,7 +196,7 @@ public class TabGroupRowView extends LinearLayout {
         return BrowserUiListMenuUtils.getBasicListMenu(
                 getContext(),
                 listItems,
-                (item) -> onItemSelected(item, openRunnable, deleteRunnable, leaveRunnable));
+                (item, view) -> onItemSelected(item, openRunnable, deleteRunnable, leaveRunnable));
     }
 
     private void onItemSelected(

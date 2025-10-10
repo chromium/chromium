@@ -18,7 +18,7 @@ public interface ListMenu {
     /** Delegate handling list item click event of {@link ListMenu}. */
     @FunctionalInterface
     interface Delegate {
-        void onItemSelected(PropertyModel item);
+        void onItemSelected(PropertyModel item, View view);
     }
 
     /**

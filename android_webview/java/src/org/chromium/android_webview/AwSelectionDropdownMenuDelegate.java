@@ -219,7 +219,7 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
         return new BasicListMenu(
                 windowContext,
                 items,
-                clickListener::onItemClick,
+                (model, view) -> clickListener.onItemClick(model),
                 /* backgroundDrawable= */ Resources.ID_NULL,
                 /* backgroundTintColor= */ Resources.ID_NULL,
                 /* bottomHairlineColor= */ null);

@@ -444,11 +444,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mActivity,
                         bookmarkItems,
-                        (model) -> {
+                        (model, view) -> {
                             View.OnClickListener clickListener =
                                     model.get(ListMenuItemProperties.CLICK_LISTENER);
                             if (clickListener != null) {
-                                clickListener.onClick(null);
+                                clickListener.onClick(view);
                             }
                         });
 

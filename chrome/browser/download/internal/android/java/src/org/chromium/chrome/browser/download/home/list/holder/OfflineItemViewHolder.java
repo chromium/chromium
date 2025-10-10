@@ -194,7 +194,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
             listItems.add(buildSimpleMenuItem(R.string.delete));
         }
         ListMenu.Delegate delegate =
-                (model) -> {
+                (model, view) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.share) {
                         if (mShareCallback != null) mShareCallback.run();

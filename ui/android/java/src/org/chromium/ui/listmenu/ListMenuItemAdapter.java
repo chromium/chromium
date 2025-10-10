@@ -44,7 +44,8 @@ public class ListMenuItemAdapter extends ModelListAdapter {
      * @param disabledTypes The type enums which should be disabled in the adapter (i.e. not
      *     keyboard-focusable or interactable).
      * @param delegate The {@link Delegate} used to handle menu clicks. If not provided, the item's
-     *     CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
+     *     CLICK_LISTENER or listMenu's onMenuItemSelected method will be used. If provided, both
+     *     will run.
      */
     public ListMenuItemAdapter(
             ModelList data, Collection<Integer> disabledTypes, @Nullable Delegate delegate) {
@@ -92,7 +93,7 @@ public class ListMenuItemAdapter extends ModelListAdapter {
                     (v) -> {
                         if (mDelegate != null) {
                             // Delegate, if possible.
-                            mDelegate.onItemSelected(item.model);
+                            mDelegate.onItemSelected(item.model, v);
                         } else if (hasClickListener(item)) {
                             // The item had a click listener in the model, but none was bound by the
                             // ViewBinder, and there is no click delegate to use. In this case, call

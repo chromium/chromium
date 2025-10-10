@@ -1734,7 +1734,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         menuItems.add(ListItemBuilder.buildSimpleMenuItem(R.string.remove));
 
         ListMenu.Delegate delegate =
-                (model) -> {
+                (model, view) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.edit) {
                         buildPreferenceDialog(websitePreference.site()).show();

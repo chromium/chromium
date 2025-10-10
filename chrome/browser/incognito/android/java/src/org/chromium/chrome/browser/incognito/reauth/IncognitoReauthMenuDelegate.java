@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -62,7 +63,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * with the menu items.
      */
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         int textId = item.get(ListMenuItemProperties.TITLE_ID);
         if (textId == R.string.menu_close_all_incognito_tabs) {
             onCloseAllIncognitoTabsMenuItemClicked();

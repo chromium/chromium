@@ -232,7 +232,9 @@ public class ListMenuUtils {
 
         // We add `HOVER_LISTENER` to items without submenus too because we might need to dismiss
         // open flyout popups.
-        if (flyoutController != null && item.model.containsKey(HOVER_LISTENER)) {
+        if (!ListMenuFlyoutController.shouldUseDrillDown(drillDownOverrideValue)
+                && flyoutController != null
+                && item.model.containsKey(HOVER_LISTENER)) {
             item.model.set(
                     HOVER_LISTENER,
                     (view, event) -> {
@@ -244,18 +246,46 @@ public class ListMenuUtils {
                                 drillDownOverrideValue,
                                 highlightPath);
                     });
+
+            View.OnKeyListener originalListener =
+                    item.model.get(org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER);
+            item.model.set(
+                    org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER,
+                    (view, keyCode, keyEvent) -> {
+                        if (isGoBackward(keyEvent)) {
+                            flyoutController.exitFlyoutWithoutDelay(
+                                    levelOfHoveredItem, view, highlightPath);
+                            return true;
+                        }
+
+                        if (originalListener != null) {
+                            return originalListener.onKey(view, keyCode, keyEvent);
+                        }
+
+                        // Return false because the listener has not consumed the event.
+                        return false;
+                    });
         }
 
         if (item.model.containsKey(SUBMENU_ITEMS)) {
             final View.OnClickListener existingListener = item.model.get(CLICK_LISTENER);
             item.model.set(
                     CLICK_LISTENER,
-                    (unusedView) -> {
+                    (view) -> {
                         if (existingListener != null) {
-                            existingListener.onClick(unusedView);
+                            existingListener.onClick(view);
                         }
-                        onItemWithSubmenuClicked(
-                                headerModelList, contentModelList, item, drillDownOverrideValue);
+                        if (ListMenuFlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
+                            onItemWithSubmenuClicked(
+                                    headerModelList,
+                                    contentModelList,
+                                    item,
+                                    drillDownOverrideValue);
+                        } else if (flyoutController != null) {
+                            // Allow for controlling flyout with keyboard for accessibility.
+                            flyoutController.enterFlyoutWithoutDelay(
+                                    item, view, levelOfHoveredItem, highlightPath);
+                        }
                     });
             for (ListItem submenuItem :
                     PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {

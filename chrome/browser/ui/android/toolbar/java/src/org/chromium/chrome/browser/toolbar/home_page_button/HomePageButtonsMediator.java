@@ -150,7 +150,8 @@ public class HomePageButtonsMediator {
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,
                             mHomeButtonMenuList,
-                            (model) -> mOnHomeButtonMenuClickCallback.onResult(mContext));
+                            (model, unusedView) ->
+                                    mOnHomeButtonMenuClickCallback.onResult(mContext));
             mHomeButtonListMenuDelegate =
                     new ListMenuDelegate() {
                         @Override

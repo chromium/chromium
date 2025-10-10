@@ -167,7 +167,7 @@ public class TabSwitcherActionMenuCoordinator {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         context,
                         listItems,
-                        (model) -> {
+                        (model, view) -> {
                             onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                         });
 

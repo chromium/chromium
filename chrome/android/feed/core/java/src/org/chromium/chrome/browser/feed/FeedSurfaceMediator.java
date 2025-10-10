@@ -1441,7 +1441,7 @@ public class FeedSurfaceMediator
     }
 
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         assert mSectionHeaderModel != null;
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         int feedType =

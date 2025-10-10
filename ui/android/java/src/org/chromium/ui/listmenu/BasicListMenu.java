@@ -148,14 +148,18 @@ public class BasicListMenu implements ListMenu {
         View hairline = mListMenuLayout.findViewById(R.id.menu_header_bottom_hairline);
 
         mContentModelList = data;
-        mContentAdapter = createAdapter(data, Set.of(), (model) -> callDelegate(delegate, model));
+        mContentAdapter =
+                createAdapter(data, Set.of(), (model, view) -> callDelegate(delegate, model, view));
         mContentListView = mListMenuLayout.findViewById(R.id.menu_list);
         mContentListView.setAdapter(mContentAdapter);
         mContentListView.setDivider(null);
 
         mHeaderModelList = new ModelList();
         mHeaderAdapter =
-                createAdapter(mHeaderModelList, Set.of(), (model) -> callDelegate(delegate, model));
+                createAdapter(
+                        mHeaderModelList,
+                        Set.of(),
+                        (model, view) -> callDelegate(delegate, model, view));
         mHeaderListView = mListMenuLayout.findViewById(R.id.menu_header);
         mHeaderListView.setAdapter(mHeaderAdapter);
 
@@ -259,8 +263,8 @@ public class BasicListMenu implements ListMenu {
                 drillDownOverrideValue);
     }
 
-    private void callDelegate(@Nullable Delegate delegate, PropertyModel model) {
-        if (delegate != null) delegate.onItemSelected(model);
+    private void callDelegate(@Nullable Delegate delegate, PropertyModel model, View view) {
+        if (delegate != null) delegate.onItemSelected(model, view);
         // We will run the runnables that are registered by the time this lambda
         // is called.
         for (Runnable r : mClickRunnables) {

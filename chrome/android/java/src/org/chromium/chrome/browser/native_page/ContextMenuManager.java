@@ -267,7 +267,7 @@ public class ContextMenuManager {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mAnchorView.getContext(),
                         menuModel,
-                        model ->
+                        (model, view) ->
                                 handleMenuItemClick(
                                         model.get(ListMenuItemProperties.MENU_ITEM_ID), delegate));
         mListContextMenu = new ListMenuHost(mAnchorView, null);

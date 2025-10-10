@@ -47,7 +47,8 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
 
         Rect dropdownRect = new Rect(x, y, x + 1, y + 1);
         BasicListMenu menu =
-                BrowserUiListMenuUtils.getBasicListMenu(context, items, clickListener::onItemClick);
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        context, items, (model, view) -> clickListener.onItemClick(model));
 
         mPopupWindow =
                 new AnchoredPopupWindow(

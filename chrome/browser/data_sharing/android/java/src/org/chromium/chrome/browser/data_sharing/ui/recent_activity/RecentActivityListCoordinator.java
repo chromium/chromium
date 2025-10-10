@@ -164,7 +164,7 @@ public class RecentActivityListCoordinator {
                             .withMenuId(R.id.see_full_activity)
                             .build());
             ListMenu.Delegate delegate =
-                    (model) -> {
+                    (model, unusedView) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
                         if (textId == R.string.data_sharing_shared_tab_groups_activity) {
                             mShowFullActivityRunnable.run();

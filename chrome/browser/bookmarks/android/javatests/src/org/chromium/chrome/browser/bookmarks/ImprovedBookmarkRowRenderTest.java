@@ -183,7 +183,7 @@ public class ImprovedBookmarkRowRenderTest {
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_edit));
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_move));
 
-        ListMenu.Delegate delegate = item -> {};
+        ListMenu.Delegate delegate = (item, view) -> {};
         return BrowserUiListMenuUtils.getBasicListMenu(
                 mActivityTestRule.getActivity(), listItems, delegate);
     }

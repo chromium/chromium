@@ -446,7 +446,7 @@ public class MessageBannerView extends RelativeLayout {
         menuItems.add(listItem);
 
         ListMenu.Delegate listMenuDelegate =
-                (PropertyModel menuItem) -> {
+                (PropertyModel menuItem, View view) -> {
                     assert menuItem == listItem.model;
                     // There is only one menu item in the menu.
                     if (mSecondaryActionCallback != null) {

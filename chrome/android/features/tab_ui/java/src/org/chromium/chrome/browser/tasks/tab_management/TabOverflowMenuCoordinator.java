@@ -150,7 +150,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     createAdapter(
                             modelList,
                             Set.of(),
-                            (model) -> {
+                            (model, view) -> {
                                 // Because ListMenuItemAdapter always uses the delegate if there is
                                 // one, we need to manually call click listeners.
                                 if (model.containsKey(CLICK_LISTENER)

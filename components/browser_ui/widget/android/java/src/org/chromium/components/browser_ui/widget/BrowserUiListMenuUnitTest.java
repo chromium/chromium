@@ -104,7 +104,7 @@ public class BrowserUiListMenuUnitTest {
 
     @Test
     public void testScrollHairline() {
-        mBasicListMenu = getBasicListMenu(mActivity, mData, item -> {});
+        mBasicListMenu = getBasicListMenu(mActivity, mData, (item, view) -> {});
         mContentView = Mockito.spy(setupListViewForSubmenuTesting());
         // Assert not showing before navigation
         View hairline = mView.findViewById(R.id.menu_header_bottom_hairline);
@@ -141,7 +141,7 @@ public class BrowserUiListMenuUnitTest {
     @Test
     public void testScrollHairline_color() {
         int colorIntForTest = 10;
-        mBasicListMenu = getBasicListMenu(mActivity, mData, item -> {}, 0, colorIntForTest);
+        mBasicListMenu = getBasicListMenu(mActivity, mData, (item, view) -> {}, 0, colorIntForTest);
         setupListViewForSubmenuTesting();
         View hairline = mView.findViewById(R.id.menu_header_bottom_hairline);
         assertEquals(colorIntForTest, ((ColorDrawable) hairline.getBackground()).getColor());
@@ -149,7 +149,7 @@ public class BrowserUiListMenuUnitTest {
 
     @Test
     public void testScroll_noHeader_noHairline() {
-        mBasicListMenu = getBasicListMenu(mActivity, mData, item -> {});
+        mBasicListMenu = getBasicListMenu(mActivity, mData, (item, view) -> {});
         ListView listView = setupListViewForSubmenuTesting();
         // Assert not showing before navigation
         View hairline = mView.findViewById(R.id.menu_header_bottom_hairline);
@@ -173,7 +173,7 @@ public class BrowserUiListMenuUnitTest {
                                 .with(SUBMENU_ITEMS, submenuItems)
                                 .build());
         data.add(submenuParentItem);
-        mBasicListMenu = getBasicListMenu(mActivity, data, item -> {}, 0, colorIntForTest);
+        mBasicListMenu = getBasicListMenu(mActivity, data, (item, view) -> {}, 0, colorIntForTest);
         mBasicListMenu.setupCallbacksRecursively(
                 () -> {}, /* drillDownOverrideValue= */ null, /* flyoutController= */ null);
         mView = mBasicListMenu.getContentView();
@@ -199,7 +199,7 @@ public class BrowserUiListMenuUnitTest {
 
     @Test
     public void testKeyboardNavigation() {
-        mBasicListMenu = getBasicListMenu(mActivity, mData, item -> {});
+        mBasicListMenu = getBasicListMenu(mActivity, mData, (item, view) -> {});
         View view = mBasicListMenu.getContentView();
         ListView headerView = view.findViewById(R.id.menu_header);
         ListView contentView = setupListViewForSubmenuTesting();
