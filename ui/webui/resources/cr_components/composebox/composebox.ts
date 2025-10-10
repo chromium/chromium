@@ -100,11 +100,15 @@ export class ComposeboxElement extends I18nMixinLit
         type: String,
       },
       smartComposeEnabled_: {
-        reflect:true,
+        reflect: true,
         type: Boolean,
       },
       smartComposeInlineHint_: {type: String},
-      showFileCarousel_ : {
+      showFileCarousel_: {
+        reflect: true,
+        type: Boolean,
+      },
+      inDeepSearchMode_: {
         reflect: true,
         type: Boolean,
       },
@@ -148,6 +152,7 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
+  protected accessor inDeepSearchMode_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor inputsDisabled_: boolean = false;
   protected accessor lensButtonDisabled_: boolean = false;
@@ -451,11 +456,28 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected setDeepSearchMode_(e: CustomEvent<{inDeepSearchMode: boolean}>) {
-    this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
+    this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
+    this.pageHandler_.setDeepSearchMode(this.inDeepSearchMode_);
+    this.updateInputPlaceholder_();
   }
 
   protected setCreateImageMode_(e: CustomEvent<{inCreateImageMode: boolean}>) {
-    this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
+    this.inCreateImageMode_ = e.detail.inCreateImageMode;
+    this.pageHandler_.setCreateImageMode(this.inDeepSearchMode_);
+    this.updateInputPlaceholder_();
+  }
+
+  private updateInputPlaceholder_() {
+    if (this.inDeepSearchMode_) {
+      this.inputPlaceholder_ =
+          loadTimeData.getString('composeDeepSearchPlaceholder');
+    } else if (this.inCreateImageMode_) {
+      this.inputPlaceholder_ =
+          loadTimeData.getString('composeCreateImagePlaceholder');
+    } else {
+      this.inputPlaceholder_ =
+          loadTimeData.getString('searchboxComposePlaceholder');
+    }
   }
 
   // Sets the input property to compute the cancel button title without using
