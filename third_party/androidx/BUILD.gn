@@ -148,7 +148,6 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
-      "//third_party/android_deps:guava_android_java",
       "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
@@ -332,7 +331,7 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_java",
       ":androidx_interpolator_interpolator_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
@@ -454,7 +453,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":androidx_annotation_annotation_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
@@ -519,7 +518,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_tracing_tracing_java",
       ":androidx_versionedparcelable_versionedparcelable_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -1086,7 +1085,7 @@ if (!limit_android_deps) {
       ":androidx_media_media_java",
       ":androidx_palette_palette_java",
       ":androidx_recyclerview_recyclerview_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
     ]
   }
 
@@ -1232,7 +1231,7 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_ktx_java",
       ":androidx_privacysandbox_ads_ads_adservices_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -1352,7 +1351,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_test_monitor_java",
       ":androidx_tracing_tracing_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -1395,7 +1394,7 @@ if (!limit_android_deps) {
       ":androidx_test_services_storage_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:javax_inject_javax_inject_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
@@ -3391,7 +3390,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_startup_startup_runtime_java",
-      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
