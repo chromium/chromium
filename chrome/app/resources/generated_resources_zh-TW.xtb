@@ -15,7 +15,7 @@
 <translation id="1005671386794704751">玫瑰粉</translation>
 <translation id="1005919400326853998">在新對話方塊中查看「<ph name="CERT_NAME" />」的憑證詳細資料</translation>
 <translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
-<translation id="1006873397406093306">這項擴充功能可讀取及變更你網站上的資料。你可以設定擴充功能可存取的網站。</translation>
+<translation id="1006873397406093306">這項擴充功能可讀取及變更已造訪網站的相關資料。你可以設定擴充功能可存取的網站。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時讓你自動登入。如關閉這項功能，系統每次都會詢問你是否要登入</translation>
@@ -6414,7 +6414,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435274640623994081">啟用語音記錄功能</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
-<translation id="5436211819997237281">目前管理新分頁的擴充功能</translation>
+<translation id="5436211819997237281">現在是由這個擴充功能管理新分頁</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗現在的寬度為 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格現在的寬度為 <ph name="PANE_SIZE_PERCENT" />。</translation>
