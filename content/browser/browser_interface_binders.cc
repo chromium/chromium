@@ -4,6 +4,8 @@
 
 #include "content/browser/browser_interface_binders.h"
 
+#include <concepts>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -702,6 +704,16 @@ void BindDevicePostureProvider(
       ->Bind(std::move(receiver));
 }
 
+template <auto Method, typename Interface>
+void BindRenderFrameHostImpl(RenderFrameHost* host,
+                             mojo::PendingReceiver<Interface> receiver)
+  requires std::invocable<decltype(Method),
+                          RenderFrameHostImpl*,
+                          mojo::PendingReceiver<Interface>>
+{
+  (static_cast<RenderFrameHostImpl*>(host)->*Method)(std::move(receiver));
+}
+
 }  // namespace
 
 // Documents/frames
@@ -840,20 +852,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host)));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(features::kWebOTP)) {
-    map->Add<blink::mojom::WebOTPService>(
-        base::BindRepeating(&RenderFrameHostImpl::BindWebOTPServiceReceiver,
-                            base::Unretained(host)));
-  }
-
-  map->Add<blink::mojom::DigitalIdentityRequest>(base::BindRepeating(
-      &RenderFrameHostImpl::BindDigitalIdentityRequestReceiver,
-      base::Unretained(host)));
-
-  map->Add<blink::mojom::FederatedAuthRequest>(base::BindRepeating(
-      &RenderFrameHostImpl::BindFederatedAuthRequestReceiver,
-      base::Unretained(host)));
-
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateWebUsbService, base::Unretained(host)));
 
@@ -904,11 +902,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::WebTransportConnector>(
       base::BindRepeating(&RenderFrameHostImpl::CreateWebTransportConnector,
                           base::Unretained(host)));
-
-  map->Add<payments::mojom::SecurePaymentConfirmationService>(
-      base::BindRepeating(
-          &RenderFrameHostImpl::CreateSecurePaymentConfirmationService,
-          base::Unretained(host)));
 
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {
@@ -1218,11 +1211,23 @@ void PopulateBinderMapWithContext(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   map->Add<blink::mojom::Authenticator>(
-      [](RenderFrameHost* host,
-         mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-        static_cast<RenderFrameHostImpl*>(host)->GetWebAuthenticationService(
-            std::move(receiver));
-      });
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::GetWebAuthenticationService>);
+  if (base::FeatureList::IsEnabled(features::kWebOTP)) {
+    map->Add<blink::mojom::WebOTPService>(
+        &BindRenderFrameHostImpl<
+            &RenderFrameHostImpl::BindWebOTPServiceReceiver>);
+  }
+  map->Add<blink::mojom::DigitalIdentityRequest>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindDigitalIdentityRequestReceiver>);
+  map->Add<blink::mojom::FederatedAuthRequest>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::BindFederatedAuthRequestReceiver>);
+  map->Add<payments::mojom::SecurePaymentConfirmationService>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateSecurePaymentConfirmationService>);
+
   map->Add<blink::mojom::ClipboardHost>(&ClipboardHostImpl::Create);
   map->Add<blink::mojom::SpeculationHost>(&SpeculationHostImpl::Bind);
   map->Add<blink::mojom::AnchorElementInteractionHost>(
