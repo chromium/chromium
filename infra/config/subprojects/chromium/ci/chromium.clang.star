@@ -929,6 +929,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "rel",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -968,6 +969,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "dbg",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1014,6 +1016,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "asn",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1061,6 +1064,7 @@ clang_tot_linux_builder(
     # Requires a large disk, so has a machine specifically devoted to it
     builderless = False,
     short_name = "fuz",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1118,6 +1122,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "msn",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1159,6 +1164,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "pgo",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1199,6 +1205,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "tsn",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
@@ -1239,6 +1246,7 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "usn",
+    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 ci.builder(
