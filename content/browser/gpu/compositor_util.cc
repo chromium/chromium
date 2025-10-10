@@ -189,15 +189,6 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
                             ? gpu::kGpuFeatureStatusEnabled
                             : gpu::kGpuFeatureStatusDisabled);
 #endif
-  features.emplace_back(
-      "webgl2",
-      SafeGetFeatureStatus(
-          gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
-          command_line.HasSwitch(switches::kDisableWebGL) ||
-              command_line.HasSwitch(switches::kDisableWebGL2)),
-      DisableInfo::Problem(
-          "WebGL2 has been disabled via blocklist or the command line."),
-      false);
   features.emplace_back("raw_draw",
                         GetFakeFeatureStatus(::features::IsUsingRawDraw()));
   features.emplace_back(
@@ -274,7 +265,6 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         status += "_on";
       }
       if ((gpu_feature_data.name == "webgl" ||
-           gpu_feature_data.name == "webgl2" ||
            gpu_feature_data.name == "webgpu") &&
           is_gpu_compositing_disabled)
         status += "_readback";

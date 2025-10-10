@@ -667,7 +667,6 @@ export class InfoViewElement extends CustomElement {
       'protected_video_decode': 'Hardware Protected Video Decode',
       'surface_control': 'Surface Control',
       'vpx_decode': 'VPx Video Decode',
-      'webgl2': 'WebGL2',
       'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
       'raw_draw': 'Raw Draw',
       'video_encode': 'Video Encode',
