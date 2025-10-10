@@ -2739,14 +2739,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
 struct {
   device::AuthenticatorAttachment attachment;
+  bool has_uvpaa;
   int expected_button;
 } kWinHelloButtonMakeCredentialTestCases[] = {
     // For make credential, we will only show the authenticator picker when
     // Windows does not do hybrid. Therefore, there is no option for "Hello,
     // Security Key, or Phone".
-    {device::AuthenticatorAttachment::kAny, kHelloOrSk},
-    {device::AuthenticatorAttachment::kCrossPlatform, kSk},
-    {device::AuthenticatorAttachment::kPlatform, kHello},
+    {device::AuthenticatorAttachment::kAny, true, kHelloOrSk},
+    {device::AuthenticatorAttachment::kCrossPlatform, true, kSk},
+    {device::AuthenticatorAttachment::kPlatform, true, kHello},
+    {device::AuthenticatorAttachment::kAny, false, kSk},
 };
 
 TEST_F(AuthenticatorRequestDialogControllerTest,
@@ -2765,6 +2767,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         device::AttestationConveyancePreference::kNone;
     transports_info.make_credential_attachment = test_case.attachment;
     fake_win_webauthn_api.set_version(4);
+    transports_info.win_is_uvpaa = test_case.has_uvpaa;
     SCOPED_TRACE(testing::Message()
                  << "Attachment: " << static_cast<int>(test_case.attachment));
     UpdateModelBeforeStartFlow(model.get(), transports_info,

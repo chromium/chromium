@@ -259,10 +259,11 @@ std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
         transport_availability.transport_list_did_include_security_key ||
         transport_availability.has_empty_allow_list;
   } else {
-    win_handles_internal = transport_availability.make_credential_attachment ==
-                               device::AuthenticatorAttachment::kPlatform ||
-                           transport_availability.make_credential_attachment ==
-                               device::AuthenticatorAttachment::kAny;
+    win_handles_internal = (transport_availability.make_credential_attachment ==
+                                device::AuthenticatorAttachment::kPlatform ||
+                            transport_availability.make_credential_attachment ==
+                                device::AuthenticatorAttachment::kAny) &&
+                           transport_availability.win_is_uvpaa;
     win_handles_security_key =
         transport_availability.make_credential_attachment ==
             device::AuthenticatorAttachment::kCrossPlatform ||
