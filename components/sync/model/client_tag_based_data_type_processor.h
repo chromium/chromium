@@ -160,7 +160,8 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
     kApplyIncrementalUpdates = 2,
     kApplyUpdatesOnCommitResponse = 3,
     kSupportsIncrementalUpdatesMismatch = 4,
-    kMaxValue = kSupportsIncrementalUpdatesMismatch,
+    kApplyIncrementalUpdatesWithClearAllDirective = 5,
+    kMaxValue = kApplyIncrementalUpdatesWithClearAllDirective,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypeErrorSite)
 
@@ -204,7 +205,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
 
   // Handle any incremental updates received from the server after being
   // enabled.
-  std::optional<ModelError> OnIncrementalUpdateReceived(
+  [[nodiscard]] std::optional<ModelError> OnIncrementalUpdateReceived(
       const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
@@ -266,12 +267,21 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
 
   // Reports error and records a metric about `site` where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
+  void ReportIfError(const std::optional<ModelError>& error, ErrorSite site);
 
   // Generates some consistent unique position on best effort if it can't be
   // calculated. Unique positions are stored in sync metadata and loaded from
   // the disk on browser startup, so they should not be CHECKed for validness.
   sync_pb::UniquePosition GenerateFallbackUniquePosition(
       const ClientTagHash& client_tag_hash) const;
+
+  // Handles a full update as an incremental update. This is used for the
+  // bridges which support incremental updates but the server sends a full
+  // update.
+  [[nodiscard]] std::optional<ModelError> ApplyFullUpdateAsIncrementalUpdate(
+      const sync_pb::DataTypeState& type_state,
+      UpdateResponseDataList updates,
+      sync_pb::GarbageCollectionDirective gc_directive);
 
   /////////////////////
   // Processor state //

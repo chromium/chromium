@@ -82,6 +82,10 @@ ProcessorEntity::ProcessorEntity(const std::string& storage_key,
 
 ProcessorEntity::~ProcessorEntity() = default;
 
+ClientTagHash ProcessorEntity::GetClientTagHash() const {
+  return ClientTagHash::FromHashed(metadata_.client_tag_hash());
+}
+
 void ProcessorEntity::SetStorageKey(const std::string& storage_key) {
   DCHECK(storage_key_.empty());
   DCHECK(!storage_key.empty());
@@ -143,6 +147,12 @@ bool ProcessorEntity::MatchesBaseData(const EntityData& data) const {
 
 bool ProcessorEntity::IsUnsynced() const {
   return metadata_.sequence_number() > metadata_.acked_sequence_number();
+}
+
+bool ProcessorEntity::IsUnsyncedLocalCreation() const {
+  // `kUncommittedVersion` implies that the entity is unsynced but add this
+  // condition for clarity.
+  return metadata_.server_version() == kUncommittedVersion && IsUnsynced();
 }
 
 bool ProcessorEntity::RequiresCommitRequest() const {

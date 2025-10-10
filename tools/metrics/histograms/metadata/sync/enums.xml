@@ -852,6 +852,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Error triggered by update not matching
              SupportsIncrementalUpdates()"/>
+  <int value="5"
+      label="Error returned when applying incremental updates containing a
+             clear all directive"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.h:SyncDataTypeErrorSite) -->

@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 
@@ -55,9 +56,16 @@ class ProcessorEntity {
   const std::string& storage_key() const { return storage_key_; }
   const sync_pb::EntityMetadata& metadata() const { return metadata_; }
 
+  ClientTagHash GetClientTagHash() const;
+
   // Returns true if this data is out of sync with the server.
   // A commit may or may not be in progress at this time.
   bool IsUnsynced() const;
+
+  // Returns true if this entity was created locally and not yet committed to
+  // the server (including while the commit is in flight, until a response is
+  // received from the server).
+  bool IsUnsyncedLocalCreation() const;
 
   // Returns true if this data is out of sync with the sync thread.
   //

@@ -156,6 +156,16 @@ bool ShouldReuseTrackedUniquePositionFor(const ProcessorEntity* target_entity,
   return true;
 }
 
+absl::flat_hash_set<ClientTagHash> GetClientTagHashes(
+    const UpdateResponseDataList& updates) {
+  absl::flat_hash_set<ClientTagHash> client_tag_hashes;
+  client_tag_hashes.reserve(updates.size());
+  for (const UpdateResponseData& update : updates) {
+    client_tag_hashes.insert(update.entity.client_tag_hash);
+  }
+  return client_tag_hashes;
+}
+
 }  // namespace
 
 ClientTagBasedDataTypeProcessor::ClientTagBasedDataTypeProcessor(
@@ -279,6 +289,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
       // For commit-only types, no updates are expected.
       data_type_state.set_initial_sync_state(
           sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
+
+      // TODO(crbug.com/40668179): handle error case for commit-only types.
       OnFullUpdateReceived(data_type_state, UpdateResponseDataList(),
                            /*gc_directive=*/std::nullopt);
       CHECK(entity_tracker_);
@@ -472,6 +484,14 @@ void ClientTagBasedDataTypeProcessor::ReportErrorImpl(const ModelError& error,
   // becomes available which happens in ConnectIfReady() upon OnSyncStarting().
 }
 
+void ClientTagBasedDataTypeProcessor::ReportIfError(
+    const std::optional<ModelError>& error,
+    ErrorSite site) {
+  if (error) {
+    ReportErrorImpl(*error, site);
+  }
+}
+
 std::optional<ModelError> ClientTagBasedDataTypeProcessor::GetError() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_error_;
@@ -514,6 +534,8 @@ void ClientTagBasedDataTypeProcessor::Put(
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsAllowingChanges()) << DataTypeToDebugString(type_);
+  // TODO(crbug.com/40668179): add a CHECK that writes are only supported for
+  // data types with incremental updates. See crbug.com/40668179 for details.
   CHECK(data) << DataTypeToDebugString(type_);
   CHECK(!data->is_deleted()) << DataTypeToDebugString(type_);
   CHECK(!data->specifics.has_encrypted()) << DataTypeToDebugString(type_);
@@ -622,6 +644,8 @@ void ClientTagBasedDataTypeProcessor::Delete(
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsAllowingChanges());
+  // TODO(crbug.com/40668179): add a CHECK that writes are only supported for
+  // data types with incremental updates. See crbug.com/40668179 for details.
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -935,30 +959,35 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
     return;
   }
 
-  std::optional<ModelError> error;
-
-  // We call OnFullUpdateReceived when it's the first sync cycle, or when
-  // we get a garbage collection directive from the server telling us to clear
-  // all data by version watermark.
-  // This means that if we receive a version watermark based GC directive, we
-  // always clear all data. We do this to allow the server to replace all data
-  // on the client, without having to know exactly which entities the client
-  // has.
   const bool is_initial_sync = !IsTrackingMetadata();
-  const bool treating_as_full_update =
-      is_initial_sync || HasClearAllDirective(gc_directive);
-  if (treating_as_full_update) {
-    error = OnFullUpdateReceived(data_type_state, std::move(updates),
-                                 std::move(gc_directive));
+  if (is_initial_sync) {
+    ReportIfError(OnFullUpdateReceived(data_type_state, std::move(updates),
+                                       std::move(gc_directive)),
+                  ErrorSite::kApplyFullUpdates);
+  } else if (!HasClearAllDirective(gc_directive)) {
+    // Incremental update or empty update with sync metadata only (e.g. progress
+    // marker).
+    ReportIfError(
+        OnIncrementalUpdateReceived(data_type_state, std::move(updates),
+                                    std::move(gc_directive)),
+        ErrorSite::kApplyIncrementalUpdates);
+  } else if (bridge_->SupportsIncrementalUpdates()) {
+    // Incremental update with GC directive.
+    ReportIfError(
+        ApplyFullUpdateAsIncrementalUpdate(data_type_state, std::move(updates),
+                                           std::move(gc_directive.value())),
+        ErrorSite::kApplyIncrementalUpdatesWithClearAllDirective);
   } else {
-    error = OnIncrementalUpdateReceived(data_type_state, std::move(updates),
-                                        std::move(gc_directive));
+    // Full update with GC directive if the bridge doesn't support incremental
+    // updates. This means that if a version watermark based GC directive is
+    // received, clear all data. This allows the server to replace all data on
+    // the client, without having to know exactly which entities the client has.
+    ReportIfError(OnFullUpdateReceived(data_type_state, std::move(updates),
+                                       std::move(gc_directive)),
+                  ErrorSite::kApplyFullUpdates);
   }
 
-  if (error) {
-    ReportErrorImpl(*error, treating_as_full_update
-                                ? ErrorSite::kApplyFullUpdates
-                                : ErrorSite::kApplyIncrementalUpdates);
+  if (model_error_.has_value()) {
     return;
   }
 
@@ -1017,17 +1046,8 @@ bool ClientTagBasedDataTypeProcessor::ValidateUpdate(
     return true;
   }
 
-  if (HasClearAllDirective(gc_directive) &&
-      bridge_->SupportsIncrementalUpdates()) {
-    ReportErrorImpl(
-        ModelError(
-            FROM_HERE,
-            ModelError::Type::kProcessorVersionWatermarkWithIncrementalUpdates),
-        ErrorSite::kSupportsIncrementalUpdatesMismatch);
-
-    return false;
-  } else if (!HasClearAllDirective(gc_directive) &&
-             !bridge_->SupportsIncrementalUpdates() && !updates.empty()) {
+  if (!HasClearAllDirective(gc_directive) &&
+      !bridge_->SupportsIncrementalUpdates() && !updates.empty()) {
     // We receive an update without clear all directive from the server to
     // indicate no data has changed. This contradicts with the list of updates
     // being non-empty, the bridge cannot handle it and we need to fail here.
@@ -1127,10 +1147,16 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
          IsInitialSyncAtLeastPartiallyDone(
              data_type_state.initial_sync_state())));
 
-  // Ensure that this is the initial sync, and it was not already marked done.
-  CHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
+  if (entity_tracker_) {
+    // If this is not the initial sync, then it must be a full update with a
+    // clear all directive.
+    CHECK(HasClearAllDirective(gc_directive));
 
-  if (entity_tracker_ && HasClearAllDirective(gc_directive)) {
+    // Bridges with full updates only are not expected to support writes.
+    CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
+    // If the bridge supports incremental updates, it should not receive a full
+    // update on GC directive.
+    CHECK(!bridge_->SupportsIncrementalUpdates());
     ExpireAllEntries(metadata_changes.get());
     entity_tracker_->set_data_type_state(data_type_state);
   }
@@ -1140,12 +1166,9 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
         type_, data_type_state, EntityMetadataMap());
   }
 
-  // TODO(crbug.com/40668179): the comment below may be wrong in case where a
-  // datatype supports non-incremental updates and local updates are
-  // acceptable.
-  // Given that we either just removed all existing sync entities (in the full
-  // update case).
-  DUMP_WILL_BE_CHECK(!entity_tracker_->size());
+  // All existing sync entities are either deleted (in the full update case) or
+  // this is the initial sync.
+  CHECK(!entity_tracker_->size());
 
   metadata_changes->UpdateDataTypeState(entity_tracker_->data_type_state());
 
@@ -1311,12 +1334,16 @@ void ClientTagBasedDataTypeProcessor::ExpireAllEntries(
   CHECK(metadata_changes);
   CHECK(entity_tracker_);
 
+  // Bridges must support incremental updates to be able to write data and this
+  // code path is only used for bridges that *don't* support incremental updates
+  // (hence it's not expected here to have any unsynced data). See
+  // crbug.com/40668179 for details.
+  CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
+
   std::vector<std::string> storage_key_to_be_deleted;
   for (const ProcessorEntity* entity :
        entity_tracker_->GetAllEntitiesIncludingTombstones()) {
-    if (!entity->IsUnsynced()) {
-      storage_key_to_be_deleted.push_back(entity->storage_key());
-    }
+    storage_key_to_be_deleted.push_back(entity->storage_key());
   }
 
   for (const std::string& key : storage_key_to_be_deleted) {
@@ -1390,8 +1417,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
       data->id = "s" + metadata.server_id();
       data->creation_time = ProtoTimeToTime(metadata.creation_time());
       data->modification_time = ProtoTimeToTime(metadata.modification_time());
-      data->client_tag_hash =
-          ClientTagHash::FromHashed(metadata.client_tag_hash());
+      data->client_tag_hash = entity->GetClientTagHash();
     }
 
     base::Value::Dict node = data->ToDictionaryValue();
@@ -1732,6 +1758,71 @@ ClientTagBasedDataTypeProcessor::GenerateFallbackUniquePosition(
   base::UmaHistogramEnumeration("Sync.DataTypeUniquePositionError",
                                 DataTypeHistogramValue(type_));
   return UniquePositionForInitialEntity(client_tag_hash);
+}
+
+std::optional<ModelError>
+ClientTagBasedDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
+    const sync_pb::DataTypeState& type_state,
+    UpdateResponseDataList updates,
+    sync_pb::GarbageCollectionDirective gc_directive) {
+  // The initial sync must be handled by a normal full update path.
+  CHECK(IsTrackingMetadata());
+  CHECK(HasClearAllDirective(gc_directive));
+
+  const absl::flat_hash_set<ClientTagHash> updated_client_tag_hashes =
+      GetClientTagHashes(updates);
+
+  // Simulate the deletion of all entities that are not in the update (and
+  // synced).
+  for (const ProcessorEntity* entity :
+       entity_tracker_->GetAllEntitiesIncludingTombstones()) {
+    if (entity->IsUnsyncedLocalCreation()) {
+      // Special case a local creation to avoid generating a deletion.
+      // Otherwise, it would result in a conflict with a remote deletion which
+      // is not real, polluting UMA metrics. This would still result in keeping
+      // the local creation but it'd be fragile and not obvious.
+      continue;
+    }
+
+    // Do not handle local updates and deletions explicitly. Consider the
+    // following scenarios:
+    // 1. Local update, remote entity still exists. A deletion won't be
+    //    generated in this case, so it's a normal conflict.
+    // 2. Local update, remote entity deleted. A deletion will be generated but
+    //    the local update will be preferred during conflict resolution.
+    // 3. Local deletion, remote entity deleted. A deletion will be generated in
+    //    this case, so it's a normal conflict resulting in a no-op for the
+    //    bridge.
+    // 4. Local deletion, remote entity still exists. This case will result in
+    //    restoring the entity during conflict resolution. It's not ideal but
+    //    safer than data loss.
+    //    TODO(crbug.com/40668179): improve handling of local deletions during
+    //    full updates.
+    const ClientTagHash client_tag_hash = entity->GetClientTagHash();
+    if (updated_client_tag_hashes.contains(client_tag_hash)) {
+      // Consider this as a normal incremental update. Note that this update can
+      // be dropped due to the version having been seen before, although for
+      // full update the version may be always increasing.
+      continue;
+    }
+
+    UpdateResponseData deletion;
+    deletion.entity.id = entity->metadata().server_id();
+    deletion.entity.client_tag_hash = client_tag_hash;
+    deletion.entity.creation_time =
+        ProtoTimeToTime(entity->metadata().creation_time());
+    deletion.entity.modification_time =
+        ProtoTimeToTime(entity->metadata().modification_time());
+    deletion.entity.name = "tombstone";
+
+    // Increment the version to ensure that the deletion is not immediately
+    // ignored.
+    deletion.response_version = entity->metadata().server_version() + 1;
+    updates.push_back(std::move(deletion));
+  }
+
+  return OnIncrementalUpdateReceived(type_state, std::move(updates),
+                                     std::move(gc_directive));
 }
 
 }  // namespace syncer

@@ -61,6 +61,8 @@ constexpr char kKey5[] = "key5";
 constexpr char kValue1[] = "value1";
 constexpr char kValue2[] = "value2";
 constexpr char kValue3[] = "value3";
+constexpr char kValue4[] = "value4";
+constexpr char kValue5[] = "value5";
 
 constexpr char kCacheGuid[] = "TestCacheGuid";
 
@@ -810,7 +812,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringMerge) {
 
 // Test that errors before it's called are passed to `start_callback` correctly.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
-  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
@@ -818,7 +821,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   ResetState(false);
   OnSyncStarting();
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
-  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
 
   // Test an error loading pending data.
   ResetStateWriteItem(kKey1, kValue1);
@@ -829,7 +833,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
 
   // Test an error prior to metadata load.
   ResetState(false);
-  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
   ModelReadyToSync();
@@ -837,7 +842,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   // Test an error prior to pending data load.
   ResetStateWriteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
-  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 }
@@ -2045,6 +2051,180 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       /*count=*/1);
 }
 
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldApplyIncrementalUpdateOnGcDirective) {
+  InitializeToReadyState();
+
+  // Synced item, will be deleted (not present in the update below).
+  WriteItemAndAck(kKey1, kValue1);
+  // Synced item, will be updated with a new value.
+  WriteItemAndAck(kKey3, kValue3);
+  // Synced item, will be updated with the same value.
+  WriteItemAndAck(kKey4, kValue4);
+  // Unsynced item, will be kept.
+  WritePrefItem(bridge(), kKey2, kValue2);
+
+  ASSERT_EQ(4U, ProcessorEntityCount());
+  ASSERT_EQ(4U, db()->metadata_count());
+  ASSERT_TRUE(db()->HasData(kKey1));
+  ASSERT_TRUE(db()->HasData(kKey2));
+  ASSERT_TRUE(db()->HasData(kKey3));
+  ASSERT_TRUE(db()->HasData(kKey4));
+
+  // Store the version of `kKey4` before the update.
+  const int64_t kKey4Version = db()->GetMetadata(kKey4).server_version();
+
+  // `kKey2` is the only unsynced item.
+  ASSERT_EQ(1U, worker()->GetNumPendingCommits());
+
+  // The full update will contain an update for `kKey3`, the same value for
+  // `kKey4` and a new item `kKey5`.
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey3), GeneratePrefSpecifics(kKey3, "new value")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey4), GeneratePrefSpecifics(kKey4, kValue4)));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey5), GeneratePrefSpecifics(kKey5, kValue5)));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  // `kKey1` should be deleted.
+  EXPECT_FALSE(db()->HasData(kKey1));
+  EXPECT_FALSE(db()->HasMetadata(kKey1));
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
+
+  // `kKey2` should be kept as it is (unsynced, not present in the update).
+  EXPECT_TRUE(db()->HasData(kKey2));
+  EXPECT_TRUE(db()->HasMetadata(kKey2));
+  EXPECT_NE(nullptr, GetEntityForStorageKey(kKey2));
+  EXPECT_TRUE(type_processor()->IsEntityUnsynced(kKey2));
+
+  // `kKey3` should be updated.
+  EXPECT_TRUE(db()->HasData(kKey3));
+  EXPECT_EQ("new value", GetPrefValue(db()->GetData(kKey3)));
+  EXPECT_TRUE(db()->HasMetadata(kKey3));
+
+  // `kKey4` should be kept as is but with new version.
+  EXPECT_TRUE(db()->HasData(kKey4));
+  EXPECT_TRUE(db()->HasMetadata(kKey4));
+  EXPECT_GT(db()->GetMetadata(kKey4).server_version(), kKey4Version);
+
+  // `kKey5` should be added.
+  EXPECT_TRUE(db()->HasData(kKey5));
+  EXPECT_TRUE(db()->HasMetadata(kKey5));
+
+  // In total, 4 entities should be tracked.
+  EXPECT_EQ(4U, ProcessorEntityCount());
+
+  // `kKey2` is still pending for commit.
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey2)}});
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldApplyIncrementalUpdateOnGcDirective_ResolveConflict) {
+  InitializeToReadyState();
+
+  const std::string kEncryptionKeyName =
+      db()->data_type_state().encryption_key_name();
+
+  WriteItemAndAck(kKey1, kValue1);
+  WriteItemAndAck(kKey2, kValue2);
+  WriteItemAndAck(kKey4, kValue4);
+  WriteItemAndAck(kKey5, kValue5);
+
+  // Unsynced item, will be updated with a new version (prefer remote on
+  // conflict).
+  WritePrefItem(bridge(), kKey1, "new local value 1");
+
+  // Unsynced item, will be kept unsynced with local value, as remote update
+  // contains the same remote value but a newer version.
+  WritePrefItem(bridge(), kKey2, "new local value 2");
+
+  // Unsynced item, local creation, will be updated with a new remote value.
+  WritePrefItem(bridge(), kKey3, "new local value 3");
+
+  // Unsynced item, local deletion. Will be restored by the remote update.
+  bridge()->DeleteItem(kKey4);
+
+  // Unsynced item, local deletion. Will be deleted as it's not present in the
+  // remote update.
+  bridge()->DeleteItem(kKey5);
+
+  ASSERT_EQ(5U, ProcessorEntityCount());
+  ASSERT_EQ(5U, db()->metadata_count());
+  ASSERT_TRUE(db()->HasData(kKey1));
+  ASSERT_TRUE(db()->HasData(kKey2));
+  ASSERT_TRUE(db()->HasData(kKey3));
+  ASSERT_FALSE(db()->HasData(kKey4));
+  ASSERT_FALSE(db()->HasData(kKey5));
+  ASSERT_EQ(5U, worker()->GetNumPendingCommits());
+
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, "new remote value 1")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey2), GeneratePrefSpecifics(kKey2, kValue2)));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey3), GeneratePrefSpecifics(kKey3, "new remote value 3")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey4), GeneratePrefSpecifics(kKey4, kValue4)));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  // `kKey1` should be updated with a remote value.
+  EXPECT_TRUE(db()->HasData(kKey1));
+  EXPECT_TRUE(db()->HasMetadata(kKey1));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey1));
+  EXPECT_EQ("new remote value 1", GetPrefValue(db()->GetData(kKey1)));
+
+  // `kKey2` should be kept as it is (unsynced, not present in the update).
+  EXPECT_TRUE(db()->HasData(kKey2));
+  EXPECT_TRUE(db()->HasMetadata(kKey2));
+  EXPECT_TRUE(type_processor()->IsEntityUnsynced(kKey2));
+  EXPECT_EQ("new local value 2", GetPrefValue(db()->GetData(kKey2)));
+
+  // `kKey3` should be updated with a remote value.
+  EXPECT_TRUE(db()->HasData(kKey3));
+  EXPECT_TRUE(db()->HasMetadata(kKey3));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey3));
+  EXPECT_EQ("new remote value 3", GetPrefValue(db()->GetData(kKey3)));
+
+  // `kKey4` should be restored, and become synced.
+  EXPECT_TRUE(db()->HasData(kKey4));
+  EXPECT_TRUE(db()->HasMetadata(kKey4));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey4));
+  EXPECT_EQ(kValue4, GetPrefValue(db()->GetData(kKey4)));
+
+  // `kKey5` should be deleted.
+  EXPECT_FALSE(db()->HasData(kKey5));
+  EXPECT_FALSE(db()->HasMetadata(kKey5));
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey5));
+
+  // In total, 3 entities should be tracked.
+  EXPECT_EQ(4U, ProcessorEntityCount());
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCallMergeFullSyncDataOnInitialSyncWithGcDirective) {
+  ModelReadyToSync();
+  OnSyncStarting();
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+  ASSERT_EQ(0, bridge()->merge_call_count());
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(UpdateResponseDataList(),
+                             garbage_collection_directive);
+
+  EXPECT_EQ(1, bridge()->merge_call_count());
+  EXPECT_EQ(0, bridge()->apply_call_count());
+}
+
 class FullUpdateClientTagBasedDataTypeProcessorTest
     : public ClientTagBasedDataTypeProcessorTest {
  protected:
@@ -2385,19 +2565,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       base::BindOnce(&CaptureTypeEntitiesCount, &count));
   EXPECT_EQ(0, count.non_tombstone_entities);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
-}
-
-// Tests that the processor reports an error for updates with a version GC
-// directive that are received for types that support incremental updates.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldNotApplyGarbageCollectionByVersion) {
-  InitializeToReadyState();
-
-  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::
-                  kSupportsIncrementalUpdatesMismatch);
-  sync_pb::GarbageCollectionDirective garbage_collection_directive;
-  garbage_collection_directive.set_version_watermark(2);
-  worker()->UpdateFromServer({}, garbage_collection_directive);
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,

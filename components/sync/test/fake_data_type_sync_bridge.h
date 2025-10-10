@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
@@ -207,7 +208,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   const DataType type_;
 
   // The conflict resolution to use for calls to ResolveConflict.
-  ConflictResolution conflict_resolution_;
+  ConflictResolution conflict_resolution_ = ConflictResolution::kUseRemote;
 
   // The preference values that the bridge will ignore.
   absl::flat_hash_set<std::string> values_to_ignore_;
