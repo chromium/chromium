@@ -18,6 +18,10 @@ class Browser;
 class SidePanelRegistry;
 class SidePanelContentProxy;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace views {
 class View;
 }  // namespace views
@@ -34,6 +38,9 @@ class SidePanelUtil {
   // exist, this creates one indicating the view is available.
   static SidePanelContentProxy* GetSidePanelContentProxy(
       views::View* content_view);
+
+  static actions::ActionItem* GetActionItem(Browser* browser,
+                                            SidePanelEntryKey entry_key);
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);

@@ -82,6 +82,8 @@ source_set("side_panel") {
     "side_panel_registry.h",
     "side_panel_resize_area.cc",
     "side_panel_resize_area.h",
+    "side_panel_toolbar_pinning_controller.cc",
+    "side_panel_toolbar_pinning_controller.h",
     "side_panel_ui.h",
     "side_panel_ui_base.cc",
     "side_panel_ui_base.h",
