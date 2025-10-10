@@ -420,6 +420,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // as a normal operation via the `ExclusiveOperationCoordinator` and forwards
   // the call to the persistent store.
   void HandleReadEntryDataOperation(
+      const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       int64_t offset,
       scoped_refptr<net::IOBuffer> buffer,

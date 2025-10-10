@@ -113,6 +113,13 @@ uint32_t Crc32(const char* data, int length) {
   return crc32(empty_crc, reinterpret_cast<const Bytef*>(data), length);
 }
 
+uint32_t IncrementalCrc32(uint32_t previous_crc,
+                          base::span<const uint8_t> data) {
+  auto chars = base::as_chars(data);
+  return IncrementalCrc32(previous_crc, chars.data(),
+                          base::checked_cast<int>(data.size()));
+}
+
 uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length) {
   return crc32(previous_crc, reinterpret_cast<const Bytef*>(data), length);
 }

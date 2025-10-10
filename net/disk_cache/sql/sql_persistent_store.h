@@ -70,7 +70,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kFailedForTesting = 16,
     kAborted = 17,
     kNotInitialized = 18,
-    kMaxValue = kNotInitialized
+    kCheckSumError = 19,
+    kMaxValue = kCheckSumError
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -255,7 +256,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // stored data. If false, gaps will be filled with zeros.
   // `callback` is invoked with the number of bytes read on success, or an error
   // code on failure.
-  virtual void ReadEntryData(ResId res_id,
+  virtual void ReadEntryData(const CacheEntryKey& key,
+                             ResId res_id,
                              int64_t offset,
                              scoped_refptr<net::IOBuffer> buffer,
                              int buf_len,

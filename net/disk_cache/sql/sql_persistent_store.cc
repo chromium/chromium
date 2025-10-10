@@ -18,6 +18,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
@@ -27,6 +28,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/cache_util.h"
+#include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
@@ -263,6 +265,17 @@ void RecordTimeAndErrorResultHistogram(std::string_view method_name,
       error);
 }
 
+int32_t CalculateCheckSum(base::span<const uint8_t> data,
+                          CacheEntryKey::Hash key_hash) {
+  // Add key_hash in network order to the CRC calculation to ensure it can be
+  // read correctly on CPUs with different endianness.
+  uint32_t hash_value_net_order =
+      base::HostToNet32(static_cast<uint32_t>(key_hash.value()));
+  uint32_t crc32_value = simple_util::IncrementalCrc32(
+      simple_util::Crc32(data), base::byte_span_from_ref(hash_value_net_order));
+  return static_cast<int32_t>(crc32_value);
+}
+
 // Sets up the database schema and indexes.
 [[nodiscard]] bool InitSchema(sql::Database& db) {
   if (!db.Execute(GetQuery(Query::kInitSchema_CreateTableResources)) ||
@@ -395,7 +408,8 @@ class Backend {
                                            int buf_len,
                                            bool truncate,
                                            base::TimeTicks start_time);
-  IntOrError ReadEntryData(ResId res_id,
+  IntOrError ReadEntryData(const CacheEntryKey& key,
+                           ResId res_id,
                            int64_t offset,
                            scoped_refptr<net::IOBuffer> buffer,
                            int buf_len,
@@ -461,14 +475,16 @@ class Backend {
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta,
       bool& corruption_detected);
-  Error WriteEntryDataInternal(ResId res_id,
+  Error WriteEntryDataInternal(const CacheEntryKey& key,
+                               ResId res_id,
                                int64_t old_body_end,
                                int64_t offset,
                                scoped_refptr<net::IOBuffer> buffer,
                                int buf_len,
                                bool truncate,
                                bool& corruption_detected);
-  IntOrError ReadEntryDataInternal(ResId res_id,
+  IntOrError ReadEntryDataInternal(const CacheEntryKey& key,
+                                   ResId res_id,
                                    int64_t offset,
                                    scoped_refptr<net::IOBuffer> buffer,
                                    int buf_len,
@@ -491,6 +507,7 @@ class Backend {
   // Trims blobs that overlap with the new write range [offset, end), and
   // updates the total size delta.
   Error TrimOverlappingBlobs(
+      const CacheEntryKey& key,
       ResId res_id,
       int64_t offset,
       int64_t end,
@@ -505,12 +522,14 @@ class Backend {
       base::CheckedNumeric<int64_t>& checked_total_size_delta);
   // Inserts a vector of new blobs into the database, and updates the total size
   // delta.
-  Error InsertNewBlobs(ResId res_id,
+  Error InsertNewBlobs(const CacheEntryKey& key,
+                       ResId res_id,
                        const std::vector<BufferWithStart>& new_blobs,
                        base::CheckedNumeric<int64_t>& checked_total_size_delta);
   // Inserts a single new blob into the database, and updates the total size
   // delta.
-  Error InsertNewBlob(ResId res_id,
+  Error InsertNewBlob(const CacheEntryKey& key,
+                      ResId res_id,
                       int64_t start,
                       const scoped_refptr<net::IOBuffer>& buffer,
                       int buf_len,
@@ -805,7 +824,11 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
   entry_info.res_id = ResId(statement.ColumnInt64(0));
   entry_info.last_used = statement.ColumnTime(1);
   entry_info.body_end = statement.ColumnInt64(2);
-  base::span<const uint8_t> blob_span = statement.ColumnBlob(3);
+  int32_t check_sum = statement.ColumnInt(3);
+  base::span<const uint8_t> blob_span = statement.ColumnBlob(4);
+  if (CalculateCheckSum(blob_span, key.hash()) != check_sum) {
+    return base::unexpected(Error::kCheckSumError);
+  }
   entry_info.head = base::MakeRefCounted<net::GrowableIOBuffer>();
   CHECK(base::IsValueInRangeForNumericType<int>(blob_span.size()));
   entry_info.head->SetCapacity(blob_span.size());
@@ -883,8 +906,9 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     statement.BindTime(0, entry_info.last_used);
     statement.BindInt64(1, entry_info.body_end);
     statement.BindInt64(2, bytes_usage);
-    statement.BindInt(3, key.hash().value());
-    statement.BindString(4, key.string());
+    statement.BindInt(3, CalculateCheckSum({}, key.hash()));
+    statement.BindInt(4, key.hash().value());
+    statement.BindString(5, key.string());
     if (!statement.Step()) {
       return base::unexpected(Error::kFailedToExecute);
     }
@@ -1508,8 +1532,9 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
         GetQuery(Query::kUpdateEntryHeaderAndLastUsed_UpdateResource)));
     statement.BindTime(0, last_used);
     statement.BindInt64(1, header_size_delta);
-    statement.BindBlob(2, buffer->span());
-    statement.BindInt64(3, res_id.value());
+    statement.BindInt(2, CalculateCheckSum(buffer->span(), key.hash()));
+    statement.BindBlob(3, buffer->span());
+    statement.BindInt64(4, res_id.value());
     if (statement.Step()) {
       const int64_t bytes_usage = statement.ColumnInt64(0);
       if (bytes_usage < static_cast<int64_t>(buffer->size()) +
@@ -1553,9 +1578,9 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result =
-      WriteEntryDataInternal(res_id, old_body_end, offset, std::move(buffer),
-                             buf_len, truncate, corruption_detected);
+  auto result = WriteEntryDataInternal(key, res_id, old_body_end, offset,
+                                       std::move(buffer), buf_len, truncate,
+                                       corruption_detected);
   RecordTimeAndErrorResultHistogram("WriteEntryData", posting_delay,
                                     timer.Elapsed(), result,
                                     corruption_detected);
@@ -1568,7 +1593,8 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
-Error Backend::WriteEntryDataInternal(ResId res_id,
+Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
+                                      ResId res_id,
                                       int64_t old_body_end,
                                       int64_t offset,
                                       scoped_refptr<net::IOBuffer> buffer,
@@ -1603,7 +1629,7 @@ Error Backend::WriteEntryDataInternal(ResId res_id,
   // with existing data.
   if (offset < old_body_end) {
     if (Error result =
-            TrimOverlappingBlobs(res_id, offset, write_end, truncate,
+            TrimOverlappingBlobs(key, res_id, offset, write_end, truncate,
                                  checked_total_size_delta, corruption_detected);
         result != Error::kOk) {
       return result;
@@ -1623,7 +1649,7 @@ Error Backend::WriteEntryDataInternal(ResId res_id,
 
   // Insert the new data blob if there is data to write.
   if (buf_len) {
-    if (Error result = InsertNewBlob(res_id, offset, buffer, buf_len,
+    if (Error result = InsertNewBlob(key, res_id, offset, buffer, buf_len,
                                      checked_total_size_delta);
         result != Error::kOk) {
       return result;
@@ -1681,6 +1707,7 @@ Error Backend::WriteEntryDataInternal(ResId res_id,
 // them, and recreates any non-overlapping portions as new, smaller blobs. This
 // effectively "cuts out" the space for the new data.
 Error Backend::TrimOverlappingBlobs(
+    const CacheEntryKey& key,
     ResId res_id,
     int64_t offset,
     int64_t end,
@@ -1735,12 +1762,17 @@ Error Backend::TrimOverlappingBlobs(
       const int64_t blob_id = statement.ColumnInt64(0);
       const int64_t blob_start = statement.ColumnInt64(1);
       const int64_t blob_end = statement.ColumnInt64(2);
-      base::span<const uint8_t> blob = statement.ColumnBlob(3);
+      const int32_t check_sum = statement.ColumnInt(3);
+      base::span<const uint8_t> blob = statement.ColumnBlob(4);
       // Consistency check: The blob's size should match its start and end
       // offsets.
       if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
         corruption_detected = true;
         return Error::kInvalidData;
+      }
+      if (CalculateCheckSum(blob, key.hash()) != check_sum) {
+        corruption_detected = true;
+        return Error::kCheckSumError;
       }
       // Mark the overlapping blob for removal.
       blob_ids_to_be_removed.push_back(blob_id);
@@ -1774,7 +1806,8 @@ Error Backend::TrimOverlappingBlobs(
 
   // Insert the new, smaller blobs that were preserved from the non-overlapping
   // parts.
-  if (Error error = InsertNewBlobs(res_id, new_blobs, checked_total_size_delta);
+  if (Error error =
+          InsertNewBlobs(key, res_id, new_blobs, checked_total_size_delta);
       error != Error::kOk) {
     return error;
   }
@@ -1811,13 +1844,14 @@ Error Backend::TruncateBlobsAfter(
 
 // Inserts a vector of new blobs into the database.
 Error Backend::InsertNewBlobs(
+    const CacheEntryKey& key,
     ResId res_id,
     const std::vector<BufferWithStart>& new_blobs,
     base::CheckedNumeric<int64_t>& checked_total_size_delta) {
   // Iterate through the provided blobs and insert each one.
   for (const auto& new_blob : new_blobs) {
     if (Error error =
-            InsertNewBlob(res_id, new_blob.start, new_blob.buffer,
+            InsertNewBlob(key, res_id, new_blob.start, new_blob.buffer,
                           new_blob.buffer->size(), checked_total_size_delta);
         error != Error::kOk) {
       return error;
@@ -1828,6 +1862,7 @@ Error Backend::InsertNewBlobs(
 
 // Inserts a single new blob into the database.
 Error Backend::InsertNewBlob(
+    const CacheEntryKey& key,
     ResId res_id,
     int64_t start,
     const scoped_refptr<net::IOBuffer>& buffer,
@@ -1847,8 +1882,10 @@ Error Backend::InsertNewBlob(
   statement.BindInt64(0, res_id.value());
   statement.BindInt64(1, start);
   statement.BindInt64(2, end);
-  statement.BindBlob(3,
-                     buffer->span().first(base::checked_cast<size_t>(buf_len)));
+  const auto new_blob =
+      buffer->span().first(base::checked_cast<size_t>(buf_len));
+  statement.BindInt(3, CalculateCheckSum(new_blob, key.hash()));
+  statement.BindBlob(4, new_blob);
   if (!statement.Run()) {
     return Error::kFailedToExecute;
   }
@@ -1946,7 +1983,8 @@ Error Backend::DeleteResourcesByResIds(const std::vector<ResId>& res_ids) {
   return Error::kOk;
 }
 
-IntOrError Backend::ReadEntryData(ResId res_id,
+IntOrError Backend::ReadEntryData(const CacheEntryKey& key,
+                                  ResId res_id,
                                   int64_t offset,
                                   scoped_refptr<net::IOBuffer> buffer,
                                   int buf_len,
@@ -1967,7 +2005,7 @@ IntOrError Backend::ReadEntryData(ResId res_id,
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result =
-      ReadEntryDataInternal(res_id, offset, std::move(buffer), buf_len,
+      ReadEntryDataInternal(key, res_id, offset, std::move(buffer), buf_len,
                             body_end, sparse_reading, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "ReadEntryData", posting_delay, timer.Elapsed(),
@@ -1981,7 +2019,8 @@ IntOrError Backend::ReadEntryData(ResId res_id,
   return result;
 }
 
-IntOrError Backend::ReadEntryDataInternal(ResId res_id,
+IntOrError Backend::ReadEntryDataInternal(const CacheEntryKey& key,
+                                          ResId res_id,
                                           int64_t offset,
                                           scoped_refptr<net::IOBuffer> buffer,
                                           int buf_len,
@@ -2015,10 +2054,15 @@ IntOrError Backend::ReadEntryDataInternal(ResId res_id,
   while (statement.Step()) {
     const int64_t blob_start = statement.ColumnInt64(0);
     const int64_t blob_end = statement.ColumnInt64(1);
-    base::span<const uint8_t> blob = statement.ColumnBlob(2);
+    int32_t check_sum = statement.ColumnInt(2);
+    base::span<const uint8_t> blob = statement.ColumnBlob(3);
     if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
       corruption_detected = true;
       return base::unexpected(Error::kInvalidData);
+    }
+    if (CalculateCheckSum(blob, key.hash()) != check_sum) {
+      corruption_detected = true;
+      return base::unexpected(Error::kCheckSumError);
     }
     // Determine the part of the blob that falls within the read request.
     const int64_t copy_start = std::max(offset, blob_start);
@@ -2226,9 +2270,11 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
     entry_info.res_id = res_id;
     entry_info.last_used = statement.ColumnTime(1);
     entry_info.body_end = statement.ColumnInt64(2);
-    result.key = CacheEntryKey(statement.ColumnString(3));
-    base::span<const uint8_t> blob_span = statement.ColumnBlob(4);
-    if (blob_span.size() > std::numeric_limits<int>::max()) {
+    int32_t check_sum = statement.ColumnInt(3);
+    result.key = CacheEntryKey(statement.ColumnString(4));
+    base::span<const uint8_t> blob_span = statement.ColumnBlob(5);
+    if (CalculateCheckSum(blob_span, result.key.hash()) != check_sum ||
+        blob_span.size() > std::numeric_limits<int>::max()) {
       // If OpenNextEntry encounters invalid data, it records it in a histogram
       // and ignores the data.
       corruption_detected = true;
@@ -2663,7 +2709,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                   truncate, base::TimeTicks::Now())
         .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
-  void ReadEntryData(ResId res_id,
+  void ReadEntryData(const CacheEntryKey& key,
+                     ResId res_id,
                      int64_t offset,
                      scoped_refptr<net::IOBuffer> buffer,
                      int buf_len,
@@ -2671,7 +2718,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                      bool sparse_reading,
                      IntOrErrorCallback callback) override {
     backend_.AsyncCall(&Backend::ReadEntryData)
-        .WithArgs(res_id, offset, std::move(buffer), buf_len, body_end,
+        .WithArgs(key, res_id, offset, std::move(buffer), buf_len, body_end,
                   sparse_reading, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }

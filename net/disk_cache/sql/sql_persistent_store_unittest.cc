@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/sys_byteorder.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +32,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "sql/database.h"
@@ -326,6 +328,7 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronous wrapper for ReadEntryData.
   SqlPersistentStore::IntOrError ReadEntryData(
+      const CacheEntryKey& key,
       SqlPersistentStore::ResId res_id,
       int64_t offset,
       scoped_refptr<net::IOBuffer> buffer,
@@ -333,8 +336,8 @@ class SqlPersistentStoreTest : public testing::Test {
       int64_t body_end,
       bool sparse_reading) {
     base::test::TestFuture<SqlPersistentStore::IntOrError> future;
-    store_->ReadEntryData(res_id, offset, std::move(buffer), buf_len, body_end,
-                          sparse_reading, future.GetCallback());
+    store_->ReadEntryData(key, res_id, offset, std::move(buffer), buf_len,
+                          body_end, sparse_reading, future.GetCallback());
     return future.Take();
   }
 
@@ -373,7 +376,7 @@ class SqlPersistentStoreTest : public testing::Test {
       WriteDataAndAssertSuccess(key, res_id, i, i, data,
                                 /*truncate=*/false);
     }
-    ReadAndVerifyData(res_id, 0, content.size(), content.size(), false,
+    ReadAndVerifyData(key, res_id, 0, content.size(), content.size(), false,
                       std::string(content));
 
     std::vector<BlobData> actual_blobs = GetAllBlobData(res_id);
@@ -404,15 +407,16 @@ class SqlPersistentStoreTest : public testing::Test {
   }
 
   // Helper to read data and verify its content.
-  void ReadAndVerifyData(SqlPersistentStore::ResId res_id,
+  void ReadAndVerifyData(const CacheEntryKey& key,
+                         SqlPersistentStore::ResId res_id,
                          int64_t offset,
                          int buffer_len,
                          int64_t body_end,
                          bool sparse_reading,
                          std::string_view expected_data) {
     auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_len);
-    auto read_result = ReadEntryData(res_id, offset, read_buffer, buffer_len,
-                                     body_end, sparse_reading);
+    auto read_result = ReadEntryData(key, res_id, offset, read_buffer,
+                                     buffer_len, body_end, sparse_reading);
     ASSERT_TRUE(read_result.has_value());
     EXPECT_EQ(read_result.value(), static_cast<int>(expected_data.size()));
     EXPECT_EQ(std::string_view(read_buffer->data(), read_result.value()),
@@ -524,14 +528,17 @@ class SqlPersistentStoreTest : public testing::Test {
     EXPECT_THAT(GetAllBlobData(res_id), testing::ElementsAreArray(expected));
   }
 
-  // Helper to corrupt the blob data for a given res_id.
-  void CorruptBlobData(SqlPersistentStore::ResId res_id,
-                       base::span<const uint8_t> new_data) {
+  // Helper to overwrite the blob data for a given entry_key and res_id.
+  void OverwriteBlobData(const CacheEntryKey& entry_key,
+                         SqlPersistentStore::ResId res_id,
+                         std::string_view new_data,
+                         int32_t new_check_sum) {
     auto db_handle = ManuallyOpenDatabase();
     sql::Statement statement(db_handle->GetUniqueStatement(
-        "UPDATE blobs SET blob = ? WHERE res_id = ?"));
-    statement.BindBlob(0, new_data);
-    statement.BindInt64(1, res_id.value());
+        "UPDATE blobs SET check_sum = ?, blob = ? WHERE res_id = ?"));
+    statement.BindInt(0, new_check_sum);
+    statement.BindBlob(1, base::as_byte_span(new_data));
+    statement.BindInt64(2, res_id.value());
     ASSERT_TRUE(statement.Run());
   }
 
@@ -548,9 +555,28 @@ class SqlPersistentStoreTest : public testing::Test {
     ASSERT_TRUE(statement.Run());
   }
 
+  int64_t GetResourceCheckSum(SqlPersistentStore::ResId res_id) {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "SELECT check_sum FROM resources WHERE res_id = ?"));
+    statement.BindInt64(0, res_id.value());
+    CHECK(statement.Step());
+    return statement.ColumnInt(0);
+  }
+
   // Returns the number of writes required for a checkpoint.
   int GetNumberForWritesRequiredForCheckpoint(const CacheEntryKey& entry_key,
                                               std::string_view data);
+
+  static int32_t CalculateCheckSum(base::span<const uint8_t> data,
+                                   CacheEntryKey::Hash key_hash) {
+    uint32_t hash_value_net_order =
+        base::HostToNet32(static_cast<uint32_t>(key_hash.value()));
+    uint32_t crc32_value = simple_util::IncrementalCrc32(
+        simple_util::Crc32(data),
+        base::byte_span_from_ref(hash_value_net_order));
+    return static_cast<int32_t>(crc32_value);
+  }
 
   void MaybeRunCheckpoint(bool expected_result) {
     base::test::TestFuture<bool> future;
@@ -2119,6 +2145,42 @@ TEST_F(SqlPersistentStoreTest,
   EXPECT_EQ(details->head_data, "");  // Header should remain empty.
 }
 
+TEST_F(SqlPersistentStoreTest, OpenEntryCheckSumError) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  EXPECT_EQ(GetResourceCheckSum(res_id), CalculateCheckSum({}, kKey.hash()));
+
+  // Prepare header data.
+  const std::string kHeadData = "header_data";
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(kHeadData);
+
+  // Update the entry. Previous header size is 0 as it was null.
+  ASSERT_EQ(
+      UpdateEntryHeaderAndLastUsed(kKey, res_id, base::Time::Now(), buffer,
+                                   /*header_size_delta=*/kHeadData.size()),
+      SqlPersistentStore::Error::kOk);
+
+  EXPECT_EQ(GetResourceCheckSum(res_id),
+            CalculateCheckSum(buffer->span(), kKey.hash()));
+
+  // Corrupt the head data.
+  {
+    const std::string kCorruptedData = "_corrupted_";
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "UPDATE resources SET head = ? WHERE res_id = ?"));
+    statement.BindBlob(0, base::as_byte_span(kCorruptedData));
+    statement.BindInt64(1, res_id.value());
+    ASSERT_TRUE(statement.Run());
+  }
+
+  auto result = OpenEntry(kKey);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SqlPersistentStore::Error::kCheckSumError);
+}
+
 TEST_F(SqlPersistentStoreTest, WriteAndReadData) {
   CreateAndInitStore();
   const CacheEntryKey kKey("my-key");
@@ -2129,13 +2191,31 @@ TEST_F(SqlPersistentStoreTest, WriteAndReadData) {
   EXPECT_EQ(GetSizeOfAllEntries(), kSqlBackendStaticResourceSize +
                                        kKey.string().size() + kData.size());
   // Read data back.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kData.size(),
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kData.size(),
                     /*body_end=*/kData.size(), /*sparse_reading=*/false, kData);
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, kData}});
   // Verify size updates.
   VerifyBodyEndAndBytesUsage(kKey, kData.size(),
                              kKey.string().size() + kData.size());
+}
+
+TEST_F(SqlPersistentStoreTest, BlobCheckSum) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+  const std::string kData = "hello world";
+  WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement statement(db_handle->GetUniqueStatement(
+        "SELECT check_sum FROM blobs WHERE res_id = ?"));
+    statement.BindInt64(0, res_id.value());
+    ASSERT_TRUE(statement.Step());
+    EXPECT_EQ(statement.ColumnInt(0),
+              CalculateCheckSum(base::as_byte_span(kData), kKey.hash()));
+  }
 }
 
 TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataSizeMismatch) {
@@ -2150,16 +2230,45 @@ TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataSizeMismatch) {
 
   // Manually corrupt the blob data size so it doesn't match its start/end
   // offsets.
-  CorruptBlobData(res_id, base::as_byte_span("short"));
+  const std::string kCorruptedData = "short";
+  OverwriteBlobData(
+      kKey, res_id, kCorruptedData,
+      CalculateCheckSum(base::as_byte_span(kCorruptedData), kKey.hash()));
 
   // This read will try to read the corrupted blob, which should be detected.
   auto read_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kInitialData.size());
-  auto read_result =
-      ReadEntryData(res_id, /*offset=*/0, read_buffer, kInitialData.size(),
-                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
+  auto read_result = ReadEntryData(
+      kKey, res_id, /*offset=*/0, read_buffer, kInitialData.size(),
+      /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
   ASSERT_FALSE(read_result.has_value());
   EXPECT_EQ(read_result.error(), SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, ReadEntryDataCheckSumError) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob data so check_sum mismatch occur
+  const std::string kCorruptedData = "0123456780";
+  OverwriteBlobData(
+      kKey, res_id, kCorruptedData,
+      CalculateCheckSum(base::as_byte_span(kInitialData), kKey.hash()));
+
+  // This read will try to read the corrupted blob, which should be detected.
+  auto read_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kInitialData.size());
+  auto read_result = ReadEntryData(
+      kKey, res_id, /*offset=*/0, read_buffer, kInitialData.size(),
+      /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), SqlPersistentStore::Error::kCheckSumError);
 }
 
 TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataRangeOverflow) {
@@ -2178,9 +2287,9 @@ TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidDataRangeOverflow) {
   // This read will try to read the corrupted blob, which should be detected.
   auto read_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kInitialData.size());
-  auto read_result =
-      ReadEntryData(res_id, /*offset=*/0, read_buffer, kInitialData.size(),
-                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
+  auto read_result = ReadEntryData(
+      kKey, res_id, /*offset=*/0, read_buffer, kInitialData.size(),
+      /*body_end=*/kInitialData.size(), /*sparse_reading=*/false);
   ASSERT_FALSE(read_result.has_value());
   EXPECT_EQ(read_result.error(), SqlPersistentStore::Error::kInvalidData);
 }
@@ -2197,7 +2306,10 @@ TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataSizeMismatch) {
 
   // Manually corrupt the blob data size so it doesn't match its start/end
   // offsets.
-  CorruptBlobData(res_id, base::as_byte_span("short"));
+  const std::string kCorruptedData = "short";
+  OverwriteBlobData(
+      kKey, res_id, kCorruptedData,
+      CalculateCheckSum(base::as_byte_span(kCorruptedData), kKey.hash()));
 
   // This write will overlap with the corrupted blob, triggering
   // TrimOverlappingBlobs, which should detect the inconsistency.
@@ -2208,6 +2320,33 @@ TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataSizeMismatch) {
                            /*offset=*/2, overwrite_buffer,
                            kOverwriteData.size(), /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidData);
+}
+
+TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsCheckSumError) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+
+  // Manually corrupt the blob data so check_sum mismatch occur
+  const std::string kCorruptedData = "0123456780";
+  OverwriteBlobData(
+      kKey, res_id, kCorruptedData,
+      CalculateCheckSum(base::as_byte_span(kInitialData), kKey.hash()));
+
+  // This write will overlap with the corrupted blob, triggering
+  // TrimOverlappingBlobs, which should detect the inconsistency.
+  const std::string kOverwriteData = "abc";
+  auto overwrite_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
+                           /*offset=*/2, overwrite_buffer,
+                           kOverwriteData.size(), /*truncate=*/false),
+            SqlPersistentStore::Error::kCheckSumError);
 }
 
 TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataRangeOverflow) {
@@ -2246,7 +2385,10 @@ TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataSizeMismatch) {
 
   // Manually corrupt the blob data size so it doesn't match its start/end
   // offsets.
-  CorruptBlobData(res_id, base::as_byte_span("short"));
+  const std::string kCorruptedData = "short";
+  OverwriteBlobData(
+      kKey, res_id, kCorruptedData,
+      CalculateCheckSum(base::as_byte_span(kCorruptedData), kKey.hash()));
 
   // This write will truncate the entry, triggering TruncateExistingBlobs,
   // which should detect the inconsistency.
@@ -2349,25 +2491,26 @@ TEST_F(SqlPersistentStoreTest, ReadEntryDataInvalidArgument) {
   const int buf_len = buffer->size();
 
   // Test with negative offset.
-  auto result = ReadEntryData(res_id, /*offset=*/-1, buffer, buf_len,
+  auto result = ReadEntryData(kKey, res_id, /*offset=*/-1, buffer, buf_len,
                               /*body_end=*/10, /*sparse_reading=*/false);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with negative buf_len.
-  result = ReadEntryData(res_id, /*offset=*/0, buffer, /*buf_len=*/-1,
+  result = ReadEntryData(kKey, res_id, /*offset=*/0, buffer, /*buf_len=*/-1,
                          /*body_end=*/10, /*sparse_reading=*/false);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with null buffer.
-  result = ReadEntryData(res_id, /*offset=*/0, /*buffer=*/nullptr, buf_len,
-                         /*body_end=*/10, /*sparse_reading=*/false);
+  result =
+      ReadEntryData(kKey, res_id, /*offset=*/0, /*buffer=*/nullptr, buf_len,
+                    /*body_end=*/10, /*sparse_reading=*/false);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with buf_len > buffer->size().
-  result = ReadEntryData(res_id, /*offset=*/0, buffer, buf_len + 1,
+  result = ReadEntryData(kKey, res_id, /*offset=*/0, buffer, buf_len + 1,
                          /*body_end=*/10, /*sparse_reading=*/false);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SqlPersistentStore::Error::kInvalidArgument);
@@ -2389,9 +2532,9 @@ TEST_F(SqlPersistentStoreTest, OverwriteEntryData) {
   EXPECT_EQ(details->body_end, kInitialData.size());
   EXPECT_EQ(details->bytes_usage, kKey.string().size() + kInitialData.size());
   // Read back and verify.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kInitialData.size(),
-                    /*body_end=*/kInitialData.size(), /*sparse_reading=*/false,
-                    "12abc67890");
+  ReadAndVerifyData(
+      kKey, res_id, /*offset=*/0, /*buffer_len=*/kInitialData.size(),
+      /*body_end=*/kInitialData.size(), /*sparse_reading=*/false, "12abc67890");
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, "12"}, {2, "abc"}, {5, "67890"}});
 }
@@ -2409,7 +2552,7 @@ TEST_F(SqlPersistentStoreTest, AppendEntryData) {
                             /*offset=*/kInitialData.size(), kAppendData,
                             /*truncate=*/false);
   // Read back and verify.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
                     new_body_end, /*sparse_reading=*/false, "initial-appended");
   // Verify blob data in the database.
   CheckBlobData(res_id,
@@ -2431,7 +2574,7 @@ TEST_F(SqlPersistentStoreTest, TruncateEntryData) {
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/kInitialData.size(),
                             /*offset=*/2, kTruncateData, /*truncate=*/true);
   // Read back and verify.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
                     new_body_end, /*sparse_reading=*/false, "12abc");
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, "12"}, {2, "abc"}});
@@ -2460,7 +2603,7 @@ TEST_F(SqlPersistentStoreTest, TruncateWithNullBuffer) {
             SqlPersistentStore::Error::kOk);
 
   // Read back and verify.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
                     kTruncateOffset, /*sparse_reading=*/false, "12345");
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, "12345"}});
@@ -2484,7 +2627,7 @@ TEST_F(SqlPersistentStoreTest, TruncateOverlappingMultipleBlobs) {
   const int64_t new_body_end = 3;
 
   // Verify the content.
-  ReadAndVerifyData(res_id, 0, new_body_end, new_body_end, false, "0XX");
+  ReadAndVerifyData(kKey, res_id, 0, new_body_end, new_body_end, false, "0XX");
 
   // Verify the underlying blobs.
   // The original blob for "0" should be trimmed.
@@ -2512,7 +2655,7 @@ TEST_F(SqlPersistentStoreTest, TruncateMultipleBlobsWithZeroLengthWrite) {
   const int64_t new_body_end = 2;
 
   // Verify the content.
-  ReadAndVerifyData(res_id, 0, new_body_end, new_body_end, false, "01");
+  ReadAndVerifyData(kKey, res_id, 0, new_body_end, new_body_end, false, "01");
   // Verify the underlying blobs.
   // The original blobs for "2", "3", "4" should be gone.
   // The original blob for "0" and "1" should remain.
@@ -2537,7 +2680,8 @@ TEST_F(SqlPersistentStoreTest, OverwriteMultipleBlobsWithoutTruncate) {
   const int64_t new_body_end = 5;
 
   // Verify the content.
-  ReadAndVerifyData(res_id, 0, new_body_end, new_body_end, false, "0AB34");
+  ReadAndVerifyData(kKey, res_id, 0, new_body_end, new_body_end, false,
+                    "0AB34");
   // Verify the underlying blobs.
   CheckBlobData(res_id, {{0, "0"}, {1, "AB"}, {3, "3"}, {4, "4"}});
   // Verify size updates.
@@ -2595,7 +2739,7 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataNullBufferNoTruncate) {
   ASSERT_TRUE(details.has_value());
   EXPECT_EQ(details->body_end, initial_body_end);
   EXPECT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/initial_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/initial_body_end,
                     initial_body_end, /*sparse_reading=*/false, kInitialData);
   CheckBlobData(res_id, {{0, kInitialData}});
   VerifyBodyEndAndBytesUsage(kKey, kInitialData.size(),
@@ -2627,7 +2771,7 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataZeroLengthBufferNoTruncate) {
   ASSERT_TRUE(details.has_value());
   EXPECT_EQ(details->body_end, initial_body_end);
   EXPECT_EQ(GetSizeOfAllEntries(), initial_size_of_all_entries);
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/initial_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/initial_body_end,
                     initial_body_end, /*sparse_reading=*/false, kInitialData);
   CheckBlobData(res_id, {{0, kInitialData}});
   VerifyBodyEndAndBytesUsage(kKey, kInitialData.size(),
@@ -2654,7 +2798,7 @@ TEST_F(SqlPersistentStoreTest, TruncateWithNullBufferExtendingBody) {
   // Read back and verify. The new space should be zero-filled.
   std::string expected_data = kInitialData;
   expected_data.append(kTruncateOffset - kInitialData.size(), '\0');
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kTruncateOffset,
                     kTruncateOffset, /*sparse_reading=*/false, expected_data);
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, kInitialData}});
@@ -2684,7 +2828,7 @@ TEST_F(SqlPersistentStoreTest, ExtendWithNullBufferNoTruncate) {
   // Read back and verify. The new space should be zero-filled.
   std::string expected_data = kInitialData;
   expected_data.append(kExtendOffset - kInitialData.size(), '\0');
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kExtendOffset,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kExtendOffset,
                     kExtendOffset, /*sparse_reading=*/false, expected_data);
   // Verify blob data in the database.
   CheckBlobData(res_id, {{0, kInitialData}});
@@ -2701,21 +2845,21 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
   // 1. Initial write.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
                             "0123456789", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 10, 10, false, "0123456789");
+  ReadAndVerifyData(kKey, res_id, 0, 10, 10, false, "0123456789");
   CheckBlobData(res_id, {{0, "0123456789"}});
   VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
 
   // 2. Overwrite middle.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/10, /*offset=*/2,
                             "AAAA", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 10, 10, false, "01AAAA6789");
+  ReadAndVerifyData(kKey, res_id, 0, 10, 10, false, "01AAAA6789");
   CheckBlobData(res_id, {{0, "01"}, {2, "AAAA"}, {6, "6789"}});
   VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
 
   // 3. Overwrite end.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/10, /*offset=*/8,
                             "BB", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 10, 10, false, "01AAAA67BB");
+  ReadAndVerifyData(kKey, res_id, 0, 10, 10, false, "01AAAA67BB");
   CheckBlobData(res_id, {{0, "01"}, {2, "AAAA"}, {6, "67"}, {8, "BB"}});
   VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
 
@@ -2723,7 +2867,7 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/10, /*offset=*/0,
                             "C",
                             /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 10, 10, false, "C1AAAA67BB");
+  ReadAndVerifyData(kKey, res_id, 0, 10, 10, false, "C1AAAA67BB");
   CheckBlobData(res_id,
                 {{0, "C"}, {1, "1"}, {2, "AAAA"}, {6, "67"}, {8, "BB"}});
   VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
@@ -2731,21 +2875,21 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
   // 5. Overwrite all.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/10, /*offset=*/0,
                             "DDDDDDDDDD", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 10, 10, false, "DDDDDDDDDD");
+  ReadAndVerifyData(kKey, res_id, 0, 10, 10, false, "DDDDDDDDDD");
   CheckBlobData(res_id, {{0, "DDDDDDDDDD"}});
   VerifyBodyEndAndBytesUsage(kKey, 10, kKey.string().size() + 10);
 
   // 6. Append.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/10, /*offset=*/10,
                             "E", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 11, 11, false, "DDDDDDDDDDE");
+  ReadAndVerifyData(kKey, res_id, 0, 11, 11, false, "DDDDDDDDDDE");
   CheckBlobData(res_id, {{0, "DDDDDDDDDD"}, {10, "E"}});
   VerifyBodyEndAndBytesUsage(kKey, 11, kKey.string().size() + 11);
 
   // 7. Sparse write.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/11, /*offset=*/12,
                             "F", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 13, 13, false,
+  ReadAndVerifyData(kKey, res_id, 0, 13, 13, false,
                     base::MakeStringViewWithNulChars("DDDDDDDDDDE\0F"));
   CheckBlobData(res_id, {{0, "DDDDDDDDDD"}, {10, "E"}, {12, "F"}});
   VerifyBodyEndAndBytesUsage(kKey, 13, kKey.string().size() + 12);
@@ -2753,7 +2897,7 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
   // 8. Overwrite with truncate.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/13, /*offset=*/5,
                             "GG", /*truncate=*/true);
-  ReadAndVerifyData(res_id, 0, 7, 7, false, "DDDDDGG");
+  ReadAndVerifyData(kKey, res_id, 0, 7, 7, false, "DDDDDGG");
   CheckBlobData(res_id, {{0, "DDDDD"}, {5, "GG"}});
   VerifyBodyEndAndBytesUsage(kKey, 7, kKey.string().size() + 7);
 
@@ -2762,14 +2906,14 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
       WriteEntryData(kKey, res_id, /*old_body_end=*/7, /*offset=*/5,
                      /*buffer=*/nullptr, /*buf_len=*/0, /*truncate=*/true),
       SqlPersistentStore::Error::kOk);
-  ReadAndVerifyData(res_id, 0, 5, 5, false, "DDDDD");
+  ReadAndVerifyData(kKey, res_id, 0, 5, 5, false, "DDDDD");
   CheckBlobData(res_id, {{0, "DDDDD"}});
   VerifyBodyEndAndBytesUsage(kKey, 5, kKey.string().size() + 5);
 
   // 10. Write into a sparse region.
   WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/5, /*offset=*/10,
                             "SPARSE", /*truncate=*/false);
-  ReadAndVerifyData(res_id, 0, 16, 16, false,
+  ReadAndVerifyData(kKey, res_id, 0, 16, 16, false,
                     base::MakeStringViewWithNulChars("DDDDD\0\0\0\0\0SPARSE"));
   CheckBlobData(res_id, {{0, "DDDDD"}, {10, "SPARSE"}});
   VerifyBodyEndAndBytesUsage(kKey, 16, kKey.string().size() + 11);
@@ -2791,29 +2935,31 @@ TEST_F(SqlPersistentStoreTest, SparseRead) {
   std::string expected_data = "chunk1";
   expected_data.append(offset2 - kData1.size(), '\0');
   expected_data.append("chunk2");
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
                     new_body_end, /*sparse_reading=*/false, expected_data);
 
   // Read with sparse_reading=true.
   // A sparse read that encounters a gap should stop at the end of the first
   // chunk.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/new_body_end,
                     new_body_end, /*sparse_reading=*/true, kData1);
 
   // A sparse read that extends into the gap should still stop at the end of
   // the first chunk.
-  ReadAndVerifyData(res_id, /*offset=*/0, /*buffer_len=*/kData1.size() + 1,
-                    new_body_end, /*sparse_reading=*/true, kData1);
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0,
+                    /*buffer_len=*/kData1.size() + 1, new_body_end,
+                    /*sparse_reading=*/true, kData1);
 
   // Read from the middle of chunk2.
   const int64_t read_offset = offset2 + 2;  // Start at 'u' in "chunk2"
   const int read_len = 2;
-  ReadAndVerifyData(res_id, read_offset, /*buffer_len=*/read_len, new_body_end,
+  ReadAndVerifyData(kKey, res_id, read_offset, /*buffer_len=*/read_len,
+                    new_body_end,
                     /*sparse_reading=*/false, "un");
 
   // Read from the middle of chunk2, past the end of the data.
   const int long_read_len = 20;
-  ReadAndVerifyData(res_id, read_offset, /*buffer_len=*/long_read_len,
+  ReadAndVerifyData(kKey, res_id, read_offset, /*buffer_len=*/long_read_len,
                     new_body_end, /*sparse_reading=*/false, "unk2");
 
   // Verify blob data in the database.
@@ -3299,7 +3445,7 @@ TEST_F(SqlPersistentStoreTest, ReadDataCallbackNotRunOnStoreDestruction) {
   auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
   bool callback_run = false;
   store_->ReadEntryData(
-      res_id, /*offset=*/0, read_buffer, read_buffer->size(),
+      kKey, res_id, /*offset=*/0, read_buffer, read_buffer->size(),
       /*body_end=*/10, /*sparse_reading=*/false,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::IntOrError) { callback_run = true; }));
@@ -4007,7 +4153,7 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
             SqlPersistentStore::Error::kFailedForTesting);
 
   auto read_data_result =
-      ReadEntryData(SqlPersistentStore::ResId(1), 0, buffer, 0, 0, false);
+      ReadEntryData(kKey, SqlPersistentStore::ResId(1), 0, buffer, 0, 0, false);
   ASSERT_FALSE(read_data_result.has_value());
   EXPECT_EQ(read_data_result.error(),
             SqlPersistentStore::Error::kFailedForTesting);

@@ -1176,24 +1176,25 @@ int SqlBackendImpl::ReadEntryData(
   auto sync_result_receiver =
       base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key, base::BindOnce(&SqlBackendImpl::HandleReadEntryDataOperation,
-                          weak_factory_.GetWeakPtr(), res_id_or_error, offset,
-                          std::move(buffer), buf_len, body_end, sparse_reading,
-                          base::BindOnce(
-                              [](CompletionOnceCallback callback,
-                                 SqlPersistentStore::IntOrError result) {
-                                std::move(callback).Run(
-                                    result.value_or(net::ERR_FAILED));
-                              },
-                              WrapCallbackWithAbortError<int>(
-                                  sync_result_receiver->GetCallback(),
-                                  net::ERR_ABORTED))));
+      key,
+      base::BindOnce(
+          &SqlBackendImpl::HandleReadEntryDataOperation,
+          weak_factory_.GetWeakPtr(), key, res_id_or_error, offset,
+          std::move(buffer), buf_len, body_end, sparse_reading,
+          base::BindOnce(
+              [](CompletionOnceCallback callback,
+                 SqlPersistentStore::IntOrError result) {
+                std::move(callback).Run(result.value_or(net::ERR_FAILED));
+              },
+              WrapCallbackWithAbortError<int>(
+                  sync_result_receiver->GetCallback(), net::ERR_ABORTED))));
 
   auto sync_result = sync_result_receiver->FinishSyncCall();
   return sync_result ? std::move(*sync_result) : net::ERR_IO_PENDING;
 }
 
 void SqlBackendImpl::HandleReadEntryDataOperation(
+    const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t offset,
     scoped_refptr<net::IOBuffer> buffer,
@@ -1212,7 +1213,7 @@ void SqlBackendImpl::HandleReadEntryDataOperation(
     return;
   }
   store_->ReadEntryData(
-      *optional_res_id, offset, buffer, buf_len, body_end, sparse_reading,
+      key, *optional_res_id, offset, buffer, buf_len, body_end, sparse_reading,
       std::move(callback).Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 

@@ -31,6 +31,8 @@ inline constexpr const char kInitSchema_CreateTableResources[] =
         "bytes_usage INTEGER NOT NULL,"
         // Flag for entries pending deletion
         "doomed INTEGER NOT NULL,"
+        // The checksum `crc32(head + cache_key_hash)`.
+        "check_sum INTEGER NOT NULL,"
         // The hash of `cache_key` created by simple_util::GetEntryHashKey()
         "cache_key_hash INTEGER NOT NULL,"
         // The cache key created by HttpCache::GenerateCacheKeyForRequest()
@@ -51,6 +53,8 @@ inline constexpr const char kInitSchema_CreateTableBlobs[] =
         "start INTEGER NOT NULL,"
         // End offset of this blob chunk
         "end INTEGER NOT NULL,"
+        // The checksum `crc32(blob + cache_key_hash)`.
+        "check_sum INTEGER NOT NULL,"
         // The actual data chunk
         "blob BLOB NOT NULL)";
 // clang-format on
@@ -85,7 +89,8 @@ inline constexpr const char kOpenEntry_SelectLiveResources[] =
         "res_id,"      // 0
         "last_used,"   // 1
         "body_end,"    // 2
-        "head "        // 3
+        "check_sum,"   // 3
+        "head "        // 4
     "FROM resources "
     "WHERE "
         "cache_key_hash=? AND " // 0
@@ -101,9 +106,10 @@ inline constexpr const char kCreateEntry_InsertIntoResources[] =
         "body_end,"       // 1
         "bytes_usage,"    // 2
         "doomed,"
-        "cache_key_hash," // 3
-        "cache_key) "     // 4
-    "VALUES(?,?,?,0,?,?) "
+        "check_sum,"      // 3
+        "cache_key_hash," // 4
+        "cache_key) "     // 5
+    "VALUES(?,?,?,0,?,?,?) "
     "RETURNING res_id";
 // clang-format on
 
@@ -188,7 +194,8 @@ inline constexpr const char kUpdateEntryHeaderAndLastUsed_UpdateResource[] =
     "SET "
         "last_used=?, "                // 0
         "bytes_usage=bytes_usage+?, "  // 1
-        "head=? "                      // 2
+        "check_sum=?, "                // 2
+        "head=? "                      // 3
     "WHERE "
         "res_id=? AND "                // 3
         "doomed=0 "
@@ -227,7 +234,8 @@ inline constexpr const char kTrimOverlappingBlobs_SelectOverlapping[] =
       "blob_id,"           // 0
       "start,"             // 1
       "end,"               // 2
-      "blob "              // 3
+      "check_sum,"         // 3
+      "blob "              // 4
   "FROM blobs "
   "WHERE "
       "res_id=? AND "      // 0
@@ -252,8 +260,9 @@ inline constexpr const char kInsertNewBlob_InsertIntoBlobs[] =
         "res_id,"      // 0
         "start,"       // 1
         "end,"         // 2
-        "blob) "       // 3
-    "VALUES(?,?,?,?)";
+        "check_sum,"   // 3
+        "blob) "       // 4
+    "VALUES(?,?,?,?,?)";
 // clang-format on
 
 inline constexpr const char kDeleteBlobById_DeleteFromBlobs[] =
@@ -278,7 +287,8 @@ inline constexpr const char kReadEntryData_SelectOverlapping[] =
     "SELECT "
         "start,"             // 0
         "end,"               // 1
-        "blob "              // 2
+        "check_sum,"         // 2
+        "blob "              // 3
     "FROM blobs "
     "WHERE "
         "res_id=? AND "      // 0
@@ -318,8 +328,9 @@ inline constexpr const char kOpenLatestEntryBeforeResId_SelectLiveResources[] =
         "res_id,"      // 0
         "last_used,"   // 1
         "body_end,"    // 2
-        "cache_key,"   // 3
-        "head "        // 4
+        "check_sum,"   // 3
+        "cache_key,"   // 4
+        "head "        // 5
     "FROM resources "
     "WHERE "
         "res_id<? AND "  // 0
