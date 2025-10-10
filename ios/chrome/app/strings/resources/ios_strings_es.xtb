@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="154312949627292154">Abre las pestañas recibidas de tus otros dispositivos desde la pantalla de bloqueo.</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
+<translation id="1545757265410828525">Historial de precios</translation>
 <translation id="1547610699249301703">Comparte contraseñas</translation>
 <translation id="1554477036522844996">Nueva ventana</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puedes deslizar hacia la izquierda para navegar en Incógnito.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} elemento del historial}other{{count} elementos del historial}}</translation>
 <translation id="2461070143328828326">Ajustes de contraseña</translation>
 <translation id="2462736546165239215">Aquí puedes encontrar todo tu historial de navegación.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
-<translation id="3349676726073650389">Los sitios y las búsquedas que sigues se guardan en tu cuenta de Google. Puedes gestionar lo que sigues en la configuración en cualquier momento.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está gestionada.</translation>
 <translation id="3365529507898144230">Guardar en Fotos</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Posición de la barra de direcciones</translation>
 <translation id="4870911314065352661">¿Cerrar todas las pestañas?</translation>
 <translation id="4872664437015695612">Abrir en la carpeta de descargas</translation>
-<translation id="4875260838563541343">Botón de acción</translation>
 <translation id="4876237378696925987">Empezar</translation>
 <translation id="4876305945144899064">Ningún nombre de usuario</translation>
 <translation id="4876665338492917862">Abierto el <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6045460247888249350">Añade un título</translation>
 <translation id="6052269326659653305">Cambiar de perfil</translation>
 <translation id="605721222689873409">AA</translation>
-<translation id="6059103953801602038">Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6074656473835429958">Recibir notificaciones</translation>
@@ -1510,7 +1509,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">Tus datos de navegación se eliminarán</translation>
-<translation id="6790502149545262384">Pronto verás historias de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
 <translation id="6791425686608802741">Toca Añadir pestaña a un nuevo grupo</translation>
 <translation id="6794476726485507147">Elige una fecha y una hora para recibir una notificación de recordatorio para volver a esta página</translation>
 <translation id="6795481620482106033">Datos no válidos</translation>
@@ -1589,7 +1587,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7091023926159231962">{count,plural, =1{No se ha podido importar {count} contraseña}other{No se han podido importar {count} contraseñas}}</translation>
 <translation id="7095110968493193530">En el gestor de contraseñas de Google de <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">En la barra de direcciones, toca el historial de precios para ver los cambios de precio a lo largo del tiempo</translation>
-<translation id="7101580180124131336">Ahora verás contenido de <ph name="CHANNEL_NAME" /> y sobre el canal en Siguiendo.</translation>
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -1666,7 +1663,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>
 <translation id="7437712592381799950">Puedes deslizar hacia arriba para ver más contenido personalizado.</translation>
 <translation id="7438473148803748807">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
-<translation id="7438481509621345350">Ahora verás contenido de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
 <translation id="7445682342344043969">Ventanas emergentes bloqueadas</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado en "{title}"}other{Marcadores guardados en "{title}"}}</translation>
 <translation id="7451404862887877229">Toca Privacidad y seguridad y, después, Navegación segura</translation>
@@ -1933,8 +1929,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8393889347136007944">Pestañas que no se han usado en <ph name="THRESHOLD" /> días</translation>
 <translation id="8395180897620197612">Detener registro</translation>
-<translation id="8395339334550012808">Pronto verás contenido de <ph name="CHANNEL_NAME" /> y sobre el canal en Siguiendo.</translation>
-<translation id="8402673309244746971">Ir a Siguiendo</translation>
 <translation id="8407669440184693619">No se han encontrado contraseñas para este sitio web</translation>
 <translation id="8407831512155324054">Tus contraseñas son seguras</translation>
 <translation id="8414283596511250978">No olvides nunca tus contraseñas</translation>
@@ -2173,7 +2167,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956218893102219091">Usa tu ubicación precisa para obtener los resultados de Gemini más precisos, en lugar de una ubicación estimada basada en tu dirección IP. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Apps</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>

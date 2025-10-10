@@ -336,6 +336,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1216891999012841486">Scopri di più sulla correzione degli errori di aggiornamento</translation>
 <translation id="1217114730239853757">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS Flex? In questo caso, premi la barra spaziatrice.</translation>
 <translation id="1217117837721346030">Scarica file sospetto</translation>
+<translation id="1217437913373100941">Nuova scheda in <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">I tuoi dati locali verranno eliminati a breve</translation>
 <translation id="1217668622537098248">Ripristina il clic con il pulsante sinistro dopo l'azione</translation>
 <translation id="1218015446623563536">Elimina Linux</translation>
@@ -3014,6 +3015,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3038612606416062604">Aggiungi manualmente una stampante</translation>
 <translation id="3038628620670416486">Individua i pulsanti sul mouse</translation>
 <translation id="3039491566278747710">Impossibile installare le norme offline sul dispositivo.</translation>
+<translation id="3040435070100611531">Le tue tessere di Google Wallet</translation>
 <translation id="3040982432432547149">Aiutaci a migliorare Steam per Chromebook</translation>
 <translation id="304169924727249890">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Modifica la strategia di ricarica ottimizzata.</translation>
@@ -3222,6 +3224,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puoi gestire le impostazioni di questa scheda in qualsiasi momento o visualizzare altre opzioni in Personalizza Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nuova scheda in 1 scheda}other{Nuova scheda in # schede}}</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
@@ -3397,6 +3400,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video riprodotto in modalità Picture in picture</translation>
 <translation id="3335380372402547327">Visualizza l'anteprima dei flash di notifica</translation>
 <translation id="3335947283844343239">Riapri scheda chiusa</translation>
+<translation id="3336661809256024098">Nuova scheda in <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Non so</translation>
 <translation id="3337568642696914359">Non consentire ai siti di gestire protocolli</translation>
 <translation id="333863344734218290">Ti avvisa in caso di siti pubblici e privati non sicuri</translation>
@@ -6975,6 +6979,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5830205393314753525">Impossibile aprire <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">La tua password è criptata e non può essere visualizzata da nessuno</translation>
 <translation id="5830720307094128296">S&amp;alva pagina come...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Accesso eseguito come <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" />, di tutti i siti secondari e della relativa app installata?</translation>
 <translation id="5832813618714645810">Profili</translation>
@@ -8936,6 +8941,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
 <translation id="7214047272988222011">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nuova scheda in 1 scheda}other{Nuova scheda in # schede}}</translation>
 <translation id="721490496276866468">Importa password</translation>
 <translation id="7217208603285112910">Selezione non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
@@ -9223,6 +9229,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7410344089573941623">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam e al microfono</translation>
 <translation id="7410421966064092098">I siti non possono aiutarti a verificare che non sei un bot</translation>
 <translation id="7410852728357935715">Trasmetti a un dispositivo</translation>
+<translation id="741148343080227980">Puoi modificare il tuo nome <ph name="BEGIN_LINK" />nel tuo Account Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione e trovare i siti che hai visitato</translation>

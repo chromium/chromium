@@ -1639,6 +1639,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2102495993840063010">Aplikace Android</translation>
 <translation id="2104166991923847969">Hotspot automaticky vypínat</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> – skryto</translation>
+<translation id="2106439768713835453">Sdílet také zvuk aplikace</translation>
 <translation id="2108204112555497972">Zkontrolováno před <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonní číslo}few{# telefonní čísla}many{# telefonního čísla}other{# telefonních čísel}}</translation>
 <translation id="2109384632594340939">profilová fotka</translation>
@@ -3015,6 +3016,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3038612606416062604">Přidat tiskárnu ručně</translation>
 <translation id="3038628620670416486">Najděte tlačítka na myši</translation>
 <translation id="3039491566278747710">Instalace offline zásady na zařízení se nezdařila.</translation>
+<translation id="3040435070100611531">Vaše karty v Peněžence Google</translation>
 <translation id="3040982432432547149">Pomozte nám Steam na Chromeboocích zlepšit</translation>
 <translation id="304169924727249890">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Změnit strategii optimalizovaného nabíjení</translation>
@@ -3873,6 +3875,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3656328935986149999">Rychlost kurzoru</translation>
 <translation id="3656701180077048004">Přidá prodlevu mezi stisknutím klávesy a její aktivací</translation>
 <translation id="3658871634334445293">Akcelerace TrackPointu</translation>
+<translation id="3659483399659250379">Přidat kartu a další položky</translation>
 <translation id="3659929705630080526">Zadali jste příliš mnohokrát nesprávný přístupový kód. Zkuste to znovu později</translation>
 <translation id="3661106764436337772">Pište rychleji a s větší jistotou</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Bylo nalezeno 1 existující heslo}few{Byla nalezena {NUM_PASSWORDS} existující hesla}many{Bylo nalezeno {NUM_PASSWORDS} existujícího hesla}other{Bylo nalezeno {NUM_PASSWORDS} existujících hesel}}</translation>
@@ -5404,6 +5407,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4707337002099455863">Vždy na všech webech</translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Povolit také zvuk karty</translation>
+<translation id="4710347732286177840">Vyberte oblast obrazovky pro doplňující dotaz</translation>
 <translation id="4711638718396952945">Obnovit nastavení</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Smazat při zavření všech oken</translation>
@@ -6970,6 +6974,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5830205393314753525">Aplikaci <ph name="APP_NAME" /> nelze otevřít</translation>
 <translation id="5830512293931520102">Vaše heslo je zašifrováno a nikdo ho neuvidí</translation>
 <translation id="5830720307094128296">Uložit stránku j&amp;ako...</translation>
+<translation id="5831217499016131155">Peněženka Google</translation>
 <translation id="583179300286794292">Jste přihlášeni jako <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vymazat data a oprávnění webu <ph name="SITE_NAME" />, všech jeho podřízených webů a jeho nainstalované aplikace?</translation>
 <translation id="5832813618714645810">Profily</translation>

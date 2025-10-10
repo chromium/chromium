@@ -1648,6 +1648,7 @@
 <translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2104166991923847969">Автоматски исклучувај ја точката на пристап</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е скриен</translation>
+<translation id="2106439768713835453">Споделувај и аудио од апликацијата</translation>
 <translation id="2108204112555497972">Проверено: пред <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="2109384632594340939">профилна слика</translation>
@@ -3027,6 +3028,7 @@
 <translation id="3038612606416062604">Додај печатач рачно</translation>
 <translation id="3038628620670416486">Лоцирајте ги копчињата на глувчето</translation>
 <translation id="3039491566278747710">Не успеа да се инсталира офлајн правило на уредот.</translation>
+<translation id="3040435070100611531">Вашите пропусници во Google Wallet</translation>
 <translation id="3040982432432547149">Помогнете ни да ја подобриме Steam за Chromebook</translation>
 <translation id="304169924727249890">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Ја променува стратегијата на оптимизирано полнење.</translation>
@@ -3887,6 +3889,7 @@
 <translation id="3656328935986149999">Брзина на курсорот</translation>
 <translation id="3656701180077048004">Додава одложување меѓу моментот на притискање некое копче и моментот на активирање на копчето</translation>
 <translation id="3658871634334445293">Забрзување на TrackPoint</translation>
+<translation id="3659483399659250379">Додајте картичка и друго</translation>
 <translation id="3659929705630080526">Внесовте премногу неточни кодови за пристап. Обидете се повторно подоцна</translation>
 <translation id="3661106764436337772">Пишувајте побрзо и со повеќе самодеоверба</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Најдена е 1 постојна лозинка}one{Најдени се {NUM_PASSWORDS} постојна лозинка}other{Најдени се {NUM_PASSWORDS} постојни лозинки}}</translation>
@@ -5419,6 +5422,7 @@
 <translation id="4707337002099455863">Секогаш вклучено на сите сајтови</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Дозволи и аудио во картичка</translation>
+<translation id="4710347732286177840">Изберете дел од екранот за дополнително прашање</translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Бриши при затворање на сите прозорци</translation>
@@ -6989,6 +6993,7 @@
 <translation id="5830205393314753525">Не може да се отвори <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Вашата лозинка е шифрирана и не може да ја види никој никогаш</translation>
 <translation id="5830720307094128296">Зачувај страница &amp;како...</translation>
+<translation id="5831217499016131155">Google Паричник</translation>
 <translation id="583179300286794292">Најавени сте како <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" />, сите сајтови под него и неговата инсталирана апликација?</translation>
 <translation id="5832813618714645810">Профили</translation>

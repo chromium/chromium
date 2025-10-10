@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="154312949627292154">Buka tab yang diterima daripada peranti anda yang lain daripada skrin kunci.</translation>
 <translation id="1545749641540134597">Imbas Kod QR</translation>
+<translation id="1545757265410828525">Sejarah harga</translation>
 <translation id="1547610699249301703">Kongsi kata laluan</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Anda telah pun menyimpan kata laluan untuk "<ph name="USERNAME" />" pada <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Anda boleh menatal ke kiri untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
+<translation id="2451607499823206582">Penjejakan</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} item sejarah}other{{count} item sejarah}}</translation>
 <translation id="2461070143328828326">Tetapan Kata Laluan</translation>
 <translation id="2462736546165239215">Anda boleh menemukan semua sejarah penyemakan imbas di sini.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>
 <translation id="3349031117032695619">Sekat tetingkap timbul</translation>
-<translation id="3349676726073650389">Laman dan carian yang anda ikuti disimpan dalam Google Account anda. Anda boleh mengurus laman dan carian yang anda ikuti dalam tetapan pada bila-bila masa.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaun ini terurus.</translation>
 <translation id="3365529507898144230">Simpan dalam Photos</translation>
 <translation id="3371831930909698441">Translate tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Kedudukan bar alamat</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
 <translation id="4872664437015695612">Buka dalam muat turun</translation>
-<translation id="4875260838563541343">Butang tindakan</translation>
 <translation id="4876237378696925987">Bermula</translation>
 <translation id="4876305945144899064">Tiada nama pengguna</translation>
 <translation id="4876665338492917862">Dibuka pada <ph name="LAST_OPENING_DATE" /></translation>
@@ -1274,7 +1274,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5956112131836209882">Tab kumpulan tab. <ph name="TAB_INDEX_IN_GROUP" /> daripada <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Pautan kepada serlahan tidak dapat dibuat.</translation>
-<translation id="5968400720580217226">Mod AI</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5971459446352190251">Carian Kod QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
 <translation id="5972844218283131174">Nyahpilih semua</translation>
@@ -1297,7 +1297,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6045460247888249350">Tambahkan tajuk</translation>
 <translation id="6052269326659653305">Tukar profil</translation>
 <translation id="605721222689873409">TT</translation>
-<translation id="6059103953801602038">Laman yang anda ikuti disimpan pada Google Account anda. Anda boleh mengurus laman tersebut dalam Tetapan Discover.</translation>
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
 <translation id="6066301408025741299">Ketik untuk membatalkan.</translation>
 <translation id="6074656473835429958">Dapatkan pemberitahuan</translation>
@@ -1510,7 +1509,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[TELAH DITEMPAH]</translation>
 <translation id="6779455296366983087">Data semakan imbas anda akan dipadamkan</translation>
-<translation id="6790502149545262384">Tidak lama lagi, anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="6791425686608802741">Ketik "Tambahkan Tab pada Kumpulan Baharu"</translation>
 <translation id="6794476726485507147">Pilih tarikh dan masa untuk menerima pemberitahuan peringatan untuk melawat semula halaman ini</translation>
 <translation id="6795481620482106033">Data Tidak Sah</translation>
@@ -1589,7 +1587,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7091023926159231962">{count,plural, =1{Tidak dapat mengimport {count} kata laluan}other{Tidak dapat mengimport {count} kata laluan}}</translation>
 <translation id="7095110968493193530">Kepada Google Password Manager untuk <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Dalam bar alamat, ketik sejarah harga untuk melihat perubahan harga dari semasa ke semasa</translation>
-<translation id="7101580180124131336">Kini anda akan dapat melihat kandungan daripada dan tentang <ph name="CHANNEL_NAME" /> dalam Diikut.</translation>
 <translation id="7102005569666697658">Memuat turun… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Tetapan → Kaedah pembayaran</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
@@ -1666,7 +1663,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7437712592381799950">Anda boleh meleret ke atas untuk melihat lebih banyak kandungan yang disesuaikan untuk anda.</translation>
 <translation id="7438473148803748807">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
-<translation id="7438481509621345350">Kini anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="7445682342344043969">Tetingkap timbul disekat</translation>
 <translation id="7451023311965289370">{count,plural, =1{Penanda halaman disimpan pada "{title}"}other{Penanda halaman disimpan pada "{title}"}}</translation>
 <translation id="7451404862887877229">Ketik "Privasi dan Keselamatan", kemudian "Penyemakan Imbas Selamat"</translation>
@@ -1933,8 +1929,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8393889347136007944">Tab tidak digunakan selama <ph name="THRESHOLD" /> hari</translation>
 <translation id="8395180897620197612">Hentikan pengelogan</translation>
-<translation id="8395339334550012808">Tidak lama lagi, anda akan dapat melihat kandungan daripada dan tentang <ph name="CHANNEL_NAME" /> dalam Diikut.</translation>
-<translation id="8402673309244746971">Pergi ke Mengikuti</translation>
 <translation id="8407669440184693619">Tiada kata laluan ditemui untuk tapak ini</translation>
 <translation id="8407831512155324054">Kata laluan anda kelihatan kukuh</translation>
 <translation id="8414283596511250978">Tidak sekali-kali melupakan kata laluan anda</translation>
@@ -2173,7 +2167,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="952704832371081537">Batal</translation>
 <translation id="954667170699278022">Senarai Bacaan</translation>
 <translation id="956218893102219091">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>
 <translation id="963102227019621224">Aktiviti Web &amp; Apl</translation>
 <translation id="966593914872420832">Carian suara</translation>

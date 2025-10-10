@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Åpne faner du mottar fra andre enheter, fra låseskjermen.</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
+<translation id="1545757265410828525">Prishistorikk</translation>
 <translation id="1547610699249301703">Del passord</translation>
 <translation id="1554477036522844996">Nytt vindu</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for å surfe i inkognitomodus.</translation>
 <translation id="2435457462613246316">Vis passord</translation>
+<translation id="2451607499823206582">Sporing</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} loggelement}other{{count} loggelementer}}</translation>
 <translation id="2461070143328828326">Passordinnstillinger</translation>
 <translation id="2462736546165239215">Du finner hele nettleserloggen din her.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{Bokmerkene er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="334690320928261823">Nylige faner</translation>
 <translation id="3349031117032695619">Blokker forgrunnsvinduer</translation>
-<translation id="3349676726073650389">Nettstedene og søkene du følger, lagres i Google-kontoen din. Du kan når som helst administrere det du følger, i innstillingene.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Denne kontoen administreres.</translation>
 <translation id="3365529507898144230">Lagre i Foto</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Posisjon for adressefeltet</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4872664437015695612">Åpne i nedlastinger</translation>
-<translation id="4875260838563541343">Handlingsknapp</translation>
 <translation id="4876237378696925987">Kom i gang</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876665338492917862">Åpnet <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6045460247888249350">Legg til en tittel</translation>
 <translation id="6052269326659653305">Bytt profil</translation>
 <translation id="605721222689873409">ÅÅ</translation>
-<translation id="6059103953801602038">Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
 <translation id="6066301408025741299">Trykk for å avbryte.</translation>
 <translation id="6074656473835429958">Få varsler</translation>
@@ -1510,7 +1509,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6770452996697898492">[BESTILT]</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
-<translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6791425686608802741">Trykk på «Legg til fane i ny gruppe»</translation>
 <translation id="6794476726485507147">Velg dato og klokkeslett for å motta et påminnelsesvarsel om å gå tilbake til denne siden</translation>
 <translation id="6795481620482106033">Ugyldige data</translation>
@@ -1589,7 +1587,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7091023926159231962">{count,plural, =1{Kunne ikke importere {count} passord}other{Kunne ikke importere {count} passord}}</translation>
 <translation id="7095110968493193530">I Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Trykk på prisloggen i adressefeltet for å se prisendringer over tid</translation>
-<translation id="7101580180124131336">Nå ser du innhold fra og om <ph name="CHANNEL_NAME" /> i Følger.</translation>
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Innstillinger → Betalingsmåter</translation>
 <translation id="7108338896283013870">Skjul</translation>
@@ -1666,7 +1663,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7437712592381799950">Du kan sveipe opp for å se mer innhold som er skreddersydd for deg.</translation>
 <translation id="7438473148803748807">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslenker deaktiveres</translation>
-<translation id="7438481509621345350">Nå ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="7445682342344043969">Forgrunnsvinduer er blokkert</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmerket er lagret i «{title}»}other{Bokmerkene er lagret i «{title}»}}</translation>
 <translation id="7451404862887877229">Trykk på «Personvern og sikkerhet» og deretter på «Safe Browsing»</translation>
@@ -1933,8 +1929,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8393889347136007944">Faner som ikke er brukt på <ph name="THRESHOLD" /> dager</translation>
 <translation id="8395180897620197612">Stopp loggføring</translation>
-<translation id="8395339334550012808">Snart ser du innhold fra og om <ph name="CHANNEL_NAME" /> i Følger.</translation>
-<translation id="8402673309244746971">Gå til Følger</translation>
 <translation id="8407669440184693619">Fant ingen passord for dette nettstedet</translation>
 <translation id="8407831512155324054">Passordene dine ser sterke ut</translation>
 <translation id="8414283596511250978">Glem aldri passordene dine</translation>
@@ -2173,7 +2167,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="954667170699278022">Leseliste</translation>
 <translation id="956218893102219091">Bruk den nøyaktige posisjonen din for å få de mest nøyaktige Gemini-resultatene, i stedet for en anslått posisjon basert på IP-adressen din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963102227019621224">Nett- og appaktivitet</translation>
 <translation id="966593914872420832">Talesøk</translation>

@@ -1647,6 +1647,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2102495993840063010">Android Колдонмолору</translation>
 <translation id="2104166991923847969">Байланыш түйүнү автоматтык түрдө өчөт</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> жашырылды</translation>
+<translation id="2106439768713835453">Колдонмонун аудиосун да бөлүшүү</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> мурда текшерилди</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефон номери}other{# телефон номери}}</translation>
 <translation id="2109384632594340939">профилиңиздин сүрөтүн</translation>
@@ -3026,6 +3027,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3038612606416062604">Принтерди кол менен кошуу</translation>
 <translation id="3038628620670416486">Чычканыңыздагы баскычтарды табыңыз</translation>
 <translation id="3039491566278747710">Оффлайн режимде түзмөккө колдонуу саясаты орнотулбай калды.</translation>
+<translation id="3040435070100611531">Google Капчыктагы билеттериңиз</translation>
 <translation id="3040982432432547149">Chromebook'тагы Steam кызматын жакшыртууга көмөктөшүңүз</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
 <translation id="3042097545107738107">Оптималдаштырылган кубаттоо стратегиясын өзгөртүңүз.</translation>
@@ -3886,6 +3888,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3656328935986149999">Курсордун ылдамдыгы</translation>
 <translation id="3656701180077048004">Сиз баскычты басып, ал иштетилгенге чейинки кечигүүнү кошот</translation>
 <translation id="3658871634334445293">TrackPoint ылдамдаткычы</translation>
+<translation id="3659483399659250379">Өтмөк жана башка нерселерди кошуу</translation>
 <translation id="3659929705630080526">Туура эмес кирүү кодун өтө көп жолу киргиздиңиз. Кийинчерээк кайталаңыз</translation>
 <translation id="3661106764436337772">Тезирээк жана тагыраак жазыңыз</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 учурдагы сырсөз табылды}other{{NUM_PASSWORDS} учурдагы сырсөз табылды}}</translation>
@@ -5418,6 +5421,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4707337002099455863">Бардык сайттарда ар дайым күйүк</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> чыгуу</translation>
 <translation id="4708892882822652439">Өтмөктөгү аудиого да уруксат берүү</translation>
+<translation id="4710347732286177840">Кошумча суроо үчүн экрандын аймагын тандаңыз</translation>
 <translation id="4711638718396952945">Параметрлерди калыбына келтирүү</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Бардык терезелер жабылганда жок кылынсын</translation>
@@ -6988,6 +6992,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5830205393314753525"><ph name="APP_NAME" /> колдонмосу ачылбай жатат</translation>
 <translation id="5830512293931520102">Сырсөзүңүз шифрленип, эң качан жана эч кимге көрсөтүлбөйт</translation>
 <translation id="5830720307094128296">Бетти &amp;төмөнкүдөй сактоо…</translation>
+<translation id="5831217499016131155">Google Капчык</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> катары кирдиңиз</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, анын астындагы бардык сайттардагы, ошондой эле орнотулган колдонмолордогу сайтка тиешелүү маалыматтар жана уруксаттар өчүрүлсүнбү?</translation>
 <translation id="5832813618714645810">Профилдер</translation>

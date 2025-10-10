@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Kirjaudu ulos ja lopeta synkronointi?</translation>
 <translation id="1363028406613469049">Raita</translation>
 <translation id="1366525380420346469">Ominaisuuden ollessa päällä</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Voit estää tätä sivustoa lähettämästä ilmoituksia jatkossa}other{Voit estää näitä sivustoja lähettämästä ilmoituksia jatkossa}}</translation>
 <translation id="1373696734384179344">Liian vähän muistia valitun sisällön lataamiseen.</translation>
 <translation id="1376578503827013741">Lasketaan…</translation>
 <translation id="1381838868249179644">Turvallisuutesi vuoksi luvat on poistettu joiltakin sivustoilta</translation>
@@ -1381,6 +1382,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7177873915659574692">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7182051712900867547">Käytä toista tiliä</translation>
+<translation id="7182520625618447753">Personoi selauskokemusta siirtämällä osoitepalkkia ylös tai alas</translation>
 <translation id="7183517696921903380">Sovellussuodatintaulukko on avattu.</translation>
 <translation id="7186568385131859684">Valitse, miten selaushistoriaa käytetään muun datan kanssa Googlen palveluissa</translation>
 <translation id="7190921792980745354">Estetäänkö <ph name="MEMBER_FULL_NAME" />?</translation>

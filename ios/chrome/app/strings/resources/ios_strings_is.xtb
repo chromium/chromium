@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Heimilisfang 1</translation>
 <translation id="154312949627292154">Opna flipa sem tekið var á móti úr hinum tækjunum þínum af lásskjánum.</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
+<translation id="1545757265410828525">Verðferill</translation>
 <translation id="1547610699249301703">Deila aðgangsorðum</translation>
 <translation id="1554477036522844996">Nýr gluggi</translation>
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">Þú getur skoðað í huliðsstillingu með því að strjúka til vinstri.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
+<translation id="2451607499823206582">Vöktun</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} ferilatriði}one{{count} ferilatriði}other{{count} ferilatriði}}</translation>
 <translation id="2461070143328828326">Stillingar fyrir aðgangsorð</translation>
 <translation id="2462736546165239215">Þú finnur vafraferilinn í heild sinni hér.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bókamerki vistað í „{title}“ á reikningnum þínum, {email}}one{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}other{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}}</translation>
 <translation id="334690320928261823">Nýlegir flipar</translation>
 <translation id="3349031117032695619">Loka á sprettiglugga</translation>
-<translation id="3349676726073650389">Vefsvæði og leitir sem þú fylgir eru vistuð á Google-reikningnum þínum. Þú getur stjórnað stillingum „Fylgir“ hvenær sem er.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Þessum reikningi er stýrt.</translation>
 <translation id="3365529507898144230">Vista í Myndum</translation>
 <translation id="3371831930909698441">Þýðing er í boði. Valkostir eru neðst á skjánum</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Staða veffangastiku</translation>
 <translation id="4870911314065352661">Loka öllum flipum?</translation>
 <translation id="4872664437015695612">Opna í niðurhali</translation>
-<translation id="4875260838563541343">Aðgerðahnappur</translation>
 <translation id="4876237378696925987">Hefjast handa</translation>
 <translation id="4876305945144899064">Ekkert notandanafn</translation>
 <translation id="4876665338492917862">Opnað <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6045460247888249350">Bæta við titli</translation>
 <translation id="6052269326659653305">Skipta um prófíl</translation>
 <translation id="605721222689873409">ÁÁ</translation>
-<translation id="6059103953801602038">Vefsvæði sem þú fylgir eru vistuð á Google-reikningnum þínum. Þú getur stjórnað þeim í tillögustillingunum.</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
 <translation id="6066301408025741299">Ýttu til að hætta við.</translation>
 <translation id="6074656473835429958">Fá tilkynningar</translation>
@@ -1510,7 +1509,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6761393919622941301">Hljóð</translation>
 <translation id="6770452996697898492">[BÓKAÐ]</translation>
 <translation id="6779455296366983087">Vefskoðunargögnum verður eytt</translation>
-<translation id="6790502149545262384">Fljótlega sérðu fréttir frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
 <translation id="6791425686608802741">Ýttu á „Bæta flipa við nýjan hóp“</translation>
 <translation id="6794476726485507147">Veldu dagsetningu og tíma til að fá áminningu um að fara aftur á þessa síðu</translation>
 <translation id="6795481620482106033">Ógild gögn</translation>
@@ -1589,7 +1587,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7091023926159231962">{count,plural, =1{Ekki tókst að flytja inn {count} aðgangsorð}one{Ekki tókst að flytja inn {count} aðgangsorð}other{Ekki tókst að flytja inn {count} aðgangsorð}}</translation>
 <translation id="7095110968493193530">Í Google-aðgangsorðastjórnun fyrir <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Ýttu á verðferil á veffangastikunni til að sjá verðbreytingar yfir tíma</translation>
-<translation id="7101580180124131336">Nú sérðu efni frá og um <ph name="CHANNEL_NAME" /> í „Fylgir“.</translation>
 <translation id="7102005569666697658">Sækir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Valmynd → Stillingar → Greiðslumátar</translation>
 <translation id="7108338896283013870">Fela</translation>
@@ -1666,7 +1663,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7435356471928173109">Kerfisstjórinn slökkti á þessu</translation>
 <translation id="7437712592381799950">Þú getur strokið upp til að sjá meira efni sem valið er sérstaklega fyrir þig.</translation>
 <translation id="7438473148803748807">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og allir boðstenglar verða gerðir óvirkir</translation>
-<translation id="7438481509621345350">Núna sérðu sögur frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
 <translation id="7445682342344043969">Lokað á sprettiglugga</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bókamerki vistað í „{title}“}one{Bókamerki vistuð í „{title}“}other{Bókamerki vistuð í „{title}“}}</translation>
 <translation id="7451404862887877229">Ýttu á „Persónuvernd og öryggi“ og síðan „Örugg vefskoðun“</translation>
@@ -1933,8 +1929,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8393889347136007944">Flipar ónotaðir í <ph name="THRESHOLD" /> daga</translation>
 <translation id="8395180897620197612">Stöðva skráningu</translation>
-<translation id="8395339334550012808">Bráðlega sérðu efni frá og um <ph name="CHANNEL_NAME" /> í „Fylgir“.</translation>
-<translation id="8402673309244746971">Opna „Fylgist með“</translation>
 <translation id="8407669440184693619">Engin aðgangsorð fundust fyrir þetta vefsvæði</translation>
 <translation id="8407831512155324054">Aðgangsorðin þín virðast traust</translation>
 <translation id="8414283596511250978">Þú gleymir aldrei aðgangsorðunum þínum</translation>
@@ -2173,7 +2167,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="952704832371081537">Hætta við</translation>
 <translation id="954667170699278022">Leslisti</translation>
 <translation id="956218893102219091">Notaðu nákvæma staðsetningu til að fá sem nákvæmastar Gemini-niðurstöður frekar en áætlaða staðsetningu út frá IP-tölunni þinni. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Þú fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Eyða vefskoðunargögnum</translation>
 <translation id="963102227019621224">Vef- og forritavirkni</translation>
 <translation id="966593914872420832">Raddleit</translation>

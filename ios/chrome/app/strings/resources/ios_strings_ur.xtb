@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">پتہ 1</translation>
 <translation id="154312949627292154">لاک اسکرین سے اپنے دوسرے آلات سے موصول کردہ ٹیبز کو کھولیں۔</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
+<translation id="1545757265410828525">قیمت کی سرگزشت</translation>
 <translation id="1547610699249301703">پاس ورڈز کا اشتراک کریں</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">آپ نے <ph name="WEBSITE" /> پر "<ph name="USERNAME" />" کے لیے پہلے ہی پاس ورڈ محفوظ کر لیا ہے</translation>
 <translation id="2434918313224755415">آپ پوشیدگی میں براؤز کرنے کے لیے دائیں اسکرول کر سکتے ہیں۔</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
+<translation id="2451607499823206582">ٹریکنگ</translation>
 <translation id="2458827363789845126">{count,plural, =1{سرگزشت کا {count} آئٹم}other{سرگزشت کے {count} آئٹمز}}</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
 <translation id="2462736546165239215">آپ یہاں اپنی تمام براؤزنگ کی سرگزشت تلاش کر سکتے ہیں۔</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="334690320928261823">حالیہ ٹیبز</translation>
 <translation id="3349031117032695619">پاپ اپس مسدود کریں</translation>
-<translation id="3349676726073650389">‏آپ جن سائٹس اور تلاشوں کی پیروی کرتے ہیں وہ آپ کے Google اکاؤنٹ میں محفوظ کی جاتی ہیں۔ آپ کسی بھی وقت ترتیبات میں اپنی پیرویوں کا نظم کر سکتے ہیں۔</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />۔ یہ اکاؤنٹ نظم کردہ ہے۔</translation>
 <translation id="3365529507898144230">تصاویر میں محفوظ کریں</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">ایڈریس بار پوزیشن</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>
 <translation id="4872664437015695612">ڈاؤن لوڈز میں کھولیں</translation>
-<translation id="4875260838563541343">کارروائی کا بٹن</translation>
 <translation id="4876237378696925987">شروع کریں</translation>
 <translation id="4876305945144899064">کوئی صارف نام نہیں ہے</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" /> کو کھولا گیا</translation>
@@ -1297,7 +1297,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6045460247888249350">عنوان شامل کریں</translation>
 <translation id="6052269326659653305">پروفائل سوئچ کریں</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059103953801602038">‏آپ جن سائٹس کی پیروی کرتے ہیں انہیں آپ کے Google اکاؤنٹ میں محفوظ کیا جاتا ہے۔ آپ Discover کی ترتیبات میں ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
 <translation id="6066301408025741299">منسوخ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="6074656473835429958">اطلاعات حاصل کریں</translation>
@@ -1510,7 +1509,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6761393919622941301">آڈیو</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
-<translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6791425686608802741">"نئے گروپ میں ٹیب شامل کریں" پر تھپتھپائیں</translation>
 <translation id="6794476726485507147">اس صفحہ کو دوبارہ ملاحظہ کرنے سے متعلق یاد دہانی کی اطلاع موصول کرنے کیلئے تاریخ اور وقت منتخب کریں</translation>
 <translation id="6795481620482106033">غلط ڈیٹا</translation>
@@ -1589,7 +1587,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7091023926159231962">{count,plural, =1{‫{count} پاس ورڈ کو درآمد نہیں کیا جا سکا}other{‫{count} پاس ورڈز کو درآمد نہیں کیا جا سکا}}</translation>
 <translation id="7095110968493193530">‏<ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کریں</translation>
 <translation id="7097046145876891318">ایڈریس بار میں، وقت کے ساتھ قیمت میں تبدیلیاں دیکھنے کے لیے قیمت کی سرگزشت پر تھپتھپائیں</translation>
-<translation id="7101580180124131336">آپ کو پیروی کر رہے ہیں میں <ph name="CHANNEL_NAME" /> سے اور اس کے متعلق مواد دکھائی دے گا۔</translation>
 <translation id="7102005569666697658">ڈاؤن لوڈ ہو رہی ہے… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">مینو ← ترتیبات ← ادائیگی کے طریقے</translation>
 <translation id="7108338896283013870">چھپائیں</translation>
@@ -1666,7 +1663,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
 <translation id="7437712592381799950">آپ کیلئے تیار کردہ مزید مواد دیکھنے کیلئے، آپ اوپر سوائپ کر سکتے ہیں۔</translation>
 <translation id="7438473148803748807">ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور شامل ہونے کے تمام لنکس آف کر دئے جائیں گے</translation>
-<translation id="7438481509621345350">نیا ٹیب کھولنے پر اب آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="7445682342344043969">پوپ-اپس مسدود ہیں</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" میں بُک مارک کو محفوظ کیا گیا}other{"{title}" میں بُک مارکس کو محفوظ کیا گیا}}</translation>
 <translation id="7451404862887877229">"رازداری اور سیکیورٹی" اور پھر "محفوظ براؤزنگ" پر تھپتھپائیں</translation>
@@ -1933,8 +1929,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8393700583063109961">پیغام بھیجیں</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> دن تک ٹیبز کا استعمال نہیں کیا گیا</translation>
 <translation id="8395180897620197612">لاگ کرنا روکیں</translation>
-<translation id="8395339334550012808">جلد ہی آپ کو پیروی کر رہے ہیں میں <ph name="CHANNEL_NAME" /> سے اور اس کے متعلق مواد دکھائی دے گا۔</translation>
-<translation id="8402673309244746971">درج ذيل پر جائيں</translation>
 <translation id="8407669440184693619">اس سائٹ کے لیے کوئی پاس ورڈ نہیں ملا</translation>
 <translation id="8407831512155324054">آپ کے پاس ورڈز مضبوط لگ رہے ہیں</translation>
 <translation id="8414283596511250978">اپنے پاس ورڈز کبھی نہ بھولیں</translation>
@@ -2173,7 +2167,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="952704832371081537">منسوخ کریں</translation>
 <translation id="954667170699278022">پڑھنے کی فہرست</translation>
 <translation id="956218893102219091">‏اپنے IP پتہ کی بنیاد پر تخمینی مقام کے بجائے، انتہائی درست Gemini نتائج کے لیے اپنے قطعی مقام کا استعمال کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">آپ <ph name="CHANNEL_NAME" /> کی پیروی کر رہے ہیں</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963102227019621224">ویب اور ایپ سرگرمی</translation>
 <translation id="966593914872420832">صوتی تلاش</translation>

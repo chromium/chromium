@@ -469,6 +469,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2549711466868162843">Yoritishni yaxshilash</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
 <translation id="255671100581129685">Google Assistent demo seansda ishlamaydi.</translation>
+<translation id="2562459326218811217">Qurilma ulangan, ammo quvvatlanmayapti. Quvvati balandroq (W) quvvatlagich ishlating yoki asl quvvatlagichdan foydalaning.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> qurilmasi ulanmadi</translation>
 <translation id="2575685495496069081">Bir nechta hisobdan kirish funksiyasi yoqilmagan</translation>
@@ -539,6 +540,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2804617685448902294"><ph name="TITLE" />, <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2814448776515246190">Qisman tasvirga olish</translation>
+<translation id="2815594810045873507">Quvvati balandroq (W) quvvatlagich ishlating yoki asl quvvatlagichdan foydalaning.</translation>
 <translation id="2819276065543622893">Seans yakunlandi.</translation>
 <translation id="2822551631199737692">Kamera ishlatilmoqda</translation>
 <translation id="2825619548187458965">Javon</translation>
@@ -1731,6 +1733,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6582012689384648647">Diqqatni jamlashga moslangan pleylistlarni olish uchun YouTube Music xizmatiga ruxsat bering</translation>
 <translation id="6582034443359256692">Batareyaning quvvat darajasi hisoblanmoqda.</translation>
 <translation id="6585808820553845416">Sessiya yakunlanishiga <ph name="SESSION_TIME_REMAINING" /> qoldi.</translation>
+<translation id="6586685375736417639">Qurilma quvvatlanmayapti.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera pastki chap burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="6605415194043280389">Fokus yoniq</translation>

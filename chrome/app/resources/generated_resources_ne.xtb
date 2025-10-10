@@ -1638,6 +1638,7 @@
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2104166991923847969">हटस्पट स्वतः अफ गर्नुहोस्</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> वटा कन्सोल म्यासेज लुकाइएका छन्</translation>
+<translation id="2106439768713835453">एपको अडियो पनि सेयर गर्नुहोस्</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> अघि जाँच गरिएको</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="2109384632594340939">प्रोफाइल फोटो</translation>
@@ -3015,6 +3016,7 @@
 <translation id="3038612606416062604">म्यानुअल तरिकाले प्रिन्टर कनेक्ट गर्नुहोस्</translation>
 <translation id="3038628620670416486">आफ्नो माउसमा भएका बटनहरूमा क्लिक गर्नुहोस्</translation>
 <translation id="3039491566278747710">यन्त्रमा अफलाइन नीति स्थापना गर्न सकिएन।</translation>
+<translation id="3040435070100611531">तपाईंका Google Wallet का पासहरू</translation>
 <translation id="3040982432432547149">हामीलाई Chromebook मा चल्ने Steam को गुणस्तर सुधार्न सघाउनुहोस्</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्</translation>
 <translation id="3042097545107738107">अप्टिमाइज गरिएको चार्ज गर्ने तरिका बदल्नुहोस्।</translation>
@@ -3873,6 +3875,7 @@
 <translation id="3656328935986149999">कर्सरको गति</translation>
 <translation id="3656701180077048004">तपाईंले कुनै की थिचेपछि उक्त की एक्टिभेट हुन लाग्ने समय बढाउँछ</translation>
 <translation id="3658871634334445293">TrackPoint एक्सिलेरेसन</translation>
+<translation id="3659483399659250379">ट्याब र अन्य कुराहरू हाल्नुहोस्</translation>
 <translation id="3659929705630080526">तपाईंले अत्यन्तै धेरै पटक गलत एक्सेस कोड हाल्नुभएको छ। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3661106764436337772">अझ छिटो र अझ धेरै आत्मविश्वासका साथ लेख्नुहोस्</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{पहिलेदेखि नै रहेको एउटा पासवर्ड भेटियो}other{पहिलेदेखि नै रहेका {NUM_PASSWORDS} वटा पासवर्ड भेटिए}}</translation>
@@ -5404,6 +5407,7 @@
 <translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
 <translation id="4708892882822652439">ट्याब अडियोलाई पनि अनुमति दिनुहोस्</translation>
+<translation id="4710347732286177840">फलो अप गर्न स्क्रिनको क्षेत्र चयन गर्नुहोस्</translation>
 <translation id="4711638718396952945">सेटिङहरू पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">मैले सबै विन्डो बन्द गरेपछि मेटाउनुहोस्</translation>
@@ -6974,6 +6978,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="5830512293931520102">तपाईंको पासवर्ड इन्क्रिप्ट गरिएको हुन्छ र कसैले कहिल्यै पनि उक्त पासवर्ड देख्दैनन्</translation>
 <translation id="5830720307094128296">पृष्ठलाई यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> का रूपमा साइन इन गरिएको छ</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, यसअन्तर्गत रहेका सबै साइट र इन्स्टल गरिएको सम्बन्धित वेब एपको साइट डेटा मेटाउनुका साथै ती साइट र एपलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
 <translation id="5832813618714645810">प्रोफाइलहरू</translation>

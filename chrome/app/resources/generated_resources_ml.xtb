@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">അപ്‌ഡേറ്റ് സംബന്ധിച്ച പിശകുകൾ പരിഹരിക്കുന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="1217114730239853757">ChromeOS Flex-നുള്ള ബിൽറ്റ് ഇൻ സ്ക്രീൻ റീഡർ ആയ ChromeVox സജീവമാക്കണോ? അങ്ങനെയെങ്കിൽ, സ്പെയ്‌സ് ബാർ അമർത്തുക.</translation>
 <translation id="1217117837721346030">സംശയാസ്‌പദമായ ഫയൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> എന്നതിൽ പുതിയ ടാബ്</translation>
 <translation id="1217483152325416304">നിങ്ങളുടെ ലോക്കൽ ഡാറ്റ ഉടൻ ഇല്ലാതാക്കപ്പെടും</translation>
 <translation id="1217668622537098248">പ്രവൃത്തിക്ക് ശേഷം ഇടത് ക്ലിക്ക് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="1218015446623563536">Linux ഇല്ലാതാക്കുക</translation>
@@ -3011,6 +3012,7 @@
 <translation id="3038612606416062604">നേരിട്ട് ഒരു പ്രിന്റർ ചേർക്കുക</translation>
 <translation id="3038628620670416486">നിങ്ങളുടെ മൗസിൽ ബട്ടണുകൾ കണ്ടെത്തുക</translation>
 <translation id="3039491566278747710">ഉപകരണത്തിൽ ഓഫ്‌ലൈൻ നയം ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
+<translation id="3040435070100611531">നിങ്ങളുടെ Google Wallet പാസുകൾ</translation>
 <translation id="3040982432432547149">Chromebook-നുള്ള Steam മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കൂ</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക</translation>
 <translation id="3042097545107738107">ഒപ്റ്റിമൈസ് ചെയ്ത ചാർജിംഗ് സ്ട്രാറ്റജി മാറ്റുക.</translation>
@@ -3219,6 +3221,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         നിങ്ങൾക്ക് ഈ കാർഡിൽ നിന്നുള്ള ക്രമീകരണം ഏതുസമയത്തും മാനേജ് ചെയ്യാം അല്ലെങ്കിൽ 'Chrome ഇഷ്ടാനുസൃതമാക്കുക' എന്നതിൽ കൂടുതൽ ഓപ്ഷനുകൾ കാണാം.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{ഒരു ടാബിൽ പുതിയ ടാബ്}other{# ടാബുകളിൽ പുതിയ ടാബ്}}</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3208703785962634733">സ്ഥിരീകരികരിക്കാത്തത്</translation>
@@ -3394,6 +3397,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ചിത്രത്തിനുള്ളിലെ ചിത്രം മോഡിൽ വീഡിയോ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="3335380372402547327">ഫ്ളാഷ് അറിയിപ്പുകൾ പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="3335947283844343239">അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> എന്നതിൽ പുതിയ ടാബ്</translation>
 <translation id="3336855445806447827">ഉറപ്പില്ല</translation>
 <translation id="3337568642696914359">പ്രോട്ടോകോളുകൾ കൈകാര്യം ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="333863344734218290">സുരക്ഷിതമല്ലാത്ത പൊതു, സ്വകാര്യ സൈറ്റുകൾ സംബന്ധിച്ച് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
@@ -6974,6 +6978,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> തുറക്കാനാകുന്നില്ല</translation>
 <translation id="5830512293931520102">നിങ്ങളുടെ പാസ്‌വേഡ് എൻക്രിപ്റ്റ് ചെയ്യും, അതൊരിക്കലും മറ്റുള്ളവർ കാണില്ല</translation>
 <translation id="5830720307094128296">പേജ് &amp;ഇതായി സംരക്ഷിക്കുക...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> എന്ന സൈറ്റിനും അതിന് കീഴിലുള്ള എല്ലാ സൈറ്റുകൾക്കും ഇൻസ്റ്റാൾ ചെയ്ത അവയുടെ ആപ്പുകൾക്കുമുള്ള സൈറ്റ് ഡാറ്റയും അനുമതികളും ഇല്ലാതാക്കണോ?</translation>
 <translation id="5832813618714645810">പ്രൊഫൈലുകൾ</translation>
@@ -8936,6 +8941,7 @@
 <translation id="7211783048245131419">ഇതുവരെ സ്വിച്ച് അസൈൻ ചെയ്തിട്ടില്ല</translation>
 <translation id="7212097698621322584">പിൻ മാറ്റാൻ നിലവിലെ പിൻ നൽകുക. നിങ്ങളുടെ പിൻ അറിയില്ലെങ്കിൽ, സുരക്ഷാ കീ പുനഃസജ്ജീകരിച്ച് പുതിയ പിൻ സൃഷ്‌ടിക്കേണ്ടി വരും.</translation>
 <translation id="7214047272988222011">അനുവദിച്ചു – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />സിസ്റ്റം ക്യാമറാ ആക്‌സസ്<ph name="LINK_END" /> ഓണാക്കുക.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{ഒരു ടാബിൽ പുതിയ ടാബ്}other{# ടാബുകളിൽ പുതിയ ടാബ്}}</translation>
 <translation id="721490496276866468">പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="7217208603285112910">തിരഞ്ഞെടുത്തത് <ph name="LANGUAGE" /> ഭാഷയിൽ ലഭ്യമല്ല</translation>
 <translation id="7219254577985949841">സൈറ്റ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
@@ -9223,6 +9229,7 @@
 <translation id="7410344089573941623">നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ആക്‌സസ് ചെയ്യാൻ <ph name="HOST" /> താൽപ്പര്യപ്പെടുന്നുണ്ടോയെന്ന് ചോദിക്കുക</translation>
 <translation id="7410421966064092098">സൈറ്റുകൾക്ക്, നിങ്ങളൊരു ബോട്ട് അല്ലെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ സഹായിക്കാനാകില്ല</translation>
 <translation id="7410852728357935715">ഒരു ഉപകരണത്തിലേക്ക് കാസ്റ്റ് ചെയ്യുക</translation>
+<translation id="741148343080227980"><ph name="BEGIN_LINK" />നിങ്ങളുടെ <ph name="USERNAME" /> എന്ന Google Account-ൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് പേര് എഡിറ്റ് ചെയ്യാം.</translation>
 <translation id="741204030948306876">ഞാൻ തയ്യാറാണ്</translation>
 <translation id="7412226954991670867">GPU മെമ്മറി</translation>
 <translation id="741370456693729525">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം തിരയാനും നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകൾ കണ്ടെത്താനും സാധാരണ ഭാഷ ഉപയോഗിക്കുക</translation>

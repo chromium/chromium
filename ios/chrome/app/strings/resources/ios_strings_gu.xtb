@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">સરનામું 1</translation>
 <translation id="154312949627292154">લૉક સ્ક્રીનમાંથી તમારા અન્ય ડિવાઇસમાંથી પ્રાપ્ત થયેલા ટૅબ ખોલો.</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
+<translation id="1545757265410828525">કિંમતનો ઇતિહાસ</translation>
 <translation id="1547610699249301703">પાસવર્ડ શેર કરો</translation>
 <translation id="1554477036522844996">નવી વિંડો</translation>
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2434918313224755415">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે ડાબી તરફ સ્ક્રોલ કરી શકો છો.</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2451607499823206582">ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="2458827363789845126">{count,plural, =1{ઇતિહાસની {count} આઇટમ}one{ઇતિહાસની {count} આઇટમ}other{ઇતિહાસની {count} આઇટમ}}</translation>
 <translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2462736546165239215">તમે તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ અહીં મેળવી શકો છો.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="334690320928261823">તાજેતરના ટૅબ</translation>
 <translation id="3349031117032695619">પૉપ-અપ બ્લૉક કરો</translation>
-<translation id="3349676726073650389">તમે જે સાઇટ અને શોધને ફૉલો કરો છો, તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે જેને ફૉલો કરો છો, તેને ગમે ત્યારે તમારા સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. આ એકાઉન્ટ મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3365529507898144230">Photosમાં સાચવો</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">ઍડ્રેસ બારનું સ્થાન</translation>
 <translation id="4870911314065352661">શું બધી ટૅબ બંધ કરીએ?</translation>
 <translation id="4872664437015695612">ડાઉનલોડ ફોલ્ડરમાં ખોલો</translation>
-<translation id="4875260838563541343">ક્રિયા બટન</translation>
 <translation id="4876237378696925987">શરૂ કરો</translation>
 <translation id="4876305945144899064">કોઈ વપરાશકર્તા નામ નથી</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" />ના રોજ ખોલેલી</translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">શીર્ષક ઉમેરો</translation>
 <translation id="6052269326659653305">પ્રોફાઇલ સ્વિચ કરો</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059103953801602038">તમે ફૉલો કરતા હો તે સાઇટને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. તમે તેમને Discoverના સેટિંગમાં મેનેજ કરી શકો છો.</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
 <translation id="6066301408025741299">રદ કરવા માટે ટેપ કરો.</translation>
 <translation id="6074656473835429958">નોટિફિકેશન મેળવો</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6770452996697898492">[બુક કરવામાં આવી]</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
-<translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
 <translation id="6794476726485507147">આ પેજની ફરી મુલાકાત લેવા માટે, રિમાઇન્ડર નોટિફિકેશન મેળવવા માટે તારીખ અને સમય પસંદ કરો</translation>
 <translation id="6795481620482106033">અમાન્ય ડેટા</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{{count} પાસવર્ડ આયાત કરી શકયાં નથી}one{{count} પાસવર્ડ આયાત કરી શકયાં નથી}other{{count} પાસવર્ડ આયાત કરી શકયાં નથી}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> માટે Google Password Managerમાં સાચવો</translation>
 <translation id="7097046145876891318">કિંમતમાં સમયાંતરે થયેલા ફેરફારો જોવા માટે ઍડ્રેસ બારમાં કિંમતના ઇતિહાસ પર ટૅપ કરો</translation>
-<translation id="7101580180124131336">તમને 'ફૉલો કરી રહ્યાં છો'માં <ph name="CHANNEL_NAME" /> પરથી અને વિશેનું કન્ટેન્ટ જોવા મળશે.</translation>
 <translation id="7102005569666697658">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">મેનૂ → સેટિંગ → ચુકવણી પદ્ધતિઓ</translation>
 <translation id="7108338896283013870">છુપાવો</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7437712592381799950">ખાસ તમારા માટે તૈયાર કરવામાં આવેલું વધુ કન્ટેન્ટ જોવા માટે તમે ઉપરની તરફ સ્વાઇપ કરી શકો છો.</translation>
 <translation id="7438473148803748807">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
-<translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7445682342344043969">પૉપ-અપ અવરોધિત છે</translation>
 <translation id="7451023311965289370">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવ્યું}one{બુકમાર્ક "{title}" પર સાચવ્યું}other{બુકમાર્ક "{title}" પર સાચવ્યા}}</translation>
 <translation id="7451404862887877229">પહેલા "પ્રાઇવસી અને સુરક્ષા" પર અને પછી "Safe Browsing" પર ટૅપ કરો</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">મેસેજ મોકલો</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> દિવસથી ઉપયોગમાં ન લેવાયેલી ટૅબ</translation>
 <translation id="8395180897620197612">લૉગિંગની પ્રક્રિયા રોકો</translation>
-<translation id="8395339334550012808">ટૂંક સમયમાં, તમને 'ફૉલો કરી રહ્યાં છો'માં <ph name="CHANNEL_NAME" /> પરથી અને વિશેનું કન્ટેન્ટ જોવા મળશે.</translation>
-<translation id="8402673309244746971">અનુસરે છે ફીડ પર જાઓ</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
 <translation id="8407831512155324054">તમારા પાસવર્ડ સશક્ત લાગે છે</translation>
 <translation id="8414283596511250978">તમારા પાસવર્ડ ક્યારેય ભૂલશો નહીં</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">રદ કરો</translation>
 <translation id="954667170699278022">વાંચન સૂચિ</translation>
 <translation id="956218893102219091">તમારા IP ઍડ્રેસના આધારે અંદાજિત લોકેશનને બદલે, Geminiના સૌથી સચોટ પરિણામો માટે તમારા સચોટ લોકેશનનો ઉપયોગ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">તમે <ph name="CHANNEL_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="963102227019621224">વેબ અને ઍપ ઍક્ટિવિટી</translation>
 <translation id="966593914872420832">વૉઇસ શોધ</translation>

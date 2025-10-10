@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">შეიტყვეთ მეტი განახლებასთან დაკავშირებული შეცდომების გასწორების შესახებ</translation>
 <translation id="1217114730239853757">გსურთ, გაააქტიუროთ ChromeVox, ChromeOS Flex-ში ჩაშენებული ეკრანის წამკითხველი? ამისთვის დააჭირეთ შორისის კლავიშს.</translation>
 <translation id="1217117837721346030">საეჭვო ფაილის ჩამოტვირთვა</translation>
+<translation id="1217437913373100941">ახალი ჩანართი <ph name="GROUP_NAME" />-ში</translation>
 <translation id="1217483152325416304">თქვენი ადგილობრივი მონაცემები მალე წაიშლება</translation>
 <translation id="1217668622537098248">ქმედების შემდეგ მარცხენა დაწკაპუნებაზე დაბრუნება</translation>
 <translation id="1218015446623563536">Linux-ის წაშლა</translation>
@@ -3014,6 +3015,7 @@
 <translation id="3038612606416062604">პრინტერის ხელით დამატება</translation>
 <translation id="3038628620670416486">განსაზღვრეთ თქვენი მაუსის ღილაკები</translation>
 <translation id="3039491566278747710">მოწყობილობაზე ვერ მოხერხდა ხაზგარეშე წესების ინსტალაცია.</translation>
+<translation id="3040435070100611531">თქვენი Google საფულის საშვები</translation>
 <translation id="3040982432432547149">დაგვეხმარეთ Steam-ის გაუმჯობესებაში Chromebook-ისთვის</translation>
 <translation id="304169924727249890">შეუერთდით ჩანართების ჯგუფს, რომელშიც არის <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">შეცვალეთ ოპტიმიზებული დატენის სტრატეგია.</translation>
@@ -3222,6 +3224,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         სურვილისამებრ, ნებისმიერ დროს შეგიძლიათ მართოთ პარამეტრები ამ ბარათიდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{ახალი ჩანართი 1 ჩანართში}other{ახალი ჩანართი # ჩანართში}}</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="3208703785962634733">დაუდასტურებელი</translation>
@@ -3397,6 +3400,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> — ვიდეო იყენებს რეჟიმს „გამოსახულება გამოსახულებაში“</translation>
 <translation id="3335380372402547327">ბლიც გაფრთხილებების გადახედვა</translation>
 <translation id="3335947283844343239">&amp;დახურული ჩანართის ხელახლა გახსნა</translation>
+<translation id="3336661809256024098">ახალი ჩანართი <ph name="GROUP_NAME" />-ში</translation>
 <translation id="3336855445806447827">დარწმუნებული არ ვარ</translation>
 <translation id="3337568642696914359">საიტებისთვის პროტოკოლების დამუშავების აკრძალვა</translation>
 <translation id="333863344734218290">გაგაფრთხილებთ საჯარო და პირადი დაუცველი საიტების შესახებ</translation>
@@ -6978,6 +6982,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> არ იხსნება</translation>
 <translation id="5830512293931520102">თქვენი პაროლი დაშიფრულია და მას ვერავინ ნახავს</translation>
 <translation id="5830720307094128296">&amp;შეინახეთ გვერდი როგორც…</translation>
+<translation id="5831217499016131155">Google საფულე</translation>
 <translation id="583179300286794292">შესული ხართ, როგორც <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">გსურთ, წაშალოთ საიტების მონაცემები და ნებართვები როგორც <ph name="SITE_NAME" />-ის, ისე მასთან დაკავშირებული ყველა საიტისთვისა და მის მიერ დაინსტალირებული აპისთვის?</translation>
 <translation id="5832813618714645810">პროფილები</translation>
@@ -8939,6 +8944,7 @@
 <translation id="7211783048245131419">გადამრთველი ჯერ არ მინიჭებულა</translation>
 <translation id="7212097698621322584">შესაცვლელად შეიყვანეთ თქვენი ამჟამინდელი PIN-კოდი. თუ PIN-კოდი არ იცით, საჭირო იქნება უსაფრთხოების გასაღების გადაყენება და ახალი PIN-კოდის შექმნა.</translation>
 <translation id="7214047272988222011">ნებადართულია — <ph name="PERMISSION_DETAILS" />. დაუშვით <ph name="LINK_BEGIN" />სისტემის კამერაზე წვდომა<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{ახალი ჩანართი 1 ჩანართში}other{ახალი ჩანართი # ჩანართში}}</translation>
 <translation id="721490496276866468">პაროლების იმპორტირება</translation>
 <translation id="7217208603285112910">არჩეული ტექსტის ენა არ არის <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">გსურთ, წაშალოთ საიტის მონაცემები?</translation>
@@ -9226,6 +9232,7 @@
 <translation id="7410344089573941623">მკითხე, თუ <ph name="HOST" /> მოითხოვს წვდომას კამერასა ან მიკროფონზე</translation>
 <translation id="7410421966064092098">საიტების ხელშეწყობით არ იქნება შესაძლებელი იმის დადასტურება, რომ ბოტი არ ხართ</translation>
 <translation id="7410852728357935715">ტრანსლირება მოწყობილობაზე</translation>
+<translation id="741148343080227980">თქვენი სახელის რედაქტირება შეგიძლიათ <ph name="BEGIN_LINK" />თქვენს Google ანგარიშში <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">დიახ, თანახმა ვარ</translation>
 <translation id="7412226954991670867">GPU მეხსიერება</translation>
 <translation id="741370456693729525">გამოიყენეთ სალაპარაკო ენა, რომ დათვალიერების ისტორიაში მოძებნოთ უკვე მონახულებული ვებსაიტები</translation>

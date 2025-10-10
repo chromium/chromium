@@ -1381,6 +1381,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7177873915659574692">QR kód nelze vytvořit. Adresa URL je delší než <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7182051712900867547">Použít jiný účet</translation>
+<translation id="7182520625618447753">Prostředí při procházení si můžete přizpůsobit přesunutím adresního řádku nahoru nebo dolů.</translation>
 <translation id="7183517696921903380">Panel filtrování podle aplikace je otevřený.</translation>
 <translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
 <translation id="7190921792980745354">Blokovat uživatele <ph name="MEMBER_FULL_NAME" />?</translation>

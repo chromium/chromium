@@ -339,6 +339,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1216891999012841486">Sužinokite daugiau apie naujinių klaidų taisymą</translation>
 <translation id="1217114730239853757">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą? Jei norite, paspauskite tarpo klavišą.</translation>
 <translation id="1217117837721346030">Atsisiųsti įtartiną failą</translation>
+<translation id="1217437913373100941">Naujas skirtukas „<ph name="GROUP_NAME" />“</translation>
 <translation id="1217483152325416304">Jūsų vietiniai duomenys netrukus bus ištrinti</translation>
 <translation id="1217668622537098248">Grąžinti kairįjį paspaudimą po veiksmo</translation>
 <translation id="1218015446623563536">„Linux“ ištrynimas</translation>
@@ -3030,6 +3031,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3038612606416062604">Pridėti spausdintuvą neautomatiškai</translation>
 <translation id="3038628620670416486">Pelės klavišai</translation>
 <translation id="3039491566278747710">Nepavyko įrenginyje įdiegti neprisijungus pasiekiamos politikos.</translation>
+<translation id="3040435070100611531">„Google Wallet“ kortelės</translation>
 <translation id="3040982432432547149">Padėkite tobulinti „Steam“, skirtą „Chromebook“</translation>
 <translation id="304169924727249890">Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Pakeiskite optimizuoto įkrovimo strategiją.</translation>
@@ -3238,6 +3240,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
         <ph name="BREAK" />
         <ph name="BREAK" />
         Galite bet kada tvarkyti šios kortelės nustatymus arba peržiūrėti daugiau parinkčių skiltyje „Chrome“ tinkinimas“.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Naujas skirtukas viename skirtuke}one{Naujas skirtukas # skirtuke}few{Naujas skirtukas # skirtukuose}many{Naujas skirtukas # skirtuko}other{Naujas skirtukas # skirtukų}}</translation>
 <translation id="3207960819495026254">Pažymėta</translation>
 <translation id="3208584281581115441">Tikrinti dabar</translation>
 <translation id="3208703785962634733">Nepatvirtinta</translation>
@@ -3413,6 +3416,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3334632933872291866">„<ph name="WINDOW_TITLE" />“ – vaizdo įrašas leidžiamas vaizdo vaizde režimu</translation>
 <translation id="3335380372402547327">Peržiūrėti mirksėjimo pranešimus</translation>
 <translation id="3335947283844343239">Iš naujo atidarykite uždarytą skirtuką</translation>
+<translation id="3336661809256024098">Naujas skirtukas „<ph name="GROUP_NAME" />“</translation>
 <translation id="3336855445806447827">Nežinau</translation>
 <translation id="3337568642696914359">Neleisti svetainėms apdoroti protokolų</translation>
 <translation id="333863344734218290">Įspėja apie nesaugias viešas ir privačias svetaines</translation>
@@ -6995,6 +6999,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5830205393314753525">Nepavyko atidaryti „<ph name="APP_NAME" />“</translation>
 <translation id="5830512293931520102">Slaptažodis šifruotas ir niekam nematomas</translation>
 <translation id="5830720307094128296">Išsaugoti puslapį &amp;kaip...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Prisijungėte kaip <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Ištrinti svetainės <ph name="SITE_NAME" />, visų jos antrinių svetainių ir įdiegtos programos duomenis bei leidimus?</translation>
 <translation id="5832813618714645810">Profiliai</translation>
@@ -8963,6 +8968,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7211783048245131419">Dar nepriskirtas joks jungiklis</translation>
 <translation id="7212097698621322584">Įveskite dabartinį PIN kodą, jei norite jį pakeisti. Jei dabartinio PIN kodo nežinote, turėsite nustatyti saugos raktą iš naujo ir sukurti naują PIN kodą.</translation>
 <translation id="7214047272988222011">Leidžiama – <ph name="PERMISSION_DETAILS" />. Įjunkite <ph name="LINK_BEGIN" />sistemos prieigą prie vaizdo kameros<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Naujas skirtukas viename skirtuke}one{Naujas skirtukas # skirtuke}few{Naujas skirtukas # skirtukuose}many{Naujas skirtukas # skirtuko}other{Naujas skirtukas # skirtukų}}</translation>
 <translation id="721490496276866468">Slaptažodžių importavimas</translation>
 <translation id="7217208603285112910">Pasirinkto teksto kalba nėra <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Ištrinti svetainės duomenis?</translation>
@@ -9250,6 +9256,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7410344089573941623">Klausti, jei <ph name="HOST" /> nori pasiekti fotoaparatą ir mikrofoną</translation>
 <translation id="7410421966064092098">Svetainės negali padėti patvirtinti, kad nesate robotas</translation>
 <translation id="7410852728357935715">Perduoti į įrenginį</translation>
+<translation id="741148343080227980">Galite redaguoti vardą <ph name="BEGIN_LINK" />„Google“ paskyroje <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Taip, sutinku</translation>
 <translation id="7412226954991670867">GPU atmintis</translation>
 <translation id="741370456693729525">Naudokite kasdienę kalbą, kad ieškotumėte naršymo istorijoje ir rastumėte svetaines, kuriose lankėtės</translation>

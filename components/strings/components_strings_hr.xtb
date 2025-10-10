@@ -3311,6 +3311,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6433501201775827830">Odaberite tražilicu</translation>
 <translation id="6433595998831338502">Host <ph name="HOST_NAME" /> odbio je povezivanje.</translation>
 <translation id="6433797564277305076">Odsad koristite otključavanje uređaja kako biste brže potvrdili kartice</translation>
+<translation id="6436994298828707228">Povezivanje je blokirano jer ga je pokrenula javna stranica radi povezivanja s uređajima ili poslužiteljima na vašoj lokalnoj mreži.</translation>
 <translation id="6437647869369934905">Google crteži</translation>
 <translation id="643917412048333145">Haljine</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
@@ -3382,6 +3383,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6547208576736763147">Dvostruko bušenje s lijeve strane</translation>
 <translation id="6549443526281184652">Kostimi</translation>
 <translation id="6550245281449521513">Zaključavanje miša nije dopušteno</translation>
+<translation id="6552566579578780089">Plaćanja</translation>
 <translation id="6554732001434021288">Posljednji posjet bio je prije <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6556866813142980365">Ponovi</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -3530,6 +3532,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serijski priključci</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Platite u više obroka</translation>
 <translation id="6825578344716086703">Pokušali ste doseći domenu <ph name="DOMAIN" />, ali poslužitelj je predstavio certifikat potpisan slabim algoritmom potpisa (kao što je SHA-1). Znači da su sigurnosne vjerodajnice koje je poslužitelj predstavio možda krivotvorene, a poslužitelj možda nije poslužitelj koji očekujete (možda ste u komunikaciji s napadačem).</translation>
 <translation id="6826993739343257035">Dopustiti virtualnu stvarnost?</translation>
 <translation id="6828150717884939426">Poziv</translation>
@@ -3978,6 +3981,7 @@ Dodatne pojedinosti:
 <translation id="753556296624075801">Omogućuje Google</translation>
 <translation id="753713322968419914">Želite li ukloniti kućnu adresu iz automatskog popunjavanja u Chromeu?</translation>
 <translation id="7537536606612762813">Obavezno</translation>
+<translation id="7541043894191476250">Kontekstualni zadaci</translation>
 <translation id="7543525346216957623">Zamoli roditelja</translation>
 <translation id="7546409722674205727">Pokretanje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ispravljanje pogrešaka veze</translation>
@@ -4503,6 +4507,7 @@ Dodatne pojedinosti:
 <translation id="8406071103346257942">prestane upotrebljavati zaključavanje zaslona za unos zaporki</translation>
 <translation id="8407031780528483338">Kuhinjski pribor</translation>
 <translation id="8409413588194360210">rukovatelji plaćanjem</translation>
+<translation id="8410956920192583322">Mjesečno ili u četiri obroka</translation>
 <translation id="8412145213513410671">Padovi (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Morate dvaput unijeti istu zaporku.</translation>
 <translation id="8414322570408428950">Došlo je do dodavanja proširenja</translation>
@@ -4794,6 +4799,7 @@ Dodatne pojedinosti:
 <translation id="8922734931659847428">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
+<translation id="8926400492587758246">Platite u malim mjesečnim obrocima</translation>
 <translation id="8932102934695377596">Sat kasni</translation>
 <translation id="893332455753468063">Dodajte ime</translation>
 <translation id="8938242527120341116">Filtri sadržaja vašeg uređaja blokirali su URL <ph name="BLOCKED_URL" /></translation>

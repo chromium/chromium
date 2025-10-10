@@ -1645,6 +1645,7 @@
 <translation id="2102495993840063010">Android အက်ပ်များ</translation>
 <translation id="2104166991923847969">ဟော့စပေါ့ကို အလိုအလျောက် ပိတ်ခြင်း</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ကို ဖျောက်လိုက်ပါပြီ</translation>
+<translation id="2106439768713835453">အပလီကေးရှင်းအသံကိုလည်း မျှဝေရန်</translation>
 <translation id="2108204112555497972">ပြီးခဲ့သော <ph name="NUM_DAYS_HOURS_MINUTES" /> က အမှတ်ခြစ်ထားသည်</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ဖုန်းနံပါတ်}other{ဖုန်းနံပါတ် # ခု}}</translation>
 <translation id="2109384632594340939">ပရိုဖိုင်ပုံ</translation>
@@ -3025,6 +3026,7 @@
 <translation id="3038612606416062604">ပရင်တာကို မိမိကိုယ်တိုင် ထည့်ရန်</translation>
 <translation id="3038628620670416486">သင့်မောက်စ်တွင် ခလုတ်များကို ရှာပါ</translation>
 <translation id="3039491566278747710">စက်ပစ္စည်းပေါ်တွင် အော့ဖ်လိုင်းမူဝါဒကို ထည့်သွင်း၍မရပါ။</translation>
+<translation id="3040435070100611531">သင်၏ Google Wallet ပါ့စ်များ</translation>
 <translation id="3040982432432547149">Chromebook အတွက် Steam ကို ပိုကောင်းအောင် ကူညီပါ</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ ‘တဘ်အုပ်စု’ တွင် ပါဝင်ခြင်း</translation>
 <translation id="3042097545107738107">အကောင်းဆုံးချိန်၍ အားသွင်းသည့်နည်းဗျူဟာကို ပြောင်းပါ။</translation>
@@ -3885,6 +3887,7 @@
 <translation id="3656328935986149999">ကာဆာ မြန်နှုန်း</translation>
 <translation id="3656701180077048004">ကီးတစ်ခုကို နှိပ်ချိန်နှင့် ၎င်းကီးအလုပ်လုပ်ချိန်တို့၏ ကြားတွင် စောင့်ဆိုင်းမှုထည့်သည်</translation>
 <translation id="3658871634334445293">TrackPoint အရှိန်မြှင့်တင်မှု</translation>
+<translation id="3659483399659250379">တဘ်စသည်တို့ ထည့်ပါ</translation>
 <translation id="3659929705630080526">သင်သည် မမှန်ကန်သော ဝင်ခွင့်ကုဒ်ကို ကြိမ်ဖန်များစွာ ရိုက်ထည့်ထားပါသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="3661106764436337772">ပိုမိုယုံကြည်မှုရှိစွာ မြန်မြန်ရေးလိုက်ပါ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{လက်ရှိစကားဝှက် ၁ ခု တွေ့သည်}other{လက်ရှိစကားဝှက် {NUM_PASSWORDS} ခု တွေ့သည်}}</translation>
@@ -5416,6 +5419,7 @@
 <translation id="4707337002099455863">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
 <translation id="4708892882822652439">တဘ်အသံကိုလည်း ခွင့်ပြုရန်</translation>
+<translation id="4710347732286177840">နောက်ဆက်တွဲအတွက် စခရင်အပိုင်းကို ရွေးရန်</translation>
 <translation id="4711638718396952945">ဆက်တင်များအား ပြန်လည်သိုလှောင်ရန်</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">ဝင်းဒိုးအားလုံးပိတ်သောအခါ ဖျက်ရန်</translation>
@@ -6987,6 +6991,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ကို ဖွင့်၍မရပါ</translation>
 <translation id="5830512293931520102">သင့်စကားဝှက်ကို အသွင်ဝှက်ထားပြီး မည်သူကမျှ ဘယ်တော့မှ မမြင်နိုင်ပါ</translation>
 <translation id="5830720307094128296">စာမျက်နှာကို...အဖြစ် သိမ်းရန်</translation>
+<translation id="5831217499016131155">Google ပိုက်ဆံအိတ်</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />၊ ၎င်းအောက်ရှိ ဝဘ်ဆိုက်အားလုံးနှင့် ၎င်းထည့်သွင်းထားသော အက်ပ်အတွက် ဝဘ်ဆိုက်ဒေတာနှင့် ခွင့်ပြုချက်များ ဖျက်မလား။</translation>
 <translation id="5832813618714645810">ပရိုဖိုင်များ</translation>

@@ -10553,6 +10553,15 @@ Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc
       Si cette règle est désactivée, les appareils enregistrés ne reçoivent pas de contrôles de rapports précis.</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
 <translation id="8254749125469750814">Ne pas valider si une extension peut être installée ou non avec un service cloud.</translation>
+<translation id="825509998103089977">Détermine si l'appli Gemini est autorisée à effectuer des actions sur les pages Web au nom de l'utilisateur.
+
+0/Non définie = L'appli Gemini est autorisée à effectuer des actions sur les pages Web.
+
+1 = L'appli Gemini n'est pas autorisée à effectuer des actions sur les pages Web.
+
+Cette règle n'a aucun effet lorsque l'appli Gemini est désactivée. Par exemple, l'appli Gemini peut être désactivée par la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Cette règle est obsolète et incompatible, veuillez utiliser la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> à la place.</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 

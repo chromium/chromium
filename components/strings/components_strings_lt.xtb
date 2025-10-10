@@ -3313,6 +3313,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6433501201775827830">Paieškos variklio pasirinkimas</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> atsisakė prisijungti.</translation>
 <translation id="6433797564277305076">Nuo šiol patvirtinkite korteles sparčiau naudodami įrenginio atrakinimo funkciją</translation>
+<translation id="6436994298828707228">Ryšys užblokuotas, nes jį inicijavo viešas puslapis, skirtas prisijungti prie vietinio tinklo įrenginių ar serverių.</translation>
 <translation id="6437647869369934905">„Google“ piešiniai</translation>
 <translation id="643917412048333145">Suknelės</translation>
 <translation id="6440503408713884761">Nepaisoma</translation>
@@ -3384,6 +3385,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6547208576736763147">Dvi skylės kairėje</translation>
 <translation id="6549443526281184652">Kostiumai</translation>
 <translation id="6550245281449521513">Pelės užraktas neleidžiamas</translation>
+<translation id="6552566579578780089">Mokėjimai</translation>
 <translation id="6554732001434021288">Paskutinį kartą lankytasi prieš <ph name="NUM_DAYS" /> d.</translation>
 <translation id="6556866813142980365">Grąžinti</translation>
 <translation id="6557715786897013164">14 x 17 col.</translation>
@@ -3532,6 +3534,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6817217109584391709">„JavaScript“</translation>
 <translation id="6820143000046097424">nuoseklieji prievadai</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Mokėkite nedidelėmis dalimis</translation>
 <translation id="6825578344716086703">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė sertifikatą, kuris pasirašytas naudojant nesudėtingą parašo algoritmą (pvz., SHA-1). Tai reiškia, kad serverio pateikti saugos prisijungimo duomenys galėjo būti suklastoti ir serveris gali būti ne tas, kurio tikėjotės (gali būti, kad bendraujate su užpuoliku).</translation>
 <translation id="6826993739343257035">Leisti AR?</translation>
 <translation id="6828150717884939426">Skambinti</translation>
@@ -3980,6 +3983,7 @@ Papildoma išsami informacija:
 <translation id="753556296624075801">Teikia „Google“</translation>
 <translation id="753713322968419914">Pašalinti namų adresą iš „Chrome“ automatinio pildymo?</translation>
 <translation id="7537536606612762813">Privaloma</translation>
+<translation id="7541043894191476250">Kontekstinės užduotys</translation>
 <translation id="7543525346216957623">Paprašykite vieno iš tėvų</translation>
 <translation id="7546409722674205727">Paleidžiama „<ph name="APP_NAME" />“</translation>
 <translation id="7548892272833184391">Ryšio klaidų taisymas</translation>
@@ -4505,6 +4509,7 @@ Papildoma išsami informacija:
 <translation id="8406071103346257942">nebenaudoti ekrano užrakto slaptažodžiams užpildyti</translation>
 <translation id="8407031780528483338">Virtuvės reikmenys</translation>
 <translation id="8409413588194360210">mokėjimų doroklės</translation>
+<translation id="8410956920192583322">Kas mėnesį arba keturiomis dalimis</translation>
 <translation id="8412145213513410671">Strigtys (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Reikia du kartus įvesti tą pačią slaptafrazę.</translation>
 <translation id="8414322570408428950">Įvyksta su plėtiniu susijęs įvykis</translation>
@@ -4796,6 +4801,7 @@ Papildoma išsami informacija:
 <translation id="8922734931659847428">Ribotas puslapių, kuriuose lankotės ir kuriuose vyksta <ph name="BEGIN_LINK" />įvykiai, susiję su pasenusiomis technologijomis<ph name="END_LINK" />, URL sąrašas</translation>
 <translation id="892588693504540538">Skylė viršuje dešinėje</translation>
 <translation id="8926389886865778422">Neklauskite dar kartą</translation>
+<translation id="8926400492587758246">Mokėkite nedidelėmis mėnesio dalimis</translation>
 <translation id="8932102934695377596">Jūsų laikrodis atsilieka</translation>
 <translation id="893332455753468063">Vardo ir pavardės pridėjimas</translation>
 <translation id="8938242527120341116">Įrenginio turinio filtrai užblokavo <ph name="BLOCKED_URL" /></translation>

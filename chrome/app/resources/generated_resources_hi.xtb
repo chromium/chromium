@@ -1648,6 +1648,7 @@
 <translation id="2102495993840063010">Android ऐप्लिकेशन</translation>
 <translation id="2104166991923847969">हॉटस्पॉट को अपने-आप बंद करें</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> छिपा दिया गया है</translation>
+<translation id="2106439768713835453">ऐप्लिकेशन का ऑडियो भी शेयर करें</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> पहले जांच की गई</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फ़ोन नंबर}one{# फ़ोन नंबर}other{# फ़ोन नंबर}}</translation>
 <translation id="2109384632594340939">प्रोफ़ाइल फ़ोटो</translation>
@@ -3027,6 +3028,7 @@
 <translation id="3038612606416062604">कोई प्रिंटर मैन्युअल रूप से जोड़ें</translation>
 <translation id="3038628620670416486">अपने माउस पर मौजूद बटन पर क्लिक करें</translation>
 <translation id="3039491566278747710">डिवाइस पर ऑफ़लाइन नीति इंस्टॉल नहीं की जा सकी.</translation>
+<translation id="3040435070100611531">आपके Google Wallet में मौजूद पास</translation>
 <translation id="3040982432432547149">Chromebook के लिए Steam को बेहतर बनाने में हमारी मदद करें</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> के साथ टैब ग्रुप में शामिल हों</translation>
 <translation id="3042097545107738107">चार्जिंग को ऑप्टिमाइज़ करने वाली सेटिंग में बदलाव करें.</translation>
@@ -3887,6 +3889,7 @@
 <translation id="3656328935986149999">कर्सर की स्पीड</translation>
 <translation id="3656701180077048004">स्लो बटन से, किसी बटन को दबाने और उसके ऐक्टिवेट होने के बीच का समय सेट किया जाता है</translation>
 <translation id="3658871634334445293">TrackPoint ऐक्सेलरेशन</translation>
+<translation id="3659483399659250379">टैब वगैरह जोड़ें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
 <translation id="3661106764436337772">तेज़ी और आत्मविश्वास के साथ लिखें</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
@@ -5418,6 +5421,7 @@
 <translation id="4707337002099455863">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
 <translation id="4708892882822652439">टैब ऑडियो की भी अनुमति दें</translation>
+<translation id="4710347732286177840">फ़ॉलो अप के लिए, स्क्रीन का कोई हिस्सा चुनें</translation>
 <translation id="4711638718396952945">सेटिंग फिर से स्थापित करें</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">सभी विंडो बंद करने पर डेटा मिटाएं</translation>
@@ -6986,6 +6990,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> को खोला नहीं जा सकता</translation>
 <translation id="5830512293931520102">आपका पासवर्ड एन्क्रिप्ट (सुरक्षित) किया जाता है और किसी को भी नहीं दिखता है</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
+<translation id="5831217499016131155">Google वॉलेट</translation>
 <translation id="583179300286794292">आपने <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> के तौर पर साइन इन किया है</translation>
 <translation id="5831950941058843834">क्या आपको <ph name="SITE_NAME" /> के तहत आने वाली सभी साइटों और इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटानी हैं?</translation>
 <translation id="5832813618714645810">प्रोफ़ाइलें</translation>

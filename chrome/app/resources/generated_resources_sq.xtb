@@ -1634,6 +1634,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2104166991923847969">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> është e fshehur</translation>
+<translation id="2106439768713835453">Ndaj po ashtu audion e aplikacionit</translation>
 <translation id="2108204112555497972">Kontrolluar <ph name="NUM_DAYS_HOURS_MINUTES" /> më parë</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numër telefoni}other{# numra telefoni}}</translation>
 <translation id="2109384632594340939">fotografinë tënde të profilit</translation>
@@ -3011,6 +3012,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3038612606416062604">Shtoje një printer manualisht</translation>
 <translation id="3038628620670416486">Lokalizo butonat në miun tënd</translation>
 <translation id="3039491566278747710">Instalimi i politikës offline në pajisje dështoi.</translation>
+<translation id="3040435070100611531">Dokumentet dixhitale të "Portofolit të Google"</translation>
 <translation id="3040982432432547149">Na ndihmo të përmirësojmë Steam për Chromebook</translation>
 <translation id="304169924727249890">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Ndrysho strategjinë e karikimit të optimizuar.</translation>
@@ -3869,6 +3871,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3656328935986149999">Shpejtësia e kursorit</translation>
 <translation id="3656701180077048004">Shton një vonesë mes kohës kur ti shtyp një tast dhe kur ai aktivizohet</translation>
 <translation id="3658871634334445293">Përshpejtimi i TrackPoint</translation>
+<translation id="3659483399659250379">Shto një skedë dhe më shumë</translation>
 <translation id="3659929705630080526">Ke futur një kod qasjeje të pasaktë shumë herë. Provo përsëri më vonë</translation>
 <translation id="3661106764436337772">Shkruaj më shpejt dhe me më shumë vetëbesim</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{U gjet 1 fjalëkalim ekzistues}other{U gjetën {NUM_PASSWORDS} fjalëkalime ekzistuese}}</translation>
@@ -5401,6 +5404,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4707337002099455863">Gjithmonë në të gjitha sajtet</translation>
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Lejo po ashtu audion e skedës</translation>
+<translation id="4710347732286177840">Zgjidh zonën e ekranit për pyetjen vijuese</translation>
 <translation id="4711638718396952945">Restauro cilësimet</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Fshiji kur mbyll të gjitha dritaret</translation>
@@ -6969,6 +6973,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> nuk mund të hapet</translation>
 <translation id="5830512293931520102">Fjalëkalimi yt është i enkriptuar dhe nuk është parë asnjëherë nga askush</translation>
 <translation id="5830720307094128296">Ruaje faqen &amp;si...</translation>
+<translation id="5831217499016131155">Portofoli i Google</translation>
 <translation id="583179300286794292">Identifikuar si <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Të fshihen të gjitha të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" />, çdo sajt në të dhe aplikacionin e tij të instaluar?</translation>
 <translation id="5832813618714645810">Profilet</translation>

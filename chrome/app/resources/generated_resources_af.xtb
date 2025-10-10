@@ -1647,6 +1647,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2102495993840063010">Android-programme</translation>
 <translation id="2104166991923847969">Skakel warmkol outomaties af</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> is versteek</translation>
+<translation id="2106439768713835453">Deel ook appoudio</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> terug nagegaan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Foonnommer}other{# foonnommers}}</translation>
 <translation id="2109384632594340939">profielfoto</translation>
@@ -3026,6 +3027,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3038612606416062604">Voeg self 'n drukker by</translation>
 <translation id="3038628620670416486">Vind knoppies op jou muis</translation>
 <translation id="3039491566278747710">Kon nie vanlyn beleid op die toestel installeer nie.</translation>
+<translation id="3040435070100611531">Jou Google Wallet-passe</translation>
 <translation id="3040982432432547149">Help ons om Steam vir Chromebook te verbeter</translation>
 <translation id="304169924727249890">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Verander die strategie vir geoptimeerde laai.</translation>
@@ -3886,6 +3888,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3656328935986149999">Skermpyltjiespoed</translation>
 <translation id="3656701180077048004">Voeg ’n vertraging by tussen wanneer jy ’n sleutel druk en wanneer dit aktiveer</translation>
 <translation id="3658871634334445293">TrackPoint-versnelling</translation>
+<translation id="3659483399659250379">Voeg ’n oortjie by en meer</translation>
 <translation id="3659929705630080526">Jy het te veel kere 'n verkeerde toegangskode ingevoer. Probeer later weer</translation>
 <translation id="3661106764436337772">Skryf vinniger en met meer selfvertroue</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 bestaande wagwoord gekry}other{{NUM_PASSWORDS} bestaande wagwoorde gekry}}</translation>
@@ -5418,6 +5421,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4707337002099455863">Altyd op alle werwe</translation>
 <translation id="4708849949179781599">Maak <ph name="PRODUCT_NAME" /> toe</translation>
 <translation id="4708892882822652439">Laat oortjieoudio ook toe</translation>
+<translation id="4710347732286177840">Kies deel van die skerm vir opvolg</translation>
 <translation id="4711638718396952945">Stel instellings terug</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Vee uit wanneer jy alle vensters toemaak</translation>
@@ -6989,6 +6993,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5830205393314753525">Kan nie <ph name="APP_NAME" /> oopmaak nie</translation>
 <translation id="5830512293931520102">Jou wagwoord word geënkripteer en niemand sal dit ooit sien nie</translation>
 <translation id="5830720307094128296">Stoor bladsy as …</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Aangemeld as <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vee werfdata en toestemmings vir <ph name="SITE_NAME" />, alle werwe onder dit, en sy geïnstalleerde app uit?</translation>
 <translation id="5832813618714645810">Profiele</translation>

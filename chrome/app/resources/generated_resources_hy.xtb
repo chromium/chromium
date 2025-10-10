@@ -1639,6 +1639,7 @@
 <translation id="2102495993840063010">Android հավելվածներ</translation>
 <translation id="2104166991923847969">Ավտոմատ անջատել թեժ կետը</translation>
 <translation id="2105809836724866556">Թաքցված է՝ <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Նաև փոխանցել աուդիոն հավելվածից</translation>
 <translation id="2108204112555497972">Ստուգվել է <ph name="NUM_DAYS_HOURS_MINUTES" /> առաջ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Հեռախոսահամար}one{# հեռախոսահամար}other{# հեռախոսահամար}}</translation>
 <translation id="2109384632594340939">պրոֆիլի նկար</translation>
@@ -3013,6 +3014,7 @@
 <translation id="3038612606416062604">Ավելացնել տպիչ ձեռքով</translation>
 <translation id="3038628620670416486">Գտեք մկնիկի կոճակները</translation>
 <translation id="3039491566278747710">Չհաջողվեց սարքում կիրառել անցանց ռեժիմում աշխատանքի քաղաքականությունը:</translation>
+<translation id="3040435070100611531">Google Wallet-ի ձեր քարտերը</translation>
 <translation id="3040982432432547149">Օգնեք մեզ բարելավել Steam-ը Chromebook-ի համար</translation>
 <translation id="304169924727249890">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է</translation>
 <translation id="3042097545107738107">Փոխել օպտիմալացված լիցքավորման ռազմավարությունը։</translation>
@@ -3871,6 +3873,7 @@
 <translation id="3656328935986149999">Նշորդի արագությունը</translation>
 <translation id="3656701180077048004">Ավելացնում է հապաղում ստեղնը սեղմելու և դրա ակտիվացման միջև</translation>
 <translation id="3658871634334445293">TrackPoint-ի արագացում</translation>
+<translation id="3659483399659250379">Ավելացրեք ներդիր կամ մեկ այլ բան</translation>
 <translation id="3659929705630080526">Դուք չափից շատ անգամ մուտքի սխալ կոդ եք մուտքագրել։ Փորձեք ավելի ուշ։</translation>
 <translation id="3661106764436337772">Գրեք ավելի արագ և ավելի վստահ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Գտնվել է գոյություն ունեցող 1 գաղտնաբառ}one{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}other{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}}</translation>
@@ -5403,6 +5406,7 @@
 <translation id="4707337002099455863">Միշտ բոլոր կայքերում</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Հասանելի դարձնել ներդիրի աուդիո բովանդակությունը</translation>
+<translation id="4710347732286177840">Ընտրեք էկրանի այն հատվածը, որի մասին ուզում եք լրացուցիչ հարց տալ</translation>
 <translation id="4711638718396952945">Վերականգնել կարգավորումները</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Ջնջել, երբ փակում եք բոլոր պատուհանները</translation>
@@ -6970,6 +6974,7 @@
 <translation id="5830205393314753525">Չհաջողվեց բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="5830512293931520102">Գաղտնաբառերը գաղտնագրված են և տեսանելի են միայն ձեզ</translation>
 <translation id="5830720307094128296">Պահել էջը &amp;որպես…</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Դուք մուտք եք գործել որպես <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Հեռացնե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև դրա համար տեղադրված հավելվածի կայքի տվյալներն ու թույլտվությունները</translation>
 <translation id="5832813618714645810">Պրոֆիլներ</translation>

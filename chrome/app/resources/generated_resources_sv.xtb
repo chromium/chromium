@@ -1647,6 +1647,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2102495993840063010">Android-appar</translation>
 <translation id="2104166991923847969">Inaktivera surfzon automatiskt</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> har dolts</translation>
+<translation id="2106439768713835453">Dela även ljud från appen</translation>
 <translation id="2108204112555497972">Genomsöktes för <ph name="NUM_DAYS_HOURS_MINUTES" /> sedan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnummer}}</translation>
 <translation id="2109384632594340939">din profilbild</translation>
@@ -3026,6 +3027,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3038612606416062604">Lägg till en skrivare manuellt</translation>
 <translation id="3038628620670416486">Hitta knappar på musen</translation>
 <translation id="3039491566278747710">Det gick inte att installera offlinepolicyn på enheten.</translation>
+<translation id="3040435070100611531">Dina värdekort i Google Wallet</translation>
 <translation id="3040982432432547149">Hjälp oss att förbättra Steam för Chromebook</translation>
 <translation id="304169924727249890">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Ändra strategin för optimerad laddning.</translation>
@@ -3886,6 +3888,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3656328935986149999">Markörhastighet</translation>
 <translation id="3656701180077048004">Lägger till en fördröjning mellan när du trycker på en tangent och när den aktiveras</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
+<translation id="3659483399659250379">Lägg till en flik med mera</translation>
 <translation id="3659929705630080526">Du har angett fel åtkomstkod för många gånger. Försök igen senare</translation>
 <translation id="3661106764436337772">Skriv snabbare och med mer självsäkerhet</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 befintligt lösenord hittades}other{{NUM_PASSWORDS} befintliga lösenord hittades}}</translation>
@@ -5418,6 +5421,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4707337002099455863">Alltid på alla webbplatser</translation>
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Tillåt även flikljud</translation>
+<translation id="4710347732286177840">Välj ett område på skärmen för följdfrågan</translation>
 <translation id="4711638718396952945">Återställ inställningarna</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Radera när du stänger alla fönster</translation>
@@ -6988,6 +6992,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5830205393314753525">Det går inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Lösenordet krypteras och visas aldrig för någon</translation>
 <translation id="5830720307094128296">Spara &amp;sida som...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Inloggad som <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vill du radera webbplatsdata och behörigheter för <ph name="SITE_NAME" />, alla underordnade webbplatser och den tillhörande installerade appen?</translation>
 <translation id="5832813618714645810">Profiler</translation>

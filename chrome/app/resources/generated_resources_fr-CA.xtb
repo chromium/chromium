@@ -337,6 +337,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1216891999012841486">En savoir plus sur la résolution des erreurs de mise à jour</translation>
 <translation id="1217114730239853757">Voulez-vous activer ChromeVox, le lecteur d'écran intégré de Chrome OS Flex? Le cas échéant, appuyez sur la barre d'espacement.</translation>
 <translation id="1217117837721346030">Télécharger le fichier suspect</translation>
+<translation id="1217437913373100941">Nouvel onglet dans <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Vos données locales seront bientôt supprimées</translation>
 <translation id="1217668622537098248">Rétablir le clic gauche après l'action</translation>
 <translation id="1218015446623563536">Supprimer Linux</translation>
@@ -1638,6 +1639,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2104166991923847969">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="2105809836724866556">Module <ph name="MODULE_TITLE" /> masqué</translation>
+<translation id="2106439768713835453">Partager également l'audio de l'application</translation>
 <translation id="2108204112555497972">Vérifié il y a <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="2109384632594340939">photo de profil</translation>
@@ -3016,6 +3018,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
 <translation id="3038628620670416486">Localiser les boutons de votre souris</translation>
 <translation id="3039491566278747710">Échec de l'installation de la politique hors ligne sur l'appareil.</translation>
+<translation id="3040435070100611531">Vos cartes Google Portefeuille</translation>
 <translation id="3040982432432547149">Aidez-nous à améliorer Steam sur Chromebook</translation>
 <translation id="304169924727249890">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Modifier la stratégie de recharge optimisée.</translation>
@@ -3224,6 +3227,7 @@ l'<ph name="BEGIN_LINK" />
         <ph name="BREAK" />
         <ph name="BREAK" />
         Vous pouvez gérer les paramètres de cette carte à tout moment ou voir plus d'options dans Personnaliser Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3208703785962634733">Non confirmé</translation>
@@ -3399,6 +3403,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Lecture de la vidéo en mode d'incrustation d'image en cours…</translation>
 <translation id="3335380372402547327">Aperçu des Notifications lumineuses</translation>
 <translation id="3335947283844343239">Rouvrir l'onglet fermé</translation>
+<translation id="3336661809256024098">Nouvel onglet dans <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Incertain</translation>
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>
 <translation id="333863344734218290">Vous avertit des sites publics et privés non sécurisés</translation>
@@ -3876,6 +3881,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3656328935986149999">Vitesse du curseur</translation>
 <translation id="3656701180077048004">Ajoute un délai entre le moment où vous appuyez sur une touche et celui où elle s'active</translation>
 <translation id="3658871634334445293">Accélération TrackPoint</translation>
+<translation id="3659483399659250379">Ajouter un onglet et plus</translation>
 <translation id="3659929705630080526">Vous avez entré un trop grand nombre de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
@@ -5408,6 +5414,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4707337002099455863">Toujours activée sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Autoriser également l'audio des onglets</translation>
+<translation id="4710347732286177840">Sélectionner une zone de l'écran pour le suivi</translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
@@ -6976,6 +6983,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5830205393314753525">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Votre mot de passe est chiffré et n'est jamais vu par personne</translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous…</translation>
+<translation id="5831217499016131155">Google Portefeuille</translation>
 <translation id="583179300286794292">Connecté en tant que <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Supprimer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" />, tous les sites qui y sont subordonnés ainsi que l'application qui y est installée?</translation>
 <translation id="5832813618714645810">Profils</translation>
@@ -8939,6 +8947,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7211783048245131419">Aucun commutateur n'a été attribué</translation>
 <translation id="7212097698621322584">Entrez votre NIP actuel pour le modifier. Si vous ne connaissez pas votre NIP, vous devrez réinitialiser la clé de sécurité, puis créer un nouveau NIP.</translation>
 <translation id="7214047272988222011">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès à l'appareil photo système<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
 <translation id="7217208603285112910">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Supprimer les données relatives aux sites?</translation>
@@ -9226,6 +9235,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7410344089573941623">Demander mon autorisation si <ph name="HOST" /> veut accéder à la caméra et au microphone</translation>
 <translation id="7410421966064092098">Les sites ne peuvent pas aider à vérifier que vous n'êtes pas un robot</translation>
 <translation id="7410852728357935715">Diffuser vers un appareil</translation>
+<translation id="741148343080227980">Vous pouvez modifier votre nom <ph name="BEGIN_LINK" />dans votre compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
 <translation id="7412226954991670867">Mémoire du processeur graphique</translation>
 <translation id="741370456693729525">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités</translation>

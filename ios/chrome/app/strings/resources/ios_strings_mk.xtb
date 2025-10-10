@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="154312949627292154">Отворајте ги картичките што сте ги примиле од вашите други уреди од заклучениот екран.</translation>
 <translation id="1545749641540134597">Скенирајте QR код</translation>
+<translation id="1545757265410828525">Историја на цените</translation>
 <translation id="1547610699249301703">Споделувајте лозинки</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Може да лизгате налево за да прелистувате во „Инкогнито“.</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
+<translation id="2451607499823206582">Се следи</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} ставка од историјата}one{{count} ставка од историјата}other{{count} ставки од историјата}}</translation>
 <translation id="2461070143328828326">Поставки за лозинка</translation>
 <translation id="2462736546165239215">Тука може да ја најдете целата ваша историја на прелистувањето.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}other{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
 <translation id="334690320928261823">Неодамнешни картички</translation>
 <translation id="3349031117032695619">Блокирање скокачки прозорци</translation>
-<translation id="3349676726073650389">Сајтовите и пребарувањата што ги следите се зачувани во вашата сметка на Google. Со работите што ги следите може да управувате во „Поставки“ во секое време.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Сметкава е управувана.</translation>
 <translation id="3365529507898144230">Зачувај во „Фотографии“</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Положба на лентата за адреси</translation>
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>
 <translation id="4872664437015695612">Отвори во „Преземања“</translation>
-<translation id="4875260838563541343">Копче за дејство</translation>
 <translation id="4876237378696925987">Започнете</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
 <translation id="4876665338492917862">Последно отворено: <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6045460247888249350">Додајте наслов</translation>
 <translation id="6052269326659653305">Сменете го профилот</translation>
 <translation id="605721222689873409">ГГ</translation>
-<translation id="6059103953801602038">Сајтовите што ги следите се зачувуваат во сметката на Google. Може да управувате со нив во поставките за Discover.</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
 <translation id="6066301408025741299">Допри за откажување.</translation>
 <translation id="6074656473835429958">Добивајте известувања</translation>
@@ -1510,7 +1509,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИРАНО]</translation>
 <translation id="6779455296366983087">Податоци од прелистување ќе се избришат</translation>
-<translation id="6790502149545262384">Наскоро ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="6791425686608802741">Допрете „Додајте картичка во нова група“</translation>
 <translation id="6794476726485507147">Изберете датум и време за да добиете известување со потсетник да ја отворите страницава повторно</translation>
 <translation id="6795481620482106033">Неважечки податоци</translation>
@@ -1589,7 +1587,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7091023926159231962">{count,plural, =1{Не можеше да се увезе {count} лозинка}one{Не можеше да се увезат {count} лозинка}other{Не можеше да се увезат {count} лозинки}}</translation>
 <translation id="7095110968493193530">До Google Password Manager за <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Во лентата за адреса, допрете ја историјата на цени за да ги видите промените на цените со текот на времето</translation>
-<translation id="7101580180124131336">Сега ќе гледате содржини од и за <ph name="CHANNEL_NAME" /> во „Се следи“.</translation>
 <translation id="7102005569666697658">Се презема… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7108338896283013870">Скриј</translation>
@@ -1666,7 +1663,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
 <translation id="7437712592381799950">Може да повлечете нагоре за да видите повеќе содржини приспособени за вас.</translation>
 <translation id="7438473148803748807">Сите веднаш ќе го изгубат пристапот до групата картички „<ph name="GROUP_NAME" />“ и сите линкови за покана ќе се исклучат</translation>
-<translation id="7438481509621345350">Сега ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="7445682342344043969">Скокачките прозорци се блокирани</translation>
 <translation id="7451023311965289370">{count,plural, =1{Обележувачот е зачуван во „{title}“}one{Обележувачите се зачувани во „{title}“}other{Обележувачите се зачувани во „{title}“}}</translation>
 <translation id="7451404862887877229">Допрете „Приватност и безбедност“, па „Безбедно прелистување“</translation>
@@ -1933,8 +1929,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8393700583063109961">Испрати порака</translation>
 <translation id="8393889347136007944">Картички што не се користат <ph name="THRESHOLD" /> дена</translation>
 <translation id="8395180897620197612">Сопри со евидентирање</translation>
-<translation id="8395339334550012808">Наскоро, ќе гледате содржини од и за <ph name="CHANNEL_NAME" /> во „Се следи“.</translation>
-<translation id="8402673309244746971">Одете на „Следите“</translation>
 <translation id="8407669440184693619">Не се најдени лозинки за сајтов</translation>
 <translation id="8407831512155324054">Лозинките изгледаат силно</translation>
 <translation id="8414283596511250978">Никогаш не заборавајте ги лозинките</translation>
@@ -2173,7 +2167,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="952704832371081537">Откажи</translation>
 <translation id="954667170699278022">Список за читање</translation>
 <translation id="956218893102219091">Користете ја вашата прецизна локација за да добивате најпрецизни резултати од Gemini, наместо приближна локација заснована на вашата IP-адреса. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
 <translation id="963102227019621224">Активност на интернет и апликации</translation>
 <translation id="966593914872420832">Гласовно пребарување</translation>

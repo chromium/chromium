@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Adressrad 1</translation>
 <translation id="154312949627292154">Öppna flikar som du har fått från andra enheter från låsskärmen.</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
+<translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1547610699249301703">Dela lösenord</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan scrolla åt vänster för att surfa inkognito.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2451607499823206582">Spårning</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} historikobjekt}other{{count} historikobjekt}}</translation>
 <translation id="2461070143328828326">Lösenordsinställningar</translation>
 <translation id="2462736546165239215">Du hittar all din webbhistorik här.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="334690320928261823">Senaste flikarna</translation>
 <translation id="3349031117032695619">Blockera popup-fönster</translation>
-<translation id="3349676726073650389">Webbplatser och sökningar du följer sparas i ditt Google-konto. Du kan när som helst hantera vad du följer i inställningarna.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Detta är ett hanterat konto.</translation>
 <translation id="3365529507898144230">Spara i Foto</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Adressfältets position</translation>
 <translation id="4870911314065352661">Vill du stänga alla flikar?</translation>
 <translation id="4872664437015695612">Öppna i Nedladdningar</translation>
-<translation id="4875260838563541343">Åtgärdsknapp</translation>
 <translation id="4876237378696925987">Kom igång</translation>
 <translation id="4876305945144899064">Inget användarnamn</translation>
 <translation id="4876665338492917862">Öppnades <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6045460247888249350">Lägg till titel</translation>
 <translation id="6052269326659653305">Byt profil</translation>
 <translation id="605721222689873409">ÅÅ</translation>
-<translation id="6059103953801602038">Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="6074656473835429958">Få aviseringar</translation>
@@ -1510,7 +1509,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6761393919622941301">Ljud</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
-<translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6791425686608802741">Tryck på Lägg till fliken i en ny grupp</translation>
 <translation id="6794476726485507147">Välj ett datum och en tidpunkt då du vill få en påminnelse om att besöka den här sidan igen</translation>
 <translation id="6795481620482106033">Ogiltig data</translation>
@@ -1589,7 +1587,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7091023926159231962">{count,plural, =1{Det gick inte att importera {count} lösenord}other{Det gick inte att importera {count} lösenord}}</translation>
 <translation id="7095110968493193530">I Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Tryck på prishistorik i adressfältet för att se prisändringar över tid</translation>
-<translation id="7101580180124131336">Nu visas innehåll från och om <ph name="CHANNEL_NAME" /> i Följer.</translation>
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7108338896283013870">Dölj</translation>
@@ -1666,7 +1663,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7437712592381799950">Du kan svepa uppåt för att se mer innehåll som är anpassat för dig.</translation>
 <translation id="7438473148803748807">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
-<translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="7445682342344043969">Popupfönster har blockerats</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmärke har sparats i {title}}other{Bokmärken har sparats i {title}}}</translation>
 <translation id="7451404862887877229">Tryck på Integritet och säkerhet och sedan på Säker webbsökning</translation>
@@ -1933,8 +1929,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8393889347136007944">Flikar som inte har använts på <ph name="THRESHOLD" /> dagar</translation>
 <translation id="8395180897620197612">Stoppa loggning</translation>
-<translation id="8395339334550012808">Snart visas innehåll från och om <ph name="CHANNEL_NAME" /> i Följer.</translation>
-<translation id="8402673309244746971">Öppna Följer</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
 <translation id="8407831512155324054">Lösenorden ser starka ut</translation>
 <translation id="8414283596511250978">Glöm aldrig dina lösenord</translation>
@@ -2173,7 +2167,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="954667170699278022">Läslista</translation>
 <translation id="956218893102219091">Använd din exakta plats för att få Gemini-resultat som är så specifika som möjligt i stället för en ungefärlig plats baserat på din IP-adress. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="963102227019621224">Webb- och appaktivitet</translation>
 <translation id="966593914872420832">Röstsökning</translation>

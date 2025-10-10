@@ -1381,6 +1381,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7177873915659574692">Kan ikke opprette QR-kode. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7182051712900867547">Bruk en annen konto</translation>
+<translation id="7182520625618447753">Flytt adressefeltet til toppen eller bunnen for å tilpasse surfeopplevelsen</translation>
 <translation id="7183517696921903380">Arket for appfiltrering er åpnet.</translation>
 <translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
 <translation id="7190921792980745354">Vil du blokkere <ph name="MEMBER_FULL_NAME" />?</translation>

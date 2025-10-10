@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Адрес, строка 1</translation>
 <translation id="154312949627292154">Открывать вкладки, полученные с других ваших устройств, на заблокированном экране.</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
+<translation id="1545757265410828525">История изменения цен</translation>
 <translation id="1547610699249301703">Делитесь паролями</translation>
 <translation id="1554477036522844996">Новое окно</translation>
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
 <translation id="2434918313224755415">Чтобы перейти в режим инкогнито, прокрутите экран влево</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
+<translation id="2451607499823206582">Отслеживание</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} элемент из истории}one{{count} элемент из истории}few{{count} элемента из истории}many{{count} элементов из истории}other{{count} элемента из истории}}</translation>
 <translation id="2461070143328828326">Настройки паролей</translation>
 <translation id="2462736546165239215">Здесь можно найти всю вашу историю браузера.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте ({email}).}one{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}few{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}many{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}other{Закладки сохранены в папке "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="334690320928261823">Недавние вкладки</translation>
 <translation id="3349031117032695619">Блокировать всплывающие окна</translation>
-<translation id="3349676726073650389">Сайты и поисковые запросы, на которые вы подписаны, сохраняются в вашем аккаунте Google. Управлять своими подписками можно в настройках.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Это управляемый аккаунт.</translation>
 <translation id="3365529507898144230">Сохранить в Фото</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Расположение адресной строки</translation>
 <translation id="4870911314065352661">Закрыть все вкладки?</translation>
 <translation id="4872664437015695612">Открыть папку "Загрузки"</translation>
-<translation id="4875260838563541343">Кнопка</translation>
 <translation id="4876237378696925987">Начать</translation>
 <translation id="4876305945144899064">Имя пользователя не указано</translation>
 <translation id="4876665338492917862">Открыто <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">Добавьте название</translation>
 <translation id="6052269326659653305">Смена профиля</translation>
 <translation id="605721222689873409">ГГ</translation>
-<translation id="6059103953801602038">Сайты, на которые вы подписаны, сохранены в аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
 <translation id="6066301408025741299">Нажмите, чтобы отменить загрузку</translation>
 <translation id="6074656473835429958">Уведомления</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6770452996697898492">[ЗАБРОНИРОВАНО]</translation>
 <translation id="6779455296366983087">Данные о работе в браузере будут удалены</translation>
-<translation id="6790502149545262384">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6791425686608802741">Выберите "Добавить вкладку в новую группу".</translation>
 <translation id="6794476726485507147">Выберите дату и время, когда хотите получить напоминание о необходимости вернуться на эту страницу.</translation>
 <translation id="6795481620482106033">Недопустимые данные</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{Не удалось импортировать {count} пароль.}one{Не удалось импортировать {count} пароль.}few{Не удалось импортировать {count} пароля.}many{Не удалось импортировать {count} паролей.}other{Не удалось импортировать {count} пароля.}}</translation>
 <translation id="7095110968493193530">В Google Менеджере паролей для аккаунта <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Чтобы увидеть, как менялась цена, в адресной строке нажмите "История изменения цен".</translation>
-<translation id="7101580180124131336">Теперь в ленте "Вы подписаны" будет появляться контент <ph name="CHANNEL_NAME" /> и связанная информация.</translation>
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Способы оплаты</translation>
 <translation id="7108338896283013870">Скрыть</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">Функцию отключил администратор.</translation>
 <translation id="7437712592381799950">Чтобы увидеть больше материалов, подобранных для вас, пролистните вверх.</translation>
 <translation id="7438473148803748807">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
-<translation id="7438481509621345350">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7445682342344043969">Всплывающие окна заблокированы</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка сохранена в {title}.}one{Закладки сохранены в {title}.}few{Закладки сохранены в {title}.}many{Закладки сохранены в {title}.}other{Закладки сохранены в {title}.}}</translation>
 <translation id="7451404862887877229">Нажмите "Конфиденциальность и безопасность", а затем "Безопасный просмотр".</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8393889347136007944">Не использовались в течение <ph name="THRESHOLD" /> дн.</translation>
 <translation id="8395180897620197612">Не вести журнал</translation>
-<translation id="8395339334550012808">Скоро в ленте "Вы подписаны" будет появляться контент <ph name="CHANNEL_NAME" /> и связанная информация.</translation>
-<translation id="8402673309244746971">Перейти к подпискам</translation>
 <translation id="8407669440184693619">Нет паролей для этого сайта.</translation>
 <translation id="8407831512155324054">Нет простых паролей</translation>
 <translation id="8414283596511250978">Ваши пароли всегда с вами</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">Отмена</translation>
 <translation id="954667170699278022">Список для чтения</translation>
 <translation id="956218893102219091">Используйте точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более подходящие результаты от Gemini. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>
 <translation id="963102227019621224">История приложений и веб-поиска</translation>
 <translation id="966593914872420832">Голосовой поиск</translation>

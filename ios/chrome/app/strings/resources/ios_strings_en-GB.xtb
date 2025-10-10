@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="154312949627292154">Open tabs received from your other devices from the lock screen.</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
+<translation id="1545757265410828525">Price history</translation>
 <translation id="1547610699249301703">Share passwords</translation>
 <translation id="1554477036522844996">New window</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">You can scroll left to browse in Incognito.</translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2451607499823206582">Tracking</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} history item}other{{count} history items}}</translation>
 <translation id="2461070143328828326">Password settings</translation>
 <translation id="2462736546165239215">You can find all your browsing history here.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
 <translation id="3349031117032695619">Block pop-ups</translation>
-<translation id="3349676726073650389">The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. This account is managed.</translation>
 <translation id="3365529507898144230">Save in Photos</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Address bar position</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>
 <translation id="4872664437015695612">Open in downloads</translation>
-<translation id="4875260838563541343">Action button</translation>
 <translation id="4876237378696925987">Get started</translation>
 <translation id="4876305945144899064">No username</translation>
 <translation id="4876665338492917862">Opened on <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6045460247888249350">Add title</translation>
 <translation id="6052269326659653305">Switch profile</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059103953801602038">The sites that you follow are saved in your Google Account. You can manage them in Discover Settings.</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="6074656473835429958">Get notifications</translation>
@@ -1510,7 +1509,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
-<translation id="6790502149545262384">Soon, you’ll see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
 <translation id="6794476726485507147">Choose a date and time to receive a reminder notification to revisit this page</translation>
 <translation id="6795481620482106033">Invalid data</translation>
@@ -1589,7 +1587,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7091023926159231962">{count,plural, =1{Couldn't import {count} password}other{Couldn't import {count} passwords}}</translation>
 <translation id="7095110968493193530">To Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">In the address bar, tap price history to see price changes over time</translation>
-<translation id="7101580180124131336">You'll now see content from and about <ph name="CHANNEL_NAME" /> in Following.</translation>
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Settings → Payment methods</translation>
 <translation id="7108338896283013870">Hide</translation>
@@ -1666,7 +1663,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437712592381799950">You can swipe up to see more content tailored to you.</translation>
 <translation id="7438473148803748807">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
-<translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="7445682342344043969">Pop-ups blocked</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark saved to ‘{title}’}other{Bookmarks saved to ‘{title}’}}</translation>
 <translation id="7451404862887877229">Tap 'Privacy and security' and then 'Safe Browsing'</translation>
@@ -1933,8 +1929,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8393889347136007944">Tabs not used for <ph name="THRESHOLD" /> days</translation>
 <translation id="8395180897620197612">Stop logging</translation>
-<translation id="8395339334550012808">Soon, you’ll see content from and about <ph name="CHANNEL_NAME" /> in Following.</translation>
-<translation id="8402673309244746971">Go to Following</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="8407831512155324054">Your passwords look strong</translation>
 <translation id="8414283596511250978">Never forget your passwords</translation>
@@ -2173,7 +2167,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="952704832371081537">Cancel</translation>
 <translation id="954667170699278022">Reading list</translation>
 <translation id="956218893102219091">Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">You're following <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963102227019621224">Web &amp; App Activity</translation>
 <translation id="966593914872420832">Voice search</translation>

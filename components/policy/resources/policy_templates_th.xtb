@@ -784,6 +784,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="1523774894176285446">เบราว์เซอร์สำรองที่จะเปิดสำหรับเว็บไซต์ที่กำหนดค่า</translation>
 <translation id="152657506688053119">รายการ URL สำรองของผู้ให้บริการค้นหาเริ่มต้น</translation>
 <translation id="1530812829012954197">แสดงรูปแบบ URL ต่อไปนี้เสมอในเบราว์เซอร์โฮสต์</translation>
+<translation id="1533353321560451784">Vids (รองรับตั้งแต่เวอร์ชัน 143)</translation>
 <translation id="1534007181698071943">อนุญาตให้ปิดใช้ตัวแฮนเดิลเหตุการณ์ยกเลิกการโหลดโดยค่าเริ่มต้นระหว่างการเลิกใช้งาน</translation>
 <translation id="1539343118617844331">โรงเรียน</translation>
 <translation id="1542491165152947087">อนุญาตให้ผู้ใช้เปิดหรือปิดการตั้งค่าหัวข้อโฆษณาโดย <ph name="PRIVACY_SANDBOX_NAME" /> ในอุปกรณ์ได้</translation>
@@ -10512,6 +10513,15 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       หากตั้งค่านโยบายเป็น "ปิดใช้" หมายความว่าอุปกรณ์ที่ลงทะเบียนไว้จะไม่ได้รับการควบคุมการรายงานแบบละเอียด</translation>
 <translation id="82530263956734297">รหัสส่วนขยายที่ได้รับการยกเว้นจากรายการที่บล็อก</translation>
 <translation id="8254749125469750814">ไม่ต้องตรวจสอบว่าติดตั้งส่วนขยายด้วยบริการระบบคลาวด์ได้หรือไม่</translation>
+<translation id="825509998103089977">ควบคุมว่าจะอนุญาตให้แอป Gemini ดำเนินการในหน้าเว็บในนามของผู้ใช้หรือไม่
+
+0/ไม่ได้ตั้งค่า  = แอป Gemini ได้รับอนุญาตให้ดำเนินการในหน้าเว็บ
+
+1 = แอป Gemini ไม่ได้รับอนุญาตให้ดำเนินการในหน้าเว็บ
+
+นโยบายนี้จะไม่มีผลเมื่อปิดใช้แอป Gemini เช่น นโยบาย <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ปิดใช้งานแอป Gemini ได้
+
+ดูข้อมูลเพิ่มเติมได้ที่ https://support.google.com/chrome/a/answer/16291696</translation>
 <translation id="8256006033157034334">เราเลิกใช้งานและไม่รองรับนโยบายนี้แล้ว โปรดใช้ <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> แทน</translation>
 <translation id="8256688113167012935">ควบคุมชื่อบัญชี <ph name="PRODUCT_OS_NAME" /> ที่แสดงในหน้าลงชื่อเข้าใช้สำหรับบัญชีภายในอุปกรณ์ที่เกี่ยวข้องกัน
 

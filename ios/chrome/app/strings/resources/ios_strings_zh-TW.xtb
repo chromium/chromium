@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">地址 1</translation>
 <translation id="154312949627292154">在螢幕鎖定畫面開啟其他裝置傳送的分頁。</translation>
 <translation id="1545749641540134597">掃描 QR code</translation>
+<translation id="1545757265410828525">價格記錄</translation>
 <translation id="1547610699249301703">分享密碼</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕分頁</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2434918313224755415">向左捲動即可使用無痕模式瀏覽。</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2451607499823206582">追蹤中</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} 個歷史記錄項目}other{{count} 個歷史記錄項目}}</translation>
 <translation id="2461070143328828326">密碼設定</translation>
 <translation id="2462736546165239215">這裡會顯示你的所有瀏覽記錄。</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近關閉的分頁</translation>
 <translation id="3349031117032695619">封鎖彈出式視窗</translation>
-<translation id="3349676726073650389">你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> 是代管帳戶</translation>
 <translation id="3365529507898144230">儲存在相簿中</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">網址列位置</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
 <translation id="4872664437015695612">在「下載」資料夾開啟</translation>
-<translation id="4875260838563541343">動作按鈕</translation>
 <translation id="4876237378696925987">開始</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4876665338492917862">上次開啟日期：<ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">新增標題</translation>
 <translation id="6052269326659653305">切換設定檔</translation>
 <translation id="605721222689873409">年</translation>
-<translation id="6059103953801602038">追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中進行管理。</translation>
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
 <translation id="6074656473835429958">接收通知</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6770452996697898492">[已預約]</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
-<translation id="6790502149545262384">不久後，你就會在開啟新分頁時看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="6791425686608802741">輕觸「將分頁加入新群組」</translation>
 <translation id="6794476726485507147">選擇要接收提醒通知的日期和時間，以便再次瀏覽這個頁面</translation>
 <translation id="6795481620482106033">資料無效</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{無法匯入 {count} 個密碼}other{無法匯入 {count} 個密碼}}</translation>
 <translation id="7095110968493193530">儲存到 <ph name="EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7097046145876891318">輕觸網址列的「價格記錄」，即可查看價格變化情形</translation>
-<translation id="7101580180124131336">你現在會在「追蹤中」分頁看到「<ph name="CHANNEL_NAME" />」的內容和簡介。</translation>
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437712592381799950">向上滑動即可查看更多專屬推薦內容。</translation>
 <translation id="7438473148803748807">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
-<translation id="7438481509621345350">日後開啟新分頁時，你就會看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="7445682342344043969">已封鎖彈出式視窗</translation>
 <translation id="7451023311965289370">{count,plural, =1{書籤已儲存到「{title}」}other{書籤已儲存到「{title}」}}</translation>
 <translation id="7451404862887877229">依序輕觸「隱私權和安全性」&gt;「安全瀏覽」</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8393889347136007944">已有 <ph name="THRESHOLD" /> 天未使用的分頁</translation>
 <translation id="8395180897620197612">停止記錄</translation>
-<translation id="8395339334550012808">不久後，你會在「追蹤中」分頁看到「<ph name="CHANNEL_NAME" />」的內容和簡介。</translation>
-<translation id="8402673309244746971">前往「追蹤中」</translation>
 <translation id="8407669440184693619">找不到這個網站的密碼</translation>
 <translation id="8407831512155324054">你的密碼強度夠高</translation>
 <translation id="8414283596511250978">再也不必擔心忘記密碼</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="954667170699278022">閱讀清單</translation>
 <translation id="956218893102219091">使用精確位置資訊，取得最準確的 Gemini 結果，而不是根據 IP 位址推估大概位置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">你正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963102227019621224">網路和應用程式活動</translation>
 <translation id="966593914872420832">語音搜尋</translation>

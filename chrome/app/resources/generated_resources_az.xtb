@@ -1637,6 +1637,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2102495993840063010">Android tətbiqləri</translation>
 <translation id="2104166991923847969">Hotspot avtomatik deaktiv edilsin</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> gizlədilib</translation>
+<translation id="2106439768713835453">Həmçinin tətbiq audiosunu paylaşın</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> əvvəl yoxlanıb</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon nömrəsi}other{# telefon nömrəsi}}</translation>
 <translation id="2109384632594340939">profil şəkli</translation>
@@ -3016,6 +3017,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3038612606416062604">Printeri mexaniki yolla əlavə edin</translation>
 <translation id="3038628620670416486">Mausda düymələrin yerini tapın</translation>
 <translation id="3039491566278747710">Cihazda oflayn siyasət quraşdırılmadı.</translation>
+<translation id="3040435070100611531">Google Pulqabınızın keçidləri</translation>
 <translation id="3040982432432547149">Chromebook üçün Steam-i təkmilləşdirməyə kömək edin</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> ilə tab qrupuna qoşulun</translation>
 <translation id="3042097545107738107">Optimallaşdırılmış şarj strategiyasını dəyişin.</translation>
@@ -3876,6 +3878,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3656328935986149999">Kursor sürəti</translation>
 <translation id="3656701180077048004">Düyməni basdığınız zaman ilə onun aktivləşdiyi zaman arasına gecikmə əlavə edir</translation>
 <translation id="3658871634334445293">TrackPoint sürətlənməsi</translation>
+<translation id="3659483399659250379">Tab və s. əlavə edin</translation>
 <translation id="3659929705630080526">Giriş kodunu dəfələrlə yanlış daxil etmisiniz. Sonra cəhd edin</translation>
 <translation id="3661106764436337772">Sürətli və özgüvənli yazın</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 mövcud parol tapıldı}other{{NUM_PASSWORDS} mövcud parol tapıldı}}</translation>
@@ -5406,6 +5409,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4707337002099455863">Həmişə bütün saytlarda</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> məhsulundan çıxın</translation>
 <translation id="4708892882822652439">Tab audiosuna da icazə verin</translation>
+<translation id="4710347732286177840">Əlavə sual üçün ekranın bir hissəsini seçin</translation>
 <translation id="4711638718396952945">Ayarları bərpa edin</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Bütün pəncərələri bağladığınız zaman silin</translation>
@@ -6976,6 +6980,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> tətbiqini açmaq olmur</translation>
 <translation id="5830512293931520102">Parolunuz şifrlənib və heç kəs tərəfindən görünmür</translation>
 <translation id="5830720307094128296">Səhifənin saxlanma formatı:</translation>
+<translation id="5831217499016131155">Google Pulqabı</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> kimi giriş edilib</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, əlaqədar saytlar və quraşdırılmış tətbiq üçün sayt datası və icazələr silinsin?</translation>
 <translation id="5832813618714645810">Profillər</translation>

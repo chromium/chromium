@@ -1638,6 +1638,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2102495993840063010">Androidi rakendused</translation>
 <translation id="2104166991923847969">Lülita kuumkoht automaatselt välja</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> on peidetud</translation>
+<translation id="2106439768713835453">Jaga ka rakenduse heli</translation>
 <translation id="2108204112555497972">Kontrolliti <ph name="NUM_DAYS_HOURS_MINUTES" /> tagasi</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefoninumber}other{# telefoninumbrit}}</translation>
 <translation id="2109384632594340939">profiilipilt</translation>
@@ -3017,6 +3018,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3038612606416062604">Printeri käsitsi lisamine</translation>
 <translation id="3038628620670416486">Leidke oma hiire nupud</translation>
 <translation id="3039491566278747710">Võrguühenduseta reegli seadmesse installimine nurjus.</translation>
+<translation id="3040435070100611531">Teie Google Walleti pääsmed</translation>
 <translation id="3040982432432547149">Aidake meil Steami Chromebookile täiustada</translation>
 <translation id="304169924727249890">Liituge vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Optimeeritud laadimisstrateegia muutmine.</translation>
@@ -3877,6 +3879,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3656328935986149999">Kursori kiirus</translation>
 <translation id="3656701180077048004">Lisab klahvi vajutamise ja selle aktiveerimise vahelise viivituse</translation>
 <translation id="3658871634334445293">Näpuhiire kiirendus</translation>
+<translation id="3659483399659250379">Lisage vaheleht ja muud.</translation>
 <translation id="3659929705630080526">Olete sisestanud vale pääsukoodi liiga mitu korda. Proovige hiljem uuesti</translation>
 <translation id="3661106764436337772">Kirjutage kiiremini ja enesekindlamalt</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Leitud on 1 olemasolev parool}other{Leitud on {NUM_PASSWORDS} olemasolevat parooli}}</translation>
@@ -5409,6 +5412,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4707337002099455863">Alati kõigil saitidel</translation>
 <translation id="4708849949179781599">Välju rakendusest <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Luba ka vahelehe heli</translation>
+<translation id="4710347732286177840">Valige täpsustamiseks ekraanikuva piirkond.</translation>
 <translation id="4711638718396952945">Taasta seaded</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Kustutatakse, kui kõik aknad sulgete</translation>
@@ -6979,6 +6983,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5830205393314753525">Rakendust <ph name="APP_NAME" /> ei saa avada</translation>
 <translation id="5830512293931520102">Teie parool on krüpteeritud ja keegi pole seda kunagi näinud</translation>
 <translation id="5830720307094128296">Salvesta leht &amp;nimega...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Sisse logitud kasutajana <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Kas kustutada saidi <ph name="SITE_NAME" />, kõigi selle alamsaitide ning selle installitud rakenduse andmed ja load?</translation>
 <translation id="5832813618714645810">Profiilid</translation>

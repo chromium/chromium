@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">ಅಪ್‌ಡೇಟ್ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="1217114730239853757">ನೀವು ChromeOS Flex ನ ಬಿಲ್ಟ್-ಇನ್ ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಆದ, ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಲು ಬಯಸುತ್ತೀರಾ? ಹಾಗಿದ್ದರೆ, ಸ್ಪೇಸ್ ಬಾರ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1217117837721346030">ಅನುಮಾನಾಸ್ಪದ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="1217483152325416304">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶೀಘ್ರದಲ್ಲಿಯೇ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1217668622537098248">ಕ್ರಿಯೆಯ ನಂತರ ಎಡ ಕ್ಲಿಕ್‌ಗೆ ಹಿಂತಿರುಗಿಸಿ</translation>
 <translation id="1218015446623563536">Linux ಅಳಿಸಿ</translation>
@@ -2262,7 +2263,7 @@
 <translation id="251722524540674480">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2518024842978892609">ನಿಮ್ಮ ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಬಳಸಿ</translation>
-<translation id="2518620532958109495">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="2518620532958109495">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2519250377986324805">ಹೇಗೆಂದು ನೋಡಿ</translation>
 <translation id="2519517390894391510">ಪ್ರಮಾಣಪತ್ರ ಪ್ರೊಫೈಲ್ ಹೆಸರು</translation>
 <translation id="2520644704042891903">ಲಭ್ಯವಿರುವ ಸಾಕೆಟ್‌ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ...</translation>
@@ -3020,6 +3021,7 @@
 <translation id="3038612606416062604">ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಿಂಟರ್ ಸೇರಿಸಿ</translation>
 <translation id="3038628620670416486">ನಿಮ್ಮ ಮೌಸ್‌ನಲ್ಲಿ ಬಟನ್‌ಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
 <translation id="3039491566278747710">ಸಾಧನದಲ್ಲಿ ಆಫ್‌ಲೈನ್ ಕಾರ್ಯನೀತಿಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="3040435070100611531">ನಿಮ್ಮ Google Wallet ಪಾಸ್‌ಗಳು</translation>
 <translation id="3040982432432547149">Chromebook ನ Steam ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> ಅವರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="3042097545107738107">ಆಪ್ಟಿಮೈಸ್ಡ್ ಚಾರ್ಜಿಂಗ್ ತಂತ್ರವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
@@ -3226,6 +3228,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಈ ಕಾರ್ಡ್‌ನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}other{# ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}}</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208584281581115441">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3208703785962634733">ದೃಢೀಕರಿಸಲಾಗಿಲ್ಲ</translation>
@@ -3401,6 +3404,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ವೀಡಿಯೊ ಪ್ಲೇ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3335380372402547327">ಫ್ಲಾಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="3335947283844343239">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮರುತೆರೆ</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="3336855445806447827">ಖಚಿತವಿಲ್ಲ</translation>
 <translation id="3337568642696914359">ಪ್ರೊಟೊಕಾಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="333863344734218290">ಅಸುರಕ್ಷಿತವಾದ ಸಾರ್ವಜನಿಕ ಮತ್ತು ಖಾಸಗಿ ಸೈಟ್‌ಗಳ ಕುರಿತು ನಿಮ್ಮನ್ನು ಎಚ್ಚರಿಸುತ್ತದೆ</translation>
@@ -6983,6 +6987,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ತೆರೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5830512293931520102">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಯಾರೂ ನೋಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5830720307094128296">&amp;ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, ಅದರ ಅಡಿಯಲ್ಲಿರುವ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು ಮತ್ತು ಅದರಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="5832813618714645810">ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
@@ -8948,6 +8953,7 @@
 <translation id="7211783048245131419">ಇನ್ನೂ ಯಾವುದೇ ಸ್ವಿಚ್ ಅನ್ನು ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7212097698621322584">ಪಿನ್ ಬದಲಾಯಿಸಲು, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ಪಿನ್ ನಿಮಗೆ ಗೊತ್ತಿಲ್ಲದಿದ್ದರೆ, ನೀವು ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸಿ, ಆಮೇಲೆ ಹೊಸ ಪಿನ್ ಅನ್ನು ರಚಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="7214047272988222011">ಅನುಮತಿಸಲಾಗಿದೆ – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />ಸಿಸ್ಟಂ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್<ph name="LINK_END" /> ಆನ್ ಮಾಡಿ.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}other{# ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್}}</translation>
 <translation id="721490496276866468">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="7217208603285112910">ಆಯ್ಕೆಯು <ph name="LANGUAGE" /> ಭಾಷೆಯಲ್ಲಿಲ್ಲ</translation>
 <translation id="7219254577985949841">ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
@@ -9235,6 +9241,7 @@
 <translation id="7410344089573941623">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಬಯಸುತ್ತಾರೆಯೇ ಎಂಬುದನ್ನು ಕೇಳಿ</translation>
 <translation id="7410421966064092098">ನೀವು ಬಾಟ್ ಅಲ್ಲ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು ಸೈಟ್‌ಗಳು ಸಹಾಯ ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="7410852728357935715">ಸಾಧನಕ್ಕೆ ಬಿತ್ತರಿಸಿ</translation>
+<translation id="741148343080227980"><ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಾದ <ph name="USERNAME" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ಹೆಸರನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7412226954991670867">GPU ಸ್ಮರಣೆ</translation>
 <translation id="741370456693729525">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್‌ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ದೈನಂದಿನ ಭಾಷೆಯನ್ನು ಬಳಸಿ</translation>

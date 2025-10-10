@@ -15,7 +15,7 @@
 <translation id="1005671386794704751">ローズ</translation>
 <translation id="1005919400326853998">新しいダイアログで <ph name="CERT_NAME" /> の証明書の詳細を表示します</translation>
 <translation id="1006033052970139968">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスが許可されています</translation>
-<translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
+<translation id="1006873397406093306">この拡張機能は、サイト上でユーザーのデータを読み取ったり変更したりできます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">更新エラー修正の詳細</translation>
 <translation id="1217114730239853757">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。有効にする場合は Space キーを押してください。</translation>
 <translation id="1217117837721346030">不審なファイルをダウンロード</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> の新しいタブ</translation>
 <translation id="1217483152325416304">ローカルデータはまもなく削除されます</translation>
 <translation id="1217668622537098248">終了後、デフォルトの左クリック動作に戻す</translation>
 <translation id="1218015446623563536">Linux の削除</translation>
@@ -3008,6 +3009,7 @@
 <translation id="3038612606416062604">プリンタを手動で追加</translation>
 <translation id="3038628620670416486">マウスのボタン設定</translation>
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
+<translation id="3040435070100611531">Google ウォレットのパス</translation>
 <translation id="3040982432432547149">Chromebook の Steam の改善にご協力ください</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加</translation>
 <translation id="3042097545107738107">充電の最適化戦略を変更します。</translation>
@@ -3214,6 +3216,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         このカードからいつでも設定を管理できます。その他のオプションは [Chrome をカスタマイズ] を開きます。</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 個のタブで新しいタブを開く}other{# 個のタブで新しいタブを開く}}</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="3208703785962634733">未確認</translation>
@@ -3389,6 +3392,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ピクチャー イン ピクチャー モードで再生中の動画</translation>
 <translation id="3335380372402547327">点滅による通知をプレビュー</translation>
 <translation id="3335947283844343239">閉じたタブを開く</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> の新しいタブ</translation>
 <translation id="3336855445806447827">わからない</translation>
 <translation id="3337568642696914359">サイトにプロトコルの処理を許可しない</translation>
 <translation id="333863344734218290">安全でない公開サイトと非公開サイトについて警告する</translation>
@@ -6962,6 +6966,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> を開けません</translation>
 <translation id="5830512293931520102">パスワードは暗号化され、誰にも表示されません</translation>
 <translation id="5830720307094128296">ページを別名で保存(&amp;A)...</translation>
+<translation id="5831217499016131155">Google ウォレット</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> としてログインしています</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
 <translation id="5832813618714645810">プロファイル</translation>
@@ -8922,6 +8927,7 @@
 <translation id="7211783048245131419">割り当てられたスイッチはありません</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
 <translation id="7214047272988222011">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 個のタブで新しいタブを開く}other{# 個のタブで新しいタブを開く}}</translation>
 <translation id="721490496276866468">パスワードをインポート</translation>
 <translation id="7217208603285112910">選択内容が <ph name="LANGUAGE" /> ではない場合</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
@@ -9209,6 +9215,7 @@
 <translation id="7410344089573941623"><ph name="HOST" /> がカメラやマイクへのアクセスを要求しているか確認する</translation>
 <translation id="7410421966064092098">サイトは、あなたが bot でないことを確認する情報を提供できません。</translation>
 <translation id="7410852728357935715">デバイスにキャスト</translation>
+<translation id="741148343080227980">名前は <ph name="BEGIN_LINK" />Google アカウント（<ph name="USERNAME" />）<ph name="END_LINK" />で編集できます。</translation>
 <translation id="741204030948306876">オンにする</translation>
 <translation id="7412226954991670867">GPU メモリ</translation>
 <translation id="741370456693729525">普段使う表現で閲覧履歴やアクセスしたサイトを検索します</translation>

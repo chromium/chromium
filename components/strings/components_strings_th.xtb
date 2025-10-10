@@ -3311,6 +3311,7 @@
 <translation id="6433501201775827830">เลือกเครื่องมือค้นหา</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ปฏิเสธการเชื่อมต่อ</translation>
 <translation id="6433797564277305076">ยืนยันบัตรได้เร็วขึ้นโดยใช้การปลดล็อกอุปกรณ์จากนี้ไป</translation>
+<translation id="6436994298828707228">การเชื่อมต่อถูกบล็อกเนื่องจากเริ่มต้นโดยหน้าเว็บสาธารณะเพื่อเชื่อมต่อกับอุปกรณ์หรือเซิร์ฟเวอร์บนเครือข่ายภายใน</translation>
 <translation id="6437647869369934905">Google วาดเขียน</translation>
 <translation id="643917412048333145">ชุดกระโปรง</translation>
 <translation id="6440503408713884761">ละเว้น</translation>
@@ -3382,6 +3383,7 @@
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
 <translation id="6549443526281184652">เครื่องแต่งกาย</translation>
 <translation id="6550245281449521513">ไม่อนุญาตให้ล็อกเมาส์</translation>
+<translation id="6552566579578780089">การชำระเงิน</translation>
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6557715786897013164">14 x 17 นิ้ว</translation>
@@ -3530,6 +3532,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">พอร์ตอนุกรม</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">ผ่อนชำระได้ง่ายๆ</translation>
 <translation id="6825578344716086703">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ลงนามด้วยอัลกอริทึมลายเซ็นที่ไม่รัดกุม (เช่น SHA-1) ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แสดงอาจถูกปลอมแปลงขึ้น และเซิร์ฟเวอร์ดังกล่าวอาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="6826993739343257035">อนุญาต AR ไหม</translation>
 <translation id="6828150717884939426">โทร</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">ขับเคลื่อนโดย Google</translation>
 <translation id="753713322968419914">นำที่อยู่บ้านออกจากฟีเจอร์ป้อนข้อความอัตโนมัติของ Chrome ใช่ไหม</translation>
 <translation id="7537536606612762813">จำเป็น</translation>
+<translation id="7541043894191476250">งานตามบริบท</translation>
 <translation id="7543525346216957623">ถามผู้ปกครอง</translation>
 <translation id="7546409722674205727">เริ่มใช้งาน <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">แก้ไขข้อผิดพลาดในการเชื่อมต่อ</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">หยุดใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
 <translation id="8407031780528483338">เครื่องครัว</translation>
 <translation id="8409413588194360210">เครื่องจัดการการชำระเงิน</translation>
+<translation id="8410956920192583322">รายเดือนหรือผ่อนชำระ 4 งวด</translation>
 <translation id="8412145213513410671">ข้อขัดข้อง (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">คุณต้องป้อนข้อความรหัสผ่านที่เหมือนกันสองครั้ง</translation>
 <translation id="8414322570408428950">เกิดเหตุการณ์ของส่วนขยาย</translation>
@@ -4794,6 +4799,7 @@
 <translation id="8922734931659847428">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้<ph name="BEGIN_LINK" />เหตุการณ์เทคโนโลยีเดิม<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
+<translation id="8926400492587758246">ผ่อนชำระรายเดือนในราคาถูก</translation>
 <translation id="8932102934695377596">นาฬิกาช้าเกินไป</translation>
 <translation id="893332455753468063">เพิ่มชื่อ</translation>
 <translation id="8938242527120341116">ตัวกรองเนื้อหาของอุปกรณ์บล็อก <ph name="BLOCKED_URL" /></translation>

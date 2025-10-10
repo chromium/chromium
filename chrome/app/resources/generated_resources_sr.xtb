@@ -338,6 +338,7 @@
 <translation id="1216891999012841486">Сазнајте више о отклањању грешака при ажурирању</translation>
 <translation id="1217114730239853757">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome OS Flex? Ако је тако, притисните тастер за размак.</translation>
 <translation id="1217117837721346030">Преузми сумњиви фајл</translation>
+<translation id="1217437913373100941">Нова картица у групи <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Локални подаци се ускоро бришу</translation>
 <translation id="1217668622537098248">Врати на леви клик после радње</translation>
 <translation id="1218015446623563536">Избришите Linux</translation>
@@ -3012,6 +3013,7 @@
 <translation id="3038612606416062604">Ручно додајте штампач</translation>
 <translation id="3038628620670416486">Пронађите дугмад на мишу</translation>
 <translation id="3039491566278747710">Инсталирање офлајн смерница на уређају није успело.</translation>
+<translation id="3040435070100611531">Карте у Google новчанику</translation>
 <translation id="3040982432432547149">Помозите нам да побољшамо Steam за Chromebook</translation>
 <translation id="304169924727249890">Придружите се групи картица са корисником <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Промените стратегију оптимизованог пуњења.</translation>
@@ -3220,6 +3222,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         У сваком тренутку можете да управљате подешавањима са ове картице или да видите још опција у менију Прилагодите Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Нова картица у 1 картици}one{Нова картица у # картици}few{Нова картица у # картице}other{Нова картица у # картица}}</translation>
 <translation id="3207960819495026254">Обележено</translation>
 <translation id="3208584281581115441">Провери</translation>
 <translation id="3208703785962634733">Непотврђено</translation>
@@ -3395,6 +3398,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – видео се репродукује у режиму слике у слици</translation>
 <translation id="3335380372402547327">Прикажи треперућа обавештења</translation>
 <translation id="3335947283844343239">Поново отвори затворену картицу</translation>
+<translation id="3336661809256024098">Нова картица у групи <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не дозвољавај сајтовима да управљају протоколима</translation>
 <translation id="333863344734218290">Упозорава вас на небезбедне јавне и приватне сајтове</translation>
@@ -6975,6 +6979,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" />: отварање није успело</translation>
 <translation id="5830512293931520102">Лозинка је шифрована и нико не може да је види</translation>
 <translation id="5830720307094128296">Сачувај страницу &amp;као...</translation>
+<translation id="5831217499016131155">Google новчаник</translation>
 <translation id="583179300286794292">Пријављени сте као <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Желите да избришете податке о сајтовима и дозволе за сајт <ph name="SITE_NAME" />, све подређене сајтове и његову инсталирану апликацију?</translation>
 <translation id="5832813618714645810">Профили</translation>
@@ -8941,6 +8946,7 @@
 <translation id="7211783048245131419">Још није додељен ниједан прекидач</translation>
 <translation id="7212097698621322584">Унесите актуелни PIN да бисте га променили. Ако не знате PIN, морате да ресетујете безбедносни кључ, па да направите нови PIN.</translation>
 <translation id="7214047272988222011">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Укључите <ph name="LINK_BEGIN" />приступ системској камери<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Нова картица у 1 картици}one{Нова картица у # картици}few{Нова картица у # картице}other{Нова картица у # картица}}</translation>
 <translation id="721490496276866468">Увези лозинке</translation>
 <translation id="7217208603285112910">Изабрана ставка није на језику <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Желите да избришете податке сајта?</translation>
@@ -9228,6 +9234,7 @@
 <translation id="7410344089573941623">Питај да ли <ph name="HOST" /> жели да приступи камери и микрофону</translation>
 <translation id="7410421966064092098">Сајтови не могу да потврде да нисте бот</translation>
 <translation id="7410852728357935715">Пребацујте на уређај</translation>
+<translation id="741148343080227980">Можете да измените име <ph name="BEGIN_LINK" />на Google налогу <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Да, омогући</translation>
 <translation id="7412226954991670867">GPU меморија</translation>
 <translation id="741370456693729525">Користите свакодневни језик да бисте претраживали историју прегледања и проналазили сајтове које сте посетили</translation>

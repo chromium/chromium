@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Cím 1. sora</translation>
 <translation id="154312949627292154">A többi eszközéről kapott lapokat a zárolási képernyőn nyithatja meg.</translation>
 <translation id="1545749641540134597">QR-kód beolvasása</translation>
+<translation id="1545757265410828525">Árelőzmények</translation>
 <translation id="1547610699249301703">Jelszavak megosztása</translation>
 <translation id="1554477036522844996">Új ablak</translation>
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Már mentett jelszót a(z) „<ph name="USERNAME" />” felhasználónévhez a(z) <ph name="WEBSITE" /> webhelyen</translation>
 <translation id="2434918313224755415">Balra görgetve inkognitó módban böngészhet.</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
+<translation id="2451607499823206582">Nyomon követés</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} előzményelem}other{{count} előzményelem}}</translation>
 <translation id="2461070143328828326">Jelszóbeállítások</translation>
 <translation id="2462736546165239215">Itt találja az összes böngészési előzményt.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{A könyvjelzőt {email} fiókja következő mappájába mentettük: „{title}”}other{A könyvjelzőket {email} fiókja következő mappájába mentettük: „{title}”}}</translation>
 <translation id="334690320928261823">Nemrég megnyitott lapok</translation>
 <translation id="3349031117032695619">Előugró ablakok letiltása</translation>
-<translation id="3349676726073650389">A követett webhelyeit és kereséseit a Google-fiókjába menti a rendszer. Követéseit bármikor kezelheti a beállításokban.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ez egy felügyelt fiók.</translation>
 <translation id="3365529507898144230">Mentés a Fotókba</translation>
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Címsáv pozíciója</translation>
 <translation id="4870911314065352661">Az összes lapot bezárja?</translation>
 <translation id="4872664437015695612">Megnyitás a Letöltések mappában</translation>
-<translation id="4875260838563541343">Műveletgomb</translation>
 <translation id="4876237378696925987">Kezdés</translation>
 <translation id="4876305945144899064">Nincs felhasználónév</translation>
 <translation id="4876665338492917862">Legutóbb megnyitva: <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6045460247888249350">Cím megadása</translation>
 <translation id="6052269326659653305">Profilváltás</translation>
 <translation id="605721222689873409">ÉÉ</translation>
-<translation id="6059103953801602038">A követett webhelyeket a Google-fiókjába menti a rendszer. A Discover beállításaiban kezelheti őket.</translation>
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
 <translation id="6074656473835429958">Értesítések kérése</translation>
@@ -1510,7 +1509,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6761393919622941301">Hang</translation>
 <translation id="6770452996697898492">[LEFOGLALVA]</translation>
 <translation id="6779455296366983087">Böngészési adatai törlődni fognak</translation>
-<translation id="6790502149545262384">Új lap megnyitásakor hamarosan látni fogja a(z) <ph name="CHANNEL_NAME" /> webhely történeteit.</translation>
 <translation id="6791425686608802741">Koppintson a „Lap hozzáadása új csoporthoz” lehetőségre.</translation>
 <translation id="6794476726485507147">Válasszon ki egy dátumot és időpontot, hogy emlékeztető értesítést kapjon az oldal újbóli felkereséséhez</translation>
 <translation id="6795481620482106033">Érvénytelen adat</translation>
@@ -1589,7 +1587,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7091023926159231962">{count,plural, =1{{count} jelszó importálása nem sikerült}other{{count} jelszó importálása nem sikerült}}</translation>
 <translation id="7095110968493193530">A Google Jelszókezelőbe a következő fióknál: <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">A címsávban koppintson az Árelőzmények ikonra, hogy megtekinthesse az árak időbeli változásait</translation>
-<translation id="7101580180124131336">Mostantól láthatja a(z) <ph name="CHANNEL_NAME" /> webhelyről, illetve webhelytől származó tartalmakat a Követve szakaszban.</translation>
 <translation id="7102005569666697658">Letöltés… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menü → Beállítások → Fizetési módok</translation>
 <translation id="7108338896283013870">Elrejtés</translation>
@@ -1666,7 +1663,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
 <translation id="7437712592381799950">Felfelé csúsztatva további személyre szabott tartalmakat tekinthet meg.</translation>
 <translation id="7438473148803748807">Mindenki azonnal el fogja veszíteni a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a rendszer az összes meghívólinket ki fogja kapcsolni.</translation>
-<translation id="7438481509621345350">Új lap megnyitásakor látni fogja a(z) <ph name="CHANNEL_NAME" /> webhely történeteit.</translation>
 <translation id="7445682342344043969">Előugró ablakok letiltva</translation>
 <translation id="7451023311965289370">{count,plural, =1{Könyvjelző mentve ide: „{title}”}other{Könyvjelzők mentve ide: „{title}”}}</translation>
 <translation id="7451404862887877229">Koppintson az „Adatvédelem és biztonság”, majd a „Biztonságos Böngészés” lehetőségre.</translation>
@@ -1933,8 +1929,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8393700583063109961">Üzenet küldése</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> napja nem használt lapok</translation>
 <translation id="8395180897620197612">Naplózás leállítása</translation>
-<translation id="8395339334550012808">Hamarosan látni fogja a(z) <ph name="CHANNEL_NAME" /> webhelytől, illetve webhelyről származó tartalmakat a Követve szakaszban.</translation>
-<translation id="8402673309244746971">Ugrás a követésekhez</translation>
 <translation id="8407669440184693619">Nem található jelszó a webhelyhez</translation>
 <translation id="8407831512155324054">Jelszavai erősnek tűnnek</translation>
 <translation id="8414283596511250978">Soha nem felejti el jelszavait</translation>
@@ -2173,7 +2167,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="952704832371081537">Mégse</translation>
 <translation id="954667170699278022">Olvasólista</translation>
 <translation id="956218893102219091">A pontos hely használatával a legpontosabb Gemini-találatokat kaphatja, az IP-címe alapján becsült hely helyett. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="959066944189734975">Követi a következőt: <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
 <translation id="963102227019621224">Internetes és alkalmazástevékenységek</translation>
 <translation id="966593914872420832">Hangalapú keresés</translation>

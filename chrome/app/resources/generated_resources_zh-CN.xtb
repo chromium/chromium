@@ -1630,6 +1630,7 @@
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2104166991923847969">自动关闭热点</translation>
 <translation id="2105809836724866556">已隐藏<ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">同时分享应用音频</translation>
 <translation id="2108204112555497972">上次检查时间：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="2109384632594340939">个人资料照片</translation>
@@ -3005,6 +3006,7 @@
 <translation id="3038612606416062604">手动添加打印机</translation>
 <translation id="3038628620670416486">寻找鼠标按钮</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
+<translation id="3040435070100611531">您的 Google 钱包卡券</translation>
 <translation id="3040982432432547149">欢迎帮助我们改进 Chromebook 版 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
 <translation id="3042097545107738107">更改优化充电策略。</translation>
@@ -3863,6 +3865,7 @@
 <translation id="3656328935986149999">光标速度</translation>
 <translation id="3656701180077048004">在按下按键与启用按键之间增加延迟</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659483399659250379">添加标签页等</translation>
 <translation id="3659929705630080526">访问代码输错次数过多。请稍后重试</translation>
 <translation id="3661106764436337772">写作更快更自信</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 个现有密码}other{找到 {NUM_PASSWORDS} 个现有密码}}</translation>
@@ -5394,6 +5397,7 @@
 <translation id="4707337002099455863">在所有网站上始终允许</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">还允许分享标签页中的音频</translation>
+<translation id="4710347732286177840">选择屏幕区域以提出跟进问题</translation>
 <translation id="4711638718396952945">恢复设置</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">关闭所有窗口时删除</translation>
@@ -6406,7 +6410,7 @@
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全角</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
-<translation id="5431318178759467895">颜色</translation>
+<translation id="5431318178759467895">彩色</translation>
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">若要分享音频，请改为分享标签页</translation>
 <translation id="5432872710261597882">选择“我喜欢”，会提交您喜欢此功能的反馈。</translation>
@@ -6960,6 +6964,7 @@
 <translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">您的密码会经过加密处理，且不会向任何人显示</translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
+<translation id="5831217499016131155">Google 电子钱包</translation>
 <translation id="583179300286794292">目前登录的账号是 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">为 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用删除网站数据和权限？</translation>
 <translation id="5832813618714645810">个人资料</translation>

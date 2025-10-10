@@ -1638,6 +1638,7 @@
 <translation id="2102495993840063010">Праграмы для Android</translation>
 <translation id="2104166991923847969">Аўтаматычна выключаць хот-спот</translation>
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Таксама абагульваць аўдыя з праграмы</translation>
 <translation id="2108204112555497972">Праверана <ph name="NUM_DAYS_HOURS_MINUTES" /> таму</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="2109384632594340939">відарыс профілю</translation>
@@ -3014,6 +3015,7 @@
 <translation id="3038612606416062604">Дадаванне прынтара ўручную</translation>
 <translation id="3038628620670416486">Знайдзіце на мышы кнопкі</translation>
 <translation id="3039491566278747710">Не ўдалося ўсталяваць пазасеткавую палітыку на прыладу.</translation>
+<translation id="3040435070100611531">Вашы карткі ў Google Кашальку</translation>
 <translation id="3040982432432547149">Дапамажыце палепшыць Steam для Chromebook</translation>
 <translation id="304169924727249890">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Змяніць стратэгію аптымізаванай зарадкі.</translation>
@@ -3874,6 +3876,7 @@
 <translation id="3656328935986149999">Хуткасць курсора</translation>
 <translation id="3656701180077048004">Дадае затрымку паміж момантам націскання на клавішу і яе актывацыяй</translation>
 <translation id="3658871634334445293">Паскарэнне TrackPoint</translation>
+<translation id="3659483399659250379">Дадайце ўкладку і іншае змесціва</translation>
 <translation id="3659929705630080526">Вы ўвялі няправільны код доступу занадта шмат разоў. Паўтарыце спробу пазней</translation>
 <translation id="3661106764436337772">Пішыце хутчэй і з большай упэўненасцю</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль ужо існуе}one{{NUM_PASSWORDS} пароль ужо існуе}few{{NUM_PASSWORDS} паролі ўжо існуюць}many{{NUM_PASSWORDS} пароляў ужо існуюць}other{{NUM_PASSWORDS} пароля ўжо існуюць}}</translation>
@@ -5404,6 +5407,7 @@
 <translation id="4707337002099455863">Заўсёды на ўсіх сайтах</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Дазволіць таксама прайграванне гуку з укладкі</translation>
+<translation id="4710347732286177840">Выбраць вобласць экрана, каб задаць дадатковае пытанне</translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Выдаляць пры закрыцці ўсіх вокнаў</translation>
@@ -6973,6 +6977,7 @@
 <translation id="5830205393314753525">Не ўдалося адкрыць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="5830512293931520102">Ваш пароль зашыфраваны, і яго ніхто і ніколі не ўбачыць</translation>
 <translation id="5830720307094128296">Захаваць старонку &amp;як...</translation>
+<translation id="5831217499016131155">Google Кашалёк</translation>
 <translation id="583179300286794292">Вы ўвайшлі як <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Выдаліць даныя і дазволы сайта <ph name="SITE_NAME" />, усіх звязаных з ім сайтаў і ўсталяваных імі праграм?</translation>
 <translation id="5832813618714645810">Профілі</translation>

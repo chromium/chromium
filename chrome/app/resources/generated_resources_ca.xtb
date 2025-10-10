@@ -1637,6 +1637,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2102495993840063010">Aplicacions per a Android</translation>
 <translation id="2104166991923847969">Desactiva el punt d'accés Wi-Fi automàticament</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> s'ha amagat</translation>
+<translation id="2106439768713835453">Comparteix també l'àudio de l'aplicació</translation>
 <translation id="2108204112555497972">S'ha comprovat fa <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telèfon}other{# números de telèfon}}</translation>
 <translation id="2109384632594340939">foto de perfil</translation>
@@ -3013,6 +3014,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3038612606416062604">Afegeix una impressora manualment</translation>
 <translation id="3038628620670416486">Localitza botons al ratolí</translation>
 <translation id="3039491566278747710">No s'ha pogut instal·lar la política sense connexió al dispositiu.</translation>
+<translation id="3040435070100611531">Els teus passis de Google Wallet</translation>
 <translation id="3040982432432547149">Ajuda'ns a millorar Steam per a Chromebook</translation>
 <translation id="304169924727249890">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Canvia l'estratègia de càrrega optimitzada.</translation>
@@ -3871,6 +3873,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3656328935986149999">Velocitat del cursor</translation>
 <translation id="3656701180077048004">Afegeix un retard entre el moment en què prems una tecla i el moment en què s'activa</translation>
 <translation id="3658871634334445293">Acceleració TrackPoint</translation>
+<translation id="3659483399659250379">Afegeix una pestanya i més</translation>
 <translation id="3659929705630080526">Has escrit un codi d'accés incorrecte massa vegades. Torna-ho a provar més tard.</translation>
 <translation id="3661106764436337772">Escriu més ràpidament i amb més confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{S'ha trobat 1 contrasenya existent}other{S'han trobat {NUM_PASSWORDS} contrasenyes existents}}</translation>
@@ -5402,6 +5405,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4707337002099455863">Sempre en tots els llocs web</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Permet també l'àudio de la pestanya</translation>
+<translation id="4710347732286177840">Selecciona una zona de la pantalla per fer-ne un seguiment</translation>
 <translation id="4711638718396952945">Restaura la configuració</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Suprimeix en tancar totes les finestres</translation>
@@ -6970,6 +6974,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5830205393314753525">No es pot obrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">La contrasenya està encriptada i no l'ha vist mai ningú</translation>
 <translation id="5830720307094128296">Anomena i desa la pà&amp;gina...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Has iniciat la sessió com a <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" />, tots els llocs web que conté i la seva aplicació instal·lada?</translation>
 <translation id="5832813618714645810">Perfils</translation>

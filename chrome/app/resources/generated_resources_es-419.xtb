@@ -1634,6 +1634,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2104166991923847969">Desactivar el hotspot automáticamente</translation>
 <translation id="2105809836724866556">Se ocultó el <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Compartir también el audio de la aplicación</translation>
 <translation id="2108204112555497972">Se verificó hace <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2109384632594340939">foto de perfil</translation>
@@ -3010,6 +3011,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3038612606416062604">Agregar una impresora manualmente</translation>
 <translation id="3038628620670416486">Encuentra los botones del mouse</translation>
 <translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
+<translation id="3040435070100611531">Los pases de tu Billetera de Google</translation>
 <translation id="3040982432432547149">Ayúdanos a mejorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar la estrategia de carga optimizada.</translation>
@@ -3870,6 +3872,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3656328935986149999">Velocidad del cursor</translation>
 <translation id="3656701180077048004">Agrega una demora entre el momento en que presionas una tecla y el momento en que se activa</translation>
 <translation id="3658871634334445293">Aceleración del TrackPoint</translation>
+<translation id="3659483399659250379">Agregar una pestaña y más</translation>
 <translation id="3659929705630080526">Ingresaste un código de acceso incorrecto demasiadas veces. Vuelve a intentarlo más tarde.</translation>
 <translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Se encontró 1 contraseña existente}other{Se encontraron {NUM_PASSWORDS} contraseñas existentes}}</translation>
@@ -5402,6 +5405,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4707337002099455863">Siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Permitir también el audio de la pestaña</translation>
+<translation id="4710347732286177840">Seleccionar la región de la pantalla para hacer preguntas adicionales</translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Borrar cuando cierras todas las ventanas</translation>
@@ -6972,6 +6976,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Tu contraseña está encriptada y nadie puede verla</translation>
 <translation id="5830720307094128296">Guardar p&amp;ágina como...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Accediste como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">¿Quieres borrar los datos y permisos de <ph name="SITE_NAME" />, de todos sus sitios secundarios y de su app instalada?</translation>
 <translation id="5832813618714645810">Perfiles</translation>

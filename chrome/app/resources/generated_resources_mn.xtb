@@ -1644,6 +1644,7 @@
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2104166991923847969">Сүлжээний цэгийг автоматаар унтраана</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" />-г нуусан</translation>
+<translation id="2106439768713835453">Мөн аппликейшны аудиог хуваалцах</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" />-н өмнө шалгасан</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Утасны дугаар}other{# утасны дугаар}}</translation>
 <translation id="2109384632594340939">профайл зураг</translation>
@@ -3023,6 +3024,7 @@
 <translation id="3038612606416062604">Хэвлэгчийг гараар нэмэх</translation>
 <translation id="3038628620670416486">Хулганынхаа товчнуудыг олоорой</translation>
 <translation id="3039491566278747710">Офлайн удирдамжийг төхөөрөмж дээр суулгаж чадсангүй.</translation>
+<translation id="3040435070100611531">Таны Google Wallet-н карт</translation>
 <translation id="3040982432432547149">Бидэнд Chromebook-д зориулсан Steam-г сайжруулахад тусална уу</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />-н байгаа табын бүлэгт нэгдэх</translation>
 <translation id="3042097545107738107">Оновчилсон байдлаар цэнэглэх стратегийг өөрчилнө үү.</translation>
@@ -3883,6 +3885,7 @@
 <translation id="3656328935986149999">Курсорын хурд</translation>
 <translation id="3656701180077048004">Таныг товч дарах болон тухайн товчийг идэвхжих хооронд саатал нэмнэ</translation>
 <translation id="3658871634334445293">TrackPoint хурдасгуур</translation>
+<translation id="3659483399659250379">Таб болон бусад зүйлийг нэмнэ үү</translation>
 <translation id="3659929705630080526">Та нэвтрэх кодыг хэт олон удаа буруу оруулсан байна. Дараа дахин оролдоно уу</translation>
 <translation id="3661106764436337772">Илүү хурдан бөгөөд илүү итгэлтэй бичээрэй</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Одоо байгаа 1 нууц үг олдлоо}other{Одоо байгаа {NUM_PASSWORDS} нууц үг олдлоо}}</translation>
@@ -5414,6 +5417,7 @@
 <translation id="4707337002099455863">Бүх сайт дээр үргэлж</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4708892882822652439">Мөн табын аудиог зөвшөөрөх</translation>
+<translation id="4710347732286177840">Араас нь лавлах асуултад зориулсан дэлгэцийн хэсгийг сонгоно уу</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Таныг бүх цонхыг хаахад устгана</translation>
@@ -6985,6 +6989,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" />-г нээх боломжгүй</translation>
 <translation id="5830512293931520102">Таны нууц үг шифрлэгдсэн бөгөөд хэнд ч харагдахгүй</translation>
 <translation id="5830720307094128296">Хуудсыг  ... гэх хадгалах</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />-р нэвтэрсэн</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, түүний доорх бүх сайт болон суулгасан аппын сайтын өгөгдөл, зөвшөөрлийг устгах уу?</translation>
 <translation id="5832813618714645810">Профайлууд</translation>

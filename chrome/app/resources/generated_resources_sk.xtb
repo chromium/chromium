@@ -1639,6 +1639,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2102495993840063010">Aplikácie pre Android</translation>
 <translation id="2104166991923847969">Vypínať hotspot automaticky</translation>
 <translation id="2105809836724866556">Skryté: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Zdieľať aj zvuk aplikácie</translation>
 <translation id="2108204112555497972">Skontrolované pred <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefónne číslo}few{# telefónne čísla}many{# phone numbers}other{# telefónnych čísiel}}</translation>
 <translation id="2109384632594340939">profilovú fotku</translation>
@@ -3015,6 +3016,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3038612606416062604">Manuálne pridanie tlačiarne</translation>
 <translation id="3038628620670416486">Vyhľadanie tlačidiel myši</translation>
 <translation id="3039491566278747710">Pravidlo pre režim offline sa nepodarilo v zariadení nainštalovať.</translation>
+<translation id="3040435070100611531">Vaše karty v Peňaženke Google</translation>
 <translation id="3040982432432547149">Pomôžte nám zlepšiť Steam pre Chromebook</translation>
 <translation id="304169924727249890">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Zmeniť stratégiu optimalizovaného nabíjania</translation>
@@ -3875,6 +3877,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3656328935986149999">Rýchlosť kurzora</translation>
 <translation id="3656701180077048004">Pridá oneskorenie medzi okamih stlačenia klávesa a jeho aktiváciu</translation>
 <translation id="3658871634334445293">Akcelerácia zariadenia TrackPoint</translation>
+<translation id="3659483399659250379">Pridajte kartu a ďalší obsah</translation>
 <translation id="3659929705630080526">Príliš veľakrát ste zadali nesprávny prístupový kód. Skúste to neskôr</translation>
 <translation id="3661106764436337772">Píšte rýchlejšie a s väčšou istotou</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Bolo nájdené 1 existujúce heslo}few{Boli nájdené {NUM_PASSWORDS} existujúce heslá}many{{NUM_PASSWORDS} existing passwords found}other{Bolo nájdených {NUM_PASSWORDS} existujúcich hesiel}}</translation>
@@ -5407,6 +5410,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4707337002099455863">Vždy zapnuté na všetkých weboch</translation>
 <translation id="4708849949179781599">Ukončiť aplikáciu <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Povoliť aj zvuk na karte</translation>
+<translation id="4710347732286177840">Vybrať oblasť obrazovky pre doplňujúci dopyt</translation>
 <translation id="4711638718396952945">Obnoviť nastavenia</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Odstraňovať pri zavretí všetkých okien</translation>
@@ -6975,6 +6979,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> sa nedá otvoriť</translation>
 <translation id="5830512293931520102">Vaše heslo je šifrované a nikomu sa nikdy nezobrazí</translation>
 <translation id="5830720307094128296">Uložiť stránku &amp;ako...</translation>
+<translation id="5831217499016131155">Peňaženka Google</translation>
 <translation id="583179300286794292">Prihlásili ste sa ako <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Chcete odstrániť dáta a povolenia webu <ph name="SITE_NAME" />, všetky jeho podriadené weby a jeho nainštalovanú aplikáciu?</translation>
 <translation id="5832813618714645810">Profily</translation>

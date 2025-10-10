@@ -23,7 +23,7 @@
 <translation id="100881991356161927">Nom du site</translation>
 <translation id="1009663062402466586">Commandes de jeu désormais disponibles</translation>
 <translation id="1010136228650201057">Chiffrement des données utilisateur</translation>
-<translation id="1010225406377140704">Contactez l'expéditeur pour lui demander un nouveau lien</translation>
+<translation id="1010225406377140704">Contactez la personne qui l'a envoyé pour lui demander un nouveau lien</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page ne répondant pas}one{Page ne répondant pas}other{Pages ne répondant pas}}</translation>
 <translation id="1011003645819296594">Appareils enregistrés</translation>
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
@@ -1638,6 +1638,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2104166991923847969">Désactiver le point d'accès automatiquement</translation>
 <translation id="2105809836724866556">Vous avez masqué : <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Partager aussi l'audio de l'appli</translation>
 <translation id="2108204112555497972">Vérification effectuée il y a <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="2109384632594340939">photo de profil</translation>
@@ -1821,7 +1822,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2236963250883149540">Supprimer votre adresse professionnelle de la saisie automatique Chrome ?</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
 <translation id="2240582393605484605">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant</translation>
-<translation id="2241053333139545397">Accéder aux données de plusieurs sites et les modifier</translation>
+<translation id="2241053333139545397">Lire et modifier vos données sur certains sites Web</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
 <translation id="2242687258748107519">Informations sur le fichier</translation>
 <translation id="2243452222143104807">Onglet inactif</translation>
@@ -2383,7 +2384,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Ouvrir et modifier <ph name="FILE1" /> dans cette extension}one{Ouvrir et modifier <ph name="FILE1" />, … dans cette appli}other{Ouvrir et modifier <ph name="FILE1" />, … dans cette appli}}</translation>
-<translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
+<translation id="2616366145935564096">Lire et modifier vos données sur <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configurer le Partage à proximité</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> groupe sans nom – <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">lecture/pause</translation>
@@ -3014,6 +3015,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
 <translation id="3038628620670416486">Localisez les boutons de votre souris</translation>
 <translation id="3039491566278747710">Échec de l'installation de la règle hors connexion sur l'appareil.</translation>
+<translation id="3040435070100611531">Vos pass Google Wallet</translation>
 <translation id="3040982432432547149">Aidez-nous à améliorer Steam pour les Chromebooks</translation>
 <translation id="304169924727249890">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Modifier la stratégie de recharge optimisée.</translation>
@@ -3872,6 +3874,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3656328935986149999">Vitesse du curseur</translation>
 <translation id="3656701180077048004">Un délai est ajouté entre le moment où vous appuyez sur une touche et celui où elle s'active</translation>
 <translation id="3658871634334445293">Accélération de TrackPoint</translation>
+<translation id="3659483399659250379">Ajouter un onglet et plus</translation>
 <translation id="3659929705630080526">Vous avez saisi trop de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3661106764436337772">Écrivez plus vite et avec plus d'assurance</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 mot de passe existant trouvé}one{{NUM_PASSWORDS} mot de passe existant trouvé}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
@@ -5404,6 +5407,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4707337002099455863">Toujours sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Autoriser aussi l'audio de l'onglet</translation>
+<translation id="4710347732286177840">Sélectionner une région de l'écran pour une question complémentaire</translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
@@ -6973,6 +6977,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5830205393314753525">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Votre mot de passe est chiffré et personne ne peut le voir</translation>
 <translation id="5830720307094128296">Enregistrer la p&amp;age sous...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Connecté en tant que <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Supprimer les données et autorisations de <ph name="SITE_NAME" />, de tous les sites qui en dépendent et de son appli installée ?</translation>
 <translation id="5832813618714645810">Profils</translation>

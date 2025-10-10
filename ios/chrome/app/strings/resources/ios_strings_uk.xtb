@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="154312949627292154">Відкривайте вкладки, надіслані з інших пристроїв, на екрані блокування.</translation>
 <translation id="1545749641540134597">Сканувати QR-код</translation>
+<translation id="1545757265410828525">Історія цін</translation>
 <translation id="1547610699249301703">Діліться паролями</translation>
 <translation id="1554477036522844996">Нове вікно</translation>
 <translation id="1558391695376153246">Закрити анонімні вкладки</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Щоб переглядати вебсторінки в анонімному режимі, прокрутіть екран уліво.</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2451607499823206582">Відстеження</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} запис історії}one{{count} запис історії}few{{count} записи історії}many{{count} записів історії}other{{count} запису історії}}</translation>
 <translation id="2461070143328828326">Налаштування паролю</translation>
 <translation id="2462736546165239215">Тут ви можете переглянути всю історію веб-перегляду.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
 <translation id="334690320928261823">Останні вкладки</translation>
 <translation id="3349031117032695619">Блокувати спливаючі вікна</translation>
-<translation id="3349676726073650389">Сайти й пошукові запити, на які ви підписалися, зберігаються в обліковому записі Google. Ви можете будь-коли керувати підписками в налаштуваннях.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Обліковим записом керує адміністратор.</translation>
 <translation id="3365529507898144230">Зберегти у Фото</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Розташування адресного рядка</translation>
 <translation id="4870911314065352661">Закрити всі вкладки?</translation>
 <translation id="4872664437015695612">Відкрити в папці "Завантаження"</translation>
-<translation id="4875260838563541343">Кнопка дії</translation>
 <translation id="4876237378696925987">Почати</translation>
 <translation id="4876305945144899064">Немає імені користувача</translation>
 <translation id="4876665338492917862">Відкрито <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">Додайте назву</translation>
 <translation id="6052269326659653305">Змінити профіль</translation>
 <translation id="605721222689873409">РР</translation>
-<translation id="6059103953801602038">Сайти, на які ви підписалися, зберігаються в обліковому записі Google. Керувати ними можна в налаштуваннях рекомендацій.</translation>
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6066301408025741299">Торкніться, щоб скасувати.</translation>
 <translation id="6074656473835429958">Отримувати сповіщення</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">Аудіо</translation>
 <translation id="6770452996697898492">[ЗАБРОНЬОВАНО]</translation>
 <translation id="6779455296366983087">Дані веб-перегляду буде видалено</translation>
-<translation id="6790502149545262384">Незабаром, відкривши нову вкладку, ви бачитимете історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Натисніть "Додати вкладку в нову групу"</translation>
 <translation id="6794476726485507147">Виберіть дату й час, коли має надійти сповіщення з нагадуванням повернутися на цю сторінку</translation>
 <translation id="6795481620482106033">Недійсні дані</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{Не вдалось імпортувати {count} пароль}one{Не вдалось імпортувати {count} пароль}few{Не вдалось імпортувати {count} паролі}many{Не вдалось імпортувати {count} паролів}other{Не вдалось імпортувати {count} пароля}}</translation>
 <translation id="7095110968493193530">У Google Менеджері паролів для облікового запису <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Щоб переглянути, як змінювалися ціни із часом, натисніть "Історія цін" в адресному рядку</translation>
-<translation id="7101580180124131336">Тепер у розділі "Підписки" відображатиметься контент із каналу <ph name="CHANNEL_NAME" /> і про нього.</translation>
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налаштування → Способи оплати</translation>
 <translation id="7108338896283013870">Сховати</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
 <translation id="7437712592381799950">Проведіть пальцем угору, щоб переглянути більше персоналізованого контенту.</translation>
 <translation id="7438473148803748807">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і всі посилання для запрошення буде вимкнено</translation>
-<translation id="7438481509621345350">Тепер, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7445682342344043969">Спливаючі вікна заблоковано</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладку збережено в папці "{title}"}one{Закладки збережено в папці "{title}"}few{Закладки збережено в папці "{title}"}many{Закладки збережено в папці "{title}"}other{Закладки збережено в папці "{title}"}}</translation>
 <translation id="7451404862887877229">Натисніть "Конфіденційність і безпека", а потім – "Безпечний перегляд"</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
 <translation id="8393889347136007944">Вкладки, які не використовуються протягом <ph name="THRESHOLD" /> дн.</translation>
 <translation id="8395180897620197612">Припинити запис у журналі</translation>
-<translation id="8395339334550012808">Невдовзі в розділі "Підписки" відображатиметься контент із каналу <ph name="CHANNEL_NAME" /> і про нього.</translation>
-<translation id="8402673309244746971">Перейти до стрічки "У підписках"</translation>
 <translation id="8407669440184693619">Немає паролів для цього сайту</translation>
 <translation id="8407831512155324054">Ваші паролі надійні</translation>
 <translation id="8414283596511250978">Ніколи не забувайте свої паролі</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="954667170699278022">Список читання</translation>
 <translation id="956218893102219091">Щоб отримувати найточніші відповіді від Gemini, використовуйте точне місцезнаходження замість приблизного, яке визначається на основі IP-адреси. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>
 <translation id="963102227019621224">Історія додатків і вебпошуку</translation>
 <translation id="966593914872420832">Голосовий пошук</translation>

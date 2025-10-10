@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
 <translation id="1363028406613469049">Traccia</translation>
 <translation id="1366525380420346469">Quando la funzionalità è attiva</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Puoi impedire a questo sito di inviare notifiche future}other{Puoi impedire a questi siti di inviare notifiche future}}</translation>
 <translation id="1373696734384179344">Memoria non sufficiente per scaricare i contenuti selezionati.</translation>
 <translation id="1376578503827013741">Elaborazione...</translation>
 <translation id="1381838868249179644">Per contribuire alla tua sicurezza, sono state rimosse le autorizzazioni di alcuni siti</translation>

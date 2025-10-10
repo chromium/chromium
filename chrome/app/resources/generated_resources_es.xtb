@@ -1387,7 +1387,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1931410639376954712">Instalando <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Posterior a</translation>
 <translation id="1932125073382155239">¿Crear copia de seguridad de tus cosas?</translation>
-<translation id="1933070475689690969">Actividad en las apps de Gemini</translation>
+<translation id="1933070475689690969">Actividad en las aplicaciones de Gemini</translation>
 <translation id="1933489278505808700">Tiene permiso para leer y modificar</translation>
 <translation id="1935303383381416800">Pueden ver tu ubicación</translation>
 <translation id="193565226207940518">Herramienta de asistencia</translation>
@@ -1637,6 +1637,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2102495993840063010">Aplicaciones de Android</translation>
 <translation id="2104166991923847969">Desactivar Compartir Internet automáticamente</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
+<translation id="2106439768713835453">Compartir también el audio de la aplicación</translation>
 <translation id="2108204112555497972">Comprobadas hace <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2109384632594340939">imagen de perfil</translation>
@@ -3014,6 +3015,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3038612606416062604">Añadir una impresora manualmente</translation>
 <translation id="3038628620670416486">Localizar botones en tu ratón</translation>
 <translation id="3039491566278747710">Se ha producido un error al instalar la política sin conexión en el dispositivo.</translation>
+<translation id="3040435070100611531">Tus pases de Google Wallet</translation>
 <translation id="3040982432432547149">Ayúdanos a mejorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambia la estrategia de carga optimizada.</translation>
@@ -3555,7 +3557,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3441824746233675597">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. <ph name="PRODUCT_NAME" /> usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="3442674350323953953">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Si rechazas esta opción, los datos se enviarán a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenarán ni se usarán de otro modo.</translation>
 <translation id="3443545121847471732">Introduce un PIN de 6 dígitos</translation>
-<translation id="3443702190855647469">Gestionar apps conectadas</translation>
+<translation id="3443702190855647469">Gestionar aplicaciones conectadas</translation>
 <translation id="3443744348829035122">Tiempo de espera de <ph name="BRAND" /> agotado</translation>
 <translation id="3443754338602062261">Ya tienes contraseñas para estas cuentas en tu <ph name="BRAND" />. Si decides importar una de las contraseñas que se indican a continuación, se sustituirá la contraseña actual.</translation>
 <translation id="344449859752187052">Cookies de terceros bloqueadas</translation>
@@ -3838,7 +3840,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3635199270495525546">Módulo de plataforma de confianza (TPM) detectado</translation>
 <translation id="3635353578505343390">Enviar comentarios a Google</translation>
 <translation id="3635960017746711110">Preferencias de USB en Crostini</translation>
-<translation id="3636538438330991674">Gestiona a qué apps se conecta Gemini</translation>
+<translation id="3636538438330991674">Gestiona a qué aplicaciones se conecta Gemini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> hasta agotar la batería</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Cuentas adicionales</translation>
@@ -3874,6 +3876,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3656328935986149999">Velocidad del cursor</translation>
 <translation id="3656701180077048004">Añade un tiempo entre el momento en que pulsas una tecla y el momento en que se activa</translation>
 <translation id="3658871634334445293">Aceleración del TrackPoint</translation>
+<translation id="3659483399659250379">Añade una pestaña u otros elementos</translation>
 <translation id="3659929705630080526">Has introducido un código de acceso incorrecto demasiadas veces. Vuelve a intentarlo más tarde.</translation>
 <translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 contraseña existente encontrada}other{{NUM_PASSWORDS} contraseñas existentes encontradas}}</translation>
@@ -5405,6 +5408,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4707337002099455863">Permitir siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Permitir también audio de las pestañas</translation>
+<translation id="4710347732286177840">Selecciona una zona de la pantalla para hacer un seguimiento</translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eliminar al cerrar todas las ventanas</translation>
@@ -6973,6 +6977,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Tu contraseña está cifrada y nadie la puede ver</translation>
 <translation id="5830720307094128296">Guardar página &amp;como...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Has iniciado sesión como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">¿Eliminar datos del sitio y permisos de <ph name="SITE_NAME" />, todos los sitios que incluya y su aplicación instalada?</translation>
 <translation id="5832813618714645810">Perfiles</translation>
@@ -7535,7 +7540,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="622484624075952240">Abajo</translation>
 <translation id="622537739776246443">Se eliminará el perfil</translation>
 <translation id="6225475702458870625">Conexión de datos disponible desde tu <ph name="PHONE_NAME" /></translation>
-<translation id="622568138962270592">Actividad en las apps de Gemini</translation>
+<translation id="622568138962270592">Actividad en las aplicaciones de Gemini</translation>
 <translation id="6226777517901268232">Archivo de clave privada (opcional)</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="622902691730729894">Desfijar grupo de la barra de marcadores</translation>

@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">آدرس ۱</translation>
 <translation id="154312949627292154">برگه‌های دریافت‌شده از دستگاه‌های دیگرتان را از صفحه قفل باز کنید.</translation>
 <translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
+<translation id="1545757265410828525">سابقه قیمت</translation>
 <translation id="1547610699249301703">هم‌رسانی گذرواژه‌ها</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2434918313224755415">برای مرور در «حالت ناشناس»، می‌توانید به چپ پیمایش کنید.</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2451607499823206582">پیگیری</translation>
 <translation id="2458827363789845126">{count,plural, =1{‫{count} مورد از سابقه}one{‫{count} مورد از سابقه}other{‫{count} مورد از سابقه}}</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
 <translation id="2462736546165239215">می‌توانید همه سابقه مرورتان را در اینجا ببینید.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="334690320928261823">زبانه‌های اخیر</translation>
 <translation id="3349031117032695619">مسدود کردن بالاپرها</translation>
-<translation id="3349676726073650389">‏سایت‌ها و جستجوهایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. هرزمان خواستید می‌توانید مواردی را که دنبال می‌کنید در تنظیمات مدیریت کنید.</translation>
 <translation id="3353037916374303415">‫<ph name="EMAIL" />. این حساب تحت‌مدیریت است.</translation>
 <translation id="3365529507898144230">‏ذخیره در Photos</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">موقعیت نوار نشانی</translation>
 <translation id="4870911314065352661">همه زبانه‌ها بسته شود؟</translation>
 <translation id="4872664437015695612">باز کردن در بارگیری‌ها</translation>
-<translation id="4875260838563541343">دکمه کنش</translation>
 <translation id="4876237378696925987">شروع کردن</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
 <translation id="4876665338492917862">در تاریخ <ph name="LAST_OPENING_DATE" /> باز شد</translation>
@@ -1297,7 +1297,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6045460247888249350">افزودن عنوان</translation>
 <translation id="6052269326659653305">عوض کردن نمایه</translation>
 <translation id="605721222689873409">سال</translation>
-<translation id="6059103953801602038">‏سایت‌هایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شود. می‌توانید آن‌ها را در تنظیمات «یافته‌ها» مدیریت کنید.</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6066301408025741299">برای لغو تک‌ضرب بزنید.</translation>
 <translation id="6074656473835429958">دریافت اعلان</translation>
@@ -1510,7 +1509,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6761393919622941301">صدا</translation>
 <translation id="6770452996697898492">[رزروشده]</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
-<translation id="6790502149545262384">به‌زودی وقتی زبانه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>
 <translation id="6794476726485507147">تاریخ و ساعتی برای دریافت اعلان یادآور جهت بازدید مجدد از این صفحه انتخاب کنید.</translation>
 <translation id="6795481620482106033">داده‌های نامعتبر</translation>
@@ -1589,7 +1587,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7091023926159231962">{count,plural, =1{‫{count} گذرواژه وارد نشد}one{‫{count} گذرواژه وارد نشد}other{‫{count} گذرواژه وارد نشد}}</translation>
 <translation id="7095110968493193530">‏در «مدیر گذرواژه Google» برای <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">در نوار نشانی، روی سابقه قیمت تک‌ضرب بزنید تا تغییرات قیمت را درطول زمان ببینید</translation>
-<translation id="7101580180124131336">اکنون محتوای برگرفته از <ph name="CHANNEL_NAME" /> و محتوای مربوط به آن را در «دنبال می‌کنید» خواهید دید.</translation>
 <translation id="7102005569666697658">درحال بارگیری… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">منو ← تنظیمات ← روش‌های پرداخت</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
@@ -1666,7 +1663,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7437712592381799950">برای دیدن محتوای بیشتری که متناسب با سلیقه شما است، می‌توانید تند به بالا بکشید.</translation>
 <translation id="7438473148803748807">همه دسترسی به گروه زبانه‌های «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
-<translation id="7438481509621345350">اکنون وقتی زبانه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7445682342344043969">پنجره‌های بازشو مسدود هستند</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7451404862887877229">روی «حریم خصوصی و امنیت» و سپس «مرور ایمن» تک‌ضرب بزنید</translation>
@@ -1933,8 +1929,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8393889347136007944">برگه‌هایی که به‌مدت <ph name="THRESHOLD" /> روز استفاده نشده‌اند</translation>
 <translation id="8395180897620197612">متوقف کردن گزارش‌گیری</translation>
-<translation id="8395339334550012808">به‌زودی محتوای برگرفته از <ph name="CHANNEL_NAME" /> و محتوای مربوط به آن را در «دنبال می‌کنید» خواهید دید.</translation>
-<translation id="8402673309244746971">رفتن به «دنبال می‌کنید»</translation>
 <translation id="8407669440184693619">هیچ گذرواژه‌ای برای این سایت پیدا نشد</translation>
 <translation id="8407831512155324054">گذرواژه‌هایتان قوی به‌نظر می‌رسند</translation>
 <translation id="8414283596511250978">هرگز گذرواژه‌هایتان را فراموش نکنید</translation>
@@ -2173,7 +2167,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="952704832371081537">لغو</translation>
 <translation id="954667170699278022">فهرست خواندن</translation>
 <translation id="956218893102219091">‏برای دریافت دقیق‌ترین نتایج از Gemini، به‌جای استفاده از مکان تخمینی مبتنی بر نشانی IP، از مکان دقیق خود استفاده کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">‫<ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
 <translation id="963102227019621224">فعالیت‌ها در وب و برنامه</translation>
 <translation id="966593914872420832">جستجوی گفتاری</translation>

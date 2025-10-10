@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">აირჩიეთ საძიებო სისტემა</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-მა უარყო დაკავშირება.</translation>
 <translation id="6433797564277305076">დაადასტურეთ ბარათები უფრო სწრაფად — გამოიყენეთ ამიერიდან მოწყობილობის განბლოკვის მეთოდი</translation>
+<translation id="6436994298828707228">კავშირი დაბლოკილია, რადგან ის წამოწყებული იყო საჯარო გვერდის მიერ, რომელსაც სურდა თქვენს ადგილობრივ ქსელში არსებულ მოწყობილობებთან ან სერვერებთან დაკავშირება.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">კაბები</translation>
 <translation id="6440503408713884761">იგნორირებული</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">ორმაგად გახვრეტა მარცხნივ</translation>
 <translation id="6549443526281184652">კოსტიუმები</translation>
 <translation id="6550245281449521513">მაუსის ჩაკეტვა არაა დაშვებული</translation>
+<translation id="6552566579578780089">გადახდები</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="6556866813142980365">გამეორება</translation>
 <translation id="6557715786897013164">14 x 17 დუიმი</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">თანმიმდევრული პორტები</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">განვადებით გადახდა</translation>
 <translation id="6825578344716086703">თქვენ ცადეთ <ph name="DOMAIN" />-თან დაკავშირება, თუმცა სერვერის მიერ წარმოდგენილი სერტიფიკატი ხელმოწერილია სუსტი ალგორითმის მეშვეობით (მაგ. SHA-1). ეს ნიშნავს, რომ დაცვის მტკიცებულებათა ნაკრები, რომელიც სერვერმა წარმოადგინა, შეიძლება გაყალბებული იყოს, ხოლო სერვერი არ იყოს ის, რომელსაც მოელით (შეიძლება საქმე თავდამსხმელთან გქონდეთ).</translation>
 <translation id="6826993739343257035">გსურთ AR-ის დაშვება?</translation>
 <translation id="6828150717884939426">ზარი</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">უზრუნველყოფს Google</translation>
 <translation id="753713322968419914">ამოიშალოს თქვენი სახლის მისამართი Chrome-ის ავტომატური შევსებიდან?</translation>
 <translation id="7537536606612762813">სავალდებულო</translation>
+<translation id="7541043894191476250">კონტექსტური ამოცანები</translation>
 <translation id="7543525346216957623">სთხოვეთ მშობელს</translation>
 <translation id="7546409722674205727">მიმდინარეობს <ph name="APP_NAME" />-ის გაშვება</translation>
 <translation id="7548892272833184391">კავშირის შეცდომების აღმოფხვრა</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">პაროლების შევსებისთვის თქვენი ეკრანის დაბლოკვის მეთოდის გამოყენების შეწყვეტა</translation>
 <translation id="8407031780528483338">სამზარეულოს ჭურჭელი</translation>
 <translation id="8409413588194360210">გადახდის დამმუშავებლები</translation>
+<translation id="8410956920192583322">ყოველთვიური ან 4 გადახდა</translation>
 <translation id="8412145213513410671">შეცდომები (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ერთი და იგივე პაროლის ფრაზა ორჯერ უნდა შეიყვანოთ.</translation>
 <translation id="8414322570408428950">გაფართოების მოვლენა მოხდა</translation>
@@ -4793,6 +4798,7 @@
 <translation id="8922734931659847428">თქვენ მიერ მონახულებული იმ გვერდების URL-ების შეზღუდული სია, რომლებზეც <ph name="BEGIN_LINK" />მოვლენები მოძველებული ტექნოლოგიით<ph name="END_LINK" /> ხდება</translation>
 <translation id="892588693504540538">ზედა მარჯვენა ნაწილის გახვრეტა</translation>
 <translation id="8926389886865778422">აღარ მკითხო</translation>
+<translation id="8926400492587758246">განვადებით გადახდა ყოველთვიურად, მცირე ოდენობით</translation>
 <translation id="8932102934695377596">თქვენი საათი უკანაა</translation>
 <translation id="893332455753468063">დაამატეთ სახელი</translation>
 <translation id="8938242527120341116">თქვენი მოწყობილობის კონტენტის ფილტრებმა დაბლოკა <ph name="BLOCKED_URL" /></translation>

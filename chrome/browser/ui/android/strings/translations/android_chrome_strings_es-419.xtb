@@ -1381,6 +1381,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7177873915659574692">No se puede crear un código QR. La dirección URL tiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7182051712900867547">Usar otra cuenta</translation>
+<translation id="7182520625618447753">Cambia la posición de la barra de direcciones a la parte superior o inferior para obtener una experiencia de navegación personalizada</translation>
 <translation id="7183517696921903380">La hoja de filtros de apps está abierta.</translation>
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
 <translation id="7190921792980745354">¿Quieres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>

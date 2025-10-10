@@ -1636,6 +1636,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Aplicacións para Android</translation>
 <translation id="2104166991923847969">Desactivar a zona wifi automaticamente</translation>
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Compartir tamén o audio da aplicación</translation>
 <translation id="2108204112555497972">Comprobáronse hai <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2109384632594340939">imaxe do perfil</translation>
@@ -3012,6 +3013,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3038612606416062604">Engadir unha impresora manualmente</translation>
 <translation id="3038628620670416486">Localiza os botóns do rato</translation>
 <translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
+<translation id="3040435070100611531">Os teus pases de Google Wallet</translation>
 <translation id="3040982432432547149">Axúdanos a mellorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar a estratexia de carga optimizada.</translation>
@@ -3875,6 +3877,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3656328935986149999">Velocidade do cursor</translation>
 <translation id="3656701180077048004">Engade un atraso entre o momento no que premes unha tecla e o momento no que se activa</translation>
 <translation id="3658871634334445293">Aceleración de TrackPoint</translation>
+<translation id="3659483399659250379">Engade unha pestana e moito máis</translation>
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
 <translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Atopouse un contrasinal}other{Atopáronse {NUM_PASSWORDS} contrasinais}}</translation>
@@ -5407,6 +5410,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4707337002099455863">Sempre en todos os sitios</translation>
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Permitir tamén o audio da pestana</translation>
+<translation id="4710347732286177840">Seleccionar unha rexión da pantalla para facer un seguimento</translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eliminar datos cando peches todas as ventás</translation>
@@ -6975,6 +6979,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5830205393314753525">Non se puido abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">O teu contrasinal está encriptado e ninguén o pode ver</translation>
 <translation id="5830720307094128296">Gardar páxina &amp;como...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Sesión iniciada como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Queres eliminar os datos do sitio e os permisos de <ph name="SITE_NAME" />, así como os de todos os sitios que inclúa e os da súa aplicación instalada?</translation>
 <translation id="5832813618714645810">Perfís</translation>

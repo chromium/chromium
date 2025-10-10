@@ -11028,6 +11028,15 @@ Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2)
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="8254749125469750814">Tidak memvalidasi apakah ekstensi dapat diinstal atau tidak dengan layanan cloud.</translation>
+<translation id="825509998103089977">Mengontrol apakah aplikasi Gemini diizinkan untuk mengambil tindakan di halaman web atas nama pengguna.
+
+0/tidak disetel  = Aplikasi Gemini diizinkan untuk mengambil tindakan di halaman web.
+
+1 = Aplikasi Gemini tidak diizinkan untuk mengambil tindakan di halaman web.
+
+Kebijakan ini tidak akan berpengaruh jika aplikasi Gemini dinonaktifkan. Misalnya, aplikasi Gemini dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya, lihat https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 

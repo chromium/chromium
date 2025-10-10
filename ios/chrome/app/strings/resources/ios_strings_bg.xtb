@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Адрес 1</translation>
 <translation id="154312949627292154">Отваряйте от заключения екран разделите, получени от другите ви устройства.</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
+<translation id="1545757265410828525">История на цените</translation>
 <translation id="1547610699249301703">Споделяне на пароли</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Можете да превъртите наляво, за да сърфирате в режим „инкогнито“.</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2451607499823206582">Проследяване</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} елемент от историята}other{{count} елемента от историята}}</translation>
 <translation id="2461070143328828326">Настройки за паролите</translation>
 <translation id="2462736546165239215">Тук можете да намерите цялата си история на сърфиране.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="334690320928261823">Скорошни раздели</translation>
 <translation id="3349031117032695619">Блокиране на изскачащите прозорци</translation>
-<translation id="3349676726073650389">Сайтовете и търсенията, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките по всяко време.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Този профил е управляван.</translation>
 <translation id="3365529507898144230">Запазване в Снимки</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Позиция на адресната лента</translation>
 <translation id="4870911314065352661">Искате ли да затворите всички раздели?</translation>
 <translation id="4872664437015695612">Отваряне в „Изтегляния“</translation>
-<translation id="4875260838563541343">Бутон за действие</translation>
 <translation id="4876237378696925987">Стартиране</translation>
 <translation id="4876305945144899064">Няма потребителско име</translation>
 <translation id="4876665338492917862">Отворено на <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">Добавете заглавие</translation>
 <translation id="6052269326659653305">Превключване на потребителския профил</translation>
 <translation id="605721222689873409">ГГ</translation>
-<translation id="6059103953801602038">Сайтовете, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките за Discover.</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
 <translation id="6074656473835429958">Получаване на известия</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИРАНО]</translation>
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
-<translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6791425686608802741">Докоснете „Добавяне на раздела към нова група“</translation>
 <translation id="6794476726485507147">Изберете дата и час, когато да получите известие с напомняне да посетите отново тази страница</translation>
 <translation id="6795481620482106033">Невалидни данни</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{{count} парола не бе импортирана}other{{count} пароли не бяха импортирани}}</translation>
 <translation id="7095110968493193530">Към Google Мениджър на пароли за <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Докоснете „История на цените“ в адресната лента, за да видите промените в цените с течение на времето</translation>
-<translation id="7101580180124131336">Вече в „Следено“ ще виждате съдържание от и за <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7102005569666697658">Изтегля се… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Начини на плащане</translation>
 <translation id="7108338896283013870">Скриване</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
 <translation id="7437712592381799950">Можете да плъзнете нагоре, за да видите повече съдържание, персонализирано за вас.</translation>
 <translation id="7438473148803748807">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и всички връзки към поканата ще бъдат изключени</translation>
-<translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7445682342344043969">Изскачащите прозорци са блокирани</translation>
 <translation id="7451023311965289370">{count,plural, =1{Отметката е запазена в(ъв) „{title}“}other{Отметките са запазени в(ъв) „{title}“}}</translation>
 <translation id="7451404862887877229">Докоснете „Поверителност и сигурност“ и след това – Безопасно сърфиране.</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8393889347136007944">Разделите не са използвани от <ph name="THRESHOLD" /> дни</translation>
 <translation id="8395180897620197612">Спиране на регистрирането</translation>
-<translation id="8395339334550012808">Скоро в „Следено“ ще виждате съдържание от и за <ph name="CHANNEL_NAME" />.</translation>
-<translation id="8402673309244746971">Към „Следено“</translation>
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="8407831512155324054">Паролите ви изглеждат надеждни</translation>
 <translation id="8414283596511250978">Никога не забравяйте паролите си</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">Отказ</translation>
 <translation id="954667170699278022">Списък за четене</translation>
 <translation id="956218893102219091">За най-уместни резултати от Gemini използвайте точното си местоположение вместо приблизителното местоположение въз основа на IP адреса си. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="963102227019621224">Активност в мрежата и приложенията</translation>
 <translation id="966593914872420832">Гласово търсене</translation>

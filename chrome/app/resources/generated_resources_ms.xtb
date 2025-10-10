@@ -336,6 +336,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1216891999012841486">Ketahui lebih lanjut tentang membetulkan ralat kemaskinian</translation>
 <translation id="1217114730239853757">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS Flex? Jika ya, tekan bar ruang.</translation>
 <translation id="1217117837721346030">Muat turun fail yang mencurigakan</translation>
+<translation id="1217437913373100941">Tab baharu dalam <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Data setempat anda akan dipadamkan tidak lama lagi</translation>
 <translation id="1217668622537098248">Kembali ke klik kiri selepas tindakan</translation>
 <translation id="1218015446623563536">Padamkan Linux</translation>
@@ -3027,6 +3028,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3038612606416062604">Tambahkan pencetak secara manual</translation>
 <translation id="3038628620670416486">Cari butang pada tetikus anda</translation>
 <translation id="3039491566278747710">Gagal memasang dasar luar talian pada peranti.</translation>
+<translation id="3040435070100611531">Pas Google Wallet anda</translation>
 <translation id="3040982432432547149">Bantu kami meningkatkan Steam pada Chromebook</translation>
 <translation id="304169924727249890">Sertai Kumpulan Tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Tukar strategi pengecasan yang dioptimumkan.</translation>
@@ -3235,6 +3237,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
         <ph name="BREAK" />
         <ph name="BREAK" />
         Anda boleh mengurus tetapan daripada kad ini pada bila-bila masa atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Tab baharu dalam 1 tab}other{Tab baharu dalam # tab}}</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
 <translation id="3208584281581115441">Semak sekarang</translation>
 <translation id="3208703785962634733">Tidak disahkan</translation>
@@ -3410,6 +3413,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video dimainkan dalam mod gambar dalam gambar</translation>
 <translation id="3335380372402547327">Pratonton pemberitahuan denyar</translation>
 <translation id="3335947283844343239">Buka Semula Tab Yang Ditutup</translation>
+<translation id="3336661809256024098">Tab Baharu dalam <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Tidak pasti</translation>
 <translation id="3337568642696914359">Jangan benarkan laman mengendalikan protokol</translation>
 <translation id="333863344734218290">Memberi anda amaran untuk laman awam &amp; peribadi yang tidak selamat</translation>
@@ -6991,6 +6995,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5830205393314753525">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Kata laluan anda disulitkan dan tidak akan dilihat oleh sesiapa sahaja</translation>
 <translation id="5830720307094128296">Simpan Halaman &amp;Sebagai...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Log masuk sebagai <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Padamkan data laman dan kebenaran untuk <ph name="SITE_NAME" />, semua laman di bawah laman tersebut dan apl yang dipasang?</translation>
 <translation id="5832813618714645810">Profil</translation>
@@ -7193,7 +7198,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5965607173855879702">Memadamkan data...</translation>
 <translation id="5966511985653515929">Data laman dipadamkan daripada peranti anda apabila anda menutup semua tetingkap</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
-<translation id="5968400720580217226">Mod AI</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5969364029958154283">Ketahui lebih lanjut tentang menetapkan semula tetapan</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> boleh melihat fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Notis pintasan papan kekunci diketepikan</translation>
@@ -8953,6 +8958,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7211783048245131419">Belum ada suis yang telah ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN semasa anda untuk menukar PIN. Jika anda tidak tahu PIN anda, anda perlu menetapkan semula kunci keselamatan, kemudian buat PIN baharu.</translation>
 <translation id="7214047272988222011">Dibenarkan – <ph name="PERMISSION_DETAILS" />. Hidupkan <ph name="LINK_BEGIN" />akses kamera sistem<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Tab Baharu dalam 1 Tab}other{Tab Baharu dalam # Tab}}</translation>
 <translation id="721490496276866468">Import kata laluan</translation>
 <translation id="7217208603285112910">Pilihan bukan dalam bahasa <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
@@ -9240,6 +9246,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7410344089573941623">Tanya jika <ph name="HOST" /> ingin mengakses kamera dan mikrofon anda</translation>
 <translation id="7410421966064092098">Laman tidak dapat mengesahkan anda bukan bot</translation>
 <translation id="7410852728357935715">Hantar ke peranti</translation>
+<translation id="741148343080227980">Anda boleh mengedit nama anda <ph name="BEGIN_LINK" />dalam Google Account anda<ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7412226954991670867">Memori GPU</translation>
 <translation id="741370456693729525">Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati</translation>

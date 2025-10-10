@@ -1381,6 +1381,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7177873915659574692">QR kód sa nedá vytvoriť. Webová adresa obsahuje viac ako <ph name="CHARACTER_LIMIT" /> znakov.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7182051712900867547">Použiť iný účet</translation>
+<translation id="7182520625618447753">Zmenou umiestnenia panela s adresou nahor alebo nadol získate prispôsobenejšie prostredie prehliadania</translation>
 <translation id="7183517696921903380">Hárok filtrov aplikácie je otvorený.</translation>
 <translation id="7186568385131859684">Ovládajte, ako sa história prehliadania používa s inými údajmi v službách Googlu</translation>
 <translation id="7190921792980745354">Chcete zablokovať používateľa <ph name="MEMBER_FULL_NAME" />?</translation>

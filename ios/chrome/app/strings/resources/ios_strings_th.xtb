@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
 <translation id="154312949627292154">เปิดแท็บที่ได้รับจากอุปกรณ์อื่นๆ ของคุณจากหน้าจอล็อก</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
+<translation id="1545757265410828525">ประวัติราคา</translation>
 <translation id="1547610699249301703">แชร์รหัสผ่าน</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2434918313224755415">คุณสามารถเลื่อนไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
+<translation id="2451607499823206582">การติดตาม</translation>
 <translation id="2458827363789845126">{count,plural, =1{รายการประวัติการเข้าชม {count} รายการ}other{รายการประวัติการเข้าชม {count} รายการ}}</translation>
 <translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
 <translation id="2462736546165239215">คุณดูประวัติการท่องเว็บทั้งหมดได้ที่นี่</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="334690320928261823">แท็บล่าสุด</translation>
 <translation id="3349031117032695619">บล็อกป๊อปอัป</translation>
-<translation id="3349676726073650389">ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> บัญชีนี้มีการจัดการ</translation>
 <translation id="3365529507898144230">บันทึกใน Photos</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">ตำแหน่งของแถบที่อยู่</translation>
 <translation id="4870911314065352661">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="4872664437015695612">เปิดใน "ดาวน์โหลด"</translation>
-<translation id="4875260838563541343">ปุ่มดำเนินการ</translation>
 <translation id="4876237378696925987">เริ่มต้นใช้งาน</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
 <translation id="4876665338492917862">เปิดเมื่อ <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">เพิ่มชื่อ</translation>
 <translation id="6052269326659653305">เปลี่ยนโปรไฟล์</translation>
 <translation id="605721222689873409">ปป</translation>
-<translation id="6059103953801602038">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่าฟีเจอร์สำรวจ</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
 <translation id="6074656473835429958">รับการแจ้งเตือน</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">เสียง</translation>
 <translation id="6770452996697898492">[จองแล้ว]</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
-<translation id="6790502149545262384">เร็วๆ นี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="6791425686608802741">แตะ "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
 <translation id="6794476726485507147">เลือกวันที่และเวลาที่จะรับการแจ้งเตือนเกี่ยวกับการช่วยเตือนให้กลับมาดูหน้านี้</translation>
 <translation id="6795481620482106033">ข้อมูลไม่ถูกต้อง</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{นำเข้ารหัสผ่าน {count} รายการไม่ได้}other{นำเข้ารหัสผ่าน {count} รายการไม่ได้}}</translation>
 <translation id="7095110968493193530">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">ในแถบที่อยู่ ให้แตะประวัติราคาเพื่อดูการเปลี่ยนแปลงของราคาเมื่อเวลาผ่านไป</translation>
-<translation id="7101580180124131336">ตอนนี้คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="CHANNEL_NAME" /> ใน "กำลังติดตาม"</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">เมนู → การตั้งค่า → วิธีการชำระเงิน</translation>
 <translation id="7108338896283013870">ซ่อน</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7437712592381799950">คุณปัดขึ้นเพื่อดูเนื้อหาที่ปรับให้เหมาะกับคุณเพิ่มเติมได้</translation>
 <translation id="7438473148803748807">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะปิดลิงก์คำเชิญทั้งหมด</translation>
-<translation id="7438481509621345350">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="7445682342344043969">บล็อกป๊อปอัป</translation>
 <translation id="7451023311965289370">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
 <translation id="7451404862887877229">แตะ "ความเป็นส่วนตัวและความปลอดภัย" แล้วแตะ Google Safe Browsing</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8393889347136007944">แท็บที่ไม่มีการใช้งานเป็นเวลา <ph name="THRESHOLD" /> วัน</translation>
 <translation id="8395180897620197612">หยุดการบันทึก</translation>
-<translation id="8395339334550012808">เร็วๆ นี้ คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="CHANNEL_NAME" /> ใน "กำลังติดตาม"</translation>
-<translation id="8402673309244746971">ไปยังฟีด "กำลังติดตาม"</translation>
 <translation id="8407669440184693619">ไม่พบรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="8407831512155324054">คุณใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="8414283596511250978">จดจำรหัสผ่านของคุณได้เสมอ</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
 <translation id="956218893102219091">ใช้ตำแหน่งที่แน่นอนเพื่อให้ Gemini แสดงผลลัพธ์ที่แม่นยำที่สุด แทนที่จะใช้ตำแหน่งโดยประมาณตามที่อยู่ IP ของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="963102227019621224">กิจกรรมบนเว็บและแอป</translation>
 <translation id="966593914872420832">ค้นหาด้วยเสียง</translation>

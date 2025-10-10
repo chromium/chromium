@@ -3311,6 +3311,7 @@
 <translation id="6433501201775827830">Іздеу жүйесін таңдаңыз</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> байланыстан бас тартты.</translation>
 <translation id="6433797564277305076">Құрылғының құлпын ашу функциясы арқылы карталарды жылдамырақ растаңыз.</translation>
+<translation id="6436994298828707228">Байланыс блокталды, себебі ол жергілікті желіңіздегі құрылғыларға немесе серверлерге қосылу үшін баршаға ашық беттен іске қосылды.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">Көйлектер</translation>
 <translation id="6440503408713884761">Еленбейді</translation>
@@ -3382,6 +3383,7 @@
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
 <translation id="6549443526281184652">Костюмдер</translation>
 <translation id="6550245281449521513">Тінтуірді құлыптауға рұқсат берілмеді</translation>
+<translation id="6552566579578780089">Төлемдер</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
 <translation id="6556866813142980365">Қайта орындау</translation>
 <translation id="6557715786897013164">14 x 17 дюйм</translation>
@@ -3530,6 +3532,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">сериялық порттар</translation>
 <translation id="6820686453637990663">CVC коды</translation>
+<translation id="6820949753458790123">Оңай бөліп төлеңіз.</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімсіз қолтаңба алгоритмімен (such as SHA-1) қол қойылған сертификатты ұсынды. Сервер ұсынған қауіпсіздік тіркелу деректері жалған болуы және ол сіз күткен сервер болмауы (шабуылшымен байланысқан болуыңыз) мүмкін.</translation>
 <translation id="6826993739343257035">AR режиміне рұқсат етілсін бе?</translation>
 <translation id="6828150717884939426">Қоңырау шалу</translation>
@@ -3977,6 +3980,7 @@
 <translation id="753556296624075801">Google ұсынған</translation>
 <translation id="753713322968419914">Үй мекенжайын Chrome-ның автотолтыру функциясынан өшіру қажет пе?</translation>
 <translation id="7537536606612762813">Міндетті</translation>
+<translation id="7541043894191476250">Контекстік тапсырмалар</translation>
 <translation id="7543525346216957623">Ата-анаңыздан сұраңыз</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> бастап</translation>
 <translation id="7548892272833184391">Байланыс қателерін түзету</translation>
@@ -4502,6 +4506,7 @@
 <translation id="8406071103346257942">құпия сөздерді толтыру үшін экран құлпын пайдалануды тоқтату</translation>
 <translation id="8407031780528483338">Ас әзірлеуге қажетті жабдық</translation>
 <translation id="8409413588194360210">төлем өңдегіштері</translation>
+<translation id="8410956920192583322">Ай сайын немесе 4 рет бөліп төлеу</translation>
 <translation id="8412145213513410671">Бұзылу (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Бірдей құпия фразаны екі рет енгізу керек.</translation>
 <translation id="8414322570408428950">Кеңейтім оқиғасы орын алады</translation>
@@ -4792,6 +4797,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Бұрынғы технология оқиғалары<ph name="END_LINK" /> орын алатын сіз кіретін беттердің URL мекенжайларының шектеулі тізімі</translation>
 <translation id="892588693504540538">Жоғарғы оң жағын тесу</translation>
 <translation id="8926389886865778422">Енді сұралмасын</translation>
+<translation id="8926400492587758246">Ай сайын аз сомамен бөліп төлеңіз.</translation>
 <translation id="8932102934695377596">Сағатыңыз артта қалған</translation>
 <translation id="893332455753468063">Ат қосу</translation>
 <translation id="8938242527120341116">Құрылғының контент сүзгілері <ph name="BLOCKED_URL" /> мекенжайын блоктады.</translation>

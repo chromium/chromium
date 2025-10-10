@@ -338,6 +338,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1216891999012841486">Saznajte više o ispravljanju pogrešaka pri ažuriranju</translation>
 <translation id="1217114730239853757">Želite li aktivirati ChromeVox, ugrađeni čitač zaslona za ChromeOS Flex? Ako želite, pritisnite razmaknicu.</translation>
 <translation id="1217117837721346030">Preuzmi sumnjivu datoteku</translation>
+<translation id="1217437913373100941">Nova kartica u grupi <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Vaši lokalni podaci uskoro će se izbrisati</translation>
 <translation id="1217668622537098248">Vrati na lijevi klik nakon radnje</translation>
 <translation id="1218015446623563536">Brisanje Linuxa</translation>
@@ -1639,6 +1640,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2104166991923847969">Automatski isključi žarišnu točku</translation>
 <translation id="2105809836724866556">Skriveno: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Dijelite i zvuk aplikacije</translation>
 <translation id="2108204112555497972">Provjera je izvršena prije <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonski broj}one{# telefonski broj}few{# telefonska broja}other{# telefonskih brojeva}}</translation>
 <translation id="2109384632594340939">profilnu sliku</translation>
@@ -3016,6 +3018,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3038612606416062604">Ručno dodavanje pisača</translation>
 <translation id="3038628620670416486">Pronađite tipke na mišu</translation>
 <translation id="3039491566278747710">Instalacija izvanmrežnog pravila na uređaju nije uspjela.</translation>
+<translation id="3040435070100611531">Vaše propusnice u Google Walletu</translation>
 <translation id="3040982432432547149">Pomozite nam da poboljšamo Steam za Chromebook</translation>
 <translation id="304169924727249890">Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Promijenite strategiju optimiziranog punjenja.</translation>
@@ -3223,6 +3226,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
         <ph name="BREAK" />
         <ph name="BREAK" />
         Postavkama uvijek možete upravljati na ovoj kartici, a više opcija možete vidjeti u odjeljku Prilagodba Chromea.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica na jednoj kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208584281581115441">Provjeri sad</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
@@ -3398,6 +3402,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – reprodukcija videozapisa u načinu slike u slici</translation>
 <translation id="3335380372402547327">Pregled bljeskajućih obavijesti</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
+<translation id="3336661809256024098">Nova kartica u grupi <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nisam siguran/sigurna</translation>
 <translation id="3337568642696914359">Ne dopuštaj web-lokacijama upravljanje protokolima</translation>
 <translation id="333863344734218290">Upozorava vas na nesigurne javne i privatne web-lokacije</translation>
@@ -3875,6 +3880,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3656328935986149999">Brzina pokazivača</translation>
 <translation id="3656701180077048004">Dodaje odgodu između pritiska na tipku i njezine aktivacije</translation>
 <translation id="3658871634334445293">TrackPoint ubrzanje</translation>
+<translation id="3659483399659250379">Dodajte karticu i druge datoteke</translation>
 <translation id="3659929705630080526">Unijeli ste netočnu pristupnu šifru previše puta. Pokušajte ponovo kasnije</translation>
 <translation id="3661106764436337772">Pišite brže i samopouzdanije</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Pronađena je 1 postojeća zaporka}one{Pronađena je {NUM_PASSWORDS} postojeća zaporka}few{Pronađene su {NUM_PASSWORDS} postojeće zaporke}other{Pronađeno je {NUM_PASSWORDS} postojećih zaporki}}</translation>
@@ -5407,6 +5413,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4707337002099455863">Uvijek na svim web-lokacijama</translation>
 <translation id="4708849949179781599">Izađi iz programa <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Dopusti i zvuk kartice</translation>
+<translation id="4710347732286177840">Odaberite dio zaslona za koji želite dodatne informacije</translation>
 <translation id="4711638718396952945">Vrati postavke</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Izbriši nakon zatvaranja svih prozora</translation>
@@ -6973,6 +6980,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5830205393314753525">Nije moguće otvoriti aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Vaša je zaporka šifrirana i nitko je ne može vidjeti</translation>
 <translation id="5830720307094128296">Spremi stranicu &amp;kao...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Prijavljeni ste kao <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Želite li izbrisati podatke web-lokacije i dopuštenja za web-lokaciju <ph name="SITE_NAME" />, sve njoj podređene web-lokacije i njezinu instaliranu aplikaciju?</translation>
 <translation id="5832813618714645810">Profili</translation>
@@ -8938,6 +8946,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7211783048245131419">Još nije dodijeljen nijedan prekidač</translation>
 <translation id="7212097698621322584">Unesite svoj trenutačni PIN da biste ga promijenili. Ako ne znate PIN, vratite sigurnosni ključ na zadano, a zatim izradite novi PIN.</translation>
 <translation id="7214047272988222011">Dopušteno – <ph name="PERMISSION_DETAILS" />. Uključite <ph name="LINK_BEGIN" />pristup kameri sustava<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova kartica na jednoj kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
 <translation id="721490496276866468">Uvezite zaporke</translation>
 <translation id="7217208603285112910">Jezik odabira nije <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Želite li izbrisati podatke web-lokacije?</translation>
@@ -9225,6 +9234,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7410344089573941623">Pitaj ako <ph name="HOST" /> želi pristupiti kameri i mikrofonu</translation>
 <translation id="7410421966064092098">Web-lokacije ne mogu vam pomoći da potvrdite da niste bot</translation>
 <translation id="7410852728357935715">Emitirajte na uređaju</translation>
+<translation id="741148343080227980">Ime možete urediti <ph name="BEGIN_LINK" />na svojem Google računu <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, u redu</translation>
 <translation id="7412226954991670867">Memorija grafičkog procesora</translation>
 <translation id="741370456693729525">Koristite svakodnevni jezik da biste pretraživali svoju povijest pregledavanja i pronašli web-lokacije koje ste posjetili</translation>

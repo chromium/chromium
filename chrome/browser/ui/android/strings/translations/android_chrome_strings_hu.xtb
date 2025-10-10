@@ -1381,6 +1381,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7177873915659574692">Nem lehet létrehozni a QR-kódot. Az URL több mint <ph name="CHARACTER_LIMIT" /> karakterből áll.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7182051712900867547">Másik fiók használata</translation>
+<translation id="7182520625618447753">A személyre szabott böngészési élmény érdekében módosíthatja a címsáv pozícióját: felülre vagy alulra is helyezheti.</translation>
 <translation id="7183517696921903380">Az alkalmazásszűrő lap meg van nyitva.</translation>
 <translation id="7186568385131859684">Annak vezérlése, hogy a böngészési előzmények hogyan használhatók az Ön egyéb adataival a Google-szolgáltatásokban</translation>
 <translation id="7190921792980745354">Letiltja a következőt: <ph name="MEMBER_FULL_NAME" />?</translation>

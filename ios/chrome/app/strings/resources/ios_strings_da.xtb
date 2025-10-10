@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Åbn faner, der er modtaget fra dine andre enheder, via låseskærmen.</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
+<translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1547610699249301703">Del adgangskoder</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for at browse i inkognito.</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="2451607499823206582">Overvågning</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} historikelement}one{{count} historikelement}other{{count} historikelementer}}</translation>
 <translation id="2461070143328828326">Adgangskodeindstillinger</translation>
 <translation id="2462736546165239215">Du kan se hele din browserhistorik her.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto, {email}}one{Bogmærket er gemt i "{title}" på din konto, {email}}other{Bogmærkerne er gemt i "{title}" på din konto, {email}}}</translation>
 <translation id="334690320928261823">Seneste faner</translation>
 <translation id="3349031117032695619">Bloker pop op-vinduer</translation>
-<translation id="3349676726073650389">De websites og søgninger, du følger, gemmes på din Google-konto. Du kan til enhver tid administrere, hvad du følger, i indstillingerne.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dette er en administreret konto</translation>
 <translation id="3365529507898144230">Gem i Fotos</translation>
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Adresselinjens placering</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4872664437015695612">Åbn i Downloads</translation>
-<translation id="4875260838563541343">Handlingsknap</translation>
 <translation id="4876237378696925987">Kom godt i gang</translation>
 <translation id="4876305945144899064">Intet brugernavn</translation>
 <translation id="4876665338492917862">Åbnet <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6045460247888249350">Tilføj titel</translation>
 <translation id="6052269326659653305">Skift profil</translation>
 <translation id="605721222689873409">ÅÅ</translation>
-<translation id="6059103953801602038">De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
 <translation id="6066301408025741299">Tryk for at annullere.</translation>
 <translation id="6074656473835429958">Få notifikationer</translation>
@@ -1510,7 +1509,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6770452996697898492">[BOOKET]</translation>
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
-<translation id="6790502149545262384">Du får snart vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="6791425686608802741">Tryk på "Føj fane til ny gruppe"</translation>
 <translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
 <translation id="6795481620482106033">Ugyldige data</translation>
@@ -1589,7 +1587,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7091023926159231962">{count,plural, =1{{count} adgangskode kunne ikke importeres}one{{count} adgangskode kunne ikke importeres}other{{count} adgangskoder kunne ikke importeres}}</translation>
 <translation id="7095110968493193530">I Google Adgangs­kode­admin­istrator for <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Tryk på prishistorikken i adresselinjen for at se prisændringer over tid</translation>
-<translation id="7101580180124131336">Du kan nu se indhold fra og om <ph name="CHANNEL_NAME" /> i Følger.</translation>
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7108338896283013870">Skjul</translation>
@@ -1666,7 +1663,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437712592381799950">Du kan stryge opad for at se mere indhold, der er skræddersyet til dig.</translation>
 <translation id="7438473148803748807">Alle mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />", og alle invitationslinks deaktiveres</translation>
-<translation id="7438481509621345350">Du får nu vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="7445682342344043969">Pop op-vinduer er blokeret</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bogmærket er gemt under "{title}"}one{Bogmærket er gemt under "{title}"}other{Bogmærkerne er gemt under "{title}"}}</translation>
 <translation id="7451404862887877229">Tryk på "Privatliv og sikkerhed" efterfulgt af "Beskyttet browsing"</translation>
@@ -1933,8 +1929,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8393889347136007944">Faner, der ikke er blevet brugt i <ph name="THRESHOLD" /> dage</translation>
 <translation id="8395180897620197612">Stop logføring</translation>
-<translation id="8395339334550012808">Du får snart vist indhold fra og om <ph name="CHANNEL_NAME" /> i Følger.</translation>
-<translation id="8402673309244746971">Gå til Følger</translation>
 <translation id="8407669440184693619">Der blev ikke fundet nogen adgangskoder til dette website</translation>
 <translation id="8407831512155324054">Dine adgangskoder ser stærke ud</translation>
 <translation id="8414283596511250978">Glem aldrig dine adgangskoder</translation>
@@ -2173,7 +2167,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="952704832371081537">Annuller</translation>
 <translation id="954667170699278022">Læseliste</translation>
 <translation id="956218893102219091">Brug din præcise lokation for at få de mest nøjagtige Gemini-resultater i stedet for en estimeret lokation baseret på din IP-adresse. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Slet browserdata</translation>
 <translation id="963102227019621224">Web- og appaktivitet</translation>
 <translation id="966593914872420832">Stemmesøgning</translation>

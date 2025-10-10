@@ -338,6 +338,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1216891999012841486">Dowiedz się więcej o poprawianiu błędów aktualizacji</translation>
 <translation id="1217114730239853757">Czy chcesz włączyć ChromeVoksa – wbudowany czytnik ekranu na ChromeOS Flex? Jeśli tak, naciśnij spację.</translation>
 <translation id="1217117837721346030">Pobierz podejrzany plik</translation>
+<translation id="1217437913373100941">Nowa karta w grupie <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Twoje dane lokalne zostaną wkrótce usunięte</translation>
 <translation id="1217668622537098248">Przywróć działanie po kliknięciu lewego przycisku myszy</translation>
 <translation id="1218015446623563536">Usuń Linuksa</translation>
@@ -3000,6 +3001,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3038612606416062604">Dodaj drukarkę ręcznie</translation>
 <translation id="3038628620670416486">Zlokalizuj przyciski na myszy</translation>
 <translation id="3039491566278747710">Nie udało się zainstalować zasad offline na urządzeniu.</translation>
+<translation id="3040435070100611531">Twoje karty i bilety w Portfelu Google</translation>
 <translation id="3040982432432547149">Pomóż nam ulepszyć Steam na Chromebooka</translation>
 <translation id="304169924727249890">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Zmień strategię ładowania zoptymalizowanego.</translation>
@@ -3206,6 +3208,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
         <ph name="BREAK" />
         <ph name="BREAK" />
         W każdej chwili możesz zarządzać ustawieniami w tej karcie lub zobaczyć więcej opcji w sekcji Dostosuj Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nowa karta w grupie z 1 kartą}few{Nowa karta w grupie # kart}many{Nowa karta w grupie # kart}other{Nowa karta w grupie # karty}}</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3208703785962634733">Niepotwierdzony</translation>
@@ -3379,6 +3382,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – odtwarzanie filmu w trybie obrazu w obrazie</translation>
 <translation id="3335380372402547327">Wyświetl podgląd powiadomień świetlnych</translation>
 <translation id="3335947283844343239">Otwórz ponownie zamkniętą kartę</translation>
+<translation id="3336661809256024098">Nowa karta w grupie <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nie wiem</translation>
 <translation id="3337568642696914359">Nie zezwalaj witrynom na obsługiwanie protokołów</translation>
 <translation id="333863344734218290">Ostrzegaj przed niebezpiecznymi witrynami publicznymi i prywatnymi</translation>
@@ -6955,6 +6959,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5830205393314753525">Nie można otworzyć aplikacji <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Twoje hasło jest zaszyfrowane i nikt go nie widzi</translation>
 <translation id="5830720307094128296">Zapisz stronę &amp;jako...</translation>
+<translation id="5831217499016131155">Portfel Google</translation>
 <translation id="583179300286794292">Zalogowano jako <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanej z niej aplikacji?</translation>
 <translation id="5832813618714645810">Profile</translation>
@@ -8919,6 +8924,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7211783048245131419">Jeszcze nie przypisano żadnego przełącznika</translation>
 <translation id="7212097698621322584">Wpisz obecny kod PIN, by go zmienić. Jeśli go nie znasz, musisz zresetować klucz bezpieczeństwa, a potem utworzyć nowy kod PIN.</translation>
 <translation id="7214047272988222011">Zezwolono – <ph name="PERMISSION_DETAILS" />. Włącz <ph name="LINK_BEGIN" />w systemie dostęp do aparatu<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nowa karta w grupie z 1 kartą}few{Nowa karta w grupie # kart}many{Nowa karta w grupie # kart}other{Nowa karta w grupie # karty}}</translation>
 <translation id="721490496276866468">Importuj hasła</translation>
 <translation id="7217208603285112910">Wybrany element jest niedostępny w tym języku (<ph name="LANGUAGE" />)</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
@@ -9206,6 +9212,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7410344089573941623">Pytaj, gdy witryna <ph name="HOST" /> chce mieć dostęp do kamery i mikrofonu</translation>
 <translation id="7410421966064092098">Witryny nie mogą potwierdzać, że nie jesteś botem</translation>
 <translation id="7410852728357935715">Przesyłaj na urządzenie</translation>
+<translation id="741148343080227980">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Tak</translation>
 <translation id="7412226954991670867">Pamięć GPU</translation>
 <translation id="741370456693729525">Używaj zwykłego języka, aby wyszukiwać w historii przeglądania i znajdować odwiedzone witryny</translation>

@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Indirizzo 1</translation>
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
+<translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1547610699249301703">Condividi le password</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="2435457462613246316">Mostra password</translation>
+<translation id="2451607499823206582">Monitoraggio</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} elemento della cronologia}other{{count} elementi della cronologia}}</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2462736546165239215">Qui puoi trovare tutta la tua cronologia di navigazione.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>
 <translation id="3349031117032695619">Blocca popup</translation>
-<translation id="3349676726073650389">I siti e le ricerche che segui vengono salvati nel tuo Account Google. Puoi gestire le tue seguenti azioni nelle impostazioni in qualsiasi momento.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Questo account è gestito.</translation>
 <translation id="3365529507898144230">Salva in Foto</translation>
 <translation id="3371831930909698441">Traduttore disponibile. Opzioni disponibili nella parte inferiore dello schermo.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Posizione barra degli indirizzi</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
 <translation id="4872664437015695612">Apri in Download</translation>
-<translation id="4875260838563541343">Pulsante Azione</translation>
 <translation id="4876237378696925987">Inizia</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876665338492917862">Ultima apertura: <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6045460247888249350">Aggiungi titolo</translation>
 <translation id="6052269326659653305">Cambia profilo</translation>
 <translation id="605721222689873409">AA</translation>
-<translation id="6059103953801602038">I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle Impostazioni di Feed personalizzato.</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
 <translation id="6074656473835429958">Ricevi notifiche</translation>
@@ -1510,7 +1509,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">I tuoi dati di navigazione verranno eliminati</translation>
-<translation id="6790502149545262384">A breve vedrai storie di <ph name="CHANNEL_NAME" /> quando aprirai una nuova scheda.</translation>
 <translation id="6791425686608802741">Tocca "Aggiungi scheda a nuovo gruppo"</translation>
 <translation id="6794476726485507147">Scegli una data e un'ora in cui ricevere una notifica di promemoria per tornare a questa pagina</translation>
 <translation id="6795481620482106033">Dati non validi</translation>
@@ -1589,7 +1587,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7091023926159231962">{count,plural, =1{Impossibile importare {count} password}other{Impossibile importare {count} password}}</translation>
 <translation id="7095110968493193530">Salva in Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Nella barra degli indirizzi, tocca Cronologia dei prezzi per vedere le variazioni di prezzo nel tempo</translation>
-<translation id="7101580180124131336">Ora vedrai contenuti di e relativi a <ph name="CHANNEL_NAME" /> in Stai seguendo.</translation>
 <translation id="7102005569666697658">Download in corso… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Impostazioni → Metodi di pagamento</translation>
 <translation id="7108338896283013870">Nascondi</translation>
@@ -1666,7 +1663,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437712592381799950">Puoi scorrere verso l'alto per vedere più contenuti personalizzati su misura per te.</translation>
 <translation id="7438473148803748807">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
-<translation id="7438481509621345350">Quando aprirai una nuova scheda vedrai le notizie di <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7445682342344043969">Popup bloccati</translation>
 <translation id="7451023311965289370">{count,plural, =1{Preferito salvato in "{title}"}other{Preferiti salvati in "{title}"}}</translation>
 <translation id="7451404862887877229">Tocca "Privacy e sicurezza", poi "Navigazione sicura"</translation>
@@ -1933,8 +1929,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8393889347136007944">Schede non utilizzate per <ph name="THRESHOLD" /> giorni</translation>
 <translation id="8395180897620197612">Interrompi logging</translation>
-<translation id="8395339334550012808">A breve vedrai contenuti di e relativi a <ph name="CHANNEL_NAME" /> in Stai seguendo.</translation>
-<translation id="8402673309244746971">Vai a Stai seguendo</translation>
 <translation id="8407669440184693619">Non è stata trovata alcuna password per questo sito</translation>
 <translation id="8407831512155324054">Le tue password sembrano efficaci</translation>
 <translation id="8414283596511250978">Le tue password sempre con te</translation>
@@ -2173,7 +2167,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="952704832371081537">Annulla</translation>
 <translation id="954667170699278022">Elenco di lettura</translation>
 <translation id="956218893102219091">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963102227019621224">Attività web e app</translation>
 <translation id="966593914872420832">Ricerca vocale</translation>

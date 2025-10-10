@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">درباره برطرف کردن خطاهای به‌روزرسانی بیشتر بدانید</translation>
 <translation id="1217114730239853757">‏آیا می‌خواهید ChromeVox را که صفحه‌خوان داخلی ChromeOS Flex است فعال کنید؟ اگر پاسختان مثبت است، کلید «فاصله» (Space) را فشار دهید.</translation>
 <translation id="1217117837721346030">بارگیری فایل مشکوک</translation>
+<translation id="1217437913373100941">زبانه جدید در <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">داده‌های محلی شما به‌زودی حذف خواهد شد</translation>
 <translation id="1217668622537098248">بعد از کنش، به کلیک چپ بازنشانی کنید</translation>
 <translation id="1218015446623563536">‏حذف Linux</translation>
@@ -3024,6 +3025,7 @@
 <translation id="3038612606416062604">افزودن چاپگری به‌صورت دستی</translation>
 <translation id="3038628620670416486">مکان‌یابی دکمه‌های موشواره</translation>
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
+<translation id="3040435070100611531">‏مجوزهای شما در «کیف پول Google»</translation>
 <translation id="3040982432432547149">‏به ما کمک کنید Steam را برای Chromebook بهبود ببخشیم</translation>
 <translation id="304169924727249890">به «گروه زبانه» با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="3042097545107738107">راهبرد شارژ بهینه‌سازی‌شده را تغییر می‌دهد.</translation>
@@ -3232,6 +3234,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         هرزمان بخواهید می‌توانید تنظیمات را از این کارت مدیریت کنید یا گزینه‌های بیشتری در «سفارشی‌سازی Chrome» ببینید.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{زبانه جدید در ۱ زبانه}one{زبانه جدید در # زبانه}other{زبانه جدید در # زبانه}}</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="3208703785962634733">تأیید نشده</translation>
@@ -3407,6 +3410,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - پخش ویدیو در حالت تصویردرتصویر</translation>
 <translation id="3335380372402547327">پیش‌دید کردن اعلان‌های چشمک‌زن</translation>
 <translation id="3335947283844343239">باز کردن مجدد برگه بسته شده</translation>
+<translation id="3336661809256024098">زبانه جدید در <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">مطمئن نیستم</translation>
 <translation id="3337568642696914359">به سایت‌ها اجازه داده نشود پروتکل‌ها را مدیریت کنند</translation>
 <translation id="333863344734218290">درباره سایت‌های عمومی و خصوصی ناامن به شما هشدار می‌دهد</translation>
@@ -5156,7 +5160,7 @@
 <translation id="4526853756266614740">تصویری انتخاب کنید تا زمینه مربوطه فوراً اعمال شود</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4528494169189661126">پیشنهاد ترجمه</translation>
-<translation id="4528638190900283934">برای دریافت ویژگی‌های بیشتر به سیستم وارد شوید</translation>
+<translation id="4528638190900283934">برای دریافت ویژگی‌های اضافی، به سیستم وارد شوید</translation>
 <translation id="4529455689802245339">‏ممکن است «زیرنویس زنده ناشنوایان» Chrome کار نکند</translation>
 <translation id="4531451811601110068">می‌توانید دوباره امتحان کنید یا برای دریافت راهنمایی با سرپرستتان تماس بگیرید</translation>
 <translation id="4531924570968473143">چه شخصی را می‌خواهید به این <ph name="DEVICE_TYPE" /> اضافه کنید؟</translation>
@@ -6988,6 +6992,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> باز نمی‌شود</translation>
 <translation id="5830512293931520102">گذرواژه شما رمزگذاری شده است و برای هیچ‌کس قابل‌مشاهده نیست</translation>
 <translation id="5830720307094128296">ذخیره صفحه &amp;بعنوان...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">با <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> به سیستم وارد شده‌اید</translation>
 <translation id="5831950941058843834">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" />، همه سایت‌های تحت آن، و برنامه‌های نصب‌شده‌اش حذف شود؟</translation>
 <translation id="5832813618714645810">نمایه‌ها</translation>
@@ -8323,7 +8328,7 @@
 <translation id="6775163072363532304">دستگاه‌های دردسترس اینجا نمایش داده می‌شوند.</translation>
 <translation id="6775992990195573904">برگه‌هایتان را مرتب کنید</translation>
 <translation id="677646486571529447">افزودن یادداشت</translation>
-<translation id="6776589734354015877">ویژگی‌های بیشتری دریافت کنید</translation>
+<translation id="6776589734354015877">ویژگی‌های اضافی دریافت کنید</translation>
 <translation id="6776729248872343918">فعال کردن «جفت‌سازی سریع»</translation>
 <translation id="6777817260680419853">هدایت کردن مسدود شده است</translation>
 <translation id="6777845730143344223">‏درباره اشتراک‌های Passpoint بیشتر بدانید</translation>
@@ -8952,6 +8957,7 @@
 <translation id="7211783048245131419">هنوز کلیدی تخصیص داده نشده است</translation>
 <translation id="7212097698621322584">پین کنونی‌تان را برای تغییر پین وارد کنید. اگر پین‌ خود را نمی‌دانید، باید کلید امنیتی را بازنشانی کنید و سپس پین جدیدی ایجاد کنید.</translation>
 <translation id="7214047272988222011">مجاز است – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />دسترسی دوربین سیستم<ph name="LINK_END" /> را روشن کنید.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{زبانه جدید در ۱ زبانه}one{زبانه جدید در # زبانه}other{زبانه جدید در # زبانه}}</translation>
 <translation id="721490496276866468">درون‌بردن گذرواژه‌ها</translation>
 <translation id="7217208603285112910">بخش انتخاب‌شده به <ph name="LANGUAGE" /> نیست</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
@@ -9239,6 +9245,7 @@
 <translation id="7410344089573941623">بپرسید که آیا <ph name="HOST" /> می‌خواهد به دوربین و میکرفون شما دسترسی داشته باشد</translation>
 <translation id="7410421966064092098">سایت‌ها نمی‌توانند به تأیید اینکه شما روبات نیستید کمک کنند</translation>
 <translation id="7410852728357935715">پخش محتوا به دستگاه</translation>
+<translation id="741148343080227980">‏می‌توانید نامتان را <ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> ویرایش کنید.</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7412226954991670867">‏حافظه GPU</translation>
 <translation id="741370456693729525">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید</translation>

@@ -11020,6 +11020,15 @@ Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#sec
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>
 <translation id="82530263956734297">Identificadores de extensión para excluir de la lista de elementos bloqueados</translation>
 <translation id="8254749125469750814">No validar si se puede instalar una extensión o no con un servicio en la nube.</translation>
+<translation id="825509998103089977">Controla si la app de Gemini puede realizar acciones en las páginas web en nombre del usuario.
+
+0 o no establecida = La app de Gemini puede realizar acciones en las páginas web.
+
+1 = La app de Gemini no tiene permiso para realizar acciones en las páginas web.
+
+Esta política no tiene efecto cuando se inhabilita la app de Gemini. Por ejemplo, la política de <ph name="GEMINI_SETTINGS_POLICY_NAME" /> puede inhabilitar la app de Gemini.
+
+Para obtener más información, consulta https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controla el nombre de cuenta <ph name="PRODUCT_OS_NAME" /> que aparece en la pantalla de acceso de la cuenta local del dispositivo que corresponda.
 

@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Ligne adresse 1</translation>
 <translation id="154312949627292154">Ouvrez les onglets reçus de vos autres appareils à partir de l'écran de verrouillage.</translation>
 <translation id="1545749641540134597">Balayer le code QR</translation>
+<translation id="1545757265410828525">Historique des prix</translation>
 <translation id="1547610699249301703">Partagez des mots de passe</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
 <translation id="1558391695376153246">Fermer onglets navig. privée</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Vous pouvez faire défiler l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
+<translation id="2451607499823206582">Suivi activé</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} élément de l'historique}one{{count} élément de l'historique}other{{count} éléments de l'historique}}</translation>
 <translation id="2461070143328828326">Paramètres des mots de passe</translation>
 <translation id="2462736546165239215">Vous pouvez retrouver tout votre historique de navigation ici.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>
 <translation id="3349031117032695619">Bloquer les fenêtres contextuelles</translation>
-<translation id="3349676726073650389">Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ce compte est géré.</translation>
 <translation id="3365529507898144230">Enregistrer dans Photos</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Position de la barre d'adresse</translation>
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>
 <translation id="4872664437015695612">Ouvrir dans le dossier des téléchargements</translation>
-<translation id="4875260838563541343">Bouton d'action</translation>
 <translation id="4876237378696925987">Premiers pas</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876665338492917862">Dernière ouverture : <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6045460247888249350">Ajouter un titre</translation>
 <translation id="6052269326659653305">Changer de profil</translation>
 <translation id="605721222689873409">AA</translation>
-<translation id="6059103953801602038">Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres Découvertes.</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6074656473835429958">Recevoir des notifications</translation>
@@ -1510,7 +1509,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[RÉSERVÉ]</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
-<translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6791425686608802741">Cliquez sur « Ajouter un onglet au nouveau groupe »</translation>
 <translation id="6794476726485507147">Choisissez une date et une heure pour recevoir une notification de rappel pour revisiter cette page</translation>
 <translation id="6795481620482106033">Données incorrectes</translation>
@@ -1589,7 +1587,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7091023926159231962">{count,plural, =1{Impossible d'importer {count} mot de passe}one{Impossible d'importer {count} mot de passe}other{Impossible d'importer {count} mots de passe}}</translation>
 <translation id="7095110968493193530">Dans le gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Dans la barre d'adresse, touchez l'historique des prix pour voir les changements de prix au fil du temps</translation>
-<translation id="7101580180124131336">Vous verrez maintenant du contenu provenant de <ph name="CHANNEL_NAME" /> dans l'onglet Contenus suivis.</translation>
 <translation id="7102005569666697658">Téléchargement en cours… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Paramètres → Modes de paiement</translation>
 <translation id="7108338896283013870">Masquer</translation>
@@ -1666,7 +1663,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437712592381799950">Vous pouvez balayer l'écran vers le haut pour voir plus de contenu adapté à vos besoins.</translation>
 <translation id="7438473148803748807">Tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et tous les liens d'invitation seront désactivés</translation>
-<translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="7445682342344043969">Fenêtres contextuelles bloquées</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans « {title} »}one{Favoris enregistré dans « {title} »}other{Favoris enregistrés dans « {title} »}}</translation>
 <translation id="7451404862887877229">Touchez « Confidentialité et sécurité », puis « Navigation sécurisée »</translation>
@@ -1933,8 +1929,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8393889347136007944">Onglets non utilisés pendant <ph name="THRESHOLD" /> jours</translation>
 <translation id="8395180897620197612">Arrêter la journalisation</translation>
-<translation id="8395339334550012808">Bientôt, vous verrez du contenu provenant de <ph name="CHANNEL_NAME" /> dans l'onglet Contenus suivis.</translation>
-<translation id="8402673309244746971">Aller au suivant</translation>
 <translation id="8407669440184693619">Aucun mot de passé trouvé pour ce site</translation>
 <translation id="8407831512155324054">Vos mots de passe semblent forts</translation>
 <translation id="8414283596511250978">N'oubliez jamais vos mots de passe</translation>
@@ -2173,7 +2167,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="952704832371081537">Annuler</translation>
 <translation id="954667170699278022">Liste de lecture</translation>
 <translation id="956218893102219091">Utilisez votre position exacte plutôt qu'une position estimée en fonction de votre adresse IP pour optimiser la précision des résultats de Gemini. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963102227019621224">Activité sur le Web et dans les applis</translation>
 <translation id="966593914872420832">Recherche vocale</translation>

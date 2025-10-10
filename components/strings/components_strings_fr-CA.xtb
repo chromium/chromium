@@ -3312,6 +3312,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6433501201775827830">Choisissez votre moteur de recherche</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> a refusé la connexion.</translation>
 <translation id="6433797564277305076">Vérifiez dès maintenant vos cartes plus rapidement avec le déverrouillage de l'appareil</translation>
+<translation id="6436994298828707228">La connexion est bloquée, car elle a été lancée par une page publique pour se connecter à des appareils ou à des serveurs de votre réseau privé.</translation>
 <translation id="6437647869369934905">Google Dessins</translation>
 <translation id="643917412048333145">Robes</translation>
 <translation id="6440503408713884761">Ignorée</translation>
@@ -3383,6 +3384,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
 <translation id="6550245281449521513">Le verrouillage de la souris n'est pas autorisé</translation>
+<translation id="6552566579578780089">Paiements</translation>
 <translation id="6554732001434021288">Dernière visite il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6557715786897013164">14 po x 17 po</translation>
@@ -3531,6 +3533,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Ports série</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Payez en versements faciles</translation>
 <translation id="6825578344716086703">Vous avez tenté d'accéder au domaine <ph name="DOMAIN" />, mais le serveur a présenté un certificat signé à l'aide d'un algorithme de signature faible (comme SHA-1). Il est possible que l'authentifiant de sécurité fourni par le serveur ait été falsifié. Il se peut donc que le serveur ne soit pas celui auquel vous souhaitez accéder et qu'il s'agisse d'une tentative de piratage.</translation>
 <translation id="6826993739343257035">Autoriser la RA?</translation>
 <translation id="6828150717884939426">Appel</translation>
@@ -3978,6 +3981,7 @@ Détails supplémentaires :
 <translation id="753556296624075801">Propulsé par Google</translation>
 <translation id="753713322968419914">Retirer l'adresse personnelle du remplissage automatique de Chrome?</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
+<translation id="7541043894191476250">Tâches contextuelles</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
@@ -4503,6 +4507,7 @@ Détails supplémentaires :
 <translation id="8406071103346257942">arrêtez d'utiliser le verrouillage de l'écran pour remplir les mots de passe</translation>
 <translation id="8407031780528483338">Batterie de cuisine</translation>
 <translation id="8409413588194360210">Modules de traitement des paiements</translation>
+<translation id="8410956920192583322">Mensuel ou en quatre versements</translation>
 <translation id="8412145213513410671">Plantages (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez entrer deux fois la même phrase de passe.</translation>
 <translation id="8414322570408428950">L'événement de l'extension se produit</translation>
@@ -4793,6 +4798,7 @@ Détails supplémentaires :
 <translation id="8922734931659847428">Une liste limitée d'URL de pages que vous visitez où se produisent des <ph name="BEGIN_LINK" />événements relatifs aux technologies patrimoniales<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
+<translation id="8926400492587758246">Payez en petites mensualités</translation>
 <translation id="8932102934695377596">Votre horloge retarde</translation>
 <translation id="893332455753468063">Ajouter un nom</translation>
 <translation id="8938242527120341116">Les filtres de contenu de votre appareil ont bloqué <ph name="BLOCKED_URL" /></translation>

@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">地址第1行</translation>
 <translation id="154312949627292154">在锁屏状态下打开从其他设备接收的标签页。</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
+<translation id="1545757265410828525">既往价格</translation>
 <translation id="1547610699249301703">分享密码</translation>
 <translation id="1554477036522844996">打开新的窗口</translation>
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2434918313224755415">向左滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2451607499823206582">正在跟踪</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} 项历史记录}other{{count} 项历史记录}}</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="334690320928261823">最近打开的标签页</translation>
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
-<translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
 <translation id="3365529507898144230">保存在相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">地址栏位置</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>
 <translation id="4872664437015695612">在“下载内容”中打开</translation>
-<translation id="4875260838563541343">操作按钮</translation>
 <translation id="4876237378696925987">开始使用</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4876665338492917862">上次打开日期：<ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@
 <translation id="6045460247888249350">添加标题</translation>
 <translation id="6052269326659653305">切换个人资料</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059103953801602038">您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
 <translation id="6074656473835429958">接收通知</translation>
@@ -1510,7 +1509,6 @@
 <translation id="6761393919622941301">音频</translation>
 <translation id="6770452996697898492">[已预订]</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
-<translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6791425686608802741">点按“向新分组添加标签页”</translation>
 <translation id="6794476726485507147">选择日期和时间即可接收通知，提醒您再次访问此页面</translation>
 <translation id="6795481620482106033">数据无效</translation>
@@ -1589,7 +1587,6 @@
 <translation id="7091023926159231962">{count,plural, =1{无法导入 {count} 个密码}other{无法导入 {count} 个密码}}</translation>
 <translation id="7095110968493193530">保存到 <ph name="EMAIL" /> 的 Google 密码管理工具</translation>
 <translation id="7097046145876891318">在地址栏中，点按“既往价格”即可查看价格随时间的变化情况</translation>
-<translation id="7101580180124131336">现在，您会在“已关注”部分中看到来自<ph name="CHANNEL_NAME" />及与其相关的内容。</translation>
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">菜单 → 设置 → 支付方式</translation>
 <translation id="7108338896283013870">隐藏</translation>
@@ -1666,7 +1663,6 @@
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7437712592381799950">您可以向上滑动，查看更多专为您量身定制的内容。</translation>
 <translation id="7438473148803748807">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
-<translation id="7438481509621345350">现在，当打开新标签页时，您会看到来自 <ph name="CHANNEL_NAME" /> 的故事。</translation>
 <translation id="7445682342344043969">已拦截弹出式窗口</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7451404862887877229">依次点按“隐私与安全”和“安全浏览”</translation>
@@ -1933,8 +1929,6 @@
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未用过的标签页</translation>
 <translation id="8395180897620197612">停止日志记录</translation>
-<translation id="8395339334550012808">不久之后，您就会在“已关注”部分中看到来自<ph name="CHANNEL_NAME" />及与其相关的内容。</translation>
-<translation id="8402673309244746971">前往“已关注”</translation>
 <translation id="8407669440184693619">未找到此网站的密码</translation>
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
@@ -2173,7 +2167,6 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="954667170699278022">阅读清单</translation>
 <translation id="956218893102219091">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963102227019621224">网络与应用活动记录</translation>
 <translation id="966593914872420832">语音搜索</translation>

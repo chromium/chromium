@@ -1634,6 +1634,7 @@
 <translation id="2102495993840063010">Android ଆପଗୁଡ଼ିକ</translation>
 <translation id="2104166991923847969">ସ୍ୱଚାଳିତ ଭାବେ ହଟସ୍ପଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ଲୁଚାଯାଇଛି</translation>
+<translation id="2106439768713835453">ଆପ୍ଲିକେସନ ଅଡିଓକୁ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ପୂର୍ବରୁ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ଫୋନ୍ ନମ୍ବର}other{#ଟି ଫୋନ୍ ନମ୍ବର}}</translation>
 <translation id="2109384632594340939">ପ୍ରୋଫାଇଲ ଛବି</translation>
@@ -3011,6 +3012,7 @@
 <translation id="3038612606416062604">ମାନୁଆଲୀ ଗୋଟିଏ ପ୍ରିଣ୍ଟର୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3038628620670416486">ଆପଣଙ୍କ ମାଉସରେ ବଟନଗୁଡ଼ିକୁ ଖୋଜନ୍ତୁ</translation>
 <translation id="3039491566278747710">ଡିଭାଇସ୍‌ରେ ଅଫ୍‌ଲାଇନ୍ ନୀତି ଇନ୍‍ଷ୍ଟଲ୍‌ କରିବା ବିଫଳ।</translation>
+<translation id="3040435070100611531">ଆପଣଙ୍କ Google Wallet ପାସ</translation>
 <translation id="3040982432432547149">Chromebook ପାଇଁ Steamକୁ ଉନ୍ନତ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />ଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="3042097545107738107">ଅପ୍ଟିମାଇଜ କରାଯାଇଥିବା ଚାର୍ଜିଂ ଷ୍ଟ୍ରାଟେଜୀ ପରିବର୍ତ୍ତନ କରନ୍ତୁ।</translation>
@@ -3871,6 +3873,7 @@
 <translation id="3656328935986149999">କର୍ସର ସ୍ପିଡ</translation>
 <translation id="3656701180077048004">ଆପଣ ଏକ କୀ'କୁ ଦବାଇବା ବେଳେ ଏବଂ ଏହା କେବେ ସକ୍ରିୟ ହୁଏ ତାହା ମଧ୍ୟରେ ଏକ ବିଳମ୍ବ ଯୋଗ କରେ</translation>
 <translation id="3658871634334445293">TrackPoint ଆକ୍ସଲରେସନ୍</translation>
+<translation id="3659483399659250379">ଏକ ଟାବ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3659929705630080526">ଆପଣ ବହୁତ ଥର ଏକ ଭୁଲ ଆକ୍ସେସ କୋଡ ଲେଖିଛନ୍ତି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3661106764436337772">ଶୀଘ୍ର ଏବଂ ଅଧିକ ଆତ୍ମବିଶ୍ୱାସର ସହ ଲେଖନ୍ତୁ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1ଟି ପୂର୍ବରୁ ଥିବା ପାସୱାର୍ଡ ମିଳିଲା}other{{NUM_PASSWORDS}ଟି ପୂର୍ବରୁ ଥିବା ପାସୱାର୍ଡ ମିଳିଲା}}</translation>
@@ -5402,6 +5405,7 @@
 <translation id="4707337002099455863">ସମସ୍ତ ସାଇଟରେ ସର୍ବଦା</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ଛାଡ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4708892882822652439">ଟାବ ଅଡିଓକୁ ମଧ୍ୟ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="4710347732286177840">ଫଲୋ ଅପ ପାଇଁ ସ୍କ୍ରିନର ଅଞ୍ଚଳକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4711638718396952945">ସେଟିଂସ୍‍ ରିଷ୍ଟୋର୍‍ କରନ୍ତୁ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">ଆପଣ ସମସ୍ତ ୱିଣ୍ଡୋ ବନ୍ଦ କରିବା ସମୟରେ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -6969,6 +6973,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" />କୁ ଖୋଲା ଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5830512293931520102">ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି ଏବଂ କେହି ଦେଖିପାରିବେ ନାହିଁ</translation>
 <translation id="5830720307094128296">&amp;ଏହି ଭାବେ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> ଭାବରେ ସାଇନ ଇନ କରିଛନ୍ତି</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, ଏହା ଅଧୀନରେ ଥିବା ସମସ୍ତ ସାଇଟ ଏବଂ ଏହାର ଇନଷ୍ଟଲ ହୋଇଥିବା ଆପ ପାଇଁ ସାଇଟ ଡାଟା ଓ ଅନୁମତିଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="5832813618714645810">ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>

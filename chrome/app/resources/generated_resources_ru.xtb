@@ -339,6 +339,7 @@
 <translation id="1216891999012841486">Подробнее о том, как исправить неполадки с обновлением</translation>
 <translation id="1217114730239853757">Включить встроенную в Chrome OS Flex программу чтения с экрана ChromeVox? Если да, нажмите Пробел.</translation>
 <translation id="1217117837721346030">Скачать подозрительный файл</translation>
+<translation id="1217437913373100941">Новая вкладка в группе "<ph name="GROUP_NAME" />"</translation>
 <translation id="1217483152325416304">Локальные данные скоро будут удалены</translation>
 <translation id="1217668622537098248">Переключаться обратно на нажатие левой кнопки мыши после завершения действия</translation>
 <translation id="1218015446623563536">Удаление Linux</translation>
@@ -1639,6 +1640,7 @@
 <translation id="2102495993840063010">Приложения для Android</translation>
 <translation id="2104166991923847969">Автоматически отключать точку доступа</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> скрыты.</translation>
+<translation id="2106439768713835453">Также передавать аудио из приложения</translation>
 <translation id="2108204112555497972">Проверено <ph name="NUM_DAYS_HOURS_MINUTES" /> назад</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефона}one{# номер телефона}few{# номера телефонов}many{# номеров телефонов}other{# номера телефона}}</translation>
 <translation id="2109384632594340939">фото профиля</translation>
@@ -3015,6 +3017,7 @@
 <translation id="3038612606416062604">Добавление принтера вручную</translation>
 <translation id="3038628620670416486">Переназначьте кнопки мыши</translation>
 <translation id="3039491566278747710">Не удалось применить к устройству политику работы в офлайн-режиме.</translation>
+<translation id="3040435070100611531">Ваши карты и билеты в Google Кошельке</translation>
 <translation id="3040982432432547149">Помогите нам улучшить Steam для Chromebook</translation>
 <translation id="304169924727249890">Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Изменить режим оптимизированной зарядки.</translation>
@@ -3223,6 +3226,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Вы можете в любой момент изменить параметры на этой карточке или посмотреть дополнительные настройки на панели "Настроить Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Новая вкладка в группе с 1 имеющейся}one{Новая вкладка в группе с # имеющейся}few{Новая вкладка в группе с # имеющимися}many{Новая вкладка в группе с # имеющимися}other{Новая вкладка в группе с # имеющейся}}</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208584281581115441">Проверить сейчас</translation>
 <translation id="3208703785962634733">Не подтвержден</translation>
@@ -3398,6 +3402,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: видео воспроизводится в режиме "Картинка в картинке"</translation>
 <translation id="3335380372402547327">Предварительный просмотр уведомлений со вспышкой</translation>
 <translation id="3335947283844343239">Открыть закрытую вкладку</translation>
+<translation id="3336661809256024098">Новая вкладка в группе "<ph name="GROUP_NAME" />"</translation>
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Запретить сайтам обрабатывать протоколы</translation>
 <translation id="333863344734218290">Предупреждать о незащищенных общедоступных и частных сайтах</translation>
@@ -3875,6 +3880,7 @@
 <translation id="3656328935986149999">Скорость движения указателя</translation>
 <translation id="3656701180077048004">Между нажатием клавиши и ее действием будет добавлена задержка</translation>
 <translation id="3658871634334445293">Ускорение TrackPoint</translation>
+<translation id="3659483399659250379">Добавьте вкладку или что-нибудь ещё</translation>
 <translation id="3659929705630080526">Слишком часто вводился неправильный код доступа. Повторите попытку позже.</translation>
 <translation id="3661106764436337772">Упростите себе работу</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Обнаружен 1 существующий пароль}one{Обнаружен {NUM_PASSWORDS} существующий пароль}few{Обнаружено {NUM_PASSWORDS} существующих пароля}many{Обнаружено {NUM_PASSWORDS} существующих паролей}other{Обнаружено {NUM_PASSWORDS} существующих пароля}}</translation>
@@ -5407,6 +5413,7 @@
 <translation id="4707337002099455863">Разрешить на всех сайтах</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Предоставить доступ к аудио на вкладке</translation>
+<translation id="4710347732286177840">Выберите область экрана, о которой хотите задать дополнительный вопрос</translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Удалять при закрытии всех окон</translation>
@@ -6976,6 +6983,7 @@
 <translation id="5830205393314753525">Не удалось открыть приложение "<ph name="APP_NAME" />"</translation>
 <translation id="5830512293931520102">Пароли зашифрованы и видны только вам.</translation>
 <translation id="5830720307094128296">Сохранить страницу как...</translation>
+<translation id="5831217499016131155">Google Кошелек</translation>
 <translation id="583179300286794292">Вы вошли как <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />.</translation>
 <translation id="5831950941058843834">Удалить данные и разрешения сайта <ph name="SITE_NAME" />, всех связанных с ним сайтов и связанного установленного приложения?</translation>
 <translation id="5832813618714645810">Профили</translation>
@@ -8944,6 +8952,7 @@
 <translation id="7211783048245131419">Переключатели не назначены.</translation>
 <translation id="7212097698621322584">Сначала введите текущий PIN-код. Если вы его не знаете, сбросьте настройки электронного ключа и установите новый PIN-код.</translation>
 <translation id="7214047272988222011">Разрешено (<ph name="PERMISSION_DETAILS" />). Предоставьте <ph name="LINK_BEGIN" />доступ к камере на уровне системы<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Новая вкладка в группе с 1 имеющейся}one{Новая вкладка в группе с # имеющейся}few{Новая вкладка в группе с # имеющимися}many{Новая вкладка в группе с # имеющимися}other{Новая вкладка в группе с # имеющейся}}</translation>
 <translation id="721490496276866468">Импорт паролей</translation>
 <translation id="7217208603285112910">Язык выбранного текста не <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Удалить данные сайта?</translation>
@@ -9231,6 +9240,7 @@
 <translation id="7410344089573941623">Запрашивать разрешение на доступ к камере и микрофону для сайта <ph name="HOST" /></translation>
 <translation id="7410421966064092098">Сайты не могут предоставлять данные о том, что вы реальный пользователь</translation>
 <translation id="7410852728357935715">Транслировать на устройство</translation>
+<translation id="741148343080227980">Вы можете изменить имя <ph name="BEGIN_LINK" />в аккаунте Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">ОК</translation>
 <translation id="7412226954991670867">Память графического процессора</translation>
 <translation id="741370456693729525">Находите посещенные сайты в истории браузера, формулируя запросы простыми словами</translation>

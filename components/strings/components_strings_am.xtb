@@ -3311,6 +3311,7 @@
 <translation id="6433501201775827830">የእርስዎን የፍለጋ ፕሮግራም ይምረጡ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ማገናኘት አሻፈረኝ ብሏል።</translation>
 <translation id="6433797564277305076">ከአሁን በኋላ የመሣሪያ መክፈቻን በመጠቀም በበለጠ ፍጥነት ካርዶችዎን ያረጋግጡ</translation>
+<translation id="6436994298828707228">በአካባቢያዊ አውታረ መረብዎ ላይ ካሉ መሣሪያዎች ወይም አገልጋዮች ጋር ለመገናኘት በይፋዊ ገጽ ስለተጀመረ ግንኙነቱ ታግዷል።</translation>
 <translation id="6437647869369934905">Google ስዕሎች</translation>
 <translation id="643917412048333145">ቀሚሶች</translation>
 <translation id="6440503408713884761">የተተወ</translation>
@@ -3382,6 +3383,7 @@
 <translation id="6547208576736763147">በግራ በኩል ብሳ</translation>
 <translation id="6549443526281184652">ልዩ ልብሶች</translation>
 <translation id="6550245281449521513">የመዳፊት መቆለፊያ አይፈቀድም</translation>
+<translation id="6552566579578780089">ክፍያዎች</translation>
 <translation id="6554732001434021288">ለመጨረሻ ጊዜ የተጎበኘው ከ<ph name="NUM_DAYS" /> ቀናት በፊት ነው</translation>
 <translation id="6556866813142980365">ድገም</translation>
 <translation id="6557715786897013164">14 x 17 ኢንች</translation>
@@ -3530,6 +3532,7 @@
 <translation id="6817217109584391709">ጃቫስክሪፕት</translation>
 <translation id="6820143000046097424">ተከታታይ ወደቦች</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">በቀላል ተከታታይ ክፍያዎች ይክፈሉ</translation>
 <translation id="6825578344716086703">እርስዎ <ph name="DOMAIN" />ን ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ ደካማ የፊርማ ስልተ-ቀመር (እንደ SHA-1 ያለ) በመጠቀም የተፈረመ የዕውቅና ማረጋገጫ ነው ያቀረበው። ይህ ማለት አገልጋዩ ያቀረበው የደህንነት ምስክርነቶች የተጭበረበሩ ሊሆኑ ይችላሉ፣ እናም አገልጋዩ እርስዎ የሚጠብቁት አገልጋይ ላይሆን ይችላል (ከአጥቂ ጋር እየተገናኙ ሊሆን ይችላል)።</translation>
 <translation id="6826993739343257035">የላቀ ዕውነታ ይፈቀድ?</translation>
 <translation id="6828150717884939426">ደውል</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">በGoogle የተጎላበተ</translation>
 <translation id="753713322968419914">የቤት አድራሻ ከChrome ራስ-ሙላ ይወገድ?</translation>
 <translation id="7537536606612762813">ግዴታ</translation>
+<translation id="7541043894191476250">ዓውዳዊ ተግባራት</translation>
 <translation id="7543525346216957623">የእርስዎን ወላጅ ይጠይቁ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> በመጀመር ላይ</translation>
 <translation id="7548892272833184391">የግንኙነት ስህተቶችን ያስተካክሉ</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">የይለፍ ቃላትን ለመሙላት ማያ ገፅ መቆለፊያዎን መጠቀም ያቁሙ</translation>
 <translation id="8407031780528483338">የምግብ እቃዎች</translation>
 <translation id="8409413588194360210">የክፍያ ተቆጣጣሪዎች</translation>
+<translation id="8410956920192583322">ወርሃዊ ወይም 4 ተከታታዮች</translation>
 <translation id="8412145213513410671">ብልሽቶች (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ተመሳሳዩ የይለፍ ሐረጉን ሁለት ጊዜ ማስገባት አለብዎት።</translation>
 <translation id="8414322570408428950">የቅጥያ ክስተት ተከስቷል</translation>
@@ -4794,6 +4799,7 @@
 <translation id="8922734931659847428">እርስዎ የሚጎበኟቸው <ph name="BEGIN_LINK" />የቆዩ የቴክኖሎጂ ክስተቶች<ph name="END_LINK" /> የሚከሰቱባቸው ገፆች ዩአርኤሎች የተወሰነ ዝርዝር</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
+<translation id="8926400492587758246">በዝቅተኛ ወርሃዊ ክፍያዎች ይክፈሉ</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>
 <translation id="893332455753468063">ስም ያክሉ</translation>
 <translation id="8938242527120341116">የመሣሪያዎ የይዘት ማጣሪያዎች <ph name="BLOCKED_URL" />ን አግደዋል</translation>

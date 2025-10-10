@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">አድራሻ 1</translation>
 <translation id="154312949627292154">ከሌሎች መሣሪያዎችዎ የተቀበሉትን ትሮችን ከመቆለፊያ ማያ ገፅ ቁልፍ ይክፈቱ።</translation>
 <translation id="1545749641540134597">የኪውአር ኮድ ይቃኙ</translation>
+<translation id="1545757265410828525">የዋጋ ታሪክ</translation>
 <translation id="1547610699249301703">የይለፍ ቃላትን ያጋሩ</translation>
 <translation id="1554477036522844996">አዲስ መስኮት</translation>
 <translation id="1558391695376153246">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2434918313224755415">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ግራ ማሸብለል ይችላሉ።</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2451607499823206582">በመከታተል ላይ</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} ታሪክ ንጥል}one{{count} ታሪክ ንጥል}other{{count} ታሪክ ንጥሎች}}</translation>
 <translation id="2461070143328828326">የይለፍ ቃል ቅንብሮች</translation>
 <translation id="2462736546165239215">ሁሉም የአሰሳ ታሪክዎን እዚህ ማግኘት ይችላሉ።</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="334690320928261823">የቅርብ ጊዜ ትሮች</translation>
 <translation id="3349031117032695619">ብቅ-ባዮችን አግድ</translation>
-<translation id="3349676726073650389">እርስዎ የሚከተሏቸው ጣቢያዎች እና ፍለጋዎች በእርስዎ Google መለያ ውስጥ ተቀምጠዋል። በማንኛውም ጊዜ የእርስዎን መከተሎች በቅንብሮች ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />። ይህ መለያ የሚተዳደር ነው።</translation>
 <translation id="3365529507898144230">ፎቶዎች ውስጥ አስቀምጥ</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">የአድራሻ አሞሌ አቀማመጥ</translation>
 <translation id="4870911314065352661">ሁሉም ትሮች ይዘጉ?</translation>
 <translation id="4872664437015695612">በውርዶች ውስጥ ክፈት</translation>
-<translation id="4875260838563541343">የድርጊት አዝራር</translation>
 <translation id="4876237378696925987">ጀምር</translation>
 <translation id="4876305945144899064">ምንም የተጠቃሚ ስም የለም</translation>
 <translation id="4876665338492917862">የተከፈተው <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6045460247888249350">ርዕስ ያክሉ</translation>
 <translation id="6052269326659653305">መገለጫ ቀይር</translation>
 <translation id="605721222689873409">ዓዓ</translation>
-<translation id="6059103953801602038">እርስዎ የሚከተሏቸው ጣቢያዎች በGoogle መለያዎ ውስጥ ይቀመጣሉ። በምርምር ቅንብሮች ውስጥ ሊያስተዳድሯቸው ይችላሉ።</translation>
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
 <translation id="6066301408025741299">ይቅር ለማለት መታ ያድርጉ።</translation>
 <translation id="6074656473835429958">ማሳወቂያዎችን ያግኙ</translation>
@@ -1510,7 +1509,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6761393919622941301">ኦዲዮ</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6779455296366983087">የአሰሳ ውሂብዎ ይሰረዛል</translation>
-<translation id="6790502149545262384">በቅርቡ አዲስ ትር ሲከፍቱ ከ<ph name="CHANNEL_NAME" /> የመጡ ታሪኮችን ይመለከታሉ።</translation>
 <translation id="6791425686608802741">«ትር ወደ አዲስ ቡድን አክል» ላይ መታ ያድርጉ</translation>
 <translation id="6794476726485507147">ይህን ገፅ ዳግም ለመጎብኘት አስታዋሽ ማሳወቂያ እንዲደርስዎ ቀን እና ሰዓት ይምረጡ</translation>
 <translation id="6795481620482106033">ልክ ያልሆነ ውሂብ</translation>
@@ -1589,7 +1587,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7091023926159231962">{count,plural, =1{{count} የይለፍ ቃል ማምጣት አልተቻለም}one{{count} የይለፍ ቃል ማምጣት አልተቻለም}other{{count} የይለፍ ቃላት ማምጣት አልተቻለም}}</translation>
 <translation id="7095110968493193530">ወደ Google የይለፍ ቃል አስተዳዳሪ ለ<ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">በአድራሻ አሞሌው ውስጥ በጊዜ ሂደት የመጡ የዋጋ ለውጦችን ለማየት የዋጋ ታሪክ ላይ መታ ያድርጉ</translation>
-<translation id="7101580180124131336">አሁን በሚከተሏቸው ውስጥ ከ እና ስለ <ph name="CHANNEL_NAME" /> ይዘትን ያያሉ።</translation>
 <translation id="7102005569666697658">በማውረድ ላይ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">ምናሌ → ቅንብሮች → የመክፈያ ዘዴዎች</translation>
 <translation id="7108338896283013870">ደብቅ</translation>
@@ -1666,7 +1663,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7435356471928173109">በአስተዳዳሪዎ ጠፍቷል</translation>
 <translation id="7437712592381799950">ተጨማሪ ለእርስዎ የተበጀ ይዘት ለማየት ወደ ላይ ማንሸራተት ይችላሉ።</translation>
 <translation id="7438473148803748807">ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ሁሉም የግብዣ አገናኞች ይጠፋሉ</translation>
-<translation id="7438481509621345350">አዲስ ትር ሲከፍቱ አሁን ከ<ph name="CHANNEL_NAME" /> ታሪኮችን ማየት ይችላሉ።</translation>
 <translation id="7445682342344043969">ብቅ-ባዮች ታግደዋል</translation>
 <translation id="7451023311965289370">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል}one{ዕልባት ወደ «{title}» ተቀምጧል}other{ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="7451404862887877229">«ግላዊነት እና ደህንነት» እና ከዚያም «አስተማማኝ አሰሳ» ላይ መታ ያድርጉ</translation>
@@ -1933,8 +1929,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8393889347136007944">ትሮች ለ<ph name="THRESHOLD" /> ቀናት ጥቅም ላይ አልዋሉም</translation>
 <translation id="8395180897620197612">በመለያ መግባት አቁም</translation>
-<translation id="8395339334550012808">በቅርቡ በሚከተሏቸው ውስጥ ከ እና ስለ <ph name="CHANNEL_NAME" /> ይዘትን ያያሉ።</translation>
-<translation id="8402673309244746971">ወደ በመከተል ላይ ሂድ</translation>
 <translation id="8407669440184693619">ለዚህ ጣቢያ ምንም የይለፍ ቃላት አልተገኙም</translation>
 <translation id="8407831512155324054">ሲታዩ የእርስዎ የይለፍ ቃላት ጠንካራ ይመስላሉ</translation>
 <translation id="8414283596511250978">የይለፍ ቃላትዎን መቼም አይርሱ</translation>
@@ -2173,7 +2167,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="952704832371081537">ይቅር</translation>
 <translation id="954667170699278022">የንባብ ዝርዝር</translation>
 <translation id="956218893102219091">በጣም ትክክል ለሆኑት የGemini ውጤቶች በአይ ፒ አድራሻዎ መሠረት ከተገመተው አካባቢ ይልቅ ትክክለኛ አካባቢዎን ይጠቀሙ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
-<translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
 <translation id="961856697154696964">የአሰሳ ውሂብን ይሰርዙ</translation>
 <translation id="963102227019621224">የድር እና የመተግበሪያ እንቅስቃሴ</translation>
 <translation id="966593914872420832">የድምፅ ፍለጋ</translation>

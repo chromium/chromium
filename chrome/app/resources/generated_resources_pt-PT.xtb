@@ -336,6 +336,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1216891999012841486">Saiba como corrigir erros de atualização</translation>
 <translation id="1217114730239853757">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex? Em caso afirmativo, prima a barra de espaço.</translation>
 <translation id="1217117837721346030">Transferir ficheiro suspeito</translation>
+<translation id="1217437913373100941">Novo separador em <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Os seus dados locais vão ser eliminados em breve</translation>
 <translation id="1217668622537098248">Reverter para clique com o botão esquerdo do rato após a ação.</translation>
 <translation id="1218015446623563536">Eliminar o Linux</translation>
@@ -3015,6 +3016,7 @@ Quer pará-lo?</translation>
 <translation id="3038612606416062604">Adicionar uma impressora manualmente</translation>
 <translation id="3038628620670416486">Localize os botões no seu rato</translation>
 <translation id="3039491566278747710">Falha ao instalar a política offline no dispositivo.</translation>
+<translation id="3040435070100611531">Os seus passes da Carteira do Google</translation>
 <translation id="3040982432432547149">Ajude-nos a melhorar o Steam para o Chromebook</translation>
 <translation id="304169924727249890">Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Alterar a estratégia de carregamento otimizado.</translation>
@@ -3223,6 +3225,7 @@ Quer pará-lo?</translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Pode gerir as definições a partir deste cartão em qualquer altura ou ver mais opções em Personalizar o Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Novo separador em 1 separador}other{Novo separador em # separadores}}</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Rever agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
@@ -3398,6 +3401,7 @@ Quer pará-lo?</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – vídeo em reprodução no modo ecrã no ecrã.</translation>
 <translation id="3335380372402547327">Pré-visualizar notificações com flash</translation>
 <translation id="3335947283844343239">Reabrir separador fechado</translation>
+<translation id="3336661809256024098">Novo separador em <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Não sei</translation>
 <translation id="3337568642696914359">Não permitir que os sites processem protocolos</translation>
 <translation id="333863344734218290">Envia-lhe avisos sobre sites públicos e privados inseguros</translation>
@@ -6980,6 +6984,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5830205393314753525">Não é possível abrir a app <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">A sua palavra-passe é encriptada e nunca é visível para ninguém</translation>
 <translation id="5830720307094128296">Guard&amp;ar Página Como...</translation>
+<translation id="5831217499016131155">Carteira do Google</translation>
 <translation id="583179300286794292">Com sessão iniciada como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e da respetiva app instalada?</translation>
 <translation id="5832813618714645810">Perfis</translation>
@@ -8942,6 +8947,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer switch</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
 <translation id="7214047272988222011">Permitida: <ph name="PERMISSION_DETAILS" />. Ative o <ph name="LINK_BEGIN" />acesso à câmara do sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Novo separador em 1 separador}other{Novo separador em # separadores}}</translation>
 <translation id="721490496276866468">Importar palavras-passe</translation>
 <translation id="7217208603285112910">Seleção não disponível em <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Eliminar dados do site?</translation>
@@ -9229,6 +9235,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7410344089573941623">Perguntar se <ph name="HOST" /> quer aceder à sua câmara e microfone</translation>
 <translation id="7410421966064092098">Os sites não podem ajudar a validar que não é um bot</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
+<translation id="741148343080227980">Pode editar o seu nome <ph name="BEGIN_LINK" />na sua Conta Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="741370456693729525">Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou</translation>

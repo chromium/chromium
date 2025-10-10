@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">進一步了解點樣修正更新錯誤</translation>
 <translation id="1217114730239853757">係咪要啟用 ChromeOS Flex 內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="1217117837721346030">下載可疑的檔案</translation>
+<translation id="1217437913373100941">在「<ph name="GROUP_NAME" />」中新增分頁</translation>
 <translation id="1217483152325416304">系統即將刪除您的本機資料</translation>
 <translation id="1217668622537098248">完成後還原至先前的按左鍵操作</translation>
 <translation id="1218015446623563536">刪除 Linux</translation>
@@ -3026,6 +3027,7 @@
 <translation id="3038612606416062604">手動新增打印機</translation>
 <translation id="3038628620670416486">找出滑鼠按鈕位置</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
+<translation id="3040435070100611531">「Google 錢包」票卡</translation>
 <translation id="3040982432432547149">協助我們改善 Chromebook 上的 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組</translation>
 <translation id="3042097545107738107">變更優化充電策略。</translation>
@@ -3232,6 +3234,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         你可隨時透過此資訊卡管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{在 1 個分頁的群組中新增分頁}other{在 # 個分頁的群組中新增分頁}}</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -3407,6 +3410,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 影片以畫中畫模式播放</translation>
 <translation id="3335380372402547327">預覽閃光燈通知</translation>
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
+<translation id="3336661809256024098">在「<ph name="GROUP_NAME" />」中新增分頁</translation>
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">不允許網站處理通訊協定</translation>
 <translation id="333863344734218290">在你瀏覽不安全的公開和私人網站時發出警告</translation>
@@ -6981,6 +6985,7 @@
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830512293931520102">你的密碼會加密，且不會向其他人顯示</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)…</translation>
+<translation id="5831217499016131155">Google 電子錢包</translation>
 <translation id="583179300286794292">以 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 的身份登入</translation>
 <translation id="5831950941058843834">要刪除 <ph name="SITE_NAME" />、當中所有網站，以及網站已安裝的應用程式的網站資料和權限嗎？</translation>
 <translation id="5832813618714645810">設定檔</translation>
@@ -8942,6 +8947,7 @@
 <translation id="7211783048245131419">未指派任何按鈕</translation>
 <translation id="7212097698621322584">請輸入目前的 PIN 以進行變更。如果您不知道自己的 PIN，請重設安全密鑰，然後建立新的 PIN。</translation>
 <translation id="7214047272988222011">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統相機存取權<ph name="LINK_END" />。</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{在 1 個分頁的群組中新增分頁}other{在 # 個分頁的群組中新增分頁}}</translation>
 <translation id="721490496276866468">匯入密碼</translation>
 <translation id="7217208603285112910">所選內容不是<ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
@@ -9229,6 +9235,7 @@
 <translation id="7410344089573941623">當 <ph name="HOST" /> 要求使用相機和麥克風時詢問我。</translation>
 <translation id="7410421966064092098">網站無法協助驗證您不是機器人</translation>
 <translation id="7410852728357935715">投放至裝置</translation>
+<translation id="741148343080227980">你可以<ph name="BEGIN_LINK" />在 Google 帳戶 <ph name="USERNAME" /> 中<ph name="END_LINK" />編輯名稱。</translation>
 <translation id="741204030948306876">確認</translation>
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="741370456693729525">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站</translation>

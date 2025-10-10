@@ -1381,6 +1381,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7177873915659574692">No es pot crear el codi QR. L'URL conté més de <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7182051712900867547">Utilitza un altre compte</translation>
+<translation id="7182520625618447753">Canvia la posició de la barra d'adreces a la part superior o inferior per gaudir d'una experiència de navegació personalitzada</translation>
 <translation id="7183517696921903380">El full de filtratge per aplicació està obert.</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
 <translation id="7190921792980745354">Vols bloquejar <ph name="MEMBER_FULL_NAME" />?</translation>

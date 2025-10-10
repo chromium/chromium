@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">1-дарек</translation>
 <translation id="154312949627292154">Башка түзмөктөрдөн алынган өтмөктөрдү кулпуланган экранда ачасыз.</translation>
 <translation id="1545749641540134597">QR кодду скандоо</translation>
+<translation id="1545757265410828525">Баалар таржымалы</translation>
 <translation id="1547610699249301703">Сырсөздөдү бөлүшүү</translation>
 <translation id="1554477036522844996">Жаңы Терезе</translation>
 <translation id="1558391695376153246">Жашыруун өтмөктөрдү жабуу</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">"<ph name="USERNAME" />" үчүн <ph name="WEBSITE" /> вебсайтында сырсөздү сактап койгонсуз</translation>
 <translation id="2434918313224755415">Жашыруун режимде карап чыгуу үчүн солго сыдырыңыз.</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
+<translation id="2451607499823206582">Көз салуу</translation>
 <translation id="2458827363789845126">{count,plural, =1{Таржымалдагы {count} нерсе}other{Таржымалдагы {count} нерсе}}</translation>
 <translation id="2461070143328828326">Сырсөздүн параметрлери</translation>
 <translation id="2462736546165239215">Көргөн вебсайттарыңыздын баарын бул жерден таба аласыз.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="334690320928261823">Соңку өтмөктөр</translation>
 <translation id="3349031117032695619">Калкып чыкмаларды бөгөттөө</translation>
-<translation id="3349676726073650389">Сиз жазылган сайттар жана издеген нерселер Google аккаунтуңузда сакталат. Жазылгандарды параметрлерден каалаган убакта тескей аласыз.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Бул аккаунт тескелет.</translation>
 <translation id="3365529507898144230">Фотого сактоо</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Дарек тилкесинин жайгашуусу</translation>
 <translation id="4870911314065352661">Бардык өтмөктөр жабылсынбы?</translation>
 <translation id="4872664437015695612">Жүктөлүп алынгандарда ачуу</translation>
-<translation id="4875260838563541343">Аракет баскычы</translation>
 <translation id="4876237378696925987">Баштадык</translation>
 <translation id="4876305945144899064">Колдонуучунун аты жок</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" /> ачылды</translation>
@@ -1297,7 +1297,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6045460247888249350">Аталышын кошуу</translation>
 <translation id="6052269326659653305">Профилди которуу</translation>
 <translation id="605721222689873409">ЖЖ</translation>
-<translation id="6059103953801602038">Сиз жазылган сайттар Google аккаунтуңузда сакталат. Аларды Сунуштардын жөндөөлөрүнөн башкара аласыз.</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
 <translation id="6074656473835429958">Билдирмелерди алуу</translation>
@@ -1510,7 +1509,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6770452996697898492">[ЭЭЛЕНГЕН]</translation>
 <translation id="6779455296366983087">Серептөө дайындарыңыз өчүрүлөт</translation>
-<translation id="6790502149545262384">Жакында жаңы өтмөктү ачкан сайын <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
 <translation id="6791425686608802741">"Өтмөктү жаңы топко кошуу" баскычын басыңыз</translation>
 <translation id="6794476726485507147">Бул бетке кайрадан баш багууну эстеткен билдирмени ала турган күн менен убакытты көрсөтүңүз</translation>
 <translation id="6795481620482106033">Туура эмес маалымат</translation>
@@ -1589,7 +1587,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7091023926159231962">{count,plural, =1{{count} сырсөз өткөрүлүп алынган жок}other{{count} сырсөз өткөрүлүп алынган жок}}</translation>
 <translation id="7095110968493193530">Google Сырсөздөрдү башкаргычка (<ph name="EMAIL" /> аккаунту)</translation>
 <translation id="7097046145876891318">Убакыттын өтүшү менен товарлардын баасы кандай өзгөргөнүн көрүү үчүн дарек тилкесиндеги баалар таржымалын таптаңыз</translation>
-<translation id="7101580180124131336">Эми <ph name="CHANNEL_NAME" /> каналындагы контентти жана маалыматты Жазылгансыз бөлүмүндө көрөсүз.</translation>
 <translation id="7102005569666697658">Жүктөлүп алынууда… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Тууралоо → Төлөм ыкмалары</translation>
 <translation id="7108338896283013870">Жашыруу</translation>
@@ -1666,7 +1663,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7435356471928173109">Администраторуңуз өчүрүп койду</translation>
 <translation id="7437712592381799950">Сиз үчүн жекелештирилген мазмунду көрүү үчүн, экранды өйдө сүрүңүз.</translation>
 <translation id="7438473148803748807">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
-<translation id="7438481509621345350">Эми жаңы өтмөктү ачканда, <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
 <translation id="7445682342344043969">Калкыма терезелер бөгөттөлгөн</translation>
 <translation id="7451023311965289370">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}"}other{Кыстарма төмөнкүгө сакталды: "{title}"}}</translation>
 <translation id="7451404862887877229">"Купуялык жана коопсуздук", андан кийин "Коопсуз серептөө" баскычын таптаңыз.</translation>
@@ -1933,8 +1929,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
 <translation id="8393889347136007944">Өтмөктөр <ph name="THRESHOLD" /> күн колдонулган жок</translation>
 <translation id="8395180897620197612">Таржымалын жыйноону токтотуу</translation>
-<translation id="8395339334550012808">Жакында <ph name="CHANNEL_NAME" /> каналындагы контентти жана маалыматты Жазылгансыз бөлүмүндө көрөсүз.</translation>
-<translation id="8402673309244746971">Жазылгандарга өтүү</translation>
 <translation id="8407669440184693619">Бул сайт үчүн бир да сырсөз табылган жок</translation>
 <translation id="8407831512155324054">Сырсөздөрүңүз татаал көрүнөт</translation>
 <translation id="8414283596511250978">Сырсөздөрүңүздү эч качан унутпаңыз</translation>
@@ -2173,7 +2167,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="952704832371081537">Жокко чыгаруу</translation>
 <translation id="954667170699278022">Окуу тизмеси</translation>
 <translation id="956218893102219091">Gemini'дан так маалыматты алуу үчүн IP дарегинин негизинде аныкталган болжолдуу жерди эмес, так даректи колдонуңуз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
-<translation id="959066944189734975"><ph name="CHANNEL_NAME" /> жаңылыктарына жазылдыңыз</translation>
 <translation id="961856697154696964">Серептөө дайындарын өчүрүү</translation>
 <translation id="963102227019621224">Колдонмолор жана Интернеттеги аракеттер таржымалы</translation>
 <translation id="966593914872420832">Айтып издөө</translation>

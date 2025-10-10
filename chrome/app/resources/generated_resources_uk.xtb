@@ -1650,6 +1650,7 @@
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2104166991923847969">Вимикати точку доступу автоматично</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
+<translation id="2106439768713835453">Також надати доступ до аудіо з додатка</translation>
 <translation id="2108204112555497972">Перевірено <ph name="NUM_DAYS_HOURS_MINUTES" /> тому</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="2109384632594340939">зображення профілю</translation>
@@ -3029,6 +3030,7 @@
 <translation id="3038612606416062604">Додати принтер вручну</translation>
 <translation id="3038628620670416486">Знайдіть кнопки на миші</translation>
 <translation id="3039491566278747710">Не вдалося встановити на пристрій політику щодо використання в режимі офлайн.</translation>
+<translation id="3040435070100611531">Ваші картки в Google Гаманці</translation>
 <translation id="3040982432432547149">Допоможіть нам покращити додаток Steam для Chromebook</translation>
 <translation id="304169924727249890">Приєднатися до групи вкладок, з якою працює <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Змінити стратегію оптимізованого заряджання.</translation>
@@ -3889,6 +3891,7 @@
 <translation id="3656328935986149999">Швидкість руху курсора</translation>
 <translation id="3656701180077048004">Додає затримку між натисканням клавіші і її активацією</translation>
 <translation id="3658871634334445293">Прискорення TrackPoint</translation>
+<translation id="3659483399659250379">Додайте вкладку й інші об’єкти</translation>
 <translation id="3659929705630080526">Ви ввели неправильний код доступу забагато разів. Спробуйте пізніше</translation>
 <translation id="3661106764436337772">Пишіть швидше й упевненіше</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль уже існує}one{{NUM_PASSWORDS} пароль уже існує}few{{NUM_PASSWORDS} паролі вже існують}many{{NUM_PASSWORDS} паролів уже існують}other{{NUM_PASSWORDS} пароля вже існують}}</translation>
@@ -5421,6 +5424,7 @@
 <translation id="4707337002099455863">Завжди на всіх сайтах</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Також дозволити аудіо на вкладці</translation>
+<translation id="4710347732286177840">Виберіть область екрана, щоб ввести додатковий запит</translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Видаляти, коли закриваються всі вікна</translation>
@@ -6987,6 +6991,7 @@
 <translation id="5830205393314753525">Не вдалося відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Ваш пароль зашифровано, і ніхто не може його побачити.</translation>
 <translation id="5830720307094128296">Зберегти сторінку &amp;як...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Ви ввійшли як <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Видалити дані й дозволи для сайту <ph name="SITE_NAME" />, усіх сайтів його групи та встановленого додатка?</translation>
 <translation id="5832813618714645810">Профілі</translation>

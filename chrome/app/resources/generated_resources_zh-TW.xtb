@@ -15,7 +15,7 @@
 <translation id="1005671386794704751">玫瑰粉</translation>
 <translation id="1005919400326853998">在新對話方塊中查看「<ph name="CERT_NAME" />」的憑證詳細資料</translation>
 <translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
-<translation id="1006873397406093306">這項擴充功能可讀取及變更你網站上的資料。你可以設定擴充功能可存取的網站。</translation>
+<translation id="1006873397406093306">這項擴充功能可讀取及變更已造訪網站的相關資料。你可以設定擴充功能可存取的網站。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008261151167010035"><ph name="BRAND" />會記住你的登入資訊，並在情況允許時讓你自動登入。如關閉這項功能，系統每次都會詢問你是否要登入</translation>
@@ -1637,6 +1637,7 @@
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
+<translation id="2106439768713835453">一併分享應用程式音訊</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
 <translation id="2109384632594340939">個人資料相片</translation>
@@ -3013,6 +3014,7 @@
 <translation id="3038612606416062604">手動新增印表機</translation>
 <translation id="3038628620670416486">點選滑鼠按鈕</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
+<translation id="3040435070100611531">你的 Google 錢包票證</translation>
 <translation id="3040982432432547149">協助我們改善 Chromebook 適用的 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />的分頁群組</translation>
 <translation id="3042097545107738107">變更最佳化充電策略。</translation>
@@ -3870,6 +3872,7 @@
 <translation id="3656328935986149999">游標速度</translation>
 <translation id="3656701180077048004">在按下按鍵與啟動按鍵間加入延遲時間</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659483399659250379">新增分頁和其他相關資訊</translation>
 <translation id="3659929705630080526">存取碼輸入錯誤的次數過多，請稍後再試</translation>
 <translation id="3661106764436337772">自信地快速編寫</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{找到 1 個現有密碼}other{找到 {NUM_PASSWORDS} 個現有密碼}}</translation>
@@ -5398,6 +5401,7 @@
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">一併允許分頁音訊</translation>
+<translation id="4710347732286177840">選取要後續查詢的畫面區域</translation>
 <translation id="4711638718396952945">還原設定</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
@@ -6419,7 +6423,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435274640623994081">啟用語音記錄功能</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
-<translation id="5436211819997237281">目前管理新分頁的擴充功能</translation>
+<translation id="5436211819997237281">現在是由這個擴充功能管理新分頁</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗現在的寬度為 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格現在的寬度為 <ph name="PANE_SIZE_PERCENT" />。</translation>
@@ -6964,6 +6968,7 @@
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830512293931520102">你的密碼已經過加密處理，任何人都不會看到</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
+<translation id="5831217499016131155">Google 電子錢包</translation>
 <translation id="583179300286794292">目前登入的帳戶是 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">要對 <ph name="SITE_NAME" />、其下所有網站，以及其安裝的應用程式刪除網站資料和權限嗎？</translation>
 <translation id="5832813618714645810">設定檔</translation>

@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Adreça 1</translation>
 <translation id="154312949627292154">Obre les pestanyes rebudes dels teus altres dispositius des de la pantalla de bloqueig.</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
+<translation id="1545757265410828525">Historial de preus</translation>
 <translation id="1547610699249301703">Comparteix contrasenyes</translation>
 <translation id="1554477036522844996">Finestra nova</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Ja has desat una contrasenya per a <ph name="USERNAME" /> a <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Pots desplaçar-te cap a l'esquerra per navegar d'incògnit.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2451607499823206582">Seguiment</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} element de l'historial}other{{count} elements de l'historial}}</translation>
 <translation id="2461070143328828326">Configuració de contrasenyes</translation>
 <translation id="2462736546165239215">Aquí pots trobar tot l'historial de navegació.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{S'ha desat l'adreça d'interès a "{title}" al teu compte, {email}}other{S'han desat les adreces d'interès a "{title}" al teu compte, {email}}}</translation>
 <translation id="334690320928261823">Pestanyes recents</translation>
 <translation id="3349031117032695619">Bloqueja finestres emergents</translation>
-<translation id="3349676726073650389">Els llocs web i les cerques que segueixes es desen al teu Compte de Google. Pots gestionar el contingut que segueixes en qualsevol moment a la configuració.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Aquest compte està gestionat.</translation>
 <translation id="3365529507898144230">Desa a Fotos</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Posició de la barra d'adreces</translation>
 <translation id="4870911314065352661">Vols tancar totes les pestanyes?</translation>
 <translation id="4872664437015695612">Obre a les baixades</translation>
-<translation id="4875260838563541343">Botó d’acció</translation>
 <translation id="4876237378696925987">Comença</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
 <translation id="4876665338492917862">Obert: <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6045460247888249350">Afegeix un títol</translation>
 <translation id="6052269326659653305">Canvia de perfil</translation>
 <translation id="605721222689873409">AA</translation>
-<translation id="6059103953801602038">Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6066301408025741299">Toca per cancel·lar.</translation>
 <translation id="6074656473835429958">Rep notificacions</translation>
@@ -1510,7 +1509,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6770452996697898492">[RESERVAT]</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
-<translation id="6790502149545262384">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6791425686608802741">Toca Afegeix una pestanya al grup nou</translation>
 <translation id="6794476726485507147">Tria la data i l'hora en què vols rebre una notificació de recordatori per tornar a visitar aquesta pàgina</translation>
 <translation id="6795481620482106033">Dades no vàlides</translation>
@@ -1589,7 +1587,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7091023926159231962">{count,plural, =1{No s'ha pogut importar {count} contrasenya}other{No s'han pogut importar {count} contrasenyes}}</translation>
 <translation id="7095110968493193530">Ves al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">A la barra d'adreces, toca l'historial de preus per veure els canvis de preu al llarg del temps</translation>
-<translation id="7101580180124131336">Ara veuràs contingut de <ph name="CHANNEL_NAME" /> i sobre aquest canal a Seguint.</translation>
 <translation id="7102005569666697658">S'està baixant… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuració → Formes de pagament</translation>
 <translation id="7108338896283013870">Amaga</translation>
@@ -1666,7 +1663,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437712592381799950">Pots lliscar cap amunt per veure més contingut adaptat a tu.</translation>
 <translation id="7438473148803748807">Tothom perdrà immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i es desactivaran tots els enllaços d'invitació</translation>
-<translation id="7438481509621345350">Quan obris una pestanya nova, ara veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7445682342344043969">S'han bloquejat les finestres emergents</translation>
 <translation id="7451023311965289370">{count,plural, =1{L'adreça d'interès s'ha desat a {title}}other{Les adreces d'interès s'han desat a {title}"}}</translation>
 <translation id="7451404862887877229">Toca Privadesa i seguretat i, a continuació, Navegació segura</translation>
@@ -1933,8 +1929,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8393889347136007944">Pestanyes que no s'han utilitzat durant <ph name="THRESHOLD" /> dies</translation>
 <translation id="8395180897620197612">Atura el registre</translation>
-<translation id="8395339334550012808">Aviat veuràs contingut de <ph name="CHANNEL_NAME" /> i sobre aquest canal a Seguint.</translation>
-<translation id="8402673309244746971">Ves a Seguint</translation>
 <translation id="8407669440184693619">No s'ha trobat cap contrasenya per a aquest lloc web</translation>
 <translation id="8407831512155324054">Les contrasenyes són segures</translation>
 <translation id="8414283596511250978">No oblidis mai les teves contrasenyes</translation>
@@ -2173,7 +2167,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="954667170699278022">Llista de lectura</translation>
 <translation id="956218893102219091">Utilitza la teva ubicació precisa per obtenir resultats de Gemini més acurats, en lloc de fer servir una ubicació estimada basada en l'adreça IP. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="963102227019621224">Activitat al web i en aplicacions</translation>
 <translation id="966593914872420832">Cerca per veu</translation>

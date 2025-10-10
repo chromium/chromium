@@ -1382,6 +1382,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7177873915659574692">Det gick inte att skapa QR-koden. Webbadressen är längre än <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7182051712900867547">Använd ett annat konto</translation>
+<translation id="7182520625618447753">Anpassa surfupplevelsen genom att flytta adressfältet överst eller nederst på skärmen</translation>
 <translation id="7183517696921903380">Arbetsbladet för appfilter har öppnats.</translation>
 <translation id="7186568385131859684">Styr hur webbhistoriken används tillsammans med din andra data i Googles tjänster</translation>
 <translation id="7190921792980745354">Vill du blockera <ph name="MEMBER_FULL_NAME" />?</translation>

@@ -338,6 +338,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1216891999012841486">Saznajte više o otklanjanju grešaka pri ažuriranju</translation>
 <translation id="1217114730239853757">Želite li da aktivirate ChromeVox, ugrađeni čitač ekrana za Chrome OS Flex? Ako je tako, pritisnite taster za razmak.</translation>
 <translation id="1217117837721346030">Preuzmi sumnjivi fajl</translation>
+<translation id="1217437913373100941">Nova kartica u grupi <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Lokalni podaci se uskoro brišu</translation>
 <translation id="1217668622537098248">Vrati na levi klik posle radnje</translation>
 <translation id="1218015446623563536">Izbrišite Linux</translation>
@@ -3012,6 +3013,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3038612606416062604">Ručno dodajte štampač</translation>
 <translation id="3038628620670416486">Pronađite dugmad na mišu</translation>
 <translation id="3039491566278747710">Instaliranje oflajn smernica na uređaju nije uspelo.</translation>
+<translation id="3040435070100611531">Karte u Google novčaniku</translation>
 <translation id="3040982432432547149">Pomozite nam da poboljšamo Steam za Chromebook</translation>
 <translation id="304169924727249890">Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Promenite strategiju optimizovanog punjenja.</translation>
@@ -3220,6 +3222,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
         <ph name="BREAK" />
         <ph name="BREAK" />
         U svakom trenutku možete da upravljate podešavanjima sa ove kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica u 1 kartici}one{Nova kartica u # kartici}few{Nova kartica u # kartice}other{Nova kartica u # kartica}}</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208584281581115441">Proveri</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
@@ -3395,6 +3398,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se reprodukuje u režimu slike u slici</translation>
 <translation id="3335380372402547327">Prikaži treperuća obaveštenja</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
+<translation id="3336661809256024098">Nova kartica u grupi <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ne znam</translation>
 <translation id="3337568642696914359">Ne dozvoljavaj sajtovima da upravljaju protokolima</translation>
 <translation id="333863344734218290">Upozorava vas na nebezbedne javne i privatne sajtove</translation>
@@ -6975,6 +6979,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />: otvaranje nije uspelo</translation>
 <translation id="5830512293931520102">Lozinka je šifrovana i niko ne može da je vidi</translation>
 <translation id="5830720307094128296">Sačuvaj stranicu &amp;kao...</translation>
+<translation id="5831217499016131155">Google novčanik</translation>
 <translation id="583179300286794292">Prijavljeni ste kao <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Želite da izbrišete podatke o sajtovima i dozvole za sajt <ph name="SITE_NAME" />, sve podređene sajtove i njegovu instaliranu aplikaciju?</translation>
 <translation id="5832813618714645810">Profili</translation>
@@ -8941,6 +8946,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7211783048245131419">Još nije dodeljen nijedan prekidač</translation>
 <translation id="7212097698621322584">Unesite aktuelni PIN da biste ga promenili. Ako ne znate PIN, morate da resetujete bezbednosni ključ, pa da napravite novi PIN.</translation>
 <translation id="7214047272988222011">Dozvoljeno je – <ph name="PERMISSION_DETAILS" />. Uključite <ph name="LINK_BEGIN" />pristup sistemskoj kameri<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova kartica u 1 kartici}one{Nova kartica u # kartici}few{Nova kartica u # kartice}other{Nova kartica u # kartica}}</translation>
 <translation id="721490496276866468">Uvezi lozinke</translation>
 <translation id="7217208603285112910">Izabrana stavka nije na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
@@ -9228,6 +9234,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7410344089573941623">Pitaj da li <ph name="HOST" /> želi da pristupi kameri i mikrofonu</translation>
 <translation id="7410421966064092098">Sajtovi ne mogu da potvrde da niste bot</translation>
 <translation id="7410852728357935715">Prebacujte na uređaj</translation>
+<translation id="741148343080227980">Možete da izmenite ime <ph name="BEGIN_LINK" />na Google nalogu <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, omogući</translation>
 <translation id="7412226954991670867">GPU memorija</translation>
 <translation id="741370456693729525">Koristite svakodnevni jezik da biste pretraživali istoriju pregledanja i pronalazili sajtove koje ste posetili</translation>

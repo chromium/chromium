@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="154312949627292154">Отварајте картице које сте примили са других уређаја са закључаног екрана.</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
+<translation id="1545757265410828525">Историја цена</translation>
 <translation id="1547610699249301703">Делите лозинке</translation>
 <translation id="1554477036522844996">Нови прозор</translation>
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Можете да скролујете улево да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2451607499823206582">Прати се</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} ставка историје}one{{count} ставка историје}few{{count} ставке историје}other{{count} ставки историје}}</translation>
 <translation id="2461070143328828326">Подешавања лозинке</translation>
 <translation id="2462736546165239215">Овде можете да пронађете сву историју прегледања.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="334690320928261823">Недавне картице</translation>
 <translation id="3349031117032695619">Блокирај искачуће прозоре</translation>
-<translation id="3349676726073650389">Сајтови и претраге које пратите се чувају на Google налогу. Можете да управљате праћењима у подешавањима у сваком тренутку.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Овим налогом се управља.</translation>
 <translation id="3365529507898144230">Сачувај у Сликама</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Позиција траке за адресу</translation>
 <translation id="4870911314065352661">Желите да затворите све картице?</translation>
 <translation id="4872664437015695612">Отвори у Преузимањима</translation>
-<translation id="4875260838563541343">Дугме за радњу</translation>
 <translation id="4876237378696925987">Почетни кораци</translation>
 <translation id="4876305945144899064">Нема корисничког имена</translation>
 <translation id="4876665338492917862">Отворено <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6045460247888249350">Додајте наслов</translation>
 <translation id="6052269326659653305">Промените профил</translation>
 <translation id="605721222689873409">ГГ</translation>
-<translation id="6059103953801602038">Сајтови које пратите се чувају на Google налогу. Њима можете да управљате у подешавањима Discover-а.</translation>
 <translation id="6059830886158432458">Овде контролишите приче и активности</translation>
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
 <translation id="6074656473835429958">Добијајте обавештења</translation>
@@ -1510,7 +1509,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6761393919622941301">Звук</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИСАНО]</translation>
 <translation id="6779455296366983087">Подаци прегледања ће бити избрисани</translation>
-<translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="6791425686608802741">Додирните Додај картицу у нову групу</translation>
 <translation id="6794476726485507147">Одаберите датум и време да бисте добили обавештење о подсетнику да поново посетите ову страницу</translation>
 <translation id="6795481620482106033">Неважећи подаци</translation>
@@ -1589,7 +1587,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7091023926159231962">{count,plural, =1{Увоз {count} лозинке није успео}one{Увоз {count} лозинке није успео}few{Увоз {count} лозинке није успео}other{Увоз {count} лозинки није успео}}</translation>
 <translation id="7095110968493193530">У Google менаџеру лозинки за <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">На траци за адресу додирните историју цена да бисте видели промене цена током времена</translation>
-<translation id="7101580180124131336">Сада ћете видети садржај са канала <ph name="CHANNEL_NAME" /> и о њему у одељку Праћења.</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7104701424653979232">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7108338896283013870">Сакриј</translation>
@@ -1666,7 +1663,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7435356471928173109">Искључио је администратор</translation>
 <translation id="7437712592381799950">Можете да превучете нагоре да бисте видели више садржаја прилагођеног вама.</translation>
 <translation id="7438473148803748807">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и сви линкови позивница ће бити искључени</translation>
-<translation id="7438481509621345350">Сада ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="7445682342344043969">Искачући прозори су блокирани</translation>
 <translation id="7451023311965289370">{count,plural, =1{Обележивач је сачуван у: {title}}one{Обележивачи су сачувани у: {title}}few{Обележивачи су сачувани у: {title}}other{Обележивачи су сачувани у: {title}}}</translation>
 <translation id="7451404862887877229">Додирните Приватност и безбедност, па Безбедно прегледање</translation>
@@ -1933,8 +1929,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8393700583063109961">Пошаљите поруку</translation>
 <translation id="8393889347136007944">Картице се не користе <ph name="THRESHOLD" /> дана</translation>
 <translation id="8395180897620197612">Заустави евидентирање</translation>
-<translation id="8395339334550012808">Ускоро ћете видети садржај са канала <ph name="CHANNEL_NAME" /> и о њему у одељку Праћења.</translation>
-<translation id="8402673309244746971">Иди на Пратите</translation>
 <translation id="8407669440184693619">Није пронађена ниједна лозинка за овај сајт</translation>
 <translation id="8407831512155324054">Лозинке изгледају јако</translation>
 <translation id="8414283596511250978">Никада не заборавите лозинке</translation>
@@ -2173,7 +2167,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="952704832371081537">Откажи</translation>
 <translation id="954667170699278022">Листа за читање</translation>
 <translation id="956218893102219091">Користите прецизну локацију да бисте добијали најтачније Gemini резултате, уместо приближне локације засноване на IP адреси. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>
 <translation id="963102227019621224">Активности на вебу и у апликацијама</translation>
 <translation id="966593914872420832">Гласовна претрага</translation>

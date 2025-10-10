@@ -11006,6 +11006,15 @@ Consulte a seção 5.2 do RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sec
       Se ela for desativada, os dispositivos registrados não vão receber controles de geração de relatórios granulares.</translation>
 <translation id="82530263956734297">IDs de extensão que serão isentos da lista de bloqueio</translation>
 <translation id="8254749125469750814">Não valide se uma extensão pode ser instalada ou não com um serviço de nuvem.</translation>
+<translation id="825509998103089977">Controla se o app do Gemini pode realizar ações nas páginas da web em nome do usuário.
+
+Se for definida como 0 ou deixada sem definição, o app do Gemini poderá realizar ações nas páginas da web.
+
+Se for definida como 1, ele não terá permissão para isso.
+
+Esta política não tem efeito quando o app do Gemini está desativado. Por exemplo, ele pode ser desativado por uma política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para mais informações, acesse https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controla o nome da conta que o <ph name="PRODUCT_OS_NAME" /> mostra na tela de login para a conta local de dispositivo correspondente.
 

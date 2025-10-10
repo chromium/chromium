@@ -340,6 +340,7 @@
 <translation id="1216891999012841486">مزيد من المعلومات حول إصلاح أخطاء التحديث</translation>
 <translation id="1217114730239853757">‏لتفعيل قارئ الشاشة ChromeVox المضمّن لنظام التشغيل ChromeOS Flex، يُرجى الضغط على شريط المسافة.</translation>
 <translation id="1217117837721346030">تنزيل ملف مُريب</translation>
+<translation id="1217437913373100941">علامة تبويب جديدة في "<ph name="GROUP_NAME" />"</translation>
 <translation id="1217483152325416304">سيتم قريبًا حذف البيانات المحلية.</translation>
 <translation id="1217668622537098248">العودة إلى النقر بزر الماوس الأيسر بعد اتخاذ إجراء</translation>
 <translation id="1218015446623563536">‏حذف Linux</translation>
@@ -3019,6 +3020,7 @@
 <translation id="3038612606416062604">إضافة طابعة يدويًا</translation>
 <translation id="3038628620670416486">تحديد مكان الأزرار على الماوس</translation>
 <translation id="3039491566278747710">تعذّر تثبيت السياسة بلا إنترنت على الجهاز.</translation>
+<translation id="3040435070100611531">‏بطاقاتك في "محفظة Google"</translation>
 <translation id="3040982432432547149">‏المساعدة في تحسين تطبيق Steam على أجهزة Chromebook</translation>
 <translation id="304169924727249890">الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"</translation>
 <translation id="3042097545107738107">يمكنك تغيير استراتيجية الشحن المُحسّن.</translation>
@@ -3227,6 +3229,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         يمكنك إدارة الإعدادات من هذه البطاقة في أي وقت أو الاطّلاع على المزيد من الخيارات في قسم "تخصيص Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{علامة تبويب جديدة ضِمن علامة تبويب واحدة}zero{علامة تبويب جديدة ضِمن # علامة تبويب}two{علامة تبويب جديدة ضِمن علامتَي تبويب (#)}few{علامة تبويب جديدة ضِمن # علامات تبويب}many{علامة تبويب جديدة ضِمن # علامة تبويب}other{علامة تبويب جديدة ضِمن # علامة تبويب}}</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="3208703785962634733">لم يتم تأكيده</translation>
@@ -3402,6 +3405,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - جارٍ تشغيل الفيديو في وضع "نافذة ضمن نافذة"</translation>
 <translation id="3335380372402547327">معاينة الإشعارات المصحوبة بوميض</translation>
 <translation id="3335947283844343239">إعادة فتح علامة التبويب المغلقة</translation>
+<translation id="3336661809256024098">علامة تبويب جديدة في "<ph name="GROUP_NAME" />"</translation>
 <translation id="3336855445806447827">غير متأكّد</translation>
 <translation id="3337568642696914359">عدم السماح للمواقع الإلكترونية بمعالجة البروتوكولات</translation>
 <translation id="333863344734218290">التحذير بشأن المواقع الإلكترونية العامة والخاصة غير الآمنة</translation>
@@ -6981,6 +6985,7 @@
 <translation id="5830205393314753525">يتعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">كلمة المرور مشفَّرة ولا يمكن لأي شخص الاطّلاع عليها</translation>
 <translation id="5830720307094128296">حفظ &amp;صفحة باسم...</translation>
+<translation id="5831217499016131155">‏محفظة Google</translation>
 <translation id="583179300286794292">تم تسجيل الدخول بحساب <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />.</translation>
 <translation id="5831950941058843834">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />، وكل المواقع الإلكترونية المدرَجة ضِمنه، وتطبيقه المثبَّت؟</translation>
 <translation id="5832813618714645810">الملفات الشخصية</translation>
@@ -8952,6 +8957,7 @@
 <translation id="7211783048245131419">لم يتم تخصيص مفتاح تبديل بعد</translation>
 <translation id="7212097698621322584">يُرجى إدخال رقم التعريف الشخصي الحالي لتغييره. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان، ثم إنشاء رقم تعريف شخصي جديد.</translation>
 <translation id="7214047272988222011">تم منح إذن الوصول إلى الكاميرا: <ph name="PERMISSION_DETAILS" />. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى كاميرا النظام<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{علامة تبويب جديدة ضِمن علامة تبويب واحدة}zero{علامة تبويب جديدة ضِمن # علامة تبويب}two{علامة تبويب جديدة ضِمن علامتَي تبويب (#)}few{علامة تبويب جديدة ضِمن # علامات تبويب}many{علامة تبويب جديدة ضِمن # علامة تبويب}other{علامة تبويب جديدة ضِمن # علامة تبويب}}</translation>
 <translation id="721490496276866468">استيراد كلمات المرور</translation>
 <translation id="7217208603285112910">النص المُحدَّد ليس باللغة <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">هل تريد حذف بيانات الموقع الإلكتروني؟</translation>
@@ -9239,6 +9245,7 @@
 <translation id="7410344089573941623">السؤال عند رغبة <ph name="HOST" /> في الدخول إلى الكاميرا والميكروفون التابعين لك</translation>
 <translation id="7410421966064092098">لا يمكن للمواقع الإلكترونية المساعدة في إثبات أنّك لست برنامج تتبُّع.</translation>
 <translation id="7410852728357935715">البث على جهاز</translation>
+<translation id="741148343080227980">‏يمكنك تعديل اسمك <ph name="BEGIN_LINK" />في حسابك على Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7412226954991670867">‏ذاكرة GPU</translation>
 <translation id="741370456693729525">يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها</translation>

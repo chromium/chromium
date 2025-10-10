@@ -1648,6 +1648,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2102495993840063010">Android forrit</translation>
 <translation id="2104166991923847969">Slökkva sjálfkrafa á heitum reit</translation>
 <translation id="2105809836724866556">Faldi: <ph name="MODULE_TITLE" /></translation>
+<translation id="2106439768713835453">Einnig deila forritshljóðum</translation>
 <translation id="2108204112555497972">Athugað fyrir: <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Símanúmer}one{# símanúmer}other{# símanúmer}}</translation>
 <translation id="2109384632594340939">prófílmynd</translation>
@@ -3027,6 +3028,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3038612606416062604">Bæta prentara við handvirkt</translation>
 <translation id="3038628620670416486">Finndu hnappana á músinni</translation>
 <translation id="3039491566278747710">Mistókst að setja upp ónettengda reglu í tækinu.</translation>
+<translation id="3040435070100611531">Passarnir þínir í Google-veski</translation>
 <translation id="3040982432432547149">Hjálpaðu okkur að bæta Steam fyrir Chromebook</translation>
 <translation id="304169924727249890">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> er í</translation>
 <translation id="3042097545107738107">Breyttu áætlun fyrir fínstillta hleðslu.</translation>
@@ -3887,6 +3889,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3656328935986149999">Bendilshraði</translation>
 <translation id="3656701180077048004">Bætir við seinkun á milli þess þegar þú ýtir á lykil og þess þegar hann virkjast</translation>
 <translation id="3658871634334445293">TrackPoint-hröðun</translation>
+<translation id="3659483399659250379">Bættu við flipa og fleiru</translation>
 <translation id="3659929705630080526">Þú hefur slegið of oft inn rangan aðgangskóða. Reyndu aftur síðar</translation>
 <translation id="3661106764436337772">Vertu fljótari og öruggari að skrifa</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 fyrirliggjandi aðgangsorð fannst}one{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fannst}other{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fundust}}</translation>
@@ -5419,6 +5422,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4707337002099455863">Alltaf á öllum vefsvæðum</translation>
 <translation id="4708849949179781599">Loka <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Leyfa einnig hljóð flipa</translation>
+<translation id="4710347732286177840">Veldu svæði á skjánum fyrir eftirfylgni</translation>
 <translation id="4711638718396952945">Endurheimta stillingar</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Eyða þegar þú lokar öllum gluggum</translation>
@@ -6989,6 +6993,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5830205393314753525">Ekki er hægt að opna <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Aðgangsorðið þitt er dulkóðað og enginn getur séð það</translation>
 <translation id="5830720307094128296">Vist&amp;a síðu sem...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Skráð(ur) inn sem <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Eyða vefsvæðagögnum og heimildum fyrir <ph name="SITE_NAME" />, öll undirvefsvæði og uppsett forrit?</translation>
 <translation id="5832813618714645810">Prófílar</translation>

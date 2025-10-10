@@ -3005,7 +3005,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5967592137238574583">Edit Maklumat Hubungan</translation>
 <translation id="5967867314010545767">Buang daripada sejarah</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
-<translation id="5968400720580217226">Mod AI</translation>
+<translation id="5968400720580217226">AI Mode</translation>
 <translation id="5969199813874624822">Simpan dan Jejak Harga</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Gulungan Keenam</translation>
@@ -3313,6 +3313,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6433501201775827830">Pilih enjin carian anda</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> enggan menyambung.</translation>
 <translation id="6433797564277305076">Sahkan kad anda dengan lebih cepat dengan menggunakan buka kunci peranti mulai sekarang</translation>
+<translation id="6436994298828707228">Sambungan telah disekat kerana sambungan tersebut dimulakan oleh halaman umum untuk menyambung kepada peranti atau pelayan pada rangkaian setempat anda.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">Gaun</translation>
 <translation id="6440503408713884761">Diabaikan</translation>
@@ -3384,6 +3385,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6547208576736763147">Dua tebukan kiri</translation>
 <translation id="6549443526281184652">Kostum</translation>
 <translation id="6550245281449521513">Kunci tetikus tidak dibenarkan</translation>
+<translation id="6552566579578780089">Pembayaran</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6556866813142980365">Buat semula</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -3532,6 +3534,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">port bersiri</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Bayar dengan ansuran mudah</translation>
 <translation id="6825578344716086703">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi pelayan memberikan sijil yang ditandatangani menggunakan algoritma tandatangan yang lemah (seperti SHA-1). Ini bermakna bahawa bukti kelayakan keselamatan yang diberi pelayan mungkin dipalsukan dan pelayan tersebut bukan seperti yang anda jangkakan (anda mungkin berkomunikasi dengan penyerang).</translation>
 <translation id="6826993739343257035">Benarkan AR?</translation>
 <translation id="6828150717884939426">Panggilan</translation>
@@ -3980,6 +3983,7 @@ Butiran tambahan:
 <translation id="753556296624075801">Dikuasakan oleh Google</translation>
 <translation id="753713322968419914">Alih keluar alamat rumah daripada autolengkap Chrome?</translation>
 <translation id="7537536606612762813">Wajib</translation>
+<translation id="7541043894191476250">Tugasan kontekstual</translation>
 <translation id="7543525346216957623">Tanya ibu/bapa anda</translation>
 <translation id="7546409722674205727">Memulakan <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Betulkan ralat sambungan</translation>
@@ -4505,6 +4509,7 @@ Butiran tambahan:
 <translation id="8406071103346257942">berhenti menggunakan kunci skrin anda untuk mengisikan kata laluan</translation>
 <translation id="8407031780528483338">Peralatan Memasak</translation>
 <translation id="8409413588194360210">pengendali pembayaran</translation>
+<translation id="8410956920192583322">Bulanan atau 4 ansuran</translation>
 <translation id="8412145213513410671">Nahas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda mesti memasukkan frasa laluan yang sama dua kali.</translation>
 <translation id="8414322570408428950">Peristiwa sambungan berlaku</translation>
@@ -4796,6 +4801,7 @@ Butiran tambahan:
 <translation id="8922734931659847428">Senarai terhad URL halaman yang anda lawati yang mengandungi <ph name="BEGIN_LINK" />peristiwa teknologi lama<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Tebukan atas sebelah kanan</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
+<translation id="8926400492587758246">Bayar dengan ansuran bulanan yang rendah</translation>
 <translation id="8932102934695377596">Jam anda di belakang</translation>
 <translation id="893332455753468063">Tambahkan Nama</translation>
 <translation id="8938242527120341116">Penapis kandungan peranti anda menyekat <ph name="BLOCKED_URL" /></translation>

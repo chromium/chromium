@@ -10755,6 +10755,15 @@ Hãy xem mục 5.2 của RFC 8828 (https://tools.ietf.org/html/rfc8828.html#sect
       Nếu bạn đặt chính sách này thành Tắt thì các thiết bị đã đăng ký sẽ không nhận được các biện pháp kiểm soát báo cáo chi tiết.</translation>
 <translation id="82530263956734297">Các mã nhận dạng tiện ích sẽ được miễn trừ khỏi danh sách chặn</translation>
 <translation id="8254749125469750814">Không dùng dịch vụ đám mây để kiểm tra xem có thể cài đặt một tiện ích hay không.</translation>
+<translation id="825509998103089977">Kiểm soát việc ứng dụng Gemini có được phép hành động trên các trang web thay mặt người dùng hay không.
+
+0/không đặt  = Ứng dụng Gemini được phép hành động trên các trang web.
+
+1 = Ứng dụng Gemini không được phép hành động trên các trang web.
+
+Chính sách này không có hiệu lực khi ứng dụng Gemini bị tắt. Ví dụ: Ứng dụng Gemini có thể bị tắt theo chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Để biết thêm thông tin, vui lòng xem https://support.google.com/chrome/a/answer/16291696.</translation>
 <translation id="8256006033157034334">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Kiểm soát tên tài khoản <ph name="PRODUCT_OS_NAME" /> hiển thị trên màn hình đăng nhập cho tài khoản trong thiết bị tương ứng.
 

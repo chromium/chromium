@@ -1641,6 +1641,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2102495993840063010">Android-apper</translation>
 <translation id="2104166991923847969">Slå av wifi-sonen automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
+<translation id="2106439768713835453">Del også lyd fra appen</translation>
 <translation id="2108204112555497972">Sjekket for <ph name="NUM_DAYS_HOURS_MINUTES" /> siden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnumre}}</translation>
 <translation id="2109384632594340939">profilbildet ditt</translation>
@@ -1780,6 +1781,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2204034823255629767">lese og endre alt du skriver</translation>
 <translation id="2204168219363024184">Før du kan opprette denne passnøkkelen med Google Passordlagring, må du bekrefte at du er deg</translation>
 <translation id="2204387456724731099">Den merkede teksten kunne ikke oversettes</translation>
+<translation id="2204613850236199029">Informasjonen er fjernet</translation>
 <translation id="2207116775853792104">Behold denne utvidelsen</translation>
 <translation id="2209841631181508629">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" /> av dette nettstedet.</translation>
 <translation id="2210462644007531147">Kunne ikke fullføre installasjonen</translation>
@@ -3019,6 +3021,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3038612606416062604">Legg til en skriver manuelt</translation>
 <translation id="3038628620670416486">Finn knapper på musen</translation>
 <translation id="3039491566278747710">Kunne ikke installere regelen for bruk uten nett på enheten.</translation>
+<translation id="3040435070100611531">Kortene og billettene dine i Google Wallet</translation>
 <translation id="3040982432432547149">Hjelp oss med å forbedre Steam for Chromebook</translation>
 <translation id="304169924727249890">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Endre strategien for optimalisert lading.</translation>
@@ -3879,6 +3882,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3656328935986149999">Markørhastighet</translation>
 <translation id="3656701180077048004">Legger til en forsinkelse mellom når du trykker på en tast, og når den aktiveres</translation>
 <translation id="3658871634334445293">TrackPoint-akselerasjon</translation>
+<translation id="3659483399659250379">Legg til en fane og mer</translation>
 <translation id="3659929705630080526">Du har oppgitt feil tilgangskode for mange ganger. Prøv på nytt senere</translation>
 <translation id="3661106764436337772">Skriv raskere og med mer selvsikkerhet</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Fant 1 eksisterende passord}other{Fant {NUM_PASSWORDS} eksisterende passord}}</translation>
@@ -5409,6 +5413,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4707337002099455863">Alltid, på alle nettsteder</translation>
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Tillat også fanelyd</translation>
+<translation id="4710347732286177840">Velg et område på skjermen for oppfølging</translation>
 <translation id="4711638718396952945">Gjenopprett innstillingene</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Slett når du lukker alle vinduer</translation>
@@ -6976,6 +6981,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5830205393314753525">Kan ikke åpne <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Passordet ditt er kryptert og blir aldri sett av noen</translation>
 <translation id="5830720307094128296">L&amp;agre side som</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Logget på som <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Vil du slette nettstedsdata og tillatelser for <ph name="SITE_NAME" />, alle undernettsteder og den tilhørende installerte appen?</translation>
 <translation id="5832813618714645810">Profiler</translation>

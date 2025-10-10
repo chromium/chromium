@@ -149,6 +149,7 @@
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="154312949627292154">Buka tab yang diterima dari perangkat Anda yang lain dari layar kunci.</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
+<translation id="1545757265410828525">Histori harga</translation>
 <translation id="1547610699249301703">Berbagi sandi</translation>
 <translation id="1554477036522844996">Jendela Baru</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
@@ -382,6 +383,7 @@
 <translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Anda dapat men-scroll ke kiri untuk menjelajah dalam mode Samaran.</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
+<translation id="2451607499823206582">Pemantauan</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} item histori}other{{count} item histori}}</translation>
 <translation id="2461070143328828326">Setelan Sandi</translation>
 <translation id="2462736546165239215">Anda dapat menemukan semua histori penjelajahan Anda di sini.</translation>
@@ -599,7 +601,6 @@
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>
 <translation id="3349031117032695619">Blokir pop-up</translation>
-<translation id="3349676726073650389">Situs dan penelusuran yang Anda ikuti disimpan di Akun Google Anda. Anda dapat mengelola konten yang Anda ikuti di setelan kapan saja.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akun ini dikelola.</translation>
 <translation id="3365529507898144230">Simpan di Foto</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
@@ -982,7 +983,6 @@
 <translation id="4869146460927742717">Posisi kolom URL</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
 <translation id="4872664437015695612">Buka di download</translation>
-<translation id="4875260838563541343">Tombol tindakan</translation>
 <translation id="4876237378696925987">Mulai</translation>
 <translation id="4876305945144899064">Tidak ada nama pengguna</translation>
 <translation id="4876665338492917862">Dibuka pada <ph name="LAST_OPENING_DATE" /></translation>
@@ -1297,7 +1297,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6045460247888249350">Tambahkan judul</translation>
 <translation id="6052269326659653305">Ganti profil</translation>
 <translation id="605721222689873409">TT</translation>
-<translation id="6059103953801602038">Situs yang Anda ikuti akan disimpan di Akun Google Anda. Anda dapat mengelolanya di Setelan Discover.</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
 <translation id="6074656473835429958">Dapatkan notifikasi</translation>
@@ -1510,7 +1509,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[DIPESAN]</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
-<translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
 <translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
 <translation id="6795481620482106033">Data Tidak Valid</translation>
@@ -1589,7 +1587,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7091023926159231962">{count,plural, =1{Tidak dapat mengimpor {count} sandi}other{Tidak dapat mengimpor {count} sandi}}</translation>
 <translation id="7095110968493193530">Ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Di kolom URL, ketuk histori harga untuk melihat perubahan harga dari waktu ke waktu</translation>
-<translation id="7101580180124131336">Sekarang Anda akan melihat konten dari dan tentang <ph name="CHANNEL_NAME" /> di tab Mengikuti.</translation>
 <translation id="7102005569666697658">Mendownload… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Setelan → Metode pembayaran</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
@@ -1666,7 +1663,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7437712592381799950">Anda dapat menggeser ke atas untuk melihat lebih banyak konten yang disesuaikan untuk Anda.</translation>
 <translation id="7438473148803748807">Semua orang akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />", dan semua link undangan akan dinonaktifkan</translation>
-<translation id="7438481509621345350">Anda sekarang akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="7445682342344043969">Pop-up diblokir</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark disimpan ke "{title}"}other{Bookmark disimpan ke "{title}"}}</translation>
 <translation id="7451404862887877229">Ketuk "Privasi dan Keamanan", lalu "Safe Browsing"</translation>
@@ -1933,8 +1929,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8393889347136007944">Tab tidak digunakan selama <ph name="THRESHOLD" /> hari</translation>
 <translation id="8395180897620197612">Hentikan logging</translation>
-<translation id="8395339334550012808">Anda akan segera melihat konten dari dan tentang <ph name="CHANNEL_NAME" /> di tab Mengikuti.</translation>
-<translation id="8402673309244746971">Buka feed Mengikuti</translation>
 <translation id="8407669440184693619">Tidak ada sandi yang ditemukan untuk situs ini</translation>
 <translation id="8407831512155324054">Sandi Anda tampak kuat</translation>
 <translation id="8414283596511250978">Jangan pernah melupakan sandi Anda</translation>
@@ -2173,7 +2167,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="952704832371081537">Batal</translation>
 <translation id="954667170699278022">Daftar Bacaan</translation>
 <translation id="956218893102219091">Gunakan lokasi presisi Anda untuk mendapatkan hasil Gemini yang paling akurat, bukan estimasi lokasi berdasarkan alamat IP Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Hapus data penjelajahan</translation>
 <translation id="963102227019621224">Aktivitas Web &amp; Aplikasi</translation>
 <translation id="966593914872420832">Penelusuran suara</translation>

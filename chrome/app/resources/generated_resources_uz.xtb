@@ -336,6 +336,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1216891999012841486">Yangilanish xatolarini tuzatish haqida batafsil</translation>
 <translation id="1217114730239853757">ChromeOS Flex tizimidagi ichiga oʻrnatilgan skrin rider – ChromeVox faollashtirilsinmi? Kerak boʻlsa, boʻshliq tugmasini bosing.</translation>
 <translation id="1217117837721346030">Shubhali faylni yuklab olish</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> guruhida yangi varaq</translation>
 <translation id="1217483152325416304">Mahalliy maʼlumotlar tez orada tozalanadi</translation>
 <translation id="1217668622537098248">Amaldan keyin chap klikka qaytarish</translation>
 <translation id="1218015446623563536">Linuxni o‘chirib tashlash</translation>
@@ -3016,6 +3017,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3038612606416062604">Printerni o‘zingiz qo‘shing</translation>
 <translation id="3038628620670416486">Sichqoncha tugmalarini tayinlash</translation>
 <translation id="3039491566278747710">Qurilmaga oflayn parametrni oʻrnatib boʻlmadi.</translation>
+<translation id="3040435070100611531">Google Wallet kartalaringiz</translation>
 <translation id="3040982432432547149">Chromebook uchun Steam xizmatini yaxshilashda yordam bering</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> ulashgan Sahifa guruhiga qoʻshilish</translation>
 <translation id="3042097545107738107">Optimal quvvatlash strategiyasini oʻzgartirish</translation>
@@ -3222,6 +3224,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
         <ph name="BREAK" />
         <ph name="BREAK" />
         Chromeni moslash sahifasi orqali istalgan vaqt bu bildirgi sozlamalarini boshqarish yoki qoʻshimcha parametrlarni koʻrish mumkin.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 varaqda yangi varaq}other{# varaqda yangi varaq}}</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
 <translation id="3208703785962634733">Tasdiqlanmagan</translation>
@@ -3397,6 +3400,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video tasvir ustida tasvir rejimida ijro etilmoqda</translation>
 <translation id="3335380372402547327">Yoritkichli bildirishnomalar eskizi</translation>
 <translation id="3335947283844343239">Yopilgan ichki oynani qayta ochish</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> guruhida yangi varaq</translation>
 <translation id="3336855445806447827">Aniq bilmayman</translation>
 <translation id="3337568642696914359">Saytlarga protokollarga ishlov berishni taqiqlash</translation>
 <translation id="333863344734218290">Himoyasiz ochiq va maxfiy saytlar haqida ogohlantirish</translation>
@@ -6977,6 +6981,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ochilmadi</translation>
 <translation id="5830512293931520102">Parollar shifrlangan va faqat sizga koʻrinadi</translation>
 <translation id="5830720307094128296">Sahifani &amp;saqlab olish...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> nomidan kirgansiz</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" /> maʼlumotlari, ruxsatlari, unga kiruvchi saytlar va oʻrnatilgan ilovalar oʻchirilsinmi?</translation>
 <translation id="5832813618714645810">Profillar</translation>
@@ -8938,6 +8943,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7211783048245131419">Hech qaysi tugma belgilanmagan</translation>
 <translation id="7212097698621322584">PIN kodni oʻzgartirish uchun joriy kodni kiriting. PIN kodni bilmasangiz, avval elektron kalit sozlamalarini qayta tiklab, keyingina yangi PIN belgilash mumkin.</translation>
 <translation id="7214047272988222011">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> <ph name="LINK_BEGIN" />Tizim darajasidagi kameraga ruxsat<ph name="LINK_END" /> bering.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 varaqda yangi varaq}other{# varaqda yangi varaq}}</translation>
 <translation id="721490496276866468">Parollarni import qilish</translation>
 <translation id="7217208603285112910">Tanlangan matn <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="7219254577985949841">Sayt maʼlumotlari oʻchirilsinmi?</translation>
@@ -9225,6 +9231,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7410344089573941623"><ph name="HOST" /> saytida kamera va mikrofondan foydalanishga ruxsat so‘ralsin</translation>
 <translation id="7410421966064092098">Saytlar real foydalanuvchi ekaningizni tasdiqlashda yordam berishi mumkin emas</translation>
 <translation id="7410852728357935715">Qurilmaga translatsiya qilish</translation>
+<translation id="741148343080227980">Ismingizni <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google hisobingiz<ph name="END_LINK" /> orqali tahrirlashingiz mumkin.</translation>
 <translation id="741204030948306876">Ha, roziman</translation>
 <translation id="7412226954991670867">Grafik protsessor (GPU) xotirasi</translation>
 <translation id="741370456693729525">Sodda iboralardan tuzilgan soʻrovlar yordamida brauzer tarixida ochilgan saytlarni qidiring</translation>

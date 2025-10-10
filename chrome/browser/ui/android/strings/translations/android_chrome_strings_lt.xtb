@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Atsijungti ir išjungti sinchronizavimą?</translation>
 <translation id="1363028406613469049">Takelis</translation>
 <translation id="1366525380420346469">Kada įjungta</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Galite neleisti šiai svetainei siųsti daugiau pranešimų}one{Galite neleisti šioms svetainėms siųsti daugiau pranešimų}few{Galite neleisti šioms svetainėms siųsti daugiau pranešimų}many{Galite neleisti šioms svetainėms siųsti daugiau pranešimų}other{Galite neleisti šioms svetainėms siųsti daugiau pranešimų}}</translation>
 <translation id="1373696734384179344">Nepakanka atminties pasirinktam turiniui atsisiųsti.</translation>
 <translation id="1376578503827013741">Apskaičiuojama...</translation>
 <translation id="1381838868249179644">Siekiant apsaugoti jus, leidimai buvo pašalinti iš kai kurių svetainių</translation>

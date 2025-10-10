@@ -1648,6 +1648,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2104166991923847969">Desativar ponto de acesso automaticamente</translation>
 <translation id="2105809836724866556">Módulo "<ph name="MODULE_TITLE" />" oculto</translation>
+<translation id="2106439768713835453">Compartilhar também o áudio do aplicativo</translation>
 <translation id="2108204112555497972">Verificado há <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
 <translation id="2109384632594340939">foto do perfil</translation>
@@ -3026,6 +3027,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3038612606416062604">Adicionar uma impressora manualmente</translation>
 <translation id="3038628620670416486">Localizar botões do mouse</translation>
 <translation id="3039491566278747710">Falha ao instalar a política off-line no dispositivo.</translation>
+<translation id="3040435070100611531">Seus cartões da Carteira do Google</translation>
 <translation id="3040982432432547149">Ajude a melhorar o Steam para Chromebook</translation>
 <translation id="304169924727249890">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Mude a estratégia do carregamento otimizado.</translation>
@@ -3887,6 +3889,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3656328935986149999">Velocidade do cursor</translation>
 <translation id="3656701180077048004">Adiciona um atraso entre o momento em que você pressiona uma tecla e o momento em que ela é ativada</translation>
 <translation id="3658871634334445293">Aceleração do TrackPoint</translation>
+<translation id="3659483399659250379">Adicione uma guia e muito mais</translation>
 <translation id="3659929705630080526">Você digitou um código de acesso incorreto muitas vezes. Tente novamente mais tarde</translation>
 <translation id="3661106764436337772">Escreva com mais rapidez e confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 senha encontrada}one{{NUM_PASSWORDS} senha encontrada}other{{NUM_PASSWORDS} senhas encontradas}}</translation>
@@ -5419,6 +5422,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4708892882822652439">Também permitir áudio da guia</translation>
+<translation id="4710347732286177840">Selecione a região da tela para fazer uma pergunta complementar</translation>
 <translation id="4711638718396952945">Restaurar configurações</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Excluir ao fechar todas as janelas</translation>
@@ -6990,6 +6994,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Sua senha é criptografada e nunca é vista por ninguém</translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292">Login feito como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Excluir permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>
 <translation id="5832813618714645810">Perfis</translation>
@@ -10118,7 +10123,7 @@ Extensão: <ph name="EXTENSION_FILE" />
 Chave de arquivo: <ph name="KEY_FILE" />
 
 Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para criar novas versões da sua extensão.</translation>
-<translation id="8000020256436988724">Barra de Ferramentas Google</translation>
+<translation id="8000020256436988724">Barra de ferramentas</translation>
 <translation id="800117767980299235">Destaque de voz</translation>
 <translation id="8001561107130904792">Compartilhamento de conteúdo da página</translation>
 <translation id="8002274832045662704">Configuração avançada de impressora</translation>

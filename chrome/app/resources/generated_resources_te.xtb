@@ -1645,6 +1645,7 @@
 <translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2104166991923847969">హాట్‌స్పాట్‌ను ఆటోమేటిక్‌గా ఆఫ్ చేయండి</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> దాచబడ్డాయి</translation>
+<translation id="2106439768713835453">అప్లికేషన్ ఆడియోను కూడా షేర్ చేయండి</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> క్రితం చెక్ చేయబడింది</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ఫోన్ నంబర్}other{# ఫోన్ నంబర్‌లు}}</translation>
 <translation id="2109384632594340939">ప్రొఫైల్ ఫోటో</translation>
@@ -3024,6 +3025,7 @@
 <translation id="3038612606416062604">ఒక ప్రింటర్‌ను మాన్యువల్‌గా జోడించండి</translation>
 <translation id="3038628620670416486">మీ మౌస్‌లో బటన్‌లను గుర్తించండి</translation>
 <translation id="3039491566278747710">పరికరంలో ఆఫ్‌లైన్ విధానాన్ని ఇన్‌స్టాల్ చేయడంలో విఫలమైంది.</translation>
+<translation id="3040435070100611531">మీ Google Wallet పాస్‌లు</translation>
 <translation id="3040982432432547149">Chromebook కోసం Steam గేమ్‌ను మెరుగుపరచడంలో మాకు సహాయపడండి</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="3042097545107738107">ఆప్టిమైజ్ చేసిన ఛార్జింగ్ స్ట్రాటజీని మార్చండి.</translation>
@@ -3884,6 +3886,7 @@
 <translation id="3656328935986149999">కర్సర్ వేగం</translation>
 <translation id="3656701180077048004">మీరు కీని నొక్కినప్పుడు, అది యాక్టివేట్ అయినప్పుడు మధ్య ఉన్న ఆలస్యమైన సమయాన్ని జోడిస్తుంది</translation>
 <translation id="3658871634334445293">ట్రాక్ పాయింట్ యాక్సిలరేషన్</translation>
+<translation id="3659483399659250379">ట్యాబ్‌ను మరిన్ని జోడించండి</translation>
 <translation id="3659929705630080526">మీరు చాలా సార్లు తప్పు యాక్సెస్ కోడ్‌ను ఎంటర్ చేశారు. తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="3661106764436337772">మరింత వేగంగా, మరింత నమ్మకంతో రాయండి</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ఇప్పటికే ఉన్న పాస్‌వర్డ్ 1 కనుగొనబడింది}other{ఇప్పటికే ఉన్న పాస్‌వర్డ్‌లు {NUM_PASSWORDS} కనుగొనబడ్డాయి}}</translation>
@@ -5416,6 +5419,7 @@
 <translation id="4707337002099455863">ఎల్లప్పుడూ అన్ని సైట్‌లలో అనుమతించండి</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> నిష్క్రమించండి</translation>
 <translation id="4708892882822652439">ట్యాబ్ ఆడియోను కూడా అనుమతించండి</translation>
+<translation id="4710347732286177840">అదనపు క్వెరీ కోసం స్క్రీన్ ప్రాంతాన్ని ఎంచుకోండి</translation>
 <translation id="4711638718396952945">సెట్టింగ్‌లను పునరుద్ధరించు</translation>
 <translation id="4712404868219726379">Windows Hell</translation>
 <translation id="4713409221649555176">మీరు అన్ని విండోలను మూసివేసినప్పుడు తొలగించండి</translation>
@@ -6985,6 +6989,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" />‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="5830512293931520102">మీ పాస్‌వర్డ్ ఎన్‌క్రిప్ట్ చేయబడింది, దానిని ఎవరూ చూడలేరు</translation>
 <translation id="5830720307094128296">&amp;లాగా పేజీని సేవ్ చేయండి...</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" />‌గా సైన్ ఇన్ చేశారు</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />‌కు సంబంధించిన సైట్ డేటాను, అనుమతులను, దాని కింద ఉండే సైట్‌లన్నింటినీ, ఇంకా ఇన్‌స్టాల్ చేయబడిన దాని యాప్‌ను తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="5832813618714645810">ప్రొఫైళ్లు</translation>

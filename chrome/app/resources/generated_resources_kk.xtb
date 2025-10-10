@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">Жаңарту қателерін түзету туралы толық ақпарат алыңыз</translation>
 <translation id="1217114730239853757">ChromeOS Flex операциялық жүйесіне арналған ендірілген ChromeVox экран оқу құралын іске қосқыңыз келе ме? Іске қосқыңыз келсе, бос орын түймесін басыңыз.</translation>
 <translation id="1217117837721346030">Күдікті файлды жүктеп алу</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> тобына жаңа қойынды қосу</translation>
 <translation id="1217483152325416304">Жергілікті деректер көп ұзамай жойылады</translation>
 <translation id="1217668622537098248">Әрекеттен кейін сол жақ түймені басуға оралу</translation>
 <translation id="1218015446623563536">Linux жою</translation>
@@ -3011,6 +3012,7 @@
 <translation id="3038612606416062604">Принтерді қолмен енгізу</translation>
 <translation id="3038628620670416486">Тінтуірден түймелерді табыңыз</translation>
 <translation id="3039491566278747710">Офлайн саясат құрылғыға орнатылмады.</translation>
+<translation id="3040435070100611531">Google Wallet билеттеріңіз</translation>
 <translation id="3040982432432547149">Chromebook құрылғысына арналған Steam қолданбасын жақсартуға көмектесіңіз</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="3042097545107738107">Оңтайлы зарядтау стратегиясын өзгертеді.</translation>
@@ -3217,6 +3219,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Параметрлерді осы картадан кез келген уақытта басқара аласыз немесе Chrome-ды бейімдеу бөлімінде басқа опцияларды көре аласыз.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 қойындыға жаңа қойынды қосу}other{# қойындыға жаңа қойынды қосу}}</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208584281581115441">Қазір тексеру</translation>
 <translation id="3208703785962634733">Расталмаған</translation>
@@ -3392,6 +3395,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – бейне "Суреттегі сурет" режимінде ойнатылып жатыр</translation>
 <translation id="3335380372402547327">Жарқылды хабарландыруларды алдын ала көру</translation>
 <translation id="3335947283844343239">Жабық қойындыны қайта ашу</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> тобына жаңа қойынды қосу</translation>
 <translation id="3336855445806447827">Сенімді емеспін</translation>
 <translation id="3337568642696914359">Сайттардың протоколдарды өңдеуіне рұқсат бермеу</translation>
 <translation id="333863344734218290">Баршаға ашық қауіпті және жеке сайттар туралы ескертеді</translation>
@@ -6969,6 +6973,7 @@
 <translation id="5830205393314753525"><ph name="APP_NAME" /> қолданбасын ашу мүмкін емес</translation>
 <translation id="5830512293931520102">Құпия сөзіңіз шифрланады және ешкімге көрсетілмейді.</translation>
 <translation id="5830720307094128296">Бетті &amp;басқаша сақтау…</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583179300286794292"><ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> аккаунтына кірдіңіз</translation>
 <translation id="5831950941058843834"><ph name="SITE_NAME" />, оның астындағы барлық сайт және оның орнатылған қолданбасы үшін сайт деректері мен рұқсаттарын жою керек пе?</translation>
 <translation id="5832813618714645810">Профильдер</translation>
@@ -8929,6 +8934,7 @@
 <translation id="7211783048245131419">Әлі ешқандай ауыстырғыш тағайындалмады.</translation>
 <translation id="7212097698621322584">Қолданыстағы PIN кодын өзгерту үшін оны енгізіңіз. PIN кодыңызды білмесеңіз, оны бастапқы күйге қайтарып, жаңа PIN кодын жасаңыз.</translation>
 <translation id="7214047272988222011">Рұқсат етілген (<ph name="PERMISSION_DETAILS" />). <ph name="LINK_BEGIN" />Жүйенің камераны пайдалану рұқсатын<ph name="LINK_END" /> қосыңыз.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 қойындыға жаңа қойынды қосу}other{# қойындыға жаңа қойынды қосу}}</translation>
 <translation id="721490496276866468">Құпия сөздерді импорттау</translation>
 <translation id="7217208603285112910">Таңдалған бөлік <ph name="LANGUAGE" /> тілінде емес</translation>
 <translation id="7219254577985949841">Сайт деректерін жою керек пе?</translation>
@@ -9216,6 +9222,7 @@
 <translation id="7410344089573941623"><ph name="HOST" /> хосты камераңызды не микрофоныңызды пайдаланғысы келетінін сұрау</translation>
 <translation id="7410421966064092098">Сайттар сіздің бот емес екеніңізді растауға көмектесе алмайды</translation>
 <translation id="7410852728357935715">Құрылғыға трансляциялау</translation>
+<translation id="741148343080227980">Атыңызды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="USERNAME" />)<ph name="END_LINK" /> өзгертуге болады.</translation>
 <translation id="741204030948306876">Жарайды</translation>
 <translation id="7412226954991670867">GPU жады</translation>
 <translation id="741370456693729525">Браузерді қолдану тарихынан іздеу және кірген сайттарды табу үшін кәдімгі тілді пайдаланыңыз.</translation>
