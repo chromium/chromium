@@ -38,6 +38,7 @@ function postProcessElement(element) {
   // actual iframes.
   fillYouTubePlaceholders(element);
   sanitizeLinks(element);
+  identifyEmptySVGs(element);
   ImageClassifier.processImagesIn(element);
 }
 
@@ -145,8 +146,12 @@ class ImageClassifier {
     if (container) {
       for (const child of container.childNodes) {
         // Skip insignificant nodes.
-        if (child === img) continue;
-        if (child.tagName === 'BR') continue;
+        if (child === img) {
+          continue;
+        }
+        if (child.tagName === 'BR') {
+          continue;
+        }
         if (child.nodeType === Node.TEXT_NODE &&
             child.textContent.trim() === '') {
           continue;
@@ -276,6 +281,30 @@ function sanitizeLinks(element) {
     }
     // With href, an anchor can be a placeholder. Leave these alone.
   });
+}
+
+/**
+ * Finds SVGs that use a local resource pointer (e.g. <use xlink:href="#...")
+ * and adds a class to them for styling. This is necessary because CSS
+ * selectors for namespaced attributes like `xlink:href` are not reliably
+ * supported across all renderers.
+ * @param {HTMLElement} element The element to search for SVGs in.
+ */
+function identifyEmptySVGs(element) {
+  const svgs = element.getElementsByTagName('svg');
+  for (const svg of svgs) {
+    const useElement = svg.querySelector('use');
+    if (!useElement) {
+      continue;
+    }
+
+    const href = useElement.getAttribute('href');
+    const xlinkHref = useElement.getAttribute('xlink:href');
+
+    if (href?.startsWith('#') || xlinkHref?.startsWith('#')) {
+      svg.classList.add('distilled-svg-with-local-ref');
+    }
+  }
 }
 
 /**

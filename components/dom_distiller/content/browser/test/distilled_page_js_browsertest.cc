@@ -83,5 +83,9 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, ImageClassifierTest) {
   LoadAndExecuteTestScript("image_classifier_tester.js");
 }
 
+IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, IdentifyEmptySVGsTest) {
+  LoadAndExecuteTestScript("identify_empty_svgs_tester.js");
+}
+
 }  // namespace
 }  // namespace dom_distiller

@@ -120,6 +120,11 @@ img, figcaption, picture:first-child + p:last-child {
   font-style: italic;
 }
 
+/* Styles for SVGs that use a local resource pointer. */
+.distilled-svg-with-local-ref {
+  display: none;
+}
+
 /*
   If there are inlined divs in a span (to host an image for example), they will
   be replaced by a paragraph element which is display: block by default. This
