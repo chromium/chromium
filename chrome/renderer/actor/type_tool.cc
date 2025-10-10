@@ -8,13 +8,13 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
@@ -669,17 +669,19 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
 }
 
 bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
-  // Perform typing specific validation.
-  std::u16string text_to_type;
-  if (!base::UTF8ToUTF16(action_->text.c_str(), action_->text.length(),
-                         &text_to_type)) {
-    return false;
-  }
-
   const absl::flat_hash_map<char16_t, Composition>& composition_map =
       GetCompositionMap();
 
-  for (char16_t c : text_to_type) {
+  for (base::i18n::UTF8CharIterator iter(action_->text); !iter.end();
+       iter.Advance()) {
+    int32_t code_point = iter.get();
+
+    if (code_point > 0xFFFF) {
+      // supplementary plane characters cannot be simulated.
+      return false;
+    }
+    char16_t c = static_cast<char16_t>(code_point);
+
     // Handle simple ASCII character
     std::optional<KeyParams> params = GetKeyParamsForChar(c);
     if (params.has_value()) {
@@ -708,7 +710,6 @@ bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
       }
       base_key_params->text = c;
       base_key_params->unmodified_text = c;
-      base_key_params->dom_key = base::UTF16ToUTF8(std::u16string(1, c));
       key_sequence.push_back(base_key_params.value());
       continue;
     }
