@@ -7,6 +7,13 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-cr-searchbox::part(searchbox-dropdown) {
-  position: initial;
+cr-searchbox {
+  --cr-searchbox-height: 36px;
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-top-position: 0;
+  display: block;
+}
+
+cr-searchbox::part(dropdown-content) {
+  border-radius: 0;
 }
