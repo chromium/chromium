@@ -22,10 +22,15 @@ import java.nio.ByteBuffer;
 public class TabStateStorageService {
     /** Simple data container for a TabState and its corresponding creation callback. */
     public static class LoadedTabState {
+        public final @TabId int tabId;
         public final TabState tabState;
         public final Callback<@Nullable Tab> onTabCreationCallback;
 
-        public LoadedTabState(TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
+        public LoadedTabState(
+                @TabId int tabId,
+                TabState tabState,
+                Callback<@Nullable Tab> onTabCreationCallback) {
+            this.tabId = tabId;
             this.tabState = tabState;
             this.onTabCreationCallback = onTabCreationCallback;
         }
@@ -64,8 +69,8 @@ public class TabStateStorageService {
 
     @CalledByNative
     public static LoadedTabState createLoadedTabState(
-            TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
-        return new LoadedTabState(tabState, onTabCreationCallback);
+            @TabId int tabId, TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
+        return new LoadedTabState(tabId, tabState, onTabCreationCallback);
     }
 
     @CalledByNative

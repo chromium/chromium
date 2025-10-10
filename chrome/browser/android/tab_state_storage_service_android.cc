@@ -86,7 +86,7 @@ void RunJavaCallbackLoadAllTabs(
 
     base::android::ScopedJavaLocalRef<jobject> j_loaded_tab_state =
         Java_TabStateStorageService_createLoadedTabState(
-            env, j_tab_state, j_on_tab_created_callback);
+            env, tab_state.tab_id(), j_tab_state, j_on_tab_created_callback);
     j_loaded_tab_state_vector.push_back(j_loaded_tab_state);
   }
 
