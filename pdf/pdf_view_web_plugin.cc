@@ -3103,6 +3103,9 @@ PdfViewWebPlugin::GetAccessibilityDocInfo() const {
   doc_info->page_count = engine_->GetNumberOfPages();
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
     doc_info->is_tagged = engine_->IsPDFDocTagged();
+    if (doc_info->is_tagged) {
+      doc_info->structure_tree_root = engine_->GetStructureTree();
+    }
   }
   doc_info->text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);

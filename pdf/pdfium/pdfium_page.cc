@@ -570,6 +570,96 @@ std::vector<AccessibilityCharInfo> PDFiumPage::GetCharInfo() {
   return chars;
 }
 
+std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureTree() {
+  if (!available_) {
+    return nullptr;
+  }
+
+  ScopedFPDFStructTree structure_tree(FPDF_StructTree_GetForPage(GetPage()));
+  if (!structure_tree) {
+    return nullptr;
+  }
+
+  auto tree_root = std::make_unique<AccessibilityStructureElement>();
+  tree_root->type = PdfTagType::kPart;
+  std::set<FPDF_STRUCTELEMENT> visited_elements;
+  int tree_children_count = FPDF_StructTree_CountChildren(structure_tree.get());
+  CHECK_GE(tree_children_count, 0);
+  tree_root->children.resize(tree_children_count);
+  for (int i = 0; i < tree_children_count; ++i) {
+    FPDF_STRUCTELEMENT tree_child =
+        FPDF_StructTree_GetChildAtIndex(structure_tree.get(), i);
+    tree_root->children[i] = GetStructureSubtree(tree_child, visited_elements);
+    if (tree_root->children[i]) {
+      tree_root->children[i]->parent = tree_root.get();
+    }
+  }
+  return tree_root;
+}
+
+std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
+    FPDF_STRUCTELEMENT element,
+    std::set<FPDF_STRUCTELEMENT>& visited_elements) {
+  CHECK(element);
+  bool inserted = visited_elements.insert(element).second;
+  if (!inserted) {
+    return nullptr;
+  }
+
+  auto tree_node = std::make_unique<AccessibilityStructureElement>();
+  tree_node->actual_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+      base::BindRepeating(&FPDF_StructElement_GetActualText, element),
+      /*check_expected_size=*/true));
+  std::string alt_text = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+      base::BindRepeating(&FPDF_StructElement_GetAltText, element),
+      /*check_expected_size=*/true));
+  tree_node->alt_text = alt_text;
+  std::string tag_type = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+      base::BindRepeating(&FPDF_StructElement_GetType, element),
+      /*check_expected_size=*/true));
+  tree_node->type = PdfTagTypeFromString(tag_type);
+  tree_node->language = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+      base::BindRepeating(&FPDF_StructElement_GetLang, element),
+      /*check_expected_size=*/true));
+
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+    int marked_content_id = -1;
+    if (FPDF_StructElement_GetMarkedContentIdCount(element) > 0) {
+      marked_content_id =
+          FPDF_StructElement_GetMarkedContentIdAtIndex(element, 0);
+    }
+    if (marked_content_id >= 0) {
+      auto text_runs_iter =
+          marked_content_id_to_text_runs_map_.find(marked_content_id);
+      if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
+        const std::vector<size_t>& text_run_indices = text_runs_iter->second;
+        for (size_t text_run_index : text_run_indices) {
+          tree_node->associated_text_runs_if_available.push_back(
+              &text_runs_[text_run_index]);
+        }
+      }
+
+      // TODO(crbug.com/40707542): Add `associated_image_if_available` field to
+      // `AccessibilityStructureElement` and populate it here by looking up
+      // `marked_content_id` in `marked_content_id_to_images_map_`.
+    }
+  }
+
+  int children_count = FPDF_StructElement_CountChildren(element);
+  CHECK_GE(children_count, 0);
+  tree_node->children.resize(children_count);
+  for (int i = 0; i < children_count; ++i) {
+    FPDF_STRUCTELEMENT child = FPDF_StructElement_GetChildAtIndex(element, i);
+    if (child) {
+      tree_node->children[i] = GetStructureSubtree(child, visited_elements);
+      if (tree_node->children[i]) {
+        tree_node->children[i]->parent = tree_node.get();
+      }
+    }
+  }
+  return tree_node;
+}
+
 std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
     int start_char_index) {
   FPDF_PAGE page = GetPage();

@@ -379,6 +379,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // elements, e.g. headings and table cells.
   virtual bool IsPDFDocTagged() const;
 
+  // Returns a copy of the structure tree which describes the logical
+  // organization of the PDF, if present.
+  std::unique_ptr<AccessibilityStructureElement> GetStructureTree() const;
+
   virtual uint32_t GetLoadedByteSize();
 
   // Copies data from `doc_loader_` into `buffer` starting from `offset`.

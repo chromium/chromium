@@ -8,6 +8,11 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/zip.h"
 #include "pdf/accessibility_structs.h"
@@ -25,6 +30,61 @@
 namespace chrome_pdf {
 
 using AccessibilityTest = PDFiumTestBase;
+
+std::string_view PdfTagTypeToString(const PdfTagType& tag_type) {
+  static const auto kPdfTagTypeToStringMap = []() {
+    base::flat_map<PdfTagType, std::string_view> reverse_map;
+    for (const auto& [str, type] : GetPdfTagTypeMap()) {
+      reverse_map[type] = str;
+    }
+    return reverse_map;
+  }();
+
+  if (auto iter = kPdfTagTypeToStringMap.find(tag_type);
+      iter != kPdfTagTypeToStringMap.end()) {
+    return iter->second;
+  }
+  return "Unknown";
+}
+
+std::string AccessibilityStructureElementToString(
+    const AccessibilityStructureElement& element) {
+  static constexpr std::string_view kLevelPrefix = "\n++";
+  std::string element_str =
+      base::StrCat({"/S /", PdfTagTypeToString(element.type)});
+  if (!element.language.empty()) {
+    base::StrAppend(&element_str, {" /Lang (", element.language, ")"});
+  }
+  if (!element.alt_text.empty()) {
+    base::StrAppend(&element_str, {" /Alt (", element.alt_text, ")"});
+  }
+  if (!element.abbreviation_expansion.empty()) {
+    base::StrAppend(&element_str,
+                    {" /E (", element.abbreviation_expansion, ")"});
+  }
+  if (!element.actual_text.empty()) {
+    base::StrAppend(&element_str, {" /ActualText (", element.actual_text, ")"});
+  }
+  if (!element.associated_text_runs_if_available.empty()) {
+    base::StrAppend(&element_str, {" AssociatedTextRunLens={"});
+    for (const AccessibilityTextRunInfo* text_run :
+         element.associated_text_runs_if_available) {
+      base::StrAppend(&element_str, {" ", base::NumberToString(text_run->len)});
+    }
+    base::StrAppend(&element_str, {" }"});
+  }
+  for (const auto& child : element.children) {
+    if (!child) {
+      // Null children can occur for pages without structure trees.
+      continue;
+    }
+    std::string child_str = AccessibilityStructureElementToString(*child);
+
+    base::ReplaceChars(child_str, "\n", kLevelPrefix, &child_str);
+    base::StrAppend(&element_str, {kLevelPrefix, child_str});
+  }
+  return element_str;
+}
 
 float GetExpectedBoundsWidth(bool using_test_fonts, size_t i, float expected) {
   return (using_test_fonts && i == 0) ? 85.333336f : expected;
@@ -125,6 +185,34 @@ TEST_P(AccessibilityTest, GetAccessibilityPage) {
       EXPECT_NEAR(expected_char_width, chars[i].char_width, 0.001) << i;
     }
   });
+}
+
+TEST_P(AccessibilityTest, AccessibilityStructureTree) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(features::kPdfTags);
+
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("tags.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  std::unique_ptr<AccessibilityStructureElement> doc_structure =
+      engine->GetStructureTree();
+  ASSERT_TRUE(doc_structure);
+
+  static constexpr char kExpectedStructureTree[] =
+      "/S /Document\n"
+      "++/S /Part\n"
+      "++++/S /Document /Lang (en-US)\n"
+      "++++++/S /Art\n"
+      "++++++/S /BlockQuote\n"
+      "++++++/S /P\n"
+      "++++++/S /H1\n"
+      "++++++/S /H2";
+
+  EXPECT_EQ(kExpectedStructureTree,
+            AccessibilityStructureElementToString(*doc_structure));
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {

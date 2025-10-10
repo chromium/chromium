@@ -49,6 +49,7 @@ struct AccessibilityCharInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
 struct AccessibilityLinkInfo;
+struct AccessibilityStructureElement;
 struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 
@@ -89,6 +90,10 @@ class PDFiumPage {
 
   // Get all the chars from the page.
   std::vector<AccessibilityCharInfo> GetCharInfo();
+
+  // Returns a copy of the structure tree which describes the logical
+  // organization of the current PDF page, if present.
+  std::unique_ptr<AccessibilityStructureElement> GetStructureTree();
 
   // Gets all the text runs from the page.
   std::vector<AccessibilityTextRunInfo> GetTextRunInfo();
@@ -480,6 +485,17 @@ class PDFiumPage {
   // guard against malformed struct trees.
   void PopulateTextRunTypeAndImageAltTextForStructElement(
       FPDF_STRUCTELEMENT current_element,
+      std::set<FPDF_STRUCTELEMENT>& visited_elements);
+
+  // Traverses a structure element and its subtree recursively and extracts all
+  // information, storing it in a corresponding hierarchy of
+  // `AccessibilityStructureElement`s. Also, extracts the text run type or the
+  // alt text from structure elements corresponding to the marked content IDs
+  // present in `marked_content_id_to_text_runs_map_` or
+  // `marked_content_id_to_images_map_` respectively. Uses `visited_elements` to
+  // guard against malformed structure trees.
+  std::unique_ptr<AccessibilityStructureElement> GetStructureSubtree(
+      FPDF_STRUCTELEMENT element,
       std::set<FPDF_STRUCTELEMENT>& visited_elements);
 
   bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
