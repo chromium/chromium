@@ -25,6 +25,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -85,7 +86,7 @@ public class SplitCompatApplication extends Application {
         private SplitCompatApplication mApplication;
 
         @Initializer
-        private final void setApplication(SplitCompatApplication application) {
+        private void setApplication(SplitCompatApplication application) {
             mApplication = application;
         }
 
@@ -271,6 +272,11 @@ public class SplitCompatApplication extends Application {
                     };
             PureJavaExceptionHandler.installHandler(factory);
             CustomAssertionHandler.installPreNativeHandler(factory);
+        }
+
+        ApplicationInitHook initHook = ServiceLoaderUtil.maybeCreate(ApplicationInitHook.class);
+        if (initHook != null) {
+            initHook.onAttachBaseContext(isBrowserProcess, isIsolatedProcess);
         }
 
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);

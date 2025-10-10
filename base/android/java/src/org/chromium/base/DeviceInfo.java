@@ -9,6 +9,7 @@ import static android.content.Context.UI_MODE_SERVICE;
 import android.app.UiModeManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -48,6 +49,7 @@ public final class DeviceInfo {
     private static @Nullable Boolean sIsRetailDemoModeForTesting;
     private final IDeviceInfo mIDeviceInfo;
     private @Nullable Boolean mIsRetailDemoMode;
+    private @Nullable ApplicationInfo mGmsAppInfo;
 
     // This is the minimum width in DP that defines a large display device
     public static final int LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP = 600;
@@ -86,6 +88,10 @@ public final class DeviceInfo {
 
     public static String getGmsVersionCode() {
         return getInstance().mIDeviceInfo.gmsVersionCode;
+    }
+
+    public static @Nullable ApplicationInfo getGmsAppInfo() {
+        return getInstance().mGmsAppInfo;
     }
 
     @CalledByNativeForTesting
@@ -220,10 +226,13 @@ public final class DeviceInfo {
         mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        mIDeviceInfo.gmsVersionCode =
-                gmsPackageInfo != null
-                        ? String.valueOf(packageVersionCode(gmsPackageInfo))
-                        : "gms versionCode not available.";
+        if (gmsPackageInfo != null) {
+            mGmsAppInfo = gmsPackageInfo.applicationInfo;
+            mIDeviceInfo.gmsVersionCode =
+                    gmsPackageInfo != null
+                            ? String.valueOf(packageVersionCode(gmsPackageInfo))
+                            : "gms versionCode not available.";
+        }
         if (sGmsVersionCodeForTesting != null) {
             mIDeviceInfo.gmsVersionCode = sGmsVersionCodeForTesting;
         }
