@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './action_chips.js';
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';
@@ -296,6 +297,8 @@ export class AppElement extends AppElementBase {
        * Whether the composebox has been opened at least once.
        */
       wasComposeboxOpened_: {type: Boolean},
+
+      ntpNextFeaturesEnabled_: {type: Boolean},
     };
   }
 
@@ -367,6 +370,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getString('realboxLayoutMode');
   protected accessor searchboxCyclingPlaceholders_: boolean =
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
+  protected accessor ntpNextFeaturesEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

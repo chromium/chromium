@@ -9,6 +9,7 @@ import("./ntp_promo/ntp_promo.gni")
 
 build_webui_tests("build") {
   files = [
+            "action_chips_test.ts",
             "app_test.ts",
             "background_manager_test.ts",
             "doodle_share_dialog_focus_test.ts",

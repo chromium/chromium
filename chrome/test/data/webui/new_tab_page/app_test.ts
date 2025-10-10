@@ -1827,4 +1827,20 @@ suite('NewTabPageAppTest', () => {
       assertTrue(!!$$(app, '#backgroundImageAttribution'));
     });
   });
+
+  suite('ActionChips', () => {
+    [true, false].forEach(
+        (ntpNextFeaturesEnabled) =>
+            suite(`actionChips rendered ${ntpNextFeaturesEnabled}`, () => {
+              suiteSetup(() => {
+                loadTimeData.overrideValues({ntpNextFeaturesEnabled});
+              });
+
+              test('Show iframe when appropriate', () => {
+                const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+
+                assertEquals(!!chips, ntpNextFeaturesEnabled);
+              });
+            }));
+  });
 });

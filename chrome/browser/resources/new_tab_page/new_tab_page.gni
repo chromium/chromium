@@ -24,6 +24,7 @@ all_ts_files = [
 
 # Files holding a Polymer element definition and have an equivalent .html file.
 all_web_component_files = [
+                            "action_chips.ts",
                             "app.ts",
                             "doodle_share_dialog.ts",
                             "iframe.ts",
@@ -35,6 +36,7 @@ all_web_component_files = [
                           ] + modules_web_component_files
 
 all_css_files = [
+                  "action_chips.css",
                   "app.css",
                   "doodle_share_dialog.css",
                   "iframe.css",

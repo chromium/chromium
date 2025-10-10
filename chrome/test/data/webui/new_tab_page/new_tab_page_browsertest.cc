@@ -80,6 +80,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
   RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
+  RunTest("new_tab_page/action_chips_test.js", "mocha.run()");
+}
+
 using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, IndividualPromosTest) {
@@ -237,6 +241,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Composebox) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ComposeEntryPoint) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest ComposeEntryPoint')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest ActionChips')");
 }
 
 // TODO(crbug.com/448987783): Re-enable test

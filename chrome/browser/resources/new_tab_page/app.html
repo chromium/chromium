@@ -45,6 +45,9 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       </ntp-lens-upload-dialog>
     ` : ''}
   </div>
+  ${this.lazyRender_ && this.ntpNextFeaturesEnabled_ ? html`
+    <ntp-action-chips></ntp-action-chips>
+  ` : ''}
   ${this.lazyRender_ ? html`
     <cr-toast id="webstoreToast" duration="10000" hidden>
       <div>$i18n{webstoreThemesToastMessage}</div>
