@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
@@ -212,8 +213,10 @@ void WriteHandler::CreateNextEntry() {
                           test_entry.data_len);
   disk_cache::EntryResult result =
       cache_->CreateEntry(test_entry.key, net::HIGHEST, callback);
-  if (result.net_error() != net::ERR_IO_PENDING)
-    callback.Run(std::move(result));
+  if (result.net_error() != net::ERR_IO_PENDING) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
 }
 
 void WriteHandler::CreateCallback(int data_len,
