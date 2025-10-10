@@ -361,6 +361,13 @@ class TabFeatures {
   std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
       saved_tab_group_web_contents_listener_;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Manages the protocol handler picker dialog on ChromeOS. Must be destroyed
+  // after the `tab_dialog_manager_`.
+  std::unique_ptr<web_app::ProtocolHandlerPickerCoordinator>
+      protocol_handler_picker_coordinator_;
+#endif
+
   // Manages various tab modal dialogs.
   std::unique_ptr<TabDialogManager> tab_dialog_manager_;
 
@@ -467,11 +474,6 @@ class TabFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wallet::ChromeWalletablePassClient> walletable_pass_client_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<web_app::ProtocolHandlerPickerCoordinator>
-      protocol_handler_picker_coordinator_;
 #endif
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
