@@ -19177,6 +19177,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_GENERIC" desc="Paragraph in the protocol handler picker dialog explaining that a website initiated the request to open a link in an app. Used when the specific website is not known.">
           The website wants to open this link in an app.
         </message>
+
+        <message name="IDS_PROTOCOL_HANDLER_PICKER_APPLICATION_OPTIONS_ACCESSIBLE_NAME" desc="Accessible name for the list of potential protocol handlers.">
+          Application options
+        </message>
     </if>
 
     <!-- Common WebUI elements. -->

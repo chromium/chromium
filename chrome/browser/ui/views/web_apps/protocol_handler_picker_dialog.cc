@@ -125,14 +125,19 @@ class SelectionView : public views::ScrollView,
 SelectionView::SelectionView(const ProtocolHandlerPickerDialogEntries& apps,
                              Delegate& delegate)
     : delegate_(delegate) {
-  auto* scrollable_container = SetContents(std::make_unique<views::View>());
-  scrollable_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  auto* scrollable_container = SetContents(
+      views::Builder<views::View>()
+          .SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+              views::LayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_CONTROL_VERTICAL)))
+          .SetProperty(views::kElementIdentifierKey,
+                       kProtocolHandlerPickerDialogSelectionId)
+          .SetAccessibleRole(ax::mojom::Role::kList)
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_PROTOCOL_HANDLER_PICKER_APPLICATION_OPTIONS_ACCESSIBLE_NAME))
+          .Build());
 
-  scrollable_container->SetProperty(views::kElementIdentifierKey,
-                                    kProtocolHandlerPickerDialogSelectionId);
   if (apps.size() == 1) {
     // For the single-app case, the app is already pre-selected for the user
     // (and has no check icon).
@@ -251,7 +256,7 @@ ProtocolHandlerPickerSelectionRowView::ProtocolHandlerPickerSelectionRowView(
                                    .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
                   .SetLineHeight(kAppNameLabelHeight)
                   .SetProperty(views::kMarginsKey, left_gap))
-          .SetAccessibleRole(ax::mojom::Role::kMenuItemRadio)
+          .SetAccessibleRole(ax::mojom::Role::kListItem)
           .SetAccessibleName(app.app_name)
           .SetCheckedState(ax::mojom::CheckedState::kFalse)
           .SetInstallFocusRingOnFocus(false)
