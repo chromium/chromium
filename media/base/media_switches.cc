@@ -190,6 +190,7 @@ const char kDisableRTCSmoothnessAlgorithm[] =
     "disable-rtc-smoothness-algorithm";
 
 // Force media player using SurfaceView instead of SurfaceTexture on Android.
+// Note: This is used by the Cast playback pipeline and must be kept.
 const char kForceVideoOverlays[] = "force-video-overlays";
 
 // Allows explicitly specifying MSE audio/video buffer sizes as megabytes.
