@@ -20,6 +20,7 @@ extern const char kGwsHeadChunkStartMarkName[];
 extern const char kGwsHeadChunkEndMarkName[];
 extern const char kGwsBodyChunkStartMarkName[];
 extern const char kGwsBodyChunkEndMarkName[];
+extern const char kGwsSGLMarkName[];
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get

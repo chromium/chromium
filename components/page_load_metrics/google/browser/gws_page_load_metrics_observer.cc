@@ -81,6 +81,8 @@ const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FinalRequestSslDelay";
 
 const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd2";
+const char kHistogramGWSAFTEndWithPreNavigationLatency[] =
+    HISTOGRAM_PREFIX "PaintTiming.AFTEndWithPreNavigationLatency";
 const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart2";
 const char kHistogramGWSHeadChunkStart[] =
     HISTOGRAM_PREFIX "PaintTiming.HeadChunkStart";
@@ -110,6 +112,7 @@ const char kHistogramGWSHST[] = HISTOGRAM_PREFIX "CSI.HST";
 const char kHistogramGWSHCT[] = HISTOGRAM_PREFIX "CSI.HCT";
 const char kHistogramGWSSCT[] = HISTOGRAM_PREFIX "CSI.SCT";
 const char kHistogramGWSSRT[] = HISTOGRAM_PREFIX "CSI.SRT";
+const char kHistogramGWSSGL[] = HISTOGRAM_PREFIX "CSI.SGL";
 const char kHistogramGWSTimeBetweenHCTAndSCT[] =
     HISTOGRAM_PREFIX "CSI.TimeBetweenHCTAndSCT";
 
@@ -180,6 +183,12 @@ const char kHistogramNoServiceWorkerLoadSearch[] =
 }  // namespace internal
 
 namespace {
+
+BASE_FEATURE(kRecordPrenavigationLatency, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsPrenavigationLatencyEnabled() {
+  return base::FeatureList::IsEnabled(kRecordPrenavigationLatency);
+}
 
 bool IsNavigationFromNewTabPage(
     GWSPageLoadMetricsObserver::NavigationSourceType type) {
@@ -529,6 +538,15 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
       body_chunk_start_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkEndMarkName) {
       record_histogram(internal::kHistogramGWSBodyChunkEnd, timing);
+    } else if (IsPrenavigationLatencyEnabled() &&
+               mark->mark_name == internal::kGwsSGLMarkName) {
+      // Because this is a performance mark for previous navigation, we should
+      // not correct the timing for prerender activation, or else we would get
+      // inconsistent timing.
+      // So, we use `mark->start_time` directly here rather than using the
+      // pre-adjusted `timing`.
+      record_histogram(internal::kHistogramGWSSGL, mark->start_time);
+      sgl_time_ = mark->start_time;
     }
   }
 }
@@ -577,6 +595,38 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
           activation_to_lcp, base::Milliseconds(10), base::Seconds(10), 100);
     }
     return;
+  }
+
+  if (IsPrenavigationLatencyEnabled() && aft_end_time_.has_value()) {
+    // There are multiple patterns to record the prenavigation latency events:
+    // - For non prerendering cases: If we have prenavigation latency, we should
+    // add them to the AFT performance mark to get the total latency.
+    // - For prerendering cases:
+    //   - If the activation happens during this navigation, we should update
+    //     the base time to start from the activation time. This means that any
+    //     prenavigation event that happens before activation should be ignored
+    //     and be set to 0.
+    //   - If the activation happens before this navigation, the
+    //     current navigation would start as a normal (non-prerendered
+    //     navigation), since it should not start from `OnPrerenderStart`, and
+    //     start from `OnStart`. Hence, we would not need to correct the base
+    //     time, and the prenavigation latency should be recorded as it is to
+    //     be consistent with what is recorded in the server side.
+    auto base_time = aft_end_time_.value();
+    std::optional<base::TimeDelta> prenavigation_time = sgl_time_;
+    if (is_prerendered_) {
+      // If we are in prerendering, we need to correct the AFTEnd to start from
+      // the activation timing.
+      base_time =
+          page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+              GetDelegate(), aft_end_time_.value());
+      prenavigation_time = std::nullopt;
+    }
+
+    // We record pre navigation time here as well.
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramGWSAFTEndWithPreNavigationLatency,
+        base_time + prenavigation_time.value_or(base::TimeDelta()));
   }
 
   if (!WasStartedInForegroundOptionalEventInForeground(

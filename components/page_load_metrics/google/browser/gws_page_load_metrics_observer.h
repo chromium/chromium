@@ -189,6 +189,7 @@ class GWSPageLoadMetricsObserver
   std::optional<base::TimeDelta> body_chunk_start_time_;
   std::optional<base::TimeDelta> head_chunk_start_time_;
   std::optional<base::TimeDelta> head_chunk_end_time_;
+  std::optional<base::TimeDelta> sgl_time_;
 
   int64_t navigation_id_;
 };

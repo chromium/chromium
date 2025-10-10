@@ -1274,6 +1274,9 @@ chromium-metrics-reviews@google.com.
     <variant name="HST" summary="to reach the head chunk start"/>
     <variant name="SCT"
         summary="from the server response time to receive the body chunk"/>
+    <variant name="SGL"
+        summary="from the previous navigation to the reload that triggers
+                 this navigation"/>
     <variant name="SRT"
         summary="from the navigation start to receive the HTTP headers"/>
     <variant name="TimeBetweenHCTAndSCT"
@@ -1610,6 +1613,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="MileStone">
     <variant name="AFTEnd2" summary="AFT end event is sent"/>
+    <variant name="AFTEndWithPreNavigationLatency"
+        summary="AFT end event is sent with pre-navigation latency"/>
     <variant name="AFTStart2" summary="AFT start event is sent"/>
     <variant name="BodyChunkEnd2"
         summary="end of the header chunk start event is sent"/>
