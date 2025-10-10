@@ -17,8 +17,14 @@ enum class LensComposeboxUserAction {
   // User focused into the composebox.
   kFocused = 0,
 
-  // User submitted a query from the composebox.
-  kQuerySubmitted = 1,
+  // A query was issued from the client to AIM. This is not necessarily the same
+  // as the user submitting a query in the composebox, as the query is queued
+  // until the handshake is complete.
+  kQueryIssued = 1,
+
+  // User submitted a query from the composebox. This differs from kQueryIssued
+  // in that the query was submitted by the user, but not yet received by AIM.
+  kQuerySubmitted = 2,
 
   kMaxValue = kQuerySubmitted
 };

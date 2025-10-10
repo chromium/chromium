@@ -69,6 +69,9 @@ struct AimSessionEndMetrics {
 
   // Indicates whether a query was issued in the session.
   bool query_issued_ = false;
+
+  // Indicates whether a query was submitted in the session.
+  bool query_submitted_ = false;
 };
 
 // LINT.IfChange(LensOverlayTextDirectiveResult)

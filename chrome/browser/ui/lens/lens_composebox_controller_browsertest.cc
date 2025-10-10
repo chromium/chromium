@@ -377,6 +377,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 1);
 
   // Send another query.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
@@ -386,6 +389,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 2);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 2);
 
   // Close the overlay to trigger session end metrics.
   lens_controller->CloseLensSync(
@@ -404,6 +410,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserActionInSession",
       lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserActionInSession",
+      lens::LensComposeboxUserAction::kQueryIssued, 1);
 
   // Start a new session.
   lens_controller->OpenLensOverlayWithPendingRegion(
@@ -418,6 +427,20 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
     return GetLensComposeboxController()->composebox_handler_for_testing() !=
            nullptr;
   }));
+
+  // Submit a query before the handshake so it never is issued.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+
+  // The new query should be logged as submitted but not issued.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 3);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 2);
 
   // Close the overlay to trigger session end metrics again.
   lens_controller->CloseLensSync(
@@ -437,7 +460,10 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                                      1);
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserActionInSession",
-      lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+      lens::LensComposeboxUserAction::kQuerySubmitted, 2);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserActionInSession",
+      lens::LensComposeboxUserAction::kQueryIssued, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
@@ -481,6 +507,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        QueryBeforeHandshakeIsQueued) {
+  base::HistogramTester histogram_tester;
   WaitForPaint();
 
   auto* lens_controller = GetLensSearchController();
@@ -519,6 +546,12 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
       /*shift_key=*/false);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 0);
 
   // Send another query. This should overwrite the last one.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
@@ -526,6 +559,12 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*ctrl_key=*/false,
       /*meta_key=*/false,
       /*shift_key=*/false);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQuerySubmitted, 2);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 0);
 
   // Verify the client message was not sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -542,6 +581,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Verify the client message sent.
   ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
                   .has_submit_query());
+  histogram_tester.ExpectBucketCount(
+      "Lens.Composebox.UserAction",
+      lens::LensComposeboxUserAction::kQueryIssued, 1);
 
   // Verify the submit query message.
   auto submit_query = test_side_panel_coordinator

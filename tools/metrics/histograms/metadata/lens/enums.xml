@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
   <summary>The user action in the user took on the composebox.</summary>
   <int value="0" label="Focused"/>
   <int value="1" label="Query Issued"/>
+  <int value="2" label="Query Submitted"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_composebox_user_action.h:LensComposeboxUserAction) -->

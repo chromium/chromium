@@ -60,6 +60,10 @@ class LensComposeboxController {
   // Handles AIM messages from the side panel remote UI.
   void OnAimMessage(const std::vector<uint8_t>& message);
 
+  // Resets data associated with the handshake. This allows the controller
+  // to know when communication is established with AIM.
+  void ResetAimHandshake();
+
   // Shows the Lens selection overlay. A no-op if it is already open.
   void ShowLensSelectionOverlay();
 

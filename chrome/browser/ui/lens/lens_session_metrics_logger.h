@@ -81,6 +81,9 @@ class LensSessionMetricsLogger {
   // Called when a query is issued in the AIM searchbox.
   void OnAimQueryIssued();
 
+  // Called when a query is submitted in the AIM searchbox.
+  void OnAimQuerySubmitted();
+
   // Records Lens invocation.
   void RecordInvocation();
 
