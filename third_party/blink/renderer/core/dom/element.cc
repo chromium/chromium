@@ -9710,7 +9710,12 @@ PseudoElement* Element::GetPseudoElement(
 
 CSSPseudoElement* Element::pseudo(const AtomicString& type) {
   PseudoId pseudo_id = CSSPseudoElement::ConvertTypeToSupportedPseudoId(type);
-  if (pseudo_id == kPseudoIdInvalid) {
+  return EnsureCSSPseudoElement(pseudo_id);
+}
+
+CSSPseudoElement* Element::EnsureCSSPseudoElement(PseudoId pseudo_id) {
+  DCHECK(RuntimeEnabledFeatures::CSSPseudoElementInterfaceEnabled());
+  if (!CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(pseudo_id)) {
     return nullptr;
   }
   EnsureElementRareData();

@@ -27,6 +27,8 @@
     readonly attribute DOMString type;
     readonly attribute EventTarget? target;
     readonly attribute EventTarget? currentTarget;
+    [RuntimeEnabled=EventPseudoTargetProperty, Exposed=Window]
+    readonly attribute CSSPseudoElement? pseudoTarget;
     [MeasureAs=EventComposedPath, CallWith=ScriptState] sequence<EventTarget> composedPath();
 
     const unsigned short NONE = 0;

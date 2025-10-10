@@ -44,6 +44,8 @@ class EventPath;
 class EventTarget;
 class Node;
 class Element;
+class PseudoElement;
+class CSSPseudoElement;
 class ScriptState;
 
 class CORE_EXPORT Event : public ScriptWrappable {
@@ -147,9 +149,20 @@ class CORE_EXPORT Event : public ScriptWrappable {
   EventTarget* target() const;
   void SetTarget(EventTarget*);
 
+  // Returns the CSSPseudoElement that this event originated from, if any.
+  // Returns null if the originating target is a real element or the feature
+  // is disabled. This is not affected by retargeting performed for
+  // Event#target.
+  CSSPseudoElement* pseudoTarget() const;
+
   // This is the target that the event was dispatched to, without any
   // retargeting. Can be a pseudo-element. Shouldn't we web exposed.
   EventTarget* RawTarget() const { return target_.Get(); }
+
+  void SetPseudoElementTarget(PseudoElement* pseudo_element_target) {
+    pseudo_element_target_ = pseudo_element_target;
+  }
+  PseudoElement* PseudoElementTarget() const { return pseudo_element_target_; }
 
   EventTarget* currentTarget() const;
   void SetCurrentTarget(EventTarget* current_target) {
@@ -388,6 +401,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
 
   Member<EventTarget> current_target_;
   Member<EventTarget> target_;
+  Member<PseudoElement> pseudo_element_target_;
   Member<const Event> underlying_event_;
   Member<EventPath> event_path_;
   // The monotonic platform time in seconds, for input events it is the

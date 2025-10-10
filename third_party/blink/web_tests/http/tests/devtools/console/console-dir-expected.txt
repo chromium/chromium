@@ -73,6 +73,7 @@ console-dir.js:49 Event
     currentTarget: null
     defaultPrevented: false
     eventPhase: 0
+    pseudoTarget: null
     returnValue: true
     srcElement: null
     target: null

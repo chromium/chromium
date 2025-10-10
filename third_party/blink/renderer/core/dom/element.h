@@ -1341,6 +1341,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   CSSPseudoElement* pseudo(const AtomicString& type);
 
   // Used to cache CSSPseudoElement objects.
+  CSSPseudoElement* EnsureCSSPseudoElement(PseudoId);
   void CacheCSSPseudoElement(PseudoId, CSSPseudoElement&);
   CSSPseudoElement* GetCSSPseudoElement(PseudoId) const;
 

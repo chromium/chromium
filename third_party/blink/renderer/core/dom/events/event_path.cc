@@ -100,6 +100,9 @@ void EventPath::CalculatePath() {
   Node* current = node_;
   // Don't expose pseudo-element in the event path.
   if (auto* pseudo = DynamicTo<PseudoElement>(node_.Get())) {
+    if (event_) {
+      event_->SetPseudoElementTarget(pseudo);
+    }
     current = &pseudo->UltimateOriginatingElement();
   }
 

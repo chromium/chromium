@@ -4,21 +4,14 @@
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
-#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-namespace {
-
-bool IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
+bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdBefore:
     case kPseudoIdAfter:
@@ -29,8 +22,6 @@ bool IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
       return false;
   }
 }
-
-}  // namespace
 
 CSSPseudoElement::CSSPseudoElement(Element& originating_element,
                                    PseudoId pseudo_id)
@@ -91,19 +82,11 @@ CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
   return css_pseudo_element;
 }
 
-const AtomicString& CSSPseudoElement::InterfaceName() const {
-  return event_target_names::kCSSPseudoElement;
-}
-
-ExecutionContext* CSSPseudoElement::GetExecutionContext() const {
-  return element_->GetDocument().GetExecutionContext();
-}
-
 void CSSPseudoElement::Trace(Visitor* v) const {
   v->Trace(element_);
   v->Trace(parent_);
   v->Trace(css_pseudo_elements_data_);
-  EventTarget::Trace(v);
+  ScriptWrappable::Trace(v);
 }
 
 void CSSPseudoElementsCacheData::CacheCSSPseudoElement(

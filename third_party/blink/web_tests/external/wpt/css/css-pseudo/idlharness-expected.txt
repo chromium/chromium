@@ -1,6 +1,10 @@
 This is a testharness.js-based test.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "TypeError: window.getPseudoElements is not a function"
+[FAIL] CSSPseudoElement interface: existence and properties of interface object
+  assert_equals: prototype of CSSPseudoElement is not EventTarget expected function "function EventTarget() { [native code] }" but got function "function () { [native code] }"
+[FAIL] CSSPseudoElement interface: existence and properties of interface prototype object
+  assert_equals: prototype of CSSPseudoElement.prototype is not EventTarget.prototype expected object "[object EventTarget]" but got object "[object Object]"
 [FAIL] CSSPseudoElement must be primary interface of beforeElements.item(0)
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
 [FAIL] Stringification of beforeElements.item(0)

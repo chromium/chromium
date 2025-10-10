@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
@@ -419,9 +420,24 @@ DispatchEventResult Event::DispatchEvent(EventDispatcher& dispatcher) {
 void Event::Trace(Visitor* visitor) const {
   visitor->Trace(current_target_);
   visitor->Trace(target_);
+  visitor->Trace(pseudo_element_target_);
   visitor->Trace(underlying_event_);
   visitor->Trace(event_path_);
   ScriptWrappable::Trace(visitor);
+}
+
+CSSPseudoElement* Event::pseudoTarget() const {
+  if (!RuntimeEnabledFeatures::CSSPseudoElementInterfaceEnabled()) {
+    return nullptr;
+  }
+  PseudoElement* pseudo_element_target = PseudoElementTarget();
+  if (!pseudo_element_target) {
+    return nullptr;
+  }
+
+  Element& target_element = *To<Element>(target()->ToNode());
+  return target_element.EnsureCSSPseudoElement(
+      pseudo_element_target->GetPseudoId());
 }
 
 }  // namespace blink

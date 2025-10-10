@@ -2057,6 +2057,12 @@
       status: "stable",
     },
     {
+      // `event.pseudoTarget` property to represent pseudo-elements in events. Returns `CSSPseudoElement` or null.
+      name: "EventPseudoTargetProperty",
+      status: "experimental",
+      depends_on: ["CSSPseudoElementInterface"],
+    },
+    {
       name: "EventTimingInteractionCount",
       status: "experimental",
     },
