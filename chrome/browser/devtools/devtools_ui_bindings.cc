@@ -2017,6 +2017,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsStartingStyleDebugging",
                     std::move(starting_style_debugging));
 
+  response_dict.Set("devToolsAiPromptApi",
+                    base::Value::Dict().Set(
+                        "enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsAiPromptApi)));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
