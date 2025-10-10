@@ -107,10 +107,8 @@ bool ShouldDisableOriginIsolationDueToMemorySlow() {
   // restrictions in that case.
   return false;
 #else
-  // TODO(crbug.com/40259221): This value currently matches the default
-  // threshold for site isolation, but once more trial data is available it
-  // should be adjusted.
-  int default_memory_threshold_mb = 1077;
+  // This value matches the threshold in the origin isolation study.
+  int default_memory_threshold_mb = 4096;
   if (base::FeatureList::IsEnabled(features::kOriginIsolationMemoryThreshold)) {
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
         features::kOriginIsolationMemoryThreshold,
