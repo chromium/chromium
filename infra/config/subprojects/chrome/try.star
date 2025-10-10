@@ -139,6 +139,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-arm-generic-cfi-thin-lto-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-arm64-generic-cfi-thin-lto-chrome",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-chrome",
 )
 
