@@ -7555,6 +7555,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </else>
       </if>
 
+      <!-- WebUI Omnibox -->
+      <message name="IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT" desc="The text displayed in the WebUI Omnibox when it is empty and unfocused.">
+        Ask <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> or type a URL
+      </message>
+
       <!-- NTP -->
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">
         Search Google or type a URL
