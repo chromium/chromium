@@ -55,7 +55,7 @@
           "splitViewId": {
             "type": "integer",
             "minimum": -1,
-            "optional": "true",
+            "optional": true,
             "description": "The ID of the Split View that the tab belongs to.",
             // TODO(crbug.com/433273595): Enable documentation when ready for launch.
             "nodoc": true
