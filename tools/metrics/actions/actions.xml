@@ -2281,6 +2281,32 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Accessibility.Android.PageZoom.ImmersiveModeClicked">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>
+    User clicked on the immersive mode button on the zoom app menu option.
+  </description>
+</action>
+
+<action name="Accessibility.Android.PageZoom.LffAppMenuUsage">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>
+    User interacted with either the zoom in or the zoom out button on the lff
+    app menu.
+  </description>
+</action>
+
+<action name="Accessibility.Android.PageZoom.ZoomIndicatorClicked">
+  <owner>clank-app-team@google.com</owner>
+  <owner>hitarthkothari@google.com</owner>
+  <description>
+    User clicked on the zoom indicator on the omnibox. This indicator is only
+    shown when the current zoom level is different from default
+  </description>
+</action>
+
 <action name="Accessibility.Autoclick.ChangeScrollPoint">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>

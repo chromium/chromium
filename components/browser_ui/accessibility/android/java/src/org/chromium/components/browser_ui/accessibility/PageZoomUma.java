@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 
 /** Centralizes UMA data collection for Page Zoom. */
@@ -100,6 +101,18 @@ public class PageZoomUma {
     @VisibleForTesting
     public static final String PAGE_ZOOM_FEATURE_USAGE = "Accessibility.Android.PageZoom.Usage";
 
+    @VisibleForTesting
+    public static final String PAGE_ZOOM_LFF_APP_MENU_USAGE =
+            "Accessibility.Android.PageZoom.LffAppMenuUsage";
+
+    @VisibleForTesting
+    public static final String PAGE_ZOOM_INDICATOR_CLICKED =
+            "Accessibility.Android.PageZoom.ZoomIndicatorClicked";
+
+    @VisibleForTesting
+    public static final String PAGE_ZOOM_IMMERSIVE_MODE_CLICKED =
+            "Accessibility.Android.PageZoom.ImmersiveModeClicked";
+
     /**
      * Log the enabled state of the page zoom slider option in the app menu.
      *
@@ -176,6 +189,21 @@ public class PageZoomUma {
         } else {
             recordUsageMetric(AccessibilityPageZoomUsageType.NO_USAGE);
         }
+    }
+
+    /** Log that the user used the LFF app menu. */
+    public static void logLffAppMenuUsageHistogram() {
+        RecordUserAction.record(PAGE_ZOOM_LFF_APP_MENU_USAGE);
+    }
+
+    /** Log that the user clicked the zoom indicator. */
+    public static void logZoomIndicatorClicked() {
+        RecordUserAction.record(PAGE_ZOOM_INDICATOR_CLICKED);
+    }
+
+    /** Log that the user clicked the immersive mode button. */
+    public static void logImmersiveModeClicked() {
+        RecordUserAction.record(PAGE_ZOOM_INDICATOR_CLICKED);
     }
 
     private static void recordUsageMetric(@AccessibilityPageZoomUsageType int usageType) {

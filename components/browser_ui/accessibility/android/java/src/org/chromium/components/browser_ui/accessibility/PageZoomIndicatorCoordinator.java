@@ -101,6 +101,7 @@ public class PageZoomIndicatorCoordinator {
         assumeNonNull(mView);
 
         mMediator.showPopupWindow(mZoomIndicatorViewSupplier.get(), mPopupWindow);
+        PageZoomUma.logZoomIndicatorClicked();
     }
 
     /** Hide the zoom feature UI from the user. */

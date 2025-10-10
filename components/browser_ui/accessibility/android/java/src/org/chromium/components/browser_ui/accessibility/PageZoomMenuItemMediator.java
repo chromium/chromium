@@ -68,12 +68,14 @@ class PageZoomMenuItemMediator {
     @VisibleForTesting
     void handleImmersiveModeClicked() {
         mManager.enterImmersiveMode();
+        PageZoomUma.logImmersiveModeClicked();
     }
 
     private void handleIndexChanged(int index) {
         double zoomFactor = AVAILABLE_ZOOM_FACTORS[index];
         updateZoomPercentageText(zoomFactor);
         updateButtonStates(zoomFactor);
+        PageZoomUma.logLffAppMenuUsageHistogram();
     }
 
     private void updateButtonStates(double newZoomFactor) {
