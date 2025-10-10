@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,7 +49,7 @@ public class SearchBoxMediatorUnitTest {
     @Mock private View.OnClickListener mComposePlateClickListener;
 
     private Context mContext;
-    private ViewGroup mParentView;
+    private ViewGroup mView;
     private PropertyModel mPropertyModel;
     private Drawable mVoiceSearchDrawable;
     private SearchBoxMediator mMediator;
@@ -57,13 +60,13 @@ public class SearchBoxMediatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mParentView =
+        mView =
                 (ViewGroup)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.fake_search_box_layout, null);
 
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
-        mMediator = new SearchBoxMediator(mContext, mPropertyModel, mParentView);
+        mMediator = new SearchBoxMediator(mContext, mPropertyModel, mView);
     }
 
     @Test
@@ -103,5 +106,42 @@ public class SearchBoxMediatorUnitTest {
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
+    }
+
+    @Test
+    public void testSetEndPadding() {
+        int padding = 10;
+        mMediator.setEndPadding(padding);
+        assertEquals(padding, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_END_PADDING));
+    }
+
+    @Test
+    public void testSetStartPadding() {
+        int padding = 20;
+        mMediator.setStartPadding(padding);
+        assertEquals(padding, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_START_PADDING));
+    }
+
+    @Test
+    public void testSetSearchBoxTextAppearance() {
+        int resId = R.style.TextAppearance_FakeSearchBoxTextMedium;
+        mMediator.setSearchBoxTextAppearance(resId);
+        assertEquals(resId, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID));
+    }
+
+    @Test
+    public void testEnableSearchBoxEditText() {
+        mMediator.enableSearchBoxEditText(true);
+        assertTrue(mPropertyModel.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));
+
+        mMediator.enableSearchBoxEditText(false);
+        assertFalse(mPropertyModel.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));
+    }
+
+    @Test
+    public void testSetSearchBoxHintText() {
+        String hint = "new hint";
+        mMediator.setSearchBoxHintText(hint);
+        assertEquals(hint, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
     }
 }

@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -190,7 +191,19 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, endPadding);
     }
 
-    void setTextViewTranslationX(float translationX) {
-        mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
+    void setStartPadding(int startPadding) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_START_PADDING, startPadding);
+    }
+
+    void setSearchBoxTextAppearance(@StyleRes int resId) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
+    }
+
+    void enableSearchBoxEditText(boolean enabled) {
+        mModel.set(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT, enabled);
+    }
+
+    void setSearchBoxHintText(@Nullable String hint) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hint);
     }
 }

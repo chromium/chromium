@@ -11,8 +11,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.StyleRes;
+
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -119,10 +122,6 @@ public class SearchBoxCoordinator {
         mMediator.startLens(lensEntryPoint, mWindowAndroid, mIsIncognito);
     }
 
-    public void setIncognitoMode(boolean isIncognito) {
-        mIsIncognito = isIncognito;
-    }
-
     public void setHeight(int height) {
         mMediator.setHeight(height);
     }
@@ -135,15 +134,19 @@ public class SearchBoxCoordinator {
         mMediator.setEndPadding(endPadding);
     }
 
-    public void setTextViewTranslationX(float translationX) {
-        mMediator.setTextViewTranslationX(translationX);
+    public void setStartPadding(int startPadding) {
+        mMediator.setStartPadding(startPadding);
     }
 
-    public void setSearchTextSize(float textSize) {
-        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE, textSize);
+    public void setSearchBoxTextAppearance(@StyleRes int resId) {
+        mMediator.setSearchBoxTextAppearance(resId);
     }
 
-    public boolean getIncognitoModeForTesting() {
-        return mIsIncognito;
+    public void enableSearchBoxEditText(boolean enabled) {
+        mMediator.enableSearchBoxEditText(enabled);
+    }
+
+    public void setSearchBoxHintText(@Nullable String hint) {
+        mMediator.setSearchBoxHintText(hint);
     }
 }

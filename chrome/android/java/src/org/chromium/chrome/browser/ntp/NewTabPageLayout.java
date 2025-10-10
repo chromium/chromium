@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.RawRes;
 import androidx.annotation.VisibleForTesting;
@@ -148,8 +147,6 @@ public class NewTabPageLayout extends LinearLayout
     private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
-    private View mFakeSearchBoxLayout;
-    private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
     private boolean mIsComposeplateEnabled;
     private boolean mIsComposeplateV2Enabled;
@@ -200,8 +197,6 @@ public class NewTabPageLayout extends LinearLayout
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout.onFinishInflate before insertSiteSectionView");
 
-        mFakeSearchBoxLayout = findViewById(R.id.search_box);
-        mFakeSearchBoxEditText = findViewById(R.id.search_box_text);
         initializeSiteSectionView();
 
         Log.i(TAG, "NewTabPageLayout.onFinishInflate after insertSiteSectionView");
@@ -320,7 +315,7 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     public void enableSearchBoxEditText(boolean enable) {
-        mFakeSearchBoxEditText.setEnabled(enable);
+        mSearchBoxCoordinator.enableSearchBoxEditText(enable);
     }
 
     /**
@@ -370,7 +365,8 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     private void initializeDseIconView(boolean shouldShowDesIconView) {
-        mDseIconView = mFakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
+        View fakeSearchBoxLayout = findViewById(R.id.search_box);
+        mDseIconView = fakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
         if (mIsOmniboxMobileParityUpdateV2Enabled) {
             // Configures icon rounding.
             mDseIconView.setOutlineProvider(
@@ -421,20 +417,13 @@ public class NewTabPageLayout extends LinearLayout
         mDseIconView.setVisibility(visibility);
 
         if (isVisible) {
-            mFakeSearchBoxLayout.setPaddingRelative(
-                    mFakeSearchBoxStartPaddingWithDseLogo,
-                    mFakeSearchBoxLayout.getPaddingTop(),
-                    mFakeSearchBoxLayout.getPaddingEnd(),
-                    mFakeSearchBoxLayout.getPaddingBottom());
-            mFakeSearchBoxEditText.setTextAppearance(
+            mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPaddingWithDseLogo);
+            mSearchBoxCoordinator.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMedium);
         } else {
-            mFakeSearchBoxLayout.setPaddingRelative(
-                    mFakeSearchBoxStartPadding,
-                    mFakeSearchBoxLayout.getPaddingTop(),
-                    mFakeSearchBoxLayout.getPaddingEnd(),
-                    mFakeSearchBoxLayout.getPaddingBottom());
-            mFakeSearchBoxEditText.setTextAppearance(R.style.TextAppearance_FakeSearchBoxText);
+            mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPadding);
+            mSearchBoxCoordinator.setSearchBoxTextAppearance(
+                    R.style.TextAppearance_FakeSearchBoxText);
         }
     }
 
@@ -855,7 +844,7 @@ public class NewTabPageLayout extends LinearLayout
         for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
             view.setTranslationY(translationY);
-            if (view == mFakeSearchBoxLayout) return;
+            if (view.getId() == R.id.search_box) return;
         }
     }
 
@@ -951,9 +940,8 @@ public class NewTabPageLayout extends LinearLayout
         mCurrentNtpFakeSearchBoxTransitionStartOffset =
                 getNtpSearchBoxTransitionStartOffset(showFakeSearchBoxWithoutLogo);
 
-        MarginLayoutParams params = (MarginLayoutParams) mFakeSearchBoxLayout.getLayoutParams();
-        params.topMargin = showFakeSearchBoxWithoutLogo ? mNtpSearchBoxTopMarginWithoutLogo : 0;
-        mFakeSearchBoxLayout.setLayoutParams(params);
+        int topMargin = showFakeSearchBoxWithoutLogo ? mNtpSearchBoxTopMarginWithoutLogo : 0;
+        mSearchBoxCoordinator.setTopMargin(topMargin);
 
         if (mLogoCoordinator != null) {
             mLogoCoordinator.setTopMargin(getLogoMargin(/* isTopMargin= */ true));
@@ -1179,9 +1167,6 @@ public class NewTabPageLayout extends LinearLayout
         mVoiceSearchButtonClickListener = null;
         mSearchBoxScrollListener = null;
         mComposeplateUrlSupplier = null;
-
-        mFakeSearchBoxEditText = null;
-        mFakeSearchBoxLayout = null;
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
@@ -1296,7 +1281,7 @@ public class NewTabPageLayout extends LinearLayout
 
     @Override
     public void onSearchBoxHintTextChanged(@Nullable String newHint) {
-        mFakeSearchBoxEditText.setHint(newHint);
+        mSearchBoxCoordinator.setSearchBoxHintText(newHint);
     }
 
     /**
