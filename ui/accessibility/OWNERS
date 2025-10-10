@@ -14,7 +14,6 @@ grt@chromium.org
 chrishtr@chromium.org
 
 # For Android / Java related changes:
-mschillaci@google.com
 aldietz@google.com
 
 per-file *.mojom=set noparent
