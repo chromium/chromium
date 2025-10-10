@@ -234,7 +234,8 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   EXPECT_CALL(*address_controller, ShowBubble());
 
   // Hide the card bubble.
-  bubble_manager().OnBubbleHiddenByController(*card_controller);
+  bubble_manager().OnBubbleHiddenByController(*card_controller,
+                                              /*show_next_bubble=*/true);
 
   // The state of the card controller should now be false.
   card_controller->HideBubble(/*initiated_by_bubble_manager=*/true);
@@ -243,6 +244,38 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   EXPECT_TRUE(address_controller->IsShowingBubble());
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.ShownFromQueue",
                                        BubbleType::kSaveUpdateAddress, 1);
+}
+
+// Test that hiding a bubble with `show_next_bubble` set to false does not
+// trigger the next bubble in the queue.
+TEST_F(BubbleManagerImplTest, HideActiveBubble_DoNotShowNextBubble) {
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+  std::unique_ptr<MockBubbleController> card_controller =
+      CreateController(BubbleType::kSaveUpdateCard);
+
+  // Show the high-priority card bubble.
+  EXPECT_CALL(*card_controller, ShowBubble());
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(card_controller->IsShowingBubble());
+
+  // Queue the lower-priority address bubble. It should not be shown.
+  EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  ASSERT_FALSE(address_controller->IsShowingBubble());
+
+  // Hide the card bubble, instructing the manager NOT to show the next one.
+  // The address bubble should not be shown.
+  bubble_manager().OnBubbleHiddenByController(*card_controller,
+                                              /*show_next_bubble=*/false);
+
+  // Manually update the hidden bubble's state.
+  card_controller->HideBubble(/*initiated_by_bubble_manager=*/true);
+
+  EXPECT_FALSE(card_controller->IsShowingBubble());
+  EXPECT_FALSE(address_controller->IsShowingBubble());
 }
 
 // Tests that when a high priority bubble is shown, the lower priority bubbles
@@ -361,13 +394,15 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
   bubble_manager().RequestShowController(*address_controller_2,
                                          /*force_show=*/false);
 
-  bubble_manager().OnBubbleHiddenByController(*password_controller);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
 
   EXPECT_TRUE(address_controller_1->IsShowingBubble());
   EXPECT_FALSE(address_controller_2->IsShowingBubble());
 
   // Ensure `address_controller_2` is never shown.
-  bubble_manager().OnBubbleHiddenByController(*address_controller_1);
+  bubble_manager().OnBubbleHiddenByController(*address_controller_1,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_2->IsShowingBubble());
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.Discarded",
                                        BubbleType::kSaveUpdateAddress, 1);
@@ -399,13 +434,15 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
   bubble_manager().RequestShowController(*address_controller_2,
                                          /*force_show=*/false);
 
-  bubble_manager().OnBubbleHiddenByController(*password_controller);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
 
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
   EXPECT_TRUE(address_controller_2->IsShowingBubble());
 
   // Ensure `address_controller_1` is never shown.
-  bubble_manager().OnBubbleHiddenByController(*address_controller_2);
+  bubble_manager().OnBubbleHiddenByController(*address_controller_2,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.TimedOut",
                                        BubbleType::kSaveUpdateAddress, 1);
@@ -432,12 +469,14 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager().RequestShowController(*password_controller_2,
                                          /*force_show=*/false);
 
-  bubble_manager().OnBubbleHiddenByController(*filled_card_controller);
+  bubble_manager().OnBubbleHiddenByController(*filled_card_controller,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
   EXPECT_TRUE(password_controller_2->IsShowingBubble());
 
   // Ensure `password_controller_1` is never shown.
-  bubble_manager().OnBubbleHiddenByController(*password_controller_2);
+  bubble_manager().OnBubbleHiddenByController(*password_controller_2,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.Replaced",
                                        BubbleType::kPassword, 1);
@@ -561,7 +600,8 @@ TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_TimedOut) {
   // The address bubble should be timed out and not shown.
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
   EXPECT_CALL(*address_controller, OnBubbleDiscarded());
-  bubble_manager().OnBubbleHiddenByController(*password_controller);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
 
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.TimedOut",
                                        BubbleType::kSaveUpdateAddress, 1);
@@ -755,7 +795,8 @@ TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_CleansUpStaleControllers) {
 
   // Destroy the address controller, invalidating its weak pointer.
   address_controller.reset();
-  bubble_manager().OnBubbleHiddenByController(*card_controller);
+  bubble_manager().OnBubbleHiddenByController(*card_controller,
+                                              /*show_next_bubble=*/true);
 }
 
 // Test that the time a bubble spends in the queue is logged correctly.
@@ -777,7 +818,8 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_LogsTimeInQueue) {
 
   // Hide the active bubble, which should trigger the queued bubble to show.
   EXPECT_CALL(*address_controller, ShowBubble());
-  bubble_manager().OnBubbleHiddenByController(*card_controller);
+  bubble_manager().OnBubbleHiddenByController(*card_controller,
+                                              /*show_next_bubble=*/true);
   histogram_tester_.ExpectUniqueTimeSample(
       "Autofill.Bubble.Queue.TimeInQueue.SaveUpdateAddress", base::Seconds(5),
       1);

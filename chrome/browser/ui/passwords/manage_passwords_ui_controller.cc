@@ -914,7 +914,7 @@ void ManagePasswordsUIController::OnBubbleHidden() {
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager =
             autofill::BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(*this);
+      manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/true);
     }
   }
 }

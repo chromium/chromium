@@ -145,6 +145,7 @@ void AddressBubblesController::ShowEditor(
     const std::u16string& title_override,
     const std::u16string& editor_footer_message,
     bool is_editing_existing_address) {
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
@@ -320,6 +321,8 @@ void AddressBubblesController::MaybeShowSignInPromo(
           autofill_profile.value())) {
     return;
   }
+
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
 
   // Close the current save bubble.
   HideBubble(/*initiated_by_bubble_manager=*/false);

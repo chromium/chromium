@@ -238,6 +238,8 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
     std::optional<
         payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
+
   // Hide the current bubble if still showing.
   HideBubble(/*initiated_by_bubble_manager=*/false);
 

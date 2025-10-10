@@ -95,7 +95,7 @@ void WalletablePassBubbleControllerBase::
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
-      manager->OnBubbleHiddenByController(*this);
+      manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/true);
     }
   }
   bubble_view_ = nullptr;

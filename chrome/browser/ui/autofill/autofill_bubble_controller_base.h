@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -56,6 +57,39 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void WebContentsDestroyed() override;
 
  protected:
+  // RAII-type guard that, while in scope, instructs the `BubbleManager` not
+  // to show the next queued bubble when this controller's bubble is hidden.
+  // Must not outlive the controller.
+  // TODO(crbug.com/432429605): Look into ways to move this lock to
+  // BubbleManager to allow suppressing other controllers' bubbles while a
+  // multi-step flow is ongoing (e.g., credit card upload).
+  class DoNotShowNextQueuedBubbleGuard final {
+   public:
+    DoNotShowNextQueuedBubbleGuard(AutofillBubbleControllerBase* controller,
+                                   base::PassKey<AutofillBubbleControllerBase>)
+        : controller_(CHECK_DEREF(controller)) {
+      CHECK(controller_->allow_bubble_manager_to_show_next_);
+      controller_->allow_bubble_manager_to_show_next_ = false;
+    }
+    DoNotShowNextQueuedBubbleGuard(const DoNotShowNextQueuedBubbleGuard&) =
+        delete;
+    DoNotShowNextQueuedBubbleGuard& operator=(
+        const DoNotShowNextQueuedBubbleGuard&) = delete;
+    DoNotShowNextQueuedBubbleGuard(DoNotShowNextQueuedBubbleGuard&&) = delete;
+    DoNotShowNextQueuedBubbleGuard& operator=(
+        DoNotShowNextQueuedBubbleGuard&&) = delete;
+    ~DoNotShowNextQueuedBubbleGuard() {
+      controller_->allow_bubble_manager_to_show_next_ = true;
+    }
+
+   private:
+    const raw_ref<AutofillBubbleControllerBase> controller_;
+  };
+
+  DoNotShowNextQueuedBubbleGuard DoNotShowNextQueuedBubble() {
+    return DoNotShowNextQueuedBubbleGuard(this, {});
+  }
+
   bool IsBubbleManagerEnabled() const {
 #if !BUILDFLAG(IS_ANDROID)
     return base::FeatureList::IsEnabled(
@@ -95,6 +129,10 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   bool bubble_hide_initiated_by_bubble_manager_ = false;
 
  private:
+  // This indicates to the `BubbleManager` whether it should show the next
+  // bubble.
+  bool allow_bubble_manager_to_show_next_ = true;
+
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<AutofillBubbleBase> bubble_view_ = nullptr;
 };

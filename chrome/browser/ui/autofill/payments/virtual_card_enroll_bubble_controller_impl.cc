@@ -99,6 +99,8 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
     autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
   }
 #else  // !BUILDFLAG(IS_ANDROID)
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
+
   HideBubble(/*initiated_by_bubble_manager=*/false);
   ResetBubble();
   UpdatePageActionIcon();

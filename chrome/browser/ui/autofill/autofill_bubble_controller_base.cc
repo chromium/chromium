@@ -128,7 +128,8 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
   if (was_showing && base::FeatureList::IsEnabled(
                          features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(*this);
+      manager->OnBubbleHiddenByController(*this,
+                                          allow_bubble_manager_to_show_next_);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

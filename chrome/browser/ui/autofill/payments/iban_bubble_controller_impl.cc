@@ -135,6 +135,8 @@ void IbanBubbleControllerImpl::ReshowBubble() {
 void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     bool iban_saved,
     bool hit_max_strikes) {
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
+
   // Hide the current bubble if still showing.
   HideBubble(/*initiated_by_bubble_manager=*/false);
 
