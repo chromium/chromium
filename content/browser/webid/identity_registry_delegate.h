@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/values.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -34,7 +35,7 @@ class IdentityRegistryDelegate {
   // account chooser.
   virtual bool OnResolve(GURL idp_config_url,
                          const std::optional<std::string>& account_id,
-                         const std::string& token) = 0;
+                         const base::Value& token) = 0;
 
   enum class Method { kClose, kResolve };
 

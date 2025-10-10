@@ -229,7 +229,7 @@ interface FederatedAuthRequest {
   // actual token.
   // If no account ID is provided, the account ID of the account that was
   // selected in the account chooser will be used.
-  ResolveTokenRequest(string? account_id, string token) => (bool success);
+  ResolveTokenRequest(string? account_id, mojo_base.mojom.Value token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must
   // not be opaque. Options such as a list of pushed accounts may be provided.

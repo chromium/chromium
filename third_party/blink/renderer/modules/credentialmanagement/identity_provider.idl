@@ -36,5 +36,5 @@ dictionary IdentityProviderToken {
 
     // Allows an IdP to return a token to the RP from the content area, as opposed to
     // over HTTP with the id_assertion_endpoint.
-    [CallWith=ScriptState] static Promise<undefined> resolve((USVString or IdentityProviderToken) token, optional IdentityResolveOptions options = {});
+    [CallWith=ScriptState] static Promise<undefined> resolve(any token, optional IdentityResolveOptions options = {});
 };

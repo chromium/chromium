@@ -97,7 +97,7 @@ class CONTENT_EXPORT RequestService
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
   void ResolveTokenRequest(const std::optional<std::string>& account_id,
-                           const std::string& token,
+                           base::Value token,
                            ResolveTokenRequestCallback callback) override;
   void SetIdpSigninStatus(
       const url::Origin& origin,
@@ -125,7 +125,7 @@ class CONTENT_EXPORT RequestService
   void OnClose() override;
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
-                 const std::string& token) override;
+                 const base::Value& token) override;
   void OnOriginMismatch(Method method,
                         const url::Origin& expected,
                         const url::Origin& actual) override;

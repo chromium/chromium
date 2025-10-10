@@ -37,7 +37,7 @@ void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
 bool IdentityRegistry::NotifyResolve(
     const url::Origin& notifier_origin,
     const std::optional<std::string>& account_id,
-    const std::string& token) {
+    const base::Value& token) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
     if (delegate_) {

@@ -2186,6 +2186,12 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "FedCmNonStringToken",
+      depends_on: ["FedCm"],
+      public: true,
+      base_feature: "none",
+    },
+    {
       name: "FencedFrames",
       base_feature: "none",
       // This helps enable and expose the <fencedframe> element, but note that
