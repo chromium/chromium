@@ -744,8 +744,6 @@ crbug.com/40550039 virtual/svg2-cascade/svg/W3C-SVG-1.1/animate-elem-30-t.svg [ 
 crbug.com/40550039 virtual/svg2-cascade/svg/W3C-SVG-1.1/animate-elem-40-t.svg [ Failure ]
 # External resource failure
 crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-external-resource-target-pseudo-002.html [ Failure ]
-# Style attribute synchronization failures
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-transitions.tentative.html [ Failure ]
 # Tests below expects SVG1.1 <use> cascade behavior
 crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-class.html [ Failure ]
 crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-pseudo.html [ Failure ]

@@ -974,8 +974,10 @@ void SVGElement::NotifyResourceClients() const {
 void SVGElement::InvalidateStyleAttribute(
     bool only_changed_independent_properties) {
   Element::InvalidateStyleAttribute(only_changed_independent_properties);
-  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    InvalidateInstances();
+  if (RuntimeEnabledFeatures::Svg2CascadeEnabled() &&
+      !InstancesForElement().empty()) {
+    SynchronizeAttributeInShadowInstances(html_names::kStyleAttr,
+                                          getAttribute(html_names::kStyleAttr));
   }
 }
 
