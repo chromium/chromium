@@ -213,6 +213,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/eval_prompts",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:chromium/fuzz",
     bootstrappable = True,
 )

@@ -1,3 +1,4 @@
+ci/linux-prompt-evals
 infra/autosharder_test
 try/linux-utr-tester
 try/mac-utr-tester
