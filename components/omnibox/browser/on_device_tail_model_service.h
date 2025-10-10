@@ -75,8 +75,6 @@ class OnDeviceTailModelService
   // level is high.
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
-
-  base::WeakPtrFactory<OnDeviceTailModelService> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_MODEL_SERVICE_H_

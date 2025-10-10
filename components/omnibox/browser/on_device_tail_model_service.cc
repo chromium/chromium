@@ -139,7 +139,6 @@ OnDeviceTailModelService::~OnDeviceTailModelService() {
 
 void OnDeviceTailModelService::Shutdown() {
   memory_pressure_listener_registration_.reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void OnDeviceTailModelService::OnModelUpdated(
