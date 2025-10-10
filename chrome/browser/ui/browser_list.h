@@ -56,13 +56,6 @@ class BrowserList {
   bool empty() const { return browsers_.empty(); }
   size_t size() const { return browsers_.size(); }
 
-  // Enumerate the current browser and the new browser in-order.
-  void ForEachCurrentAndNewBrowser(
-      base::FunctionRef<void(Browser*)> on_browser);
-
-  // Enumerate the current browser in-order.
-  void ForEachCurrentBrowser(base::FunctionRef<void(Browser*)> on_browser);
-
   // Returns iterated access to list of open browsers ordered by activation. The
   // underlying data structure is a vector and we push_back on recent access so
   // a reverse iterator gives the latest accessed browser first.

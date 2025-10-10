@@ -75,28 +75,6 @@ Browser* BrowserList::GetLastActive() const {
   return nullptr;
 }
 
-void BrowserList::ForEachCurrentBrowser(
-    base::FunctionRef<void(Browser*)> on_browser) {
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // add or remove a Browser during the loop.
-  constexpr bool kEnumerateNewBrowser = false;
-  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
-  while (!browser_list_copy.empty()) {
-    on_browser(browser_list_copy.Next());
-  }
-}
-
-void BrowserList::ForEachCurrentAndNewBrowser(
-    base::FunctionRef<void(Browser*)> on_browser) {
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // add or remove a Browser during the loop.
-  constexpr bool kEnumerateNewBrowser = true;
-  BrowserListEnumerator browser_list_copy(kEnumerateNewBrowser);
-  while (!browser_list_copy.empty()) {
-    on_browser(browser_list_copy.Next());
-  }
-}
-
 // static
 BrowserList* BrowserList::GetInstance() {
   BrowserList** list = &instance_;
