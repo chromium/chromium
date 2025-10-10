@@ -183,6 +183,51 @@ class ChromeShelfControllerInitializer
 
 }  // namespace internal
 
+class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
+    : public session_manager::SessionManagerObserver {
+ public:
+  explicit UserProfileLoadedObserver(
+      ash::MultiUserWindowManagerBrowserAdaptor*
+          multi_user_window_manager_browser_adaptor)
+      : multi_user_window_manager_browser_adaptor_(
+            multi_user_window_manager_browser_adaptor) {
+    session_observation_.Observe(session_manager::SessionManager::Get());
+  }
+
+  UserProfileLoadedObserver(const UserProfileLoadedObserver&) = delete;
+  UserProfileLoadedObserver& operator=(const UserProfileLoadedObserver&) =
+      delete;
+
+  ~UserProfileLoadedObserver() override = default;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override {
+    Profile* profile =
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    if (ash::ProfileHelper::IsUserProfile(profile) &&
+        !profile->IsGuestSession()) {
+      // Start the error notifier services to show auth/sync notifications.
+      ash::SigninErrorNotifierFactory::GetForProfile(profile);
+      ash::SyncErrorNotifierFactory::GetForProfile(profile);
+    }
+
+    if (multi_user_window_manager_browser_adaptor_) {
+      multi_user_window_manager_browser_adaptor_->AddUser(account_id);
+    }
+    if (ChromeShelfController::instance()) {
+      ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
+    }
+  }
+
+ private:
+  const raw_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+};
+
 // static
 ChromeBrowserMainExtraPartsAsh* ChromeBrowserMainExtraPartsAsh::Get() {
   return g_instance;
@@ -619,48 +664,3 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 void ChromeBrowserMainExtraPartsAsh::ResetChromeNewWindowClientForTesting() {
   chrome_new_window_client_.reset();
 }
-
-class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
-    : public session_manager::SessionManagerObserver {
- public:
-  explicit UserProfileLoadedObserver(
-      ash::MultiUserWindowManagerBrowserAdaptor*
-          multi_user_window_manager_browser_adaptor)
-      : multi_user_window_manager_browser_adaptor_(
-            multi_user_window_manager_browser_adaptor) {
-    session_observation_.Observe(session_manager::SessionManager::Get());
-  }
-
-  UserProfileLoadedObserver(const UserProfileLoadedObserver&) = delete;
-  UserProfileLoadedObserver& operator=(const UserProfileLoadedObserver&) =
-      delete;
-
-  ~UserProfileLoadedObserver() override = default;
-
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override {
-    Profile* profile =
-        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-    if (ash::ProfileHelper::IsUserProfile(profile) &&
-        !profile->IsGuestSession()) {
-      // Start the error notifier services to show auth/sync notifications.
-      ash::SigninErrorNotifierFactory::GetForProfile(profile);
-      ash::SyncErrorNotifierFactory::GetForProfile(profile);
-    }
-
-    if (multi_user_window_manager_browser_adaptor_) {
-      multi_user_window_manager_browser_adaptor_->AddUser(account_id);
-    }
-    if (ChromeShelfController::instance()) {
-      ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
-    }
-  }
-
- private:
-  const raw_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
-      multi_user_window_manager_browser_adaptor_;
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
-};

@@ -21,6 +21,7 @@
 #include "components/url_matcher/url_matcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
 #include "content/public/browser/browser_context.h"
 #endif
 
@@ -29,10 +30,6 @@ class FileSystemURL;
 }
 
 namespace enterprise_connectors {
-
-#if BUILDFLAG(IS_CHROMEOS)
-class SourceDestinationMatcherAsh;
-#endif
 
 // The settings for an analysis service obtained from a connector policy.
 class AnalysisServiceSettings : public AnalysisServiceSettingsBase {

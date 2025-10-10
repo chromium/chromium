@@ -170,20 +170,6 @@ bool OpenFilesSwa(Profile* const profile,
 
 }  // namespace
 
-ChromeNewWindowClient::ChromeNewWindowClient() {
-  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(this);
-}
-
-ChromeNewWindowClient::~ChromeNewWindowClient() {
-  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(nullptr);
-}
-
-// static
-ChromeNewWindowClient* ChromeNewWindowClient::Get() {
-  return static_cast<ChromeNewWindowClient*>(
-      ash::NewWindowDelegate::GetInstance());
-}
-
 // TabRestoreHelper is used to restore a tab. In particular when the user
 // attempts to a restore a tab if the TabRestoreService hasn't finished loading
 // this waits for it. Once the TabRestoreService finishes loading the tab is
@@ -227,6 +213,20 @@ class ChromeNewWindowClient::TabRestoreHelper
   raw_ptr<Profile> profile_;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
+
+ChromeNewWindowClient::ChromeNewWindowClient() {
+  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(this);
+}
+
+ChromeNewWindowClient::~ChromeNewWindowClient() {
+  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(nullptr);
+}
+
+// static
+ChromeNewWindowClient* ChromeNewWindowClient::Get() {
+  return static_cast<ChromeNewWindowClient*>(
+      ash::NewWindowDelegate::GetInstance());
+}
 
 void ChromeNewWindowClient::NewTab() {
   Browser* browser = chrome::FindBrowserWithActiveWindow();

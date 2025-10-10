@@ -342,6 +342,10 @@ void DictationTestUtils::WaitForCommitText(const std::u16string& value) {
   input_context_handler_->RemoveObserver(&waiter);
 }
 
+void DictationTestUtils::DisableConsoleObserver() {
+  console_observer_.reset();
+}
+
 void DictationTestUtils::AddAllowedExtensionError(
     const std::u16string& allowed) {
   if (console_observer_) {

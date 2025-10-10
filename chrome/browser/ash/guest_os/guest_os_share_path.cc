@@ -161,8 +161,8 @@ SharedPathInfo::SharedPathInfo(SharedPathInfo&&) = default;
 SharedPathInfo::~SharedPathInfo() = default;
 
 GuestOsSharePath::PathsToShare::PathsToShare() = default;
-GuestOsSharePath::PathsToShare::PathsToShare(GuestOsSharePath::PathsToShare&) =
-    default;
+GuestOsSharePath::PathsToShare::PathsToShare(
+    const GuestOsSharePath::PathsToShare&) = default;
 GuestOsSharePath::PathsToShare::~PathsToShare() = default;
 
 GuestOsSharePath::GuestOsSharePath(Profile* profile)

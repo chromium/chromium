@@ -51,6 +51,34 @@ Profile* GetOTROrActiveProfile() {
 
 }  // namespace
 
+class NetworkPortalSigninWindow::WindowObserver
+    : public content::WebContentsObserver {
+ public:
+  WindowObserver(content::WebContents* web_contents,
+                 NetworkPortalSigninWindow* controller)
+      : content::WebContentsObserver(web_contents), controller_(controller) {}
+  ~WindowObserver() override = default;
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    RequestPortalDetection();
+  }
+
+  void WebContentsDestroyed() override { RequestPortalDetection(); }
+
+ private:
+  void RequestPortalDetection() {
+    NET_LOG(EVENT) << "Request portal detection";
+    controller_->portal_detection_requested_for_testing_++;
+    ash::NetworkHandler::Get()
+        ->network_state_handler()
+        ->RequestPortalDetection();
+  }
+
+ private:
+  raw_ptr<NetworkPortalSigninWindow> controller_;
+};
+
 // static
 NetworkPortalSigninWindow* NetworkPortalSigninWindow::Get() {
   static base::NoDestructor<NetworkPortalSigninWindow> instance;
@@ -100,34 +128,6 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
 Browser* NetworkPortalSigninWindow::GetBrowserForTesting() {
   return chrome::FindBrowserWithID(window_session_id_);
 }
-
-class NetworkPortalSigninWindow::WindowObserver
-    : public content::WebContentsObserver {
- public:
-  WindowObserver(content::WebContents* web_contents,
-                 NetworkPortalSigninWindow* controller)
-      : content::WebContentsObserver(web_contents), controller_(controller) {}
-  ~WindowObserver() override = default;
-
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    RequestPortalDetection();
-  }
-
-  void WebContentsDestroyed() override { RequestPortalDetection(); }
-
- private:
-  void RequestPortalDetection() {
-    NET_LOG(EVENT) << "Request portal detection";
-    controller_->portal_detection_requested_for_testing_++;
-    ash::NetworkHandler::Get()
-        ->network_state_handler()
-        ->RequestPortalDetection();
-  }
-
- private:
-  raw_ptr<NetworkPortalSigninWindow> controller_;
-};
 
 content::WebContents* NetworkPortalSigninWindow::GetWebContentsForTesting() {
   if (!window_observer_.get()) {

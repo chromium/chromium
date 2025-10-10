@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/ash/input_method/suggestion_details.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -23,7 +24,6 @@ class ImageView;
 namespace ui {
 namespace ime {
 
-struct SuggestionDetails;
 class CompletionSuggestionLabelView;
 
 // Font-related constants

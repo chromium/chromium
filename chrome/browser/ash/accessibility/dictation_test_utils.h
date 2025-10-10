@@ -90,7 +90,7 @@ class DictationTestUtils {
 
   // TODO(b:259352600): Instead of disabling the observer, change this to
   // allow specific messages.
-  void DisableConsoleObserver() { console_observer_.reset(); }
+  void DisableConsoleObserver();
 
   // Add an allowed extension JS error to `console_observer_`.
   void AddAllowedExtensionError(const std::u16string& allowed);

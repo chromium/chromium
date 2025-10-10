@@ -65,9 +65,7 @@ class TestPermissionBubbleViewDelegate
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;
 
   void set_requests(
-      std::vector<std::unique_ptr<permissions::PermissionRequest>> requests) {
-    requests_ = std::move(requests);
-  }
+      std::vector<std::unique_ptr<permissions::PermissionRequest>> requests);
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;

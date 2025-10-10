@@ -60,3 +60,8 @@ base::WeakPtr<permissions::PermissionPrompt::Delegate>
 TestPermissionBubbleViewDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+void TestPermissionBubbleViewDelegate::set_requests(
+    std::vector<std::unique_ptr<permissions::PermissionRequest>> requests) {
+  requests_ = std::move(requests);
+}

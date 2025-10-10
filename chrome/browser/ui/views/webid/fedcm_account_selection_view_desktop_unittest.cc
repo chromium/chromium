@@ -46,18 +46,6 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 class FedCmAccountSelectionViewDesktopTest;
 class TestAccountSelectionView;
 
-class TestAccountWidgetDelegate : public views::WidgetDelegate {
- public:
-  explicit TestAccountWidgetDelegate(
-      std::unique_ptr<TestAccountSelectionView> account_selection_view) {
-    SetContentsView(std::move(account_selection_view));
-  }
-  ~TestAccountWidgetDelegate() override = default;
-  TestAccountWidgetDelegate(const TestAccountWidgetDelegate&) = delete;
-  TestAccountWidgetDelegate& operator=(const TestAccountWidgetDelegate&) =
-      delete;
-};
-
 // Mock AccountSelectionViewBase which tracks state.
 class TestAccountSelectionView : public AccountSelectionViewBase,
                                  public views::View {
@@ -149,6 +137,18 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
 };
 BEGIN_METADATA(TestAccountSelectionView)
 END_METADATA
+
+class TestAccountWidgetDelegate : public views::WidgetDelegate {
+ public:
+  explicit TestAccountWidgetDelegate(
+      std::unique_ptr<TestAccountSelectionView> account_selection_view) {
+    SetContentsView(std::move(account_selection_view));
+  }
+  ~TestAccountWidgetDelegate() override = default;
+  TestAccountWidgetDelegate(const TestAccountWidgetDelegate&) = delete;
+  TestAccountWidgetDelegate& operator=(const TestAccountWidgetDelegate&) =
+      delete;
+};
 
 namespace {
 

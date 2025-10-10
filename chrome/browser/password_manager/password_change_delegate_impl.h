@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -33,7 +34,6 @@ class ChangePasswordFormFinder;
 class CrossOriginNavigationObserver;
 class LoginStateChecker;
 class ModelQualityLogsUploader;
-class PasswordChangeUIController;
 class PasswordChangeHats;
 class Profile;
 
