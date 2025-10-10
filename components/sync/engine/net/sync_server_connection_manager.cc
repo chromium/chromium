@@ -101,8 +101,7 @@ HttpResponse Connection::PostRequestAndDownloadResponse(
 
   // We got a server response, copy over response codes and content.
   HttpResponse response = HttpResponse::ForHttpStatusCode(http_status_code);
-  response.content_length =
-      static_cast<int64_t>(post_provider_->GetResponseContentLength());
+  response.content_length = post_provider_->GetResponseContentLength();
 
   // Write the content into the buffer.
   buffer_out->assign(post_provider_->GetResponseContent(),
