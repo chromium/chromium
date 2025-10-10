@@ -16,6 +16,15 @@
 
 namespace web_app {
 
+// Not actually used in production logic. This is just for debugging output.
+enum class ApplyPendingManifestUpdateCommandStage {
+  kNotStarted,
+  kAquiringAppLock,
+  kSynchronizingOS,
+  kDeletingPendingIconDirectories,
+  kDeletingPendingUpdateInfo,
+};
+
 // This enum is recorded by UMA, the numeric values must not change.
 // LINT.IfChange(ApplyPendingManifestUpdateResult)
 enum class ApplyPendingManifestUpdateResult {
@@ -25,7 +34,9 @@ enum class ApplyPendingManifestUpdateResult {
   kFailedToOverwriteIconsFromPendingIcons = 3,
   kNoPendingUpdate = 4,
   kFailedToRemovePendingIconsFromDisk = 5,
-  kMaxValue = kFailedToRemovePendingIconsFromDisk
+  kAppNameUpdatedSuccessfully = 6,
+  kAppNameAndIconsUpdatedSuccessfully = 7,
+  kMaxValue = kAppNameAndIconsUpdatedSuccessfully
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppApplyPendingManifestUpdateResult)
 
@@ -50,16 +61,20 @@ class ApplyPendingManifestUpdateCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  // Sets the pending trusted icon and pending manifest icon metadata to the web
-  // app.
-  void ApplyPendingIconToWebApp(bool success);
+  // Sets the pending update info to the web app.
+  void ApplyPendingUpdateInfoToWebApp(bool success);
 
   // Deletes pending trusted icons and pending manifest icons directory from the
   // disk.
-  void DeletePendingIconsFromDisk(bool success);
+  void DeletePendingIconsFromDisk();
 
+  // Sets the pending update info as a nullopt.
+  void DeletePendingUpdateInfoThenComplete(
+      ApplyPendingManifestUpdateResult expected_result);
   void CompleteCommandAndSelfDestruct(
       ApplyPendingManifestUpdateResult check_result);
+
+  void SetStage(ApplyPendingManifestUpdateCommandStage stage);
 
   base::WeakPtr<ApplyPendingManifestUpdateCommand> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -67,10 +82,17 @@ class ApplyPendingManifestUpdateCommand
 
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId app_id_;
+
+  // Debug info.
+  ApplyPendingManifestUpdateCommandStage stage_ =
+      ApplyPendingManifestUpdateCommandStage::kNotStarted;
+
   // KeepAlive objects are needed to make sure that manifest update writes
   // still happen even though the app window has closed.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  bool has_icon_changes_ = false;
+  bool has_name_change_ = false;
   base::WeakPtrFactory<ApplyPendingManifestUpdateCommand> weak_factory_{this};
 };
 

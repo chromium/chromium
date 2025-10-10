@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h"
 
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -25,7 +27,12 @@
 
 namespace web_app {
 namespace {
-constexpr int kIconSizeToUse = 96;
+
+constexpr int kAppIconSize = 10;
+constexpr int kUpdatedAppIconSize = 56;
+constexpr SkColor kAppIconColor = SK_ColorCYAN;
+constexpr SkColor kUpdatedAppIconColor = SK_ColorYELLOW;
+
 class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
  public:
   ApplyPendingManifestUpdateCommandTest() = default;
@@ -40,6 +47,7 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         {features::kWebAppUsePrimaryIcon});
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    provider->UseRealOsIntegrationManager();
     provider->StartWithSubsystems();
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
   }
@@ -60,12 +68,12 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     // Set up manifest icon.
     blink::Manifest::ImageResource icon;
     icon.src = default_icon_url;
-    icon.sizes = {{kIconSizeToUse, kIconSizeToUse}};
+    icon.sizes = {{kAppIconSize, kAppIconSize}};
     icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
     // Set icons in content.
     web_contents_manager().GetOrCreateIconState(default_icon_url).bitmaps = {
-        gfx::test::CreateBitmap(kIconSizeToUse, SK_ColorCYAN)};
+        gfx::test::CreateBitmap(kAppIconSize, kAppIconColor)};
 
     // Set up manifest.
     auto manifest = blink::mojom::Manifest::New();
@@ -76,6 +84,12 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     manifest->has_valid_specified_start_url = true;
 
     page_state.manifest_before_default_processing = std::move(manifest);
+  }
+
+  blink::mojom::ManifestPtr& GetPageManifest() {
+    return web_contents_manager()
+        .GetOrCreatePageState(kAppUrl)
+        .manifest_before_default_processing;
   }
 
   ManifestSilentUpdateCheckResult RunManifestSilentUpdateAndGetResult() {
@@ -101,25 +115,30 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     return manifest_apply_pending_update_future.Get();
   }
 
-  SkBitmap ChangePageIconAndGetBitmap() {
-    auto& manifest = *web_contents_manager()
-                          .GetOrCreatePageState(kAppUrl)
-                          .manifest_before_default_processing;
+  SkBitmap ChangePageIconAndGetBitmap(blink::mojom::ManifestPtr& manifest) {
     blink::Manifest::ImageResource new_icon;
     const GURL new_icon_url = GURL("https://example2.com/path/def_icon.png");
     new_icon.src = new_icon_url;
-    new_icon.sizes = {{kIconSizeToUse, kIconSizeToUse}};
+    new_icon.sizes = {{kUpdatedAppIconSize, kUpdatedAppIconSize}};
     new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-
-    manifest.icons = {new_icon};
+    manifest->icons = {new_icon};
 
     // Set icon in content. Setting the icon color to YELLOW to trigger a more
     // than 10% image diff to create a pending update info when updating.
     SkBitmap updated_bitmap =
-        gfx::test::CreateBitmap(kIconSizeToUse, SK_ColorYELLOW);
+        gfx::test::CreateBitmap(kUpdatedAppIconSize, kUpdatedAppIconColor);
     web_contents_manager().GetOrCreateIconState(new_icon_url).bitmaps = {
         updated_bitmap};
     return updated_bitmap;
+  }
+
+  using WebAppBitmaps = WebAppIconManager::WebAppBitmaps;
+  WebAppBitmaps ReadIconBitmapsFromIconManager(const webapps::AppId& app_id) {
+    base::test::TestFuture<WebAppIconManager::WebAppBitmaps>
+        read_all_icons_future;
+    provider().icon_manager().ReadAllIcons(app_id,
+                                           read_all_icons_future.GetCallback());
+    return read_all_icons_future.Get();
   }
 
   FakeWebContentsManager& web_contents_manager() {
@@ -153,8 +172,44 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
 
 }  // namespace
 
+TEST_F(ApplyPendingManifestUpdateCommandTest, VerifyNameUpdatedSuccessfully) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
+            base::UTF16ToUTF8(u"Foo App"));
+
+  auto& new_manifest = GetPageManifest();
+  new_manifest->name = u"New Name";
+
+  EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+  ASSERT_TRUE(
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info());
+
+  EXPECT_EQ(RunManifestApplyPendingUpdateAndGetResult(app_id),
+            ApplyPendingManifestUpdateResult::kAppNameUpdatedSuccessfully);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
+            base::UTF16ToUTF8(u"New Name"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "WebApp.Update.ApplyPendingManifestUpdateResult"),
+              BucketsAre(base::Bucket(
+                  ApplyPendingManifestUpdateResult::kAppNameUpdatedSuccessfully,
+                  /*count=*/1)));
+
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppById(app_id)
+                   ->pending_update_info()
+                   .has_value());
+}
+
+// TODO(crbug.com/450578111): Refactor test.
 TEST_F(ApplyPendingManifestUpdateCommandTest,
-       VerifyPendingIconsOverwriteIconsDirectory) {
+       VerifyPendingIconsUpdatedSuccessfully) {
   SetupBasicInstallablePageState();
   webapps::AppId app_id = test::InstallForWebContents(
       profile(), web_contents(),
@@ -163,68 +218,73 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
-
-  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap();
+  auto& new_manifest = GetPageManifest();
+  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap(new_manifest);
 
   EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+  auto* const web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app->pending_update_info());
 
-  ASSERT_TRUE(
-      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info());
+  WebAppBitmaps bitmaps = ReadIconBitmapsFromIconManager(app_id);
 
-  base::test::TestFuture<WebAppIconManager::WebAppBitmaps>
-      read_all_icons_future;
-  provider().icon_manager().ReadAllIcons(app_id,
-                                         read_all_icons_future.GetCallback());
-  WebAppIconManager::WebAppBitmaps bitmaps = read_all_icons_future.Get();
+  // Verify manifest icons
+  EXPECT_EQ(7u, bitmaps.manifest_icons.any.size());
+  EXPECT_TRUE(bitmaps.manifest_icons.any.contains(10));
+  for (const auto& [size, bitmap] : bitmaps.manifest_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
 
-  const SizeToBitmap& size_bitmaps_manifest =
-      bitmaps.manifest_icons.GetBitmapsForPurpose(IconPurpose::ANY);
-  auto icon_it = size_bitmaps_manifest.find(kIconSizeToUse);
-  ASSERT_NE(icon_it, size_bitmaps_manifest.end());
-  const SkBitmap& manifest_bitmap = icon_it->second;
-
-  const SizeToBitmap& size_bitmaps_trusted =
-      bitmaps.trusted_icons.GetBitmapsForPurpose(IconPurpose::ANY);
-  auto trusted_icon_it = size_bitmaps_trusted.find(kIconSizeToUse);
-  ASSERT_NE(trusted_icon_it, size_bitmaps_trusted.end());
-  const SkBitmap& trusted_bitmap = trusted_icon_it->second;
-
-  // Verify current manifest icon bitmaps are not the updated_bitmaps.
-  EXPECT_THAT(manifest_bitmap,
-              ::testing::Not(gfx::test::EqualsBitmap(updated_bitmap)));
-  EXPECT_THAT(trusted_bitmap,
-              ::testing::Not(gfx::test::EqualsBitmap(updated_bitmap)));
+  // Verify trusted icons
+  EXPECT_EQ(7u, bitmaps.trusted_icons.any.size());
+  EXPECT_TRUE(bitmaps.trusted_icons.any.contains(10));
+  for (const auto& [size, bitmap] : bitmaps.trusted_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
 
   EXPECT_EQ(RunManifestApplyPendingUpdateAndGetResult(app_id),
             ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully);
 
-  base::test::TestFuture<WebAppIconManager::WebAppBitmaps>
-      pending_update_applied_read_all_icons_future;
-  provider().icon_manager().ReadAllIcons(
-      app_id, pending_update_applied_read_all_icons_future.GetCallback());
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
 
-  WebAppIconManager::WebAppBitmaps pending_update_applied_bitmaps =
-      pending_update_applied_read_all_icons_future.Get();
+  WebAppBitmaps bitmaps_updated = ReadIconBitmapsFromIconManager(app_id);
 
-  const SizeToBitmap& size_bitmaps_updated_manifest =
-      pending_update_applied_bitmaps.manifest_icons.GetBitmapsForPurpose(
-          IconPurpose::ANY);
-  auto updated_manifest_icon_it =
-      size_bitmaps_updated_manifest.find(kIconSizeToUse);
-  ASSERT_NE(updated_manifest_icon_it, size_bitmaps_updated_manifest.end());
-  const SkBitmap& updated_manifest_bitmap = updated_manifest_icon_it->second;
+  // Verify manifest icons
+  EXPECT_EQ(7u, bitmaps_updated.manifest_icons.any.size());
+  EXPECT_FALSE(bitmaps_updated.manifest_icons.any.contains(10));
+  EXPECT_TRUE(bitmaps_updated.manifest_icons.any.contains(56));
+  for (const auto& [size, bitmap] : bitmaps_updated.manifest_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
 
-  const SizeToBitmap& size_bitmaps_updated_trusted =
-      pending_update_applied_bitmaps.trusted_icons.GetBitmapsForPurpose(
-          IconPurpose::ANY);
-  auto updated_trusted_icon_it =
-      size_bitmaps_updated_trusted.find(kIconSizeToUse);
-  ASSERT_NE(updated_trusted_icon_it, size_bitmaps_updated_trusted.end());
-  const SkBitmap& updated_trusted_bitmap = updated_trusted_icon_it->second;
+  // Verify trusted icons
+  EXPECT_EQ(7u, bitmaps_updated.manifest_icons.any.size());
+  EXPECT_FALSE(bitmaps_updated.trusted_icons.any.contains(10));
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.any.contains(56));
+  for (const auto& [size, bitmap] : bitmaps_updated.trusted_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
 
-  EXPECT_THAT(updated_manifest_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
-  EXPECT_THAT(updated_trusted_bitmap, gfx::test::EqualsBitmap(updated_bitmap));
+// TODO(crbug.com/40261124): Enable once PList parsing code is added to
+// OsIntegrationTestOverride for Mac shortcut checking.
+#if !BUILDFLAG(IS_MAC)
+  // Verify that OS integration happened. Comparing it with updated_bitmap can
+  // be flaky since GetShortcutIcon may return a bitmap of different size
+  // depending on the OS. Instead, verifying the center bitmap color.
+  std::optional<SkBitmap> installed_icon =
+      fake_os_integration().GetShortcutIcon(profile(), std::nullopt, app_id,
+                                            web_app->untranslated_name());
+  ASSERT_TRUE(installed_icon.has_value());
+  EXPECT_EQ(installed_icon->getColor(installed_icon->width() / 2,
+                                     installed_icon->height() / 2),
+            kUpdatedAppIconColor);
+#endif
+
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(
           "WebApp.Update.ApplyPendingManifestUpdateResult"),
@@ -232,12 +292,258 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
           ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully,
           /*count=*/1)));
 
+  // Verify the pending icon directories have been removed.
   EXPECT_FALSE(file_utils().PathExists(
       provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
-
   EXPECT_FALSE(file_utils().PathExists(
       provider().icon_manager().GetAppPendingManifestIconDirForTesting(
           app_id)));
+  EXPECT_FALSE(web_app->pending_update_info().has_value());
+}
+
+// TODO(crbug.com/450578111): Refactor test.
+TEST_F(ApplyPendingManifestUpdateCommandTest,
+       VerifyPendingNameAndIconsUpdatedSuccessfully) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
+            base::UTF16ToUTF8(u"Foo App"));
+
+  auto& new_manifest = GetPageManifest();
+  new_manifest->name = u"New Name";
+  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap(new_manifest);
+
+  EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+  auto* const web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app->pending_update_info());
+
+  WebAppBitmaps bitmaps = ReadIconBitmapsFromIconManager(app_id);
+
+  // Verify manifest icons
+  EXPECT_EQ(7u, bitmaps.manifest_icons.any.size());
+  EXPECT_TRUE(bitmaps.manifest_icons.any.contains(10));
+  for (const auto& [size, bitmap] : bitmaps.manifest_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  // Verify trusted icons
+  EXPECT_EQ(7u, bitmaps.trusted_icons.any.size());
+  EXPECT_TRUE(bitmaps.trusted_icons.any.contains(10));
+  for (const auto& [size, bitmap] : bitmaps.trusted_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  EXPECT_EQ(
+      RunManifestApplyPendingUpdateAndGetResult(app_id),
+      ApplyPendingManifestUpdateResult::kAppNameAndIconsUpdatedSuccessfully);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
+            base::UTF16ToUTF8(u"New Name"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+
+  WebAppBitmaps bitmaps_updated = ReadIconBitmapsFromIconManager(app_id);
+
+  // Verify manifest icons
+  EXPECT_EQ(7u, bitmaps_updated.manifest_icons.any.size());
+  EXPECT_FALSE(bitmaps_updated.manifest_icons.any.contains(10));
+  EXPECT_TRUE(bitmaps_updated.manifest_icons.any.contains(56));
+  for (const auto& [size, bitmap] : bitmaps_updated.manifest_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  // Verify trusted icons
+  EXPECT_EQ(7u, bitmaps_updated.manifest_icons.any.size());
+  EXPECT_FALSE(bitmaps_updated.trusted_icons.any.contains(10));
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.any.contains(56));
+  for (const auto& [size, bitmap] : bitmaps_updated.trusted_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+// TODO(crbug.com/40261124): Enable once PList parsing code is added to
+// OsIntegrationTestOverride for Mac shortcut checking.
+#if !BUILDFLAG(IS_MAC)
+  // Verify that OS integration happened. Comparing it with updated_bitmap can
+  // be flaky since GetShortcutIcon may return a bitmap of different size
+  // depending on the OS. Instead, verifying the center bitmap color.
+  std::optional<SkBitmap> installed_icon =
+      fake_os_integration().GetShortcutIcon(profile(), std::nullopt, app_id,
+                                            web_app->untranslated_name());
+  ASSERT_TRUE(installed_icon.has_value());
+  EXPECT_EQ(installed_icon->getColor(installed_icon->width() / 2,
+                                     installed_icon->height() / 2),
+            kUpdatedAppIconColor);
+#endif
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "WebApp.Update.ApplyPendingManifestUpdateResult"),
+      BucketsAre(base::Bucket(
+          ApplyPendingManifestUpdateResult::kAppNameAndIconsUpdatedSuccessfully,
+          /*count=*/1)));
+
+  // Verify the pending icon directories have been removed.
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingManifestIconDirForTesting(
+          app_id)));
+  EXPECT_FALSE(web_app->pending_update_info().has_value());
+}
+
+TEST_F(ApplyPendingManifestUpdateCommandTest,
+       VerifyPendingIconsDiffPurposeUpdatedSuccessfully) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  const GURL icon_url = GURL("https://example.com/path/def_icon.png");
+  const GURL icon_any_url = GURL("https://example2.com/path/def_icon.png");
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            icon_url);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  // Set up a maskable icon to use in the update.
+  blink::Manifest::ImageResource updated_icon;
+  int icon_size_maskable = 256;
+  updated_icon.src = icon_url;
+  updated_icon.sizes = {{icon_size_maskable, icon_size_maskable}};
+  updated_icon.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+
+  // Since MASKABLE is not supported windows and linux for trusted icons, one
+  // ANY icon is required to be chosen as the trusted icon.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  blink::Manifest::ImageResource updated_any_icon;
+  int icon_size_any = 128;
+  updated_any_icon.src = icon_any_url;
+  updated_any_icon.sizes = {{icon_size_any, icon_size_any}};
+  updated_any_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+#endif
+
+  auto& new_manifest = GetPageManifest();
+
+  // Adding the ANY icon that will be chosen as the trusted icon on windows and
+  // linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  new_manifest->icons = {updated_icon, updated_any_icon};
+  // Make icon diff larger than 10% by changing the color to RED.
+  const SkBitmap updated_any_bitmaps =
+      gfx::test::CreateBitmap(icon_size_any, kUpdatedAppIconColor);
+  web_contents_manager().GetOrCreateIconState(icon_any_url).bitmaps = {
+      updated_any_bitmaps};
+#else  // Mac and ChromeOS should get MASKABLE
+  new_manifest->icons = {updated_icon};
+#endif
+
+  // Make icon diff larger than 10% by changing the color to RED.
+  const SkBitmap updated_bitmap =
+      gfx::test::CreateBitmap(icon_size_maskable, kUpdatedAppIconColor);
+  web_contents_manager().GetOrCreateIconState(icon_url).bitmaps = {
+      updated_bitmap};
+
+  EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+  auto* const web_app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app->pending_update_info());
+
+  WebAppBitmaps bitmaps = ReadIconBitmapsFromIconManager(app_id);
+
+  // Verify manifest icons
+  EXPECT_EQ(7u, bitmaps.manifest_icons.any.size());
+  EXPECT_TRUE(bitmaps.manifest_icons.maskable.empty());
+  EXPECT_TRUE(bitmaps.manifest_icons.monochrome.empty());
+
+  // Verify the color of the icon
+  for (const auto& [size, bitmap] : bitmaps.manifest_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  // Verify trusted icons
+  EXPECT_EQ(7u, bitmaps.trusted_icons.any.size());
+  EXPECT_TRUE(bitmaps.trusted_icons.maskable.empty());
+  EXPECT_TRUE(bitmaps.trusted_icons.monochrome.empty());
+
+  // Verify the color of the icon
+  for (const auto& [size, bitmap] : bitmaps.trusted_icons.any) {
+    EXPECT_EQ(kAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  EXPECT_EQ(RunManifestApplyPendingUpdateAndGetResult(app_id),
+            ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully);
+
+  WebAppBitmaps bitmaps_updated = ReadIconBitmapsFromIconManager(app_id);
+
+  // Verify manifest icons
+  EXPECT_EQ(6u, bitmaps_updated.manifest_icons.any.size());
+  EXPECT_EQ(1u, bitmaps_updated.manifest_icons.maskable.size());
+  EXPECT_TRUE(bitmaps_updated.manifest_icons.monochrome.empty());
+
+  // Verify the color of the maskable icon
+  for (const auto& [size, bitmap] : bitmaps_updated.manifest_icons.maskable) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // Verify the color of the manifest any icons
+  for (const auto& [size, bitmap] : bitmaps_updated.manifest_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+  // Verify trusted icons
+  EXPECT_EQ(6u, bitmaps_updated.trusted_icons.any.size());
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.maskable.empty());
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.monochrome.empty());
+
+  // Verify the color of the icon
+  for (const auto& [size, bitmap] : bitmaps_updated.trusted_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+#else  // Mac and ChromeOS
+  // Verify trusted icons
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.any.empty());
+  EXPECT_EQ(6u, bitmaps_updated.trusted_icons.maskable.size());
+  EXPECT_TRUE(bitmaps_updated.trusted_icons.monochrome.empty());
+
+  // Verify the color of the maskable icon
+  for (const auto& [size, bitmap] : bitmaps_updated.trusted_icons.any) {
+    EXPECT_EQ(kUpdatedAppIconColor,
+              bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2));
+  }
+
+#endif
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "WebApp.Update.ApplyPendingManifestUpdateResult"),
+      BucketsAre(base::Bucket(
+          ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully,
+          /*count=*/1)));
+
+  // Verify the pending icon directories have been removed.
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingManifestIconDirForTesting(
+          app_id)));
+  EXPECT_FALSE(web_app->pending_update_info().has_value());
 }
 
 }  // namespace web_app

@@ -441,6 +441,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to overwrite icons from pending icons"/>
   <int value="4" label="App has no pending updates"/>
   <int value="5" label="Failed to remove pending icon directories"/>
+  <int value="6" label="App name updated successfully"/>
+  <int value="7" label="App name and icon updated successfully"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h:ApplyPendingManifestUpdateResult) -->

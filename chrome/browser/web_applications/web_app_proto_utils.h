@@ -38,6 +38,9 @@ using RepeatedImageResourceProto =
 using RepeatedUrlPatternProto =
     ::google::protobuf::RepeatedPtrField<proto::UrlPattern>;
 
+std::optional<apps::IconInfo::Purpose> SyncPurposeToIconInfoPurpose(
+    sync_pb::WebAppIconInfo_Purpose purpose);
+
 std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
     const RepeatedIconInfosProto& manifest_icons_proto);
