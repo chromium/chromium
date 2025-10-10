@@ -1514,24 +1514,21 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
 
 // Verifies that the IDB connection is force closed when the backing store has
 // an error.
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // TODO(crbug.com/450044205): update test for SQLite.
-    GTEST_SKIP();
-  }
+TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDatabaseError) {
   storage::BucketInfo bucket_info;
   VerifyForcedClosedCalled(
       base::BindOnce(
-          [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
-            context->GetBucketContextForTesting(bucket_info->id)
-                ->AsyncCall(&BucketContext::OnDatabaseError)
-                .WithArgs(
-                    // SQLite will need the correct pointer passed here.
-                    /*database=*/nullptr,
-                    Status::InvalidArgument("operation not supported"),
-                    std::string());
+          [](IndexedDBTest* test, storage::BucketInfo* bucket_info) {
+            BucketContext* bucket = test->GetBucketContext(bucket_info->id);
+            const auto& dbs = bucket->GetDatabasesForTesting();
+            ASSERT_EQ(1U, dbs.size());
+            for (auto& [name, db] : dbs) {
+              bucket->OnDatabaseError(
+                  db.get(), Status::InvalidArgument("operation not supported"),
+                  std::string());
+            }
           },
-          context(), &bucket_info),
+          this, &bucket_info),
       &bucket_info);
 }
 

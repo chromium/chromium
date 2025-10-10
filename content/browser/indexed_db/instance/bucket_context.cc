@@ -889,10 +889,8 @@ void BucketContext::OnDatabaseError(Database* database,
   const std::string error_message =
       message.empty() ? status.ToString() : message;
   if (ShouldUseSqlite()) {
-    // TODO(crbug.com/419203257): for now, database errors are most likely due
-    // to unimplemented functionality; in the future, we'll need to deal with
-    // corruption. Unlike in the LevelDB case, an error in one database doesn't
-    // indicate a problem with the entire bucket.
+    // Unlike in the LevelDB case, an error in one database doesn't indicate a
+    // problem with the entire bucket.
     CHECK(database);
     database->ForceCloseAndRunTasks(error_message);
   } else {
