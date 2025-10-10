@@ -395,6 +395,13 @@ void GlicButton::AnimationProgressed(const gfx::Animation* animation) {
 void GlicButton::AnimationEnded(const gfx::Animation* animation) {
   if (animation == expansion_animation_.get()) {
     AnimationProgressed(animation);
+
+    // If finished hiding, hide the close button so that we're ready to
+    // calculate the correct collapsed width when showing next time.
+    if (!is_showing_nudge_) {
+      SetCloseButtonVisible(false);
+    }
+
     expansion_animation_done_callback_.Run();
   }
 }
