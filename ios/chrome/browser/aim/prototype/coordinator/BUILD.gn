@@ -72,6 +72,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:selected_grid_items",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",

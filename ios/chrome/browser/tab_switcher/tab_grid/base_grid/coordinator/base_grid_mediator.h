@@ -25,6 +25,7 @@ class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
+@class SelectedGridItems;
 @protocol SharedTabGroupLastTabAlertCommands;
 @protocol TabCollectionConsumer;
 @protocol TabGridCommands;
@@ -102,6 +103,9 @@ class WebState;
 
 // The mode holder.
 @property(nonatomic, readonly) TabGridModeHolder* modeHolder;
+
+// Items selected for editing.
+@property(nonatomic, readonly) SelectedGridItems* selectedEditingItems;
 
 // Disconnects the mediator.
 - (void)disconnect NS_REQUIRES_SUPER;

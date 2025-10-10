@@ -249,6 +249,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   return _modeHolder;
 }
 
+- (SelectedGridItems*)selectedEditingItems {
+  return _selectedEditingItems;
+}
+
 - (void)disconnect {
   [self.snapshotStorage removeObserver:self];
 

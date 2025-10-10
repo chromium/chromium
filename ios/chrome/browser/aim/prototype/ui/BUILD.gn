@@ -22,12 +22,15 @@ source_set("ui") {
     "aim_prototype_navigation_consumer.h",
     "aim_prototype_present_animator.h",
     "aim_prototype_present_animator.mm",
+    "aim_prototype_tab_picker_consumer.h",
+    "aim_prototype_tab_picker_mutator.h",
     "aim_prototype_tab_picker_view_controller.h",
     "aim_prototype_tab_picker_view_controller.mm",
   ]
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
     "//ios/chrome/browser/shared/public/features",
@@ -38,5 +41,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/glow_effect:glow_effect_api",
+    "//ui/base",
   ]
 }

@@ -7,13 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_tab_picker_consumer.h"
+
 @class BaseGridViewController;
+@protocol AimPrototypeTabPickerMutator;
 
 // The tab picker view controller for AIM.
-@interface AimPrototypeTabPickerViewController : UIViewController
+@interface AimPrototypeTabPickerViewController
+    : UIViewController <AimPrototypeTabPickerConsumer>
 
 /// The embedded grid view controller.
 @property(nonatomic, readonly) BaseGridViewController* gridViewController;
+
+/// The tab's picker mutator.
+@property(nonatomic, weak) id<AimPrototypeTabPickerMutator> mutator;
 
 @end
 
