@@ -694,6 +694,14 @@ You will need to make sure that `DoStuff()` is sufficiently trivial and can't
 `DoOtherStuff()` call may be considered protected. The tool will provide you
 with the stack trace for both the extraction and dereference events.
 
+Note that this becomes significantly more difficult in the presence of
+multiple threads. In order to avoid exploitable race conditions, the
+creation of the `raw_ptr<T>` must be sequenced before the free, and it
+must not be destroyed or change its value before the use. `raw_ptr<T>`
+only prevents exploitation if no possible allocation of sqeuences to
+threads and no possible interleaving of thread operations could result
+in this region having no `raw_ptr<T>`.
+
 #### Not protected
 
 The dangling `T*` doesn't appear to originate from a `raw_ptr<T>` variable,
