@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -240,10 +240,10 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuMainPageViewInteractiveUITest::main_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  DCHECK(menu_controller);
-  return menu_controller->GetMainPageViewForTesting();
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  DCHECK(menu_delegate);
+  return menu_delegate->GetMainPageViewForTesting();
 }
 
 std::vector<ExtensionMenuItemView*>
@@ -745,7 +745,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     ExtensionsMenuMainPageView* main_page =
         extensions_container()
             ->GetExtensionsMenuCoordinatorForTesting()
-            ->GetControllerForTesting()
+            ->GetDelegateForTesting()
             ->GetMainPageViewForTesting();
     if (!main_page) {
       return nullptr;

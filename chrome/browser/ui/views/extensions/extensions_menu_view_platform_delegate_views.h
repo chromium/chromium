@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
@@ -25,25 +25,25 @@ class ExtensionsMenuMainPageView;
 class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
-// TODO(crbug.com/449814184): Rename class to
-// ExtensionsMenuViewPlatformDelegateViews.
 // TODO(crbug.com/449814184): Separate extensions UI business logic (e.g what
 // text should appear on a button) versus UI platform logic (e.g updating the
 // view).
-class ExtensionsMenuViewController
+class ExtensionsMenuViewPlatformDelegateViews
     : public ExtensionsMenuViewPlatformDelegate,
       public ExtensionsMenuHandler,
       public TabStripModelObserver,
       public ToolbarActionsModel::Observer,
       public extensions::PermissionsManager::Observer {
  public:
-  ExtensionsMenuViewController(Browser* browser,
-                               ExtensionsContainer* extensions_container,
-                               views::View* bubble_contents);
-  ExtensionsMenuViewController(const ExtensionsMenuViewController&) = delete;
-  const ExtensionsMenuViewController& operator=(
-      const ExtensionsMenuViewController&) = delete;
-  ~ExtensionsMenuViewController() override;
+  ExtensionsMenuViewPlatformDelegateViews(
+      Browser* browser,
+      ExtensionsContainer* extensions_container,
+      views::View* bubble_contents);
+  ExtensionsMenuViewPlatformDelegateViews(
+      const ExtensionsMenuViewPlatformDelegateViews&) = delete;
+  const ExtensionsMenuViewPlatformDelegateViews& operator=(
+      const ExtensionsMenuViewPlatformDelegateViews&) = delete;
+  ~ExtensionsMenuViewPlatformDelegateViews() override;
 
   // ExtensionsMenuHandler:
   void OpenMainPage() override;
@@ -161,4 +161,4 @@ class ExtensionsMenuViewController
   views::ViewTracker current_page_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_PLATFORM_DELEGATE_VIEWS_H_

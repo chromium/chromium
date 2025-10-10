@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -167,18 +167,17 @@ void ExtensionsMenuMainPageViewUnitTest::ClickSiteAccessToggle(
 }
 
 ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetMainPageViewForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuMainPageViewUnitTest::site_permissions_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetSitePermissionsPageForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
+                       : nullptr;
 }
 
 std::vector<ExtensionMenuItemView*>

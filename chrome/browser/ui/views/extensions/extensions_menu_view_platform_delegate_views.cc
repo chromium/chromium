@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 
 #include <algorithm>
 
@@ -293,10 +293,11 @@ void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
 
 }  // namespace
 
-ExtensionsMenuViewController::ExtensionsMenuViewController(
-    Browser* browser,
-    ExtensionsContainer* extensions_container,
-    views::View* bubble_contents)
+ExtensionsMenuViewPlatformDelegateViews::
+    ExtensionsMenuViewPlatformDelegateViews(
+        Browser* browser,
+        ExtensionsContainer* extensions_container,
+        views::View* bubble_contents)
     : browser_(browser),
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
@@ -309,9 +310,10 @@ ExtensionsMenuViewController::ExtensionsMenuViewController(
 
 // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
 // directly within TabStripModelObserver::~TabStripModelObserver().
-ExtensionsMenuViewController::~ExtensionsMenuViewController() = default;
+ExtensionsMenuViewPlatformDelegateViews::
+    ~ExtensionsMenuViewPlatformDelegateViews() = default;
 
-void ExtensionsMenuViewController::OpenMainPage() {
+void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get(), GetActiveWebContents());
   PopulateMainPage(main_page.get());
@@ -319,7 +321,7 @@ void ExtensionsMenuViewController::OpenMainPage() {
   SwitchToPage(std::move(main_page));
 }
 
-void ExtensionsMenuViewController::OpenSitePermissionsPage(
+void ExtensionsMenuViewPlatformDelegateViews::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
   CHECK(CanUserCustomizeExtensionSiteAccess(
       *GetExtension(browser_, extension_id), *browser_->profile(),
@@ -337,12 +339,12 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
       base::UserMetricsAction("Extensions.Menu.SitePermissionsPageOpened"));
 }
 
-void ExtensionsMenuViewController::CloseBubble() {
+void ExtensionsMenuViewPlatformDelegateViews::CloseBubble() {
   bubble_contents_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void ExtensionsMenuViewController::OnSiteAccessSelected(
+void ExtensionsMenuViewPlatformDelegateViews::OnSiteAccessSelected(
     const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
   LogSiteAccessUpdate(site_access);
@@ -352,7 +354,7 @@ void ExtensionsMenuViewController::OnSiteAccessSelected(
                                GetActiveWebContents(), site_access);
 }
 
-void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
+void ExtensionsMenuViewPlatformDelegateViews::OnSiteSettingsToggleButtonPressed(
     bool is_on) {
   content::WebContents* web_contents = GetActiveWebContents();
   const url::Origin& origin =
@@ -375,7 +377,7 @@ void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
   }
 }
 
-void ExtensionsMenuViewController::OnExtensionToggleSelected(
+void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   const extensions::Extension* extension = GetExtension(browser_, extension_id);
@@ -447,12 +449,12 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   }
 }
 
-void ExtensionsMenuViewController::OnReloadPageButtonClicked() {
+void ExtensionsMenuViewPlatformDelegateViews::OnReloadPageButtonClicked() {
   GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
                                                  false);
 }
 
-void ExtensionsMenuViewController::OnAllowExtensionClicked(
+void ExtensionsMenuViewPlatformDelegateViews::OnAllowExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
@@ -471,7 +473,7 @@ void ExtensionsMenuViewController::OnAllowExtensionClicked(
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
 }
 
-void ExtensionsMenuViewController::OnDismissExtensionClicked(
+void ExtensionsMenuViewPlatformDelegateViews::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
   auto* permissions_manager = PermissionsManager::Get(browser_->profile());
   CHECK(permissions_manager);
@@ -484,7 +486,7 @@ void ExtensionsMenuViewController::OnDismissExtensionClicked(
       "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
 }
 
-void ExtensionsMenuViewController::OnShowRequestsTogglePressed(
+void ExtensionsMenuViewPlatformDelegateViews::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   extensions::SitePermissionsHelper(browser_->profile())
@@ -499,9 +501,10 @@ void ExtensionsMenuViewController::OnShowRequestsTogglePressed(
   }
 }
 
-void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
-                                                int index,
-                                                TabChangeType change_type) {
+void ExtensionsMenuViewPlatformDelegateViews::TabChangedAt(
+    content::WebContents* contents,
+    int index,
+    TabChangeType change_type) {
   bool should_update_page = false;
   switch (change_type) {
     case TabChangeType::kAll:
@@ -519,7 +522,7 @@ void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
   UpdatePage(contents);
 }
 
-void ExtensionsMenuViewController::OnTabStripModelChanged(
+void ExtensionsMenuViewPlatformDelegateViews::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -533,7 +536,7 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
   UpdatePage(web_contents);
 }
 
-void ExtensionsMenuViewController::UpdatePage(
+void ExtensionsMenuViewPlatformDelegateViews::UpdatePage(
     content::WebContents* web_contents) {
   DCHECK(current_page_);
 
@@ -561,7 +564,7 @@ void ExtensionsMenuViewController::UpdatePage(
   UpdateMainPage(main_page, web_contents);
 }
 
-void ExtensionsMenuViewController::UpdateMainPage(
+void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -675,7 +678,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
   }
 }
 
-void ExtensionsMenuViewController::UpdateSitePermissionsPage(
+void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
     ExtensionsMenuSitePermissionsPageView* site_permissions_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -710,7 +713,7 @@ void ExtensionsMenuViewController::UpdateSitePermissionsPage(
                                 is_on_site_enabled, is_on_all_sites_enabled);
 }
 
-void ExtensionsMenuViewController::OnToolbarActionAdded(
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   DCHECK(current_page_);
 
@@ -727,7 +730,7 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
-void ExtensionsMenuViewController::OnToolbarActionRemoved(
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   DCHECK(current_page_);
 
@@ -747,12 +750,12 @@ void ExtensionsMenuViewController::OnToolbarActionRemoved(
   main_page->RemoveMenuItem(action_id);
 }
 
-void ExtensionsMenuViewController::OnToolbarActionUpdated(
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
   UpdatePage(GetActiveWebContents());
 }
 
-void ExtensionsMenuViewController::OnToolbarModelInitialized() {
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
   DCHECK(current_page_);
 
   // Toolbar model should have been initialized if site permissions page is
@@ -765,7 +768,7 @@ void ExtensionsMenuViewController::OnToolbarModelInitialized() {
   PopulateMainPage(main_page);
 }
 
-void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   DCHECK(current_page_);
 
   // Do nothing when site permissions page is opened as it doesn't have pin
@@ -785,7 +788,7 @@ void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
   }
 }
 
-void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
+void ExtensionsMenuViewPlatformDelegateViews::OnUserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {
   DCHECK(current_page_);
 
@@ -813,9 +816,10 @@ void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
   // blocked actions that don't require a page refresh to run.
 }
 
-void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
-    const extensions::ExtensionId& extension_id,
-    bool can_show_requests) {
+void ExtensionsMenuViewPlatformDelegateViews::
+    OnShowAccessRequestsInToolbarChanged(
+        const extensions::ExtensionId& extension_id,
+        bool can_show_requests) {
   DCHECK(current_page_);
 
   // Changing whether an extension can show requests access in the toolbar only
@@ -827,9 +831,10 @@ void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
   }
 }
 
-void ExtensionsMenuViewController::OnHostAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
+void ExtensionsMenuViewPlatformDelegateViews::
+    OnHostAccessRequestDismissedByUser(
+        const extensions::ExtensionId& extension_id,
+        const url::Origin& origin) {
   DCHECK(current_page_);
 
   // Extension can only dismiss requests from the menu's main page. if it has
@@ -846,7 +851,7 @@ void ExtensionsMenuViewController::OnHostAccessRequestDismissedByUser(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnHostAccessRequestAdded(
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -877,7 +882,7 @@ void ExtensionsMenuViewController::OnHostAccessRequestAdded(
   }
 }
 
-void ExtensionsMenuViewController::OnHostAccessRequestUpdated(
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -913,7 +918,7 @@ void ExtensionsMenuViewController::OnHostAccessRequestUpdated(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnHostAccessRequestRemoved(
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
   DCHECK(current_page_);
@@ -935,7 +940,8 @@ void ExtensionsMenuViewController::OnHostAccessRequestRemoved(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewController::OnHostAccessRequestsCleared(int tab_id) {
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestsCleared(
+    int tab_id) {
   DCHECK(current_page_);
 
   // Ignore requests for other tabs.
@@ -957,18 +963,18 @@ void ExtensionsMenuViewController::OnHostAccessRequestsCleared(int tab_id) {
 }
 
 ExtensionsMenuMainPageView*
-ExtensionsMenuViewController::GetMainPageViewForTesting() {
+ExtensionsMenuViewPlatformDelegateViews::GetMainPageViewForTesting() {
   DCHECK(current_page_);
   return GetMainPage(current_page_.view());
 }
 
 ExtensionsMenuSitePermissionsPageView*
-ExtensionsMenuViewController::GetSitePermissionsPageForTesting() {
+ExtensionsMenuViewPlatformDelegateViews::GetSitePermissionsPageForTesting() {
   DCHECK(current_page_);
   return GetSitePermissionsPage(current_page_.view());
 }
 
-void ExtensionsMenuViewController::SwitchToPage(
+void ExtensionsMenuViewPlatformDelegateViews::SwitchToPage(
     std::unique_ptr<views::View> page) {
   if (current_page_) {
     bubble_contents_->RemoveChildViewT(current_page_.view());
@@ -977,7 +983,7 @@ void ExtensionsMenuViewController::SwitchToPage(
   current_page_.SetView(bubble_contents_->AddChildView(std::move(page)));
 }
 
-void ExtensionsMenuViewController::PopulateMainPage(
+void ExtensionsMenuViewPlatformDelegateViews::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
   // TODO(crbug.com/40879945): We should update the subheader here since it
   // depends on `toolbar_model_`.
@@ -987,7 +993,7 @@ void ExtensionsMenuViewController::PopulateMainPage(
   }
 }
 
-void ExtensionsMenuViewController::InsertMenuItemMainPage(
+void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
     ExtensionsMenuMainPageView* main_page,
     const extensions::ExtensionId& extension_id,
     int index) {
@@ -1020,11 +1026,12 @@ void ExtensionsMenuViewController::InsertMenuItemMainPage(
                                      site_permissions_button_access, index);
 }
 
-void ExtensionsMenuViewController::AddOrUpdateExtensionRequestingAccess(
-    ExtensionsMenuMainPageView* main_page,
-    const extensions::ExtensionId& extension_id,
-    int index,
-    content::WebContents* web_contents) {
+void ExtensionsMenuViewPlatformDelegateViews::
+    AddOrUpdateExtensionRequestingAccess(
+        ExtensionsMenuMainPageView* main_page,
+        const extensions::ExtensionId& extension_id,
+        int index,
+        content::WebContents* web_contents) {
   ToolbarActionViewController* action_controller =
       extensions_container_->GetActionForId(extension_id);
   std::u16string name = action_controller->GetActionName();
@@ -1037,7 +1044,7 @@ void ExtensionsMenuViewController::AddOrUpdateExtensionRequestingAccess(
                                                   index);
 }
 
-content::WebContents* ExtensionsMenuViewController::GetActiveWebContents()
-    const {
+content::WebContents*
+ExtensionsMenuViewPlatformDelegateViews::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }

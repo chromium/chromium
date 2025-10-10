@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -85,7 +85,7 @@ ExtensionsSitePermissionsPageViewUnitTest::
 void ExtensionsSitePermissionsPageViewUnitTest::ShowSitePermissionsPage(
     extensions::ExtensionId extension_id) {
   menu_coordinator()->Show(extensions_button(), extensions_container());
-  menu_coordinator()->GetControllerForTesting()->OpenSitePermissionsPage(
+  menu_coordinator()->GetDelegateForTesting()->OpenSitePermissionsPage(
       extension_id);
 }
 
@@ -120,18 +120,17 @@ void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
 
 ExtensionsMenuMainPageView*
 ExtensionsSitePermissionsPageViewUnitTest::main_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetMainPageViewForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsSitePermissionsPageViewUnitTest::site_permissions_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  return menu_controller ? menu_controller->GetSitePermissionsPageForTesting()
-                         : nullptr;
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
+                       : nullptr;
 }
 
 void ExtensionsSitePermissionsPageViewUnitTest::SetUp() {

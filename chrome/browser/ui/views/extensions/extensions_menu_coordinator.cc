@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -91,8 +91,9 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_view_observation_.Observe(bubble_contents);
   bubble_tracker_.SetView(bubble_contents);
 
-  auto menu_delegate = std::make_unique<ExtensionsMenuViewController>(
-      browser_, extensions_container, bubble_contents);
+  auto menu_delegate =
+      std::make_unique<ExtensionsMenuViewPlatformDelegateViews>(
+          browser_, extensions_container, bubble_contents);
   menu_delegate_ = menu_delegate.get();
   menu_model_ =
       std::make_unique<ExtensionsMenuViewModel>(std::move(menu_delegate));
