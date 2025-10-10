@@ -3012,17 +3012,10 @@ const FeatureEntry::FeatureVariation kBoardingPassDetectorVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kShowNewTabAnimationsLogs[] = {
-    {"logs", "true"},
-    {"listeners", "false"}};
-const FeatureEntry::FeatureParam kShowNewTabAnimationsListeners[] = {
-    {"logs", "true"},
-    {"listeners", "true"}};
+    {"logs", "true"}};
 const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
     {"- Add logs", kShowNewTabAnimationsLogs,
-     std::size(kShowNewTabAnimationsLogs), nullptr},
-    {"- Add logs and listeners", kShowNewTabAnimationsListeners,
-     std::size(kShowNewTabAnimationsListeners), nullptr},
-};
+     std::size(kShowNewTabAnimationsLogs), nullptr}};
 
 const FeatureEntry::FeatureParam
     kTabStorageSqlitePrototypeAuthoritativeReads[] = {

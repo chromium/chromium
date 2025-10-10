@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimator;
 import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
@@ -148,53 +147,51 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
                         mRectView, mStartRadii, endRadii);
 
-        if (ChromeFeatureList.sShowNewTabAnimationsListeners.getValue()) {
-            AnimationFreezeChecker rectChecker =
-                    new AnimationFreezeChecker(AnimationFreezeChecker.FOREGROUND_RECT_TAG);
-            mRectAnimator.addListener(
-                    new CancelAwareAnimatorListener() {
-                        @Override
-                        public void onStart(Animator animation) {
-                            rectChecker.onAnimationStart();
-                            if (mLogsEnabled) Log.i(TAG, "mRectAnimator#onStart");
-                        }
+        AnimationFreezeChecker rectChecker =
+                new AnimationFreezeChecker(AnimationFreezeChecker.FOREGROUND_RECT_TAG);
+        mRectAnimator.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animation) {
+                        rectChecker.onAnimationStart();
+                        if (mLogsEnabled) Log.i(TAG, "mRectAnimator#onStart");
+                    }
 
-                        @Override
-                        public void onEnd(Animator animation) {
-                            rectChecker.onAnimationEnd();
-                            Log.i(TAG, "mRectAnimator#onEnd");
-                        }
+                    @Override
+                    public void onEnd(Animator animation) {
+                        rectChecker.onAnimationEnd();
+                        if (mLogsEnabled) Log.i(TAG, "mRectAnimator#onEnd");
+                    }
 
-                        @Override
-                        public void onCancel(Animator animation) {
-                            rectChecker.onAnimationCancel();
-                            Log.i(TAG, "mRectAnimator#onCancel");
-                        }
-                    });
+                    @Override
+                    public void onCancel(Animator animation) {
+                        rectChecker.onAnimationCancel();
+                        if (mLogsEnabled) Log.i(TAG, "mRectAnimator#onCancel");
+                    }
+                });
 
-            AnimationFreezeChecker cornerChecker =
-                    new AnimationFreezeChecker(AnimationFreezeChecker.FOREGROUND_CORNER_TAG);
-            mCornerAnimator.addListener(
-                    new CancelAwareAnimatorListener() {
-                        @Override
-                        public void onStart(Animator animation) {
-                            cornerChecker.onAnimationStart();
-                            Log.i(TAG, "mCornerAnimator#onStart");
-                        }
+        AnimationFreezeChecker cornerChecker =
+                new AnimationFreezeChecker(AnimationFreezeChecker.FOREGROUND_CORNER_TAG);
+        mCornerAnimator.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animation) {
+                        cornerChecker.onAnimationStart();
+                        if (mLogsEnabled) Log.i(TAG, "mCornerAnimator#onStart");
+                    }
 
-                        @Override
-                        public void onEnd(Animator animation) {
-                            cornerChecker.onAnimationEnd();
-                            Log.i(TAG, "mCornerAnimator#onEnd");
-                        }
+                    @Override
+                    public void onEnd(Animator animation) {
+                        cornerChecker.onAnimationEnd();
+                        if (mLogsEnabled) Log.i(TAG, "mCornerAnimator#onEnd");
+                    }
 
-                        @Override
-                        public void onCancel(Animator animation) {
-                            cornerChecker.onAnimationCancel();
-                            Log.i(TAG, "mCornerAnimator#onCancel");
-                        }
-                    });
-        }
+                    @Override
+                    public void onCancel(Animator animation) {
+                        cornerChecker.onAnimationCancel();
+                        if (mLogsEnabled) Log.i(TAG, "mCornerAnimator#onCancel");
+                    }
+                });
 
         mFadeAnimator = ObjectAnimator.ofFloat(mRectView, ShrinkExpandImageView.ALPHA, 1f, 0f);
         mFadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
@@ -299,7 +296,7 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
             if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: mExpandAnimatorSet#cancel");
             mExpandAnimatorSet.cancel();
         } else if (mFadeAnimator != null) {
-            if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: mFadeAnimator#end");
+            if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: mFadeAnimator#cancel");
             mFadeAnimator.cancel();
         }
     }
