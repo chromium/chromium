@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -31,6 +32,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -114,6 +119,25 @@ class DefaultSearchManagerTest : public testing::Test {
         pref_service(), search_engine_choice_service(),
         search_engines_test_environment_.prepopulate_data_resolver(),
         DefaultSearchManager::ObserverCallback());
+  }
+
+  std::unique_ptr<TemplateURLData> set_default_search_provider_data_pref(
+      const std::string& keyword) {
+    std::unique_ptr<TemplateURLData> data =
+        GenerateDummyTemplateURLData(keyword);
+    pref_service()->SetDict(
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        TemplateURLDataToDictionary(*data));
+    return data;
+  }
+
+  void set_mirrored_default_search_provider_data_pref(
+      const std::string& keyword) {
+    std::unique_ptr<TemplateURLData> data =
+        GenerateDummyTemplateURLData(keyword);
+    pref_service()->SetDict(
+        DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
+        TemplateURLDataToDictionary(*data));
   }
 
  private:
@@ -436,3 +460,118 @@ TEST_F(DefaultSearchManagerTest,
   expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   ExpectSimilar(&expected_engine, result);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(DefaultSearchManagerTest, DefaultSearchReset) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+
+  set_default_search_provider_data_pref("search_engine_A");
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  auto manager = create_manager();
+
+  // The original and mirrored DSE prefs should have been cleared since they
+  // were holding different data.
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  EXPECT_TRUE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // The DSE should now be the fallback.
+  DefaultSearchManager::Source source;
+  manager->GetDefaultSearchEngine(&source);
+  EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+  // Simulate an enterprise device.
+  base::win::ScopedDomainStateForTesting scoped_domain_state_(true);
+
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  auto manager = create_manager();
+
+  // The DSE prefs should NOT be cleared since this is an enterprise device.
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // The DSE should not have been changed.
+  DefaultSearchManager::Source source;
+  ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kResetTamperedDefaultSearchEngine);
+
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  set_mirrored_default_search_provider_data_pref("search_engine_B");
+
+  auto manager = create_manager();
+
+  // The DSE prefs should NOT be cleared.
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // The DSE should not have been changed.
+  DefaultSearchManager::Source source;
+  ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+TEST_F(DefaultSearchManagerTest, DontResetDefaultSearchIfPrefsMatch) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
+
+  auto user_data = set_default_search_provider_data_pref("search_engine_A");
+  pref_service()->SetDict(
+      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName,
+      TemplateURLDataToDictionary(*user_data));
+
+  auto manager = create_manager();
+
+  // The DSE prefs should NOT be cleared since the original and mirrored pref
+  // are the same.
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
+          .empty());
+  EXPECT_FALSE(
+      pref_service()
+          ->GetDict(
+              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
+          .empty());
+
+  // The DSE should not have been changed.
+  DefaultSearchManager::Source source;
+  ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
