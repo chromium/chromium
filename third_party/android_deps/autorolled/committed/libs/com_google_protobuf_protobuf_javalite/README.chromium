@@ -1,7 +1,7 @@
 Name: Protocol Buffers [Lite]
 Short Name: protobuf-javalite
-URL: https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/4.33.0-RC1/protobuf-javalite-4.33.0-RC1.jar
-Version: 4.33.0-RC1
+URL: https://repo.maven.apache.org/maven2/com/google/protobuf/protobuf-javalite/4.33.0-RC2/protobuf-javalite-4.33.0-RC2.jar
+Version: 4.33.0-RC2
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE

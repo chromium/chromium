@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-testing
 Short Name: grpc-testing
-URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-testing/1.75.0/grpc-testing-1.75.0.jar
-Version: 1.75.0
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-testing/1.76.0/grpc-testing-1.76.0.jar
+Version: 1.76.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

@@ -212,12 +212,12 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-alpha04"
+        "version": "1.10.0-alpha05"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.10.0-alpha04"
+        "version": "1.10.0-alpha05"
     },
     {
         "name": "runtime-retain",
@@ -392,7 +392,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-beta01"
+        "version": "1.6.0-beta02"
     },
     {
         "name": "credentials-play-services-auth",
@@ -592,17 +592,17 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-livedata",
@@ -612,7 +612,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -627,17 +627,17 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -667,12 +667,12 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -692,12 +692,12 @@
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-alpha04"
+        "version": "2.10.0-alpha05"
     },
     {
         "name": "loader",
@@ -802,12 +802,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha09"
+        "version": "1.0.0-beta01"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha09"
+        "version": "1.0.0-beta01"
     },
     {
         "name": "navigationevent-compose",
@@ -907,32 +907,32 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.1"
+        "version": "2.8.2"
     },
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.4.0-alpha03"
+        "version": "1.4.0-beta01"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.4.0-alpha03"
+        "version": "1.4.0-beta01"
     },
     {
         "name": "savedstate-compose",
@@ -1477,7 +1477,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.33.0-RC1"
+        "version": "4.33.0-RC2"
     },
     {
         "name": "protobuf-lite",
@@ -1517,7 +1517,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.16.0"
+        "version": "3.16.1"
     },
     {
         "name": "wire-runtime",
@@ -1542,52 +1542,52 @@
     {
         "name": "grpc-android",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-binder",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-context",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-core",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-inprocess",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-protobuf-lite",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-testing",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "grpc-util",
         "group": "io.grpc",
-        "version": "1.75.0"
+        "version": "1.76.0"
     },
     {
         "name": "perfmark-api",
@@ -1662,7 +1662,7 @@
     {
         "name": "animal-sniffer-annotations",
         "group": "org.codehaus.mojo",
-        "version": "1.24"
+        "version": "1.26"
     },
     {
         "name": "conscrypt-openjdk-uber",
@@ -1707,7 +1707,7 @@
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.2.0"
+        "version": "2.2.20"
     },
     {
         "name": "kotlin-stdlib-common",

@@ -654,6 +654,13 @@ template("define_autorolled_targets") {
         "//third_party/androidx:androidx_core_core_java",
         "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
       ]
+
+      # https://crbug.com/450243304.
+      ignore_manifest = true
+      jar_excluded_patterns = [
+        "META-INF/services/io.grpc.NameResolverProvider",
+        "io/grpc/binder/internal/IntentNameResolver*",
+      ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1447,6 +1454,12 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:io_grpc_grpc_context_java",
         "//third_party/android_deps:io_perfmark_perfmark_api_java",
         "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
+      ]
+
+      # Needed only for gRPC networking (not IPC).
+      jar_excluded_patterns = [
+        "META-INF/services/io.grpc.NameResolverProvider",
+        "io/grpc/internal/DnsNameResolver*",
       ]
     }
 
