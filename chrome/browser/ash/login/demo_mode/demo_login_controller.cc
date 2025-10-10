@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -73,6 +74,10 @@ const char kLoginScopeDeviceId[] = "login_scope_device_id";
 const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
 const char kDMToken[] = "dm_token";
 const char kClientID[] = "client_id";
+
+const char kDeviceInfo[] = "device_info";
+const char kLocale[] = "locale";
+const char kCountry[] = "country";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -346,6 +351,20 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
   return policy_connector_ash->GetDeviceCloudPolicyManager();
 }
 
+base::Value::Dict GetDeviceInfo() {
+  // This field "locale" is used to set the language of the demo account.
+  const std::string& locale = g_browser_process->local_state()->GetString(
+      language::prefs::kApplicationLocale);
+  // This field "country" is intended to be used to control region specific
+  // behaviors, including TOS agreement, focus backend services and etc. Convert
+  // it to uppercase since some devices may still have the country in lowercase.
+  const std::string country = base::ToUpperASCII(
+      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
+
+  // TODO(crbug.com/449237585): Add other DeviceInfo fields.
+  return base::Value::Dict().Set(kLocale, locale).Set(kCountry, country);
+}
+
 }  // namespace
 
 DemoLoginController::DemoLoginController(
@@ -445,6 +464,12 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
 
   auto post_data = base::Value::Dict().Set(
       kDeviceIdentifier, std::move(device_identifier.value()));
+
+  if (features::IsSendDeviceInfoToDemoServerEnabled()) {
+    base::Value::Dict device_info = GetDeviceInfo();
+    post_data.Set(kDeviceInfo, std::move(device_info));
+  }
+
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kSetupDemoAccountEndpoint),
                                  kSetupAccountTrafficAnnotation);
