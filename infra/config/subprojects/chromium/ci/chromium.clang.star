@@ -1443,6 +1443,9 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64(dbg)",
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 5,
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1479,9 +1482,11 @@ ci.builder(
             "win10",
         ],
     ),
-    cores = "32",
+    # TODO(b/449722288): Reduce to 1 concurrent build after picking best
+    # machine type.
+    builderless = False,
+    cores = None,
     os = os.WINDOWS_DEFAULT,
-    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "dbg",
