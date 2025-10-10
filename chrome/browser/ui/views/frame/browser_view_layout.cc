@@ -362,7 +362,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   }
 
   main_region_->SetBoundsRect(available_bounds);
-  main_container_->SetBoundsRect(available_bounds);
+  main_container_->SetBoundsRect(main_region_->GetLocalBounds());
   gfx::Rect main_container_bounds = main_container_->GetLocalBounds();
   main_container_bounds.set_y(available_bounds.y() +
                               delegate_->GetTopInsetInBrowserView());
