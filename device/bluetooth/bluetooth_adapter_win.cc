@@ -175,6 +175,11 @@ void BluetoothAdapterWin::RemovePairingDelegateInternal(
 void BluetoothAdapterWin::AdapterStateChanged(
     const BluetoothTaskManagerWin::AdapterState& state) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  // Lifetime: If obtained via BluetoothAdapterFactory::GetClassicAdapter() and
+  // the caller did NOT keep the scoped_refptr<BluetoothAdapter>, running
+  // init_callback_.Run() will release the last reference and destroy |this|.
+  // Use keep_alive to avoid use-after-free issues.
+  scoped_refptr<BluetoothAdapterWin> keep_alive(this);
   name_ = state.name;
   bool was_present = IsPresent();
   bool is_present = !state.address.empty();
