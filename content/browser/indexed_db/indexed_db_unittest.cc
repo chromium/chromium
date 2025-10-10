@@ -2001,11 +2001,6 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 // Tests that the backing store is closed when the connection is closed during
 // upgrade.
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // TODO(crbug.com/450044205): update test for SQLite.
-    GTEST_SKIP();
-  }
-
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   BucketLocator bucket_locator = BucketLocator();
