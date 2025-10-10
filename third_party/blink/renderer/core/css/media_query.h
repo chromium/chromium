@@ -40,10 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-class MediaQueryExp;
 class MediaQueryExpNode;
-
-using ExpressionHeapVector = Vector<MediaQueryExp>;
 
 class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
