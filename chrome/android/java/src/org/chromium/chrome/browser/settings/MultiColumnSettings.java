@@ -97,11 +97,21 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         // Update the detail pane, if the intent is specified.
         Fragment fragment = processPendingFragmentIntent();
         if (fragment != null) {
-            getChildFragmentManager()
+            // Opening a new page. If we already have back stack entries, clean it up for
+            // - back button behavior
+            // - detailed page title
+            var fragmentManager = getChildFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                var entry = fragmentManager.getBackStackEntryAt(0);
+                fragmentManager.popBackStack(
+                        entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+
+            // Then, open the fragment.
+            fragmentManager
                     .beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.preferences_detail, fragment)
-                    .addToBackStack(null)
                     .commit();
             getSlidingPaneLayout().open();
         }
