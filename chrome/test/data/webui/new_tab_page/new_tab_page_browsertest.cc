@@ -17,7 +17,7 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabledEn});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
   }
 
  private:

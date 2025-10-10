@@ -147,7 +147,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedInline}}}});
-    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInOmnibox)]) {
@@ -155,7 +155,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedSingleButton}}}});
-    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
   if ([self isRunningTest:@selector
             (testNewTabShowsMIAEntryPointInEnlargedFakebox)]) {
@@ -163,7 +163,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}}}});
-    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
   if ([self
           isRunningTest:@selector(testIncognitoButtonNotShownInQuickActions)]) {
@@ -171,7 +171,7 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
         {kNTPMIAEntrypoint,
          {{{kNTPMIAEntrypointParam,
             kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito}}}});
-    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabledEn);
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   }
 
   return config;

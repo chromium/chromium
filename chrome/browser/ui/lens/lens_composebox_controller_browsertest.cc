@@ -145,7 +145,7 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
                  {"update-viewport-each-query", "false"},
              }},
         },
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabledEn});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
 
     InProcessBrowserTest::SetUp();
   }

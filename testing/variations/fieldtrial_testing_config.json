@@ -13,8 +13,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AimServerEligibilityChangedNotification",
-                        "AimServerEligibilityEnabledEn"
+                        "AimServerEligibilityEnabled"
                     ]
                 }
             ]

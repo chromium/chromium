@@ -235,10 +235,7 @@ AimEligibilityService::RegisterEligibilityChangedCallback(
 }
 
 bool AimEligibilityService::IsServerEligibilityEnabled() const {
-  return base::FeatureList::IsEnabled(omnibox::kAimServerEligibilityEnabled) ||
-         (base::FeatureList::IsEnabled(
-              omnibox::kAimServerEligibilityEnabledEn) &&
-          IsLanguage("en"));
+  return base::FeatureList::IsEnabled(omnibox::kAimServerEligibilityEnabled);
 }
 
 bool AimEligibilityService::IsAimLocallyEligible() const {

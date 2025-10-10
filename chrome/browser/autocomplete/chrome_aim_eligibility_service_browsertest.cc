@@ -125,7 +125,7 @@ class ChromeAimEligibilityServiceBrowserTest
 
  protected:
   void SetUp() override {
-    auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+    auto [locale, country, server_eligibility_enabled, allowed_by_policy,
           is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
         GetParam();
 
@@ -135,7 +135,7 @@ class ChromeAimEligibilityServiceBrowserTest
     // Needed for bots with field trial testing configs explicitly disabled.
     enabled_features.push_back(
         {omnibox::kAimServerEligibilityChangedNotification, {}});
-    enabled_features.push_back({omnibox::kAimServerEligibilityEnabledEn, {}});
+    enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
     enabled_features.push_back(
         {omnibox::kAimServerRequestOnStartupEnabled, {}});
     enabled_features.push_back(
@@ -143,7 +143,7 @@ class ChromeAimEligibilityServiceBrowserTest
          {{"request_on_cookie_jar_changes", "true"},
           {"request_on_primary_account_changes", "false"}}});
 
-    if (server_eligibility_enabled_all) {
+    if (server_eligibility_enabled) {
       enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
     } else {
       disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
@@ -156,7 +156,7 @@ class ChromeAimEligibilityServiceBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+    auto [locale, country, server_eligibility_enabled, allowed_by_policy,
           is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
         GetParam();
 
@@ -251,14 +251,8 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
                        ComprehensiveEligibilityTest) {
-  auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+  auto [locale, country, server_eligibility_enabled, allowed_by_policy,
         is_google_dse, is_server_eligible, is_pdf_upload_eligible] = GetParam();
-
-  // Enabling `AimServerEligibilityEnabledEn` overrides server eligibility for
-  // English locales
-  const bool server_eligibility_enabled =
-      server_eligibility_enabled_all ||
-      base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
 
   // Handle the eligibility request on startup with a custom response.
   omnibox::AimEligibilityResponse response;

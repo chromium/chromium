@@ -186,7 +186,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     // Disable AimServerEligibilityEnabledEn so that omnibox doesn't move and
     // shift offset.
     config.additional_args.push_back(base::StringPrintf(
-        "--disable-features=%s", omnibox::kAimServerEligibilityEnabledEn.name));
+        "--disable-features=%s", omnibox::kAimServerEligibilityEnabled.name));
   } else {
     // Show doodle to make sure tests cover async callback logic updating logo.
     // Note: This makes testPositionRestoredWithShiftingOffset and
