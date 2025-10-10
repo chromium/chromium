@@ -54,10 +54,6 @@ enum FocusgroupFlags : uint8_t {
 
   // Memory behavior override disables history-based focus restoration:
   kNoMemory = 1 << 6,
-
-  // Deprecated. Will be removed when opt-out behavior is implemented.
-  // Placed last for easy identification; its bit may be recycled after removal.
-  kExtend = 1 << 7,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,

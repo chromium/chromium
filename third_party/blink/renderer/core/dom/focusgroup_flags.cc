@@ -59,7 +59,6 @@ constexpr FlagMapping kModifierMap[] = {
     {"row-flow", FocusgroupFlags::kRowFlow},
     {"col-flow", FocusgroupFlags::kColFlow},
     {"no-memory", FocusgroupFlags::kNoMemory},
-    // Deprecated: {"extend", FocusgroupFlags::kExtend},
 };
 
 // Returns true if a flag contains a modifier only meaningful for grid

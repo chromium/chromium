@@ -29,24 +29,6 @@ class CORE_EXPORT FocusgroupController {
   // moved the focus.
   static bool Advance(Element* initial_element, FocusgroupDirection direction);
 
-  static bool AdvanceForward(Element* initial_element,
-                             FocusgroupDirection direction);
-  static bool CanExitFocusgroupForward(const Element* exiting_focusgroup,
-                                       const Element* entering_focusgroup,
-                                       FocusgroupDirection direction);
-  static bool CanExitFocusgroupForwardRecursive(
-      const Element* exiting_focusgroup,
-      const Element* next_element,
-      FocusgroupDirection direction,
-      bool check_wrap);
-  static Element* WrapForward(Element* nearest_focusgroup,
-                              FocusgroupDirection direction);
-
-  static bool AdvanceBackward(Element* initial_element,
-                              FocusgroupDirection direction);
-  static Element* WrapBackward(Element* nearest_focusgroup,
-                               FocusgroupDirection direction);
-
   static bool AdvanceInGrid(Element* initial_element,
                             Element* grid_root,
                             FocusgroupDirection direction);
