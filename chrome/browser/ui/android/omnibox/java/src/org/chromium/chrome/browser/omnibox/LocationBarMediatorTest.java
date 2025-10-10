@@ -130,7 +130,6 @@ import java.util.Map;
 @Config(
         shadows = {
             LocationBarMediatorTest.ShadowUrlUtilities.class,
-            LocationBarMediatorTest.ShadowGeolocationHeader.class,
             LocationBarMediatorTest.ObjectAnimatorShadow.class
         })
 @DisableFeatures({
@@ -150,20 +149,6 @@ public class LocationBarMediatorTest {
         @Implementation
         public static boolean isNtpUrl(String url) {
             return sIsNtp;
-        }
-    }
-
-    @Implements(GeolocationHeader.class)
-    static class ShadowGeolocationHeader {
-        @Implementation
-        public static void primeLocationForGeoHeaderIfEnabled(
-                Profile profile, TemplateUrlService templateService) {
-            sGeoHeaderPrimeCount++;
-        }
-
-        @Implementation
-        public static void stopListeningForLocationUpdates() {
-            sGeoHeaderStopCount++;
         }
     }
 
@@ -337,6 +322,9 @@ public class LocationBarMediatorTest {
         ShadowUrlUtilities.sIsNtp = false;
         sGeoHeaderPrimeCount = 0;
         sGeoHeaderStopCount = 0;
+        GeolocationHeader.setPrimeLocationForGeoHeaderIfEnabledForTesting(
+                () -> sGeoHeaderPrimeCount++);
+        GeolocationHeader.setStopListeningForLocationUpdatesForTesting(() -> sGeoHeaderStopCount++);
     }
 
     @Test

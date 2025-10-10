@@ -24,6 +24,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -100,6 +101,14 @@ public class GeolocationHeader {
     private static boolean sUseFakePermissionForTesting;
     private static boolean sCurrentLocationRequested;
     private static @Nullable Location sFusedLocation;
+    private static @Nullable Runnable sPrimeLocationForGeoHeaderIfEnabledForTesting;
+    private static @Nullable Runnable sStopListeningForLocationUpdatesForTesting;
+
+    public static void setPrimeLocationForGeoHeaderIfEnabledForTesting(
+            @Nullable Runnable runnable) {
+        sPrimeLocationForGeoHeaderIfEnabledForTesting = runnable;
+        ResettersForTesting.register(() -> sPrimeLocationForGeoHeaderIfEnabledForTesting = null);
+    }
 
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
@@ -110,6 +119,10 @@ public class GeolocationHeader {
      */
     public static void primeLocationForGeoHeaderIfEnabled(
             Profile profile, TemplateUrlService templateService) {
+        if (sPrimeLocationForGeoHeaderIfEnabledForTesting != null) {
+            sPrimeLocationForGeoHeaderIfEnabledForTesting.run();
+            return;
+        }
         if (profile == null) return;
         if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) return;
         if (!isGeoHeaderEnabledForDse(profile, templateService)) return;
@@ -181,8 +194,17 @@ public class GeolocationHeader {
         return sCurrentLocationRequested;
     }
 
+    public static void setStopListeningForLocationUpdatesForTesting(@Nullable Runnable runnable) {
+        sStopListeningForLocationUpdatesForTesting = runnable;
+        ResettersForTesting.register(() -> sStopListeningForLocationUpdatesForTesting = null);
+    }
+
     /** Stop requesting and listening for location updates from FusedLocationProvider. */
     public static void stopListeningForLocationUpdates() {
+        if (sStopListeningForLocationUpdatesForTesting != null) {
+            sStopListeningForLocationUpdatesForTesting.run();
+            return;
+        }
         if (!sCurrentLocationRequested) return;
         FusedLocationProviderClient fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(

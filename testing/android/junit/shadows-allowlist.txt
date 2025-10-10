@@ -20,7 +20,6 @@
 +org.chromium.chrome.browser.lens.LensPolicyUtils
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
 +org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
-+org.chromium.chrome.browser.omnibox.geo.GeolocationHeader
 +org.chromium.chrome.browser.omnibox.geo.GeolocationTracker
 +org.chromium.chrome.browser.omnibox.geo.PlatformNetworksManager
 +org.chromium.chrome.browser.omnibox.geo.VisibleNetworksTracker
