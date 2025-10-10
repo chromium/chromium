@@ -54,7 +54,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     }
 
     @Override
-    public boolean isOpenInNewWindowEnabled() {
+    public boolean isOpenInAnotherWindowEnabled() {
         return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity)
                 || MultiWindowUtils.getInstance().canEnterMultiWindowMode();
     }

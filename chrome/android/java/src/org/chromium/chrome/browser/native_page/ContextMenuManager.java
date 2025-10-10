@@ -48,7 +48,7 @@ public class ContextMenuManager {
         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP,
         ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
         ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW,
-        ContextMenuItemId.OPEN_IN_NEW_WINDOW,
+        ContextMenuItemId.OPEN_IN_OTHER_WINDOW,
         ContextMenuItemId.OPEN_ALL,
         ContextMenuItemId.SAVE_FOR_OFFLINE,
         ContextMenuItemId.ADD_TO_MY_APPS,
@@ -71,7 +71,7 @@ public class ContextMenuManager {
         int OPEN_IN_NEW_TAB_IN_GROUP = 2;
         int OPEN_IN_INCOGNITO_TAB = 3;
         int OPEN_IN_INCOGNITO_WINDOW = 4;
-        int OPEN_IN_NEW_WINDOW = 5;
+        int OPEN_IN_OTHER_WINDOW = 5;
         int OPEN_ALL = 6;
         int SAVE_FOR_OFFLINE = 7;
         int ADD_TO_MY_APPS = 8;
@@ -352,8 +352,8 @@ public class ContextMenuManager {
             case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
                 return mNavigationDelegate.isOpenInIncognitoEnabled()
                         && IncognitoUtils.shouldOpenIncognitoAsWindow();
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
-                return mNavigationDelegate.isOpenInNewWindowEnabled();
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
+                return mNavigationDelegate.isOpenInAnotherWindowEnabled();
             case ContextMenuItemId.OPEN_ALL:
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
@@ -399,7 +399,7 @@ public class ContextMenuManager {
                 return R.string.contextmenu_open_in_incognito_tab;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
                 return R.string.contextmenu_open_in_incognito_window;
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
                 return R.string.contextmenu_open_in_other_window;
             case ContextMenuItemId.OPEN_ALL:
                 return R.string.recent_tabs_open_all_menu_option;
@@ -452,9 +452,11 @@ public class ContextMenuManager {
                 RecordUserAction.record(
                         mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoWindow");
                 return true;
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
+                // TODO(crbug.com/450631766): Update WindowOpenDisposition to handle
+                // OPEN_IN_OTHER_WINDOW
                 delegate.openItem(WindowOpenDisposition.NEW_WINDOW);
-                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInNewWindow");
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInOtherWindow");
                 return true;
             case ContextMenuItemId.OPEN_ALL:
                 delegate.openAllItems();

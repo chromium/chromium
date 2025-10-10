@@ -230,7 +230,7 @@ class TileInteractionDelegateImpl
                 return !IncognitoUtils.shouldOpenIncognitoAsWindow();
             case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
                 return IncognitoUtils.shouldOpenIncognitoAsWindow();
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
                 return true;

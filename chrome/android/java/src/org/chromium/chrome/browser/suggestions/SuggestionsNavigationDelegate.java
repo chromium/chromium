@@ -47,7 +47,7 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
         if (inGroup) {
             assert windowOpenDisposition != WindowOpenDisposition.NEW_WINDOW
-                    : "Tabs in groups cannot be opened in a new window.";
+                    : "Tabs in groups cannot be opened in another window.";
             openUrlInGroup(windowOpenDisposition, loadUrlParams);
         } else {
             openUrl(windowOpenDisposition, loadUrlParams);

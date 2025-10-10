@@ -99,7 +99,9 @@ should be able to be added at any place in this file.
   <variant name=".OpenItemInNewTabInGroup"
       summary="Open a suggested item in a new tab in group."/>
   <variant name=".OpenItemInNewWindow"
-      summary="Open a suggested item in a new window."/>
+      summary="Open a suggested item in a new window. (obsolete)"/>
+  <variant name=".OpenItemInOtherWindow"
+      summary="Open a suggested item in an other window."/>
   <variant name=".PinItem"
       summary="Convert a suggested item to a custom item."/>
   <variant name=".RemoveItem" summary="Remove a suggested item."/>

@@ -70,7 +70,7 @@ public class ContextMenuManagerUnitTest {
     public void showListContextMenu() {
         doReturn(true).when(mDelegate).isItemSupported(anyInt());
         doReturn(false).when(mNavigationDelegate).isOpenInNewTabInGroupEnabled();
-        doReturn(false).when(mNavigationDelegate).isOpenInNewWindowEnabled();
+        doReturn(false).when(mNavigationDelegate).isOpenInAnotherWindowEnabled();
         doReturn(false).when(mNavigationDelegate).isOpenInIncognitoEnabled();
         doReturn(null).when(mDelegate).getUrl();
         doReturn(true).when(mAnchorView).isAttachedToWindow();
