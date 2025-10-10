@@ -126,12 +126,6 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
-<variants name="InstanceAllocationType">
-  <variant name="ExistingInstance"
-      summary="a restoration of a persisted instance"/>
-  <variant name="NewInstance" summary="a new instance"/>
-</variants>
-
 <!-- LINT.IfChange(MessageIdentifier) -->
 
 <variants name="MessageIdentifiers">
@@ -3270,24 +3264,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.MultiInstance.NumActivities.DesktopWindow.{InstanceAllocationType}"
-    units="activities" expires_after="2026-04-05">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the number of running ChromeTabbedActivity's when a new
-    ChromeTabbedActivity is started in a desktop window, as
-    {InstanceAllocationType}. This includes activities that may not be visible
-    on screen (i.e. it includes ChromeTabbedActivity's in the
-    &quot;stopped&quot; state). This does not include ChromeTabbedActivity's
-    that have been destroyed regardless of whether their owning Android Task may
-    be retrieved in Android Recents. Applicable to Android V+ only.
-  </summary>
-  <token key="InstanceAllocationType" variants="InstanceAllocationType"/>
-</histogram>
-
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
     expires_after="2026-03-01">
   <owner>jinsukkim@chromium.org</owner>
@@ -3320,25 +3296,6 @@ chromium-metrics-reviews@google.com.
     Task. Recorded on every ChromeTabbedActivity start-up in a desktop window.
     Applicable to Android V+ only.
   </summary>
-</histogram>
-
-<histogram
-    name="Android.MultiInstance.NumInstances.DesktopWindow.{InstanceAllocationType}"
-    units="instances" expires_after="2025-11-09">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    The number of allocated instance IDs which corresponds to the number of
-    retrievable Chrome instances (aka windows). An instance is considered
-    retrievable if it has tab state data on disk irrespective of whether that
-    data is currently assigned to a running ChromeTabbedActivity. These
-    instances may be retrieved from Chrome's in-app window manager from Android
-    Recents if they are associated with a live ChromeTabbedActivity or Android
-    Task. Recorded when a ChromeTabbedActivity starts in a desktop window, as
-    {InstanceAllocationType}. Applicable to Android V+ only.
-  </summary>
-  <token key="InstanceAllocationType" variants="InstanceAllocationType"/>
 </histogram>
 
 <histogram name="Android.MultiInstance.WindowManager.DesktopWindowModeState"
