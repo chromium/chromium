@@ -105,11 +105,6 @@ HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   if (content::RenderProcessHost::run_renderer_in_process())
     content::RenderProcessHost::ShutDownInProcessRenderer();
 
-  if (request_context_manager_) {
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, request_context_manager_.release());
-  }
-
   ShutdownStoragePartitions();
 
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(

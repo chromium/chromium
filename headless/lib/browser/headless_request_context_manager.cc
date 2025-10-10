@@ -65,22 +65,13 @@ class HeadlessProxyConfigMonitor
     : public net::ProxyConfigService::Observer,
       public ::network::mojom::ProxyConfigPollerClient {
  public:
-  static void DeleteSoon(std::unique_ptr<HeadlessProxyConfigMonitor> instance) {
-    instance->task_runner_->DeleteSoon(FROM_HERE, instance.release());
-  }
-
-  explicit HeadlessProxyConfigMonitor(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  HeadlessProxyConfigMonitor() {
     // We must create the proxy config service on the UI loop on Linux because
     // it must synchronously run on the glib message loop.
     proxy_config_service_ =
-        net::ProxyConfigService::CreateSystemProxyConfigService(task_runner_);
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&net::ProxyConfigService::AddObserver,
-                                  base::Unretained(proxy_config_service_.get()),
-                                  base::Unretained(this)));
+        net::ProxyConfigService::CreateSystemProxyConfigService(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    proxy_config_service_->AddObserver(this);
   }
 
   HeadlessProxyConfigMonitor(const HeadlessProxyConfigMonitor&) = delete;
@@ -88,7 +79,6 @@ class HeadlessProxyConfigMonitor
       delete;
 
   ~HeadlessProxyConfigMonitor() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     proxy_config_service_->RemoveObserver(this);
   }
 
@@ -98,7 +88,6 @@ class HeadlessProxyConfigMonitor
   // multiple NetworkContexts of proxy changes.
   void AddToNetworkContextParams(
       ::network::mojom::NetworkContextParams* network_context_params) {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (proxy_config_client_) {
       // This may be called in the course of re-connecting to a new instance
       // of network service following a restart, so the config client / poller
@@ -140,7 +129,6 @@ class HeadlessProxyConfigMonitor
   // network::mojom::ProxyConfigPollerClient implementation:
   void OnLazyProxyConfigPoll() override { proxy_config_service_->OnLazyPoll(); }
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   mojo::Receiver<::network::mojom::ProxyConfigPollerClient> poller_receiver_{
       this};
@@ -213,22 +201,12 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
     if (command_line->HasSwitch(switches::kNoSystemProxyConfigService)) {
       proxy_config_ = std::make_unique<net::ProxyConfig>();
     } else {
-      proxy_config_monitor_ = std::make_unique<HeadlessProxyConfigMonitor>(
-          base::SingleThreadTaskRunner::GetCurrentDefault());
+      proxy_config_monitor_ = std::make_unique<HeadlessProxyConfigMonitor>();
     }
   }
 }
 
-HeadlessRequestContextManager::~HeadlessRequestContextManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (proxy_config_monitor_) {
-    HeadlessProxyConfigMonitor::DeleteSoon(std::move(proxy_config_monitor_));
-  }
-  if (cookie_encryption_provider_) {
-    content::GetUIThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, cookie_encryption_provider_.release());
-  }
-}
+HeadlessRequestContextManager::~HeadlessRequestContextManager() = default;
 
 void HeadlessRequestContextManager::ConfigureNetworkContextParams(
     bool in_memory,
