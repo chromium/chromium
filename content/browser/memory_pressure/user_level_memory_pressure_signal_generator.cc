@@ -46,7 +46,7 @@ constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(4);
 // Time interval between measuring total private memory footprint.
 base::TimeDelta MeasurementIntervalFor3GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      &features::kUserLevelMemoryPressureSignalOn3GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
 }
@@ -66,7 +66,7 @@ constexpr base::ByteCount kMemoryThresholdOf3GbDevices = base::MiB(738);
 
 base::ByteCount MemoryThresholdParamFor3GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
-      &content::features::kUserLevelMemoryPressureSignalOn3GbDevices,
+      &features::kUserLevelMemoryPressureSignalOn3GbDevices,
       "memory_threshold_mb", kMemoryThresholdOf3GbDevices.InMiB()};
   return base::MiB(kMemoryThresholdParam.Get());
 }
@@ -97,29 +97,29 @@ void UserLevelMemoryPressureSignalGenerator::Initialize() {
   // on all devices to determine the most suitable memory heuristics. Memory
   // pressure signals will not be sent in the experiment group.
   if (base::FeatureList::IsEnabled(
-          content::features::kUserLevelMemoryPressureSignalMetricsOnly)) {
+          features::kUserLevelMemoryPressureSignalMetricsOnly)) {
     UserLevelMemoryPressureSignalGenerator::Get().StartMetricsCollection();
     return;
   }
 
-  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
+  if (features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor3GbDevices(), MeasurementIntervalFor3GbDevices(),
-        content::features::MinUserMemoryPressureIntervalOn3GbDevices());
+        features::MinUserMemoryPressureIntervalOn3GbDevices());
     return;
   }
 
-  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
+  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor4GbDevices(), MeasurementIntervalFor4GbDevices(),
-        content::features::MinUserMemoryPressureIntervalOn4GbDevices());
+        features::MinUserMemoryPressureIntervalOn4GbDevices());
     return;
   }
 
-  if (content::features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
+  if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
     UserLevelMemoryPressureSignalGenerator::Get().Start(
         MemoryThresholdParamFor6GbDevices(), MeasurementIntervalFor6GbDevices(),
-        content::features::MinUserMemoryPressureIntervalOn6GbDevices());
+        features::MinUserMemoryPressureIntervalOn6GbDevices());
     return;
   }
 
@@ -127,7 +127,7 @@ void UserLevelMemoryPressureSignalGenerator::Initialize() {
 }
 
 // static
-std::optional<content::UserLevelMemoryPressureMetrics>
+std::optional<UserLevelMemoryPressureMetrics>
 UserLevelMemoryPressureSignalGenerator::GetLatestMemoryMetrics() {
   return Get().latest_metrics_;
 }
@@ -170,15 +170,14 @@ void UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics() {
   int total_process_count = 0;
   int visible_renderer_count = 0;
 
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     total_process_count++;
   }
 
-  for (content::RenderProcessHost::iterator iter =
-           content::RenderProcessHost::AllHostsIterator();
+  for (RenderProcessHost::iterator iter = RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
     total_process_count++;
-    content::RenderProcessHost* host = iter.GetCurrentValue();
+    RenderProcessHost* host = iter.GetCurrentValue();
     if (host && host->IsInitializedAndNotDead() &&
         host->GetEffectiveChildBindingState() >=
             base::android::ChildBindingState::VISIBLE) {
@@ -186,7 +185,7 @@ void UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics() {
     }
   }
 
-  latest_metrics_ = content::UserLevelMemoryPressureMetrics{
+  latest_metrics_ = UserLevelMemoryPressureMetrics{
       .total_private_footprint =
           GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers(),
       .available_memory = meminfo.available,
@@ -268,7 +267,7 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
   // measure the private memory footprints of the utility processes.
   // TODO(crbug.com/40248151): measure the private memory footprints of
   // the utility processes correctly.
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     add_process_private_footprint(
         total_pmf_visible_or_higher_priority_renderers_bytes,
         iter.GetData().GetProcess());
@@ -278,10 +277,9 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
   // or higher priority. Since the renderer processes with invisible or lower
   // priority will be cleaned up by Android OS, this pressure signal feature
   // doesn't need to take care of them.
-  for (content::RenderProcessHost::iterator iter =
-           content::RenderProcessHost::AllHostsIterator();
+  for (RenderProcessHost::iterator iter = RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
-    content::RenderProcessHost* host = iter.GetCurrentValue();
+    RenderProcessHost* host = iter.GetCurrentValue();
     if (!host || !host->IsInitializedAndNotDead())
       continue;
 
@@ -300,9 +298,8 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
     // status, i.e. no such file or directory. So each renderer process
     // provides its private memory footprint for the browser process and
     // the browser process gets the (cached) value via RenderProcessHostImpl.
-    total_pmf_visible_or_higher_priority_renderers_bytes +=
-        base::ByteCount(static_cast<content::RenderProcessHostImpl*>(host)
-                            ->GetPrivateMemoryFootprint());
+    total_pmf_visible_or_higher_priority_renderers_bytes += base::ByteCount(
+        static_cast<RenderProcessHostImpl*>(host)->GetPrivateMemoryFootprint());
   }
 
   return total_pmf_visible_or_higher_priority_renderers_bytes;
@@ -311,28 +308,27 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
 // static
 void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
   // Notifies GPU process and Utility processes.
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     if (!iter.GetData().GetProcess().IsValid())
       continue;
 
-    content::ChildProcessHostImpl* host =
-        static_cast<content::ChildProcessHostImpl*>(iter.GetHost());
+    ChildProcessHostImpl* host =
+        static_cast<ChildProcessHostImpl*>(iter.GetHost());
     host->NotifyMemoryPressureToChildProcess(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   // Notifies renderer processes.
-  for (content::RenderProcessHost::iterator iter =
-           content::RenderProcessHost::AllHostsIterator();
+  for (RenderProcessHost::iterator iter = RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
-    content::RenderProcessHost* host = iter.GetCurrentValue();
+    RenderProcessHost* host = iter.GetCurrentValue();
     if (!host || !host->IsInitializedAndNotDead())
       continue;
     if (!host->GetProcess().IsValid())
       continue;
 
-    static_cast<content::RenderProcessHostImpl*>(host)
-        ->NotifyMemoryPressureToRenderer(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    static_cast<RenderProcessHostImpl*>(host)->NotifyMemoryPressureToRenderer(
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   // Notifies browser process.
