@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -228,6 +229,12 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
     return E_INVALIDARG;
   }
 
+  {
+    base::AutoLock lock{lock_};
+    output_ = {};
+  }
+  command_completed_event_.Reset();
+
   // Holds the result of the IPC to retrieve the process and hr from
   // `GetAppOutputWithExitCodeAndTimeout`.
   struct GetAppOutputWithExitCodeAndTimeoutResult
@@ -278,6 +285,8 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
 
                       if (!partial_output.empty()) {
                         VLOG(1) << "AppCommand output: " << partial_output;
+                        base::AutoLock lock{obj->lock_};
+                        obj->output_ += partial_output;
                       }
                     },
                     &final_status);
@@ -297,13 +306,15 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
               },
               base::WrapRefCounted(this), *command_line_parameters, result)
               .Then(base::BindOnce(
-                  [](scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
+                  [](scoped_refptr<AppCommandRunner> obj,
+                     scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
                          result,
                      HRESULT hr) {
                     result->hr = hr;
                     result->process_event.Signal();
+                    obj->command_completed_event_.Signal();
                   },
-                  result)));
+                  base::WrapRefCounted(this), result)));
 
   result->process_event.Wait();
   if (!result->process) {
@@ -315,6 +326,15 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
   process = result->process->Duplicate();
   VLOG(2) << __func__ << ": Started process with PID: " << process.Pid();
   return S_OK;
+}
+
+std::string AppCommandRunner::output() {
+  base::AutoLock lock{lock_};
+  return output_;
+}
+
+bool AppCommandRunner::TimedWait(base::TimeDelta wait_delta) {
+  return command_completed_event_.TimedWait(wait_delta);
 }
 
 // static

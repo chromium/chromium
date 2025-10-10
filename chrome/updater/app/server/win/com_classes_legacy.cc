@@ -1195,12 +1195,15 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
     return E_INVALIDARG;
   }
 
+  if (!app_command_runner_.has_value()) {
+    return E_UNEXPECTED;
+  }
+
   if (!process_.IsValid()) {
     *status = COMMAND_STATUS_INIT;
-  } else if (process_.IsRunning()) {
-    *status = COMMAND_STATUS_RUNNING;
   } else {
-    *status = COMMAND_STATUS_COMPLETE;
+    *status = app_command_runner_.value()->TimedWait() ? COMMAND_STATUS_COMPLETE
+                                                       : COMMAND_STATUS_RUNNING;
   }
 
   return S_OK;
@@ -1222,8 +1225,14 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
+  if (!app_command_runner_.has_value()) {
+    return E_UNEXPECTED;
+  }
+
+  *output = base::win::ScopedBstr(
+                base::UTF8ToWide(app_command_runner_.value()->output()))
+                .Release();
+  return S_OK;
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,

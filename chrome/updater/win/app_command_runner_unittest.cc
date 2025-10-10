@@ -623,4 +623,39 @@ TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
       });
 }
 
+struct AppCommandOutputTestCase {
+  const std::vector<std::wstring> input;
+  const std::string expected_output;
+};
+
+class AppCommandOutputTest
+    : public ::testing::WithParamInterface<AppCommandOutputTestCase>,
+      public AppCommandRunnerTestBase {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AppCommandOutputTestCases,
+    AppCommandOutputTest,
+    ::testing::ValuesIn(std::vector<AppCommandOutputTestCase>{
+        {{L"/c", L"\"echo hello\""}, "hello\r\n"},
+        {{L"/c", L"exit"}, ""},
+    }));
+
+TEST_P(AppCommandOutputTest, TestCases) {
+  scoped_refptr<AppCommandRunner> app_command_runner =
+      base::MakeRefCounted<AppCommandRunner>();
+  base::Process process;
+  ASSERT_OK_AND_ASSIGN(
+      app_command_runner,
+      CreateAppCommandRunner(
+          kAppId1, kCmdId1,
+          base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                        base::JoinString(GetParam().input, L" ")})));
+  ASSERT_HRESULT_SUCCEEDED(app_command_runner->Run({}, process));
+
+  EXPECT_TRUE(
+      app_command_runner->TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_FALSE(process.IsRunning());
+  EXPECT_EQ(app_command_runner->output(), GetParam().expected_output);
+}
+
 }  // namespace updater

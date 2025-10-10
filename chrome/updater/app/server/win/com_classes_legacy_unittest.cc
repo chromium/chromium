@@ -21,6 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
@@ -147,6 +148,57 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
   EXPECT_EQ(status, COMMAND_STATUS_COMPLETE);
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
   EXPECT_EQ(exit_code, 7U);
+  EXPECT_TRUE(ping_sent);
+}
+
+TEST_F(LegacyAppCommandWebImplTest, Output) {
+  bool ping_sent = false;
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
+  ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
+      kAppId1, kCmdId1,
+      base::StrCat({cmd_exe_command_line_.GetCommandLineString(),
+                    L" /c \"echo hello\""}),
+      base::BindLambdaForTesting(
+          [&ping_sent](UpdaterScope scope, const std::string& app_id,
+                       const std::string& command_id,
+                       LegacyAppCommandWebImpl::ErrorParams error_params,
+                       update_client::Callback callback) {
+            ping_sent = true;
+            EXPECT_EQ(GetUpdaterScopeForTesting(), scope);
+            EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+            EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
+            EXPECT_EQ(error_params.error_code, 0);
+            EXPECT_EQ(error_params.extra_code1, 0);
+          }),
+      app_command_web));
+  UINT status = 0;
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
+  EXPECT_EQ(status, COMMAND_STATUS_INIT);
+  DWORD exit_code = 0;
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
+
+  ASSERT_HRESULT_SUCCEEDED(
+      app_command_web->execute(base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant));
+
+  WaitForUpdateCompletion(app_command_web);
+
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
+  EXPECT_EQ(status, COMMAND_STATUS_COMPLETE);
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(exit_code, 0u);
+
+  base::win::ScopedBstr output;
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_output(output.Receive()));
+  EXPECT_STREQ(output.Get(), L"hello\r\n");
+
   EXPECT_TRUE(ping_sent);
 }
 

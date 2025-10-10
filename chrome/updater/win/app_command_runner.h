@@ -16,6 +16,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -44,6 +46,14 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
   // `process` if successful.
   HRESULT Run(base::span<const std::wstring> substitutions,
               base::Process& process);
+
+  // Returns the output that the AppCommand generated, if any.
+  std::string output();
+
+  // Waits until `wait_delta` for the completion of the AppCommand execution.
+  // Returns true if the AppCommand completes execution by `wait_delta`, false
+  // otherwise.
+  bool TimedWait(base::TimeDelta wait_delta = {});
 
  protected:
   friend class base::RefCountedThreadSafe<AppCommandRunner>;
@@ -90,6 +100,12 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
 
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
+  base::WaitableEvent command_completed_event_;
+
+  // Access to the following object members must be serialized by using the
+  // lock.
+  mutable base::Lock lock_;
+  std::string output_;
 
   friend class base::RefCountedThreadSafe<AppCommandRunner>;
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsInvalidPathsTest,
