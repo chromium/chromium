@@ -2602,6 +2602,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Fonts.LastResortFallbackFound" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <summary>
+    Records whether a last resort fallback font was found. This is attempted
+    when no other specified font could be instantiated to render a character.
+    The last resort font from the FontDescription is tried first, and then
+    hardcoded system fonts if needed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fonts.VariableFontsRatio"
     enum="WebFontInstantiationResult" expires_after="2025-10-26">
   <owner>drott@chromium.org</owner>

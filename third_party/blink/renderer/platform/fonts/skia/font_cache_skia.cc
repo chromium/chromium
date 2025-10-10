@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
@@ -208,6 +209,8 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
   }
 #endif
 
+  base::UmaHistogramBoolean("Blink.Fonts.LastResortFallbackFound",
+                            font_platform_data != nullptr);
   DCHECK(font_platform_data);
   return FontDataFromFontPlatformData(font_platform_data);
 }
