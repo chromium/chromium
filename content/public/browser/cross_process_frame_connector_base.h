@@ -190,9 +190,11 @@ class CONTENT_EXPORT CrossProcessFrameConnectorBase
   // IsThrottled() indicates that the frame is outside of it's parent frame's
   // visible viewport, and should be render throttled.
   virtual bool IsThrottled() const = 0;
+
   // IsSubtreeThrottled() indicates that IsThrottled() is true for one of this
   // frame's ancestors, which means this frame must also be throttled.
   virtual bool IsSubtreeThrottled() const = 0;
+
   // IsDisplayLocked() indicates that a DOM ancestor of this frame's owning
   // <iframe> element in the parent frame is currently display locked; or that
   // IsDisplayLocked() is true for one of this frame's ancestors; which means
