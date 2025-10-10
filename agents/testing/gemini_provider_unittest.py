@@ -256,6 +256,18 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         self.assertEqual(error, '')
         self.assertEqual(args.timeout_seconds, 123)
 
+    def test_string_console_width(self):
+        """Tests that string console widths are successfully parsed."""
+        provider_vars = {'console_width': '99'}
+        provider_config = {}
+        user_prompt = ''
+
+        args, error = gemini_provider._get_gemini_cli_arguments(
+            provider_vars, provider_config, user_prompt)
+
+        self.assertEqual(error, '')
+        self.assertEqual(args.console_width, 99)
+
 
 class GetSystemPromptUnittest(unittest.TestCase):
     """Unit tests for the `_get_system_prompt` function."""

@@ -277,7 +277,8 @@ def _get_gemini_cli_arguments(
         timeout_seconds=timeout_seconds,
         system_prompt=_get_system_prompt(provider_config),
         user_prompt=user_prompt,
-        console_width=provider_vars.get('console_width', 80)), ''
+        console_width=int(provider_vars.get('console_width', 80)),
+    ), ''
 
 
 def _get_system_prompt(provider_config: dict[str, Any]) -> str:
