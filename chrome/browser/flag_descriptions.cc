@@ -4730,6 +4730,10 @@ const char kAndroidGrammarCheckDescription[] =
     "When typing, allows spellcheckers to highlight grammar errors and suggest "
     "corrections on browser text input.";
 
+const char kAndroidMediaInsertionName[] = "Enable IME media insertion";
+const char kAndroidMediaInsertionDescription[] =
+    "Enables IMEs to insert media content such as images, gifs and stickers.";
+
 const char kAndroidSpellcheckNativeUiName[] =
     "Enable native-like spellcheck underline UI";
 const char kAndroidSpellcheckNativeUiDescription[] =
