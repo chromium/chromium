@@ -44,6 +44,8 @@ void WebAppTest::TearDown() {
   // Make sure that we flush any messages related to WebContentsImpl
   // destruction before we destroy the profiles.
   base::RunLoop().RunUntilIdle();
+  // Reset `profile_` to prevent dangling.
+  profile_ = nullptr;
   testing_profile_manager_.DeleteAllTestingProfiles();
   content::RenderViewHostTestHarness::TearDown();
 }

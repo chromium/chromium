@@ -50,7 +50,6 @@ class InstallAppLocallyCommandTest : public WebAppTest {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
-    provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
         std::make_unique<WebAppFileHandlerManager>(profile());
@@ -60,7 +59,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
         profile(), std::move(file_handler_manager),
         std::move(protocol_handler_manager));
 
-    provider_->SetOsIntegrationManager(std::move(os_integration_manager));
+    fake_provider().SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -92,7 +91,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
     params.add_to_quick_launch_bar = false;
     params.add_to_search = false;
     // InstallFromInfo does not trigger OS integration.
-    provider().scheduler().InstallFromInfoWithParams(
+    fake_provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         result.GetCallback(), params);
@@ -116,7 +115,6 @@ class InstallAppLocallyCommandTest : public WebAppTest {
   }
 
  protected:
-  WebAppProvider& provider() { return *provider_; }
   SkBitmap CreateSolidColorIcon(int size, SkColor color) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(size, size);
@@ -161,7 +159,6 @@ class InstallAppLocallyCommandTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
@@ -179,7 +176,8 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
       InstallNonLocallyInstalledAppWithIcons(std::move(icon_map));
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
   const proto::os_state::WebAppOsIntegration& os_integration_state =
       state.value();
@@ -190,32 +188,34 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
 
   // Install app locally.
   base::test::TestFuture<void> test_future;
-  provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
+  fake_provider().scheduler().InstallAppLocally(app_id,
+                                                test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
 
   auto updated_state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(updated_state.has_value());
   const proto::os_state::WebAppOsIntegration& updated_os_states =
       updated_state.value();
   ASSERT_TRUE(updated_os_states.has_shortcut());
 
   EXPECT_TRUE(
-      provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
+      fake_provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
           WebAppManagement::kUserInstalled));
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {
     ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
-        provider().registrar_unsafe().GetAppShortName(app_id)));
+        fake_provider().registrar_unsafe().GetAppShortName(app_id)));
 
     // On all desktop platforms, the shortcut icon that is used for the
     // launcher is icon_size::k128, which should be GREEN as per the icon_map
     // being used above.
     ASSERT_THAT(
-        GetShortcutColor(app_id,
-                         provider().registrar_unsafe().GetAppShortName(app_id)),
+        GetShortcutColor(
+            app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
         testing::Eq(SK_ColorGREEN));
   }
 }
@@ -224,9 +224,10 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   const webapps::AppId app_id = "abcde";
 
   base::test::TestFuture<void> test_future;
-  provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
+  fake_provider().scheduler().InstallAppLocally(app_id,
+                                                test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(fake_provider().registrar_unsafe().IsInRegistrar(app_id));
 }
 
 }  // namespace
