@@ -42,12 +42,15 @@ interface DeepScanResult {
  */
 function initialize() {
   sendWithPromise('getExperiments', [])
-      .then((experiments) => addExperiments(experiments));
-  sendWithPromise('getPrefs', []).then((prefs) => addPrefs(prefs));
-  sendWithPromise('getPolicies', []).then((policies) => addPolicies(policies));
-  sendWithPromise('getCookie', []).then((cookie) => addCookie(cookie));
+      .then((experiments: string[]) => addExperiments(experiments));
+  sendWithPromise('getPrefs', []).then((prefs: string[]) => addPrefs(prefs));
+  sendWithPromise('getPolicies', [])
+      .then((policies: Array<string|boolean>) => addPolicies(policies));
+  sendWithPromise('getCookie', []).then((cookie: [
+                                          string, number
+                                        ]) => addCookie(cookie));
   sendWithPromise('getSavedPasswords', [])
-      .then((passwords) => addSavedPasswords(passwords));
+      .then((passwords: Array<string|boolean>) => addSavedPasswords(passwords));
   sendWithPromise('getDatabaseManagerInfo', []).then(function(databaseState) {
     const fullHashCacheState = databaseState.splice(-1, 1);
     addDatabaseManagerInfo(databaseState);
@@ -277,48 +280,65 @@ function initialize() {
   }, true);
 }
 
-function addExperiments(result: string[]) {
-  addContentHelper(result, 'result-template', 'experiments-list', 'span');
+// Adds the currently running experimental Safe Browsing features, and
+// their statuses, to the DOM. `experiments` is an array of strings
+// where the even-indexed elements contain the feature's name and the
+// odd-indexed elements are the feature's status.
+function addExperiments(experiments: string[]) {
+  addContentHelper(experiments, 'result-template', 'experiments-list', 'span');
 }
 
-function addPrefs(result: string[]) {
-  addContentHelper(result, 'result-template', 'preferences-list', 'span');
+// Adds a list of preferences and their statuses to the DOM. `prefs` is
+// an array of strings where the even-indexed elements contain the
+// pref's name and the odd-indexed elements are the pref's status.
+function addPrefs(prefs: string[]) {
+  addContentHelper(prefs, 'result-template', 'preferences-list', 'span');
 }
 
-function addPolicies(result: string[]) {
-  addContentHelper(result, 'result-template', 'policies-list', 'span');
+// Adds a list of policies and their statuses to the DOM. `policies` is
+// an array where the even-indexed elements contain the policy's name
+// and the odd-indexed elements are the policy's status. The policy's
+// status can be represented either as a string or a boolean.
+function addPolicies(policies: Array<string|boolean>) {
+  addContentHelper(policies, 'result-template', 'policies-list', 'span');
 }
 
-function addCookie(result: [string, number]) {
+// Adds the value of the Safe Browsing Cookie and the time it was
+// created. `cookie` is a expected to be an array containing two
+// elements where the first element is Safe Browsing Cookie's
+// value and the second element is its creation time.
+function addCookie(cookie: [string, number]) {
   const cookiePanel = $('cookie-panel');
+  assert(cookiePanel);
   const cookieTemplate = $<HTMLTemplateElement>('cookie-template');
   assert(cookieTemplate);
+
   const cookieFormatted = cookieTemplate.content.cloneNode(true) as HTMLElement;
   const selectedElements = cookieFormatted.querySelectorAll('.result');
   assert(selectedElements);
-  const firstElement = selectedElements[0];
-  const secondElement = selectedElements[1];
-  const firstResult = result[0];
-  const secondResult = result[1];
 
-  assert(cookiePanel);
-  assert(firstElement);
-  assert(secondElement);
-  assert(firstResult);
-  assert(secondResult !== null && secondResult !== undefined);
+  const cookieValueDOM = selectedElements[0];
+  assert(cookieValueDOM);
+  const creationDateDOM = selectedElements[1];
+  assert(creationDateDOM);
+  const cookieValue = cookie[0];
+  assert(cookieValue);
+  const creationDate = cookie[1];
+  assert(creationDate !== null && creationDate !== undefined);
 
-  firstElement.textContent = firstResult;
-  secondElement.textContent = (new Date(secondResult)).toLocaleString();
+  cookieValueDOM.textContent = cookieValue;
+  creationDateDOM.textContent = (new Date(creationDate)).toLocaleString();
   cookiePanel.appendChild(cookieFormatted);
 }
 
-function addSavedPasswords(result: string[]) {
-  const resLength = result.length;
-
-  for (let i = 0; i < resLength; i += 2) {
+// Adds saved passwords data to the DOM. `passwords` is an array where
+// the even-indexed elements contain the username and the odd-indexed
+// elements are boolean values indicating how the password is stored.
+function addSavedPasswords(passwords: Array<string|boolean>) {
+  for (let i = 0; i < passwords.length; i += 2) {
     const savedPasswordFormatted = document.createElement('div');
-    const suffix = result[i + 1] ? 'GAIA password' : 'Enterprise password';
-    savedPasswordFormatted.textContent = `${result[i]} (${suffix})`;
+    const suffix = passwords[i + 1] ? 'GAIA password' : 'Enterprise password';
+    savedPasswordFormatted.textContent = `${passwords[i]} (${suffix})`;
     const savedPasswordsList = $('saved-passwords');
     assert(savedPasswordsList);
     savedPasswordsList.appendChild(savedPasswordFormatted);
@@ -360,34 +380,36 @@ function addDatabaseManagerInfo(result: string[]) {
   }
 }
 
-// A helper function that formats and adds strings from `result` into the
-// template and then appends the template to the parent list.
+// A helper function that formats and adds the content's name and its
+// status into the template and then appends the template to the parent
+// list.
 function addContentHelper(
-    result: string[], templateName: string, parentListName: string,
-    elementSelector: string) {
-  const resLength = result.length;
+    content: Array<string|boolean>, templateName: string,
+    parentListName: string, elementSelector: string) {
+  const resLength = content.length;
 
   for (let i = 0; i < resLength; i += 2) {
     const listTemplate = $<HTMLTemplateElement>(templateName);
     assert(listTemplate);
     const formattedTemplate =
         listTemplate.content.cloneNode(true) as HTMLElement;
-    const firstResult = result[i];
-    const secondResult = result[i + 1];
+
+    const contentName = content[i];
+    const status = content[i + 1];
+    assert(contentName !== null && contentName !== undefined);
+    assert(status !== null && status !== undefined);
+
     const selectedElements =
         formattedTemplate.querySelectorAll(elementSelector);
-    const firstElement = selectedElements[0];
-    const secondElement = selectedElements[1];
+    const labelDOM = selectedElements[0];
+    const valueDOM = selectedElements[1];
+    assert(labelDOM);
+    assert(valueDOM);
     const parentList = $(parentListName);
-
-    assert(firstResult !== null && firstResult !== undefined);
-    assert(secondResult);
-    assert(firstElement);
-    assert(secondElement);
     assert(parentList);
 
-    firstElement.textContent = secondResult + ': ';
-    secondElement.textContent = firstResult;
+    labelDOM.textContent = status + ': ';
+    valueDOM.textContent = contentName.toString();
     parentList.appendChild(formattedTemplate);
   }
 }
