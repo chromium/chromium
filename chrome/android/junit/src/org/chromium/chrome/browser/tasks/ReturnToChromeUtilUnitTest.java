@@ -29,7 +29,6 @@ import android.text.format.DateUtils;
 
 import androidx.test.filters.SmallTest;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,8 +42,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
@@ -62,6 +59,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -71,7 +69,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -83,21 +80,9 @@ import java.util.List;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowHomepagePolicyManager.class})
+@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
 public class ReturnToChromeUtilUnitTest {
-    @Implements(HomepagePolicyManager.class)
-    static class ShadowHomepagePolicyManager {
-        static boolean sIsInitialized;
-
-        @Implementation
-        public static boolean isInitializedWithNative() {
-            return sIsInitialized;
-        }
-    }
-
     private static final int ON_RETURN_THRESHOLD_SECOND = 1000;
     private static final int DELTA_MS = 100;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -128,8 +113,7 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mProfile).when(mCurrentTabModel).getProfile();
         doReturn(mCurrentTabModel).when(mTabModelSelector).getCurrentModel();
 
-        ShadowHomepagePolicyManager.sIsInitialized = true;
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
+        HomepagePolicyManager.setIsInitializedWithNativeForTesting(true);
 
         // Low end devices:
         Assert.assertFalse(SysUtils.isLowEndDevice());
@@ -181,7 +165,6 @@ public class ReturnToChromeUtilUnitTest {
         // Tests the case when there isn't any Tab. Verifies that home surface NTP is shown.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(0).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
 
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(
@@ -442,7 +425,6 @@ public class ReturnToChromeUtilUnitTest {
         // There should always be at least 1 tab. Otherwise one will be created regardless.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
 
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(

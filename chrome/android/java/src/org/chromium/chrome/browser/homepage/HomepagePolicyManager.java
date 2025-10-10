@@ -44,6 +44,10 @@ public class HomepagePolicyManager implements PrefObserver {
     private static @Nullable HomepagePolicyManager sInstance;
 
     private static @Nullable PrefService sPrefServiceForTesting;
+    private static @Nullable GURL sHomepageUrlForTesting;
+    private static @Nullable Boolean sHomepageIsNtpForTesting;
+    private static @Nullable Boolean sIsHomepageManagedForTesting;
+    private static @Nullable Boolean sIsInitializedWithNativeForTesting;
 
     private boolean mIsHomepageLocationManaged;
     private GURL mHomepageUrl;
@@ -67,6 +71,18 @@ public class HomepagePolicyManager implements PrefObserver {
         return sInstance;
     }
 
+    public static void setHomepageForTesting(boolean isManaged, GURL homepageUrl, boolean isNtp) {
+        sIsHomepageManagedForTesting = isManaged;
+        sHomepageUrlForTesting = homepageUrl;
+        sHomepageIsNtpForTesting = isNtp;
+        ResettersForTesting.register(
+                () -> {
+                    sIsHomepageManagedForTesting = null;
+                    sHomepageUrlForTesting = null;
+                    sHomepageIsNtpForTesting = null;
+                });
+    }
+
     /**
      * If policies such as HomepageLocation are enabled on this device, the home page will be marked
      * as managed.
@@ -74,6 +90,9 @@ public class HomepagePolicyManager implements PrefObserver {
      * @return True if the current home page is managed by enterprise policy.
      */
     public static boolean isHomepageLocationManaged() {
+        if (sIsHomepageManagedForTesting != null) {
+            return sIsHomepageManagedForTesting;
+        }
         return getInstance().isHomepageLocationPolicyManaged();
     }
 
@@ -81,6 +100,9 @@ public class HomepagePolicyManager implements PrefObserver {
      * @return The homepage URL from the homepage preference.
      */
     public static GURL getHomepageUrl() {
+        if (sHomepageUrlForTesting != null) {
+            return sHomepageUrlForTesting;
+        }
         return getInstance().getHomepageLocationPolicyUrl();
     }
 
@@ -179,6 +201,9 @@ public class HomepagePolicyManager implements PrefObserver {
      * Returns true if HomepageIsNewTabPage policy is managed and has a value of true, else false.
      */
     public static boolean isHomepageNewTabPageEnabled() {
+        if (sHomepageIsNtpForTesting != null) {
+            return sHomepageIsNtpForTesting;
+        }
         return isHomepageNewTabPageManaged() && getHomepageNewTabPageValue();
     }
 
@@ -187,11 +212,20 @@ public class HomepagePolicyManager implements PrefObserver {
      * HomepagePolicyManager can only return valid result after initialing with native.
      */
     public static boolean isInitializedWithNative() {
+        if (sIsInitializedWithNativeForTesting != null) {
+            return sIsInitializedWithNativeForTesting;
+        }
         return getInstance().isInitialized();
+    }
+
+    public static void setIsInitializedWithNativeForTesting(boolean isInitialized) {
+        sIsInitializedWithNativeForTesting = isInitialized;
+        ResettersForTesting.register(() -> sIsInitializedWithNativeForTesting = null);
     }
 
     /**
      * Adds a HomepagePolicyStateListener to receive updates when the homepage policy changes.
+     *
      * @param listener Object that would like to listen to changes from homepage policy.
      */
     public void addListener(HomepagePolicyStateListener listener) {

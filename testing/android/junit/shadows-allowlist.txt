@@ -14,7 +14,6 @@
 +org.chromium.base.version_info.VersionInfo
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
 +org.chromium.chrome.browser.firstrun.FirstRunUtils
-+org.chromium.chrome.browser.homepage.HomepagePolicyManager
 +org.chromium.chrome.browser.incognito.IncognitoUtils
 +org.chromium.chrome.browser.init.ChromeBrowserInitializer
 +org.chromium.chrome.browser.lens.LensController

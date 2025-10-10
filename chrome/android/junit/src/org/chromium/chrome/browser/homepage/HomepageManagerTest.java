@@ -29,34 +29,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link HomepageManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        shadows = {
-            HomepageManagerTest.ShadowHomepagePolicyManager.class,
-            HomepageManagerTest.ShadowPartnerBrowserCustomizations.class
-        })
+@Config(shadows = {HomepageManagerTest.ShadowPartnerBrowserCustomizations.class})
 public class HomepageManagerTest {
-    /** Shadow for {@link HomepagePolicyManager}. */
-    @Implements(HomepagePolicyManager.class)
-    public static class ShadowHomepagePolicyManager {
-        static GURL sHomepageUrl;
-        static Boolean sHomepageIsNtp;
-
-        @Implementation
-        public static boolean isHomepageLocationManaged() {
-            return true;
-        }
-
-        @Implementation
-        public static GURL getHomepageUrl() {
-            return sHomepageUrl;
-        }
-
-        @Implementation
-        public static boolean isHomepageNewTabPageEnabled() {
-            return Boolean.TRUE.equals(sHomepageIsNtp);
-        }
-    }
-
     @Implements(PartnerBrowserCustomizations.class)
     static class ShadowPartnerBrowserCustomizations {
         private static PartnerBrowserCustomizations sPartnerBrowserCustomizations;
@@ -86,17 +60,17 @@ public class HomepageManagerTest {
     public void testIsHomepageNonNtp() {
         HomepageManager homepageManager = HomepageManager.getInstance();
 
-        ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
+        HomepagePolicyManager.setHomepageForTesting(true, GURL.emptyGURL(), false);
         Assert.assertFalse(
                 "Empty string should fall back to NTP.", homepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.EXAMPLE_URL;
+        HomepagePolicyManager.setHomepageForTesting(true, JUnitTestGURLs.EXAMPLE_URL, false);
         Assert.assertTrue("Random web page is not the NTP.", homepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.NTP_NATIVE_URL;
+        HomepagePolicyManager.setHomepageForTesting(true, JUnitTestGURLs.NTP_NATIVE_URL, false);
         Assert.assertFalse("NTP should be considered the NTP.", homepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageIsNtp = true;
+        HomepagePolicyManager.setHomepageForTesting(true, JUnitTestGURLs.EXAMPLE_URL, true);
         Assert.assertFalse("NTP policy forces NTP.", homepageManager.isHomepageNonNtp());
     }
 
