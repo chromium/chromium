@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -41,17 +43,22 @@ Profile* GetOriginalSigninProfile() {
 
 class LoginScreenExtensionsLifetimeManagerTest
     : public MixinBasedInProcessBrowserTest {
+ public:
+  LoginScreenExtensionsLifetimeManagerTest(
+      const LoginScreenExtensionsLifetimeManagerTest&) = delete;
+  LoginScreenExtensionsLifetimeManagerTest& operator=(
+      const LoginScreenExtensionsLifetimeManagerTest&) = delete;
+
  protected:
   LoginScreenExtensionsLifetimeManagerTest() {
     // Don't shut down when no browser is open, since it breaks the test and
     // since it's not the real Chrome OS behavior.
     set_exit_when_last_browser_closes(false);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kLockScreenBadgeAuth},
+        /*disabled_features=*/{});
   }
 
-  LoginScreenExtensionsLifetimeManagerTest(
-      const LoginScreenExtensionsLifetimeManagerTest&) = delete;
-  LoginScreenExtensionsLifetimeManagerTest& operator=(
-      const LoginScreenExtensionsLifetimeManagerTest&) = delete;
   ~LoginScreenExtensionsLifetimeManagerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -100,6 +107,7 @@ class LoginScreenExtensionsLifetimeManagerTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};

@@ -17,9 +17,12 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/pref_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -47,6 +50,15 @@ base::Value::Dict GetForceInstalledExtensionsFromPrefs(
   return login_screen_extensions_pref_value->GetDict().Clone();
 }
 
+// Whether extensions should be loaded on the lock screen instead of the sign-in
+// profile.
+bool IsLockScreenTakingOver() {
+  const auto session_state =
+      session_manager::SessionManager::Get()->session_state();
+  return chromeos::features::IsLockScreenBadgeAuthEnabled() &&
+         session_state == session_manager::SessionState::LOCKED &&
+         ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext();
+}
 }  // namespace
 
 AuthenticationScreenExtensionsExternalLoader::
@@ -66,6 +78,10 @@ AuthenticationScreenExtensionsExternalLoader::
   DCHECK(ash::IsSigninBrowserContext(profile) ||
          (chromeos::features::IsLockScreenBadgeAuthEnabled() &&
           ash::IsLockScreenBrowserContext(profile)));
+  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
+  }
 }
 
 void AuthenticationScreenExtensionsExternalLoader::StartLoading() {
@@ -94,6 +110,10 @@ bool AuthenticationScreenExtensionsExternalLoader::IsRollbackAllowed() const {
   return true;
 }
 
+void AuthenticationScreenExtensionsExternalLoader::OnSessionStateChanged() {
+  UpdateStateFromPrefs();
+}
+
 AuthenticationScreenExtensionsExternalLoader::
     ~AuthenticationScreenExtensionsExternalLoader() = default;
 
@@ -115,8 +135,21 @@ void AuthenticationScreenExtensionsExternalLoader::
 }
 
 void AuthenticationScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
+  bool is_lock_screen_taking_over = IsLockScreenTakingOver();
+  bool should_load_extensions;
+  if (ash::IsSigninBrowserContext(profile_)) {
+    should_load_extensions = !is_lock_screen_taking_over;
+  } else {
+    DCHECK(ash::IsLockScreenBrowserContext(profile_));
+    should_load_extensions = is_lock_screen_taking_over;
+  }
+
   auto force_installed_extensions =
-      GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs());
+      should_load_extensions
+          ? GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs())
+          : base::Value::Dict();
+  // TODO(crbug.com/447591120): On the lock profile, only load badge based auth
+  // extensions.
   external_cache_.UpdateExtensionsList(std::move(force_installed_extensions));
 }
 

@@ -87,6 +87,10 @@ include_rules = [
   "+chrome/services/media_gallery_util/public/mojom",
   "+chrome/services/pdf/public/mojom",
   "+chrome/test/base",
+  "+chrome/browser/ash/login/lock/screen_locker_tester.h",
+  "+chrome/browser/ash/login/test/device_state_mixin.h",
+  "+chrome/browser/ash/login/test/login_manager_mixin.h",
+  "+chrome/browser/ash/login/test/session_manager_state_waiter.h",
 
   # Dependencies outside of //chrome:
   "+third_party/ced",

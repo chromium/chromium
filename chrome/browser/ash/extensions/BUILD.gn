@@ -158,6 +158,7 @@ source_set("browser_tests") {
 
   sources = [
     "accessibility_features_apitest.cc",
+    "authentication_screen_extensions_external_loader_browsertest.cc",
     "default_keyboard_extension_browser_test.cc",
     "default_keyboard_extension_browser_test.h",
     "incoming_native_messaging_apitest.cc",
@@ -171,12 +172,14 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",

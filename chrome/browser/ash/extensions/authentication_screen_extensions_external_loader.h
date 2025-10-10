@@ -8,11 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;
@@ -30,7 +33,8 @@ namespace chromeos {
 //   => {LoadFinished()|OnUpdated()}.
 class AuthenticationScreenExtensionsExternalLoader
     : public extensions::ExternalLoader,
-      public ExternalCacheDelegate {
+      public ExternalCacheDelegate,
+      public session_manager::SessionManagerObserver {
  public:
   explicit AuthenticationScreenExtensionsExternalLoader(Profile* profile);
   AuthenticationScreenExtensionsExternalLoader(
@@ -44,6 +48,9 @@ class AuthenticationScreenExtensionsExternalLoader
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
   bool IsRollbackAllowed() const override;
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
 
  private:
   friend class base::RefCounted<AuthenticationScreenExtensionsExternalLoader>;
@@ -64,6 +71,10 @@ class AuthenticationScreenExtensionsExternalLoader
   PrefChangeRegistrar pref_change_registrar_;
   // Whether the list of extensions was already passed via LoadFinished().
   bool initial_load_finished_ = false;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<AuthenticationScreenExtensionsExternalLoader>

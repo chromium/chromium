@@ -1,0 +1,9 @@
+{
+    "name": "Authentication Screens Test Extension",
+    "version": "0.1",
+    "manifest_version": 3,
+    "description": "The extension for testing the extensions installation in the Chrome OS sign-in and lock screen profiles",
+    "background": {
+      "service_worker": "test.js"
+    }
+}
