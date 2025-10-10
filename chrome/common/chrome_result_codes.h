@@ -6,7 +6,6 @@
 #define CHROME_COMMON_CHROME_RESULT_CODES_H_
 
 #include "content/public/common/result_codes.h"
-#include "partition_alloc/page_allocator.h"
 
 // IMPORTANT: This needs to stay in sync with <enum name="CrashExitCodes"> and
 // <enum name="WindowsExitCode"> in tools/metrics/histograms/enums.xml. So do
@@ -131,9 +130,8 @@ enum ResultCode {
   // LINT.IfChange(CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
   // Upon encountering a commit failure in a process, PartitionAlloc terminated
   // another process deemed less important.
-  CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE =
-      partition_alloc::kTerminateOnCommitFailureExitCode,
-  // LINT.ThenChange(/base/allocator/partition_allocator/src/partition_alloc/page_allocator.h:CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
+  CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE = 39,
+  // LINT.ThenChange(/base/allocator/partition_allocator/src/partition_alloc/page_allocator.cc:CHROME_RESULT_CODE_TERMINATED_BY_OTHER_PROCESS_ON_COMMIT_FAILURE)
 
   // Last return code (keep this last).
   CHROME_RESULT_CODE_CHROME_LAST_CODE
