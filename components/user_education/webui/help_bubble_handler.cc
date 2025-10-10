@@ -562,11 +562,8 @@ class HelpBubbleHandler::VisibilityProvider
   VisibilityProvider() = default;
   ~VisibilityProvider() override = default;
 
-  std::optional<bool> CheckIsVisible() override {
+  bool CheckIsVisible() override {
     auto* const contents = handler()->GetWebContents();
-    if (!contents) {
-      return std::nullopt;
-    }
     CHECK(!web_contents());
     Observe(contents);
     return contents->GetVisibility() == content::Visibility::VISIBLE;

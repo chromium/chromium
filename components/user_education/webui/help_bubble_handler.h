@@ -54,9 +54,12 @@ class HelpBubbleHandlerBase
   // lifetime of the handler.
   virtual content::WebUIController* GetController() = 0;
 
-  // Returns the WebContents associated with the controller. This is a
-  // convenience method. A contents should be associated with the controller but
-  // it is probably good to check for null.
+  // Returns the WebContents associated with the WebUIController. This is a
+  // convenience method. A WebContents is always associated with a
+  // WebUIController, so this never returns nullptr in production code. The only
+  // possible reason for returning nullptr is in unit tests where the test
+  // WebUIController implementation is not set up correctly. If that happens,
+  // the test support code should be fixed.
   content::WebContents* GetWebContents();
 
   // Returns whether a help bubble is showing for a given element.
@@ -90,12 +93,10 @@ class HelpBubbleHandlerBase
 
     void set_handler(HelpBubbleHandlerBase* handler) { handler_ = handler; }
 
-    // Does the check if visibility is currently unknown. Returns
-    // `std::nullopt` if the visibility cannot be determined (this should be
-    // treated as "not visible" for most purposes).
+    // Does the check if visibility is currently unknown.
     //
     // This method may lazily instantiate some visibility-tracking logic.
-    virtual std::optional<bool> CheckIsVisible() = 0;
+    virtual bool CheckIsVisible() = 0;
 
    protected:
     HelpBubbleHandlerBase* handler() const { return handler_; }

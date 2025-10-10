@@ -48,9 +48,6 @@ views::WebView* GetWebViewForElement(const ui::TrackedElement* element) {
   const auto* const element_webui =
       element->AsA<TrackedElementHelpBubbleWebUIAnchor>();
   auto* const contents = element_webui->handler()->GetWebContents();
-  if (!contents) {
-    return nullptr;
-  }
   auto* const widget = views::Widget::GetWidgetForNativeWindow(
       contents->GetTopLevelNativeWindow());
   if (!widget) {

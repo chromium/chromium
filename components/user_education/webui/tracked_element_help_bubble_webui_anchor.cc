@@ -29,23 +29,21 @@ TrackedElementHelpBubbleWebUIAnchor::~TrackedElementHelpBubbleWebUIAnchor() {
 }
 
 gfx::Rect TrackedElementHelpBubbleWebUIAnchor::GetScreenBounds() const {
-  gfx::Rect result;
+  // Use the last known bounds, but if the bounds are empty, make them 1x1 so
+  // there's something to anchor to.
+  gfx::Rect result = gfx::ToRoundedRect(last_known_bounds_);
+  if (result.width() < 1) {
+    result.set_width(1);
+  }
+  if (result.height() < 1) {
+    result.set_height(1);
+  }
+
+  // To get the screen coordinates, have to offset by the coordinates of the
+  // viewport.
   content::WebContents* const contents =
       handler_->GetController()->web_ui()->GetWebContents();
-  if (contents) {
-    // Use the last known bounds, but if the bounds are empty, make them 1x1 so
-    // there's something to anchor to.
-    result = gfx::ToRoundedRect(last_known_bounds_);
-    if (result.width() < 1) {
-      result.set_width(1);
-    }
-    if (result.height() < 1) {
-      result.set_height(1);
-    }
-    // To get the screen coordinates, have to offset by the coordinates of the
-    // viewport.
-    result.Offset(contents->GetContainerBounds().OffsetFromOrigin());
-  }
+  result.Offset(contents->GetContainerBounds().OffsetFromOrigin());
   return result;
 }
 
