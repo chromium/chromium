@@ -8,6 +8,8 @@ assert(is_chromeos)
 
 static_library("extensions") {
   sources = [
+    "authentication_screen_extensions_external_loader.cc",
+    "authentication_screen_extensions_external_loader.h",
     "default_app_order.cc",
     "default_app_order.h",
     "device_local_account_management_policy_provider.cc",
@@ -38,8 +40,6 @@ static_library("extensions") {
     "media_player_api.h",
     "media_player_event_router.cc",
     "media_player_event_router.h",
-    "signin_screen_extensions_external_loader.cc",
-    "signin_screen_extensions_external_loader.h",
     "signin_screen_policy_provider.cc",
     "signin_screen_policy_provider.h",
   ]
@@ -72,6 +72,7 @@ static_library("extensions") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",

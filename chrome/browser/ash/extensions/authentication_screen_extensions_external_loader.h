@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_EXTENSIONS_SIGNIN_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
-#define CHROME_BROWSER_ASH_EXTENSIONS_SIGNIN_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
+#ifndef CHROME_BROWSER_ASH_EXTENSIONS_AUTHENTICATION_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
+#define CHROME_BROWSER_ASH_EXTENSIONS_AUTHENTICATION_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,8 +19,8 @@ class Profile;
 
 namespace chromeos {
 
-// Loader of extensions force-installed into the sign-in profile using the
-// DeviceLoginScreenExtensions policy.
+// Loader of extensions force-installed into the sign-in and lock screen
+// profiles using the DeviceLoginScreenExtensions policy.
 //
 // Overview of the initialization flow:
 //   StartLoading()
@@ -28,14 +28,15 @@ namespace chromeos {
 //   => UpdateStateFromPrefs()
 //   => OnExtensionListsUpdated()
 //   => {LoadFinished()|OnUpdated()}.
-class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
-                                             public ExternalCacheDelegate {
+class AuthenticationScreenExtensionsExternalLoader
+    : public extensions::ExternalLoader,
+      public ExternalCacheDelegate {
  public:
-  explicit SigninScreenExtensionsExternalLoader(Profile* profile);
-  SigninScreenExtensionsExternalLoader(
-      const SigninScreenExtensionsExternalLoader&) = delete;
-  SigninScreenExtensionsExternalLoader& operator=(
-      const SigninScreenExtensionsExternalLoader&) = delete;
+  explicit AuthenticationScreenExtensionsExternalLoader(Profile* profile);
+  AuthenticationScreenExtensionsExternalLoader(
+      const AuthenticationScreenExtensionsExternalLoader&) = delete;
+  AuthenticationScreenExtensionsExternalLoader& operator=(
+      const AuthenticationScreenExtensionsExternalLoader&) = delete;
 
   // extensions::ExternalLoader:
   void StartLoading() override;
@@ -45,9 +46,9 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   bool IsRollbackAllowed() const override;
 
  private:
-  friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;
+  friend class base::RefCounted<AuthenticationScreenExtensionsExternalLoader>;
 
-  ~SigninScreenExtensionsExternalLoader() override;
+  ~AuthenticationScreenExtensionsExternalLoader() override;
 
   // Called when the pref service gets initialized asynchronously.
   void OnPrefsInitialized(bool success);
@@ -65,10 +66,10 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   bool initial_load_finished_ = false;
 
   // Must be the last member.
-  base::WeakPtrFactory<SigninScreenExtensionsExternalLoader> weak_factory_{
-      this};
+  base::WeakPtrFactory<AuthenticationScreenExtensionsExternalLoader>
+      weak_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_EXTENSIONS_SIGNIN_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_
+#endif  // CHROME_BROWSER_ASH_EXTENSIONS_AUTHENTICATION_SCREEN_EXTENSIONS_EXTERNAL_LOADER_H_

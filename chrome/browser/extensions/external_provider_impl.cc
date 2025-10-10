@@ -67,15 +67,17 @@
 #include "ash/constants/ash_switches.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
+#include "chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
@@ -671,14 +673,16 @@ void ExternalProviderImpl::CreateExternalProviders(
       ManifestLocation::kInvalidLocation;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    // Download extensions/apps installed by policy in the login profile.
-    // Extensions (not apps) installed through this path will have type
-    // |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
+  const bool install_on_lock_screen =
+      chromeos::features::IsLockScreenBadgeAuthEnabled() &&
+      ash::IsLockScreenBrowserContext(profile);
+  if (ash::IsSigninBrowserContext(profile) || install_on_lock_screen) {
+    // Download extensions/apps installed by policy in the login and lock screen
+    // profiles. Extensions (not apps) installed through this path will have
+    // type |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
     crx_location = ManifestLocation::kExternalPolicyDownload;
-    external_loader =
-        base::MakeRefCounted<chromeos::SigninScreenExtensionsExternalLoader>(
-            profile);
+    external_loader = base::MakeRefCounted<
+        chromeos::AuthenticationScreenExtensionsExternalLoader>(profile);
     auto signin_profile_provider = std::make_unique<ExternalProviderImpl>(
         service, external_loader, profile, crx_location,
         ManifestLocation::kExternalPolicyDownload, Extension::FOR_LOGIN_SCREEN);

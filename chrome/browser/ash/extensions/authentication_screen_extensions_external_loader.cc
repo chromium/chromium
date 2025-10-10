@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
+#include "chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h"
 
 #include <memory>
 #include <utility>
@@ -15,9 +15,10 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,9 +49,10 @@ base::Value::Dict GetForceInstalledExtensionsFromPrefs(
 
 }  // namespace
 
-SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
-    Profile* profile)
+AuthenticationScreenExtensionsExternalLoader::
+    AuthenticationScreenExtensionsExternalLoader(Profile* profile)
     : profile_(profile),
+      // TODO(crbug.com/447583060): Separate cache for lock screen.
       external_cache_(
           base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_EXTENSIONS),
           g_browser_process->shared_url_loader_factory(),
@@ -61,22 +63,24 @@ SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
           /*always_check_updates=*/true,
           /*wait_for_cache_initialization=*/false,
           /*allow_scheduled_updates=*/false) {
-  DCHECK(ash::ProfileHelper::IsSigninProfile(profile));
+  DCHECK(ash::IsSigninBrowserContext(profile) ||
+         (chromeos::features::IsLockScreenBadgeAuthEnabled() &&
+          ash::IsLockScreenBrowserContext(profile)));
 }
 
-void SigninScreenExtensionsExternalLoader::StartLoading() {
+void AuthenticationScreenExtensionsExternalLoader::StartLoading() {
   PrefService* const prefs = profile_->GetPrefs();
   if (prefs->GetAllPrefStoresInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_WAITING) {
     prefs->AddPrefInitObserver(base::BindOnce(
-        &SigninScreenExtensionsExternalLoader::OnPrefsInitialized,
+        &AuthenticationScreenExtensionsExternalLoader::OnPrefsInitialized,
         weak_factory_.GetWeakPtr()));
     return;
   }
   SubscribeAndInitializeFromPrefs();
 }
 
-void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
+void AuthenticationScreenExtensionsExternalLoader::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {
   if (initial_load_finished_) {
     OnUpdated(prefs.Clone());
@@ -86,30 +90,31 @@ void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
   LoadFinished(prefs.Clone());
 }
 
-bool SigninScreenExtensionsExternalLoader::IsRollbackAllowed() const {
+bool AuthenticationScreenExtensionsExternalLoader::IsRollbackAllowed() const {
   return true;
 }
 
-SigninScreenExtensionsExternalLoader::~SigninScreenExtensionsExternalLoader() =
-    default;
+AuthenticationScreenExtensionsExternalLoader::
+    ~AuthenticationScreenExtensionsExternalLoader() = default;
 
-void SigninScreenExtensionsExternalLoader::OnPrefsInitialized(
+void AuthenticationScreenExtensionsExternalLoader::OnPrefsInitialized(
     bool /*success*/) {
   SubscribeAndInitializeFromPrefs();
 }
 
-void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
+void AuthenticationScreenExtensionsExternalLoader::
+    SubscribeAndInitializeFromPrefs() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       extensions::pref_names::kInstallForceList,
       base::BindRepeating(
-          &SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
+          &AuthenticationScreenExtensionsExternalLoader::UpdateStateFromPrefs,
           base::Unretained(this)));
 
   UpdateStateFromPrefs();
 }
 
-void SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
+void AuthenticationScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
   auto force_installed_extensions =
       GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs());
   external_cache_.UpdateExtensionsList(std::move(force_installed_extensions));
