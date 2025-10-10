@@ -8,6 +8,7 @@ import android.app.Application;
 import android.content.res.Configuration;
 
 import org.chromium.base.BinderCallsListener;
+import org.chromium.base.SysUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
@@ -57,6 +58,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             BrowserUiUtilsCachedFlags.getInstance()
                     .setAsyncNotificationManagerFlag(
                             ChromeFeatureList.sAsyncNotificationManager.isEnabled());
+            // TODO(crbug.com/423925400): Remove if finch is initialized earlier
+            SysUtils.setLowMemoryDeviceThresholdMb(
+                    ChromeFeatureList.sLowMemoryDeviceThresholdMb.getValue());
 
             // Only trace Binder IPCs for pre-Beta channels.
             if (VersionConstants.CHANNEL <= Channel.DEV) {

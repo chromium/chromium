@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.StrictMode;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -35,6 +36,7 @@ public class SysUtils {
     private static @Nullable Boolean sLowEndDevice;
     private static @Nullable Integer sAmountOfPhysicalMemoryKB;
     private static @Nullable Boolean sHasCameraForTesting;
+    private static int sLowMemoryThresholdMB = LOW_MEMORY_DEVICE_THRESHOLD_MB;
 
     private SysUtils() {}
 
@@ -176,6 +178,15 @@ public class SysUtils {
 
         return isLowEnd;
         // LINT.ThenChange(//base/system/sys_info.cc)
+    }
+
+    public static void setLowMemoryDeviceThresholdMb(int thresholdMb) {
+        sLowMemoryThresholdMB = thresholdMb;
+    }
+
+    @CalledByNative
+    private static int getLowMemoryDeviceThresholdMb() {
+        return sLowMemoryThresholdMB;
     }
 
     /**

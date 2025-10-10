@@ -1223,6 +1223,7 @@ component("base") {
       "android/shared_preferences/shared_preferences_manager.h",
       "android/statistics_recorder_android.cc",
       "android/sys_utils.cc",
+      "android/sys_utils.h",
       "android/task_scheduler/post_task_android.cc",
       "android/task_scheduler/post_task_android.h",
       "android/task_scheduler/task_runner_android.cc",

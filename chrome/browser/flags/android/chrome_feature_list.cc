@@ -509,6 +509,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAndroidMinimalUiLargeScreen,
     &webapps::features::kAndroidWebAppMenuButton,
+    &base::features::kLowEndMemoryExperiment,
     &base::features::kPostGetMyMemoryStateToBackground,
 };
 

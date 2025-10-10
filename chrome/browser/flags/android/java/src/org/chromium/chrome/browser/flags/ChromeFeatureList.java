@@ -477,6 +477,7 @@ public abstract class ChromeFeatureList {
             "LockTopControlsOnLargeTabletsV2";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
+    public static final String LOW_END_MEMORY_EXPERIMENT = BaseFeatures.LOW_END_MEMORY_EXPERIMENT;
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
     public static final String MALICIOUS_APK_DOWNLOAD_CHECK = "MaliciousApkDownloadCheck";
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
@@ -1399,6 +1400,8 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "contextual_only", false);
     public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
             newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
+    public static final IntCachedFeatureParam sLowMemoryDeviceThresholdMb =
+            newIntCachedFeatureParam(LOW_END_MEMORY_EXPERIMENT, "LowMemoryDeviceThresholdMB", 1024);
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleForceCardShow =
             newBooleanCachedFeatureParam(ANDROID_APP_INTEGRATION_MODULE, "force_card_shown", false);
 
@@ -1796,6 +1799,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
                     sLoadNativeEarlyConcurrentLoad,
+                    sLowMemoryDeviceThresholdMb,
                     sMagicStackAndroidShowAllModules,
                     sMaliciousApkDownloadCheckTelemetryOnly,
                     sMaxLegacyTabStateFilesCleanedUpPerSession,

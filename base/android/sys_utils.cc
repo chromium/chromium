@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/process/process_metrics.h"
-#include "base/trace_event/trace_event.h"
+#include <jni.h>
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/android/jni_android.h"
+#include "base/process/process_metrics.h"
 #include "base/sys_utils_jni/SysUtils_jni.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 namespace android {
@@ -29,6 +30,11 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
   process_metrics->GetPageFaultCounts(&counts);
   TRACE_EVENT_END2("memory", "CollectPageFaults", "minor", counts.minor,
                    "major", counts.major);
+}
+
+int GetCachedLowMemoryDeviceThresholdMb() {
+  JNIEnv* env = AttachCurrentThread();
+  return static_cast<int>(Java_SysUtils_getLowMemoryDeviceThresholdMb(env));
 }
 
 }  // namespace android
