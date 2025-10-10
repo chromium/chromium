@@ -18,31 +18,28 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/sessions/core/session_id.h"
-#include "content/public/browser/clipboard_types.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace content {
 class WebContent;
+struct ClipboardPasteData;
 }  // namespace content
+
+namespace safe_browsing {
+class BinaryUploadService;
+class SafeBrowsingNavigationObserverManager;
+}  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
+class ClipboardRequestHandler;
 class ContentAnalysisDialogController;
 class FilesRequestHandler;
 class PagePrintRequestHandler;
-class ClipboardRequestHandler;
-
-using ReferrerChain =
-    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
 
 // A class that performs deep scans of data (for example malicious or sensitive
 // content checks) before allowing a page to access it.
