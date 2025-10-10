@@ -127,8 +127,8 @@ class CC_EXPORT CompositorFrameReporter {
   enum class TreesInVizBreakdown {
     kEndActivateToDrawLayers = 0,                          // in cc
     kDrawLayersToSubmitUpdateDisplayTree = 1,              // in cc
-    kSendUpdateDisplayTreeToRecieveUpdateDisplayTree = 2,  // cc-> viz
-    kRecieveUpdateDisplayTreeToStartPrepareToDraw = 3,     // viz
+    kSendUpdateDisplayTreeToReceiveUpdateDisplayTree = 2,  // cc-> viz
+    kReceiveUpdateDisplayTreeToStartPrepareToDraw = 3,     // viz
     kStartPrepareToDrawToStartDrawLayers = 4,              // viz
     kStartDrawLayersToSubmitCompositorFrame = 5,           // viz
     kTreesInVizBreakdownCount

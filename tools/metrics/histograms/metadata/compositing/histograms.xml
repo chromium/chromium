@@ -1000,9 +1000,9 @@ chromium-metrics-reviews@google.com.
     <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"/>
     <variant
-        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.RecieveUpdateDisplayTreeToStartPrepareToDraw"/>
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceiveUpdateDisplayTreeToStartPrepareToDraw"/>
     <variant
-        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SendUpdateDisplayTreeToRecieveUpdateDisplayTree"/>
+        name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SendUpdateDisplayTreeToReceiveUpdateDisplayTree"/>
     <variant
         name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawLayersToSubmitCompositorFrame"/>
     <variant

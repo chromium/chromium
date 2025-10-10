@@ -176,9 +176,9 @@ void UkmManager::RecordCompositorLatencyUKM(
         it.GetDuration().InMicroseconds());                                 \
     break;
         CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
-            SendUpdateDisplayTreeToRecieveUpdateDisplayTree);
+            SendUpdateDisplayTreeToReceiveUpdateDisplayTree);
         CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
-            RecieveUpdateDisplayTreeToStartPrepareToDraw);
+            ReceiveUpdateDisplayTreeToStartPrepareToDraw);
         CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(
             StartPrepareToDrawToStartDrawLayers);
         CASE_FOR_TREES_IN_VIZ_VIZ_BREAKDOWN(

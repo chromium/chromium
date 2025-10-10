@@ -82,10 +82,10 @@ const char kSubmitUpdateDisplayTreeToPresentationCompositorFrame[] =
 const char kEndActivateToDrawLayers[] = "EndActivateToDrawLayers";
 const char kDrawLayersToSubmitUpdateDisplayTree[] =
     "DrawLayersToSubmitUpdateDisplayTree";
-const char kSendUpdateDisplayTreeToRecieveUpdateDisplayTree[] =
-    "SendUpdateDisplayTreeToRecieveUpdateDisplayTree";
-const char kRecieveUpdateDisplayTreeToStartPrepareToDraw[] =
-    "RecieveUpdateDisplayTreeToStartPrepareToDraw";
+const char kSendUpdateDisplayTreeToReceiveUpdateDisplayTree[] =
+    "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+const char kReceiveUpdateDisplayTreeToStartPrepareToDraw[] =
+    "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
 const char kStartPrepareToDrawToStartDrawLayers[] =
     "StartPrepareToDrawToStartDrawLayers";
 const char kStartDrawLayersToSubmitCompositorFrame[] =
@@ -486,7 +486,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
     recorder()->ExpectEntryMetric(
         entry,
         SubstageName(submit_stage,
-                     kSendUpdateDisplayTreeToRecieveUpdateDisplayTree),
+                     kSendUpdateDisplayTreeToReceiveUpdateDisplayTree),
         (frame_timing_details.start_update_display_tree -
          trees_in_viz_viz_start_time)
             .InMicroseconds());
@@ -494,7 +494,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
     recorder()->ExpectEntryMetric(
         entry,
         SubstageName(submit_stage,
-                     kRecieveUpdateDisplayTreeToStartPrepareToDraw),
+                     kReceiveUpdateDisplayTreeToStartPrepareToDraw),
         (frame_timing_details.start_prepare_to_draw -
          frame_timing_details.start_update_display_tree)
             .InMicroseconds());

@@ -482,11 +482,11 @@ TEST_F(CompositorFrameReporterTest, TreesInVizLifecycleTest) {
       // Remaining values derived from BuildVizBreakdownWithTreesInVizTimestamps
       {"CompositorLatency2."
        "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-       "SendUpdateDisplayTreeToRecieveUpdateDisplayTree",
+       "SendUpdateDisplayTreeToReceiveUpdateDisplayTree",
        static_cast<base::HistogramBase::Sample32>((1))},
       {"CompositorLatency2."
        "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-       "RecieveUpdateDisplayTreeToStartPrepareToDraw",
+       "ReceiveUpdateDisplayTreeToStartPrepareToDraw",
        static_cast<base::HistogramBase::Sample32>((2))},
       {"CompositorLatency2."
        "SubmitUpdateDisplayTreeToPresentationCompositorFrame."

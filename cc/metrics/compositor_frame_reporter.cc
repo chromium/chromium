@@ -612,7 +612,7 @@ CompositorFrameReporter::ProcessedTreesInVizBreakdown::
 
   // CC -> Viz mojo time
   list_[static_cast<int>(
-      TreesInVizBreakdown::kSendUpdateDisplayTreeToRecieveUpdateDisplayTree)] =
+      TreesInVizBreakdown::kSendUpdateDisplayTreeToReceiveUpdateDisplayTree)] =
       std::make_pair(
           trees_in_viz_viz_time,                     // send over wire to
           viz_breakdown.start_update_display_tree);  // receive over wire.
@@ -620,7 +620,7 @@ CompositorFrameReporter::ProcessedTreesInVizBreakdown::
   // New stages introduced in Viz.
   list_[static_cast<int>(
       TreesInVizBreakdown::
-          kRecieveUpdateDisplayTreeToStartPrepareToDraw)] =  // receive over the
+          kReceiveUpdateDisplayTreeToStartPrepareToDraw)] =  // receive over the
                                                              // wire to start
                                                              // prepare to draw
       std::make_pair(viz_breakdown.start_update_display_tree,
@@ -798,8 +798,8 @@ const char* CompositorFrameReporter::GetStageName(
           return "EndActivateToSubmitUpdateDisplayTree."
                  "DrawLayersToSubmitUpdateDisplayTree";
         case TreesInVizBreakdown::
-            kSendUpdateDisplayTreeToRecieveUpdateDisplayTree:
-        case TreesInVizBreakdown::kRecieveUpdateDisplayTreeToStartPrepareToDraw:
+            kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
+        case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
         case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
         case TreesInVizBreakdown::kStartDrawLayersToSubmitCompositorFrame:
         case TreesInVizBreakdown::kTreesInVizBreakdownCount:
@@ -847,12 +847,12 @@ const char* CompositorFrameReporter::GetStageName(
         case TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree:
           NOTREACHED();
         case TreesInVizBreakdown::
-            kSendUpdateDisplayTreeToRecieveUpdateDisplayTree:
+            kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
           return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-                 "SendUpdateDisplayTreeToRecieveUpdateDisplayTree";
-        case TreesInVizBreakdown::kRecieveUpdateDisplayTreeToStartPrepareToDraw:
+                 "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+        case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
           return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-                 "RecieveUpdateDisplayTreeToStartPrepareToDraw";
+                 "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
         case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
           return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
                  "StartPrepareToDrawToStartDrawLayers";
@@ -877,10 +877,10 @@ const char* CompositorFrameReporter::GetTreesInVizBreakdownName(
       return "EndActivateToDrawLayers";
     case TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree:
       return "DrawLayersToSendUpdateDisplayTree";
-    case TreesInVizBreakdown::kSendUpdateDisplayTreeToRecieveUpdateDisplayTree:
-      return "SendUpdateDisplayTreeToRecieveUpdateDisplayTree";
-    case TreesInVizBreakdown::kRecieveUpdateDisplayTreeToStartPrepareToDraw:
-      return "RecieveUpdateDisplayTreeToStartPrepareToDraw";
+    case TreesInVizBreakdown::kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
+      return "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+    case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
+      return "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
     case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
       return "StartPrepareToDrawToStartDrawLayers";
     case TreesInVizBreakdown::kStartDrawLayersToSubmitCompositorFrame:

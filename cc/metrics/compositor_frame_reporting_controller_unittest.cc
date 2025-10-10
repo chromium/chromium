@@ -1138,12 +1138,12 @@ TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
   // CC -> Viz RPC
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-      "SendUpdateDisplayTreeToRecieveUpdateDisplayTree",
+      "SendUpdateDisplayTreeToReceiveUpdateDisplayTree",
       35, 1);
   // Viz-only stages
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
-      "RecieveUpdateDisplayTreeToStartPrepareToDraw",
+      "ReceiveUpdateDisplayTreeToStartPrepareToDraw",
       2, 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency2.SubmitUpdateDisplayTreeToPresentationCompositorFrame."
