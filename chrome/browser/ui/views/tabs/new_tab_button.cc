@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -26,7 +25,6 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabButtonMenuModel, kNewTab);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabButtonMenuModel, kNewTabInGroup);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabButtonMenuModel, kNewSplitView);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabButtonMenuModel,
                                       kCreateNewTabGroup);
 
@@ -69,38 +67,21 @@ void NewTabButton::ShowContextMenuForViewImpl(
 
 NewTabButtonMenuModel::NewTabButtonMenuModel(BrowserWindowInterface* browser)
     : ui::SimpleMenuModel(this), browser_(browser) {
-  CHECK(browser_);
-
   // Build the menu.
   AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_NEW_TAB).value(), kNewTab);
-  AddNewTabInGroupItem();
 
-  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddNewTabInGroupItem();
 
   AddItemWithStringId(IDC_CREATE_NEW_TAB_GROUP, IDS_NEW_TAB_GROUP);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
                          kCreateNewTabGroup);
-
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddNewSplitTabItem();
-  }
 }
 
 NewTabButtonMenuModel::~NewTabButtonMenuModel() = default;
 
 void NewTabButtonMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK(browser_);
-
-  if (command_id == IDC_NEW_SPLIT_TAB) {
-    // Handle this command directly because we want to specify the source
-    // as the new tab button.
-    chrome::NewSplitTab(browser_,
-                        split_tabs::SplitTabCreatedSource::kNewTabButton);
-    return;
-  }
-
   chrome::ExecuteCommand(browser_, command_id);
 }
 
@@ -157,16 +138,4 @@ void NewTabButtonMenuModel::AddNewTabInGroupItem() {
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_ADD_NEW_TAB_RECENT_GROUP).value(),
       kNewTabInGroup);
-}
-
-void NewTabButtonMenuModel ::AddNewSplitTabItem() {
-  AddItemWithStringId(IDC_NEW_SPLIT_TAB, IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_NEW_SPLIT_TAB).value(),
-                         kNewSplitView);
-
-  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
-  CHECK(tab_strip_model);
-
-  SetEnabledAt(GetIndexOfCommandId(IDC_NEW_SPLIT_TAB).value(),
-               !tab_strip_model->IsActiveTabSplit());
 }

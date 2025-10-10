@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -118,49 +116,9 @@ IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
           ClickMouse(ui_controls::RIGHT),
           EnsurePresent(NewTabButtonMenuModel::kNewTab),
           EnsurePresent(NewTabButtonMenuModel::kNewTabInGroup),
-          EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
           EnsurePresent(NewTabButtonMenuModel::kCreateNewTabGroup),
           SendAccelerator(NewTabButtonMenuModel::kNewTab,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
-                       NewTabButtonContextMenuSplitView) {
-  RunTestSequence(FinishTabstripAnimations(),
-                  EnsurePresent(kNewTabButtonElementId),
-                  MoveMouseTo(kNewTabButtonElementId),
-                  MayInvolveNativeContextMenu(
-                      ClickMouse(ui_controls::RIGHT),
-                      EnsurePresent(NewTabButtonMenuModel::kNewTab),
-                      EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
-                      SelectMenuItem(NewTabButtonMenuModel::kNewSplitView)));
-
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-
-  // Split view should be open
-  EXPECT_TRUE(browser_view->IsInSplitView());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
-                       NewTabButtonContextMenuSplitViewDisabled) {
-  chrome::NewSplitTab(browser(),
-                      split_tabs::SplitTabCreatedSource::kNewTabButton);
-  RunTestSequence(
-      FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          EnsurePresent(NewTabButtonMenuModel::kNewTab),
-          EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
-          WaitForViewProperty(NewTabButtonMenuModel::kNewSplitView, views::View,
-                              Enabled, false),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
-
-  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-
-  // Split view should be open
-  EXPECT_TRUE(browser_view->IsInSplitView());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
@@ -209,32 +167,4 @@ IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
           },
           2));
 }
-
-class TabStripTabGroupEntryPointsSideBySideDisabled
-    : public TabStripInteractiveUiTest {
- public:
-  TabStripTabGroupEntryPointsSideBySideDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints}, {features::kSideBySide});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabStripTabGroupEntryPointsSideBySideDisabled,
-                       VerifyNewTabButtonContextMenuSplitViewNotPresent) {
-  RunTestSequence(
-      FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          EnsurePresent(NewTabButtonMenuModel::kNewTab),
-          EnsurePresent(NewTabButtonMenuModel::kNewTabInGroup),
-          EnsurePresent(NewTabButtonMenuModel::kCreateNewTabGroup),
-          EnsureNotPresent(NewTabButtonMenuModel::kNewSplitView),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
-}
-
 #endif  // !BUILDFLAG(IS_MAC)
