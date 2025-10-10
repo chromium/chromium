@@ -164,9 +164,9 @@ class JsSandboxIsolate {
       v8::Isolate* isolate);
 
   // Must only be used from isolate thread
-  [[noreturn]] static size_t NearHeapLimitCallback(void* data,
-                                                   size_t current_heap_limit,
-                                                   size_t initial_heap_limit);
+  [[noreturn]] static void OOMErrorCallback(const char* location,
+                                            const v8::OOMDetails& details,
+                                            void* data);
   v8::MaybeLocal<v8::ArrayBuffer> tryAllocateArrayBuffer(size_t length);
 
   // Must only be used from isolate thread

@@ -682,8 +682,7 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
   isolate_scope_ = std::make_unique<v8::Isolate::Scope>(isolate);
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);
 
-  isolate->AddNearHeapLimitCallback(&JsSandboxIsolate::NearHeapLimitCallback,
-                                    this);
+  isolate->SetOOMErrorHandler(&OOMErrorCallback, this);
   v8::HandleScope handle_scope(isolate);
 
   v8::Local<v8::ObjectTemplate> android_template =
@@ -963,10 +962,10 @@ void JsSandboxIsolate::GetNamedPort(gin::Arguments* args) {
 }
 
 // Called from isolate thread.
-[[noreturn]] size_t JsSandboxIsolate::NearHeapLimitCallback(
-    void* data,
-    size_t /*current_heap_limit*/,
-    size_t /*initial_heap_limit*/) {
+[[noreturn]] void JsSandboxIsolate::OOMErrorCallback(
+    const char* location,
+    const v8::OOMDetails& details,
+    void* data) {
   android_webview::JsSandboxIsolate* js_sandbox_isolate =
       static_cast<android_webview::JsSandboxIsolate*>(data);
   js_sandbox_isolate->MemoryLimitExceeded();
