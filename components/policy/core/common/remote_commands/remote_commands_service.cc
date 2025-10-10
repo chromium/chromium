@@ -447,7 +447,8 @@ void RemoteCommandsService::OnRemoteCommandsFetched(
     std::move(on_command_acked_callback_).Run();
   }
 
-  // TODO(binjin): Add retrying on errors. See http://crbug.com/466572.
+  // No retry is implemented for errors. If you want to change that, please
+  // consider using exponential backoff.
   if (status == DM_STATUS_SUCCESS) {
     for (const auto& command : commands) {
       VerifyAndEnqueueSignedCommand(command);
