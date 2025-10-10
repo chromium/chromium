@@ -242,6 +242,11 @@ Tab::Tab(TabSlotController* controller)
   // onto opaque parts of a not-entirely-opaque layer.
   title_->SetSkipSubpixelRenderingOpacityCheck(true);
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("chrome-refresh-2023-top-chrome-font")) {
+     title_->SetTextContext(views::style::CONTEXT_LABEL);
+     title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  }
+
   AddChildViewRaw(title_.get());
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -586,7 +591,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // Close tab on middle click, but only if the button is released over the tab
   // (normal windows behavior is to discard presses of a UI element where the
   // releases happen off the element).
-  if (event.IsOnlyMiddleMouseButton()) {
+  if (event.IsOnlyMiddleMouseButton() ||
+    // Close tab on double click, mirror of IsOnlyMiddleMouseButton
+    // Based on gz83's work.
+    ((event.IsOnlyLeftMouseButton() && event.GetClickCount() == 2) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch("double-click-close-tab"))) {
     if (HitTestPoint(event.location())) {
       controller_->CloseTab(this, CloseTabSource::kFromMouse);
     } else if (closing_) {
