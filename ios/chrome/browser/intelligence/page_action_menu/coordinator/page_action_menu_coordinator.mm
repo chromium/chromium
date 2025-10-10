@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -69,6 +70,8 @@
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
   _mediator.pageActionMenuHandler = pageActionMenuHandler;
   _mediator.consumer = _viewController;
+  _mediator.contextualSheetHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ContextualSheetCommands);
 
   if (readerModeTabHelper) {
     DistillerService* distillerService =

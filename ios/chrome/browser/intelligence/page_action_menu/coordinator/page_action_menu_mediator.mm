@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -451,5 +452,12 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
       ->current_language();
 }
 
+- (void)openPriceInsightsPanel {
+  if (!_contextualSheetHandler) {
+    return;
+  }
+
+  [self.contextualSheetHandler openContextualSheet];
+}
 
 @end

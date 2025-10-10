@@ -51,6 +51,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Reverts the page translation to show the original language.
 - (void)revertTranslation;
 
+// Opens the price insights contextual panel.
+- (void)openPriceInsightsPanel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_
