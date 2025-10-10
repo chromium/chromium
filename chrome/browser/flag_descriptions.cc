@@ -4950,10 +4950,6 @@ const char kCCTResizableForThirdPartiesName[] =
 const char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
 
-const char kCCTRevampedBrandingName[] = "Revamped CCT toolbar branding.";
-const char kCCTRevampedBrandingDescription[] =
-    "Enables a revamped branding animation on the CCT toolbar.";
-
 const char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
 const char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
 

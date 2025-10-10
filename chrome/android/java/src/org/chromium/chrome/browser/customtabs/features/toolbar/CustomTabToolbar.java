@@ -1903,23 +1903,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void showBrandingLocationBar() {
             mBrandingStarted = true;
 
-            if (ChromeFeatureList.sCctRevampedBranding.isEnabled()) {
-                ViewStub stub = findViewById(R.id.branding_stub);
+            ViewStub stub = findViewById(R.id.branding_stub);
+            if (stub != null) {
+                PropertyModel model =
+                        new PropertyModel.Builder(ToolbarBrandingOverlayProperties.ALL_KEYS)
+                                .with(
+                                        ToolbarBrandingOverlayProperties.COLOR_DATA,
+                                        new ToolbarBrandingOverlayProperties.ColorData(
+                                                getBackground().getColor(), mBrandedColorScheme))
+                                .build();
+                mBrandingOverlayCoordinator = new ToolbarBrandingOverlayCoordinator(stub, model);
 
-                if (stub != null) {
-                    PropertyModel model =
-                            new PropertyModel.Builder(ToolbarBrandingOverlayProperties.ALL_KEYS)
-                                    .with(
-                                            ToolbarBrandingOverlayProperties.COLOR_DATA,
-                                            new ToolbarBrandingOverlayProperties.ColorData(
-                                                    getBackground().getColor(),
-                                                    mBrandedColorScheme))
-                                    .build();
-                    mBrandingOverlayCoordinator =
-                            new ToolbarBrandingOverlayCoordinator(stub, model);
-
-                    return;
-                }
+                return;
             }
 
             // Store the title and domain setting, if the empty state is not in used. Otherwise
@@ -1955,10 +1950,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void showRegularToolbar() {
             mCurrentlyShowingBranding = false;
 
-            if (ChromeFeatureList.sCctRevampedBranding.isEnabled()) {
-                if (mBrandingOverlayCoordinator != null) {
-                    mBrandingOverlayCoordinator.hideAndDestroy();
-                }
+            if (mBrandingOverlayCoordinator != null) {
+                mBrandingOverlayCoordinator.hideAndDestroy();
             }
 
             recoverFromRegularState();

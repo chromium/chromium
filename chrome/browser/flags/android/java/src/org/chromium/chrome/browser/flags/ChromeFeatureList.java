@@ -346,7 +346,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_REPORT_PRERENDER_EVENTS = "CCTReportPrerenderEvents";
     public static final String CCT_RESET_TIMEOUT_ENABLED = "CCTResetTimeoutEnabled";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
-    public static final String CCT_REVAMPED_BRANDING = "CCTRevampedBranding";
     public static final String CCT_SHOW_TAB_FIX = "CCTShowTabFix";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TOOLBAR_REFACTOR = "CCTToolbarRefactor";
@@ -862,8 +861,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_RESET_TIMEOUT_ENABLED, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
-    public static final CachedFlag sCctRevampedBranding =
-            newCachedFlag(CCT_REVAMPED_BRANDING, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCctToolbarRefactor =
             newCachedFlag(CCT_TOOLBAR_REFACTOR, false, true);
@@ -1165,7 +1162,6 @@ public abstract class ChromeFeatureList {
                     sCctRealtimeEngagementEventsInBackground,
                     sCctResetTimeoutEnabled,
                     sCctResizableForThirdParties,
-                    sCctRevampedBranding,
                     sCctTabModalDialog,
                     sCctToolbarRefactor,
                     sChromeItemPickerUi,

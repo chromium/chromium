@@ -288,7 +288,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTReportParallelRequestStatus,
     &kCCTReportPrerenderEvents,
     &kCCTResizableForThirdParties,
-    &kCCTRevampedBranding,
     &kCCTShowTabFix,
     &kCCTTabModalDialog,
     &kCCTToolbarRefactor,
@@ -766,8 +765,6 @@ BASE_FEATURE(kCCTReportParallelRequestStatus,
 BASE_FEATURE(kCCTReportPrerenderEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResizableForThirdParties, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTRevampedBranding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTShowTabFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
