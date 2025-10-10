@@ -166,13 +166,27 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace {
+
 using signin::constants::kNoHostedDomainFound;
 using testing::_;
 using testing::Eq;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
-namespace {
+// Simulates the account capabilities that make the user eligible for the
+// history sync opt-in, so that the UI is preconfigured to show the opt-in
+// without any delay and wait-ui. Otherwise, UI should be presenting some sort
+// of loading UI and clicking reject or accept buttons should not be available.
+void MakeHistorySyncOptinUiAvailable(signin::IdentityManager& identity_manager,
+                                     AccountInfo& account_info,
+                                     bool eligible = true) {
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+          eligible);
+  signin::UpdateAccountInfoForAccount(&identity_manager, account_info);
+}
+
 const SkColor kProfileColor = SK_ColorRED;
 
 // State of the the ForceEphemeralProfiles policy.
@@ -634,6 +648,9 @@ class ProfilePickerCreationFlowBrowserTest
       AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
       mutator.set_is_subject_to_parental_controls(true);
     }
+
+    MakeHistorySyncOptinUiAvailable(*identity_manager, account_info,
+                                    !is_supervised_profile);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
     if (web_contents()) {
@@ -2245,17 +2262,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
           base::Milliseconds(10));
 
   // Add an account - simulate a successful Gaia sign-in.
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
+  AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
           .Build("joe.consumer@gmail.com"));
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
+  MakeHistorySyncOptinUiAvailable(*identity_manager, account_info);
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
+  SimulateEnableSyncDiceHeader(web_contents(), account_info);
   GURL target_url =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? GetHistorySyncOptinURL()
@@ -2320,17 +2338,19 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       IdentityManagerFactory::GetForProfile(profile_being_created);
 
   // Add an account - simulate a successful Gaia sign-in.
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
+  AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
           .Build("joe.consumer@gmail.com"));
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
+  MakeHistorySyncOptinUiAvailable(*identity_manager, account_info);
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
+  SimulateEnableSyncDiceHeader(web_contents(), account_info);
   GURL target_url =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? GetHistorySyncOptinURL()
@@ -2357,9 +2377,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   // Add full account info.
-  AccountInfo account_info =
-      FillAccountInfo(core_account_info, "Joe", kNoHostedDomainFound);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  AccountInfo full_account_info =
+      FillAccountInfo(account_info, "Joe", kNoHostedDomainFound);
+  signin::UpdateAccountInfoForAccount(identity_manager, full_account_info);
 
   // Check expectations when the profile creation flow is closes.
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
@@ -2374,7 +2394,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   // Even if the given name is provided after the user clicked to complete the
-  // flow, we still wait to use it as  profile name.
+  // flow, we still wait to use it as its profile name.
   EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
 
   syncer::SyncService* sync_service =
@@ -3242,10 +3262,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   bool should_have_primary_account =
       !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
-  Profile* contents_profile =
-      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe",
-                          kNoHostedDomainFound, false, false,
-                          should_have_primary_account);
+  Profile* contents_profile = SignInForNewProfile(
+      expected_switch_url, "joe.consumer@gmail.com", "Joe",
+      kNoHostedDomainFound, false, false, should_have_primary_account);
 
   base::FilePath contents_profile_path = contents_profile->GetPath();
 
@@ -3311,10 +3330,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   bool should_have_primary_account =
       !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
-  Profile* contents_profile =
-      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe",
-                          kNoHostedDomainFound, false, false,
-                          should_have_primary_account);
+  Profile* contents_profile = SignInForNewProfile(
+      expected_switch_url, "joe.consumer@gmail.com", "Joe",
+      kNoHostedDomainFound, false, false, should_have_primary_account);
   base::FilePath contents_profile_path = contents_profile->GetPath();
 
   // Simulate clicking on the cancel button.
@@ -3351,19 +3369,20 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Add an account - simulate a successful Gaia sign-in.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
+  AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager,
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithAccessPoint(signin_metrics::AccessPoint::kUserManager)
           .Build("joe.acme@gmail.com"));
-  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
+  MakeHistorySyncOptinUiAvailable(*identity_manager, account_info);
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   signin::UpdateAccountInfoForAccount(
       identity_manager,
-      /*account_info=*/FillAccountInfo(core_account_info, "Joe", "acme.com"));
+      /*account_info=*/FillAccountInfo(account_info, "Joe", "acme.com"));
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      core_account_info.account_id, signin::ConsentLevel::kSignin,
+      account_info.account_id, signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kWebSignin);
 
   // Redirect the web contents to a the two factor intersitial authentication

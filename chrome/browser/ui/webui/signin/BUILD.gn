@@ -473,6 +473,7 @@ source_set("unit_tests") {
 
   if (!is_chromeos) {
     sources += [
+      "history_sync_optin/history_sync_optin_handler_unittest.cc",
       "history_sync_optin_service_unittest.cc",
       "managed_user_profile_notice_handler_unittest.cc",
       "profile_picker_handler_unittest.cc",
