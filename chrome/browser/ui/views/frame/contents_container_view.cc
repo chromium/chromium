@@ -447,6 +447,12 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   int height = size_bounds.height().value();
   int width = size_bounds.width().value();
 
+  if (width == 0 || height == 0) {
+    // On Wayland we receive a resize to 0 width first before the actual
+    // size bounds. Ignore such requests.
+    return layouts;
+  }
+
   gfx::Rect full_contents_bounds = GetContentsBounds();
   gfx::Rect devtools_bounds;
   // The area contents excluding devtools is drawn (ie |contents_view_|,
