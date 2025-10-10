@@ -35,7 +35,7 @@ BASE_FEATURE(kBookmarkTriggerForPrerender2KillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This flag is used for enabling BookmarkBar triggered preconnect.
-BASE_FEATURE(kBookmarkTriggerForPreconnect, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBookmarkTriggerForPreconnect, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag is used for enabling BookmarkBar triggered prefetch.  See
 // crbug.com/413259638 for more details of Bookmark triggered prefetching.
