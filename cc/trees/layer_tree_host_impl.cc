@@ -2205,7 +2205,7 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
     // successfully sent to Viz via UpdateDisplayTree().
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
-        *resource_provider(), *layer_tree_frame_sink_->context_provider(),
+        *resource_provider(), layer_tree_frame_sink_->context_provider(),
         update_damage);
   }
 
@@ -3407,7 +3407,7 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
 
   return layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
-      *layer_tree_frame_sink_->context_provider(), viewport_damage_rect_,
+      layer_tree_frame_sink_->context_provider(), viewport_damage_rect_,
       target_local_surface_id_);
 }
 

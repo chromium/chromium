@@ -39,7 +39,7 @@ class CC_EXPORT LayerContext {
   virtual base::TimeTicks UpdateDisplayTreeFrom(
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
-      viz::RasterContextProvider& context_provider,
+      viz::RasterContextProvider* context_provider,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
@@ -47,7 +47,7 @@ class CC_EXPORT LayerContext {
   virtual void UpdateDisplayTile(PictureLayerImpl& layer,
                                  const Tile& tile,
                                  viz::ClientResourceProvider& resource_provider,
-                                 viz::RasterContextProvider& context_provider,
+                                 viz::RasterContextProvider* context_provider,
                                  bool update_damage) = 0;
 };
 

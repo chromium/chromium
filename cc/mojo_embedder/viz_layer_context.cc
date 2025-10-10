@@ -467,7 +467,7 @@ viz::mojom::ScrollTreeUpdatePtr ComputeScrollTreePropertiesUpdate(
 
 void SerializeUIResourceRequest(
     cc::LayerTreeHostImpl& host_impl,
-    viz::RasterContextProvider& context_provider,
+    viz::RasterContextProvider* context_provider,
     viz::mojom::LayerTreeUpdate& update,
     cc::UIResourceId uid,
     viz::mojom::TransferableUIResourceRequest::Type type) {
@@ -479,7 +479,7 @@ void SerializeUIResourceRequest(
     bool opaque = host_impl.IsUIResourceOpaque(uid);
     ids.push_back(resource_id);
     host_impl.resource_provider()->PrepareSendToParent(ids, &resources,
-                                                       &context_provider);
+                                                       context_provider);
     CHECK_EQ(resources.size(), ids.size());
 
     auto& request = update.ui_resource_requests.emplace_back(
@@ -500,11 +500,11 @@ void SerializeUIResourceRequest(
 viz::mojom::TileResourcePtr SerializeTileResource(
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider* context_provider) {
   const auto& draw_info = tile.draw_info();
   std::vector<viz::ResourceId> ids(1, draw_info.resource_id_for_export());
   std::vector<viz::TransferableResource> resources;
-  resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+  resource_provider.PrepareSendToParent(ids, &resources, context_provider);
   CHECK_EQ(resources.size(), 1u);
 
   auto wire = viz::mojom::TileResource::New();
@@ -517,7 +517,7 @@ viz::mojom::TileResourcePtr SerializeTileResource(
 viz::mojom::TilePtr SerializeTile(
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider* context_provider) {
   auto wire = viz::mojom::Tile::New();
   wire->column_index = tile.tiling_i_index();
   wire->row_index = tile.tiling_j_index();
@@ -556,7 +556,7 @@ viz::mojom::TilingPtr SerializeTiling(
     float scale_key,
     base::span<const std::pair<TileIndex, const Tile*>> tile_updates,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider* context_provider) {
   // Handle the case where the tiling no longer exists (deleted).
   if (!tiling) {
     auto deleted_tiling = viz::mojom::Tiling::New();
@@ -613,7 +613,7 @@ viz::mojom::TilingPtr SerializeTiling(
 void SerializePictureLayerTileUpdates(
     PictureLayerImpl& layer,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider,
+    viz::RasterContextProvider* context_provider,
     std::vector<viz::mojom::TilingPtr>& tilings,
     bool needs_full_sync) {
   auto updates =
@@ -646,7 +646,7 @@ void SerializePictureLayerTileUpdates(
 void SerializeHudLayerExtra(HeadsUpDisplayLayerImpl& layer,
                             viz::mojom::TextureLayerExtraPtr& extra,
                             viz::ClientResourceProvider& resource_provider,
-                            viz::RasterContextProvider& context_provider) {
+                            viz::RasterContextProvider* context_provider) {
   // HUD layers are typically drawn onto a transparent background and then
   // composited. They don't have a specific background color to blend with.
   extra->blend_background_color = false;
@@ -662,7 +662,7 @@ void SerializeHudLayerExtra(HeadsUpDisplayLayerImpl& layer,
   if (resource_id != viz::kInvalidResourceId) {
     std::vector<viz::ResourceId> ids = {resource_id};
     std::vector<viz::TransferableResource> resources;
-    resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+    resource_provider.PrepareSendToParent(ids, &resources, context_provider);
     CHECK_EQ(resources.size(), 1u);
     extra->transferable_resource = resources[0];
     extra->uv_top_left = gfx::PointF();
@@ -681,7 +681,7 @@ void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
 void SerializeTextureLayerExtra(TextureLayerImpl& layer,
                                 viz::mojom::TextureLayerExtraPtr& extra,
                                 viz::ClientResourceProvider& resource_provider,
-                                viz::RasterContextProvider& context_provider) {
+                                viz::RasterContextProvider* context_provider) {
   extra->blend_background_color = layer.blend_background_color();
   extra->force_texture_to_opaque = layer.force_texture_to_opaque();
   extra->uv_top_left = layer.uv_top_left();
@@ -691,7 +691,7 @@ void SerializeTextureLayerExtra(TextureLayerImpl& layer,
     if (layer.resource_id() != viz::kInvalidResourceId) {
       std::vector<viz::ResourceId> ids(1, layer.resource_id());
       std::vector<viz::TransferableResource> resources;
-      resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+      resource_provider.PrepareSendToParent(ids, &resources, context_provider);
       CHECK_EQ(resources.size(), 1u);
       extra->transferable_resource = resources[0];
     } else {
@@ -819,7 +819,7 @@ void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
 
 void SerializeLayer(LayerImpl& layer,
                     viz::ClientResourceProvider& resource_provider,
-                    viz::RasterContextProvider& context_provider,
+                    viz::RasterContextProvider* context_provider,
                     viz::mojom::LayerTreeUpdate& update,
                     bool needs_full_sync) {
   auto& wire = *update.layers.emplace_back(viz::mojom::Layer::New());
@@ -1298,7 +1298,7 @@ void VizLayerContext::SetVisible(bool visible) {
 base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider,
+    viz::RasterContextProvider* context_provider,
     const gfx::Rect& viewport_damage_rect,
     const viz::LocalSurfaceId& target_local_surface_id) {
   auto& property_trees = *tree.property_trees();
@@ -1463,7 +1463,7 @@ void VizLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider,
+    viz::RasterContextProvider* context_provider,
     bool update_damage) {
   if (needs_full_sync_) {
     // If |needs_full_sync_| is set due to context lost, we will need to sync
