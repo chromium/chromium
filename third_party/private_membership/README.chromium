@@ -1,5 +1,5 @@
 Name: PSM (Private Set Membership) client side
-URL: This is the canonical public repository
+URL: https://github.com/google/private-membership
 Version: N/A
 Date: 2023-09-15
 Update Mechanism: Manual (https://crbug.com/419414056)
