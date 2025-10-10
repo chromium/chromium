@@ -103,11 +103,12 @@ class ParentAccessView : public views::View,
   void ShowNativeView();
   content::WebContents* GetWebViewContents();
   // views::WidgetObserver implementation:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetThemeChanged(views::Widget* widget) override;
 
   // views::View override:
   void ChildPreferredSizeChanged(View* child) override;
+
+  void OnWidgetClose(views::Widget::ClosedReason closed_reason);
 
   // content::WebContentsDelegate override:
   bool HandleKeyboardEvent(content::WebContents* source,
