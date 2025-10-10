@@ -4640,6 +4640,7 @@ auto GraphBuilderTflite::SerializeElementsCoordinates(
     int32_t axis) -> base::expected<int32_t, std::string> {
   const std::vector<uint32_t> indices_strides =
       CalculateStrides(indices_dimensions);
+  CHECK_EQ(indices_dimensions.size(), input_dimensions.size());
   const size_t indices_rank = indices_strides.size();
 
   // Clamp the values in `indices` to be in range of `-N` (inclusive) to `N`
@@ -4695,16 +4696,32 @@ auto GraphBuilderTflite::SerializeGatherElements(
 
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(gather_elements.input_operand_id));
-  ASSIGN_OR_RETURN(
-      const TensorIndex indices_tensor_index,
-      SerializeElementsCoordinates<int64_t>(
-          indices_operand.descriptor.shape(),
-          GetConstantInt64Value(gather_elements.indices_operand_id),
-          input_tensor_info.dimensions, gather_elements.axis));
-  const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(gather_elements.output_operand_id).index;
-  return SerializeGatherNDOperation(input_tensor_info.index,
-                                    indices_tensor_index, output_tensor_index);
+
+  const base::FixedArray<int64_t> indices_value =
+      GetConstantInt64Value(gather_elements.indices_operand_id);
+  ASSIGN_OR_RETURN(const TensorIndex indices_tensor_index,
+                   SerializeElementsCoordinates<int64_t>(
+                       indices_operand.descriptor.shape(), indices_value,
+                       input_tensor_info.dimensions, gather_elements.axis));
+  const TensorInfo& output_tensor_info =
+      SerializeOutputTensorInfo(gather_elements.output_operand_id);
+  // The emulated GatherND will always output a tensor with one dimension
+  // because the shape of the indices tensor is 2D [flat_indices_size,
+  // input_rank], while GatherElements requires output tensor shape being the
+  // same as indices tensor, so we need to insert a reshape.
+  //
+  // For example, if the input shape is [4, 2, 2],  the indices are [1, 2, 2]
+  // and axis = 0, then the output shape of gatherND will be [4] that is
+  // calculated with ResizeTensor. The output tensor needs to be reshaped to [1,
+  // 2, 2].
+  const TensorIndex gather_nd_tensor_index = SerializeTemporaryTensor(
+      {base::checked_cast<int32_t>(indices_value.size())},
+      input_tensor_info.data_type);
+  operators_.emplace_back(SerializeGatherNDOperation(
+      input_tensor_info.index, indices_tensor_index, gather_nd_tensor_index));
+  return SerializeReshapeOperation(gather_nd_tensor_index,
+                                   output_tensor_info.index,
+                                   output_tensor_info.dimensions);
 }
 
 auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
