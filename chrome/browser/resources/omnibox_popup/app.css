@@ -9,6 +9,7 @@
 
 :host {
   --cr-searchbox-icon-container-size: 28px;
+  --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --cr-searchbox-match-padding: 6px;
   --cr-searchbox-match-padding-inline-start: 16px;
   --cr-searchbox-match-text-padding-inline-start: 12px;
@@ -31,7 +32,6 @@
   --color-searchbox-results-foreground: var(--color-omnibox-text);
   --color-searchbox-results-icon: var(--color-omnibox-results-icon);
   --color-searchbox-results-icon-container-background: unset;
-  --color-searchbox-results-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
   --color-searchbox-results-typed-prefix: unset;
