@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("cxx_lib") {
+  sources = [ "cxx_lib.rs" ]
+  crate_root = "cxx_lib.rs"
+  cxx_bindings = [ "cxx_lib.rs" ]
+  allow_unsafe = true
+}
+
+source_set("ffi_base") {
+  sources = [
+    "callbacks_from_rust.cc",
+    "callbacks_from_rust.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+executable("exercise_4_solution") {
+  sources = [ "hellocxx.cc" ]
+  deps = [
+    ":cxx_lib",
+    ":ffi_base",
+    "//base",
+  ]
+}

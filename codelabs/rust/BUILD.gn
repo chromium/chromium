@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+# Group for all solutions.
+
+group("codelab_rust") {
+  testonly = true
+  deps = [
+    "solutions/exercise_1_build_rules:exercise_1_solution",
+    "solutions/exercise_2_testing:exercise_2_solution",
+    "solutions/exercise_3_cpp_interop:exercise_3_solution",
+    "solutions/exercise_4_cpp_interop:exercise_4_solution",
+  ]
+}

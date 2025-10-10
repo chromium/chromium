@@ -6,6 +6,7 @@ group("codelabs") {
   testonly = true
   deps = [
     "//codelabs/cpp101:codelab_cpp101",
+    "//codelabs/rust:codelab_rust",
     "//codelabs/threading_and_scheduling:codelab_threading_and_scheduling",
   ]
 
