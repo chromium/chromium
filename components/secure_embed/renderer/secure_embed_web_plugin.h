@@ -53,10 +53,14 @@ class SecureEmbedWebPlugin : public blink::WebPlugin {
 
  private:
   explicit SecureEmbedWebPlugin(
-      mojo::AssociatedRemote<mojom::SecureEmbedHost> host);
+      mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
+      int contents_id);
 
   mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+
+  // The guest contents ID parsed from the `data-content-id` attribute.
+  int contents_id_ = -1;
 };
 
 }  // namespace secure_embed

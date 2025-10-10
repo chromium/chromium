@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +27,9 @@ namespace {
 
 constexpr char kTestUrl[] = "/secure_embed/embed_tag.html";
 constexpr char kMultipleEmbedsUrl[] = "/secure_embed/multiple_embeds.html";
+
+constexpr size_t kSingleEmbedCount = 1;
+constexpr size_t kMultipleEmbedCount = 3;
 
 class MockSecureEmbedHost;
 
@@ -224,9 +229,8 @@ class SecureEmbedRendererTest : public content::ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, EmbedTagCreatesPlugin) {
   NavigateToTestUrl(kTestUrl);
 
-  EXPECT_EQ(1, CountEmbedElementsInPage());
-
-  ASSERT_EQ(1u, GetMockHostCount());
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
   MockSecureEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
@@ -234,26 +238,28 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, EmbedTagCreatesPlugin) {
   ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->attach_call_count());
 
-  // TODO(secure-embed): Update this expectation when content_id is implemented.
-  EXPECT_EQ(0, host->last_content_id());
+  EXPECT_EQ(1, host->last_content_id());
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, MultipleEmbedTags) {
   NavigateToTestUrl(kMultipleEmbedsUrl);
 
-  ASSERT_EQ(3, CountEmbedElementsInPage());
-  ASSERT_EQ(3u, GetMockHostCount());
+  ASSERT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kMultipleEmbedCount, GetMockHostCount());
 
-  // Verify each host has an independent Mojo connection and receives Attach()
-  for (size_t i = 0; i < 3; i++) {
+  // Verify each host has an independent Mojo connection and receives Attach().
+  // Collect all content_ids to verify we see 1, 2, and 3 (order is not
+  // deterministic).
+  std::set<int64_t> content_ids;
+  for (size_t i = 0; i < kMultipleEmbedCount; i++) {
     MockSecureEmbedHost* host = GetMockHost(i);
     ASSERT_NE(nullptr, host);
     ASSERT_TRUE(WaitForAttachCall(host));
     ASSERT_EQ(1, host->attach_call_count());
-    // TODO(secure-embed): Update this expectation when content_id is
-    // implemented.
-    EXPECT_EQ(0, host->last_content_id());
+    content_ids.insert(host->last_content_id());
   }
+
+  EXPECT_EQ(std::set<int64_t>({1, 2, 3}), content_ids);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
@@ -261,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
   // the SecureEmbedWebPlugin and SecureEmbedHost, and that the Mojo connection
   // is cleanly closed.
   NavigateToTestUrl(kTestUrl);
-  ASSERT_EQ(1, CountEmbedElementsInPage());
-  ASSERT_EQ(1u, GetMockHostCount());
+  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
   MockSecureEmbedHost* first_host = GetMockHost(0);
   ASSERT_NE(nullptr, first_host);
 
@@ -277,23 +283,23 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, PluginDestruction) {
   }));
 
   NavigateToTestUrl(kMultipleEmbedsUrl);
-  ASSERT_EQ(3, CountEmbedElementsInPage());
+  ASSERT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
 
   // Navigation should have disconnected the first host
   disconnect_loop.Run();
   EXPECT_TRUE(first_host_disconnected);
 
-  ASSERT_EQ(3u, GetMockHostCount());
+  ASSERT_EQ(kMultipleEmbedCount, GetMockHostCount());
 
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < kMultipleEmbedCount; i++) {
     MockSecureEmbedHost* host = GetMockHost(i);
     ASSERT_NE(nullptr, host);
     ASSERT_TRUE(WaitForAttachCall(host));
   }
 
   std::vector<std::unique_ptr<base::RunLoop>> disconnect_loops;
-  std::vector<bool> hosts_disconnected(3, false);
-  for (size_t i = 0; i < 3; i++) {
+  std::vector<bool> hosts_disconnected(kMultipleEmbedCount, false);
+  for (size_t i = 0; i < kMultipleEmbedCount; i++) {
     MockSecureEmbedHost* host = GetMockHost(i);
     auto loop = std::make_unique<base::RunLoop>();
     host->SetDisconnectCallback(base::BindLambdaForTesting(
@@ -320,8 +326,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveEmbedFromDOM) {
   // SecureEmbedHost connection.
   NavigateToTestUrl(kTestUrl);
 
-  ASSERT_EQ(1, CountEmbedElementsInPage());
-  ASSERT_EQ(1u, GetMockHostCount());
+  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
   MockSecureEmbedHost* host = GetMockHost(0);
   ASSERT_NE(nullptr, host);
@@ -355,8 +361,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
   // it creates a new SecureEmbedHost connection.
   NavigateToTestUrl(kTestUrl);
 
-  ASSERT_EQ(1, CountEmbedElementsInPage());
-  ASSERT_EQ(1u, GetMockHostCount());
+  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
   MockSecureEmbedHost* first_host = GetMockHost(0);
   ASSERT_NE(nullptr, first_host);
@@ -384,10 +390,10 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
   ASSERT_TRUE(content::ExecJs(web_contents(),
                               "document.body.appendChild(window.savedEmbed);"));
 
-  EXPECT_EQ(1, CountEmbedElementsInPage());
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
 
-  WaitForHostAdded(1u);
-  ASSERT_EQ(1u, GetMockHostCount());
+  WaitForHostAdded(kSingleEmbedCount);
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
 
   MockSecureEmbedHost* second_host = GetMockHost(0);
   ASSERT_NE(nullptr, second_host);
@@ -395,6 +401,59 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, RemoveAndReinsertEmbed) {
   // Wait for the new host to receive the Attach call
   ASSERT_TRUE(WaitForAttachCall(second_host));
   EXPECT_EQ(1, second_host->attach_call_count());
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
+                       ChangeDataContentIdDoesNotRecreateHost) {
+  // Verifies that changing the data-content-id attribute does not destroy
+  // and recreate the SecureEmbedHost connection.
+  constexpr size_t kFinalEmbedCount = 2;
+
+  NavigateToTestUrl(kTestUrl);
+
+  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
+
+  MockSecureEmbedHost* host = GetMockHost(0);
+  ASSERT_NE(nullptr, host);
+  ASSERT_TRUE(WaitForAttachCall(host));
+  EXPECT_EQ(1, host->last_content_id());
+
+  // Set up disconnect callback to detect if host is destroyed
+  bool host_disconnected = false;
+  host->SetDisconnectCallback(
+      base::BindLambdaForTesting([&]() { host_disconnected = true; }));
+
+  // Change the data-content-id attribute
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', '5');"));
+
+  // Add a new embed element and wait for it to attach. This ensures that
+  // the renderer and browser have fully processed the attribute change above.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents(),
+                      "const newEmbed = document.createElement('embed');"
+                      "newEmbed.setAttribute('type', "
+                      "'application/x-google-chrome-secure-embed');"
+                      "newEmbed.setAttribute('data-content-id', '10');"
+                      "document.body.appendChild(newEmbed);"));
+
+  EXPECT_EQ(kFinalEmbedCount, CountEmbedElementsInPage());
+  WaitForHostAdded(kFinalEmbedCount);
+  ASSERT_EQ(kFinalEmbedCount, GetMockHostCount());
+
+  MockSecureEmbedHost* second_host = GetMockHost(1);
+  ASSERT_NE(nullptr, second_host);
+  ASSERT_TRUE(WaitForAttachCall(second_host));
+  EXPECT_EQ(1, second_host->attach_call_count());
+  EXPECT_EQ(10, second_host->last_content_id());
+
+  // Verify the original host was not disconnected or recreated
+  EXPECT_FALSE(host_disconnected);
+  EXPECT_EQ(host, GetMockHost(0));
+  EXPECT_EQ(1, host->attach_call_count());
+  EXPECT_EQ(1, host->last_content_id());
 }
 
 }  // namespace secure_embed

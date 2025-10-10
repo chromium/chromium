@@ -6,7 +6,9 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/guest_contents/browser/guest_contents_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 
 namespace secure_embed {
@@ -32,7 +34,25 @@ void SecureEmbedHost::Create(
 }
 
 void SecureEmbedHost::Attach(int64_t content_id) {
-  // TODO(secure-embed): Implement content_id handling.
+  int guest_id = static_cast<int>(content_id);
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::FromID(guest_id);
+
+  if (!guest_handle) {
+    LOG(ERROR) << "GuestContentsHandle not found for content_id: "
+               << content_id;
+    return;
+  }
+
+  content::WebContents* web_contents_to_attach = guest_handle->web_contents();
+  if (!web_contents_to_attach) {
+    LOG(ERROR) << "WebContents not found for GuestContentsHandle";
+    return;
+  }
+
+  // TODO(secure-embed): Use web_contents_to_attach to complete the attachment.
+  LOG(INFO) << "Successfully retrieved WebContents for content_id: "
+            << content_id;
 }
 
 // static

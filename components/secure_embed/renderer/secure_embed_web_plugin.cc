@@ -5,6 +5,7 @@
 #include "components/secure_embed/renderer/secure_embed_web_plugin.h"
 
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "content/public/renderer/render_frame.h"
@@ -28,12 +29,23 @@ SecureEmbedWebPlugin* SecureEmbedWebPlugin::Create(
     const blink::WebPluginParams& params) {
   mojo::AssociatedRemote<mojom::SecureEmbedHost> host;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&host);
-  return new SecureEmbedWebPlugin(std::move(host));
+
+  // Read the content ID from the data-content-id attribute
+  int contents_id = -1;
+  for (size_t i = 0; i < params.attribute_names.size(); ++i) {
+    if (params.attribute_names[i].Utf8() == "data-content-id") {
+      base::StringToInt(params.attribute_values[i].Utf8(), &contents_id);
+      break;
+    }
+  }
+
+  return new SecureEmbedWebPlugin(std::move(host), contents_id);
 }
 
 SecureEmbedWebPlugin::SecureEmbedWebPlugin(
-    mojo::AssociatedRemote<mojom::SecureEmbedHost> host)
-    : host_(std::move(host)) {}
+    mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
+    int contents_id)
+    : host_(std::move(host)), contents_id_(contents_id) {}
 
 SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 
@@ -41,8 +53,7 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
   if (host_) {
-    // TODO(secure-embed): pass the real content_id.
-    host_->Attach(0);
+    host_->Attach(contents_id_);
   }
   return true;
 }

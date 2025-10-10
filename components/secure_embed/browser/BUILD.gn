@@ -18,6 +18,7 @@ component("browser") {
 
   deps = [
     "//base",
+    "//components/guest_contents/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]
