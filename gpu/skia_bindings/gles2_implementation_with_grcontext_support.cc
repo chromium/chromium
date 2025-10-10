@@ -31,12 +31,4 @@ bool GLES2ImplementationWithGrContextSupport::HasGrContextSupport() const {
   return true;
 }
 
-void GLES2ImplementationWithGrContextSupport::WillCallGLFromSkia() {
-  using_gl_from_skia_ = true;
-}
-
-void GLES2ImplementationWithGrContextSupport::DidCallGLFromSkia() {
-  using_gl_from_skia_ = false;
-}
-
 }  // namespace skia_bindings

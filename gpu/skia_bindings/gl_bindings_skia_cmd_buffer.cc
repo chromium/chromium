@@ -15,26 +15,13 @@ using gpu::ContextSupport;
 
 namespace {
 
-class ScopedCallingGLFromSkia {
- public:
-  ScopedCallingGLFromSkia(ContextSupport* context_support)
-      : context_support_(context_support) {
-    context_support_->WillCallGLFromSkia();
-  }
-  ~ScopedCallingGLFromSkia() { context_support_->DidCallGLFromSkia(); }
-
- private:
-  raw_ptr<ContextSupport> context_support_;
-};
-
 template <typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> gles_bind(
     R (GLES2Interface::*func)(Args...),
     GLES2Interface* gles2_interface,
     ContextSupport* context_support) {
   if (context_support->HasGrContextSupport()) {
-    return [func, context_support, gles2_interface](Args... args) {
-      ScopedCallingGLFromSkia guard(context_support);
+    return [func, gles2_interface](Args... args) {
       return (gles2_interface->*func)(args...);
     };
   }

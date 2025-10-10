@@ -118,8 +118,4 @@ bool TestContextSupport::HasGrContextSupport() const {
   return true;
 }
 
-void TestContextSupport::WillCallGLFromSkia() {}
-
-void TestContextSupport::DidCallGLFromSkia() {}
-
 }  // namespace viz

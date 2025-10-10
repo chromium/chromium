@@ -174,8 +174,6 @@ class ContextSupportStub : public ContextSupport {
     return false;
   }
   bool HasGrContextSupport() const override { return false; }
-  void WillCallGLFromSkia() override {}
-  void DidCallGLFromSkia() override {}
 
  private:
   base::HeapArray<uint8_t> mapped_transfer_cache_entry_;

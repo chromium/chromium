@@ -24,12 +24,7 @@ class GLES2ImplementationWithGrContextSupport
 
   typedef gpu::gles2::GLES2Implementation BaseClass;
 
-  void WillCallGLFromSkia() override;
-  void DidCallGLFromSkia() override;
   bool HasGrContextSupport() const override;
-
- private:
-  bool using_gl_from_skia_ = false;
 };
 
 }  // namespace skia_bindings

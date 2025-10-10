@@ -106,10 +106,6 @@ class ContextSupport {
   // synchronization problems between the GLES2 interface and skia.
   virtual bool HasGrContextSupport() const = 0;
 
-  virtual void WillCallGLFromSkia() = 0;
-
-  virtual void DidCallGLFromSkia() = 0;
-
  protected:
   ContextSupport() = default;
   virtual ~ContextSupport() = default;
