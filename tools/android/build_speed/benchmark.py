@@ -169,8 +169,8 @@ _BENCHMARKS = [
     ),
     Benchmark(
         name='module_public_sig',
-        from_string='INVALID_WINDOW_INDEX = -1',
-        to_string='INVALID_WINDOW_INDEX = -<sub>',
+        from_string='INVALID_WINDOW_ID = -1',
+        to_string='INVALID_WINDOW_ID = -<sub>',
         change_file=
         'chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
         can_install=True,
@@ -314,8 +314,11 @@ def _emulator(emulator_avd_name):
         logging.info('Stopped emulator.')
 
 
-def _run_and_time_cmd(cmd: List[str]) -> float:
+def _run_and_time_cmd(cmd: List[str], *, dry_run: bool) -> float:
     logging.debug('Running %s', cmd)
+    if dry_run:
+        logging.warning('Dry run, skipping and returning random time.')
+        return random.uniform(1.0, 10.0)
     start = time.time()
     try:
         # Since output can be verbose, only show it for debug/errors.
@@ -339,11 +342,12 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
     return time.time() - start
 
 
-def _run_gn_gen(out_dir: pathlib.Path) -> float:
+def _run_gn_gen(out_dir: pathlib.Path, *, dry_run: bool) -> float:
     return _run_and_time_cmd(
         [sys.executable,
          str(_GN_PATH), 'gen', '-C',
-         str(out_dir)])
+         str(out_dir)],
+        dry_run=dry_run)
 
 
 def _terminate_build_server_if_needed(out_dir: pathlib.Path):
@@ -366,17 +370,17 @@ def _terminate_build_server_if_needed(out_dir: pathlib.Path):
         raise Exception('Build server still running after waiting 5s.')
 
 
-def _compile(out_dir: pathlib.Path, target: str) -> float:
+def _compile(out_dir: pathlib.Path, target: str, *, dry_run: bool) -> float:
     cmd = gn_helpers.CreateBuildCommand(str(out_dir))
     try:
-        return _run_and_time_cmd(cmd + [target])
+        return _run_and_time_cmd(cmd + [target], dry_run=dry_run)
     finally:
         # This ensures that the build server does not affect subsequent runs.
         _terminate_build_server_if_needed(out_dir)
 
 
-def _run_install(out_dir: pathlib.Path, target: str,
-                 device_serial: str) -> float:
+def _run_install(out_dir: pathlib.Path, target: str, device_serial: str, *,
+                 dry_run: bool) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
     script_path = out_dir / 'bin' / target
     # Disable first run to get a more accurate timing of startup.
@@ -387,11 +391,11 @@ def _run_install(out_dir: pathlib.Path, target: str,
     ]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cmd += ['-vv']
-    return _run_and_time_cmd(cmd)
+    return _run_and_time_cmd(cmd, dry_run=dry_run)
 
 
 def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
-              test_filter: str) -> float:
+              test_filter: str, *, dry_run: bool) -> float:
     # Example script path: out/Debug/bin/run_chrome_public_test_apk
     script_path = out_dir / 'bin' / f'run_{target}'
     cmd = [str(script_path), '--fast-local-dev', '--device', device_serial]
@@ -399,33 +403,43 @@ def _run_test(out_dir: pathlib.Path, target: str, device_serial: str,
         cmd += ['-f', test_filter]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cmd += ['-vv']
-    return _run_and_time_cmd(cmd)
+    return _run_and_time_cmd(cmd, dry_run=dry_run)
 
 
-def _execute_benchmark_stages(
-        benchmark: Benchmark, out_dir: pathlib.Path, target: str,
-        emulator: Optional[device_utils.DeviceUtils]
-) -> List[Tuple[str, float]]:
+def _execute_benchmark_stages(benchmark: Benchmark, out_dir: pathlib.Path,
+                              target: str,
+                              emulator: Optional[device_utils.DeviceUtils], *,
+                              dry_run: bool) -> List[Tuple[str, float]]:
     if benchmark.can_install or benchmark.can_run:
         assert emulator, f'An emulator is required for {benchmark}'
-    results = [(f'{benchmark.name}_compile', _compile(out_dir, target))]
+    results = [(f'{benchmark.name}_compile',
+                _compile(out_dir, target, dry_run=dry_run))]
     if benchmark.can_install:
         results.append((f'{benchmark.name}_install',
-                        _run_install(out_dir, target, emulator.serial)))
+                        _run_install(out_dir,
+                                     target,
+                                     emulator.serial,
+                                     dry_run=dry_run)))
     if benchmark.can_run:
         results.append((f'{benchmark.name}_run',
-                        _run_test(out_dir, target, emulator.serial,
-                                  benchmark.test_filter)))
+                        _run_test(out_dir,
+                                  target,
+                                  emulator.serial,
+                                  benchmark.test_filter,
+                                  dry_run=dry_run)))
     return results
 
 
-def _run_benchmark(
-        benchmark: Benchmark, out_dir: pathlib.Path, target: str,
-        emulator: Optional[device_utils.DeviceUtils]
-) -> List[Tuple[str, float]]:
+def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
+                   emulator: Optional[device_utils.DeviceUtils], *,
+                   dry_run: bool) -> List[Tuple[str, float]]:
     # This ensures that the only change is the one that this script makes.
     logging.info('Prepping benchmark...')
-    results = _execute_benchmark_stages(benchmark, out_dir, target, emulator)
+    results = _execute_benchmark_stages(benchmark,
+                                        out_dir,
+                                        target,
+                                        emulator,
+                                        dry_run=dry_run)
     for name, elapsed in results:
         logging.info(f'Took {elapsed:.1f}s to prep {name}.')
     logging.info('Starting actual test...')
@@ -445,7 +459,11 @@ def _run_benchmark(
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        return _execute_benchmark_stages(benchmark, out_dir, target, emulator)
+        return _execute_benchmark_stages(benchmark,
+                                         out_dir,
+                                         target,
+                                         emulator,
+                                         dry_run=dry_run)
 
 
 def _format_result(time_taken: List[float]) -> str:
@@ -469,7 +487,7 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: pathlib.Path, target: str, repeat: int,
-                   emulator_avd_name: Optional[str]) -> Dict:
+                   emulator_avd_name: Optional[str], *, dry_run: bool) -> Dict:
     args_gn_path = output_directory / 'args.gn'
     if emulator_avd_name is None:
         emulator_ctx = contextlib.nullcontext
@@ -483,7 +501,8 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             f.write('\n'.join(gn_args))
         for run_num in range(repeat):
             logging.info(f'Run number: {run_num + 1}')
-            timings['gn_gen'].append(_run_gn_gen(output_directory))
+            timings['gn_gen'].append(
+                _run_gn_gen(output_directory, dry_run=dry_run))
             for benchmark in _parse_benchmarks(benchmarks):
                 logging.info(f'Starting {benchmark.name}...')
                 # Start a fresh emulator for each benchmark to produce more
@@ -492,7 +511,8 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                     results = _run_benchmark(benchmark=benchmark,
                                              out_dir=output_directory,
                                              target=target,
-                                             emulator=emulator)
+                                             emulator=emulator,
+                                             dry_run=dry_run)
                 for name, elapsed in results:
                     logging.info(f'Completed {name}: {elapsed:.1f}s')
                     timings[name].append(elapsed)
@@ -569,6 +589,11 @@ def main():
     parser.add_argument('--json',
                         action='store_true',
                         help='Output machine-readable output per benchmark.')
+    parser.add_argument('-n',
+                        '--dry-run',
+                        action='store_true',
+                        help='Do everything except the build/test/run '
+                        'steps, which will return random times.')
     args = parser.parse_args()
 
     if args.output_directory:
@@ -621,8 +646,13 @@ def main():
     else:
         target = _TARGETS['apk']
 
-    results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat, args.emulator)
+    results = run_benchmarks(args.benchmark,
+                             gn_args,
+                             out_dir,
+                             target,
+                             args.repeat,
+                             args.emulator,
+                             dry_run=args.dry_run)
 
     if args.json:
         json_results = []

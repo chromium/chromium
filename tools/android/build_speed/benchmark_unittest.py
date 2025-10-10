@@ -50,7 +50,8 @@ class TestBenchmarkScript(unittest.TestCase):
                     out_dir,
                     'target',
                     repeat,
-                    emulator_avd_name='emulator.avd')
+                    emulator_avd_name='emulator.avd',
+                    dry_run=False)
                 self.assertEqual(timings['gn_gen'], [2.5])
                 self.assertEqual(timings['chrome_nosig_compile'], [5.5])
                 self.assertEqual(timings['chrome_nosig_install'], [3.0])
@@ -173,6 +174,19 @@ class TestBenchmarkScript(unittest.TestCase):
             },
         ]
         self.assertEqual(parsed_json, expected_json)
+
+    @unittest.mock.patch('builtins.print')
+    @unittest.mock.patch('benchmark.run_benchmarks')
+    def test_main_dry_run(self, mock_run_benchmarks, mock_print):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            constants.SetOutputDirectory(tmpdir)
+            with unittest.mock.patch(
+                    'sys.argv', ['benchmark.py', 'chrome_nosig', '--dry-run']):
+                benchmark.main()
+
+        # Verify run_benchmarks was called with dry_run=True
+        _args, kwargs = mock_run_benchmarks.call_args
+        self.assertTrue(kwargs['dry_run'])
 
 
 if __name__ == '__main__':
