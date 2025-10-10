@@ -9,6 +9,10 @@
 
 #include "base/functional/callback.h"
 
+namespace favicon {
+class FaviconService;
+}
+
 namespace contextual_tasks {
 
 class ContextDecorator;
@@ -18,7 +22,8 @@ struct UrlAttachmentDecoratorData;
 
 // Factory function to create a ContextDecorator pre-configured with a
 // default set of multiple other ContextDecorators.
-std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator();
+std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator(
+    favicon::FaviconService* favicon_service);
 
 // Abstract interface for a decorator that enriches a ContextualTaskContext
 // with additional metadata. The enrichment process is asynchronous.

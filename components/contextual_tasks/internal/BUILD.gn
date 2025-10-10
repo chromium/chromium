@@ -19,12 +19,16 @@ source_set("internal") {
     "contextual_tasks_service_impl.h",
     "fallback_title_context_decorator.cc",
     "fallback_title_context_decorator.h",
+    "favicon_context_decorator.cc",
+    "favicon_context_decorator.h",
   ]
 
   deps = [
     "//base",
     "//components/contextual_tasks/internal/proto",
     "//components/contextual_tasks/public",
+    "//components/favicon/core",
+    "//components/favicon_base",
     "//components/keyed_service/core",
     "//components/sessions:session_id",
     "//components/sync/model",
@@ -43,6 +47,7 @@ source_set("unit_tests") {
     "contextual_task_sync_bridge_unittest.cc",
     "contextual_tasks_service_impl_unittest.cc",
     "fallback_title_context_decorator_unittest.cc",
+    "favicon_context_decorator_unittest.cc",
   ]
 
   deps = [
@@ -50,11 +55,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/contextual_tasks/public",
+    "//components/favicon/core/test:test_support",
     "//components/sessions:session_id",
     "//components/sync:test_support",
     "//components/sync/model",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
     "//url",
   ]
 

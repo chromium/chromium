@@ -10,6 +10,7 @@
 
 #include "base/uuid.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -23,6 +24,12 @@ struct UrlAttachmentDecoratorData {
     std::u16string title;
   };
   FallbackTitleData fallback_title_data;
+
+  struct FaviconData {
+    gfx::Image image;
+    GURL icon_url;
+  };
+  FaviconData favicon_data;
 };
 
 // Represents a URL that is attached to a `ContextualTask`. This struct contains
@@ -35,10 +42,13 @@ struct UrlAttachment {
   // Accessor methods.
   GURL GetURL() const;
   std::u16string GetTitle() const;
+  gfx::Image GetFavicon() const;
+
+  // Gives access to internal data sources.
+  UrlAttachmentDecoratorData& GetDecoratorDataForTesting();
 
  private:
   friend class ContextDecorator;
-  friend class ContextualTasksServiceImplTest;
 
   // ContextDecorator implementation can access this method through a protected
   // method.
@@ -72,6 +82,9 @@ struct ContextualTaskContext {
 
   // Returns the URL attachments for the task.
   const std::vector<UrlAttachment>& GetUrlAttachments() const;
+
+  // Returns a mutable version of the URL attachments for the task.
+  std::vector<UrlAttachment>& GetMutableUrlAttachmentsForTesting();
 
  private:
   friend class ContextDecorator;

@@ -20,6 +20,14 @@ std::u16string UrlAttachment::GetTitle() const {
   return decorator_data_.fallback_title_data.title;
 }
 
+gfx::Image UrlAttachment::GetFavicon() const {
+  return decorator_data_.favicon_data.image;
+}
+
+UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorDataForTesting() {
+  return decorator_data_;
+}
+
 UrlAttachmentDecoratorData& UrlAttachment::GetDecoratorData() {
   return decorator_data_;
 }
@@ -51,6 +59,11 @@ const base::Uuid& ContextualTaskContext::GetTaskId() const {
 
 const std::vector<UrlAttachment>& ContextualTaskContext::GetUrlAttachments()
     const {
+  return urls_;
+}
+
+std::vector<UrlAttachment>&
+ContextualTaskContext::GetMutableUrlAttachmentsForTesting() {
   return urls_;
 }
 

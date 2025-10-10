@@ -116,16 +116,6 @@ class ContextualTasksServiceImplTest : public testing::Test {
     return result;
   }
 
-  std::vector<UrlAttachment>& GetMutableUrlAttachments(
-      ContextualTaskContext& task) {
-    return task.GetMutableUrlAttachments();
-  }
-
-  UrlAttachmentDecoratorData& GetUrlAttachmentDecoratorData(
-      UrlAttachment& url_attachment) {
-    return url_attachment.GetDecoratorData();
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ContextualTasksServiceImpl> service_;
@@ -503,11 +493,12 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
 
   EXPECT_CALL(*mock_decorator_, DecorateContext(testing::_, testing::_))
       .WillOnce(testing::Invoke(
-          [this](std::unique_ptr<ContextualTaskContext> context,
-                 base::OnceCallback<void(
-                     std::unique_ptr<ContextualTaskContext>)> callback) {
+          [](std::unique_ptr<ContextualTaskContext> context,
+             base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                 callback) {
             // Mock decorator adds a title.
-            GetUrlAttachmentDecoratorData(GetMutableUrlAttachments(*context)[0])
+            (context->GetMutableUrlAttachmentsForTesting()[0]
+                 .GetDecoratorDataForTesting())
                 .fallback_title_data.title = u"Hardcoded Title";
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,

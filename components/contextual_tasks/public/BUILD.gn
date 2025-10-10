@@ -26,6 +26,7 @@ source_set("public") {
     "//base",
     "//components/keyed_service/core",
     "//components/sessions:session_id",
+    "//ui/gfx",
     "//url",
   ]
 

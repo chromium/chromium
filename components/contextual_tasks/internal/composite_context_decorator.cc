@@ -12,14 +12,16 @@
 #include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "fallback_title_context_decorator.h"
+#include "favicon_context_decorator.h"
 
 namespace contextual_tasks {
 
-std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator() {
-  auto fallback_title_decorator =
-      std::make_unique<FallbackTitleContextDecorator>();
+std::unique_ptr<ContextDecorator> CreateDefaultContextDecorator(
+    favicon::FaviconService* favicon_service) {
   std::vector<std::unique_ptr<ContextDecorator>> decorators;
-  decorators.push_back(std::move(fallback_title_decorator));
+  decorators.push_back(std::make_unique<FallbackTitleContextDecorator>());
+  decorators.push_back(
+      std::make_unique<FaviconContextDecorator>(favicon_service));
   return std::make_unique<CompositeContextDecorator>(std::move(decorators));
 }
 
