@@ -103,6 +103,12 @@ bool PageContentStore::AddPageContent(const GURL& url,
     return false;
   }
 
+  // Delete existing contents, else the insert call would fail since tab_id is
+  // marked unique
+  if (tab_id.has_value()) {
+    DeletePageContentForTab(tab_id.value());
+  }
+
   std::string serialized_page_context;
   if (!page_context.SerializeToString(&serialized_page_context)) {
     return false;
@@ -128,8 +134,6 @@ bool PageContentStore::AddPageContent(const GURL& url,
   }
   const int64_t content_id = db_.GetLastInsertRowId();
 
-  // Note only run INSERT here and not REPLACE, the caller should have deleted
-  // stale contents for a tab.
   static const char kInsertMetadataSql[] =
       "INSERT INTO page_metadata (url, content_id, visit_timestamp, "
       "extraction_timestamp, tab_id) "

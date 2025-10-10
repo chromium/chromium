@@ -38,9 +38,8 @@ class PageContentStore {
   // from the page.
   // `tab_id` is platform specific information used to identify tabs. It is
   // integer in iOS and Android. This database should be migrated to a cross
-  // platform tab ID implementation once available. This method will return
-  // false if an entry with the same `tab_id` already exists. The caller is
-  // responsible for deleting the old entry first.
+  // platform tab ID implementation once available. If an entry with the same
+  // non-null `tab_id` already exists, it will be overwritten.
   bool AddPageContent(const GURL& url,
                       const proto::PageContext& page_context,
                       base::Time visit_timestamp,
