@@ -9,6 +9,8 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/glic_shared_resources.h"
+#include "chrome/grit/glic_shared_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace glic {
@@ -37,6 +39,8 @@ void ConfigureSharedWebUISource(content::WebUIDataSource& source) {
                    base::FeatureList::IsEnabled(features::kGlicHeader)
                        ? features::kGlicHeaderRequestTypes.Get()
                        : "");
+
+  source.AddResourcePaths(kGlicSharedResources);
 }
 
 }  // namespace glic

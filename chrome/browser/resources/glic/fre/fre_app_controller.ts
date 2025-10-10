@@ -4,7 +4,7 @@
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {GlicRequestHeaderInjector} from '/glic/glic_request_headers.js';
+import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 

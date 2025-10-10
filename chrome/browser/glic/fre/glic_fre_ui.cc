@@ -23,8 +23,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_fre_resources.h"
 #include "chrome/grit/glic_fre_resources_map.h"
-#include "chrome/grit/glic_resources.h"
-#include "chrome/grit/glic_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -68,9 +66,6 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       browser_context, chrome::kChromeUIGlicFreHost);
   ConfigureSharedWebUISource(*source);
 
-  // Explicitly add source shared with chrome://glic.
-  source->AddResourcePath("glic/glic_request_headers.js",
-      IDR_GLIC_GLIC_REQUEST_HEADERS_JS);
   source->AddResourcePath("glic_logo.svg", GetResourceID(IDR_GLIC_LOGO));
 
   // Add required resources.

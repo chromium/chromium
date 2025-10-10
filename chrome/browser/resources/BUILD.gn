@@ -176,6 +176,7 @@ group("resources") {
     public_deps += [
       "glic:resources",
       "glic/fre:resources",
+      "glic/shared:resources",
     ]
   }
 

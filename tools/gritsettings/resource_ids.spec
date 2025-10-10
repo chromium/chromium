@@ -450,6 +450,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4020],
   },
+    "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/shared/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4030],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [4040],

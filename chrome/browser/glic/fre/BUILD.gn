@@ -29,7 +29,6 @@ source_set("fre") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/shared",
     "//chrome/browser/resources/glic:resources",
-    "//chrome/browser/resources/glic:resources_grit",
     "//chrome/browser/resources/glic/fre:resources_grit",
     "//chrome/browser/themes",
     "//components/language/core/common",

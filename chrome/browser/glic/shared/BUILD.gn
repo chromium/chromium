@@ -1,4 +1,3 @@
-
 import("//chrome/common/features.gni")
 
 assert(enable_glic)
@@ -10,6 +9,7 @@ source_set("shared") {
   ]
   deps = [
     "//base/version_info",
+    "//chrome/browser/resources/glic/shared:resources_grit",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
@@ -17,4 +17,3 @@ source_set("shared") {
     "//ui/webui",
   ]
 }
-
