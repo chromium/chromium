@@ -105,6 +105,7 @@ static_library("test_support") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/experiences/settings_ui",
     "//components/web_package",
   ]
 }

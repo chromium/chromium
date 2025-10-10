@@ -9,8 +9,10 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -20,11 +22,12 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,11 +70,11 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
       ash::NotificationCatalogName::kArcBootError);
-  const AccountId& account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-  notifier_id.profile_id = account_id.GetUserEmail();
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  CHECK(user);
+  notifier_id.profile_id = user->GetAccountId().GetUserEmail();
 
-  Profile* profile = Profile::FromBrowserContext(context);
   message_center::Notification notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskSpaceId,
       l10n_util::GetStringUTF16(IDS_ARC_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE),
@@ -81,16 +84,21 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
       notifier_id, optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](Profile* profile, std::optional<int> button_index) {
+              [](const user_manager::User* user,
+                 std::optional<int> button_index) {
                 if (button_index) {
                   DCHECK_EQ(0, *button_index);
-                  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-                      profile, chromeos::settings::mojom::kStorageSubpagePath);
+                  ash::SettingsAppManager::Get()->Open(
+                      CHECK_DEREF(user),
+                      {.sub_page =
+                           chromeos::settings::mojom::kStorageSubpagePath});
                 }
               },
-              profile)),
+              user)),
       kNotificationStorageFullIcon,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+
+  Profile* profile = Profile::FromBrowserContext(context);
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);

@@ -31,6 +31,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,14 +120,16 @@ IN_PROC_BROWSER_TEST_P(KioskTest, HidesShelf) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, CanOpenA11ySettings) {
-  Browser* settings = OpenA11ySettings(CurrentProfile());
+  Browser* settings = OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()));
   ASSERT_NE(settings, nullptr);
   EXPECT_TRUE(settings->window()->IsActive());
   EXPECT_TRUE(settings->window()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
-  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
   EXPECT_GT(BrowserList::GetInstance()->size(), 0u);
 
   // Close the app window and verify the settings browser gets closed too.
@@ -139,7 +142,8 @@ IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotExitWhenSettingsWindowCloses) {
-  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
   EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), &settings);
 
   settings.window()->Close();

@@ -19,6 +19,10 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "url/gurl.h"
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace ash::kiosk::test {
 
 // Returns the auto launch Kiosk app configured in the system. Checks if there
@@ -108,7 +112,7 @@ void WaitNetworkScreen();
 // does not close it, and returns the corresponding `Browser`.
 //
 // Checks if `KioskSystemSession` closes the browser, or if it is null.
-Browser* OpenA11ySettings(Profile& profile);
+Browser* OpenA11ySettings(const user_manager::User& user);
 
 // Waits for the next new browser window to be created and returns true if
 // `KioskSystemSession` decides to close it.
