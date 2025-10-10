@@ -10,6 +10,7 @@ proto_library("protocol") {
   sources = [
     "children.proto",
     "split_collection_state.proto",
+    "tab_group_collection_state.proto",
     "tab_state.proto",
   ]
 }
@@ -19,6 +20,7 @@ proto_java_library("proto_java") {
   sources = [
     "children.proto",
     "split_collection_state.proto",
+    "tab_group_collection_state.proto",
     "tab_state.proto",
   ]
 }

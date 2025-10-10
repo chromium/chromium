@@ -82,8 +82,11 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
   std::unique_ptr<Payload> metadata;
   TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
   if (type == TabStorageType::kSplit) {
-    metadata = PackageData(static_cast<const SplitTabCollection*>(collection),
-                           mapping);
+    metadata = PackageSplitTabCollectionData(
+        static_cast<const SplitTabCollection*>(collection), mapping);
+  } else if (type == TabStorageType::kGroup) {
+    metadata = PackageTabGroupTabCollectionData(
+        static_cast<const TabGroupTabCollection*>(collection), mapping);
   } else {
     metadata = std::make_unique<EmptyPayload>();
   }
@@ -92,7 +95,7 @@ std::unique_ptr<StoragePackage> TabStoragePackager::Package(
                                                     std::move(children_proto));
 }
 
-std::unique_ptr<Payload> TabStoragePackager::PackageData(
+std::unique_ptr<Payload> TabStoragePackager::PackageSplitTabCollectionData(
     const SplitTabCollection* collection,
     StorageIdMapping& mapping) {
   tabs_pb::SplitCollectionState state;

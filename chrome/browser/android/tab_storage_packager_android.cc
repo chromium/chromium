@@ -10,9 +10,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_group_android.h"
+#include "chrome/browser/android/tab_group_features.h"
 #include "chrome/browser/tab/android_tab_package.h"
+#include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
@@ -23,6 +28,23 @@
 
 namespace tabs {
 static const int kTabStoragePackagerAndroidVersion = 1;
+
+// A payload of data representing TabGroupTabCollection.
+class TabGroupCollectionStorageData : public Payload {
+ public:
+  explicit TabGroupCollectionStorageData(
+      tabs_pb::TabGroupCollectionState tab_group_collection_state)
+      : tab_group_collection_state_(std::move(tab_group_collection_state)) {}
+
+  ~TabGroupCollectionStorageData() override = default;
+
+  std ::string SerializePayload() const override {
+    return tab_group_collection_state_.SerializeAsString();
+  }
+
+ private:
+  tabs_pb::TabGroupCollectionState tab_group_collection_state_;
+};
 
 TabStoragePackagerAndroid::TabStoragePackagerAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -74,6 +96,24 @@ void TabStoragePackagerAndroid::ConsolidatePackageData(
   package_ = std::make_unique<TabStoragePackage>(
       tab->GetUserAgent(), std::move(tab_group_id), tab->IsPinned(),
       std::move(android_package));
+}
+
+std::unique_ptr<Payload>
+TabStoragePackagerAndroid::PackageTabGroupTabCollectionData(
+    const TabGroupTabCollection* collection,
+    StorageIdMapping& mapping) {
+  tabs_pb::TabGroupCollectionState state;
+  const base::Token group_id = collection->GetTabGroupId().token();
+  state.set_group_id_high(group_id.high());
+  state.set_group_id_low(group_id.low());
+
+  const tab_groups::TabGroupVisualData* visual_data =
+      collection->GetTabGroup()->visual_data();
+  state.set_color(static_cast<int32_t>(visual_data->color()));
+  state.set_is_collapsed(visual_data->is_collapsed());
+  state.set_title(base::UTF16ToUTF8(visual_data->title()));
+
+  return std::make_unique<TabGroupCollectionStorageData>(std::move(state));
 }
 
 std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::ReleasePackage() {

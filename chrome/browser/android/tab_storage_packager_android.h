@@ -42,6 +42,10 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       TabAndroid* tab);
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
+      const TabGroupTabCollection* collection,
+      StorageIdMapping& mapping) override;
+
  private:
   std::unique_ptr<StoragePackage> ReleasePackage();
 

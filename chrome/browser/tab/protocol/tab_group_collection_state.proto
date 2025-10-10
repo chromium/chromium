@@ -1,0 +1,22 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package tabs_pb;
+option java_package = "org.chromium.chrome.browser.tabs.proto";
+
+// Stores the state of a TabGroupTabCollection.
+message TabGroupCollectionState {
+  optional fixed64 group_id_high = 1;
+  optional fixed64 group_id_low = 2;
+
+  // A UTF16 string, encoded in UTF8.
+  optional string title = 3;
+
+  optional int32 color = 4;
+
+  optional bool is_collapsed = 5;
+}
