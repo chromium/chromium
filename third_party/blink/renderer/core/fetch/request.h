@@ -28,6 +28,7 @@ class AbortSignal;
 class BodyStreamBuffer;
 class ExceptionState;
 class RequestInit;
+class RetryOptions;
 class V8ReferrerPolicy;
 class V8RequestDestination;
 class V8RequestCache;
@@ -95,6 +96,8 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.
   Request* clone(ScriptState*, ExceptionState&);
+  // Returns the retry options set on the request if exists.
+  RetryOptions* getRetryOptions() const;
 
   FetchRequestData* PassRequestData(ScriptState*, ExceptionState&);
   mojom::blink::FetchAPIRequestPtr CreateFetchAPIRequest() const;

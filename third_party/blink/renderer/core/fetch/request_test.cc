@@ -7,14 +7,17 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_destination.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_retry_options.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -273,6 +276,82 @@ TEST(ServiceWorkerRequestTest, ToFetchAPIRequestDoesNotStripURLFragment) {
   mojom::blink::FetchAPIRequestPtr fetch_api_request =
       request->CreateFetchAPIRequest();
   EXPECT_EQ(url_with_fragment, fetch_api_request->url);
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledNoOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  Request* request = Request::Create(
+      scope.GetScriptState(), "https://example.com", scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  EXPECT_EQ(request->getRetryOptions(), nullptr);
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledWithOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  RequestInit* init = RequestInit::Create();
+  RetryOptions* retry_options = RetryOptions::Create();
+  retry_options->setMaxAttempts(5);
+  retry_options->setInitialDelay(100);
+  retry_options->setBackoffFactor(2.5);
+  retry_options->setMaxAge(5000);
+  retry_options->setRetryAfterUnload(true);
+  retry_options->setRetryNonIdempotent(true);
+  retry_options->setRetryOnlyIfServerUnreached(true);
+  init->setRetryOptions(retry_options);
+
+  Request* request =
+      Request::Create(scope.GetScriptState(), "https://example.com", init,
+                      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  RetryOptions* result = request->getRetryOptions();
+  ASSERT_NE(result, nullptr);
+  EXPECT_EQ(result->maxAttempts(), 5u);
+  EXPECT_TRUE(result->hasInitialDelay());
+  EXPECT_EQ(result->initialDelay(), 100u);
+  EXPECT_TRUE(result->hasBackoffFactor());
+  EXPECT_EQ(result->backoffFactor(), 2.5);
+  EXPECT_EQ(result->maxAge(), 5000u);
+  EXPECT_TRUE(result->retryAfterUnload());
+  EXPECT_TRUE(result->retryNonIdempotent());
+  EXPECT_TRUE(result->retryOnlyIfServerUnreached());
+}
+
+TEST(RequestRetryOptionsTest, RetryOptionsEnabledWithPartialOptionsSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFetchRetry);
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  RequestInit* init = RequestInit::Create();
+  RetryOptions* retry_options = RetryOptions::Create();
+  retry_options->setMaxAttempts(2);
+  retry_options->setMaxAge(2000);
+  init->setRetryOptions(retry_options);
+
+  Request* request =
+      Request::Create(scope.GetScriptState(), "https://example.com", init,
+                      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  RetryOptions* result = request->getRetryOptions();
+  ASSERT_NE(result, nullptr);
+  EXPECT_EQ(result->maxAttempts(), 2u);
+  EXPECT_FALSE(result->hasInitialDelay());
+  EXPECT_FALSE(result->hasBackoffFactor());
+  EXPECT_EQ(result->maxAge(), 2000u);
+  EXPECT_FALSE(result->retryAfterUnload());
+  EXPECT_FALSE(result->retryNonIdempotent());
+  EXPECT_FALSE(result->retryOnlyIfServerUnreached());
 }
 
 }  // namespace blink

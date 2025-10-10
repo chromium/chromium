@@ -1691,6 +1691,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clone
 [Worker]     method constructor
 [Worker]     method formData
+[Worker]     method getRetryOptions
 [Worker]     method json
 [Worker]     method text
 [Worker] interface Response
