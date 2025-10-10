@@ -1722,27 +1722,7 @@ TEST_F(InlineNodeTest, FontFeaturesInitial) {
   EXPECT_FALSE(is_initial("no-kern"));
 }
 
-TEST_F(InlineNodeTest, ShapeCacheDisabled) {
-  ScopedLayoutNGShapeCacheForTest scoped_feature(false);
-
-  SetupHtml("t",
-            "<style>div { font-family: serif; }</style>"
-            "<div id=t>abc</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  node.CollectInlines();
-  EXPECT_EQ("abc", node.Text());
-
-  const String& text_content(node.Text().c_str());
-  InlineItems& items = node.Items();
-  ShapeResultSpacing spacing(text_content, node.IsSvgText());
-
-  EXPECT_FALSE(
-      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
-}
-
 TEST_F(InlineNodeTest, ShapeCacheLongString) {
-  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
-
   for (const unsigned text_length :
        {NGShapeCache::kMaxTextLengthOfEntries - 1,
         NGShapeCache::kMaxTextLengthOfEntries,
@@ -1768,8 +1748,6 @@ TEST_F(InlineNodeTest, ShapeCacheLongString) {
 }
 
 TEST_F(InlineNodeTest, ShapeCacheMultiItems) {
-  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
-
   SetupHtml("t", "<div id=t>abc<span>def</span>ghi</div>");
   InlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
@@ -1784,8 +1762,6 @@ TEST_F(InlineNodeTest, ShapeCacheMultiItems) {
 }
 
 TEST_F(InlineNodeTest, ShapeCacheSpacingRequired) {
-  ScopedLayoutNGShapeCacheForTest scoped_feature(true);
-
   SetupHtml("t",
             "<style>div { letter-spacing: 5px; }</style>"
             "<div id=t>abc</div>");

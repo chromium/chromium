@@ -165,7 +165,6 @@ class ReusingTextShaper final {
       return ShapeWithoutCache(start_item, font, end_offset);
     };
     if (allow_shape_cache_) {
-      DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
       return font.PrimaryFont()->GetShapeCache().GetOrCreate(
           shaper_.GetText(), start_item.Direction(), ShapeFunc);
     }
@@ -1399,9 +1398,6 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
                                        const Font* override_font,
                                        const InlineItems& items,
                                        ShapeResultSpacing& spacing) const {
-  if (!RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()) {
-    return false;
-  }
   // For consistency with similar usages of ShapeCache (e.g. canvas) and in
   // order to avoid caching bugs (e.g. with scripts having Arabic joining)
   // NGShapeCache is only enabled when the IFC is made of a single text item. To

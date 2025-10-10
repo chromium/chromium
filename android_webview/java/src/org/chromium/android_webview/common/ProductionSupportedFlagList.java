@@ -204,8 +204,6 @@ public final class ProductionSupportedFlagList {
                 "Send touch move events as async or non-blocking to Renderer immediately after a"
                         + " scroll has started."),
         Flag.baseFeature(
-                BlinkFeatures.LAYOUT_NG_SHAPE_CACHE, "Cache shape results for short text blocks."),
-        Flag.baseFeature(
                 BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING,
                 "Disable text inflation with setLayoutAlgorithm(TEXT_AUTOSIZING)"),
         Flag.baseFeature(

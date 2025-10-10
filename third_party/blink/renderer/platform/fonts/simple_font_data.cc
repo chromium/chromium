@@ -76,9 +76,7 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
     : platform_data_(platform_data),
-      shape_cache_(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()
-                       ? MakeGarbageCollected<NGShapeCache>(this)
-                       : nullptr),
+      shape_cache_(MakeGarbageCollected<NGShapeCache>(this)),
       font_(platform_data->size() ? platform_data->CreateSkFont()
                                   : skia::DefaultFont()),
       custom_font_data_(custom_data) {

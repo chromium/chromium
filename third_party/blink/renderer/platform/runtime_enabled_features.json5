@@ -2948,11 +2948,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutNGShapeCache",
-      status: "stable",
-      base_feature: "LayoutNGShapeCache",
-    },
-    {
       // Allow triggering the word suggestion from left click.
       // From crbug.com/433209485
       name: "LeftClickToHandleSuggestion",
