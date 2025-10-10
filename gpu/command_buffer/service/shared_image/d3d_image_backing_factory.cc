@@ -40,14 +40,15 @@ namespace gpu {
 
 namespace {
 
-class GpuMemoryBufferFactoryDXGI {
+class GpuMemoryBufferHandleSharedState {
  public:
-  GpuMemoryBufferFactoryDXGI() { DETACH_FROM_THREAD(thread_checker_); }
-  ~GpuMemoryBufferFactoryDXGI() = default;
+  GpuMemoryBufferHandleSharedState() { DETACH_FROM_THREAD(thread_checker_); }
+  ~GpuMemoryBufferHandleSharedState() = default;
 
-  GpuMemoryBufferFactoryDXGI(const GpuMemoryBufferFactoryDXGI&) = delete;
-  GpuMemoryBufferFactoryDXGI& operator=(const GpuMemoryBufferFactoryDXGI&) =
+  GpuMemoryBufferHandleSharedState(const GpuMemoryBufferHandleSharedState&) =
       delete;
+  GpuMemoryBufferHandleSharedState& operator=(
+      const GpuMemoryBufferHandleSharedState&) = delete;
 
   // TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
   // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
@@ -105,7 +106,7 @@ class GpuMemoryBufferFactoryDXGI {
         return nullptr;
       }
 
-      const char* kDebugName = "GPUIPC_GpuMemoryBufferFactoryDXGI";
+      const char* kDebugName = "GPUIPC_GpuMemoryBufferHandleSharedState";
       d3d11_device_->SetPrivateData(WKPDID_D3DDebugObjectName,
                                     strlen(kDebugName), kDebugName);
     }
@@ -124,8 +125,8 @@ class GpuMemoryBufferFactoryDXGI {
   THREAD_CHECKER(thread_checker_);
 };
 
-GpuMemoryBufferFactoryDXGI* GetGpuMemoryBufferFactoryDXGI() {
-  static auto* factory = new GpuMemoryBufferFactoryDXGI();
+GpuMemoryBufferHandleSharedState* GetGpuMemoryBufferHandleSharedState() {
+  static auto* factory = new GpuMemoryBufferHandleSharedState();
   return factory;
 }
 
@@ -356,7 +357,8 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
   TRACE_EVENT0("gpu", "D3DImageBackingFactory::CrceateGpuMemoryBufferHandle");
 
   gfx::GpuMemoryBufferHandle handle;
-  auto d3d11_device = GetGpuMemoryBufferFactoryDXGI()->GetOrCreateD3D11Device();
+  auto d3d11_device =
+      GetGpuMemoryBufferHandleSharedState()->GetOrCreateD3D11Device();
   if (!d3d11_device) {
     return handle;
   }
@@ -420,9 +422,9 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
   DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
-  auto* gmb_factory = GetGpuMemoryBufferFactoryDXGI();
+  auto* shared_state = GetGpuMemoryBufferHandleSharedState();
 
-  auto d3d11_device = gmb_factory->GetOrCreateD3D11Device();
+  auto d3d11_device = shared_state->GetOrCreateD3D11Device();
   if (!d3d11_device) {
     return false;
   }
@@ -435,7 +437,7 @@ bool D3DImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle().buffer_handle(),
                                mapping.GetMemoryAsSpan<uint8_t>(),
                                d3d11_device.Get(),
-                               &gmb_factory->staging_texture());
+                               &shared_state->staging_texture());
 }
 
 // static
