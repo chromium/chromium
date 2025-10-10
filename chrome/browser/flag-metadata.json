@@ -1171,7 +1171,7 @@
   {
     "name": "back-forward-transitions-cross-doc-shared-image",
     "owners": [ "acondor@chromium.org", "clank-performance-team@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 145
   },
   {
     "name": "backdrop-filter-mirror-edge",
