@@ -108,6 +108,11 @@ class MojoBindingsCheckTest(MojomParserTestCase):
       interface FooWithDirectReceiver {
         Method();
       };
+
+      [VendorSpecified="foo=bar"]
+      interface InterfaceWithVendorSpecifiedStringAttribute {
+        Method();
+      };
     """)
 
   def testWrongModuleStable(self):

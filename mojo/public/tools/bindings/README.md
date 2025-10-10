@@ -627,6 +627,12 @@ interesting attributes supported today.
   if other factors such as inlining or code folding end up obscuring the message
   information. This generates extra code, so it is not the default behavior.
 
+* **`[VendorSpecified]`**: The `VendorSpecified` attribute can be used on any of
+  the mojo entities, such as structs, unions, interfaces, constants, and enums,
+  in which downstream vendors can customize the code generation requirements for
+  their respective products.  The attribute is a string value that can be
+  referenced in a templating system and can be used for conditional generation.
+
 ## Generated Code For Target Languages
 
 When the bindings generator successfully processes an input Mojom file, it emits

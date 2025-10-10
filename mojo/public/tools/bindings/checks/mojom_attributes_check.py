@@ -9,6 +9,7 @@ import mojom.generate.module as module
 _COMMON_ATTRIBUTES = {
     'EnableIf',
     'EnableIfNot',
+    'VendorSpecified',
 }
 
 # For struct, union & parameter lists.
