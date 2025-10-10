@@ -62,7 +62,6 @@ void MasonryRunningPositions::UpdateRunningPositionsForSpan(
 
   for (auto track_idx = span.StartLine(); track_idx < end_line; ++track_idx) {
     const LayoutUnit current_running_position = running_positions_[track_idx];
-    DCHECK_GE(new_running_position, current_running_position);
     // If the current running position is less than the new running position, it
     // means that a opening will be formed after placement. We should only ever
     // be accounting for track openings in the case of dense packing.
@@ -73,6 +72,9 @@ void MasonryRunningPositions::UpdateRunningPositionsForSpan(
       track_collection_openings_[track_idx].emplace_back(TrackOpening{
           current_running_position, *max_running_position_for_span});
     }
+    // TODO(celestepan): Consider setting the running position of the track to
+    // be the maximum between the current and the new, depending on how
+    // https://github.com/w3c/csswg-drafts/issues/12918 resolves.
     running_positions_[track_idx] = new_running_position;
   }
 }
