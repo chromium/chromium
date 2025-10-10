@@ -423,19 +423,29 @@ impl Derivable for CheckedBitPattern {
 
 pub struct TransparentWrapper;
 
+struct WrappedType {
+  wrapped_type: syn::Type,
+  /// Was the type given with a #[transparent(Type)] attribute.
+  explicit: bool,
+}
+
 impl TransparentWrapper {
-  fn get_wrapper_type(
+  fn get_wrapped_type(
     attributes: &[Attribute], fields: &Fields,
-  ) -> Option<TokenStream> {
-    let transparent_param = get_simple_attr(attributes, "transparent");
-    transparent_param.map(|ident| ident.to_token_stream()).or_else(|| {
+  ) -> Option<WrappedType> {
+    let transparent_param =
+      get_type_from_simple_attr(attributes, "transparent")
+        .map(|wrapped_type| WrappedType { wrapped_type, explicit: true });
+    transparent_param.or_else(|| {
       let mut types = get_field_types(&fields);
       let first_type = types.next();
       if let Some(_) = types.next() {
         // can't guess param type if there is more than one field
         return None;
       } else {
-        first_type.map(|ty| ty.to_token_stream())
+        first_type
+          .cloned()
+          .map(|wrapped_type| WrappedType { wrapped_type, explicit: false })
       }
     })
   }
@@ -445,15 +455,13 @@ impl Derivable for TransparentWrapper {
   fn ident(input: &DeriveInput, crate_name: &TokenStream) -> Result<syn::Path> {
     let fields = get_struct_fields(input)?;
 
-    let ty = match Self::get_wrapper_type(&input.attrs, &fields) {
-      Some(ty) => ty,
-      None => bail!(
-        "\
-        when deriving TransparentWrapper for a struct with more than one field \
-        you need to specify the transparent field using #[transparent(T)]\
-      "
-      ),
-    };
+    let WrappedType { wrapped_type: ty, .. } =
+      match Self::get_wrapped_type(&input.attrs, &fields) {
+        Some(ty) => ty,
+        None => bail!("when deriving TransparentWrapper for a struct with more \
+                       than one field, you need to specify the transparent field \
+                       using #[transparent(T)]"),
+      };
 
     Ok(syn::parse_quote!(#crate_name::TransparentWrapper<#ty>))
   }
@@ -464,19 +472,27 @@ impl Derivable for TransparentWrapper {
     let (impl_generics, _ty_generics, where_clause) =
       input.generics.split_for_impl();
     let fields = get_struct_fields(input)?;
-    let wrapped_type = match Self::get_wrapper_type(&input.attrs, &fields) {
-      Some(wrapped_type) => wrapped_type.to_string(),
-      None => unreachable!(), /* other code will already reject this derive */
-    };
+    let (wrapped_type, explicit) =
+      match Self::get_wrapped_type(&input.attrs, &fields) {
+        Some(WrappedType { wrapped_type, explicit }) => {
+          (wrapped_type.to_token_stream().to_string(), explicit)
+        }
+        None => unreachable!(), /* other code will already reject this derive */
+      };
     let mut wrapped_field_ty = None;
     let mut nonwrapped_field_tys = vec![];
     for field in fields.iter() {
       let field_ty = &field.ty;
       if field_ty.to_token_stream().to_string() == wrapped_type {
         if wrapped_field_ty.is_some() {
-          bail!(
-            "TransparentWrapper can only have one field of the wrapped type"
-          );
+          if explicit {
+            bail!("TransparentWrapper must have one field of the wrapped type. \
+                   The type given in `#[transparent(Type)]` must match tokenwise \
+                   with the type in the struct definition, not just be the same type. \
+                   You may be able to use a type alias to work around this limitation.");
+          } else {
+            bail!("TransparentWrapper must have one field of the wrapped type");
+          }
         }
         wrapped_field_ty = Some(field_ty);
       } else {
@@ -1182,21 +1198,31 @@ fn generate_enum_discriminant(input: &DeriveInput) -> Result<TokenStream> {
   })
 }
 
-fn get_ident_from_stream(tokens: TokenStream) -> Option<Ident> {
-  match tokens.into_iter().next() {
-    Some(TokenTree::Group(group)) => get_ident_from_stream(group.stream()),
-    Some(TokenTree::Ident(ident)) => Some(ident),
-    _ => None,
+fn get_wrapped_type_from_stream(tokens: TokenStream) -> Option<syn::Type> {
+  let mut tokens = tokens.into_iter().peekable();
+  match tokens.peek() {
+    Some(TokenTree::Group(group)) => {
+      let res = get_wrapped_type_from_stream(group.stream());
+      tokens.next(); // remove the peeked token tree
+      match tokens.next() {
+        // If there were more tokens, the input was invalid
+        Some(_) => None,
+        None => res,
+      }
+    }
+    _ => syn::parse2(tokens.collect()).ok(),
   }
 }
 
-/// get a simple #[foo(bar)] attribute, returning "bar"
-fn get_simple_attr(attributes: &[Attribute], attr_name: &str) -> Option<Ident> {
+/// get a simple `#[foo(bar)]` attribute, returning `bar`
+fn get_type_from_simple_attr(
+  attributes: &[Attribute], attr_name: &str,
+) -> Option<syn::Type> {
   for attr in attributes {
     if let (AttrStyle::Outer, Meta::List(list)) = (&attr.style, &attr.meta) {
       if list.path.is_ident(attr_name) {
-        if let Some(ident) = get_ident_from_stream(list.tokens.clone()) {
-          return Some(ident);
+        if let Some(ty) = get_wrapped_type_from_stream(list.tokens.clone()) {
+          return Some(ty);
         }
       }
     }

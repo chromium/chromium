@@ -105,7 +105,6 @@ chrome/test/data/extensions/manifest_tests
 chrome/test/data/mac_installer
 chrome/test/data/safe_browsing
 chrome/test/data/safe_browsing/download_protection
-chrome/test/data/third_party/kraken/tests/kraken-1.1
 chrome/test/data/third_party/spaceport
 chrome/test/data/updater
 chrome/test/data/webui
@@ -177,6 +176,7 @@ content/public/browser
 content/public/common
 content/renderer
 content/test/gpu
+content/web_test/browser
 content/web_test/renderer
 device/gamepad
 device/vr/public/mojom

@@ -318,7 +318,10 @@ pub fn derive_maybe_pod(
 ///
 /// If the struct only contains a single field, the `Wrapped` type will
 /// automatically be determined. If there is more then one field in the struct,
-/// you need to specify the `Wrapped` type using `#[transparent(T)]`
+/// you need to specify the `Wrapped` type using `#[transparent(T)]`. Due to
+/// technical limitations, the type in the `#[transparent(Type)]` needs to be
+/// the exact same token sequence as the corresponding type in the struct
+/// definition.
 ///
 /// ## Examples
 ///

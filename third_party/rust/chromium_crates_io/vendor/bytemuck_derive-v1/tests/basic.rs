@@ -312,6 +312,31 @@ enum CheckedBitPatternEnumNested {
 #[repr(transparent)]
 struct NewtypeWrapperTest<T>(T);
 
+#[derive(Debug, Clone, PartialEq, Eq, TransparentWrapper)]
+#[repr(transparent)]
+struct AlgebraicNewtypeWrapperTest<T>(Vec<T>);
+
+#[test]
+fn algebraic_newtype_corect() {
+  let x: Vec<u32> = vec![1, 2, 3, 4];
+  let y: AlgebraicNewtypeWrapperTest<u32> =
+    AlgebraicNewtypeWrapperTest::wrap(x.clone());
+  assert_eq!(y.0, x);
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, TransparentWrapper)]
+#[repr(transparent)]
+#[transparent(Vec<T>)]
+struct AlgebraicNewtypeWrapperTestWithFields<T, U>(Vec<T>, PhantomData<U>);
+
+#[test]
+fn algebraic_newtype_fields_corect() {
+  let x: Vec<u32> = vec![1, 2, 3, 4];
+  let y: AlgebraicNewtypeWrapperTestWithFields<u32, f32> =
+    AlgebraicNewtypeWrapperTestWithFields::wrap(x.clone());
+  assert_eq!(y.0, x);
+}
+
 #[test]
 fn fails_cast_contiguous() {
   let can_cast = CheckedBitPatternEnumWithValues::is_valid_bit_pattern(&5);

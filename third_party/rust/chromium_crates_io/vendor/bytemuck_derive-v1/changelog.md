@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.10.2
+
+* [Extend #[derive(TransparentWrapper)](https://github.com/Lokathor/bytemuck/pull/147)
+
 ## 1.10.1
 
 * changes the derive macros to not use `transmute` size matching when checking
