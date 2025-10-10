@@ -32,29 +32,27 @@ import type {NetworkRequest} from './NetworkRequest.js';
 
 type NetworkCollector = Network.AddDataCollectorParameters;
 
-// The default total data size limit in CDP.
-// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
-const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
-
 export class CollectorsStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
   readonly #responseCollectors = new Map<Network.Request, Set<string>>();
   readonly #requestBodyCollectors = new Map<Network.Request, Set<string>>();
+  readonly #maxEncodedDataSize: number;
   readonly #logger?: LoggerFn;
 
-  constructor(logger?: LoggerFn) {
+  constructor(maxEncodedDataSize: number, logger?: LoggerFn) {
+    this.#maxEncodedDataSize = maxEncodedDataSize;
     this.#logger = logger;
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
     if (
       params.maxEncodedDataSize < 1 ||
-      params.maxEncodedDataSize > MAX_TOTAL_COLLECTED_SIZE
+      params.maxEncodedDataSize > this.#maxEncodedDataSize
     ) {
       // 200 MB is the default limit in CDP:
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
       throw new InvalidArgumentException(
-        `Max encoded data size should be between 1 and ${MAX_TOTAL_COLLECTED_SIZE}`,
+        `Max encoded data size should be between 1 and ${this.#maxEncodedDataSize}`,
       );
     }
     const collectorId = uuidv4();

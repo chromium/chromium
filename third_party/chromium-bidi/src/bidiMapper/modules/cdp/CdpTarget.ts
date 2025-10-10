@@ -36,7 +36,10 @@ import type {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {LogManager} from '../log/LogManager.js';
-import type {NetworkStorage} from '../network/NetworkStorage.js';
+import {
+  MAX_TOTAL_COLLECTED_SIZE,
+  type NetworkStorage,
+} from '../network/NetworkStorage.js';
 import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -233,7 +236,10 @@ export class CdpTarget {
       // Enabling CDP Network domain is required for navigation detection:
       // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
       this.#cdpClient
-        .sendCommand('Network.enable')
+        .sendCommand('Network.enable', {
+          enableDurableMessages: true,
+          maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+        })
         .then(() => this.toggleNetworkIfNeeded()),
       this.#cdpClient.sendCommand('Target.setAutoAttach', {
         autoAttach: true,

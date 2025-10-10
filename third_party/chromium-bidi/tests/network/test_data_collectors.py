@@ -16,8 +16,7 @@
 import pytest
 import pytest_asyncio
 from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
-                          send_JSON_command, subscribe, to_base64,
-                          wait_for_event)
+                          send_JSON_command, subscribe, wait_for_event)
 
 SOME_CONTENT = "some response content"
 SOME_POST_REQUEST_CONTENT = "some post request content"
@@ -152,12 +151,7 @@ async def test_network_collector_get_data_response_required_params(
                 "request": request_id
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
     # Assert data is available after collection.
     resp = await execute_command(
@@ -168,12 +162,7 @@ async def test_network_collector_get_data_response_required_params(
                 "request": request_id
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
 
 @pytest.mark.asyncio
@@ -253,12 +242,7 @@ async def test_network_collector_get_data_response_collector(
                 "collector": collector_id
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
     # Assert data is still available after collecting.
     resp = await execute_command(
@@ -269,12 +253,7 @@ async def test_network_collector_get_data_response_collector(
                 "request": request_id,
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
 
 @pytest.mark.asyncio
@@ -357,12 +336,7 @@ async def test_network_collector_get_data_response_disown_removes_data(
                 "disown": True
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
     # Assert data is not available anymore.
     with pytest.raises(Exception,
@@ -405,12 +379,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
                 "request": request_id,
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
     await execute_command(
         websocket, {
@@ -476,12 +445,7 @@ async def test_network_collector_disown_data(websocket, context_id,
                 "request": request_id,
             }
         })
-    assert resp == {
-        'bytes': {
-            'type': 'base64',
-            'value': to_base64(SOME_CONTENT)
-        }
-    }
+    assert resp == {'bytes': {'type': 'string', 'value': SOME_CONTENT}}
 
     await execute_command(
         websocket, {

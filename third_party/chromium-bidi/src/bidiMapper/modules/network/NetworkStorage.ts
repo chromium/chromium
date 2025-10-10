@@ -24,6 +24,7 @@ import {
   NoSuchNetworkDataException,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
@@ -34,6 +35,10 @@ import type {EventManager} from '../session/EventManager.js';
 import {CollectorsStorage} from './CollectorsStorage.js';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
+
+// The default total data size limit in CDP.
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
+export const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
 
 type NetworkInterception = Omit<
   Network.AddInterceptParameters,
@@ -70,7 +75,10 @@ export class NetworkStorage {
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
-    this.#collectorsStorage = new CollectorsStorage(logger);
+    this.#collectorsStorage = new CollectorsStorage(
+      MAX_TOTAL_COLLECTED_SIZE,
+      logger,
+    );
 
     browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
       this.disposeRequestMap(sessionId);
@@ -291,18 +299,34 @@ export class NetworkStorage {
   async #getCollectedResponseData(
     request: NetworkRequest,
   ): Promise<Network.GetDataResult> {
-    // TODO: handle CDP error in case of the renderer is gone.
-    const responseBody = await request.cdpClient.sendCommand(
-      'Network.getResponseBody',
-      {requestId: request.id},
-    );
+    try {
+      const responseBody = await request.cdpClient.sendCommand(
+        'Network.getResponseBody',
+        {requestId: request.id},
+      );
 
-    return {
-      bytes: {
-        type: responseBody.base64Encoded ? 'base64' : 'string',
-        value: responseBody.body,
-      },
-    };
+      return {
+        bytes: {
+          type: responseBody.base64Encoded ? 'base64' : 'string',
+          value: responseBody.body,
+        },
+      };
+    } catch (error: any) {
+      if (
+        error.code === CdpErrorConstants.GENERIC_ERROR &&
+        error.message === 'No resource with given identifier found'
+      ) {
+        // The data has be gone for whatever reason.
+        throw new NoSuchNetworkDataException(`Response data was disposed`);
+      }
+      if (error.code === CdpErrorConstants.CONNECTION_CLOSED) {
+        // The request's CDP session is gone. http://b/450771615.
+        throw new NoSuchNetworkDataException(
+          `Response data is disposed after the related page`,
+        );
+      }
+      throw error;
+    }
   }
 
   async #getCollectedRequestData(
