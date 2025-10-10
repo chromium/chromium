@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE_CONDENSED;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.DECREASE_ZOOM_CALLBACK;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.DECREASE_ZOOM_ENABLED;
+import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.IMMERIVE_MODE_CALLBACK;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.INCREASE_ZOOM_CALLBACK;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.INCREASE_ZOOM_ENABLED;
 import static org.chromium.components.browser_ui.accessibility.PageZoomProperties.ZOOM_PERCENT_TEXT;
@@ -60,6 +61,9 @@ public class PageZoomMenuItemViewBinder {
         } else if (key == ZOOM_PERCENT_TEXT) {
             ((TextView) view.findViewById(R.id.zoom_percentage))
                     .setText(model.get(ZOOM_PERCENT_TEXT));
+        } else if (key == IMMERIVE_MODE_CALLBACK) {
+            View immersiveModeButton = view.findViewById(R.id.fullscreen_button);
+            immersiveModeButton.setOnClickListener(v -> model.get(IMMERIVE_MODE_CALLBACK).run());
         }
     }
 }

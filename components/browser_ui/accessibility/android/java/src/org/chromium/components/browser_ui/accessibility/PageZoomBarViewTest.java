@@ -144,6 +144,9 @@ public class PageZoomBarViewTest {
 
                     @Override
                     public void addZoomEventsObserver(ZoomEventsObserver observer) {}
+
+                    @Override
+                    public void enterImmersiveMode() {}
                 };
 
         ThreadUtils.runOnUiThreadBlocking(

@@ -7,7 +7,7 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/AppMenuItem"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -25,18 +25,19 @@ found in the LICENSE file.
         android:id="@+id/zoom_out_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
-        android:padding="@dimen/symbol_padding"
         android:src="@drawable/ic_remove"
         app:tint="@color/default_icon_color_tint_list" />
 
     <TextView
         android:id="@+id/zoom_percentage"
-        android:layout_width="@dimen/zoom_percentage_width"
+        android:layout_width="@dimen/zoom_percentage_menu_item_width"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/zoom_percentage_menu_item_margin"
+        android:layout_marginEnd="@dimen/zoom_percentage_menu_item_margin"
         android:gravity="center"
-        android:padding="@dimen/zoom_percentage_padding"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
     <org.chromium.ui.widget.ChromeImageButton
@@ -45,7 +46,22 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/page_zoom_increase_zoom_button_text"
-        android:padding="@dimen/symbol_padding"
         android:src="@drawable/ic_add"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <View
+        android:layout_width="@dimen/zoom_menu_item_divider_width"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/zoom_menu_item_divider_margin"
+        android:layout_marginEnd="@dimen/zoom_menu_item_divider_margin"
+        android:background="@drawable/divider_line_bg" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/fullscreen_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/page_zoom_fullscreen_button_content_description"
+        android:src="@drawable/ic_fullscreen_enter"
         app:tint="@color/default_icon_color_tint_list" />
 </LinearLayout>

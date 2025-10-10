@@ -32,6 +32,7 @@ class PageZoomMenuItemMediator {
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
+        mModel.set(PageZoomProperties.IMMERIVE_MODE_CALLBACK, this::handleImmersiveModeClicked);
 
         // Update the stored system font scale based on OS-level configuration. `this` will be
         // reconstructed after configuration changes, so this will be up-to-date for this session.
@@ -62,6 +63,11 @@ class PageZoomMenuItemMediator {
     @VisibleForTesting
     void handleIncreaseClicked() {
         handleIndexChanged(mManager.incrementZoomLevel());
+    }
+
+    @VisibleForTesting
+    void handleImmersiveModeClicked() {
+        mManager.enterImmersiveMode();
     }
 
     private void handleIndexChanged(int index) {

@@ -37,4 +37,7 @@ public interface PageZoomManagerDelegate {
      * @param observer The zoom events observer to remove.
      */
     void removeZoomEventsObserver(ZoomEventsObserver observer);
+
+    /** Fullscreen the current tab. */
+    void enterImmersiveMode();
 }

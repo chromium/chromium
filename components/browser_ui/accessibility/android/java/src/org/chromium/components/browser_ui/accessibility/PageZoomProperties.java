@@ -30,6 +30,8 @@ public class PageZoomProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> ZOOM_PERCENT_TEXT =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> IMMERIVE_MODE_CALLBACK =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<Integer>> BAR_VALUE_CHANGE_CALLBACK =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<@Nullable Void>> USER_INTERACTION_CALLBACK =
@@ -59,7 +61,8 @@ public class PageZoomProperties {
         DECREASE_ZOOM_ENABLED,
         INCREASE_ZOOM_ENABLED,
         DEFAULT_ZOOM_FACTOR,
-        ZOOM_PERCENT_TEXT
+        ZOOM_PERCENT_TEXT,
+        IMMERIVE_MODE_CALLBACK
     };
 
     public static final PropertyKey[] ALL_KEYS_FOR_INDICATOR = {

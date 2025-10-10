@@ -1140,6 +1140,9 @@
           other {Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER">%1$d<ex>120</ex></ph>%%}
         }
       </message>
+      <message name="IDS_PAGE_ZOOM_FULLSCREEN_BUTTON_CONTENT_DESCRIPTION" desc="Content description for the fullscreen button in the zoom menu.">
+        Fullscreen
+      </message>
 
       <!-- Search resumption module strings -->
       <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">

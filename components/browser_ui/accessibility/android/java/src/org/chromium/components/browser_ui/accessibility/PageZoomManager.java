@@ -126,6 +126,11 @@ public class PageZoomManager {
         mDelegate.removeZoomEventsObserver(observer);
     }
 
+    /** Enters immersive mode. */
+    public void enterImmersiveMode() {
+        mDelegate.enterImmersiveMode();
+    }
+
     // Snaps the zoom level of the current WebContents to the zoom factor at the given index in the
     // cached available values.
     @VisibleForTesting

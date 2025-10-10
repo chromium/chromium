@@ -23,9 +23,13 @@ found in the LICENSE file.
     <!-- Page zoom Indicator dimensions -->
     <dimen name="page_zoom_indicator_popup_width">248dp</dimen>
     <dimen name="page_zoom_indicator_popup_height">56dp</dimen>
+    <dimen name="zoom_percentage_width">68dp</dimen>
+    <dimen name="zoom_percentage_padding">6dp</dimen>
 
     <!-- Page zoom item dimensions -->
     <dimen name="symbol_padding">2dp</dimen>
-    <dimen name="zoom_percentage_padding">6dp</dimen>
-    <dimen name="zoom_percentage_width">68dp</dimen>
+    <dimen name="zoom_percentage_menu_item_margin">6dp</dimen>
+    <dimen name="zoom_percentage_menu_item_width">42dp</dimen>
+    <dimen name="zoom_menu_item_divider_width">1dp</dimen>
+    <dimen name="zoom_menu_item_divider_margin">7dp</dimen>
 </resources>

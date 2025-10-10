@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Shows a popup of menu items anchored to a host view.
@@ -236,7 +237,12 @@ class AppMenu implements OnKeyListener {
         Rect bgPadding = new Rect();
         contentView.getBackground().getPadding(bgPadding);
 
-        int menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width);
+        int menuWidth;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width_lff);
+        } else {
+            menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width);
+        }
         int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
 
         mPopup.setWidth(popupWidth);
