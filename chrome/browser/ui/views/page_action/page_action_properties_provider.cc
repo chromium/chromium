@@ -135,14 +135,6 @@ constexpr auto kPageActionProperties =
                 .element_identifier = FindBarIcon::kElementId,
             },
         },
-        {
-            kActionShowCookieControls,
-            {
-                .histogram_name = "CookieControls",
-                .type = PageActionIconType::kCookieControls,
-                .element_identifier = kCookieControlsIconElementId,
-            },
-        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {
