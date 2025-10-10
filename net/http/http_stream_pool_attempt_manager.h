@@ -347,11 +347,9 @@ class HttpStreamPool::AttemptManager
 
   // Attempts connections if there are pending jobs and IPEndPoints that
   // haven't failed. If `exclude_ip_endpoint` is given, exclude the IPEndPoint
-  // from attempts. If `max_attempts` is given, attempts connections up to
-  // `max_attempts`.
+  // from attempts.
   void MaybeAttemptTcpBased(
-      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt,
-      std::optional<size_t> max_attempts = std::nullopt);
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
 
   // Creates and starts a TCP based attempt.
   void CreateAndStartTcpBasedAttempt(bool using_tls,

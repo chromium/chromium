@@ -505,8 +505,7 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
   DCHECK(!HasAvailableSpdySession());
 
-  MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/std::nullopt,
-                       /*max_attempts=*/1);
+  MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/std::nullopt);
 }
 
 void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
@@ -1284,8 +1283,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
-    std::optional<IPEndPoint> exclude_ip_endpoint,
-    std::optional<size_t> max_attempts) {
+    std::optional<IPEndPoint> exclude_ip_endpoint) {
   if (is_shutting_down()) {
     return;
   }
@@ -1301,7 +1299,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
 
   // There might be multiple pending jobs. Make attempts as much as needed
   // and allowed.
-  size_t num_attempts = 0;
   const bool using_tls = UsingTls();
   while (IsTcpBasedAttemptReady()) {
     // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
@@ -1333,11 +1330,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
     }
 
     CreateAndStartTcpBasedAttempt(using_tls, *ip_endpoint, slot);
-
-    ++num_attempts;
-    if (max_attempts.has_value() && num_attempts >= *max_attempts) {
-      break;
-    }
   }
 }
 
