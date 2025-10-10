@@ -468,6 +468,9 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
 inline constexpr char16_t kPayOverTimeLearnMoreUrl[] =
     u"https://support.google.com/googlepay?p=bnpl_autofill_chrome";
 
+// The URL for the Wallet website.
+inline constexpr char16_t kWalletUrl[] = u"https://wallet.google.com";
+
 // Help URL for Autofill AI.
 inline constexpr char16_t kAutofillAiLearnMoreURL[] =
     u"https://support.google.com/chrome?p=autofill_ai";

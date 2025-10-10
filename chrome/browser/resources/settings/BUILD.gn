@@ -255,6 +255,7 @@ build_webui("build") {
     "site_settings/window_management_page.ts",
     "site_settings/zoom_levels.ts",
     "your_saved_info_page/account_card_element.ts",
+    "your_saved_info_page/category_reference_card.ts",
     "your_saved_info_page/your_saved_info_page.ts",
     "your_saved_info_page/your_saved_info_page_index.ts",
   ]

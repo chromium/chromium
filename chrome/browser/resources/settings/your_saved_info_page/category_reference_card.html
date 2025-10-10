@@ -1,0 +1,60 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    background-color: var(--cr-card-background-color);
+    box-shadow: var(--cr-card-shadow);
+    border-radius: var(--cr-card-border-radius);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--cr-separator-color);
+    margin: 0 20px;
+  }
+
+  .chips-container {
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  cr-chip {
+    --chip-icon-size_: var(--cr-icon-size);
+    --color-chip-border: transparent;
+    --color-chip-icon: var(--cr-secondary-text-color);
+    --cr-chip-border-radius: 20px;
+    --cr-chip-height: 36px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  cr-chip span {
+    font-weight: normal;
+  }
+
+  cr-chip cr-icon {
+    width: var(--chip-icon-size_);
+    height: var(--chip-icon-size_);
+    margin-inline-start: 8px;
+    margin-inline-end: 10px;
+  }
+
+  .counter {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+
+<cr-link-row label="[[cardTitle]]" external="[[isExternal]]">
+</cr-link-row>
+<hr>
+<div class="chips-container">
+  <template is="dom-repeat" items="[[chips]]">
+    <cr-chip>
+      <cr-icon icon="[[item.icon]]"></cr-icon>
+      <span>[[item.label]]</span>
+      <span class="counter" hidden$="[[!item.counter]]">
+        ([[item.counter]])
+      </span>
+    </cr-chip>
+  </template>
+</div>

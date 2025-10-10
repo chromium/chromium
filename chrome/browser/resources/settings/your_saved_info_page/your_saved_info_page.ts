@@ -8,9 +8,14 @@
  * and manage their saved info.
  */
 import './account_card_element.js';
+import './category_reference_card.js';
+import '/shared/settings/prefs/prefs.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_page/autofill_manager_proxy.js';
@@ -18,14 +23,17 @@ import {AutofillManagerImpl} from '../autofill_page/autofill_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
+import type {ChipData} from './category_reference_card.js';
 import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page.html.js';
 
-
-const SettingsYourSavedInfoPageElementBase =
-    WebUiListenerMixin(SettingsViewMixin(PrefsMixin(PolymerElement)));
+const SettingsYourSavedInfoPageElementBase = WebUiListenerMixin(
+    SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsYourSavedInfoPageElement extends
     SettingsYourSavedInfoPageElementBase {
@@ -40,6 +48,26 @@ export class SettingsYourSavedInfoPageElement extends
   static get properties() {
     return {
       prefs: Object,
+      /**
+       * The data for the Passwords reference card.
+       */
+      passwordsCardData_: {
+        type: Array,
+        computed: 'computePasswordsCardData_(passwordsCount, passkeysCount)',
+      },
+
+      /**
+       * The data for the Payment methods reference card.
+       */
+      paymentsCardData_: {
+        type: Array,
+        value: () => {
+          return [{
+            label: loadTimeData.getString('addPaymentMethodCreditOrDebitCard'),
+            icon: 'settings20:credit-card',
+          }];
+        },
+      },
 
       passwordsCount: Number,
       passkeysCount: Number,
@@ -51,6 +79,8 @@ export class SettingsYourSavedInfoPageElement extends
   }
 
   declare prefs: {[key: string]: any};
+  declare private passwordsCardData_: ChipData[];
+  declare private paymentsCardData_: ChipData[];
   declare passwordsCount: number|undefined;
   declare passkeysCount: number|undefined;
   declare addressesCount: number|undefined;
@@ -131,10 +161,77 @@ export class SettingsYourSavedInfoPageElement extends
     }
   }
 
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.PAYMENTS) {
+      map.set(routes.PAYMENTS.path, '#paymentManagerButton');
+    }
+    if (routes.ADDRESSES) {
+      map.set(routes.ADDRESSES.path, '#addressesManagerButton');
+    }
+
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    const ids = [
+      'addresses',
+      // <if expr="is_win or is_macosx">
+      'passkeys',
+      // </if>
+      'payments',
+    ];
+    assert(ids.includes(childViewId));
+
+    let triggerId: string|null = null;
+    switch (childViewId) {
+      case 'addresses':
+        triggerId = 'addressesManagerButton';
+        break;
+      // <if expr="is_win or is_macosx">
+      case 'passkeys':
+        triggerId = 'passwordManagerButton';
+        break;
+      // </if>
+      case 'payments':
+        triggerId = 'paymentManagerButton';
+        break;
+      default:
+        break;
+    }
+
+    assert(triggerId);
+
+    const control =
+        this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
+    assert(control);
+    return control;
+  }
+
+  private computePasswordsCardData_(): ChipData[] {
+    return [
+      {
+        label: this.i18n('passwords'),
+        icon: 'cr20:password',
+        counter: this.passwordsCount,
+      },
+      {label: 'Passkeys', icon: 'cr:security', counter: this.passkeysCount},
+    ];
+  }
+
+  /**
+   * Shows the manage payment methods sub page.
+   */
+  private onPaymentManagerClick_() {
+    Router.getInstance().navigateTo(routes.PAYMENTS);
+  }
+
   /**
    * Shows Password Manager page.
    */
-  private onPasswordManagerExternalLinkClick() {
+  private onPasswordManagerExternalLinkClick_() {
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
@@ -143,15 +240,17 @@ export class SettingsYourSavedInfoPageElement extends
   /**
    * Opens Wallet page in a new tab.
    */
-  private onGoogleWalletExternalLinkClick() {
-    window.open('https://wallet.google.com');
+  private onGoogleWalletExternalLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('googleWalletUrl'));
   }
 
   /**
    * Opens Google Account page in a new tab.
    */
-  private onGoogleAccountExternalLinkClick() {
-    window.open('https://myaccount.google.com');
+  private onGoogleAccountExternalLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('googleAccountUrl'));
   }
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://settings/settings.js';
+import 'chrome://settings/lazy_load.js';
 
 import type {SettingsYourSavedInfoPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
@@ -54,5 +55,24 @@ suite('YourSavedInfoPageIndex', function() {
     await microtasksFinished();
     assertActiveView('passkeys');
     // </if>
+  });
+
+  // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
+  // inherited correctly.
+  test('Search', async function() {
+    // Test that the child views are properly annotated.
+    const childViewsId = [
+      'payments',
+    ];
+    for (const id of childViewsId) {
+      assertTrue(!!index.$.viewManager.querySelector(
+          `#${id}[slot=view][data-parent-view-id=parent]`));
+    }
+
+    // Test that search finds results in both parent and child views.
+    const result = await index.searchContents('Payments');
+    assertFalse(result.canceled);
+    assertEquals(2, result.matchCount);
+    assertFalse(result.wasClearSearch);
   });
 });

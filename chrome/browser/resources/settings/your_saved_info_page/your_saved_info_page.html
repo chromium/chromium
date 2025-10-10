@@ -1,34 +1,40 @@
 <style include="settings-shared">
-#title {
-  color: var(--cr-primary-text-color);
-  font-size: 1.375rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  margin-bottom: 8px;
-  margin-top: 24px;
-  outline: none;
-  text-align: center;
-}
+  #title {
+    color: var(--cr-primary-text-color);
+    font-size: 1.375rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+    margin-top: 24px;
+    outline: none;
+    text-align: center;
+  }
 
-#subtitle {
-  font-size: 0.813rem;
-  line-height: 1.25rem;
-  margin: 8px auto 4px auto;
-  max-width: 400px;
-  text-align: center;
-}
+  #subtitle {
+    font-size: 0.813rem;
+    line-height: 1.25rem;
+    margin: 8px auto 4px auto;
+    max-width: 400px;
+    text-align: center;
+  }
 
-.section-header {
-  color: var(--cr-primary-text-color);
-  font-size: 0.88rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  margin-bottom: 12px;
-  margin-top: var(--cr-section-vertical-margin);
-  outline: none;
-  padding-bottom: 4px;
-  padding-top: 8px;
-}
+  .section-header {
+    color: var(--cr-primary-text-color);
+    font-size: 0.88rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    margin-top: var(--cr-section-vertical-margin);
+    outline: none;
+    padding-bottom: 4px;
+    padding-top: 8px;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 </style>
 
 <h1 id="title">$i18n{yourSavedInfoPageTitle}</h1>
@@ -39,32 +45,30 @@
 <h2 id="yourSavedInfoPageTitle" class="section-header">
   $i18n{yourSavedInfoPageTitle}
 </h2>
+<div class="card-container">
+  <category-reference-card card-title="$i18n{localPasswordManager}"
+      is-external chips="[[passwordsCardData_]]"
+      on-click="onPasswordManagerExternalLinkClick_">
+  </category-reference-card>
+  <category-reference-card id="paymentManagerButton"
+      card-title="$i18n{paymentsTitle}" chips="[[paymentsCardData_]]"
+      on-click="onPaymentManagerClick_">
+  </category-reference-card>
+</div>
 
 <settings-section page-title="$i18n{yourSavedInfoRelatedServicesTitle}">
   <div route-path="default">
-    <cr-link-row
-      id="passwordManagerButton"
-      label="$i18n{localPasswordManager}"
-      on-click="onPasswordManagerExternalLinkClick"
-      start-icon="cr20:password"
-      external
-    >
+    <cr-link-row id="passwordManagerButton" label="$i18n{localPasswordManager}"
+        on-click="onPasswordManagerExternalLinkClick_"
+        start-icon="cr20:password" external>
     </cr-link-row>
-    <cr-link-row
-      id="walletButton"
-      label="$i18n{googleWalletTitle}"
-      on-click="onGoogleWalletExternalLinkClick"
-      start-icon="settings20:wallet"
-      external
-    >
+    <cr-link-row id="googleWalletButton" label="$i18n{googleWalletTitle}"
+        on-click="onGoogleWalletExternalLinkClick_"
+        start-icon="settings20:wallet" external>
     </cr-link-row>
-    <cr-link-row
-      id="profileButton"
-      label="$i18n{googleAccount}"
-      on-click="onGoogleAccountExternalLinkClick"
-      start-icon="settings20:googleg"
-      external
-    >
+    <cr-link-row id="googleAccountButton" label="$i18n{googleAccount}"
+        on-click="onGoogleAccountExternalLinkClick_"
+        start-icon="settings20:googleg" external>
     </cr-link-row>
   </div>
 </settings-section>

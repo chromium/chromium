@@ -1594,6 +1594,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL, chrome::kPayOverTimeLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
+  html_source->AddString("googleWalletUrl", chrome::kWalletUrl);
+
   html_source->AddString("googleAccountHomeAddressUrl",
                          chrome::kGoogleAccountHomeAddressURL);
   html_source->AddString("googleAccountWorkAddressUrl",

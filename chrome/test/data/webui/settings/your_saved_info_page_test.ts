@@ -4,12 +4,12 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -33,8 +33,7 @@ suite('YourSavedInfoPage', function() {
     PaymentsManagerImpl.setInstance(paymentsManager);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    yourSavedInfoPage =
-        document.createElement('settings-your-saved-info-page');
+    yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
     document.body.appendChild(yourSavedInfoPage);
     await flushTasks();
   });
@@ -43,6 +42,45 @@ suite('YourSavedInfoPage', function() {
     const yourSavedInfoPageTitleElement =
         yourSavedInfoPage.shadowRoot!.querySelector('#yourSavedInfoPageTitle');
     assertTrue(!!yourSavedInfoPageTitleElement);
+  });
+
+  test('CardsRenderCorrectly', function() {
+    const cards = yourSavedInfoPage.shadowRoot!.querySelectorAll(
+        'category-reference-card');
+    const expectedCardTitles = [
+      loadTimeData.getString('localPasswordManager'),
+      loadTimeData.getString('paymentsTitle'),
+    ];
+
+    assertEquals(expectedCardTitles.length, cards.length);
+    for (let i = 0; i < expectedCardTitles.length; i++) {
+      assertEquals(expectedCardTitles[i], cards[i]!.cardTitle);
+    }
+  });
+
+  test('passwordsCardOpensPasswordManager', async function() {
+    const passwordsCard =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(`
+        category-reference-card[card-title="${
+            loadTimeData.getString('localPasswordManager')}"]`);
+    assertTrue(!!passwordsCard);
+
+    passwordsCard.shadowRoot!.querySelector<HTMLElement>(
+                                 'cr-link-row')!.click();
+
+    const page = await passwordManager.whenCalled('showPasswordManager');
+    assertEquals(PasswordManagerPage.PASSWORDS, page);
+  });
+
+  test('paymentsCardNavigatesToPayments', function() {
+    const paymentsCard =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(`
+        category-reference-card[card-title="${
+            loadTimeData.getString('paymentsTitle')}"]`);
+    assertTrue(!!paymentsCard);
+
+    paymentsCard.shadowRoot!.querySelector('cr-link-row')!.click();
+    assertEquals(routes.PAYMENTS, Router.getInstance().currentRoute);
   });
 
   test('AddressesAndPaymentsCountersAreUpdated', async function() {
@@ -73,21 +111,15 @@ suite('YourSavedInfoPage', function() {
 });
 
 suite('RelatedServices', function() {
-  let openUrl: string|URL|undefined;
   let yourSavedInfoPage: SettingsYourSavedInfoPageElement;
+  let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
 
-  // Save the original window.open and restore it after the test.
-  const originalOpen = window.open;
-
   setup(function() {
-    // Mock window.open to be able to check that it was called.
-    window.open = (url) => {
-      openUrl = url;
-      return null;
-    };
-
     Router.resetInstanceForTesting(new Router(routes));
+
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
@@ -96,12 +128,16 @@ suite('RelatedServices', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
     document.body.appendChild(yourSavedInfoPage);
-    flush();
   });
 
-  teardown(function() {
-    window.open = originalOpen;
-  });
+  async function testRowOpensUrl(selector: string, urlStringId: string) {
+    const row =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(selector);
+    assertTrue(!!row);
+    row.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString(urlStringId), url);
+  }
 
   test('CardRendersCorrectly', function() {
     const relatedServicesCard =
@@ -114,10 +150,10 @@ suite('RelatedServices', function() {
         !!relatedServicesCard.querySelector('#passwordManagerButton'),
         'Password manager button not found');
     assertTrue(
-        !!relatedServicesCard.querySelector('#walletButton'),
+        !!relatedServicesCard.querySelector('#googleWalletButton'),
         'Wallet button not found');
     assertTrue(
-        !!relatedServicesCard.querySelector('#profileButton'),
+        !!relatedServicesCard.querySelector('#googleAccountButton'),
         'Profile button not found');
   });
 
@@ -127,27 +163,15 @@ suite('RelatedServices', function() {
             '#passwordManagerButton');
     assertTrue(!!passwordManagerRow);
     passwordManagerRow.click();
-
     const page = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, page);
-    assertEquals(undefined, openUrl);
   });
 
   test('WalletRowOpensWallet', function() {
-    const walletRow =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
-            '#walletButton');
-    assertTrue(!!walletRow);
-    walletRow.click();
-    assertEquals('https://wallet.google.com', openUrl);
+    return testRowOpensUrl('#googleWalletButton', 'googleWalletUrl');
   });
 
   test('ProfileRowOpensProfile', function() {
-    const profileRow =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
-            '#profileButton');
-    assertTrue(!!profileRow);
-    profileRow.click();
-    assertEquals('https://myaccount.google.com', openUrl);
+    return testRowOpensUrl('#googleAccountButton', 'googleAccountUrl');
   });
 });
