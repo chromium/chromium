@@ -1868,8 +1868,13 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
 }
 
 bool MatchesExternalSVGUseTarget(Element& element) {
-  const auto* svg_element = DynamicTo<SVGElement>(element);
-  return svg_element && svg_element->IsResourceTarget();
+  if (const auto* svg_element = DynamicTo<SVGElement>(element)) {
+    if (const SVGElement* corresponding = svg_element->CorrespondingElement()) {
+      svg_element = corresponding;
+    }
+    return svg_element->IsResourceTarget();
+  }
+  return false;
 }
 
 }  // namespace
