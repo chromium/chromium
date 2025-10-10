@@ -112,14 +112,6 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
   return nullptr;
 }
 
-void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
-  if (floating_instance_key_.has_value() &&
-      floating_instance_key_.value() == instance->id()) {
-    return;
-  }
-  RemoveInstance(instance);
-}
-
 std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
   std::vector<GlicInstance*> instances;
   if (warmed_instance_) {

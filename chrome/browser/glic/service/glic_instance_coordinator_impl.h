@@ -59,7 +59,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   ~GlicInstanceCoordinatorImpl() override;
 
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
-  void OnInstanceOrphaned(GlicInstance* instance) override;
   void OnInstanceVisibilityChanged(GlicInstance* instance,
                                    bool is_showing) override;
   void SwitchConversation(
@@ -128,7 +127,7 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void ToggleFloaty(bool prevent_close);
   void ToggleSidePanel(BrowserWindowInterface* browser, bool prevent_close);
 
-  void RemoveInstance(GlicInstance* instance);
+  void RemoveInstance(GlicInstance* instance) override;
   bool HasAttachedInstance(GlicInstance* instance);
 
   void NotifyLastActiveInstanceChanged();

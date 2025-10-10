@@ -56,7 +56,7 @@ class GlicInstanceImpl : public GlicInstance,
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
-    virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
+    virtual void RemoveInstance(GlicInstance* instance) = 0;
     // Called by an instance when its visibility state changes.
     virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
                                              bool is_showing) = 0;
@@ -94,7 +94,6 @@ class GlicInstanceImpl : public GlicInstance,
   void Toggle(EmbedderType type, tabs::TabInterface* tab, bool prevent_close);
 
   void UnbindTab(tabs::TabInterface* tab);
-  bool IsOrphaned() const;
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
 
   // GlicInstance:

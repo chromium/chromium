@@ -329,17 +329,6 @@ void GlicInstanceImpl::UnbindTab(tabs::TabInterface* tab) {
   embedders_.erase(EmbedderKey(tab));
 }
 
-bool GlicInstanceImpl::IsOrphaned() const {
-  // An instance is orphaned if it has no tab bindings. The floating
-  // embedder does not count.
-  for (const auto& [key, entry] : embedders_) {
-    if (std::holds_alternative<tabs::TabInterface*>(key)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 Host& GlicInstanceImpl::host() {
   return host_;
 }
@@ -534,8 +523,9 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
                                            const InstanceId& instance_id) {
   UnbindTab(tab);
-  if (IsOrphaned() && coordinator_delegate_) {
-    coordinator_delegate_->OnInstanceOrphaned(this);
+  if (embedders_.empty() && coordinator_delegate_) {
+    // This call will delete `this`.
+    coordinator_delegate_->RemoveInstance(this);
   }
 }
 
