@@ -4175,6 +4175,13 @@
       status: "stable",
     },
     {
+      // Constrains text selections to stay within table cell boundaries
+      // (e.g., triple-click paragraph selection)
+      // See crbug.com/40852213.
+      name: "RestrictTableCellSelectionToBoundary",
+      status: "stable",
+    },
+    {
       // If enabled, makes the root scrollbars' foreground elements follow the
       // browser
       name: "RootScrollbarFollowsBrowserTheme",

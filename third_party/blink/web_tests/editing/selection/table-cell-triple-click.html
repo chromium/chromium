@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<p>This test validates that triple-click selection in table cells is properly
+constrained to cell boundaries. When users triple-click text within a table cell,
+the selection should include only that cell's content, preventing unwanted table
+markup from being copied and ensuring clean copy/paste operations.
+</p>
+
+<style>
+table,
+td {
+  border: 1px solid black;
+}
+</style>
+
+<table id="testTable">
+<tbody><tr>
+  <td id="cell1">cell 1</td>
+  <td id="cell2">cell 2</td>
+  <td id="cell3">cell 3</td>
+</tr>
+<tr>
+  <td id="cell4">cell 4</td>
+  <td id="cell5">cell 5</td>
+  <td id="cell6">cell 6</td>
+</tr>
+<tr>
+  <td id="cell7">cell 7</td>
+  <td id="cell8">cell 8</td>
+  <td id="cell9">cell 9</td>
+</tr>
+</tbody></table>
+
+<br>
+<div contenteditable="true" id="pasteArea">paste content here</div>
+
+<script>
+
+async function testTripleClickInCell(cellId, expectedText, testDescription) {
+    assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+
+    const selection = window.getSelection();
+    const targetCell = document.getElementById(cellId);
+    const pasteArea = document.getElementById("pasteArea");
+
+    // Clear any existing selection
+    selection.removeAllRanges();
+
+    // Calculate position in the middle of the target cell
+    const rect = targetCell.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    internals.settings.setEditingBehavior('win');
+
+    // Simulate triple-click on the target cell
+    eventSender.mouseMoveTo(x, y);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    // Verify selection is not collapsed
+    assert_false(selection.isCollapsed, 'Selection should not be collapsed after triple-click');
+
+    // Verify selection text content
+    const selectedText = selection.toString();
+    assert_equals(selectedText, expectedText, 'Selected text should be "' + expectedText + '"');
+
+    // Verify selection stays within the target cell
+    const range = selection.getRangeAt(0);
+    const startContainer = range.startContainer.nodeType === Node.TEXT_NODE ?
+                          range.startContainer.parentElement : range.startContainer;
+    const endContainer = range.endContainer.nodeType === Node.TEXT_NODE ?
+                        range.endContainer.parentElement : range.endContainer;
+
+    assert_true(targetCell.contains(startContainer), 'Selection start should be within target cell');
+    assert_true(targetCell.contains(endContainer), 'Selection end should be within target cell');
+
+    // Copy the selection using eventSender
+    eventSender.keyDown('Copy');
+
+    // Clear selection and focus on paste area
+    selection.removeAllRanges();
+    pasteArea.focus();
+    pasteArea.innerHTML = '';
+
+    // Paste using eventSender
+    eventSender.keyDown('Paste');
+
+    // Verify pasted content
+    const pastedContent = pasteArea.textContent.trim();
+    assert_equals(pastedContent, expectedText, 'Pasted content should be "' + expectedText + '" without table structure');
+
+    // Verify no HTML table structure was pasted
+    const pastedHTML = pasteArea.innerHTML;
+    assert_false(pastedHTML.includes('<table'), 'Pasted content should not contain table tags');
+    assert_false(pastedHTML.includes('<td'), 'Pasted content should not contain cell tags');
+    assert_false(pastedHTML.includes('<tr'), 'Pasted content should not contain row tags');
+    assert_false(pastedHTML.includes('\t'), 'Pasted content should not contain tab characters');
+}
+
+promise_test(async function() {
+    await testTripleClickInCell("cell2", "cell 2", "middle cell");
+}, 'Triple-click in table cell should select only cell content without table structure');
+
+promise_test(async function() {
+    await testTripleClickInCell("cell9", "cell 9", "last cell");
+}, 'Triple-click in last table cell should not extend beyond table boundaries');
+
+</script>
