@@ -15,4 +15,8 @@ jonross@chromium.org
 wenyufu@chromium.org
 pnoland@chromium.org
 
+# for modaldialog
+per-file *modal_dialog*.*=jthiesen@chromium.org
+per-file *ModalDialog*.java=jthiesen@chromium.org
+
 per-file BUILD.gn=*
