@@ -9764,3 +9764,4 @@ crbug.com/450592015 [ Mac12-arm64 ] external/wpt/webxr/idlharness.https.window.h
 crbug.com/450592015 [ Mac13-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
 crbug.com/450592015 [ Mac14-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
 crbug.com/450592015 [ Mac15-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
+crbug.com/450592015 [ Win11-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
