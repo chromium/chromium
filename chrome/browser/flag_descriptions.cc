@@ -3831,6 +3831,11 @@ const char kServiceWorkerAutoPreloadDescription[] =
     "worker. See "
     "https://github.com/explainers-by-googlers/service-worker-auto-preload";
 
+const char kServiceWorkerSyntheticResponseName[] =
+    "ServiceWorkerSyntheticResponse";
+const char kServiceWorkerSyntheticResponseDescription[] =
+    "Enable service worker synthetic response feature.";
+
 const char kSharingDesktopScreenshotsName[] = "Desktop Screenshots";
 const char kSharingDesktopScreenshotsDescription[] =
     "Enables taking"

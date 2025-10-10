@@ -2188,6 +2188,9 @@ extern const char kSegmentationSurveyPageDescription[];
 extern const char kServiceWorkerAutoPreloadName[];
 extern const char kServiceWorkerAutoPreloadDescription[];
 
+extern const char kServiceWorkerSyntheticResponseName[];
+extern const char kServiceWorkerSyntheticResponseDescription[];
+
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 

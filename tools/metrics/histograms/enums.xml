@@ -16224,6 +16224,7 @@ from previous Chrome versions.
   <int value="717827121" label="ChromeSharingHub:disabled"/>
   <int value="717913871" label="PeripheralCustomization:disabled"/>
   <int value="718276461" label="HaTSWebUI:disabled"/>
+  <int value="718357402" label="ServiceWorkerSyntheticResponse:enabled"/>
   <int value="719267310"
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
@@ -20017,6 +20018,7 @@ from previous Chrome versions.
   <int value="2044243615"
       label="AccessibilitySelectToSpeakContextMenuOption:disabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>
+  <int value="2046010882" label="ServiceWorkerSyntheticResponse:disabled"/>
   <int value="2046329062" label="ReleaseTrackUi:enabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
