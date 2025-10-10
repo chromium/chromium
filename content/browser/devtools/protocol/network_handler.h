@@ -382,6 +382,15 @@ class NetworkHandler : public DevToolsDomainHandler,
                         const String& body,
                         bool is_base64_encoded);
 
+  void FedCmRequestWillBeSent(
+      const std::string& request_id,
+      const std::string& loader_id,
+      const network::ResourceRequest& request,
+      const std::optional<std::string>& request_body,
+      const GURL& initiator_url,
+      const std::optional<base::UnguessableToken>& frame_token,
+      base::TimeTicks timestamp);
+
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
                                      const net::HttpResponseHeaders* rh,

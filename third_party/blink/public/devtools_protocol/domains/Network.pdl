@@ -587,6 +587,7 @@ domain Network
         preload
         SignedExchange
         preflight
+        FedCM
         other
       # Initiator JavaScript stack trace, set for Script only.
       # Requires the Debugger domain to be enabled.

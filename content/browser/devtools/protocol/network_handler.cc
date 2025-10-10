@@ -3199,6 +3199,50 @@ void NetworkHandler::BodyDataReceived(const String& request_id,
   received_body_data_[request_id] = {body, is_base64_encoded};
 }
 
+void NetworkHandler::FedCmRequestWillBeSent(
+    const std::string& request_id,
+    const std::string& loader_id,
+    const network::ResourceRequest& request,
+    const std::optional<std::string>& request_body,
+    const GURL& initiator_url,
+    const std::optional<base::UnguessableToken>& frame_token,
+    base::TimeTicks timestamp) {
+  if (!enabled_) {
+    return;
+  }
+
+  double current_wall_time = base::Time::Now().InSecondsFSinceUnixEpoch();
+  double current_ticks = timestamp.since_origin().InSecondsF();
+
+  std::vector<base::expected<std::vector<uint8_t>, std::string>>
+      request_body_bytes;
+  if (request_body.has_value() && !request_body->empty()) {
+    request_body_bytes.emplace_back(
+        std::vector<uint8_t>(request_body->begin(), request_body->end()));
+  }
+
+  std::unique_ptr<protocol::Network::Request> request_info =
+      CreateRequestFromResourceRequest(request, "",
+                                       std::move(request_body_bytes));
+
+  auto initiator = protocol::Network::Initiator::Create()
+                       .SetType(protocol::Network::Initiator::TypeEnum::FedCM)
+                       .Build();
+  if (!initiator_url.is_empty()) {
+    initiator->SetUrl(initiator_url.spec());
+  }
+
+  std::string frame_token_str =
+      frame_token.has_value() ? frame_token.value().ToString() : "";
+
+  frontend_->RequestWillBeSent(
+      request_id, loader_id, request.url.spec(), std::move(request_info),
+      current_ticks, current_wall_time, std::move(initiator),
+      /*redirectHasExtraInfo=*/false, /*redirectResponse=*/nullptr,
+      std::string(Network::ResourceTypeEnum::FedCM), frame_token_str,
+      /*hasUserGesture=*/false);
+}
+
 void NetworkHandler::ProcessDurableMessageOrGetLocalData(
     const String& request_id,
     std::unique_ptr<GetResponseBodyCallback> callback,

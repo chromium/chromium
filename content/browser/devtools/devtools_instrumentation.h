@@ -493,8 +493,10 @@ void DidShowFedCmDialog(RenderFrameHost& render_frame_host);
 void DidCloseFedCmDialog(RenderFrameHost& render_frame_host);
 
 // Fires Network Handler to capture FedCM request and response events.
-void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
-                                 const network::ResourceRequest& request);
+void WillSendFedCmNetworkRequest(
+    FrameTreeNodeId frame_tree_node_id,
+    const network::ResourceRequest& request,
+    const std::optional<std::string>& request_body = std::nullopt);
 void DidReceiveFedCmNetworkResponse(
     FrameTreeNodeId frame_tree_node_id,
     const std::string& devtools_request_id,

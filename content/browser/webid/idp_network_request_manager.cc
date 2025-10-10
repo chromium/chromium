@@ -1529,7 +1529,7 @@ void IdpNetworkRequestManager::DownloadUrl(
     urlloader_devtools_request_id_map_[url_loader_ptr] = request_id;
 
     devtools_instrumentation::WillSendFedCmNetworkRequest(
-        frame_tree_node_id_, *resource_request_ptr);
+        frame_tree_node_id_, *resource_request_ptr, url_encoded_post_data);
   }
 
   if (url_encoded_post_data) {
