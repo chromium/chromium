@@ -7,8 +7,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_save_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
@@ -20,15 +18,12 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 @interface SaveAddressProfileInfobarModalOverlayMediator ()
 // The save address profile modal config from the request.
 @property(nonatomic, assign, readonly)
     SaveAddressProfileModalRequestConfig* config;
-// YES if the edit modal is being shown.
-@property(nonatomic, assign) BOOL currentViewIsEditView;
 @end
 
 @implementation SaveAddressProfileInfobarModalOverlayMediator
@@ -77,24 +72,6 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
   [_consumer setupModalViewControllerWithPrefs:prefs];
 }
 
-- (void)setEditAddressConsumer:
-    (id<InfobarEditAddressProfileModalConsumer>)editAddressConsumer {
-  if (_editAddressConsumer == editAddressConsumer) {
-    return;
-  }
-
-  _editAddressConsumer = editAddressConsumer;
-
-  SaveAddressProfileModalRequestConfig* config = self.config;
-  if (!_editAddressConsumer || !config) {
-    return;
-  }
-
-  [_editAddressConsumer setIsEditForUpdate:config->IsUpdateModal()];
-
-  [_editAddressConsumer setMigrationPrompt:config->is_migration_to_account()];
-}
-
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
@@ -108,7 +85,6 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
     return;
   }
 
-  self.currentViewIsEditView = YES;
   [self.saveAddressProfileMediatorDelegate showEditView];
 }
 
@@ -121,28 +97,7 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 - (void)dismissInfobarModal:(id)infobarModal {
   base::RecordAction(base::UserMetricsAction(kInfobarModalCancelButtonTapped));
-
-  // For migration prompt, the cancel from the edit view would result in removal
-  // of the modal.
-  if (self.config && self.config->is_migration_to_account() &&
-      self.currentViewIsEditView) {
-    [self noThanksButtonWasPressed];
-    self.currentViewIsEditView = NO;
-    return;
-  }
-
-  self.currentViewIsEditView = NO;
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<CancelViewAction>(
-                             self.currentViewIsEditView)];
-  [self dismissOverlay];
-}
-
-#pragma mark - Public
-
-- (void)saveEditedProfileWithProfileData:(autofill::AutofillProfile*)profile {
-  [self
-      dispatchResponse:OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(
-                           profile)];
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<CancelViewAction>()];
   [self dismissOverlay];
 }
 

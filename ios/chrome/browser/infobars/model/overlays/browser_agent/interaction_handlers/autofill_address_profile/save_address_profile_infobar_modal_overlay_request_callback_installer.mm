@@ -7,7 +7,6 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
@@ -20,7 +19,6 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
 SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
@@ -39,26 +37,13 @@ SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
 #pragma mark - Private
 
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
-    SaveEditedProfileDetailsCallback(OverlayRequest* request,
-                                     OverlayResponse* response) {
-  InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
-  if (!infobar) {
-    return;
-  }
-
-  EditedProfileSaveAction* info = response->GetInfo<EditedProfileSaveAction>();
-  interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
-}
-
-void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     CancelModalCallback(OverlayRequest* request, OverlayResponse* response) {
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
   if (!infobar) {
     return;
   }
 
-  CancelViewAction* info = response->GetInfo<CancelViewAction>();
-  interaction_handler_->CancelModal(infobar, info->edit_view_is_dismissed());
+  interaction_handler_->CancelModal(infobar);
 }
 
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
@@ -96,13 +81,6 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
   InfobarModalOverlayRequestCallbackInstaller::InstallCallbacksInternal(
       request);
   OverlayCallbackManager* manager = request->GetCallbackManager();
-
-  manager->AddDispatchCallback(OverlayDispatchCallback(
-      base::BindRepeating(
-          &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
-              SaveEditedProfileDetailsCallback,
-          weak_factory_.GetWeakPtr(), request),
-      EditedProfileSaveAction::ResponseSupport()));
 
   manager->AddDispatchCallback(OverlayDispatchCallback(
       base::BindRepeating(

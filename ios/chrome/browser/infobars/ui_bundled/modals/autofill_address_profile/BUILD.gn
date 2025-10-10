@@ -4,14 +4,11 @@
 
 source_set("modals") {
   sources = [
-    "infobar_edit_address_profile_modal_consumer.h",
     "infobar_save_address_profile_modal_consumer.h",
     "infobar_save_address_profile_modal_consumer.mm",
     "infobar_save_address_profile_modal_delegate.h",
     "infobar_save_address_profile_table_view_controller.h",
     "infobar_save_address_profile_table_view_controller.mm",
-    "legacy_infobar_edit_address_profile_table_view_controller.h",
-    "legacy_infobar_edit_address_profile_table_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -39,10 +36,7 @@ source_set("modals") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "infobar_save_address_profile_table_view_controller_unittest.mm",
-    "legacy_infobar_edit_address_profile_table_view_controller_unittest.mm",
-  ]
+  sources = [ "infobar_save_address_profile_table_view_controller_unittest.mm" ]
   deps = [
     ":modals",
     "//base/test:test_support",
