@@ -502,7 +502,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
-    protected void onPreCreate() {
+    public void performPreInflationStartup() {
+        // This must be requested before adding content.
+        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
+
         // Parse the data from the Intent before calling super to allow the Intent to customize
         // the Activity parameters, including the background of the page.
         // Note that color scheme is fixed for the lifetime of Activity: if the system setting
@@ -515,14 +518,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             this.finishAndRemoveTask();
             return;
         }
-
-        super.onPreCreate();
-    }
-
-    @Override
-    public void performPreInflationStartup() {
-        // This must be requested before adding content.
-        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         InstalledWebappDataRegister.prefetchPreferences();
 
