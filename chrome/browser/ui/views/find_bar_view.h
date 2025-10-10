@@ -102,6 +102,9 @@ class FindBarView : public views::BoxLayoutView,
                       const ui::KeyEvent& key_event) override;
   void OnAfterUserAction(views::Textfield* sender) override;
   void OnAfterPaste() override;
+  bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                  const std::u16string_view& text) override;
+  bool AllowStartDragEvent(const std::u16string_view& selected_text) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LegacyFindInPageTest, AccessibleName);
