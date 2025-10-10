@@ -2497,10 +2497,6 @@
       status: "stable",
     },
     {
-      name: "FontPresentWin",
-      status: "stable",
-    },
-    {
       name: "FontSrcLocalMatching",
       base_feature: "none",
       // No status, as the web platform runtime enabled feature is controlled by

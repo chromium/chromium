@@ -54,28 +54,7 @@ inline bool IsFontPresent(const char* font_name_utf8,
                           const SkFontMgr& font_manager) {
   sk_sp<SkTypeface> tf(
       font_manager.matchFamilyStyle(font_name_utf8, SkFontStyle()));
-  if (!tf)
-    return false;
-
-  if (RuntimeEnabledFeatures::FontPresentWinEnabled()) {
-    return true;
-  }
-
-  const String font_name = String::FromUTF8(font_name_utf8);
-  SkTypeface::LocalizedStrings* actual_families =
-      tf->createFamilyNameIterator();
-  bool matches_requested_family = false;
-  SkTypeface::LocalizedString actual_family;
-  while (actual_families->next(&actual_family)) {
-    if (DeprecatedEqualIgnoringCase(
-            font_name, String::FromUTF8(actual_family.fString.c_str()))) {
-      matches_requested_family = true;
-      break;
-    }
-  }
-  actual_families->unref();
-
-  return matches_requested_family;
+  return !!tf;
 }
 
 const char* FirstAvailableFont(
