@@ -45,8 +45,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.task.TaskTraits;
@@ -62,14 +60,13 @@ import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@Config(shadows = {CustomTabsConnectionUnitTest.ShadowUmaSessionStats.class, ShadowPostTask.class})
+@Config(shadows = {ShadowPostTask.class})
 public class CustomTabsConnectionUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -85,19 +82,6 @@ public class CustomTabsConnectionUnitTest {
     private CustomTabsSessionToken mSession;
     private PostMessageServiceConnection mPostMessageServiceConnection;
     private PostMessageHandler mPostMessageHandler;
-
-    @Implements(UmaSessionStats.class)
-    public static class ShadowUmaSessionStats {
-        public ShadowUmaSessionStats() {}
-
-        @Implementation
-        public static boolean isMetricsServiceAvailable() {
-            return false;
-        }
-
-        @Implementation
-        public static void registerSyntheticFieldTrial(String trialName, String groupName) {}
-    }
 
     @Before
     public void setup() {
