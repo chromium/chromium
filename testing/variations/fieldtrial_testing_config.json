@@ -26098,6 +26098,7 @@
                         "V8FlushCodeOldTime": "180"
                     },
                     "enable_features": [
+                        "V8Flag_ineffective_gcs_forces_last_resort",
                         "V8FlushBaselineCode",
                         "V8FlushCodeBasedOnTime"
                     ],
