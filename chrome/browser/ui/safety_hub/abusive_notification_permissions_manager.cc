@@ -190,18 +190,22 @@ void AbusiveNotificationPermissionsManager::
   if (!safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm_.get(), url)) {
     return;
   }
+  safe_browsing::NotificationRevocationSource revocation_source =
+      GetRevokedAbusiveNotificationRevocationSource(hcsm_.get(), url);
   // Set this to true to prevent removal of revoked setting values.
   is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_ALLOW);
   SetRevokedAbusiveNotificationPermission(hcsm_.get(), url,
-                                          /*is_ignored=*/true);
+                                          /*is_ignored=*/true,
+                                          revocation_source);
   // Set this back to false, so that revoked settings can be cleaned up if
   // necessary.
   is_abusive_site_revocation_running_ = false;
 
   LogAbusiveNotificationPermissionRevocationUKM(
-      url, AbusiveNotificationPermissionsInteractions::kAllowAgain);
+      url, AbusiveNotificationPermissionsInteractions::kAllowAgain,
+      revocation_source);
 }
 
 void AbusiveNotificationPermissionsManager::
@@ -221,19 +225,22 @@ void AbusiveNotificationPermissionsManager::
   if (stored_value.is_none()) {
     return;
   }
-
+  safe_browsing::NotificationRevocationSource revocation_source =
+      GetRevokedAbusiveNotificationRevocationSource(hcsm_.get(), url);
   // Set this to true to prevent removal of revoked setting values.
   is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_DEFAULT);
   SetRevokedAbusiveNotificationPermission(hcsm_.get(), url,
-                                          /*is_ignored=*/false, constraints);
+                                          /*is_ignored=*/false,
+                                          revocation_source, constraints);
   // Set this back to false, so that revoked settings can be cleaned up if
   // necessary.
   is_abusive_site_revocation_running_ = false;
 
   LogAbusiveNotificationPermissionRevocationUKM(
-      url, AbusiveNotificationPermissionsInteractions::kUndoAllowAgain);
+      url, AbusiveNotificationPermissionsInteractions::kUndoAllowAgain,
+      revocation_source);
 }
 
 void AbusiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
@@ -278,12 +285,14 @@ bool AbusiveNotificationPermissionsManager::IsRevocationRunning() {
 void AbusiveNotificationPermissionsManager::
     LogAbusiveNotificationPermissionRevocationUKM(
         const GURL& origin,
-        AbusiveNotificationPermissionsInteractions interaction) {
+        AbusiveNotificationPermissionsInteractions interaction,
+        safe_browsing::NotificationRevocationSource revocation_source) {
   ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
       base::PassKey<AbusiveNotificationPermissionsManager>(), origin);
   ukm::builders::SafetyHub_AbusiveNotificationPermissionRevocation_Interactions(
       source_id)
       .SetInteractionType(static_cast<int>(interaction))
+      .SetRevocationSource(static_cast<int>(revocation_source))
       .Record(ukm::UkmRecorder::Get());
 }
 

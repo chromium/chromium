@@ -372,6 +372,10 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       static_cast<int>(
           AbusiveNotificationPermissionsManager::
               AbusiveNotificationPermissionsInteractions::kAllowAgain));
+  ukm_recorder.ExpectEntryMetric(
+      entry1, "RevocationSource",
+      static_cast<int>(safe_browsing::NotificationRevocationSource::
+                           kSocialEngineeringBlocklist));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
@@ -597,6 +601,10 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       static_cast<int>(
           AbusiveNotificationPermissionsManager::
               AbusiveNotificationPermissionsInteractions::kAllowAgain));
+  ukm_recorder.ExpectEntryMetric(
+      entry1, "RevocationSource",
+      static_cast<int>(safe_browsing::NotificationRevocationSource::
+                           kSocialEngineeringBlocklist));
   const auto* entry2 = ukm_entries[1].get();
   ukm_recorder.ExpectEntrySourceHasUrl(entry2, GURL(url1));
   ukm_recorder.ExpectEntryMetric(
@@ -604,6 +612,10 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       static_cast<int>(
           AbusiveNotificationPermissionsManager::
               AbusiveNotificationPermissionsInteractions::kUndoAllowAgain));
+  ukm_recorder.ExpectEntryMetric(
+      entry2, "RevocationSource",
+      static_cast<int>(safe_browsing::NotificationRevocationSource::
+                           kSocialEngineeringBlocklist));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,

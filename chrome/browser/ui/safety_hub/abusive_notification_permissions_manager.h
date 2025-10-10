@@ -151,7 +151,8 @@ class AbusiveNotificationPermissionsManager {
   // `AbusiveNotificationPermissionRevocation.Interactions` UKM.
   void LogAbusiveNotificationPermissionRevocationUKM(
       const GURL& origin,
-      AbusiveNotificationPermissionsInteractions interaction);
+      AbusiveNotificationPermissionsInteractions interaction,
+      safe_browsing::NotificationRevocationSource source);
 
   // Test support:
   // TODO(crbug/342210522): Use a unique_ptr here if possible.

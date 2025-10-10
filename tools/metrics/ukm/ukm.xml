@@ -22171,6 +22171,11 @@ be describing additional metrics about the same event.
       notification auto-revocation in Safety Hub.
     </summary>
   </metric>
+  <metric name="RevocationSource" enum="NotificationRevocationSource">
+    <summary>
+      The reason for auto-revocation.
+    </summary>
+  </metric>
 </event>
 
 <event
