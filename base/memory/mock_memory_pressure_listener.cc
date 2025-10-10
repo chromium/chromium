@@ -21,4 +21,15 @@ RegisteredMockMemoryPressureListener::RegisteredMockMemoryPressureListener()
 RegisteredMockMemoryPressureListener::~RegisteredMockMemoryPressureListener() =
     default;
 
+RegisteredMockAsyncMemoryPressureListener::
+    RegisteredMockAsyncMemoryPressureListener()
+    : registration_(
+          FROM_HERE,
+          MemoryPressureListenerTag::kTest,
+          base::BindRepeating(&MockMemoryPressureListener::OnMemoryPressure,
+                              base::Unretained(this))) {}
+
+RegisteredMockAsyncMemoryPressureListener::
+    ~RegisteredMockAsyncMemoryPressureListener() = default;
+
 }  // namespace base
