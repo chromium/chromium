@@ -165,7 +165,7 @@ void WebNNContextProviderImpl::RemoveWebNNContextImpl(
 }
 
 #if BUILDFLAG(IS_WIN)
-void WebNNContextProviderImpl::DestroyContextsAndKillGpuProcess(
+void WebNNContextProviderImpl::DestroyAllContextsAndKillGpuProcess(
     const std::string& reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Send the contexts lost reason to the renderer process.

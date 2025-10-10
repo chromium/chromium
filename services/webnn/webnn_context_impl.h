@@ -135,14 +135,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // by removing itself from the ownership of `context_provider_`.
   void OnLost(const std::string& reason);
 
-  WebNNContextProviderImpl* context_provider() const {
-    // TODO https://crbug.com/436531065 - Replace this with a new
-    // `owning_sequence_checker_` when `scheduler_task_runner_` starts posting
-    // tasks to a different sequence.
-    DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-    return context_provider_.get();
-  }
-
   // Exposes a SequencedTaskRunner which can be used to schedule tasks in
   // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
   // sequence. Does not support nested loops or delayed tasks.
@@ -200,6 +192,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
       std::unique_ptr<gpu::WebNNTensorRepresentation> representation) = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // Inform the provider that this context is lost so it can inform the renderer
+  // process and kill the GPU process to destroy all contexts.
+  void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
+#endif  // BUILDFLAG(IS_WIN)
 
   // This weak pointer can only be dereferenced on the sequence where
   // `context_provider_->main_thread_task_runner()` runs tasks.

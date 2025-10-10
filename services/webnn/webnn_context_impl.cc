@@ -99,6 +99,22 @@ void WebNNContextImpl::OnDisconnect() {
   context_provider_->RemoveWebNNContextImpl(handle());
 }
 
+#if BUILDFLAG(IS_WIN)
+void WebNNContextImpl::DestroyAllContextsAndKillGpuProcess(
+    const std::string& reason) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WebNNContextProviderImpl::DestroyAllContextsAndKillGpuProcess,
+            context_provider_, reason));
+    return;
+  }
+
+  context_provider_->DestroyAllContextsAndKillGpuProcess(reason);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void WebNNContextImpl::ReportBadGraphBuilderMessage(
     const std::string& message,
     base::PassKey<WebNNGraphBuilderImpl> pass_key) {
