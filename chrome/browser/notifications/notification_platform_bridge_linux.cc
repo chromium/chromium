@@ -5,9 +5,12 @@
 #include "chrome/browser/notifications/notification_platform_bridge_linux.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <sstream>
+#include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -50,10 +53,11 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/utils/read_value.h"
+#include "components/dbus/utils/variant.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -281,6 +285,28 @@ NotificationTempFiles WriteNotificationResourceFiles(
 }
 
 template <typename... Ts>
+std::optional<std::tuple<Ts...>> ReadTuple(dbus::MessageReader& reader) {
+  std::tuple<Ts...> t;
+  const bool success = std::apply(
+      [&](auto&... members) {
+        auto read_and_assign = [&](auto& member) {
+          using MemberType = std::remove_cvref_t<decltype(member)>;
+          if (auto value = dbus_utils::ReadValue<MemberType>(reader)) {
+            member = std::move(*value);
+            return true;
+          }
+          return false;
+        };
+        return (read_and_assign(members) && ...);
+      },
+      t);
+  if (!success) {
+    return std::nullopt;
+  }
+  return t;
+}
+
+template <typename... Ts>
 void ConnectToSignal(
     dbus::ObjectProxy* proxy,
     const std::string& interface,
@@ -293,14 +319,14 @@ void ConnectToSignal(
           [](const std::string& interface, const std::string& signal_name,
              base::RepeatingCallback<void(Ts...)> cb, dbus::Signal* signal) {
             dbus::MessageReader reader(signal);
-            DbusParameters<Ts...> params;
-            if (!params.Read(&reader)) {
+            auto params = ReadTuple<Ts...>(reader);
+            if (!params) {
               LOG(ERROR) << interface << "." << signal_name
                          << ": Failed to read signal parameters.";
               return;
             }
             std::apply([&](auto&&... args) { cb.Run(std::move(args)...); },
-                       params.value());
+                       *params);
           },
           interface, signal_name, std::move(signal_callback)),
       std::move(on_connected_callback));
@@ -897,19 +923,19 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     return nullptr;
   }
 
-  void OnActivationToken(DbusUint32 dbus_id, DbusString token) {
+  void OnActivationToken(uint32_t dbus_id, std::string token) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    base::nix::SetActivationToken(token.value());
+    base::nix::SetActivationToken(token);
   }
 
-  void OnActionInvoked(DbusUint32 dbus_id, DbusString dbus_action) {
+  void OnActionInvoked(uint32_t dbus_id, std::string dbus_action) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }
 
-    const std::string& action = dbus_action.value();
+    const std::string& action = dbus_action;
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
           NotificationOperation::kClick, data->notification_type,
@@ -947,9 +973,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
-  void OnNotificationReplied(DbusUint32 dbus_id, DbusString reply) {
+  void OnNotificationReplied(uint32_t dbus_id, std::string reply) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }
@@ -957,13 +983,13 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     ForwardNotificationOperation(
         NotificationOperation::kClick, data->notification_type,
         data->origin_url, data->notification_id, /*action_index=*/std::nullopt,
-        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply.value()),
-        data->profile_id, data->is_incognito);
+        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply), data->profile_id,
+        data->is_incognito);
   }
 
-  void OnNotificationClosed(DbusUint32 dbus_id, DbusUint32 reason) {
+  void OnNotificationClosed(uint32_t dbus_id, uint32_t reason) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }
