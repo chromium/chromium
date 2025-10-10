@@ -76,7 +76,7 @@ class FontSupport : public gpu::ServiceFontManager::Client {
   base::flat_map<uint32_t, scoped_refptr<gpu::Buffer>> buffers_;
 };
 
-void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
+void Raster(GrDirectContext* gr_context,
             SkStrikeClient* strike_client,
             cc::ServicePaintCache* paint_cache,
             const uint8_t* data,
@@ -85,8 +85,8 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
   SkImageInfo image_info = SkImageInfo::MakeN32(
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
-  sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
-      context_provider->GrContext(), skgpu::Budgeted::kYes, image_info);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::RenderTarget(gr_context, skgpu::Budgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
 
   cc::PlaybackParams params(nullptr, canvas->getLocalToDevice());
@@ -157,17 +157,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   auto context_provider_no_support = viz::TestContextProvider::Create();
   context_provider_no_support->BindToCurrentSequence();
-  CHECK(!context_provider_no_support->GrContext()->supportsDistanceFieldText());
-  Raster(context_provider_no_support, font_manager->strike_client(),
-         &paint_cache, raster_data, raster_size);
+  auto* gr_context = context_provider_no_support->GrContext();
+  CHECK(!gr_context->supportsDistanceFieldText());
+  Raster(gr_context, font_manager->strike_client(), &paint_cache, raster_data,
+         raster_size);
 
   auto context_provider_with_support = viz::TestContextProvider::Create(
       std::string("GL_OES_standard_derivatives"));
   context_provider_with_support->BindToCurrentSequence();
-  CHECK(
-      context_provider_with_support->GrContext()->supportsDistanceFieldText());
-  Raster(context_provider_with_support, font_manager->strike_client(),
-         &paint_cache, raster_data, raster_size);
+  gr_context = context_provider_with_support->GrContext();
+  CHECK(gr_context->supportsDistanceFieldText());
+  Raster(gr_context, font_manager->strike_client(), &paint_cache, raster_data,
+         raster_size);
 
   font_manager->Unlock(locked_handles);
   font_manager->Destroy();
