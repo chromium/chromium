@@ -55,6 +55,7 @@ class NewTabButtonMenuModel : public ui::SimpleMenuModel,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTab);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTabInGroup);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewSplitView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
   explicit NewTabButtonMenuModel(BrowserWindowInterface* browser);
   NewTabButtonMenuModel(const NewTabButtonMenuModel&) = delete;
@@ -68,6 +69,7 @@ class NewTabButtonMenuModel : public ui::SimpleMenuModel,
 
  private:
   void AddNewTabInGroupItem();
+  void AddNewSplitTabItem();
 
   raw_ptr<BrowserWindowInterface> browser_;
 };
