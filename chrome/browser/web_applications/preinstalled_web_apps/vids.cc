@@ -24,10 +24,9 @@ namespace web_app {
 
 namespace {
 
-blink::Manifest::TabStrip HomeTabPathnames(
+blink::Manifest::HomeTabParams HomeTabPathnames(
     std::vector<std::string_view> pathnames) {
-  blink::Manifest::TabStrip tab_strip;
-  auto& home_tab = tab_strip.home_tab.emplace<blink::Manifest::HomeTabParams>();
+  blink::Manifest::HomeTabParams home_tab;
 
   for (const std::string_view pathname : pathnames) {
     base::expected<liburlpattern::Pattern, absl::Status> parse_result =
@@ -44,7 +43,7 @@ blink::Manifest::TabStrip HomeTabPathnames(
     home_tab.scope_patterns.push_back(std::move(url_pattern));
   }
 
-  return tab_strip;
+  return home_tab;
 }
 
 }  // namespace
@@ -68,10 +67,15 @@ ExternalInstallOptions GetConfigForVids() {
     info->scope = GURL("https://docs.google.com/videos/");
     info->display_mode = DisplayMode::kBrowser;
     info->display_override = {DisplayMode::kTabbed};
-    info->tab_strip = HomeTabPathnames({
-        "/videos/",
-        "/videos/u/:index",
-        "/videos/u/:index/",
+    info->tab_strip.emplace();
+    info->tab_strip->new_tab_button.url =
+        GURL("https://docs.google.com/videos/u/0/create?usp=webapp_tab_strip");
+    info->tab_strip->home_tab = HomeTabPathnames({
+        "/videos/", "/videos/u/:index", "/videos/u/:index/",
+        // The manifest officially includes the following pathnames however they
+        // are not in scope and would be ignored by blink::ManifestParser.
+        // "/a/:domain/videos",
+        // "/a/:domain/videos/",
     });
     info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_VIDS_ICON_144_PNG});
