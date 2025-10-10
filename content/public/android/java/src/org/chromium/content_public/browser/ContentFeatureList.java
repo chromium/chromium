@@ -43,6 +43,8 @@ public class ContentFeatureList {
 
     public static final String ANDROID_DEV_TOOLS_FRONTEND = "AndroidDevToolsFrontend";
 
+    public static final String ANDROID_MEDIA_INSERTION = "AndroidMediaInsertion";
+
     public static final String ANDROID_OPEN_PDF_INLINE = "AndroidOpenPdfInline";
 
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
