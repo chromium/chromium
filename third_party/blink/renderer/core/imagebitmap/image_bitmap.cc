@@ -88,8 +88,7 @@ gfx::Size ParseDstSize(const ImageBitmapOptions* options,
 ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
                                         std::optional<gfx::Rect> crop_rect,
                                         gfx::Size source_size,
-                                        ImageOrientation source_orientation,
-                                        bool source_is_unpremul) {
+                                        ImageOrientation source_orientation) {
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == V8ImageOrientation::Enum::kFlipY) {
     parsed_options.flip_y = true;
@@ -110,7 +109,6 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     }
   }
 
-  parsed_options.source_is_unpremul = source_is_unpremul;
   switch (options->premultiplyAlpha().AsEnum()) {
     case V8PremultiplyAlpha::Enum::kNone:
       parsed_options.premultiply_alpha = false;
@@ -185,9 +183,9 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
                                         std::optional<gfx::Rect> crop_rect,
                                         scoped_refptr<Image> input) {
   const auto info = input->PaintImageForCurrentFrame().GetSkImageInfo();
-  return ParseOptions(
-      options, crop_rect, gfx::Size(info.width(), info.height()),
-      input->Orientation(), info.alphaType() == kUnpremul_SkAlphaType);
+  return ParseOptions(options, crop_rect,
+                      gfx::Size(info.width(), info.height()),
+                      input->Orientation());
 }
 
 ImageBitmap::ParsedOptions ParseOptions(
@@ -195,8 +193,7 @@ ImageBitmap::ParsedOptions ParseOptions(
     std::optional<gfx::Rect> crop_rect,
     scoped_refptr<StaticBitmapImage> input) {
   return ParseOptions(options, crop_rect, input->GetSize(),
-                      input->Orientation(),
-                      input->GetAlphaType() == kUnpremul_SkAlphaType);
+                      input->Orientation());
 }
 
 // The function dstBufferSizeHasOverflow() is being called at the beginning of
@@ -317,11 +314,6 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
                       .set_image(std::move(skia_image),
                                  paint_image.GetContentIdForFrame(0u))
                       .TakePaintImage();
-
-    // Update source alpha states after redecoding.
-    parsed_options.source_is_unpremul =
-        paint_image.GetAlphaType() == kUnpremul_SkAlphaType;
-
   } else if (paint_image.IsLazyGenerated()) {
     // Other Image types can still produce lazy generated images (for example
     // SVGs).
@@ -445,8 +437,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   const ParsedOptions parsed_options = ParseOptions(
-      options, crop_rect, data->Size(), ImageOrientationEnum::kOriginTopLeft,
-      /*source_is_unpremul=*/true);
+      options, crop_rect, data->Size(), ImageOrientationEnum::kOriginTopLeft);
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
