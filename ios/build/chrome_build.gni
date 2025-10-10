@@ -60,9 +60,6 @@ declare_args() {
   ios_passkey_keychain_provider_chrome_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
   ios_passkey_keychain_provider_extension_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
 
-  # TODO(crbug.com/448228341): Remove after transition to two targets.
-  ios_passkey_keychain_provider_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
-
   # Label of the target providing implementation for FontProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_font_provider_target =
