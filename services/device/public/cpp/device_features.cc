@@ -82,7 +82,7 @@ BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
 // to bypass the HID blocklist when accessing FIDO devices. When enabled,
 // privileged extensions can access non-FIDO interfaces on known security keys.
 BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
