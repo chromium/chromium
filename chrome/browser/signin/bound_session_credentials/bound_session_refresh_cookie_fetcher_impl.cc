@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -42,7 +41,6 @@ namespace {
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
-const size_t kMaxGenerateAssertionFailuresAllowed = 1;
 
 constexpr std::string_view kRotationResultHistogramName =
     "Signin.BoundSessionCredentials.CookieRotationResult";
@@ -430,8 +428,7 @@ void BoundSessionRefreshCookieFetcherImpl::
 }
 
 void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
-    const std::string& challenge,
-    size_t generate_assertion_attempt) {
+    const std::string& challenge) {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
@@ -439,24 +436,19 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
       challenge, refresh_url_,
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
-          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge,
-          generate_assertion_attempt));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     base::ElapsedTimer generate_assertion_timer,
     const std::string& challenge,
-    size_t generate_assertion_attempt,
     base::expected<std::string, SessionBindingHelper::Error>
         assertion_or_error) {
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
   base::UmaHistogramEnumeration(
-      base::StrCat({"Signin.BoundSessionCredentials."
-                    "CookieRotationGenerateAssertionResult."
-                    "Attempt",
-                    base::NumberToString(generate_assertion_attempt)}),
+      "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult",
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
   TRACE_EVENT(
       "browser",
@@ -465,14 +457,6 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
 
   if (!assertion_or_error.has_value()) {
-    // `assertion_or_error.error()` doesn't expose enough information to
-    // decide whether an error was transient or permanent. As permanent errors
-    // are issued almost immediately, it's acceptable to retry on them.
-    if (generate_assertion_attempt < kMaxGenerateAssertionFailuresAllowed) {
-      RefreshWithChallenge(challenge, generate_assertion_attempt + 1);
-      return;
-    }
-
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }

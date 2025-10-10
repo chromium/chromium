@@ -86,12 +86,10 @@ class BoundSessionRefreshCookieFetcherImpl
   void HandleBindingKeyAssertionRequired(
       const std::string& challenge_header_value);
   void CompleteRequestAndReportRefreshResult(Result result);
-  void RefreshWithChallenge(const std::string& challenge,
-                            size_t generate_assertion_attempt = 0);
+  void RefreshWithChallenge(const std::string& challenge);
   void OnGenerateBindingKeyAssertion(
       base::ElapsedTimer generate_assertion_timer,
       const std::string& challenge,
-      size_t generate_assertion_attempt,
       base::expected<std::string, SessionBindingHelper::Error>
           assertion_or_error);
 

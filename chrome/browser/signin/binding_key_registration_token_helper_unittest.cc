@@ -21,8 +21,9 @@
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::NiceMock;
-using testing::Return;
+using ::testing::AtLeast;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace {
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
@@ -249,7 +250,9 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
-  EXPECT_CALL(*key_to_generate, SignSlowly).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*key_to_generate, SignSlowly)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
   unexportable_keys::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   scoped_mock_key_provider.AddNextGeneratedKey(std::move(key_to_generate));
 

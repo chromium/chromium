@@ -119,7 +119,7 @@ void SessionBindingHelper::SignAssertionToken(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload),
-      kSessionBindingPriority, /*max_retries=*/0,
+      kSessionBindingPriority, /*max_retries=*/3,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm,
                      std::move(public_key))
           .Then(std::move(callback)));
