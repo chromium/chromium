@@ -807,25 +807,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
   DestroyIncognitoNetworkContextAndInterceptors();
 }
 
-// TODO(crbug.com/445983566): Re-enable once PRE_ tests are fixed on Android
-// (crbug.com/40200835).
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart \
-  DISABLED_PRE_TrackingProtectionExceptionRemainsAfterRestart
-#define MAYBE_TrackingProtectionExceptionRemainsAfterRestart \
-  DISABLED_TrackingProtectionExceptionRemainsAfterRestart
-#else
-#define MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart \
-  PRE_TrackingProtectionExceptionRemainsAfterRestart
-#define MAYBE_TrackingProtectionExceptionRemainsAfterRestart \
-  TrackingProtectionExceptionRemainsAfterRestart
-#endif
-
 // Verify that Tracking Protection exceptions persist across network service
 // restarts and crashes.
-IN_PROC_BROWSER_TEST_F(
-    IpProtectionCoreHostUserSettingBrowserTest,
-    MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart) {
+IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
+                       PRE_TrackingProtectionExceptionRemainsAfterRestart) {
   // Ensure that the tracking protection exception is not set yet.
   base::test::TestFuture<bool> has_exception_future;
 
@@ -863,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
-                       MAYBE_TrackingProtectionExceptionRemainsAfterRestart) {
+                       TrackingProtectionExceptionRemainsAfterRestart) {
   // Check that the settings are still propagated to IP Protection Core after
   // restart.
   ip_protection::mojom::CoreControl* ipp_control =
