@@ -745,7 +745,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Returns the visit matching a given timestamp. In case of redirects (where
   // multiple visits can have the same timestamp), returns the last visit in the
-  // redirect chain.
+  // redirect chain. Includes visits and redirects that result in a 404 response
+  // code.
   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
 
   // Returns the sync controller delegate for syncing history. The returned
