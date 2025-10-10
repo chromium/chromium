@@ -629,6 +629,42 @@ function unescapeURLPattern(pattern: string) {
   return result;
 }
 
+// https://fetch.spec.whatwg.org/#header-name
+const FORBIDDEN_HEADER_NAME_SYMBOLS = new Set([
+  ' ',
+  '\t',
+  '\n',
+  '"',
+  '(',
+  ')',
+  ',',
+  '/',
+  ':',
+  ';',
+  '<',
+  '=',
+  '>',
+  '?',
+  '@',
+  '[',
+  '\\',
+  ']',
+  '{',
+  '}',
+]);
+
+// https://fetch.spec.whatwg.org/#header-value
+const FORBIDDEN_HEADER_VALUE_SYMBOLS = new Set(['\0', '\n', '\r']);
+
+function includesChar(str: string, chars: Set<string>) {
+  for (const char of str) {
+    if (chars.has(char)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Export for testing.
 export function parseBiDiHeaders(
   headers: Network.Header[],
@@ -636,6 +672,31 @@ export function parseBiDiHeaders(
   const parsedHeaders: Protocol.Network.Headers = {};
   for (const bidiHeader of headers) {
     if (bidiHeader.value.type === 'string') {
+      const name = bidiHeader.name;
+      const value = bidiHeader.value.value;
+
+      if (name.length === 0) {
+        throw new InvalidArgumentException(`Empty header name is not allowed`);
+      }
+
+      if (includesChar(name, FORBIDDEN_HEADER_NAME_SYMBOLS)) {
+        throw new InvalidArgumentException(
+          `Header name '${name}' contains forbidden symbols`,
+        );
+      }
+
+      if (includesChar(value, FORBIDDEN_HEADER_VALUE_SYMBOLS)) {
+        throw new InvalidArgumentException(
+          `Header value '${value}' contains forbidden symbols`,
+        );
+      }
+
+      if (value.trim() !== value) {
+        throw new InvalidArgumentException(
+          `Header value should not contain trailing or ending whitespaces`,
+        );
+      }
+
       if (parsedHeaders[bidiHeader.name] === undefined) {
         parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
       } else {

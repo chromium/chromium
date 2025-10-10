@@ -16,7 +16,10 @@
  */
 import {expect} from 'chai';
 
-import {UnsupportedOperationException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  UnsupportedOperationException,
+} from '../../../protocol/ErrorResponse.js';
 import type {Network} from '../../../protocol/protocol.js';
 
 import {NetworkProcessor, parseBiDiHeaders} from './NetworkProcessor.js';
@@ -213,9 +216,9 @@ describe('NetworkProcessor', () => {
     });
   });
   describe('parseBiDiHeaders', () => {
-    const SOME_HEADER_NAME = 'SOME HEADER NAME';
+    const SOME_HEADER_NAME = 'SOME_HEADER_NAME';
     const SOME_HEADER_VALUE = 'SOME HEADER VALUE';
-    const ANOTHER_HEADER_NAME = 'ANOTHER HEADER NAME';
+    const ANOTHER_HEADER_NAME = 'ANOTHER_HEADER_NAME';
     const ANOTHER_HEADER_VALUE = 'ANOTHER HEADER VALUE';
 
     it('should return an empty object for an empty array', () => {
@@ -291,19 +294,50 @@ describe('NetworkProcessor', () => {
     it('should be case-sensitive for header names', () => {
       const headers: Network.Header[] = [
         {
-          name: 'SOME HEADER NAME',
+          name: 'SOME_HEADER_NAME',
           value: {type: 'string', value: 'SOME VALUE'},
         },
         {
-          name: 'some header name',
+          name: 'some_header_name',
           value: {type: 'string', value: 'some value'},
         },
       ];
       const result = parseBiDiHeaders(headers);
       expect(result).to.deep.equal({
-        ['SOME HEADER NAME']: 'SOME VALUE',
-        'some header name': 'some value',
+        ['SOME_HEADER_NAME']: 'SOME VALUE',
+        some_header_name: 'some value',
       });
+    });
+    it('should throw for invalid header name', () => {
+      const headers: Network.Header[] = [
+        {
+          name: 'SOME HEADER NAME',
+          value: {type: 'string', value: 'SOME VALUE'},
+        },
+        {
+          name: 'invalid name\n',
+          value: {type: 'string', value: 'some value'},
+        },
+      ];
+      expect(() => parseBiDiHeaders(headers)).to.throw(
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw for invalid header value', () => {
+      const headers: Network.Header[] = [
+        {
+          name: 'SOME HEADER NAME',
+          value: {type: 'string', value: 'SOME VALUE'},
+        },
+        {
+          name: 'valid-name',
+          value: {type: 'string', value: 'invalid value\n'},
+        },
+      ];
+      expect(() => parseBiDiHeaders(headers)).to.throw(
+        InvalidArgumentException,
+      );
     });
   });
 });
