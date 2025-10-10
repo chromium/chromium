@@ -4,6 +4,7 @@ include_rules = [
   "+components/dbus",
   "+components/device_event_log",
   "+components/location",
+  "+components/permissions",
   "+dbus",
   "+net/base",
   "+net/http/http_status_code.h",

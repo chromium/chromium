@@ -23,6 +23,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 
 import java.util.List;
 
@@ -47,6 +49,15 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
         mEnableHighAccuracy = enableHighAccuracy;
+
+        // Checking app-level permission here and override the `mEnableHighAccuracy` so we can make
+        // sure `Geolocation.AndroidLocationProvider.` is logged with correct name suffix.
+        Context context = ContextUtils.getApplicationContext();
+        if (context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mEnableHighAccuracy = false;
+        }
+
         unregisterFromLocationUpdates();
         registerForLocationUpdates();
     }
@@ -120,12 +131,21 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
         try {
             Criteria criteria = new Criteria();
-            Context context = ContextUtils.getApplicationContext();
-            if (mEnableHighAccuracy
-                    && context.checkCallingOrSelfPermission(
-                                    Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                criteria.setAccuracy(Criteria.ACCURACY_FINE);
+
+            // When the `APPROXIMATE_GEOLOCATION_PERMISSION` feature is enabled,
+            // `mEnableHighAccuracy` explicitly controls the location accuracy. Otherwise, it
+            // only acts as a hint for the location provider.
+            if (PermissionsAndroidFeatureMap.isEnabled(
+                    PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
+                if (mEnableHighAccuracy) {
+                    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                } else {
+                    criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+                }
+            } else {
+                if (mEnableHighAccuracy) {
+                    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                }
             }
             mLocationManager.requestLocationUpdates(
                     0, 0, criteria, this, ThreadUtils.getUiThreadLooper());
