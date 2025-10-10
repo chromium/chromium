@@ -10,6 +10,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 
 namespace content {
 class WebContents;
@@ -45,14 +46,19 @@ class InactiveViewController : public views::ViewObserver {
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
+  void OnViewThemeChanged(views::View* observed_view) override;
 
  private:
   // Updates the displayed image by resizing and re-blurring the screenshot.
   void UpdateImageView();
 
+  // Updates the scrim color based on the current theme.
+  void UpdateScrimColor();
+
   base::ScopedObservation<views::View, views::ViewObserver>
       image_view_observation_{this};
   raw_ptr<views::ImageView> image_view_ = nullptr;
+  views::ViewTracker scrim_view_tracker_;
   gfx::ImageSkia screenshot_;
 
   base::WeakPtrFactory<InactiveViewController> weak_ptr_factory_{this};
