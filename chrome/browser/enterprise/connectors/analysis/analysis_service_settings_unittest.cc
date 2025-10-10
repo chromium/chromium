@@ -87,6 +87,7 @@ constexpr char kEnablePatternIsNotADictSettings[] = R"({
 
 constexpr char kOnlyDlpEnabledPatternsAndIrrelevantSettings[] = R"({
   "service_provider": "%s",
+  %s
   "enable": [
     {"tags": ["dlp", "malware"]},
     {"url_list": ["scan1.com", "scan2.com"], "tags": ["dlp"]},
@@ -734,9 +735,6 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
           GURL(GetServiceProviderConfig()
                    ->at("google")
                    .analysis->region_urls[static_cast<size_t>(data_region())]);
-      std::get<CloudAnalysisSettings>(
-          GetParam().expected_settings->cloud_or_local_settings)
-          .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
       cloud_settings.analysis_url = regionalized_url;
       GetParam().expected_settings->cloud_or_local_settings =
@@ -746,7 +744,9 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       LocalAnalysisSettings local_settings;
       local_settings.local_path = "path_user";
       local_settings.user_specific = true;
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
       local_settings.verification_signatures.push_back("key");
+#endif
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(local_settings));
 
@@ -836,14 +836,20 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
               expected_settings()->block_large_files);
-    ASSERT_TRUE(
-        analysis_settings.value().cloud_or_local_settings.is_local_analysis());
-    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.local_path(),
-              expected_settings()->cloud_or_local_settings.local_path());
-    ASSERT_EQ(analysis_settings.value().cloud_or_local_settings.user_specific(),
-              expected_settings()->cloud_or_local_settings.user_specific());
     ASSERT_EQ(analysis_settings.value().minimum_data_size,
               expected_settings()->minimum_data_size);
+
+    const auto& cloud_or_local_settings =
+        analysis_settings.value().cloud_or_local_settings;
+    ASSERT_TRUE(cloud_or_local_settings.is_local_analysis());
+    ASSERT_EQ(cloud_or_local_settings.local_path(),
+              expected_settings()->cloud_or_local_settings.local_path());
+    ASSERT_EQ(cloud_or_local_settings.user_specific(),
+              expected_settings()->cloud_or_local_settings.user_specific());
+    ASSERT_EQ(
+        cloud_or_local_settings.verification_signatures(),
+        expected_settings()->cloud_or_local_settings.verification_signatures());
+
     for (const auto& entry : expected_settings()->tags) {
       const std::string& tag = entry.first;
       ASSERT_TRUE(analysis_settings.value().tags.count(entry.first));

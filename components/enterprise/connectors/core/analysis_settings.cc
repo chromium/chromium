@@ -93,6 +93,12 @@ base::span<const char* const> CloudOrLocalAnalysisSettings::subject_names()
   return std::get<LocalAnalysisSettings>(*this).subject_names;
 }
 
+std::vector<std::string> CloudOrLocalAnalysisSettings::verification_signatures()
+    const {
+  DCHECK(std::holds_alternative<LocalAnalysisSettings>(*this));
+  return std::get<LocalAnalysisSettings>(*this).verification_signatures;
+}
+
 size_t CloudOrLocalAnalysisSettings::max_file_size() const {
   if (is_local_analysis()) {
     return std::get<LocalAnalysisSettings>(*this).max_file_size;

@@ -112,6 +112,7 @@ class CloudOrLocalAnalysisSettings
   const std::string local_path() const;
   bool user_specific() const;
   base::span<const char* const> subject_names() const;
+  std::vector<std::string> verification_signatures() const;
 
   // Field accessible by both CloudAnalysisSettings and LocalAnalysisSettings.
   size_t max_file_size() const;
