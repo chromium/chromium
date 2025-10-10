@@ -1305,7 +1305,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
 <translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
-<translation id="6100676328067737810">Deine Daten werden in deinem Google-Konto gespeichert, <ph name="USER_EMAIL" /></translation>
+<translation id="6100676328067737810">Deine Daten werden in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="610083648014322104">Hol dir relevante Antworten basierend auf dem Inhalt der aktuellen Seite</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
 <translation id="611361228753138223">Websites, die du auf diesem Gerät zuletzt besucht hast</translation>
@@ -1330,7 +1330,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6169031022444660352">Zum Löschen aller gespeicherten Anmeldedaten musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="6172428250974276014">Ja, Daten getrennt halten (empfohlen)</translation>
 <translation id="6173499589275053515">Passwort in deinem Google-Konto <ph name="EMAIL" /> gespeichert</translation>
-<translation id="6181969657494915430">Suchbildschirm</translation>
+<translation id="6181969657494915430">Bildschirmsuche</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ungelesen</translation>
@@ -1617,7 +1617,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="728025568708172005">Tour starten</translation>
-<translation id="7280980607183752256">Diese Datei kann nicht importiert werden</translation>
+<translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7281202269687163394">Datenschutz und Gemini.</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>

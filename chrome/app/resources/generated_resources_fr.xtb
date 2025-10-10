@@ -22,7 +22,7 @@
 <translation id="100881991356161927">Nom du site</translation>
 <translation id="1009663062402466586">Commandes de jeu désormais disponibles</translation>
 <translation id="1010136228650201057">Chiffrement des données utilisateur</translation>
-<translation id="1010225406377140704">Contactez l'expéditeur pour lui demander un nouveau lien</translation>
+<translation id="1010225406377140704">Contactez la personne qui l'a envoyé pour lui demander un nouveau lien</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page ne répondant pas}one{Page ne répondant pas}other{Pages ne répondant pas}}</translation>
 <translation id="1011003645819296594">Appareils enregistrés</translation>
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
@@ -1816,7 +1816,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2236963250883149540">Supprimer votre adresse professionnelle de la saisie automatique Chrome ?</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
 <translation id="2240582393605484605">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant</translation>
-<translation id="2241053333139545397">Accéder aux données de plusieurs sites et les modifier</translation>
+<translation id="2241053333139545397">Lire et modifier vos données sur certains sites Web</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
 <translation id="2242687258748107519">Informations sur le fichier</translation>
 <translation id="2243452222143104807">Onglet inactif</translation>
@@ -2383,7 +2383,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Ouvrir et modifier <ph name="FILE1" /> dans cette extension}one{Ouvrir et modifier <ph name="FILE1" />, … dans cette appli}other{Ouvrir et modifier <ph name="FILE1" />, … dans cette appli}}</translation>
-<translation id="2616366145935564096">Accéder aux données du site <ph name="WEBSITE_1" /> et les modifier</translation>
+<translation id="2616366145935564096">Lire et modifier vos données sur <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configurer le Partage à proximité</translation>
 <translation id="2619305858360733464"><ph name="SHARED_STATE" /> groupe sans nom – <ph name="OPENED_STATE" /></translation>
 <translation id="2619340799655338321">lecture/pause</translation>
@@ -5669,7 +5669,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4893522937062257019">Sur l'écran de verrouillage</translation>
 <translation id="4894055916816649664">Seulement pendant 10 minutes</translation>
 <translation id="4895799941222633551">Créer un &amp;raccourci…</translation>
-<translation id="4898913189644355814">Un site pourrait enregistrer votre langue préférée ou les articles que vous voulez acheter. Le site et ses sous-domaines peuvent accéder à ces informations.</translation>
+<translation id="4898913189644355814">Un site peut éventuellement enregistrer votre langue préférée ou les articles que vous voulez acheter. Le site et ses sous-domaines peuvent accéder à ces informations.</translation>
 <translation id="4899052647152077033">Inverser les couleurs</translation>
 <translation id="4899696330053002588">Contient des annonces</translation>
 <translation id="490031510406860025">Non autorisée sur ce site</translation>

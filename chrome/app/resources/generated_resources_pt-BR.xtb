@@ -8235,7 +8235,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
-<translation id="6738180164164974883">Permitir a definição de cookies de terceiros</translation>
+<translation id="6738180164164974883">Permitir cookies de terceiros</translation>
 <translation id="6738430949033571771">Verificando a conta…</translation>
 <translation id="6739266861259291931">Redefinir para o idioma do dispositivo</translation>
 <translation id="6739923123728562974">Mostrar atalho na área de trabalho</translation>
@@ -10003,7 +10003,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7952708427581814389">Os sites podem pedir para acessar texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauração concluída</translation>
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
-<translation id="7953236668995583915">Atualize a página para aplicar as configurações atualizadas ao site</translation>
+<translation id="7953236668995583915">Recarregue esta página para aplicar as configurações atualizadas ao site.</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>
@@ -10078,7 +10078,7 @@ Extensão: <ph name="EXTENSION_FILE" />
 Chave de arquivo: <ph name="KEY_FILE" />
 
 Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para criar novas versões da sua extensão.</translation>
-<translation id="8000020256436988724">Barra de Ferramentas Google</translation>
+<translation id="8000020256436988724">Barra de ferramentas</translation>
 <translation id="800117767980299235">Destaque de voz</translation>
 <translation id="8001561107130904792">Compartilhamento de conteúdo da página</translation>
 <translation id="8002274832045662704">Configuração avançada de impressora</translation>
