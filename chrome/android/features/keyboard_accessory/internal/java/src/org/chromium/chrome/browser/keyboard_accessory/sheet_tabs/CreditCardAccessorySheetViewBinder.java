@@ -12,7 +12,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -202,11 +201,7 @@ class CreditCardAccessorySheetViewBinder {
             case "unionPayCC":
                 return R.drawable.unionpay_metadata_card;
             case "verveCC":
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
-                    return R.drawable.verve_metadata_card;
-                }
-                break;
+                return R.drawable.verve_metadata_card;
             case "visaCC":
                 return R.drawable.visa_metadata_card;
         }

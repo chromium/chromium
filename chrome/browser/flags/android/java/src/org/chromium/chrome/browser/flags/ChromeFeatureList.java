@@ -278,8 +278,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSupportForHomeAndWork";
     public static final String AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS =
             "AutofillEnableSyncingOfPixBankAccounts";
-    public static final String AUTOFILL_ENABLE_VERVE_CARD_SUPPORT =
-            "AutofillEnableVerveCardSupport";
     public static final String AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE =
             "AutofillRetryImageFetchOnFailure";
     public static final String AUTOFILL_SYNC_EWALLET_ACCOUNTS = "AutofillSyncEwalletAccounts";

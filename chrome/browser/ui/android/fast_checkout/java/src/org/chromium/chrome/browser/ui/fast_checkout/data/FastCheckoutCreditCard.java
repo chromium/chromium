@@ -10,7 +10,6 @@ import android.util.ArrayMap;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -192,11 +191,6 @@ public class FastCheckoutCreditCard {
 
     public int getIssuerIconDrawableId() {
         @Icon int issuerIconDrawable = getIssuerIcon();
-        if (issuerIconDrawable == Icon.CARD_VERVE
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VERVE_CARD_SUPPORT)) {
-            return R.drawable.ic_credit_card_black;
-        }
         return sResourceMetadataMap.getOrDefault(
                 issuerIconDrawable, R.drawable.ic_credit_card_black);
     }
