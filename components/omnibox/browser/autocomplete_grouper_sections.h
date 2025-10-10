@@ -281,6 +281,14 @@ class DesktopLensMultimodalZpsSection : public ZpsSection {
       omnibox::GroupConfigMap& group_configs);
 };
 
+class AndroidComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit AndroidComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                       size_t max_suggestions,
+                                       size_t max_aim_suggestions,
+                                       size_t max_contextual_suggestions);
+};
+
 class DesktopComposeboxZpsSection : public ZpsSection {
  public:
   explicit DesktopComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,

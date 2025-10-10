@@ -609,6 +609,33 @@ DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
                  },
                  group_configs) {}
 
+AndroidComposeboxZpsSection::AndroidComposeboxZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions,
+    size_t max_aim_suggestions,
+    size_t max_contextual_suggestions)
+    : ZpsSection(max_suggestions,
+                 {
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
+                                max_aim_suggestions},
+                               {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED,
+                                max_aim_suggestions},
+                           }),
+                     Group(max_suggestions,
+                           {
+                               {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                                max_contextual_suggestions},
+                           }),
+                 },
+                 group_configs) {}
+
 DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
     omnibox::GroupConfigMap& group_configs,
     size_t max_suggestions,
