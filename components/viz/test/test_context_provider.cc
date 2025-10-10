@@ -24,8 +24,6 @@
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/skia_limits.h"
-#include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 namespace viz {
@@ -321,31 +319,6 @@ gpu::ContextSupport* TestContextProvider::ContextSupport() {
   return support();
 }
 
-class GrDirectContext* TestContextProvider::GrContext() {
-  DCHECK(bound_);
-  CheckValidThreadOrLockAcquired();
-
-  if (!context_gl_)
-    return nullptr;
-
-  if (gr_context_)
-    return gr_context_->get();
-
-  size_t max_resource_cache_bytes;
-  size_t max_glyph_cache_texture_bytes;
-  gpu::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
-                                    &max_glyph_cache_texture_bytes);
-  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
-      context_gl_.get(), support_.get(), context_gl_->test_capabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes, true);
-
-  // If GlContext is already lost, also abandon the new GrContext.
-  if (ContextGL()->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
-    gr_context_->get()->abandonContext();
-
-  return gr_context_->get();
-}
-
 gpu::TestSharedImageInterface* TestContextProvider::SharedImageInterface() {
   return shared_image_interface_.get();
 }
@@ -365,8 +338,6 @@ void TestContextProvider::OnLostContext() {
   CheckValidThreadOrLockAcquired();
   for (auto& observer : observers_)
     observer.OnContextLost();
-  if (gr_context_)
-    gr_context_->get()->abandonContext();
 }
 
 TestGLES2Interface* TestContextProvider::TestContextGL() {

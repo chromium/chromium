@@ -26,10 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-namespace skia_bindings {
-class GrContextForGLES2Interface;
-}
-
 namespace viz {
 class TestGLES2Interface;
 class TestRasterInterface;
@@ -87,8 +83,6 @@ class TestContextProvider
   void RemoveObserver(ContextLostObserver* obs) override;
   unsigned int GetGrGLTextureFormat(SharedImageFormat format) const override;
 
-  class GrDirectContext* GrContext();
-
   TestGLES2Interface* TestContextGL();
   TestRasterInterface* GetTestRasterInterface();
 
@@ -123,7 +117,6 @@ class TestContextProvider
   // Used for GLES2 contexts.
   std::unique_ptr<TestGLES2Interface> context_gl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_gles_;
-  std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
   // Used for raster contexts.
   std::unique_ptr<TestRasterInterface> raster_context_;
