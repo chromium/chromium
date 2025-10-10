@@ -280,11 +280,9 @@ std::optional<ModelError> FakeDataTypeSyncBridge::ApplyIncrementalSyncChanges(
 
 void FakeDataTypeSyncBridge::ApplyMetadataChangeList(
     std::unique_ptr<MetadataChangeList> mcl) {
-  InMemoryMetadataChangeList* in_memory_mcl =
-      static_cast<InMemoryMetadataChangeList*>(mcl.get());
   // Use TestMetadataChangeList to commit all metadata changes to the store.
   TestMetadataChangeList db_mcl(db_.get());
-  in_memory_mcl->TransferChangesTo(&db_mcl);
+  mcl->TransferChangesTo(&db_mcl);
 }
 
 std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetDataForCommit(

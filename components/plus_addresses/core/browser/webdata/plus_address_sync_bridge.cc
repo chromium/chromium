@@ -221,8 +221,7 @@ PlusAddressSyncBridge::TransferMetadataChanges(
       GetPlusAddressTable(), syncer::PLUS_ADDRESS,
       base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
-  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-      ->TransferChangesTo(&sync_metadata_store_change_list);
+  metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
   return change_processor()->GetError();
 }
 

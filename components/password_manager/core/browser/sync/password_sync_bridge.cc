@@ -730,10 +730,8 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
         password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
         base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                             change_processor()->GetWeakPtr()));
-    // |metadata_change_list| must have been created via
-    // CreateMetadataChangeList() so downcasting is safe.
-    static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-        ->TransferChangesTo(&sync_metadata_store_change_list);
+
+    metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
     std::optional<syncer::ModelError> error = change_processor()->GetError();
     if (error) {
       metrics_util::LogPasswordSyncState(
@@ -912,10 +910,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
         password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
         base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                             change_processor()->GetWeakPtr()));
-    // |metadata_change_list| must have been created via
-    // CreateMetadataChangeList() so downcasting is safe.
-    static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-        ->TransferChangesTo(&sync_metadata_store_change_list);
+    metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
     std::optional<syncer::ModelError> error = change_processor()->GetError();
     if (error) {
       metrics_util::LogApplySyncChangesState(

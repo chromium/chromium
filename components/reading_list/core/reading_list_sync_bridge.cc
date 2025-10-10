@@ -196,8 +196,8 @@ std::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
                             metadata_change_list.get());
   }
 
-  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-      ->TransferChangesTo(model_batch_updates->GetSyncMetadataChangeList());
+  metadata_change_list->TransferChangesTo(
+      model_batch_updates->GetSyncMetadataChangeList());
 
   return {};
 }
@@ -250,8 +250,8 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
-      ->TransferChangesTo(model_batch_updates->GetSyncMetadataChangeList());
+  metadata_change_list->TransferChangesTo(
+      model_batch_updates->GetSyncMetadataChangeList());
 
   return {};
 }
