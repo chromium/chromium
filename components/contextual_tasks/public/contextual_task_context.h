@@ -20,6 +20,7 @@ namespace contextual_tasks {
 enum class ContextualTaskContextSource {
   kFallbackTitle,
   kFaviconService,
+  kHistoryService,
 };
 
 class ContextualTask;
@@ -38,6 +39,12 @@ struct UrlAttachmentDecoratorData {
     GURL icon_url;
   };
   FaviconData favicon_data;
+
+  // Filled in by ContextualTaskContextSource::kHistoryService.
+  struct HistoryData {
+    std::u16string title;
+  };
+  HistoryData history_data;
 };
 
 // Represents a URL that is attached to a `ContextualTask`. This struct contains

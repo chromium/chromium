@@ -12,13 +12,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/contextual_tasks/public/context_decorator.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/history/core/browser/history_service.h"
 #include "fallback_title_context_decorator.h"
 #include "favicon_context_decorator.h"
+#include "history_context_decorator.h"
 
 namespace contextual_tasks {
 
 std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
-    favicon::FaviconService* favicon_service) {
+    favicon::FaviconService* favicon_service,
+    history::HistoryService* history_service) {
   std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
       decorators;
   decorators.emplace(ContextualTaskContextSource::kFallbackTitle,
@@ -26,6 +29,9 @@ std::unique_ptr<CompositeContextDecorator> CreateCompositeContextDecorator(
   decorators.emplace(
       ContextualTaskContextSource::kFaviconService,
       std::make_unique<FaviconContextDecorator>(favicon_service));
+  decorators.emplace(
+      ContextualTaskContextSource::kHistoryService,
+      std::make_unique<HistoryContextDecorator>(history_service));
   return std::make_unique<CompositeContextDecorator>(std::move(decorators));
 }
 
