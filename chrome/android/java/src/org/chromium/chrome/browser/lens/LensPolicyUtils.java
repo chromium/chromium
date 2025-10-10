@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.lens;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.policy.PolicyCache;
 
 /** Provides Lens policy utility functions. */
@@ -15,10 +17,21 @@ public class LensPolicyUtils {
     private static final String LENS_CAMERA_ASSISTED_SEARCH_ENABLED_POLICY_NAME =
             "policy.lens_camera_assisted_search_enabled";
 
+    private static @Nullable Boolean sLensCameraAssistedSearchEnabledForTesting;
+
+    public static void setLensCameraAssistedSearchEnabledForTesting(boolean enabled) {
+        sLensCameraAssistedSearchEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sLensCameraAssistedSearchEnabledForTesting = null);
+    }
+
     /**
      * @return Whether the Lens camera assisted search should be enabled for the enterprise user.
      */
     public static boolean getLensCameraAssistedSearchEnabledForEnterprise() {
+        if (sLensCameraAssistedSearchEnabledForTesting != null) {
+            return sLensCameraAssistedSearchEnabledForTesting;
+        }
+
         // Read from policy cache before the native library is ready.
         if (PolicyCache.get().isReadable()) {
             return Boolean.TRUE.equals(
