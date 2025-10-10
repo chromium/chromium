@@ -49,6 +49,8 @@ rust_static_library("test_rust_logger_consumer") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "../memory/mock_memory_pressure_listener.cc",
+    "../memory/mock_memory_pressure_listener.h",
     "../memory_coordinator/mock_memory_consumer.cc",
     "../memory_coordinator/mock_memory_consumer.h",
     "../memory_coordinator/test_memory_consumer_registry.cc",
