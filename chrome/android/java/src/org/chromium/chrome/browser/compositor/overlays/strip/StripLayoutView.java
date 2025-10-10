@@ -372,8 +372,8 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /** Marks that the view will be closed due to an incoming TabModel update. */
-    public void setWillClose() {
-        mWillClose = true;
+    public void setWillClose(boolean willClose) {
+        mWillClose = willClose;
     }
 
     /** Returns whether or not the view will be closed due to an incoming TabModel update. */
