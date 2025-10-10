@@ -213,9 +213,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // by `FindIndexedDBFiles`.
   std::map<blink::StorageKey, base::FilePath> FindLegacyIndexedDBFiles() const;
 
-  // Reads IDB files from disk, looking in the directories where
-  // third-party-context IDB files are stored.
-  std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles() const;
+  // Finds buckets in the profile that have an IndexedDB directory, e.g.
+  // will return 6 if <profile>/WebStorage/6/IndexedDB exists.
+  std::vector<storage::BucketId> FindBucketsWithIndexedDBDirs() const;
 
   void DidForceCloseForDeleteBucketData(
       const storage::BucketLocator& bucket_locator,

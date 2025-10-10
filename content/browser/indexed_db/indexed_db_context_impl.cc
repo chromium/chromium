@@ -927,9 +927,8 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
   }
   std::map<StorageKey, base::FilePath> storage_key_to_file_path =
       FindLegacyIndexedDBFiles();
-  std::map<storage::BucketId, base::FilePath> bucket_id_to_file_path =
-      FindIndexedDBFiles();
-  if (storage_key_to_file_path.empty() && bucket_id_to_file_path.empty()) {
+  std::vector<storage::BucketId> bucket_ids = FindBucketsWithIndexedDBDirs();
+  if (storage_key_to_file_path.empty() && bucket_ids.empty()) {
     did_initialize_from_files_ = true;
     std::move(callback).Run();
     return;
@@ -944,7 +943,7 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
 
   using Barrier = base::RepeatingCallback<void(std::optional<BucketLocator>)>;
   Barrier barrier = base::BarrierCallback<std::optional<BucketLocator>>(
-      storage_key_to_file_path.size() + bucket_id_to_file_path.size(),
+      storage_key_to_file_path.size() + bucket_ids.size(),
       base::BindOnce(
           [](base::WeakPtr<IndexedDBContextImpl> context,
              const std::vector<std::optional<BucketLocator>>& bucket_locators) {
@@ -982,7 +981,7 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
         idb_task_runner_, on_lookup_done);
   }
 
-  for (const auto& [bucket_id, file_path] : bucket_id_to_file_path) {
+  for (const auto& bucket_id : bucket_ids) {
     quota_manager_proxy_->GetBucketById(bucket_id, idb_task_runner_,
                                         on_lookup_done);
   }
@@ -1006,14 +1005,20 @@ IndexedDBContextImpl::FindLegacyIndexedDBFiles() const {
                                        base::FileEnumerator::DIRECTORIES);
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
-    if (file_path.Extension() != indexed_db::kLevelDBExtension ||
-        file_path.RemoveExtension().Extension() !=
+    std::string origin_id;
+    if (file_path.Extension() == indexed_db::kLevelDBExtension &&
+        file_path.RemoveExtension().Extension() ==
             indexed_db::kIndexedDBExtension) {
-      continue;
+      // LevelDB store directory.
+      origin_id = file_path.BaseName()
+                      .RemoveExtension()
+                      .RemoveExtension()
+                      .MaybeAsASCII();
+    } else {
+      // SQLite store directory.
+      origin_id = file_path.BaseName().MaybeAsASCII();
     }
 
-    std::string origin_id =
-        file_path.BaseName().RemoveExtension().RemoveExtension().MaybeAsASCII();
     url::Origin origin = storage::GetOriginFromIdentifier(origin_id);
     if (origin.opaque()) {
       continue;
@@ -1023,13 +1028,13 @@ IndexedDBContextImpl::FindLegacyIndexedDBFiles() const {
   return storage_key_to_file_path;
 }
 
-std::map<storage::BucketId, base::FilePath>
-IndexedDBContextImpl::FindIndexedDBFiles() const {
+std::vector<storage::BucketId>
+IndexedDBContextImpl::FindBucketsWithIndexedDBDirs() const {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  std::map<storage::BucketId, base::FilePath> bucket_id_to_file_path;
+  std::vector<storage::BucketId> bucket_ids;
   if (base_data_path_.empty())
-    return bucket_id_to_file_path;
+    return bucket_ids;
 
   base::FilePath third_party_path =
       base_data_path_.Append(storage::kWebStorageDirectory);
@@ -1037,21 +1042,17 @@ IndexedDBContextImpl::FindIndexedDBFiles() const {
                                        base::FileEnumerator::DIRECTORIES);
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
-    if (file_path.BaseName().Extension() == indexed_db::kLevelDBExtension &&
-        file_path.BaseName().RemoveExtension().value() ==
-            indexed_db::kIndexedDBFile &&
-        file_path.DirName().BaseName().value() ==
-            storage::kIndexedDbDirectory) {
-      int64_t raw_bucket_id = 0;
-      bool success = base::StringToInt64(
-          file_path.DirName().DirName().BaseName().value(), &raw_bucket_id);
-      if (success && raw_bucket_id > 0) {
-        bucket_id_to_file_path[storage::BucketId::FromUnsafeValue(
-            raw_bucket_id)] = file_path;
-      }
+    if (file_path.BaseName().value() != storage::kIndexedDbDirectory) {
+      continue;
+    }
+    int64_t raw_bucket_id = 0;
+    bool success = base::StringToInt64(file_path.DirName().BaseName().value(),
+                                       &raw_bucket_id);
+    if (success && raw_bucket_id > 0) {
+      bucket_ids.push_back(storage::BucketId::FromUnsafeValue(raw_bucket_id));
     }
   }
-  return bucket_id_to_file_path;
+  return bucket_ids;
 }
 
 void IndexedDBContextImpl::GetInMemorySize(

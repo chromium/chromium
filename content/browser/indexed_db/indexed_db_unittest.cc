@@ -1363,11 +1363,6 @@ TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
 }
 
 TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // TODO(crbug.com/450044205): update test for SQLite.
-    GTEST_SKIP();
-  }
-
   base::FilePath normal_path_first_party;
   base::FilePath session_only_path_first_party;
   base::FilePath session_only_subdomain_path_first_party;
