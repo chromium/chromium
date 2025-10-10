@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -556,13 +557,29 @@ class InteractiveGlicTestT : public T {
         glic_service()->window_controller());
   }
 
+  GlicInstanceCoordinatorImpl& GetInstanceCoordinator() {
+    CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    return static_cast<GlicInstanceCoordinatorImpl&>(
+        glic_service()->window_controller());
+  }
+
   GlicInstance* GetGlicInstance() {
+    if (tracked_instance_id_) {
+      for (GlicInstance* instance : window_controller().GetInstances()) {
+        if (instance->id() == *tracked_instance_id_) {
+          return instance;
+        }
+      }
+      return nullptr;
+    }
+
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       // TODO(harringtond): Currently, we only use the instance tied to the
       // first tab. This allows us to test what happens when the instance is not
       // tied to the active tab, but does seem arbitrary. We should make it
       // possible to switch which instance is used by default in this class, and
       // make this behavior more obvious somehow.
+
       return glic_service()->GetInstanceForTab(
           browser()->tab_strip_model()->GetTabAtIndex(0));
     }
@@ -571,8 +588,7 @@ class InteractiveGlicTestT : public T {
 
   GlicInstanceImpl* GetGlicInstanceImpl() {
     CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
-    return static_cast<GlicInstanceImpl*>(glic_service()->GetInstanceForTab(
-        browser()->tab_strip_model()->GetTabAtIndex(0)));
+    return static_cast<GlicInstanceImpl*>(GetGlicInstance());
   }
 
   GlicUiEmbedder* GetGlicUiEmbedder() {
@@ -682,6 +698,10 @@ class InteractiveGlicTestT : public T {
     }
   }
 
+  // Have all glic instance operations linked to a glic instance with this ID,
+  // instead of always operating on the instance in tab 0.
+  void TrackGlicInstanceById(InstanceId id) { tracked_instance_id_ = id; }
+
  private:
   // Because of limitations in the template system, calls to base class methods
   // that are guaranteed by the `requires` clause must still be scoped. These
@@ -689,6 +709,7 @@ class InteractiveGlicTestT : public T {
   using Api = InteractiveBrowserTestApi;
   using Test = InProcessBrowserTest;
 
+  std::optional<InstanceId> tracked_instance_id_;
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;

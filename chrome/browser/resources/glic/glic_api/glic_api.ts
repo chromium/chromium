@@ -436,6 +436,8 @@ export declare interface GlicBrowserHost {
    *
    * A browser window is considered active if it is the current active window,
    * or if the panel is active and it is the last browser window that had focus.
+   *
+   * @deprecated Does not work for MULTI_INSTANCE, and will go away.
    */
   activeBrowser?(): ObservableValue<ActiveBrowserInfo|undefined>;
 

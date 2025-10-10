@@ -897,11 +897,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  if (GetParam().multi_instance) {
+    // TODO(b/450624587):
+    GTEST_SKIP() << "multi-instance will close the floating panel too early. "
+                    "Re-enable this test after the bug is fixed.";
+  }
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-
+  TrackGlicInstanceById(GetGlicInstance()->id());
   ExecuteJsTest();
 
   // Open a new incognito tab so that Chrome doesn't exit, and close the first
@@ -913,7 +917,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testActiveBrowser) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  if (GetParam().multi_instance) {
+    GTEST_SKIP() << "activeBrowser() not supported with multi-instance.";
+  }
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));

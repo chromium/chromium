@@ -143,6 +143,17 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testIsBrowserOpen() {
     assertDefined(this.host.isBrowserOpen);
+    if (this.host.getHostCapabilities?.().has(HostCapability.MULTI_INSTANCE)) {
+      // This test closes the browser, so we need to detach the side panel to
+      // avoid closing glic.
+      assertDefined(this.host.detachPanel);
+      this.host.detachPanel();
+
+      assertDefined(this.host.getPanelState);
+      const panelStates = observeSequence(this.host.getPanelState());
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.DETACHED);
+    }
     const isBrowserOpen = observeSequence(this.host.isBrowserOpen());
     assertTrue(await isBrowserOpen.next());
     // Close the browser.

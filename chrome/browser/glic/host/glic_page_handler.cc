@@ -667,12 +667,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
                                 base::Unretained(this)));
 
-    active_browser_changed_subscription_ =
-        sharing_manager()
-            .focused_browser_manager()
-            .AddActiveBrowserChangedCallback(base::BindRepeating(
-                &GlicWebClientHandler::OnActiveBrowserChanged,
-                base::Unretained(this)));
+    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      active_browser_changed_subscription_ =
+          sharing_manager()
+              .focused_browser_manager()
+              .AddActiveBrowserChangedCallback(base::BindRepeating(
+                  &GlicWebClientHandler::OnActiveBrowserChanged,
+                  base::Unretained(this)));
+    }
 
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
