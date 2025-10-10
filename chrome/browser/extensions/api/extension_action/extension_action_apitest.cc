@@ -212,7 +212,6 @@ class ActionTestHelper {
   const raw_ptr<content::WebContents> web_contents_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Forces a flush of the StateStore, where action state is persisted.
 void FlushStateStore(Profile* profile) {
   base::RunLoop run_loop;
@@ -220,7 +219,6 @@ void FlushStateStore(Profile* profile) {
       run_loop.QuitWhenIdleClosure());
   run_loop.Run();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -691,11 +689,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
 
 using ActionAndBrowserActionAPITest = MultiActionAPITest;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests whether action values persist across sessions.
 // Note: Since pageActions are only applicable on a specific tab, this test
 // doesn't apply to them.
-// TODO(crbug.com/40200835): Enable on Android when PRE_ steps are supported.
 IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, PRE_ValuesArePersisted) {
   const char* dir_name = nullptr;
   switch (GetParam()) {
@@ -734,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, PRE_ValuesArePersisted) {
 
 IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
   const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension) << message_;
   EXPECT_EQ("Action persistence check", extension->name());
 
   // The previous action states are read from the state store on start-up.
@@ -762,6 +758,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
   EXPECT_EQ("default title", action->GetTitle(ExtensionAction::kDefaultTabId));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
 class MultiActionAPICanvasTest : public MultiActionAPITest {
