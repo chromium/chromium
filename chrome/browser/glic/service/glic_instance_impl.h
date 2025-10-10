@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_IMPL_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_IMPL_H_
 
-#include <variant>
-
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +17,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/tabs/public/tab_interface.h"
@@ -48,11 +47,6 @@ class GlicInstanceImpl : public GlicInstance,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate {
  public:
-  enum class EmbedderType {
-    kSidePanel,
-    kFloating,
-  };
-
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
@@ -61,7 +55,8 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
                                              bool is_showing) = 0;
     virtual void SwitchConversation(
-        tabs::TabInterface* tab,
+        GlicInstanceImpl& source_instance,
+        const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
@@ -89,11 +84,11 @@ class GlicInstanceImpl : public GlicInstance,
   gfx::Size GetPanelSize() override;
 
   // These methods should only be called by the GlicInstanceCoordinator.
-  void Show(EmbedderType type, tabs::TabInterface* tab);
-  void Close(EmbedderType type, tabs::TabInterface* tab);
-  void Toggle(EmbedderType type, tabs::TabInterface* tab, bool prevent_close);
+  void Show(const ShowOptions& options);
+  void Close(EmbedderKey key);
+  void Toggle(const ShowOptions& options, bool prevent_close);
 
-  void UnbindTab(tabs::TabInterface* tab);
+  void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
 
   // GlicInstance:
@@ -143,7 +138,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicUiEmbedder::Delegate:
   void SwitchConversation(
-      tabs::TabInterface* tab,
+      const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void WillCloseFor(tabs::TabInterface* tab) override;
@@ -164,13 +159,6 @@ class GlicInstanceImpl : public GlicInstance,
   void WebUiStateChanged(mojom::WebUiState state) override;
 
  private:
-  // A tag type to represent the floating embedder key.
-  struct FloatingEmbedderKey {
-    auto operator<=>(const FloatingEmbedderKey&) const = default;
-  };
-
-  using EmbedderKey = std::variant<FloatingEmbedderKey, tabs::TabInterface*>;
-
   struct EmbedderEntry {
     EmbedderEntry();
     ~EmbedderEntry();
@@ -190,13 +178,13 @@ class GlicInstanceImpl : public GlicInstance,
 
   void NotifyStateChange();
 
-  EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
+  GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
   GlicUiEmbedder* CreateActiveEmbedderForSidePanel(tabs::TabInterface* tab);
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(
-      BrowserWindowInterface* browser);
+      const gfx::Rect& initial_bounds);
   void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);

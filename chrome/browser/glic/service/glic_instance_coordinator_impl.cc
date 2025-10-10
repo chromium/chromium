@@ -135,7 +135,7 @@ void GlicInstanceCoordinatorImpl::FindInstanceFromGlicContentsAndBindToTab(
   for (auto const& [instance_id, instance] : instances_) {
     if (instance->host().webui_contents() == source_glic_web_contents) {
       // Show the instance in the new tab
-      instance->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab_to_bind);
+      instance->Show(SidePanelShowOptions(*tab_to_bind));
     }
   }
 }
@@ -385,7 +385,7 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
   auto instance_iter = instances_.find(*floating_instance_key_);
   CHECK(instance_iter != instances_.end());
   GlicInstanceImpl* instance = instance_iter->second.get();
-  instance->Toggle(GlicInstanceImpl::EmbedderType::kFloating, nullptr,
+  instance->Toggle(FloatingShowOptions::From(/*anchor_browser=*/nullptr),
                    prevent_close);
 }
 
@@ -397,8 +397,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
   auto* instance = GetOrCreateGlicInstanceImplForTab(tab);
-  instance->Toggle(GlicInstanceImpl::EmbedderType::kSidePanel, tab,
-                   prevent_close);
+  instance->Toggle(SidePanelShowOptions(*tab), prevent_close);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
@@ -415,11 +414,10 @@ bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
 }
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(
-    tabs::TabInterface* tab,
+    GlicInstanceImpl& source_instance,
+    const ShowOptions& options,
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  GlicInstanceImpl* current_instance = GetInstanceImplForTab(tab);
-
   GlicInstanceImpl* target_instance = nullptr;
   if (!info) {
     target_instance = CreateGlicInstance();
@@ -435,19 +433,18 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       // No instance exists for this conversation. If the current instance
       // already has a conversation, create a new instance. Otherwise, reuse
       // the current instance.
-      target_instance = current_instance->conversation_id()
-                            ? CreateGlicInstance()
-                            : current_instance;
+      target_instance = source_instance.conversation_id() ? CreateGlicInstance()
+                                                          : &source_instance;
       target_instance->RegisterConversation(std::move(info), base::DoNothing());
     }
   }
 
   CHECK(target_instance);
-  if (current_instance && current_instance != target_instance) {
-    current_instance->UnbindTab(tab);
+  if (&source_instance != target_instance) {
+    source_instance.UnbindEmbedder(GetEmbedderKey(options));
   }
 
-  target_instance->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
+  target_instance->Show(options);
 
   std::move(callback).Run(std::nullopt);
 }

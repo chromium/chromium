@@ -42,6 +42,13 @@
 
 namespace glic {
 
+namespace {
+EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
+  CHECK(tab);
+  return EmbedderKey(tab);
+}
+}  // namespace
+
 // Web Contents Observer for the tab bound with its respective glic
 // embedder.
 class GlicTabContentsObserver : public content::WebContentsObserver {
@@ -80,7 +87,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 
     // Only bind if the previous instance was active.
     if (glic_embedder && glic_embedder->IsShowing()) {
-      instance_->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab_to_bind);
+      instance_->Show(SidePanelShowOptions(*tab_to_bind));
     }
   }
 
@@ -146,13 +153,15 @@ gfx::Size GlicInstanceImpl::GetPanelSize() {
   return gfx::Size();
 }
 
-void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
-  if (type == EmbedderType::kSidePanel && tab && !tab->IsActivated()) {
-    ShowInactiveSidePanelEmbedderFor(tab);
+void GlicInstanceImpl::Show(const ShowOptions& options) {
+  if (const auto* side_panel_options =
+          std::get_if<SidePanelShowOptions>(&options);
+      side_panel_options && !side_panel_options->tab->IsActivated()) {
+    ShowInactiveSidePanelEmbedderFor(&side_panel_options->tab.get());
     return;
   }
 
-  EmbedderKey new_key = GetEmbedderKey(type, tab);
+  EmbedderKey new_key = GetEmbedderKey(options);
 
   GlicUiEmbedder* embedder_to_show = nullptr;
 
@@ -161,12 +170,7 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
     embedder_to_show = GetActiveEmbedder();
   } else {
     DeactivateCurrentEmbedder();
-    if (type == EmbedderType::kSidePanel) {
-      embedder_to_show = CreateActiveEmbedderForSidePanel(tab);
-    } else {
-      embedder_to_show =
-          CreateActiveEmbedderForFloaty(tab->GetBrowserWindowInterface());
-    }
+    embedder_to_show = CreateActiveEmbedder(options);
     CHECK(embedder_to_show);
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
     SetActiveEmbedderAndNotifyStateChange(new_key);
@@ -177,12 +181,11 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
 }
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
-  Show(EmbedderType::kFloating, tab);
-  Close(EmbedderType::kSidePanel, tab);
+  Show(FloatingShowOptions::From(tab->GetBrowserWindowInterface()));
+  Close(CreateSidePanelEmbedderKey(tab));
 }
 
-void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
-  EmbedderKey key = GetEmbedderKey(type, tab);
+void GlicInstanceImpl::Close(EmbedderKey key) {
   auto* embedder = GetEmbedderForKey(key);
   if (embedder) {
     embedder->Close();
@@ -190,16 +193,14 @@ void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
-void GlicInstanceImpl::Toggle(EmbedderType type,
-                              tabs::TabInterface* tab,
-                              bool prevent_close) {
-  EmbedderKey key = GetEmbedderKey(type, tab);
+void GlicInstanceImpl::Toggle(const ShowOptions& options, bool prevent_close) {
+  EmbedderKey key = GetEmbedderKey(options);
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
     if (!prevent_close) {
-      Close(type, tab);
+      Close(key);
     }
   } else {
-    Show(type, tab);
+    Show(options);
   }
 }
 
@@ -324,9 +325,9 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
   state_observers_.RemoveObserver(observer);
 }
 
-void GlicInstanceImpl::UnbindTab(tabs::TabInterface* tab) {
-  MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey(tab));
-  embedders_.erase(EmbedderKey(tab));
+void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
+  MaybeDeactivateEmbedderAndCloseHostUi(key);
+  embedders_.erase(key);
 }
 
 Host& GlicInstanceImpl::host() {
@@ -417,18 +418,8 @@ void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
   }
   auto* embedder = GetEmbedderForTab(active_tab);
   if (embedder && embedder->IsShowing()) {
-    Show(EmbedderType::kSidePanel, active_tab);
+    Show(SidePanelShowOptions{*active_tab});
   }
-}
-
-GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(
-    EmbedderType type,
-    tabs::TabInterface* tab) {
-  if (type == EmbedderType::kSidePanel) {
-    CHECK(tab);
-    return tab;
-  }
-  return FloatingEmbedderKey();
 }
 
 GlicUiEmbedder* GlicInstanceImpl::GetActiveEmbedder() {
@@ -457,6 +448,19 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   ClearActiveEmbedderAndNotifyStateChange();
 }
 
+GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
+    const ShowOptions& options) {
+  return std::visit(
+      absl::Overload{[&](const SidePanelShowOptions& opts) {
+                       return CreateActiveEmbedderForSidePanel(&opts.tab.get());
+                     },
+                     [&](const FloatingShowOptions& opts) {
+                       return CreateActiveEmbedderForFloaty(
+                           opts.initial_bounds);
+                     }},
+      options);
+}
+
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
     tabs::TabInterface* tab) {
   auto& entry = BindTab(tab);
@@ -466,11 +470,11 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
-    BrowserWindowInterface* browser) {
-  GlicInstanceImpl::EmbedderKey key = FloatingEmbedderKey();
+    const gfx::Rect& initial_bounds) {
+  EmbedderKey key = FloatingEmbedderKey();
   auto [entry_iter, _] = embedders_.try_emplace(key);
   entry_iter->second.embedder =
-      std::make_unique<GlicFloatingUi>(profile_, browser, *this);
+      std::make_unique<GlicFloatingUi>(profile_, initial_bounds, *this);
   return entry_iter->second.embedder.get();
 }
 
@@ -522,7 +526,7 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
                                            const InstanceId& instance_id) {
-  UnbindTab(tab);
+  UnbindEmbedder(tab);
   if (embedders_.empty() && coordinator_delegate_) {
     // This call will delete `this`.
     coordinator_delegate_->RemoveInstance(this);
@@ -536,16 +540,16 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
   auto* embedder = GetEmbedderForTab(tab);
   if (embedder && embedder->IsShowing()) {
     // Ensure that the side panel in this tab becomes the active embedder.
-    Show(EmbedderType::kSidePanel, tab);
+    Show(SidePanelShowOptions(*tab));
   }
 }
 
 void GlicInstanceImpl::SwitchConversation(
-    tabs::TabInterface* tab,
+    const ShowOptions& options,
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   if (coordinator_delegate_) {
-    coordinator_delegate_->SwitchConversation(tab, std::move(info),
+    coordinator_delegate_->SwitchConversation(*this, options, std::move(info),
                                               std::move(callback));
   } else {
     std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
@@ -572,7 +576,7 @@ void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
 
 GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
     tabs::TabInterface* tab) {
-  EmbedderKey key = GetEmbedderKey(EmbedderType::kSidePanel, tab);
+  EmbedderKey key = CreateSidePanelEmbedderKey(tab);
   auto [it, inserted] = embedders_.try_emplace(key);
 
   if (!inserted) {
@@ -598,13 +602,12 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
 }
 
 void GlicInstanceImpl::WillCloseFor(tabs::TabInterface* tab) {
-  auto key = GetEmbedderKey(
-      tab ? EmbedderType::kSidePanel : EmbedderType::kFloating, tab);
+  auto key = tab ? CreateSidePanelEmbedderKey(tab) : FloatingEmbedderKey{};
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
 void GlicInstanceImpl::Attach(tabs::TabInterface* tab) {
-  Show(EmbedderType::kSidePanel, tab);
+  Show(SidePanelShowOptions(*tab));
 }
 
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
@@ -640,7 +643,7 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
   for (auto const& [key, entry] : embedders_) {
     if (auto* tab = std::get_if<tabs::TabInterface*>(&key)) {
       if (entry.embedder->IsShowing()) {
-        Show(EmbedderType::kSidePanel, *tab);
+        Show(SidePanelShowOptions(**tab));
         return;
       }
     }

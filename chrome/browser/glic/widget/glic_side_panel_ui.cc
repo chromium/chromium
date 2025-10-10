@@ -129,7 +129,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
 void GlicSidePanelUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  delegate_->SwitchConversation(tab_.get(), std::move(info),
+  delegate_->SwitchConversation(SidePanelShowOptions(*tab_), std::move(info),
                                 std::move(callback));
 }
 

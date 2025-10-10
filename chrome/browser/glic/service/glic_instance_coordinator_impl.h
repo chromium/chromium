@@ -62,7 +62,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void OnInstanceVisibilityChanged(GlicInstance* instance,
                                    bool is_showing) override;
   void SwitchConversation(
-      tabs::TabInterface* tab,
+      GlicInstanceImpl& source_instance,
+      const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 

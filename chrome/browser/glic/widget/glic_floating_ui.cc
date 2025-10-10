@@ -26,15 +26,6 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
 // end static
 
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
-                               BrowserWindowInterface* browser,
-                               GlicUiEmbedder::Delegate& delegate)
-    : GlicFloatingUi(
-          profile,
-          GlicWidget::GetInitialBounds(browser,
-                                       GlicFloatingUi::GetDefaultSize()),
-          delegate) {}
-
-GlicFloatingUi::GlicFloatingUi(Profile* profile,
                                gfx::Rect initial_bounds,
                                GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), delegate_(delegate) {
@@ -166,7 +157,9 @@ views::View* GlicFloatingUi::GetView() {
 void GlicFloatingUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  NOTIMPLEMENTED();
+  delegate_->SwitchConversation(
+      FloatingShowOptions{GetGlicWidget()->GetWindowBoundsInScreen()},
+      std::move(info), std::move(callback));
 }
 
 }  // namespace glic

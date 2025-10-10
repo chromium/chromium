@@ -173,6 +173,8 @@ source_set("impl") {
     "service/glic_instance_impl.cc",
     "service/glic_instance_impl.h",
     "service/glic_ui_embedder.h",
+    "service/glic_ui_types.cc",
+    "service/glic_ui_types.h",
     "widget/application_hotkey_delegate.cc",
     "widget/application_hotkey_delegate.h",
     "widget/browser_conditions.cc",

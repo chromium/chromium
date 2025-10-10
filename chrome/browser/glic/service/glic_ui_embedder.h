@@ -9,6 +9,7 @@
 
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "ui/views/view.h"
 
 namespace tabs {
@@ -23,7 +24,7 @@ class GlicUiEmbedder {
    public:
     virtual ~Delegate() = default;
     virtual void SwitchConversation(
-        tabs::TabInterface* tab,
+        const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
     virtual void WillCloseFor(tabs::TabInterface* tab) = 0;

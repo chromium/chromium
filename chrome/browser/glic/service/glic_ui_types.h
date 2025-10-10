@@ -1,0 +1,57 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_TYPES_H_
+#define CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_TYPES_H_
+
+#include <variant>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace glic {
+
+// Key for the floating embedder. This is a struct to make it a distinct type
+// for the variant, even though it's empty.
+struct FloatingEmbedderKey {
+  // Add a comparison operator to allow it to be a key in std::map/flat_map.
+  auto operator<=>(const FloatingEmbedderKey&) const = default;
+};
+
+// A key representing a unique embedder.
+using EmbedderKey = std::variant<tabs::TabInterface*, FloatingEmbedderKey>;
+
+struct SidePanelShowOptions {
+  explicit SidePanelShowOptions(tabs::TabInterface& tab_in) : tab(tab_in) {}
+  base::raw_ref<tabs::TabInterface> tab;
+};
+
+struct FloatingShowOptions {
+  // Uses `anchor_browser` to get initial location. If `anchor_browser` is
+  // nullptr, it will use default location values.
+  static FloatingShowOptions From(BrowserWindowInterface* anchor_browser);
+
+  gfx::Rect initial_bounds;
+};
+
+using ShowOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
+
+inline EmbedderKey GetEmbedderKey(const ShowOptions& options) {
+  return std::visit(absl::Overload{[](const SidePanelShowOptions& opts) {
+                                     return EmbedderKey(&opts.tab.get());
+                                   },
+                                   [](const FloatingShowOptions& opts) {
+                                     return EmbedderKey(FloatingEmbedderKey());
+                                   }},
+                    options);
+}
+
+}  // namespace glic
+
+#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_TYPES_H_
