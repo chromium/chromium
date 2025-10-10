@@ -4504,9 +4504,6 @@ extern const char kRunOnOsLoginDescription[];
 extern const char kPreventCloseName[];
 extern const char kPreventCloseDescription[];
 
-extern const char kFileSystemAccessGetCloudIdentifiersName[];
-extern const char kFileSystemAccessGetCloudIdentifiersDescription[];
-
 extern const char kCrOSDspBasedAecAllowedName[];
 extern const char kCrOSDspBasedAecAllowedDescription[];
 

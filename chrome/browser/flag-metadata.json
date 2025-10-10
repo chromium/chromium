@@ -3178,11 +3178,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "enable-cloud-identifiers",
-    "owners": ["hendrich@chromium.org", "asully@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium

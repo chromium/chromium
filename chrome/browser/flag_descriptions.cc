@@ -7795,14 +7795,6 @@ const char kPreventCloseName[] = "Prevent close";
 const char kPreventCloseDescription[] =
     "When enabled, allow-listed PWAs cannot be closed manually.";
 
-const char kFileSystemAccessGetCloudIdentifiersName[] =
-    "Cloud identifiers for FileSystemAccess API";
-const char kFileSystemAccessGetCloudIdentifiersDescription[] =
-    "Enables the FileSystemHandle.getCloudIdentifiers() method. See"
-    "https://github.com/WICG/file-system-access/blob/main/proposals/"
-    "CloudIdentifier.md"
-    "for more information.";
-
 const char kCrOSDspBasedAecAllowedName[] =
     "Allow CRAS to use a DSP-based AEC if available";
 const char kCrOSDspBasedAecAllowedDescription[] =
