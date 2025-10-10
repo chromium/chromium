@@ -27269,20 +27269,6 @@
             ]
         }
     ],
-    "WebRTC-ForceDtls13": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,_20250207"
-                }
-            ]
-        }
-    ],
     "WebRTC-IPv6NetworkResolutionFixes": [
         {
             "platforms": [
