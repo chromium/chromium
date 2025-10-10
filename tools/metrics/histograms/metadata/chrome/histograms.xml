@@ -42,6 +42,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.DWriteFontProxy.GetFontFailedHResult" enum="Hresult"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The HResult of failed GetFont calls in
+    DWriteFontProxyImpl::GetFontFileHandles.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.DWriteFontProxy.GetFontFamilyFailedHResult"
+    enum="Hresult" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The HResult of failed GetFontFamily calls in
+    DWriteFontProxyImpl::GetFontFileHandles.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.DWriteFontProxy.WinLastError" enum="WinGetLastError"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
