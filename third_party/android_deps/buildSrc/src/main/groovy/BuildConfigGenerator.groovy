@@ -98,8 +98,8 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
             com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
             com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
-            com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
-            com_google_guava_guava: '//third_party/android_deps:guava_android_java',
+            com_google_guava_failureaccess: '//third_party/android_deps:guava_java',
+            com_google_guava_guava: '//third_party/android_deps:guava_java',
             com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
             net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
             // Logic for google_play_services_package added below.
@@ -114,6 +114,7 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
             com_google_dagger_dagger: '!defined(dagger_java_target)',
             com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
+            com_google_guava_guava: '!defined(guava_android_target)',
             // Logic for google_play_services_package added below.
     ]
 
@@ -670,11 +671,8 @@ No modifications.
             if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
                 sb.append('  # Target is swapped out when internal code is enabled.\n')
             }
-            // Guava is special in that it needs to be available for non-android code to depend on.
-            if (dependency.id != 'com_google_guava_guava') {
-              sb.append("  # Please depend on $aliasedLib instead.\n")
-              sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
-            }
+            sb.append("  # Please depend on $aliasedLib instead.\n")
+            sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
         } else if (!dependency.visible) {
             sb.append('  # To remove visibility constraint, add this dependency to\n')
             sb.append("  # //${pathToBuildGradle}/build.gradle.\n")
@@ -828,9 +826,6 @@ No modifications.
                 sb.append('  preferred_dep = true\n')
                 break
             case 'com_google_guava_guava':
-                sb.append('\n')
-                sb.append('  # Only allow android targets to depend on this if there is no internal alias.\n')
-                sb.append('  supports_android = !defined(guava_android_java)\n')
                 sb.append('\n')
                 sb.append('  # Dep needed to fix:\n')
                 sb.append('  #   warning: unknown enum constant ReflectionSupport$Level.FULL\n')

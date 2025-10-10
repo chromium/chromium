@@ -68,7 +68,7 @@ java_annotation_processor("module_interface_processor") {
   deps = [
     ":module_interface_java",
     "//build/android:build_java",
-    "//third_party/android_deps:com_google_guava_guava_java",
+    "//third_party/android_deps:guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
   ]
 }

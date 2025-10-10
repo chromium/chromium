@@ -517,15 +517,13 @@ def _FixArchiveNames(android_deps_dir):
     # --local and for the autorolled / androidx packages.
     src_libs_dir = os.path.join(android_deps_dir, _LIBS_DIR)
     # Match .aar and .jar
-    logging.warn('AAAA %s', src_libs_dir)
-
     for src_path in FindInDirectory(src_libs_dir, '*.?ar'):
         dirname = os.path.dirname(src_path)
         yaml_path = os.path.join(dirname, 'cipd.yaml')
         data = pathlib.Path(yaml_path).read_text('utf-8')
         new_name = re.search(r'- file: (.*)', data).group(1)
         dst_path = os.path.join(dirname, new_name)
-        logging.warn('mv [%s -> %s]', src_path, dst_path)
+        logging.debug('mv [%s -> %s]', src_path, dst_path)
         shutil.move(src_path, dst_path)
 
 
