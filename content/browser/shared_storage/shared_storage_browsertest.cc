@@ -416,6 +416,19 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
         force_server_error_);
   }
 
+  bool NavigateToUrlMaybeWaitForRfhDeleted(Shell* shell, GURL url) {
+    auto* rfh = shell->web_contents()->GetPrimaryMainFrame();
+    bool result;
+    if (rfh->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+      RenderFrameDeletedObserver observer(rfh);
+      result = NavigateToURL(shell, url);
+      observer.WaitUntilDeleted();
+    } else {
+      result = NavigateToURL(shell, url);
+    }
+    return result;
+  }
+
  private:
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList custom_data_origin_feature_;
@@ -789,7 +802,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   content::FetchHistogramsFromChildProcesses();
 
   // Navigate to terminate the worklet.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   histogram_tester_.ExpectUniqueSample(
       kDestroyedStatusHistogram,
@@ -1302,7 +1316,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
   EXPECT_EQ(1u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
 
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1369,7 +1384,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, TwoWorklets) {
             base::UTF16ToUTF8(console_observer.messages()[2].message));
 
   // Navigate again to record histograms.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
   WaitForHistograms(
       {kDestroyedStatusHistogram, kTimingUsefulResourceHistogram});
 
@@ -1421,7 +1437,8 @@ IN_PROC_BROWSER_TEST_P(
                                EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   // Navigate to trigger keep-alive
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1489,7 +1506,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   // Navigate to trigger keep-alive
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1565,7 +1583,8 @@ IN_PROC_BROWSER_TEST_P(
     )"));
 
   // Navigate to trigger keep-alive
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1683,7 +1702,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(result.is_ok());
 
   // Navigate to trigger keep-alive
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1836,7 +1856,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
             base::UTF16ToUTF8(console_observer.messages()[0].message));
 
   // Navigate again to record histograms.
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      NavigateToUrlMaybeWaitForRfhDeleted(shell(), GURL(url::kAboutBlankURL)));
   WaitForHistograms({kDestroyedStatusHistogram, kTimingUsefulResourceHistogram,
                      kTimingKeepAliveDurationHistogram});
 
@@ -1892,11 +1913,8 @@ IN_PROC_BROWSER_TEST_P(
                                EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   // Navigate to trigger keep-alive
-  RenderFrameDeletedObserver rfh_deleted_observer(
-      shell()->web_contents()->GetPrimaryMainFrame());
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            https_server()->GetURL("c.test", kSimplePagePath)));
-  rfh_deleted_observer.WaitUntilDeleted();
+  EXPECT_TRUE(NavigateToUrlMaybeWaitForRfhDeleted(
+      shell(), https_server()->GetURL("c.test", kSimplePagePath)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
@@ -1934,11 +1952,8 @@ IN_PROC_BROWSER_TEST_P(
       EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
 
   // Navigate to trigger keep-alive
-  RenderFrameDeletedObserver rfh_deleted_observer(
-      shell()->web_contents()->GetPrimaryMainFrame());
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            https_server()->GetURL("c.test", kSimplePagePath)));
-  rfh_deleted_observer.WaitUntilDeleted();
+  EXPECT_TRUE(NavigateToUrlMaybeWaitForRfhDeleted(
+      shell(), https_server()->GetURL("c.test", kSimplePagePath)));
 
   EXPECT_EQ(0u, test_runtime_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(1u, test_runtime_manager().GetKeepAliveWorkletHostsCount());

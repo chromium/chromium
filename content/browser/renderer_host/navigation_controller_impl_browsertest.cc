@@ -7854,6 +7854,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(blank_url, root->child_at(0)->current_url());
   EXPECT_EQ(inner_url, root->child_at(0)->child_at(0)->current_url());
 
+  RenderFrameDeletedObserver blank_frame_deleted(
+      root->child_at(0)->current_frame_host());
+
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
@@ -7874,7 +7877,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL main_url_2(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url_2));
+  blank_frame_deleted.WaitUntilDeleted();
   ASSERT_EQ(0U, root->child_count());
+  ASSERT_EQ(0U, entry->root_node()->children.size());
   EXPECT_EQ(main_url_2, root->current_url());
 
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -7955,6 +7960,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(root->child_at(0)->current_url().IsAboutSrcdoc());
   EXPECT_EQ(inner_url, root->child_at(0)->child_at(0)->current_url());
 
+  RenderFrameDeletedObserver srcdoc_frame_deleted(
+      root->child_at(0)->current_frame_host());
+
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
@@ -7976,7 +7984,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL main_url_2(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url_2));
+  srcdoc_frame_deleted.WaitUntilDeleted();
   ASSERT_EQ(0U, root->child_count());
+  ASSERT_EQ(0U, entry->root_node()->children.size());
   EXPECT_EQ(main_url_2, root->current_url());
 
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -14675,7 +14685,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   scoped_refptr<FrameNavigationEntry> old_fne =
       nav_entry->root_node()->children[0]->frame_entry;
 
-  EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
+  {
+    RenderFrameDeletedObserver observer(
+        root->child_at(0)->current_frame_host());
+    EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
+    observer.WaitUntilDeleted();
+  }
   EXPECT_EQ(0U, root->child_count());
   EXPECT_EQ(0U, nav_entry->root_node()->children.size());
 
@@ -14691,7 +14706,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(old_fne->HasOneRef());  // Only the test keeps the old FNE alive.
   EXPECT_NE(old_fne.get(), new_fne.get());
 
-  EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
+  {
+    RenderFrameDeletedObserver observer(
+        root->child_at(0)->current_frame_host());
+    EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
+    observer.WaitUntilDeleted();
+  }
   EXPECT_EQ(0U, root->child_count());
 }
 

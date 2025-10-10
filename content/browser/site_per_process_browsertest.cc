@@ -1164,9 +1164,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CleanupCrossSiteIframe) {
 
   // Use Javascript in the parent to remove one of the frames and ensure that
   // the subframe goes away.
+  RenderFrameHost* frame_to_delete = root->child_at(0)->current_frame_host();
+  RenderFrameDeletedObserver deleted_observer(frame_to_delete);
   EXPECT_TRUE(ExecJs(shell(),
                      "document.body.removeChild("
                      "document.querySelectorAll('iframe')[0])"));
+  deleted_observer.WaitUntilDeleted();
   ASSERT_EQ(1U, root->child_count());
 
   // Load a new same-site page in the top-level frame and ensure the other
@@ -4816,9 +4819,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
 
   // Have the parent frame remove the child frame from its DOM. This should
   // result in the child RenderFrame being deleted in the remote process.
+  RenderFrameDeletedObserver deleted_observer(node->current_frame_host());
   EXPECT_TRUE(ExecJs(contents,
                      "document.body.removeChild("
                      "document.querySelectorAll('iframe')[0])"));
+  deleted_observer.WaitUntilDeleted();
   EXPECT_EQ(1U, contents->GetPrimaryFrameTree().root()->child_count());
 
   {

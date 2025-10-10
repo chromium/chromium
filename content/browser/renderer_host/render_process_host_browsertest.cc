@@ -2321,11 +2321,25 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ReuseSiteURLChanges) {
     EXPECT_NE(root->current_frame_host()->GetProcess(),
               site_instance->GetProcess());
 
+    RenderFrameDeletedObserver observer(
+        shell()->web_contents()->GetPrimaryMainFrame());
     // Reload. Getting a RenderProcessHost with the
     // kReusePendingOrCommittedSite policy should now return the process of
     // the main RFH, as it is now registered with the modified site URL.
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    // TODO(crbug.com/40192071): At this point, the main frame should swap to a
+    // new SiteInstance with the modified site URL, but it unexpectedly stays in
+    // the old SiteInstance and process. Without waiting for the RFH
+    // destruction, most of the subsequent expectations still accidentally pass,
+    // except for the one about no process reuse after the custom
+    // ContentBrowserClient is removed. For now, work around this by waiting for
+    // the old RFH to be deleted here, which avoids the main frame process being
+    // associated with the old site URL and later interfering with process reuse
+    // decisions. When this bug is fixed, this observer should be removed, and
+    // new expectations should be added here to ensure that we swap to a fresh
+    // SiteInstance and process after the reload
+    observer.WaitUntilDeleted();
     site_instance =
         SiteInstanceImpl::CreateReusableInstanceForTesting(context, kUrl);
     EXPECT_EQ(root->current_frame_host()->GetProcess(),

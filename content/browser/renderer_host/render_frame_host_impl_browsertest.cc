@@ -7424,8 +7424,15 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostWrapper child_frame_wrapper(child_frame);
   ASSERT_FALSE(child_frame_wrapper.IsDestroyed());
 
+  RenderFrameDeletedObserver child_frame_delete_observer(child_frame);
   // Remove the child frame from the DOM, which destroys the RenderFrameHost.
   EXPECT_TRUE(ExecJs(shell(), "document.querySelector('iframe').remove()"));
+
+  if (base::FeatureList::IsEnabled(
+          features::kDelayRfhDestructionsOnUnloadAndDetach)) {
+    EXPECT_FALSE(child_frame_delete_observer.deleted());
+    child_frame_delete_observer.WaitUntilDeleted();
+  }
 
   // The destructors of DestructorLifetimeDocumentService and
   // DestructorLifetimeDocumentUserData also perform googletest

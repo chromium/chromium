@@ -5793,9 +5793,9 @@ void RenderFrameHostImpl::Detach() {
   frame_tree()->FrameUnloading(GetFrameTreeNodeForUnload());
 
   // Some children with no unload handler may be eligible for immediate
-  // deletion. Cut the dead branches now. This is a performance optimization.
-  PendingDeletionCheckCompletedOnSubtree();  // Can delete |this|.
-  // |this| is potentially deleted. Do not add code after this.
+  // deletion. Cut the dead branches now.
+  PendingDeletionCheckCompletedOnSubtreeNowOrLater();  // Can delete |this|.
+  //  |this| is potentially deleted. Do not add code after this.
 }
 
 void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
@@ -6525,9 +6525,10 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     web_ui()->RenderFrameHostUnloading();
 
   StartPendingDeletionOnSubtree(PendingDeletionReason::kSwappedOut);
-  // Some children with no unload handler may be eligible for deletion. Cut the
-  // dead branches now. This is a performance optimization.
-  PendingDeletionCheckCompletedOnSubtree();
+
+  // Some children with no unload handler may be eligible for immediate
+  // deletion. Cut the dead branches now.
+  PendingDeletionCheckCompletedOnSubtreeNowOrLater();  // Can delete |this|.
   // |this| is potentially deleted. Do not add code after this.
 }
 
@@ -6626,8 +6627,8 @@ void RenderFrameHostImpl::DetachFromProxy() {
   frame_tree()->FrameUnloading(GetFrameTreeNodeForUnload());
 
   // Some children with no unload handler may be eligible for immediate
-  // deletion. Cut the dead branches now. This is a performance optimization.
-  PendingDeletionCheckCompletedOnSubtree();  // May delete |this|.
+  // deletion. Cut the dead branches now.
+  PendingDeletionCheckCompletedOnSubtree();  // Can delete |this|.
   // |this| is potentially deleted. Do not add code after this.
 }
 
@@ -12128,6 +12129,27 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
 
   if (self) {
     check_deletion_for_bug_1276535_ = false;
+  }
+
+  return;
+}
+
+void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtreeNowOrLater() {
+  if (base::FeatureList::IsEnabled(
+          features::kDelayRfhDestructionsOnUnloadAndDetach)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](auto rfh) {
+                         if (rfh) {
+                           rfh->PendingDeletionCheckCompletedOnSubtree();
+                         }
+                       },
+                       GetWeakPtr()));
+  } else {
+    // Some children with no unload handler may be eligible for deletion. Cut
+    // the dead branches now. This is a performance optimization.
+    PendingDeletionCheckCompletedOnSubtree();
+    // |this| is potentially deleted. Do not add code after this.
   }
 }
 

@@ -91,7 +91,10 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
   // DocumentService should not be destroyed.
   EXPECT_FALSE(echo_deleted);
 
+  RenderFrameDeletedObserver deleted_observer(
+      shell()->web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  deleted_observer.WaitUntilDeleted();
   // It should be destroyed on navigation.
   EXPECT_TRUE(echo_deleted);
 }

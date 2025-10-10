@@ -22,7 +22,7 @@ void PageAnchorsMetricsObserver::RecordAnchorElementMetricsDataToUkm() {
   data->RecordAnchorElementMetricsData(ukm_source_id_);
 }
 
-void PageAnchorsMetricsObserver::RecordDataToUkm() {
+void PageAnchorsMetricsObserver::RecordDataToUkm(bool reset_source) {
   // `AnchorElementMetricsData` are already recorded to UKM as we receive them,
   // and we don't need to record them again here. The edge case scenario is
   // handled separately in `OnRestoreFromBackForwardCache`.
@@ -35,6 +35,9 @@ void PageAnchorsMetricsObserver::RecordDataToUkm() {
           rfh);
   CHECK(data);
   data->RecordDataToUkm(ukm_source_id_);
+  if (reset_source) {
+    data->ResetUkmSourceId();
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -59,7 +62,9 @@ void PageAnchorsMetricsObserver::OnComplete(
   // Do not report Ukm while prerendering.
   if (is_in_prerendered_page_)
     return;
-  RecordDataToUkm();
+  // Resetting the source so that no more data is recorded to UKM, until a new
+  // source is set.
+  RecordDataToUkm(/*reset_source=*/false);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -69,7 +74,7 @@ PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (is_in_prerendered_page_)
     return CONTINUE_OBSERVING;
 
-  RecordDataToUkm();
+  RecordDataToUkm(/*reset_source=*/false);
   return STOP_OBSERVING;
 }
 
@@ -115,7 +120,9 @@ void PageAnchorsMetricsObserver::OnRenderFrameDeleted(
   // Including the sub-frames.
   if (render_frame_host() == rfh) {
     if (!is_in_prerendered_page_) {
-      RecordDataToUkm();
+      // Resetting the source so that data is not recorded to UKM again when the
+      // RenderFrameHost is destroyed.
+      RecordDataToUkm(/*reset_source=*/true);
     }
     render_frame_host_id_.reset();
   }
@@ -128,6 +135,6 @@ PageAnchorsMetricsObserver::OnEnterBackForwardCache(
     return CONTINUE_OBSERVING;
   }
 
-  RecordDataToUkm();
+  RecordDataToUkm(/*reset_source=*/false);
   return CONTINUE_OBSERVING;
 }
