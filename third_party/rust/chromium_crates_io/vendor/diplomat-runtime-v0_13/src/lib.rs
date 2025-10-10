@@ -22,7 +22,7 @@ extern crate alloc;
 
 use alloc::alloc::Layout;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 mod wasm_glue;
 
 mod write;

@@ -30,7 +30,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "diplomat-runtime"
   cargo_pkg_description = "Common runtime utilities used by diplomat codegen"
   cargo_pkg_repository = "https://github.com/rust-diplomat/diplomat"
-  cargo_pkg_version = "0.13.0"
+  cargo_pkg_version = "0.13.1"
 
   allow_unsafe = true
 

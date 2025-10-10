@@ -15,7 +15,7 @@ unsafe extern "C" fn diplomat_init() {
         .unwrap();
 }
 
-fn panic_handler(info: &std::panic::PanicInfo) {
+fn panic_handler(info: &std::panic::PanicHookInfo) {
     let msg = match info.payload().downcast_ref::<&'static str>() {
         Some(&s) => s,
         None => match info.payload().downcast_ref::<String>() {
