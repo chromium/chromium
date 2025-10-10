@@ -1209,6 +1209,7 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
     std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
                           std::vector<SuggestionGenerator::SuggestionData>>>
         suggestion_data) {
+  using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
   auto barrier_callback =
       base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
           suggestion_generators_.size(),
@@ -1227,11 +1228,25 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
                              &form_structure, &autofill_field);
 
   auto all_suggestion_data =
-      base::MakeFlatMap<SuggestionGenerator::SuggestionDataSource,
+      base::MakeFlatMap<SuggestionDataSource,
                         std::vector<SuggestionGenerator::SuggestionData>>(
           suggestion_data);
 
-  for (const auto& suggestion_generator : suggestion_generators_) {
+  if (autofill_field &&
+      !all_suggestion_data[SuggestionDataSource::kAddress].empty() &&
+      EvaluateAblationStudy(*autofill_field, FillingProduct::kAddress,
+                            /*has_suggestions=*/true)) {
+    all_suggestion_data[SuggestionDataSource::kAddress].clear();
+  }
+  if (autofill_field &&
+      !all_suggestion_data[SuggestionDataSource::kCreditCard].empty() &&
+      EvaluateAblationStudy(*autofill_field, FillingProduct::kCreditCard,
+                            /*has_suggestions=*/true)) {
+    all_suggestion_data[SuggestionDataSource::kCreditCard].clear();
+  }
+
+  for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
+       suggestion_generators_) {
     suggestion_generator->GenerateSuggestions(
         form, field, form_structure, autofill_field, all_suggestion_data,
         barrier_callback);
@@ -3112,17 +3127,17 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
 }
 
 bool BrowserAutofillManager::EvaluateAblationStudy(
-    const std::vector<Suggestion>& address_and_credit_card_suggestions,
     AutofillField& autofill_field,
-    SuggestionsContext& context) {
-  if (context.filling_product != FillingProduct::kAddress &&
-      context.filling_product != FillingProduct::kCreditCard) {
+    FillingProduct filling_product,
+    bool has_suggestions) {
+  if (filling_product != FillingProduct::kAddress &&
+      filling_product != FillingProduct::kCreditCard) {
     // The ablation study only supports addresses and credit cards.
     return false;
   }
 
   FormTypeForAblationStudy form_type =
-      context.filling_product == FillingProduct::kCreditCard
+      filling_product == FillingProduct::kCreditCard
           ? FormTypeForAblationStudy::kPayment
           : FormTypeForAblationStudy::kAddress;
 
@@ -3152,8 +3167,7 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   // to that. Note that we don't set the ablation group if there are no
   // suggestions. In that case we stick to kDefault.
   AblationGroup conditional_ablation_group =
-      !address_and_credit_card_suggestions.empty() ? ablation_group
-                                                   : AblationGroup::kDefault;
+      has_suggestions ? ablation_group : AblationGroup::kDefault;
 
   // For both form types (credit card and address forms), we inform the other
   // event logger also about the ablation. This prevents for example that for
@@ -3162,12 +3176,12 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   // the metrics_->credit_card_form_event_logger). For the complementary event
   // logger, the conditional ablation status is logged as kDefault to not
   // imply that data would be filled without ablation.
-  if (context.filling_product == FillingProduct::kCreditCard) {
+  if (filling_product == FillingProduct::kCreditCard) {
     metrics_->credit_card_form_event_logger.SetAblationStatus(
         ablation_group, conditional_ablation_group);
     metrics_->address_form_event_logger.SetAblationStatus(
         ablation_group, AblationGroup::kDefault);
-  } else if (context.filling_product == FillingProduct::kAddress) {
+  } else if (filling_product == FillingProduct::kAddress) {
     metrics_->address_form_event_logger.SetAblationStatus(
         ablation_group, conditional_ablation_group);
     metrics_->credit_card_form_event_logger.SetAblationStatus(
@@ -3180,11 +3194,8 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
                               GetDayInAblationWindow(AutofillClock::Now())});
   }
 
-  if (!address_and_credit_card_suggestions.empty() &&
-      ablation_group == AblationGroup::kAblation &&
+  if (has_suggestions && ablation_group == AblationGroup::kAblation &&
       !features::kAutofillAblationStudyIsDryRun.Get()) {
-    // Logic for disabling/ablating autofill.
-    context.suppress_reason = SuppressReason::kAblation;
     return true;
   }
 
@@ -3259,8 +3270,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       break;
   }
 
-  if (EvaluateAblationStudy(suggestions, CHECK_DEREF(autofill_field),
-                            context)) {
+  if (EvaluateAblationStudy(CHECK_DEREF(autofill_field),
+                            context.filling_product, !suggestions.empty())) {
+    // Logic for disabling/ablating autofill.
+    context.suppress_reason = SuppressReason::kAblation;
     return {};
   }
 
