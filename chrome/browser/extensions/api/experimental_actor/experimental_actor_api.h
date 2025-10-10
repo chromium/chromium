@@ -78,6 +78,7 @@ class ExperimentalActorPerformActionsFunction
   void OnActionsFinished(
       actor::TaskId task_id,
       base::TimeTicks start_time,
+      bool skip_async_observation_information,
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);

@@ -439,6 +439,7 @@ void GlicKeyedService::PerformActionsFinished(
     mojom::WebClientHandler::PerformActionsCallback callback,
     actor::TaskId task_id,
     base::TimeTicks start_time,
+    bool skip_async_observation_information,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results) {
@@ -463,7 +464,8 @@ void GlicKeyedService::PerformActionsFinished(
 
   actor::BuildActionsResultWithObservations(
       *profile_, start_time, result_code, index_of_failed_action,
-      std::move(action_results), *task, std::move(result_callback));
+      std::move(action_results), *task, skip_async_observation_information,
+      std::move(result_callback));
 }
 
 void GlicKeyedService::PerformActions(
@@ -525,11 +527,14 @@ void GlicKeyedService::PerformActions(
     std::move(callback).Run(mojo_base::ProtoWrapper(response));
     return;
   }
-
+  bool skip_async_observation_information =
+      actions.has_skip_async_observation_collection() &&
+      actions.skip_async_observation_collection();
   actor_keyed_service_->PerformActions(
       task_id, std::move(requests.value()),
       base::BindOnce(&GlicKeyedService::PerformActionsFinished, GetWeakPtr(),
-                     std::move(callback), task_id, start_time));
+                     std::move(callback), task_id, start_time,
+                     skip_async_observation_information));
 }
 
 void GlicKeyedService::StopActorTask(actor::TaskId task_id,

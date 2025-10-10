@@ -755,6 +755,7 @@ void BuildActionsResultWithObservations(
     std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
+    bool skip_async_observation_information,
     base::OnceCallback<
         void(std::unique_ptr<apc::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
@@ -823,7 +824,7 @@ void BuildActionsResultWithObservations(
     }
   }
 
-  absl::flat_hash_set<tabs::TabInterface*> tabs_to_fetch;
+  absl::flat_hash_map<tabs::TabInterface*, apc::TabObservation*> tabs_to_fetch;
 
   for (const tabs::TabHandle& handle : task.GetLastActedTabs()) {
     // Include a TabObservation entry for acted on tabs. If the tab no longer
@@ -861,31 +862,35 @@ void BuildActionsResultWithObservations(
                                           .AddError("Page crashed")
                                           .Build());
     } else {
-      tabs_to_fetch.insert(tab);
+      apc::TabObservation* tab_observation = response->add_tabs();
+      tabs_to_fetch.emplace(tab, tab_observation);
+      tab_observation->set_id(tab->GetHandle().raw_value());
+      if (skip_async_observation_information) {
+        tab_observation->set_result(apc::TabObservation::TAB_OBSERVATION_OK);
+      }
     }
   }
+  base::UmaHistogramCounts1000("Actor.PageContext.TabCount",
+                               tabs_to_fetch.size());
 
-  apc::ActionsResult* raw_response = response.get();
+  if (skip_async_observation_information) {
+    std::move(callback).Run(std::move(response), std::move(journal_entry));
+    return;
+  }
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
       base::BindOnce(std::move(callback), std::move(response),
                      std::move(journal_entry)));
-
-  for (tabs::TabInterface* tab : tabs_to_fetch) {
-    apc::TabObservation* tab_observation = raw_response->add_tabs();
-    tab_observation->set_id(tab->GetHandle().raw_value());
-
-    // tab_observation can be Unretained because the underlying APC is owned by
-    // the barrier which is ref-counted.
+  for (auto& [tab, tab_observation] : tabs_to_fetch) {
+    // tab_observation can be Unretained because the underlying APC is owned
+    // by the barrier which is ref-counted.
     actor_service->RequestTabObservation(
         *tab, task.id(),
         base::BindOnce(FetchCallback, profile->GetWeakPtr(), task.id(), barrier,
-                       base::Unretained(tab_observation), action_results,
-                       actions_start_time, base::TimeTicks::Now(),
-                       base::Unretained(latency_info)));
+                       base::Unretained(tab_observation),
+                       action_results, actions_start_time,
+                       base::TimeTicks::Now(), base::Unretained(latency_info)));
   }
-  base::UmaHistogramCounts1000("Actor.PageContext.TabCount",
-                               tabs_to_fetch.size());
 }
 
 apc::ActionsResult BuildErrorActionsResult(

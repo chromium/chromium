@@ -205,5 +205,36 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   ASSERT_FALSE(result.has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       RequestTabObservationSkipAsyncObservationInformation) {
+  TaskId task_id = actor_keyed_service()->CreateTask();
+  // Navigate the active tab to a new page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL("/actor/blank.html")));
+
+  actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  TestFuture<mojom::ActionResultPtr> add_tab_future;
+  task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
+               add_tab_future.GetCallback());
+  auto add_tab_result = add_tab_future.Take();
+  ASSERT_TRUE(add_tab_result);
+
+  TestFuture<std::unique_ptr<optimization_guide::proto::ActionsResult>,
+             std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
+      future;
+  actor::BuildActionsResultWithObservations(
+      *browser()->profile(), base::TimeTicks::Now(),
+      mojom::ActionResultCode::kOk, std::nullopt,
+      std::vector<actor::ActionResultWithLatencyInfo>(), *task, true,
+      future.GetCallback());
+  auto [actions_result, _] = future.Take();
+  ASSERT_TRUE(actions_result);
+  EXPECT_EQ(actions_result->action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kOk));
+  EXPECT_EQ(actions_result->tabs_size(), 1);
+  EXPECT_FALSE(actions_result->tabs()[0].has_annotated_page_content());
+  EXPECT_FALSE(actions_result->tabs()[0].has_screenshot());
+}
+
 }  // namespace
 }  // namespace actor

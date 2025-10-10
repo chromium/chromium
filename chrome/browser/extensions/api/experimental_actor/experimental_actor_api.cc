@@ -258,13 +258,16 @@ ExperimentalActorPerformActionsFunction::Run() {
 
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
 
+  bool skip_async_observation_information =
+      actions.has_skip_async_observation_collection() &&
+      actions.skip_async_observation_collection();
   if (!requests.has_value()) {
     std::vector<actor::ActionResultWithLatencyInfo> empty_results;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
-            task_id, start_time,
+            task_id, start_time, skip_async_observation_information,
             actor::mojom::ActionResultCode::kArgumentsInvalid, requests.error(),
             std::move(empty_results)));
     return RespondLater();
@@ -274,7 +277,7 @@ ExperimentalActorPerformActionsFunction::Run() {
       task_id, std::move(requests.value()),
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
-          task_id, start_time));
+          task_id, start_time, skip_async_observation_information));
 
   return RespondLater();
 }
@@ -282,6 +285,7 @@ ExperimentalActorPerformActionsFunction::Run() {
 void ExperimentalActorPerformActionsFunction::OnActionsFinished(
     actor::TaskId task_id,
     base::TimeTicks start_time,
+    bool skip_async_observation_information,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results) {
@@ -295,7 +299,7 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
   actor::BuildActionsResultWithObservations(
       *browser_context(), start_time, result_code, index_of_failed_action,
-      std::move(action_results), *task,
+      std::move(action_results), *task, skip_async_observation_information,
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnObservationResult, this));
 }
@@ -326,9 +330,8 @@ void ExperimentalActorPerformActionsFunction::OnObservationResult(
       observation.set_tab_ids(i, session_tab_id);
     }
 
-    int32_t activated_tab_id =
-        ConvertTabHandleToSessionTabId(observation.activated_tab_id(),
-                                       browser_context());
+    int32_t activated_tab_id = ConvertTabHandleToSessionTabId(
+        observation.activated_tab_id(), browser_context());
     observation.set_activated_tab_id(activated_tab_id);
   }
 

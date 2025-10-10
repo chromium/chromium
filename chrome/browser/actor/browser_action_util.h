@@ -65,6 +65,7 @@ void BuildActionsResultWithObservations(
     std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
+    bool skip_async_observation_information,
     base::OnceCallback<
         void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
