@@ -857,7 +857,7 @@ class GlicWindowControllerWithMemoryPressureUiTest
   }
 
   auto CheckWarmed() {
-    return Do([this]() { EXPECT_TRUE(window_controller().IsWarmed()); });
+    return Do([this]() { EXPECT_TRUE(GetWindowControllerImpl().IsWarmed()); });
   }
 
  private:

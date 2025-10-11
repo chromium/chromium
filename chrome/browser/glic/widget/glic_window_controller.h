@@ -126,10 +126,6 @@ class GlicWindowController : public Host::InstanceInterfaceForMigration {
   // which is currently visible).
   virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;
 
-  // Returns whether or not the glic web contents are loaded (this can also be
-  // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
-  virtual bool IsWarmed() const = 0;
-
   virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
 
   // Returns the widget that backs the glic window.
@@ -195,6 +191,10 @@ class GlicWindowControllerInterface : public GlicWindowController,
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.
   virtual base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() = 0;
+
+  // Returns whether or not the glic web contents are loaded (this can also be
+  // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
+  virtual bool IsWarmed() const = 0;
 };
 
 }  // namespace glic

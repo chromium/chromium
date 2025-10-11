@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   // Since we have no delay, running until idle should mean that we do warm
   // (provided warming is enabled).
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(service->window_controller().IsWarmed());
+  EXPECT_TRUE(service->GetSingleInstanceWindowController().IsWarmed());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   // Since we shouldn't preload until after the delay, we shouldn't be warmed
   // after running until idle.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(service->window_controller().IsWarmed());
+  EXPECT_FALSE(service->GetSingleInstanceWindowController().IsWarmed());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   service->TryPreload();
   service->reset_profile_for_test();
   run_loop.Run();
-  EXPECT_FALSE(service->window_controller().IsWarmed());
+  EXPECT_FALSE(service->GetSingleInstanceWindowController().IsWarmed());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

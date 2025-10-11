@@ -247,12 +247,6 @@ void GlicInstanceCoordinatorImpl::Reload(
   }
 }
 
-bool GlicInstanceCoordinatorImpl::IsWarmed() const {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-  return false;
-}
-
 base::WeakPtr<GlicInstanceCoordinatorImpl>
 GlicInstanceCoordinatorImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

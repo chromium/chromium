@@ -146,9 +146,10 @@ class GlicProfileManagerUiTest
   auto CheckWarmedAndSized(bool primary_warmed, bool secondary_warmed) {
     return Do([primary_warmed, secondary_warmed, this]() {
       auto IsWarmedAndSized = [](GlicKeyedService* service) {
-        const bool warmed = service->window_controller().IsWarmed() ||
-                            service->fre_controller().IsWarmed() ||
-                            service->IsWindowOrFreShowing();
+        const bool warmed =
+            service->GetSingleInstanceWindowController().IsWarmed() ||
+            service->fre_controller().IsWarmed() ||
+            service->IsWindowOrFreShowing();
         if (!warmed) {
           return false;
         }

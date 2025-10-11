@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateResetOnShutdown) {
   EXPECT_FALSE(border->GetVisible());
 
   // Also check that the web client is gone.
-  EXPECT_FALSE(glic_service()->window_controller().IsWarmed());
+  EXPECT_FALSE(glic_service()->GetSingleInstanceWindowController().IsWarmed());
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.

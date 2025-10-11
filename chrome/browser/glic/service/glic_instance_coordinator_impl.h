@@ -94,7 +94,6 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       WindowActivationChangedCallback callback) override;
   void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
-  bool IsWarmed() const override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
   base::WeakPtr<views::View> GetGlicViewAsView() override;
