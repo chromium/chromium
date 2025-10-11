@@ -565,10 +565,10 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-void DemuxerManager::AddMediaTrack(const media::MediaTrack& track) {
+void DemuxerManager::AddMediaTrack(const MediaTrack& track) {
   client_->AddMediaTrack(track);
 }
-void DemuxerManager::RemoveMediaTrack(const media::MediaTrack& track) {
+void DemuxerManager::RemoveMediaTrack(const MediaTrack& track) {
   client_->RemoveMediaTrack(track);
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)

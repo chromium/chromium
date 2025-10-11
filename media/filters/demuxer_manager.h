@@ -32,8 +32,8 @@
 
 namespace media {
 
-// This class manages both an implementation of media::Demuxer and of
-// media::DataSource. DataSource, in particular may be null, since MSE playback
+// This class manages both an implementation of Demuxer and of
+// DataSource. DataSource, in particular may be null, since MSE playback
 // does not make use of it. In the case that DataSource is present, these
 // objects should have a similar lifetime, and both must be destroyed on the
 // media thread, so owning them together makes sense. Additionally, the demuxer
@@ -56,15 +56,15 @@ class MEDIA_EXPORT DemuxerManager {
     // Can be called quite often.
     virtual void OnProgress() = 0;
 
-    virtual void OnError(media::PipelineStatus status) = 0;
+    virtual void OnError(PipelineStatus status) = 0;
 
     // Used for controlling the client when a demuxer swap happens.
     virtual void StopForDemuxerReset() = 0;
     virtual void RestartForHls() = 0;
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-    virtual void AddMediaTrack(const media::MediaTrack&) = 0;
-    virtual void RemoveMediaTrack(const media::MediaTrack&) = 0;
+    virtual void AddMediaTrack(const MediaTrack&) = 0;
+    virtual void RemoveMediaTrack(const MediaTrack&) = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -77,7 +77,7 @@ class MEDIA_EXPORT DemuxerManager {
 
     // Given a demuxer, the client should construct an implementation of
     // base::trace_event::MemoryDumpProvider for debugging purposes.
-    virtual void MakeDemuxerThreadDumper(media::Demuxer* demuxer) = 0;
+    virtual void MakeDemuxerThreadDumper(Demuxer* demuxer) = 0;
 
     virtual double CurrentTime() const = 0;
 
@@ -152,10 +152,10 @@ class MEDIA_EXPORT DemuxerManager {
 
  private:
   // Demuxer creation and helper methods
-  std::unique_ptr<media::Demuxer> CreateChunkDemuxer();
+  std::unique_ptr<Demuxer> CreateChunkDemuxer();
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-  std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
+  std::unique_ptr<Demuxer> CreateFFmpegDemuxer();
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -164,8 +164,8 @@ class MEDIA_EXPORT DemuxerManager {
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  void AddMediaTrack(const media::MediaTrack&);
-  void RemoveMediaTrack(const media::MediaTrack&);
+  void AddMediaTrack(const MediaTrack&);
+  void RemoveMediaTrack(const MediaTrack&);
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);
