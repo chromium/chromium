@@ -162,9 +162,8 @@ void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
   }
   status_updated_callback_.Run(state);
   if (state == CrdConnectionState::kTimeout) {
-    remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient)
-        .WithArgs(base::DoNothing());
-    Reset();
+    // This call will be a noop if `StopCrdClient` is already called.
+    StopCrdClient(base::DoNothing());
   }
 }
 
