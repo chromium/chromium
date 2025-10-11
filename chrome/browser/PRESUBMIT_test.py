@@ -216,5 +216,86 @@ class CheckBuildFilesForIndirectAshSourcesTest(unittest.TestCase):
         ['a/c'])
 
 
+class CheckAshSourcesForBadIncludes(unittest.TestCase):
+  MESSAGE = "Bad includes detected in the following files."
+
+  def testScope(self):
+    """We only complain for changes under certain directories."""
+
+    new_contents = [ '#include "chrome/browser/ui/browser.h"' ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ash/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ashley/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/chromeos/a/b/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/resources/ash/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ui/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ui/ash/foo/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ui/chromeos/foo.cc', new_contents),
+        MockAffectedFile('chrome/browser/ui/webui/ash/foo.cc', new_contents),
+        MockAffectedFile('chrome/foo/ash/foo.cc', new_contents),
+    ]
+
+    results = PRESUBMIT._CheckAshSourcesForBadIncludes(mock_input_api,
+                                                       mock_output_api)
+
+    for result in results:
+      self.assertEqual(result.message, self.MESSAGE)
+
+    self.assertCountEqual(
+        [r.items for r in results],
+        [["chrome/browser/ash/foo.cc"],
+         ["chrome/browser/chromeos/a/b/foo.cc"],
+         ["chrome/browser/resources/ash/foo.cc"],
+         ["chrome/browser/ui/ash/foo/foo.cc"],
+         ["chrome/browser/ui/chromeos/foo.cc"],
+         ["chrome/browser/ui/webui/ash/foo.cc"]])
+
+  def testComments(self):
+    """We don't complain about bad includes in single-line comments."""
+
+    new_contents = [ '// No #include "chrome/browser/ui/browser.h"' ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('chrome/browser/ash/foo.cc', new_contents),
+    ]
+
+    results = PRESUBMIT._CheckAshSourcesForBadIncludes(mock_input_api,
+                                                       mock_output_api)
+
+    self.assertEqual(results, [])
+
+  def testModifications(self):
+    """We don't complain about bad includes that were already there."""
+
+    old_contents = [
+        '#include "chrome/browser/foo/bar.h"',
+        '#include "chrome/browser/ui/browser.h"',
+    ]
+    new_contents = [
+        '#include "chrome/browser/foo/bar.h"',
+        '#include "chrome/browser/ui/browser.h"',
+        '#include "chrome/browser/ui/browser.h"',
+    ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('chrome/browser/ash/foo.cc',
+                         new_contents, old_contents),
+    ]
+
+    results = PRESUBMIT._CheckAshSourcesForBadIncludes(mock_input_api,
+                                                       mock_output_api)
+
+    self.assertEqual(results, [])
+
+
 if __name__ == '__main__':
   unittest.main()
