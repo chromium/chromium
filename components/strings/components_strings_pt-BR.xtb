@@ -1667,7 +1667,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
 <translation id="374325029554577103">Eletrônicos para atividade física</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
-<translation id="3744212718085287312">Quer ter mais segurança com um cartão virtual?</translation>
+<translation id="3744212718085287312">Que tal proteção extra para suas compras?</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3745599309295009257">O texto, o conteúdo e o URL da página em que você está escrevendo serão enviados ao Google, revisados por humanos e usados para melhorar esse recurso. Evite inserir informações pessoais, como detalhes médicos ou financeiros. Evite também usar essa ferramenta em sites que contenham informações particulares ou sensíveis.</translation>
 <translation id="3748009735914587286">Metal (alto brilho)</translation>
@@ -4988,7 +4988,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="991413375315957741">sensores de luz ou movimento</translation>
 <translation id="991936891556421157">Calçados</translation>
-<translation id="992110854164447044">Este cartão oculta o físico e protege você contra fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="992110854164447044">O cartão virtual oculta os dados do cartão físico e protege você contra fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992432478773561401">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede:

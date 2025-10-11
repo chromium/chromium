@@ -11776,7 +11776,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
       <ph name="LIST_ITEM" />Ricollegarti alla rete Wi-Fi
       <ph name="LIST_ITEM" />Eseguire lo strumento Diagnostica della connettività Chrome
     <ph name="END_LIST" /></translation>
-<translation id="9161172953291434881">Ti fidi di come questo sito userà i tuoi dati?</translation>
+<translation id="9161172953291434881">Autorizzi questo sito a usare i tuoi dati?</translation>
 <translation id="9164418710391288146">Non possono connettersi a nessun dispositivo sulla rete locale</translation>
 <translation id="9165856803582999927">Scansiona questo codice QR con la fotocamera sul dispositivo in cui vuoi creare e salvare la passkey per <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>

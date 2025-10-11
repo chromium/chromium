@@ -1282,7 +1282,7 @@
 <translation id="3140646734028448730">商业服务</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
-<translation id="3144458715650412431">测试政策已被应用。如需查看和重置这些政策，请访问 chrome://policy/test。管理员政策不会被应用。</translation>
+<translation id="3144458715650412431">已应用测试政策。如需查看政策或重新设置，请访问 chrome://policy/test。系统不会应用管理员政策。</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
 <translation id="3147941219998826815">廉价旅行与最后时限旅行</translation>
 <translation id="3150653042067488994">服务器临时错误</translation>

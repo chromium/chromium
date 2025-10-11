@@ -1088,7 +1088,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5250371859659394278">Vanuit een onbekende bron</translation>
 <translation id="5271265092610673171">{count,plural, =1{Een verplicht veld is leeg. Vul het in voordat je opslaat.}other{Sommige verplichte velden zijn leeg. Vul ze in voordat je opslaat.}}</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
-<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Overweeg dus goed of je lid wilt worden. De link verloopt over 48 uur.</translation>
+<translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Denk dus goed na voordat je lid wordt. De link verloopt over 48 uur.</translation>
 <translation id="5282340693022193851">Als je meldingen voor prijzen volgen wilt krijgen, zet je meldingen aan in de iOS-instellingen.</translation>
 <translation id="528857768909044842">Tabbladgroepen worden hier opgeslagen</translation>
 <translation id="5294624619177114121">Mobiele meldingen</translation>
