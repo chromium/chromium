@@ -569,6 +569,7 @@
 <translation id="7406113532070524618">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありませんが、確認に必要な少量の情報を共有することがあります</translation>
 <translation id="7409735910987429903">ポップアップを送信して広告を表示したり、リダイレクトを使ってユーザーがアクセスするつもりのないウェブサイトを表示したりするサイトもあります</translation>
 <translation id="7412160840120117304">メインの色（16 進数）</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{ズーム}other{ズーム: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>

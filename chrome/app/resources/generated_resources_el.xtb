@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">Μάθετε περισσότερα σχετικά με τη διόρθωση σφαλμάτων ενημέρωσης</translation>
 <translation id="1217114730239853757">Θέλετε να ενεργοποιήσετε το ChromeVox, τον ενσωματωμένο αναγνώστη οθόνης για το ChromeOS Flex; Εφόσον το επιθυμείτε, πατήστε το πλήκτρο διαστήματος.</translation>
 <translation id="1217117837721346030">Λήψη ύποπτου αρχείου</translation>
+<translation id="1217437913373100941">Νέα καρτέλα στην ομάδα <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Τα τοπικά δεδομένα σας θα διαγραφούν σύντομα.</translation>
 <translation id="1217668622537098248">Επαναφορά σε αριστερό κλικ μετά από κάποια ενέργεια</translation>
 <translation id="1218015446623563536">Διαγραφή Linux</translation>
@@ -3236,6 +3237,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Μπορείτε να διαχειριστείτε τις ρυθμίσεις από αυτή την κάρτα ανά πάσα στιγμή ή να δείτε περισσότερες επιλογές στην ενότητα Προσαρμογή του Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Νέα καρτέλα σε 1 καρτέλα}other{Νέα καρτέλα σε # καρτέλες}}</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="3208703785962634733">Μη επιβεβαιωμένη</translation>
@@ -3411,6 +3413,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Αναπαραγωγή βίντεο στη λειτουργία picture-in-picture</translation>
 <translation id="3335380372402547327">Προεπισκόπηση ειδοποιήσεων με λάμψη</translation>
 <translation id="3335947283844343239">Εκ Νέου Άνοιγμα Κλεισμένης Καρτέλας</translation>
+<translation id="3336661809256024098">Νέα καρτέλα στην ομάδα <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ίσως</translation>
 <translation id="3337568642696914359">Να μην επιτρέπεται στους ιστοτόπους να χειρίζονται πρωτόκολλα</translation>
 <translation id="333863344734218290">Σας ειδοποιεί για μη ασφαλείς δημόσιους και ιδιωτικούς ιστοτόπους</translation>
@@ -8956,6 +8959,7 @@
 <translation id="7211783048245131419">Προς το παρόν, δεν έχει γίνει ανάθεση κάποιου διακόπτη</translation>
 <translation id="7212097698621322584">Εισαγάγετε το τρέχον PIN για να το αλλάξετε. Εάν δεν γνωρίζετε το PIN, θα χρειαστεί να επαναφέρετε το κλειδί ασφαλείας και, στη συνέχεια, να δημιουργήσετε ένα νέο PIN.</translation>
 <translation id="7214047272988222011">Επιτρέπεται – <ph name="PERMISSION_DETAILS" />. Ενεργοποιήστε την <ph name="LINK_BEGIN" />πρόσβαση κάμερας του συστήματος<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Νέα καρτέλα σε 1 καρτέλα}other{Νέα καρτέλα σε # καρτέλες}}</translation>
 <translation id="721490496276866468">Εισαγωγή κωδικών πρόσβασης</translation>
 <translation id="7217208603285112910">Η επιλογή δεν είναι στα <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Διαγραφή δεδομένων ιστοτόπου;</translation>
@@ -9243,6 +9247,7 @@
 <translation id="7410344089573941623">Ερώτηση εάν το <ph name="HOST" /> θέλει να αποκτήσει πρόσβαση στην κάμερα και στο μικρόφωνό σας</translation>
 <translation id="7410421966064092098">Οι ιστότοποι δεν μπορούν να σας βοηθήσουν να επαληθεύσετε ότι δεν είστε bot</translation>
 <translation id="7410852728357935715">Μετάδοση σε κάποια συσκευή</translation>
+<translation id="741148343080227980">Μπορείτε να επεξεργαστείτε το όνομά σας <ph name="BEGIN_LINK" />στον Λογαριασμό σας Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
 <translation id="7412226954991670867">Μνήμη GPU</translation>
 <translation id="741370456693729525">Χρησιμοποιήστε καθημερινή γλώσσα, για να κάνετε αναζήτηση στο ιστορικό περιήγησης και να βρείτε ιστοτόπους που επισκεφτήκατε</translation>

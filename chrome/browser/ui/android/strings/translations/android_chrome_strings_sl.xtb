@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Odjava in izklop sinhronizacije?</translation>
 <translation id="1363028406613469049">Posnetek</translation>
 <translation id="1366525380420346469">Če je to vklopljeno</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Temu spletnemu mestu lahko preprečite nadaljnje pošiljanje obvestil}one{Tem spletnim mestom lahko preprečite nadaljnje pošiljanje obvestil}two{Tem spletnim mestom lahko preprečite nadaljnje pošiljanje obvestil}few{Tem spletnim mestom lahko preprečite nadaljnje pošiljanje obvestil}other{Tem spletnim mestom lahko preprečite nadaljnje pošiljanje obvestil}}</translation>
 <translation id="1373696734384179344">Za prenos izbrane vsebine ni dovolj pomnilnika.</translation>
 <translation id="1376578503827013741">Računanje …</translation>
 <translation id="1381838868249179644">Zaradi zagotavljanja vaše varnosti so bila za nekatera spletna mesta odstranjena dovoljenja</translation>

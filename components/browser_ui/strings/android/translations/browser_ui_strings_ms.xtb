@@ -569,6 +569,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7406113532070524618">Tetapan ini berfungsi tanpa mengenal pasti identiti anda atau membenarkan laman melihat sejarah penyemakan imbas anda tetapi laman boleh berkongsi sedikit maklumat sebagai sebahagian daripada proses pengesahan</translation>
 <translation id="7409735910987429903">Tapak mungkin menghantar tetingkap timbul untuk memaparkan iklan, atau menggunakan ubah hala untuk membawa anda ke laman web yang mungkin tidak ingin anda lawati</translation>
 <translation id="7412160840120117304">Heks Warna Utama</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zum}other{Zum: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7423538860840206698">Disekat daripada membaca papan keratan</translation>
 <translation id="7425915948813553151">Tema gelap untuk laman</translation>

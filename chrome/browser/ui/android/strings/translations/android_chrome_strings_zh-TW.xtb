@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1366525380420346469">開啟之後</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{你可以禁止這個網站傳送通知}other{你可以禁止這些網站傳送通知}}</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載您選取的這項內容。</translation>
 <translation id="1376578503827013741">計算中…</translation>
 <translation id="1381838868249179644">為確保你的安全，系統已移除某些網站的權限</translation>

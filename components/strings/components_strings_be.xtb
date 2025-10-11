@@ -3311,6 +3311,7 @@
 <translation id="6433501201775827830">Выберыце пошукавую сістэму</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> адмовіўся ад падключэння.</translation>
 <translation id="6433797564277305076">Пацвярджайце карткі хутчэй, выкарыстоўваючы функцыю разблакіроўкі прылады</translation>
+<translation id="6436994298828707228">Падключэнне заблакіравана, бо яго ініцыявала агульнадаступная старонка для падключэння да прылад або сервераў у вашай лакальнай сетцы.</translation>
 <translation id="6437647869369934905">Google Рысункі</translation>
 <translation id="643917412048333145">Сукенкі</translation>
 <translation id="6440503408713884761">Ігнаруецца</translation>
@@ -3382,6 +3383,7 @@
 <translation id="6547208576736763147">Дзве дзіркі злева</translation>
 <translation id="6549443526281184652">Касцюмы</translation>
 <translation id="6550245281449521513">Блакіроўка мышы не дазволена</translation>
+<translation id="6552566579578780089">Даныя для плацяжоў</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6556866813142980365">Узнавіць</translation>
 <translation id="6557715786897013164">14 x 17 цаляў</translation>
@@ -3530,6 +3532,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">паслядоўныя парты</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Лёгкая аплата ў растэрміноўку</translation>
 <translation id="6825578344716086703">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў сертыфікат, падпісаны з выкарыстаннем ненадзейнага алгарытму (напрыклад, SHA-1). Гэта азначае, што прапанаваныя серверам уліковыя даныя бяспекі маглі быць падроблены і сервер можа быць не тым серверам, які вам патрэбны (магчыма, вы абменьваецеся данымі са зламыснікам).</translation>
 <translation id="6826993739343257035">Дазволіць AR?</translation>
 <translation id="6828150717884939426">Выклікаць</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">Тэхналогіі Google</translation>
 <translation id="753713322968419914">Выдаліць хатні адрас з прапаноў аўтазапаўнення Chrome?</translation>
 <translation id="7537536606612762813">Абавязкова</translation>
+<translation id="7541043894191476250">Кантэкстныя задачы</translation>
 <translation id="7543525346216957623">Папрасі дазволу ў бацькоў</translation>
 <translation id="7546409722674205727">Ідзе запуск праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7548892272833184391">Выпраўленне памылак падключэння</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">перастаць выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>
 <translation id="8407031780528483338">Кухонны посуд</translation>
 <translation id="8409413588194360210">апрацоўшчыкі плацяжоў</translation>
+<translation id="8410956920192583322">Аплата штомесяц або чатырма плацяжамі</translation>
 <translation id="8412145213513410671">Збоі (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Вам трэба двойчы ўвесці аднолькавую фразу-пароль.</translation>
 <translation id="8414322570408428950">Адбываецца падзея, звязаная з пашырэннем</translation>
@@ -4793,6 +4798,7 @@
 <translation id="8922734931659847428">Абмежаваны спіс URL-адрасоў наведаных вамі старонак, дзе адбываюцца <ph name="BEGIN_LINK" />падзеі ўстарэлых тэхналогій<ph name="END_LINK" />.</translation>
 <translation id="892588693504540538">Дзірка зверху справа</translation>
 <translation id="8926389886865778422">Больш не пытацца</translation>
+<translation id="8926400492587758246">Аплата невялікімі штомесячнымі плацяжамі</translation>
 <translation id="8932102934695377596">Ваш гадзіннік спазняецца</translation>
 <translation id="893332455753468063">Дадаць імя</translation>
 <translation id="8938242527120341116">Фільтры змесціва на прыладзе заблакіравалі адрас <ph name="BLOCKED_URL" /></translation>

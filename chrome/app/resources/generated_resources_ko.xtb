@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">업데이트 오류 수정에 관해 자세히 알아보기</translation>
 <translation id="1217114730239853757">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="1217117837721346030">의심스러운 파일 다운로드</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" />에 새 탭</translation>
 <translation id="1217483152325416304">로컬 데이터가 곧 삭제됩니다</translation>
 <translation id="1217668622537098248">작업 후 왼쪽 클릭으로 되돌리기</translation>
 <translation id="1218015446623563536">Linux 삭제</translation>
@@ -3238,6 +3239,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         언제든지 이 카드의 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{탭 1개에 새 탭}other{탭 #개에 새 탭}}</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3208703785962634733">미확인</translation>
@@ -3413,6 +3415,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - PIP 모드로 동영상 재생 중</translation>
 <translation id="3335380372402547327">플래시 알림 미리보기</translation>
 <translation id="3335947283844343239">닫은 탭 다시 열기</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" />에 새 탭</translation>
 <translation id="3336855445806447827">잘 모르겠음</translation>
 <translation id="3337568642696914359">사이트에서 프로토콜을 처리하도록 허용하지 않음</translation>
 <translation id="333863344734218290">안전하지 않은 공개 및 비공개 사이트에 대해 경고 표시</translation>
@@ -8956,6 +8959,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7211783048245131419">아직 할당된 스위치가 없음</translation>
 <translation id="7212097698621322584">PIN을 변경하려면 현재 PIN을 입력하세요. PIN을 모르는 경우 보안 키를 재설정한 다음 새 PIN을 만들어야 합니다.</translation>
 <translation id="7214047272988222011">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 카메라 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{탭 1개에 새 탭}other{탭 #개에 새 탭}}</translation>
 <translation id="721490496276866468">비밀번호 가져오기</translation>
 <translation id="7217208603285112910">선택 항목이 <ph name="LANGUAGE" />로 제공되지 않음</translation>
 <translation id="7219254577985949841">사이트 데이터를 삭제하시겠습니까?</translation>
@@ -9243,6 +9247,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7410344089573941623"><ph name="HOST" />에서 카메라와 마이크에 액세스하려는 경우 메시지 표시</translation>
 <translation id="7410421966064092098">사이트에서 내가 봇이 아님을 확인할 수 없습니다.</translation>
 <translation id="7410852728357935715">기기로 전송</translation>
+<translation id="741148343080227980"><ph name="BEGIN_LINK" />Google 계정(<ph name="USERNAME" />)<ph name="END_LINK" />에서 이름을 수정할 수 있습니다.</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7412226954991670867">GPU 메모리</translation>
 <translation id="741370456693729525">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요.</translation>

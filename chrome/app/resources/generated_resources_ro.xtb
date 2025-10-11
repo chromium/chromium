@@ -337,6 +337,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1216891999012841486">Află mai multe despre remedierea erorilor de actualizare</translation>
 <translation id="1217114730239853757">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome Flex? Dacă da, apasă bara de spațiu.</translation>
 <translation id="1217117837721346030">Descarcă fișierul suspect</translation>
+<translation id="1217437913373100941">Filă nouă în <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Datele tale locale vor fi șterse în curând</translation>
 <translation id="1217668622537098248">Revino la clic stânga după acțiune</translation>
 <translation id="1218015446623563536">Șterge Linux</translation>
@@ -3223,6 +3224,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Poți să gestionezi oricând setările din acest card sau să vezi mai multe opțiuni în secțiunea Personalizează Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Filă nouă într-o filă}few{Filă nouă în # file}other{Filă nouă în # de file}}</translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208584281581115441">Verifică acum</translation>
 <translation id="3208703785962634733">Neconfirmat</translation>
@@ -3398,6 +3400,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videoclipul se redă în modul picture-in-picture</translation>
 <translation id="3335380372402547327">Previzualizează notificările flash</translation>
 <translation id="3335947283844343239">Redeschide fila închisă</translation>
+<translation id="3336661809256024098">Filă nouă în <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nu știu sigur</translation>
 <translation id="3337568642696914359">Nu permite site-urilor să gestioneze protocoale</translation>
 <translation id="333863344734218290">Te avertizează cu privire la site-urile publice și private nesigure</translation>
@@ -8942,6 +8945,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7211783048245131419">Nu a fost încă atribuită nicio tastă de comutare</translation>
 <translation id="7212097698621322584">Introdu codul PIN actual pentru a-l schimba. Dacă nu știi codul PIN, trebuie să resetezi cheia de securitate, apoi să creezi un nou cod PIN.</translation>
 <translation id="7214047272988222011">Se permite – <ph name="PERMISSION_DETAILS" />. Activează <ph name="LINK_BEGIN" />accesul la camera foto a sistemului<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Filă nouă într-o filă}few{Filă nouă în # file}other{Filă nouă în # de file}}</translation>
 <translation id="721490496276866468">Importă parole</translation>
 <translation id="7217208603285112910">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Ștergi datele privind site-ul?</translation>
@@ -9229,6 +9233,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7410344089573941623">Întreabă dacă <ph name="HOST" /> solicită acces la camera și microfonul meu</translation>
 <translation id="7410421966064092098">Site-urile nu te pot ajuta să confirmi că nu ești o aplicație bot</translation>
 <translation id="7410852728357935715">Proiectează pe un dispozitiv</translation>
+<translation id="741148343080227980">Poți să-ți editezi numele <ph name="BEGIN_LINK" />în Contul Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, accept</translation>
 <translation id="7412226954991670867">Memorie GPU</translation>
 <translation id="741370456693729525">Folosește limbajul cotidian pentru a căuta în istoricul de navigare și pentru a găsi site-urile pe care le-ai accesat</translation>

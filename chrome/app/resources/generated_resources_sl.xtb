@@ -339,6 +339,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1216891999012841486">Preberite več o odpravljanju napak posodobitev.</translation>
 <translation id="1217114730239853757">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex? Če ga želite, pritisnite preslednico.</translation>
 <translation id="1217117837721346030">Prenos sumljive datoteke</translation>
+<translation id="1217437913373100941">Nov zavihek v skupini <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Lokalni podatki bodo kmalu izbrisani</translation>
 <translation id="1217668622537098248">Povrnitev na levi klik po dejanju</translation>
 <translation id="1218015446623563536">Izbris Linuxa</translation>
@@ -3239,6 +3240,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
         <ph name="BREAK" />
         <ph name="BREAK" />
         Kadar koli lahko upravljate nastavitve te kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nov zavihek v 1 zavihku}one{Nov zavihek v # zavihku}two{Nov zavihek v # zavihkih}few{Nov zavihek v # zavihkih}other{Nov zavihek v # zavihkih}}</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
 <translation id="3208584281581115441">Preveri</translation>
 <translation id="3208703785962634733">Nepotrjeno</translation>
@@ -3414,6 +3416,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videoposnetek se predvaja v načinu slike v sliki</translation>
 <translation id="3335380372402547327">Predogled obveščanja z utripanjem</translation>
 <translation id="3335947283844343239">Znova odpri zaprt zavihek</translation>
+<translation id="3336661809256024098">Nov zavihek v skupini <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ne vem</translation>
 <translation id="3337568642696914359">Spletnim mestom ni dovoljena obravnava protokolov.</translation>
 <translation id="333863344734218290">Prikaz opozorila za javna in zasebna spletna mesta, ki niso varna</translation>
@@ -8966,6 +8969,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7211783048245131419">Dodeljeno ni bilo še nobeno stikalo.</translation>
 <translation id="7212097698621322584">Vnesite trenutno kodo PIN, da jo spremenite. Če kode PIN ne poznate, morate ponastaviti varnostni ključ, nato ustvarite novo kodo PIN.</translation>
 <translation id="7214047272988222011">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite <ph name="LINK_BEGIN" />dostop do sistemske kamere<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nov zavihek v 1 zavihku}one{Nov zavihek v # zavihku}two{Nov zavihek v # zavihkih}few{Nov zavihek v # zavihkih}other{Nov zavihek v # zavihkih}}</translation>
 <translation id="721490496276866468">Uvoz gesel</translation>
 <translation id="7217208603285112910">Izbor ni v jeziku <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
@@ -9253,6 +9257,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7410344089573941623">Vprašaj, če <ph name="HOST" /> zahteva dostop do kamere in mikrofona</translation>
 <translation id="7410421966064092098">Spletna mesta vam ne morejo pomagati potrditi, da niste bot</translation>
 <translation id="7410852728357935715">Predvajanje v oddaljeni napravi</translation>
+<translation id="741148343080227980">Ime lahko uredite <ph name="BEGIN_LINK" />v računu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, sem za</translation>
 <translation id="7412226954991670867">Pomnilnik grafičnega procesorja</translation>
 <translation id="741370456693729525">Uporabite pogovorni jezik za iskanje po zgodovini brskanja in iskanje obiskanih spletnih mest</translation>

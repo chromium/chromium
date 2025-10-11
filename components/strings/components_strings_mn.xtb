@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">Хайлтын системээ сонгоно уу</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> нь холбогдохоос татгалзлаа.</translation>
 <translation id="6433797564277305076">Одооноос төхөөрөмжийн түгжээг тайлахыг ашиглан картуудаа илүү хурдан баталгаажуулаарай</translation>
+<translation id="6436994298828707228">Холболтыг таны дотоод сүлжээн дээрх төхөөрөмж, сервертэй холбогдохоор олон нийтийн хуудаснаас эхлүүлсэн тул үүнийг блоклосон.</translation>
 <translation id="6437647869369934905">Google Зураглал</translation>
 <translation id="643917412048333145">Даашинзнууд</translation>
 <translation id="6440503408713884761">Хаагдсан</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">Зүүн ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6549443526281184652">Хувцас</translation>
 <translation id="6550245281449521513">Хулганын түгжээг зөвшөөрөөгүй</translation>
+<translation id="6552566579578780089">Төлбөр</translation>
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6556866813142980365">Дахин хийх</translation>
 <translation id="6557715786897013164">14 x 17 инч</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">цуваа порт</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Хэсэгчилсэн хялбар төлбөрөөр төлөөрэй</translation>
 <translation id="6825578344716086703">Та <ph name="DOMAIN" />-д хандахыг хүссэн ч уг сервер нь алгоритмын сул кодыг ашигласан сертификаттай байна. Тухайн сервер аюулгүй байдлын талаар мэдээллэсэн мэдээлэл нь хуурамч байж болох бөгөөд энэхүү сервер нь таны хүссэн (та халдагчтай харилцаж байж болзошгүй) сервер биш байж болно.</translation>
 <translation id="6826993739343257035">AR-г зөвшөөрөх үү?</translation>
 <translation id="6828150717884939426">Залгах</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">Google-с дэмжсэн</translation>
 <translation id="753713322968419914">Гэрийн хаягийг Chrome-н автоматаар бөглөх онцлогоос хасах уу?</translation>
 <translation id="7537536606612762813">Заавал</translation>
+<translation id="7541043894191476250">Хам сэдэвт ажил</translation>
 <translation id="7543525346216957623">Эцэг эхээсээ асууна уу</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" />-г эхлүүлж байна</translation>
 <translation id="7548892272833184391">Холболтын алдааг засах</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">нууц үг бөглөхөд таны дэлгэцийн түгжээг ашиглахыг зогсоохоор оролдож байна</translation>
 <translation id="8407031780528483338">Хоолны сав</translation>
 <translation id="8409413588194360210">төлбөр хариуцагч</translation>
+<translation id="8410956920192583322">Сараар эсвэл 4 хувааж хэсэгчилсэн төлбөр</translation>
 <translation id="8412145213513410671">Эвдрэл (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Та нууц үгүү хоёр удаа зөв оруулна уу.</translation>
 <translation id="8414322570408428950">Өргөтгөлийн үйл явдал тохиолдох</translation>
@@ -4793,6 +4798,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Уламжлалт технологийн үйл явдлууд<ph name="END_LINK" /> тохиолдож буй таны зочилсон хуудаснуудын URL-н хязгаарлагдмал жагсаалт</translation>
 <translation id="892588693504540538">Баруун дээд буланд нэг нүх цоолох</translation>
 <translation id="8926389886865778422">Дахиж бүү асуу</translation>
+<translation id="8926400492587758246">Сараар хувааж хэсэгчилсэн бага төлбөрөөр төлөөрэй</translation>
 <translation id="8932102934695377596">Таны цаг хоцорч байна</translation>
 <translation id="893332455753468063">Нэр нэмэх</translation>
 <translation id="8938242527120341116">Таны төхөөрөмжийн контентын шүүлтүүр <ph name="BLOCKED_URL" />-г блоклосон</translation>

@@ -3236,7 +3236,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
         <ph name="BREAK" />
         <ph name="BREAK" />
         Bilo kada možete upravljati postavkama na ovoj kartici ili vidjeti više opcija u odjeljku Prilagodite Chrome.</translation>
-<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica na jednoj kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica na 1 kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208584281581115441">Provjeri sada</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
@@ -8961,7 +8961,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7211783048245131419">Još uvijek nije dodijeljen nijedan prekidač za pristup</translation>
 <translation id="7212097698621322584">Unesite sadašnji PIN da ga promijenite. Ako ne znate svoj PIN, moraćete poništiti sigurnosni ključ, a zatim kreirati novi PIN.</translation>
 <translation id="7214047272988222011">Dozvoljeno – <ph name="PERMISSION_DETAILS" />. Uključite <ph name="LINK_BEGIN" />pristup kameri sistema<ph name="LINK_END" />.</translation>
-<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova kartica na jednoj kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova kartica na 1 kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
 <translation id="721490496276866468">Uvoz lozinki</translation>
 <translation id="7217208603285112910">Odabir nije na jeziku: <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
@@ -9249,7 +9249,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7410344089573941623">Pitaj ako <ph name="HOST" /> želi pristupiti kameri i mikrofonu</translation>
 <translation id="7410421966064092098">Web lokacije ne mogu pomoći u potvrđivanju da niste bot</translation>
 <translation id="7410852728357935715">Emitiraj na uređaju</translation>
-<translation id="741148343080227980">Ime možete urediti <ph name="BEGIN_LINK" />na svojem Google računu <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="741148343080227980">Možete urediti ime <ph name="BEGIN_LINK" />na Google računu <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Da, želim</translation>
 <translation id="7412226954991670867">GPU memorija</translation>
 <translation id="741370456693729525">Pomoću svakodnevnog jezika pretražujte historiju pregledanja i pronađite web lokacije koje ste posjetili</translation>

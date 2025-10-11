@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">আপডে’ট সম্পৰ্কীয় আসোঁৱাহ সমাধান কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="1217114730239853757">আপুনি ChromeOS Flexৰ বিল্ট-ইন স্ক্ৰীন ৰীডাৰ, ChromeVox সক্ৰিয় কৰিবলৈ বিচাৰেনে? যদি বিচাৰে, স্পেচ বাৰডালত টিপক।</translation>
 <translation id="1217117837721346030">সন্দেহজনক ফাইল ডাউনল’ড কৰক</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" />ত নতুন টেব</translation>
 <translation id="1217483152325416304">আপোনাৰ স্থানীয় ডেটা অতি সোনকালে মচা হ'ব</translation>
 <translation id="1217668622537098248">কাৰ্য সম্পন্ন হ’লে পুনৰ বাওঁফালৰ ক্লিকলৈ উভতি যাওক</translation>
 <translation id="1218015446623563536">Linux মচক</translation>
@@ -3234,6 +3235,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         আপুনি এই কাৰ্ডৰ পৰা যিকোনো সময়তে ছেটিং পৰিচালনা কৰিব পাৰে অথবা Chrome কাষ্টমাইজ কৰকত অধিক বিকল্প চাব পাৰে।</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{১ টা টেবত নতুন টেব}one{# টা টেবত নতুন টেব}other{# টা টেবত নতুন টেব}}</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="3208703785962634733">নিশ্চিত কৰা নাই</translation>
@@ -3409,6 +3411,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ভিডিঅ’ চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডত প্লে’ হৈ আছে</translation>
 <translation id="3335380372402547327">ফ্লেশ্ব জাননী পূৰ্বদৰ্শন কৰক</translation>
 <translation id="3335947283844343239">বন্ধ কৰা টেব পুনৰ খোলক</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" />ত নতুন টেব</translation>
 <translation id="3336855445806447827">নিশ্চিত নহয়</translation>
 <translation id="3337568642696914359">ছাইটক প্ৰ্ৰ'টকল পৰিচালনা কৰাৰ অনুমতি নিদিব</translation>
 <translation id="333863344734218290">আপোনাক অসুৰক্ষিত ৰাজহুৱা আৰু ব্যক্তিগত ছাইটৰ বাবে সকীয়নি দিয়ে</translation>
@@ -8953,6 +8956,7 @@
 <translation id="7211783048245131419">এই পৰ্যন্ত কোনো ছুইচ আবণ্টন কৰা হোৱা নাই</translation>
 <translation id="7212097698621322584">আপোনাৰ বৰ্তমানৰ পিনটো সলনি কৰিবলৈ সেইটো দিয়ক। আপুনি যদি নিজৰ পিনটো নাজানে, আপুনি সুৰক্ষা চাবিটো ৰিছেট কৰি এটা নতুন পিন সৃষ্টি কৰিব লাগিব।</translation>
 <translation id="7214047272988222011">অনুমতি দিয়া আছে – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />ছিষ্টেমৰ কেমেৰাৰ এক্সেছ<ph name="LINK_END" /> অন কৰক।</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{১ টা টেবত নতুন টেব}one{# টা টেবত নতুন টেব}other{# টা টেবত নতুন টেব}}</translation>
 <translation id="721490496276866468">পাছৱৰ্ড আমদানি কৰক</translation>
 <translation id="7217208603285112910">বাছনিটো <ph name="LANGUAGE" /> ভাষাত নাই</translation>
 <translation id="7219254577985949841">ছাইটৰ ডেটা মচিবনে?</translation>
@@ -9240,6 +9244,7 @@
 <translation id="7410344089573941623"><ph name="HOST" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব বিচাৰিলে সোধক</translation>
 <translation id="7410421966064092098">ছাইটসমূহে আপুনি ব’ট নহয় বুলি সত্যাপন কৰাত সহায় কৰিব নোৱাৰে</translation>
 <translation id="7410852728357935715">ডিভাইচলৈ কাষ্ট কৰক</translation>
+<translation id="741148343080227980">আপুনি <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্ট <ph name="USERNAME" />ত<ph name="END_LINK" /> আপোনাৰ নামটো সম্পাদনা কৰিব পাৰে।</translation>
 <translation id="741204030948306876">হয়, মই সন্মত</translation>
 <translation id="7412226954991670867">GPU মেম’ৰী</translation>
 <translation id="741370456693729525">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক</translation>

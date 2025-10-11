@@ -469,6 +469,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2549711466868162843">Melhorar a iluminação</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="255671100581129685">O Assistente Google não está disponível para sessões públicas.</translation>
+<translation id="2562459326218811217">O dispositivo está ligado, mas não está a carregar. Experimente um carregador com mais watts (W) ou use o carregador original.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
 <translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
@@ -539,6 +540,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Experimente um carregador com mais watts (W) ou use o carregador original.</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
 <translation id="2822551631199737692">A câmara está a ser usada</translation>
 <translation id="2825619548187458965">Prateleira</translation>
@@ -1731,6 +1733,7 @@ Nova instalação</translation>
 <translation id="6582012689384648647">Para playlists de concentração personalizadas, permita o acesso ao YouTube Music</translation>
 <translation id="6582034443359256692">A calcular o nível de carga da bateria.</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Não é possível carregar o dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Câmara ajustada ao canto inferior esquerdo. Há um conflito com a superfície do sistema.</translation>
 <translation id="6605415194043280389">O Modo sem distrações está ativado</translation>

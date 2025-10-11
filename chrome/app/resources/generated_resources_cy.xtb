@@ -340,6 +340,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1216891999012841486">Dysgu rhagor am ddatrys gwallau diweddaru</translation>
 <translation id="1217114730239853757">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex? Os felly, pwyswch Space.</translation>
 <translation id="1217117837721346030">Lawrlwytho ffeil amheus</translation>
+<translation id="1217437913373100941">Tab newydd yn <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Bydd eich data lleol yn cael eu dileu yn fuan</translation>
 <translation id="1217668622537098248">Dychwelyd i glic chwith ar ôl gweithredu</translation>
 <translation id="1218015446623563536">Dileu Linux</translation>
@@ -3239,6 +3240,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
         <ph name="BREAK" />
         <ph name="BREAK" />
         Gallwch reoli gosodiadau y cerdyn hwn unrhyw bryd neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Tab newydd mewn 1 tab}zero{Tab newydd mewn # tabiau}two{Tab newydd mewn # dab}few{Tab newydd mewn # thab}many{Tab newydd mewn # thab}other{Tab newydd mewn # tab}}</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
 <translation id="3208584281581115441">Gwirio nawr</translation>
 <translation id="3208703785962634733">Heb ei gadarnhau</translation>
@@ -3414,6 +3416,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Fideo yn chwarae yn y modd llun mewn llun</translation>
 <translation id="3335380372402547327">Rhagolwg o hysbysiadau fflach</translation>
 <translation id="3335947283844343239">Ailagor Tab sydd wedi'i Gau</translation>
+<translation id="3336661809256024098">Tab Newydd yn <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ddim yn siŵr</translation>
 <translation id="3337568642696914359">Peidio â chaniatáu i wefannau drin protocolau</translation>
 <translation id="333863344734218290">Yn eich rhybuddio am wefannau cyhoeddus a phreifat ansicr</translation>
@@ -8965,6 +8968,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7211783048245131419">Heb aseinio switsh eto</translation>
 <translation id="7212097698621322584">Rhowch eich PIN presennol i'w newid. Os nad ydych yn gwybod eich PIN, bydd angen i chi ailosod yr allwedd ddiogelwch a chreu PIN newydd.</translation>
 <translation id="7214047272988222011">Caniatawyd – <ph name="PERMISSION_DETAILS" />. Trowch <ph name="LINK_BEGIN" />fynediad camera system<ph name="LINK_END" /> ymlaen.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Tab Newydd mewn 1 Tab}zero{Tab Newydd mewn # Tabiau}two{Tab Newydd mewn # Dab}few{Tab Newydd mewn # Thab}many{Tab Newydd mewn # Thab}other{Tab Newydd mewn # Tab}}</translation>
 <translation id="721490496276866468">Mewnforio cyfrineiriau</translation>
 <translation id="7217208603285112910">Dewis ddim yn <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Dileu data gwefan?</translation>
@@ -9252,6 +9256,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7410344089573941623">Gofyn pan fydd <ph name="HOST" /> eisiau cael mynediad at eich camera a'ch meicroffon</translation>
 <translation id="7410421966064092098">Ni all gwefannau helpu i gadarnhau nad bot ydych chi</translation>
 <translation id="7410852728357935715">Castio i ddyfais</translation>
+<translation id="741148343080227980">Gallwch olygu eich enw <ph name="BEGIN_LINK" />yn eich Cyfrif Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Iawn, rwy'n cydsynio</translation>
 <translation id="7412226954991670867">Cof GPU</translation>
 <translation id="741370456693729525">Defnyddiwch iaith bob dydd i chwilio eich hanes pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw</translation>

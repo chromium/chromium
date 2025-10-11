@@ -336,6 +336,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1216891999012841486">Máis información sobre a solución de erros de actualización</translation>
 <translation id="1217114730239853757">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS Flex? En caso afirmativo, preme a barra de espazo.</translation>
 <translation id="1217117837721346030">Descargar ficheiro sospeitoso</translation>
+<translation id="1217437913373100941">Nova pestana en <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Os teus datos locais eliminaranse en breve</translation>
 <translation id="1217668622537098248">Volve a utilizar o clic esquerdo tras realizar a acción</translation>
 <translation id="1218015446623563536">Eliminar Linux</translation>
@@ -3222,6 +3223,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Podes xestionar a configuración desta tarxeta cando queiras ou ver máis opcións en Personalizar Chrome</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova pestana en 1 pestana}other{Nova pestana en # pestanas}}</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3208703785962634733">Sen confirmar</translation>
@@ -3397,6 +3399,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: reproducindo vídeo no modo de pantalla superposta</translation>
 <translation id="3335380372402547327">Previsualizar as notificacións con luz</translation>
 <translation id="3335947283844343239">Abrir de novo a pestana pechada</translation>
+<translation id="3336661809256024098">Nova pestana en <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3337568642696914359">Non permitir que os sitios xestionen protocolos</translation>
 <translation id="333863344734218290">Recibir avisos dos sitios públicos e privados pouco seguros</translation>
@@ -8940,6 +8943,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7211783048245131419">Aínda non se asignou ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce o teu PIN actual para cambialo. Se non sabes cal é, deberás restablecer a chave de seguranza e, despois, crear un novo.</translation>
 <translation id="7214047272988222011">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Activa o <ph name="LINK_BEGIN" />acceso á cámara do sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova pestana en 1 pestana}other{Nova pestana en # pestanas}}</translation>
 <translation id="721490496276866468">Importar contrasinais</translation>
 <translation id="7217208603285112910">A selección non está en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Eliminar datos do sitio?</translation>
@@ -9227,6 +9231,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7410344089573941623">Preguntar se <ph name="HOST" /> quere acceder á túa cámara e micrófono</translation>
 <translation id="7410421966064092098">Os sitios non poden axudarche a verificar que non es un bot</translation>
 <translation id="7410852728357935715">Emitir nun dispositivo</translation>
+<translation id="741148343080227980">Podes editar o teu nome na túa <ph name="BEGIN_LINK" />Conta de Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Si, acepto</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>

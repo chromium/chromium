@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
 <translation id="1363028406613469049">Número de seguimento</translation>
 <translation id="1366525380420346469">Se a función está activada</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Podes evitar que este sitio envíe notificacións no futuro}other{Podes evitar que estes sitios envíen notificacións no futuro}}</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando...</translation>
 <translation id="1381838868249179644">Para protexerte, quitáronse os permisos dalgúns sitios</translation>

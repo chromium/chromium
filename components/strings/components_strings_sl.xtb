@@ -3312,6 +3312,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6433501201775827830">Izbira iskalnika</translation>
 <translation id="6433595998831338502">Spletno mesto <ph name="HOST_NAME" /> ni dovolilo povezave.</translation>
 <translation id="6433797564277305076">Od zdaj naprej lahko uporabljate odklepanje naprave in kartice potrjujete hitreje</translation>
+<translation id="6436994298828707228">Povezava je blokirana, ker jo je sprožila javna stran zaradi povezovanja z napravami ali strežniki v vašem lokalnem omrežju.</translation>
 <translation id="6437647869369934905">Google Risbe</translation>
 <translation id="643917412048333145">Ženske obleke</translation>
 <translation id="6440503408713884761">Prezrto</translation>
@@ -3383,6 +3384,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6547208576736763147">Dvojno luknjanje na levi</translation>
 <translation id="6549443526281184652">Kostumi</translation>
 <translation id="6550245281449521513">Zaklepanje miške ni dovoljeno</translation>
+<translation id="6552566579578780089">Plačila</translation>
 <translation id="6554732001434021288">Nazadnje obiskano pred toliko dnevi: <ph name="NUM_DAYS" /></translation>
 <translation id="6556866813142980365">Uveljavi</translation>
 <translation id="6557715786897013164">14 x 17 palcev</translation>
@@ -3531,6 +3533,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serijska vrata</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Plačujte v preprostih obrokih</translation>
 <translation id="6825578344716086703">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar ima strežnik potrdilo, podpisano s šibkim podpisnim algoritmom (kot je SHA-1). To pomeni, da so varnostne poverilnice, ki jih je poslal strežnik, morda ponarejene in strežnik morda ni tisti, ki ga pričakujete (morda komunicirate z napadalcem).</translation>
 <translation id="6826993739343257035">Želite omogočiti RR?</translation>
 <translation id="6828150717884939426">Klic</translation>
@@ -3979,6 +3982,7 @@ Dodatne podrobnosti:
 <translation id="753556296624075801">Uporablja tehnologijo Google</translation>
 <translation id="753713322968419914">Želite domači naslov odstraniti iz Chromovega samodejnega izpolnjevanja?</translation>
 <translation id="7537536606612762813">Obvezen</translation>
+<translation id="7541043894191476250">Kontekstualna opravila</translation>
 <translation id="7543525346216957623">Prosi starša</translation>
 <translation id="7546409722674205727">Zagon aplikacije <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Odpravljanje napak s povezavo</translation>
@@ -4504,6 +4508,7 @@ Dodatne podrobnosti:
 <translation id="8406071103346257942">ustaviti uporabo zaklepanja zaslona za izpolnjevanje gesel.</translation>
 <translation id="8407031780528483338">Kuhinjska posoda</translation>
 <translation id="8409413588194360210">rutine za obravnavo plačil</translation>
+<translation id="8410956920192583322">Mesečno ali v 4 obrokih</translation>
 <translation id="8412145213513410671">Zrušitve (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Dvakrat morate vnesti isto geslo.</translation>
 <translation id="8414322570408428950">Dogodek razširitve se zgodi</translation>
@@ -4794,6 +4799,7 @@ Dodatne podrobnosti:
 <translation id="8922734931659847428">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do <ph name="BEGIN_LINK" />starejših tehnoloških dogodkov<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Luknjanje zgoraj desno</translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
+<translation id="8926400492587758246">Plačujte v nizkih mesečnih obrokih</translation>
 <translation id="8932102934695377596">Ura zaostaja</translation>
 <translation id="893332455753468063">Dodajanje imena</translation>
 <translation id="8938242527120341116">Filtri vsebine v napravi so blokirali <ph name="BLOCKED_URL" /></translation>

@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">Alege motorul de căutare</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> a refuzat conexiunea.</translation>
 <translation id="6433797564277305076">Confirmă-ți cardurile mai rapid, folosind deblocarea dispozitivului de acum înainte</translation>
+<translation id="6436994298828707228">Conexiunea este blocată deoarece a fost inițiată de o pagină publică pentru conectarea la dispozitive sau servere din rețeaua ta locală.</translation>
 <translation id="6437647869369934905">Desene Google</translation>
 <translation id="643917412048333145">Rochii</translation>
 <translation id="6440503408713884761">Ignorat</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">Perforare dublă în stânga</translation>
 <translation id="6549443526281184652">Costumații</translation>
 <translation id="6550245281449521513">Blocarea mouse-ului nu este permisă</translation>
+<translation id="6552566579578780089">Plăți</translation>
 <translation id="6554732001434021288">Accesat ultima dată acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Porturi seriale</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Plătește în rate simple</translation>
 <translation id="6825578344716086703">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat semnat folosind un algoritm de semnare slab (cum ar fi SHA-1). Acest lucru înseamnă că este posibil ca datele de conectare de securitate prezentate de server să fie falsificate sau ca serverul să nu fie cel așteptat (este posibil să comunici cu un atacator).</translation>
 <translation id="6826993739343257035">Permiți RA?</translation>
 <translation id="6828150717884939426">Apelează</translation>
@@ -3979,6 +3982,7 @@ Detalii suplimentare:
 <translation id="753556296624075801">Un produs Google</translation>
 <translation id="753713322968419914">Elimini adresa de acasă din completarea automată din Chrome?</translation>
 <translation id="7537536606612762813">Obligatorie</translation>
+<translation id="7541043894191476250">Activități contextuale</translation>
 <translation id="7543525346216957623">Roagă-ți părintele</translation>
 <translation id="7546409722674205727">Începe <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Remediază erorile de conexiune</translation>
@@ -4504,6 +4508,7 @@ Detalii suplimentare:
 <translation id="8406071103346257942">nu mai folosi blocarea ecranului pentru completarea parolelor</translation>
 <translation id="8407031780528483338">Vase de bucătărie</translation>
 <translation id="8409413588194360210">Handlere pentru plăți</translation>
+<translation id="8410956920192583322">Lunar sau în 4 rate</translation>
 <translation id="8412145213513410671">Blocări (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Trebuie să introduci aceeași expresie de acces de două ori.</translation>
 <translation id="8414322570408428950">Are loc un eveniment legat de extensie</translation>
@@ -4795,6 +4800,7 @@ Detalii suplimentare:
 <translation id="8922734931659847428">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc <ph name="BEGIN_LINK" />evenimente privind tehnologia veche<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforare în dreapta sus</translation>
 <translation id="8926389886865778422">Nu mai întreba</translation>
+<translation id="8926400492587758246">Plătește în rate lunare mici</translation>
 <translation id="8932102934695377596">Ora este setată în trecut</translation>
 <translation id="893332455753468063">Adaugă un nume</translation>
 <translation id="8938242527120341116">Filtrele de conținut ale dispozitivului au blocat <ph name="BLOCKED_URL" /></translation>

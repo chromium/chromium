@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1363028406613469049">추적</translation>
 <translation id="1366525380420346469">켜졌을 때</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
 <translation id="1381838868249179644">안전을 위해 일부 사이트에서 권한이 삭제되었습니다</translation>

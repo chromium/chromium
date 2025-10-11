@@ -337,6 +337,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1216891999012841486">Få flere oplysninger om, hvordan du løser opdateringsproblemer</translation>
 <translation id="1217114730239853757">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex? Tryk på mellemrumstasten for at aktivere.</translation>
 <translation id="1217117837721346030">Download mistænkelig fil</translation>
+<translation id="1217437913373100941">Ny fane i <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Dine lokale data slettes snart</translation>
 <translation id="1217668622537098248">Vend tilbage til venstreklik efter handling</translation>
 <translation id="1218015446623563536">Slet Linux</translation>
@@ -3238,6 +3239,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan til enhver tid administrere indstillinger fra dette kort eller se flere valgmuligheder i Tilpas Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Ny fane på 1 fane}one{Ny fane på # fane}other{Ny fane på # faner}}</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3208703785962634733">Ikke bekræftet</translation>
@@ -3413,6 +3415,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – afspiller video i tilstanden med integreret billede</translation>
 <translation id="3335380372402547327">Se en forhåndsvisning af lysnotifikationer</translation>
 <translation id="3335947283844343239">Åbn lukket fane igen</translation>
+<translation id="3336661809256024098">Ny fane i <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ved ikke</translation>
 <translation id="3337568642696914359">Tillad ikke, at websites håndterer protokoller</translation>
 <translation id="333863344734218290">Advarer dig om usikre offentlige og private websites</translation>
@@ -8959,6 +8962,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7211783048245131419">Der er endnu ikke blevet tildelt nogen kontakt</translation>
 <translation id="7212097698621322584">Angiv din aktuelle pinkode for at ændre den. Hvis du ikke kender din pinkode, skal du nulstille sikkerhedsnøglen og derefter oprette en ny pinkode.</translation>
 <translation id="7214047272988222011">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér <ph name="LINK_BEGIN" />systemets kameraadgang<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Ny fane på 1 fane}one{Ny fane på # fane}other{Ny fane på # faner}}</translation>
 <translation id="721490496276866468">Importér adgangskoder</translation>
 <translation id="7217208603285112910">Ikke tilgængelig på <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vil du slette websitedata?</translation>
@@ -9246,6 +9250,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7410344089573941623">Spørg, hvis <ph name="HOST" /> vil have adgang til dit kamera og din mikrofon</translation>
 <translation id="7410421966064092098">Websites kan ikke hjælpe med at verificere, at du ikke er en bot</translation>
 <translation id="7410852728357935715">Cast til en enhed</translation>
+<translation id="741148343080227980">Du kan redigere dit navn <ph name="BEGIN_LINK" />på din Google-konto <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja tak</translation>
 <translation id="7412226954991670867">GPU-hukommelse</translation>
 <translation id="741370456693729525">Brug dagligsprog til at søge i din browserhistorik og finde websites, du har besøgt</translation>

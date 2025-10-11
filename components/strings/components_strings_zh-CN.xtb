@@ -1293,7 +1293,7 @@
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141337053413339205">切换到这个标签页。</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
-<translation id="3144458715650412431">测试政策已被应用。如需查看和重置这些政策，请访问 chrome://policy/test。管理员政策不会被应用。</translation>
+<translation id="3144458715650412431">已应用测试政策。如需查看政策或重新设置，请访问 chrome://policy/test。系统不会应用管理员政策。</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
 <translation id="3147941219998826815">廉价旅行与最后时限旅行</translation>
 <translation id="3150653042067488994">服务器临时错误</translation>
@@ -3307,6 +3307,7 @@
 <translation id="6433501201775827830">选择搜索引擎</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 拒绝了我们的连接请求。</translation>
 <translation id="6433797564277305076">从现在开始，您可使用设备解锁更快速地确认银行卡信息</translation>
+<translation id="6436994298828707228">此连接已被阻止，因为它是公共页面发起的，旨在连接到您本地网络上的设备或服务器。</translation>
 <translation id="6437647869369934905">Google 绘图</translation>
 <translation id="643917412048333145">连衣裙</translation>
 <translation id="6440503408713884761">已忽略</translation>
@@ -3378,6 +3379,7 @@
 <translation id="6547208576736763147">双孔（左侧）</translation>
 <translation id="6549443526281184652">特殊场合服装</translation>
 <translation id="6550245281449521513">不允许锁定鼠标</translation>
+<translation id="6552566579578780089">支付方式</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 英寸</translation>
@@ -3526,6 +3528,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">串行端口</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">轻松分期付款</translation>
 <translation id="6825578344716086703">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书是使用弱签名算法（例如 SHA-1）签署的。这意味着服务器出示的安全凭据可能是伪造的，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="6826993739343257035">允许 AR？</translation>
 <translation id="6828150717884939426">致电</translation>
@@ -3974,6 +3977,7 @@
 <translation id="753556296624075801">由 Google 提供支持</translation>
 <translation id="753713322968419914">要从 Chrome 自动填充功能中移除住址吗？</translation>
 <translation id="7537536606612762813">强制</translation>
+<translation id="7541043894191476250">情境任务</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">修正网络连接错误</translation>
@@ -4499,6 +4503,7 @@
 <translation id="8406071103346257942">停止使用屏幕锁定功能填充密码</translation>
 <translation id="8407031780528483338">烹饪用具</translation>
 <translation id="8409413588194360210">付款处理程序</translation>
+<translation id="8410956920192583322">按月或分 4 期付款</translation>
 <translation id="8412145213513410671">崩溃次数（<ph name="CRASH_COUNT" /> 次）</translation>
 <translation id="8412392972487953978">您两次输入的密码必须相同。</translation>
 <translation id="8414322570408428950">发生扩展程序事件</translation>
@@ -4790,6 +4795,7 @@
 <translation id="8922734931659847428">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
 <translation id="8926389886865778422">不再询问</translation>
+<translation id="8926400492587758246">按月小额分期付款</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>
 <translation id="893332455753468063">添加名称</translation>
 <translation id="8938242527120341116">设备上的内容过滤器阻止了 <ph name="BLOCKED_URL" /></translation>

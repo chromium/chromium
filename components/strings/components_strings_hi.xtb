@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">अपना सर्च इंजन चुनें</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ने कनेक्ट करने से मना कर दिया है.</translation>
 <translation id="6433797564277305076">अब से, कार्ड को अनलॉक करने की सुविधा का इस्तेमाल करके, अपने कार्ड की पुष्टि जल्दी करें</translation>
+<translation id="6436994298828707228">कनेक्शन को ब्लॉक कर दिया गया है, क्योंकि इसे सार्वजनिक पेज से आपके लोकल नेटवर्क पर मौजूद डिवाइसों या सर्वर से कनेक्ट करने के लिए चालू किया गया था.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">कपड़े</translation>
 <translation id="6440503408713884761">अनदेखा किया गया</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">बाईं ओर ड्युएल पंच</translation>
 <translation id="6549443526281184652">पोशाक</translation>
 <translation id="6550245281449521513">माउस लॉक इस्तेमाल करने की अनुमति नहीं है</translation>
+<translation id="6552566579578780089">पेमेंट</translation>
 <translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
 <translation id="6556866813142980365">फिर से करें</translation>
 <translation id="6557715786897013164">14 x 17 इंच</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">सीरियल पोर्ट</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">आसान किस्तों में पेमेंट करें</translation>
 <translation id="6825578344716086703">आपने <ph name="DOMAIN" /> तक पहुंचने की कोशिश की थी, लेकिन सर्वर ने कमज़ोर हस्ताक्षर एल्गोरिद्म (जैसे कि SHA-1) वाला प्रमाणपत्र प्रस्तुत किया. इसका मतलब है कि सर्वर की ओर से प्रस्तुत किए गए सुरक्षा क्रेडेंशियल नकली हो सकते हैं और हो सकता है कि सर्वर आपका अपेक्षित सर्वर न हो (हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों).</translation>
 <translation id="6826993739343257035">क्या आप एआर (ऑगमेंटेड रिएलिटी) के लिए अनुमति देना चाहते हैं?</translation>
 <translation id="6828150717884939426">कॉल करें</translation>
@@ -3979,6 +3982,7 @@
 <translation id="753556296624075801">Google की ओर से</translation>
 <translation id="753713322968419914">क्या Chrome में जानकारी ऑटोमैटिक तरीके से भरने की सुविधा से, घर का पता हटाना है?</translation>
 <translation id="7537536606612762813">ज़रूरी है</translation>
+<translation id="7541043894191476250">कॉन्टेक्स्ट के हिसाब से टास्क</translation>
 <translation id="7543525346216957623">अपने अभिभावक से पूछें</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> शुरू हो रहा है</translation>
 <translation id="7548892272833184391">कनेक्शन गड़बड़ियां ठीक करना</translation>
@@ -4504,6 +4508,7 @@
 <translation id="8406071103346257942">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करना बंद करें</translation>
 <translation id="8407031780528483338">खाना बनाने के बर्तन</translation>
 <translation id="8409413588194360210">पेमेंट हैंडलर</translation>
+<translation id="8410956920192583322">चार किस्तों में या हर महीने पेमेंट करें</translation>
 <translation id="8412145213513410671">क्रैश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">आपको वही 'पासफ़्रेज़' दोबारा दर्ज करना होगा.</translation>
 <translation id="8414322570408428950">एक्सटेंशन से जुड़े इवेंट के बारे में जानकारी</translation>
@@ -4795,6 +4800,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />लेगसी टेक्नोलॉजी इवेंट<ph name="END_LINK" /> वाले जिन पेजों पर आपने विज़िट किया है उनके यूआरएल की सीमित सूची</translation>
 <translation id="892588693504540538">सबसे ऊपर दाईं ओर पंच</translation>
 <translation id="8926389886865778422">दोबारा न पूछें</translation>
+<translation id="8926400492587758246">महीने के हिसाब से छोटी-छोटी किस्तों में पेमेंट करें</translation>
 <translation id="8932102934695377596">आपकी घड़ी पीछे है</translation>
 <translation id="893332455753468063">नाम जोड़ें</translation>
 <translation id="8938242527120341116">आपके डिवाइस के कॉन्टेंट फ़िल्टर ने <ph name="BLOCKED_URL" /> को ब्लॉक किया है</translation>

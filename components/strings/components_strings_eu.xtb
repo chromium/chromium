@@ -3307,6 +3307,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6433501201775827830">Aukeratu bilatzailea</translation>
 <translation id="6433595998831338502">Konexioa baztertu du <ph name="HOST_NAME" /> webguneak.</translation>
 <translation id="6433797564277305076">Aurrerantzean, berretsi txartelak bizkorrago gailu-desblokeoa erabilita</translation>
+<translation id="6436994298828707228">Konexioa blokeatuta dago, orri publiko batek abiarazi duelako zure sare lokaleko gailu edo zerbitzarietara konektatzeko helburuarekin.</translation>
 <translation id="6437647869369934905">Google Marrazkiak</translation>
 <translation id="643917412048333145">Soinekoak</translation>
 <translation id="6440503408713884761">Ez ikusi egin zaio</translation>
@@ -3378,6 +3379,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6547208576736763147">Bi zulo ezkerrean</translation>
 <translation id="6549443526281184652">Mozorroak</translation>
 <translation id="6550245281449521513">Ezin da blokeatu sagua</translation>
+<translation id="6552566579578780089">Ordainketak</translation>
 <translation id="6554732001434021288">Duela <ph name="NUM_DAYS" /> egun bisitatu zenuen azkenengoz</translation>
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6557715786897013164">35,56 × 43,18 cm (14 × 17 in)</translation>
@@ -3526,6 +3528,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serie-atakak</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Ordaindu epe erosoetan</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak aurkeztu duen sinadura-algoritmoa ez da segurua (adibidez, SHA-1). Horrek esan nahi du zerbitzariak aurkeztutako segurtasun-kredentzialak faltsuak direla eta balitekeela zerbitzaria ez izatea zuk espero zenuena, hau da, posible dela erasotzaile batekin komunikatzen ari izatea.</translation>
 <translation id="6826993739343257035">EA erabiltzeko baimena eman nahi duzu?</translation>
 <translation id="6828150717884939426">Deitu</translation>
@@ -3973,6 +3976,7 @@ Xehetasun gehiago:
 <translation id="753556296624075801">Google-ren teknologiarekin</translation>
 <translation id="753713322968419914">Chrome-ren betetze automatikotik etxeko helbidea kendu nahi duzu?</translation>
 <translation id="7537536606612762813">Derrigorrezkoa</translation>
+<translation id="7541043894191476250">Testuinguruaren araberako zereginak</translation>
 <translation id="7543525346216957623">Galdetu gurasoei</translation>
 <translation id="7546409722674205727">Hasiera-ordua: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Konpondu konexio-erroreak</translation>
@@ -4498,6 +4502,7 @@ Xehetasun gehiago:
 <translation id="8406071103346257942">pantailaren blokeoa pasahitzen eremuak betetzeko erabiltzeari utzi behar dio</translation>
 <translation id="8407031780528483338">Sukaldeko ontziak</translation>
 <translation id="8409413588194360210">ordainketa-kudeatzaileak</translation>
+<translation id="8410956920192583322">Hilero edo 4 epetan</translation>
 <translation id="8412145213513410671">Hutsegiteak (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Pasaesaldi berbera bi aldiz idatzi behar duzu.</translation>
 <translation id="8414322570408428950">Luzapenen gertaera bat dago</translation>
@@ -4788,6 +4793,7 @@ Xehetasun gehiago:
 <translation id="8922734931659847428">bisitatzen dituzun orrien URLen zerrenda mugatu bat, non <ph name="BEGIN_LINK" />aurreko bertsioko teknologia-gertaerak<ph name="END_LINK" /> jazotzen baitira</translation>
 <translation id="892588693504540538">Zulo bat goian, eskuinetara</translation>
 <translation id="8926389886865778422">Ez galdetu berriro</translation>
+<translation id="8926400492587758246">Ordaindu hileroko kuota baxutan</translation>
 <translation id="8932102934695377596">Erlojua atzeratuta duzu</translation>
 <translation id="893332455753468063">Gehitu izena</translation>
 <translation id="8938242527120341116">Gailuaren eduki-iragazkiek <ph name="BLOCKED_URL" /> blokeatu dute</translation>

@@ -336,6 +336,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1216891999012841486">További információ a sikertelen frissítést okozó hibák kijavításáról</translation>
 <translation id="1217114730239853757">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját? Ha igen, nyomja meg a szóköz billentyűt.</translation>
 <translation id="1217117837721346030">Gyanús fájl letöltése</translation>
+<translation id="1217437913373100941">Új lap itt: <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Helyi adatai hamarosan törlődnek</translation>
 <translation id="1217668622537098248">Visszaállítás bal kattintásra a művelet elvégzése után</translation>
 <translation id="1218015446623563536">A Linux törlése</translation>
@@ -3235,6 +3236,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
         <ph name="BREAK" />
         <ph name="BREAK" />
         Az erre a kártyára vonatkozó beállításokat bármikor kezelheti, illetve további lehetőségeket is megtekinthet a Chrome személyre szabása szakaszban.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Új lap 1 lapon}other{Új lap # lapon}}</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208584281581115441">Ellenőrzés most</translation>
 <translation id="3208703785962634733">Nincs megerősítve</translation>
@@ -3410,6 +3412,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – A videó lejátszása kép a képben módban történik</translation>
 <translation id="3335380372402547327">Villogó értesítések előnézete</translation>
 <translation id="3335947283844343239">Bezárt lap megnyitása</translation>
+<translation id="3336661809256024098">Új lap itt: <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nem tudom</translation>
 <translation id="3337568642696914359">A webhelyek nem kezelhetnek protokollokat</translation>
 <translation id="333863344734218290">Figyelmeztetést kap a nyilvános és privát nem biztonságos webhelyekről</translation>
@@ -8954,6 +8957,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7211783048245131419">Még nem lett hozzárendelve kapcsoló</translation>
 <translation id="7212097698621322584">A módosításhoz adja meg jelenlegi PIN-kódját. Ha nem tudja a PIN-kódot, vissza kell állítania a biztonsági hardverkulcsot, majd új PIN-kódot kell létrehoznia.</translation>
 <translation id="7214047272988222011">Engedélyezve – <ph name="PERMISSION_DETAILS" />. Kapcsolja be a <ph name="LINK_BEGIN" />rendszerkamerához való hozzáférést<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Új lap 1 lapon}other{Új lap # lapon}}</translation>
 <translation id="721490496276866468">Jelszavak importálása</translation>
 <translation id="7217208603285112910">A kijelölés nem áll rendelkezésre <ph name="LANGUAGE" /> nyelven</translation>
 <translation id="7219254577985949841">Törli a webhelyadatokat?</translation>
@@ -9241,6 +9245,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7410344089573941623">Kérdezzen rá, ha a(z) <ph name="HOST" /> hozzá szeretne férni a kamerához és a mikrofonhoz</translation>
 <translation id="7410421966064092098">A webhelyek nem tudnak segíteni annak igazolásában, hogy Ön nem robot</translation>
 <translation id="7410852728357935715">Átküldés egyetlen eszközre</translation>
+<translation id="741148343080227980">Nevét <ph name="BEGIN_LINK" />Google-fiókjában (<ph name="USERNAME" />)<ph name="END_LINK" /> szerkesztheti.</translation>
 <translation id="741204030948306876">Igen, folytatom</translation>
 <translation id="7412226954991670867">GPU memória</translation>
 <translation id="741370456693729525">Hétköznapi nyelven kereshet a böngészési előzmények között, és megkeresheti a felkeresett webhelyeket.</translation>

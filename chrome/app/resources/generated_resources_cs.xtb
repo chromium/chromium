@@ -338,6 +338,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1216891999012841486">Další informace o opravě chyb aktualizace</translation>
 <translation id="1217114730239853757">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro systém ChromeOS Flex? Pokud ano, stiskněte mezerník.</translation>
 <translation id="1217117837721346030">Stáhnout podezřelý soubor</translation>
+<translation id="1217437913373100941">Nová karta ve skupině <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Vaše místní data budou brzy smazána</translation>
 <translation id="1217668622537098248">Po akci vrátit na kliknutí levým tlačítkem</translation>
 <translation id="1218015446623563536">Smazat Linux</translation>
@@ -3223,6 +3224,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Nastavení můžete z této karty kdykoliv změnit nebo si projít další možnosti v sekci Přizpůsobit Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nová karta ve skupině 1 karty}few{Nová karta ve skupině # karet}many{Nová karta ve skupině # karty}other{Nová karta ve skupině # karet}}</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="3208703785962634733">Nepotvrzeno</translation>
@@ -3398,6 +3400,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se přehrává v režimu obrazu v obraze</translation>
 <translation id="3335380372402547327">Zobrazit náhled světelných oznámení</translation>
 <translation id="3335947283844343239">Znovu otevřít zavřenou kartu</translation>
+<translation id="3336661809256024098">Nová karta ve skupině <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nevím</translation>
 <translation id="3337568642696914359">Nepovolovat webům zpracovávat protokoly</translation>
 <translation id="333863344734218290">Varuje vás před nezabezpečenými veřejnými a soukromými weby</translation>
@@ -8940,6 +8943,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7211783048245131419">Zatím nebyl přiřazen žádný přepínač</translation>
 <translation id="7212097698621322584">Chcete-li změnit PIN, zadejte aktuální PIN. Pokud svůj PIN neznáte, budete bezpečnostní klíč muset resetovat a poté vytvořit nový PIN.</translation>
 <translation id="7214047272988222011">Povoleno – <ph name="PERMISSION_DETAILS" />. Zapněte <ph name="LINK_BEGIN" />systémový přístup ke kameře<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nová karta ve skupině 1 karty}few{Nová karta ve skupině # karet}many{Nová karta ve skupině # karty}other{Nová karta ve skupině # karet}}</translation>
 <translation id="721490496276866468">Importovat hesla</translation>
 <translation id="7217208603285112910">Výběr není v jazyce <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vymazat data webu?</translation>
@@ -9227,6 +9231,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7410344089573941623">Zobrazit dotaz, pokud bude chtít web <ph name="HOST" /> používat webovou kameru a mikrofon</translation>
 <translation id="7410421966064092098">Weby nemohou pomáhat ověřit, že nejste robot</translation>
 <translation id="7410852728357935715">Odesílání do zařízení</translation>
+<translation id="741148343080227980">Své jméno <ph name="BEGIN_LINK" />můžete upravit ve svém účtu Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7412226954991670867">Paměť GPU</translation>
 <translation id="741370456693729525">Vyhledávat běžným jazykem v historii prohlížení a najít tak navštívené weby</translation>

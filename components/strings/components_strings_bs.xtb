@@ -3312,7 +3312,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6433501201775827830">Odaberite pretraživač</translation>
 <translation id="6433595998831338502">Host računar <ph name="HOST_NAME" /> je odbio povezivanje.</translation>
 <translation id="6433797564277305076">Potvrdite kartice brže koristeći otključavanja uređaja od sada</translation>
-<translation id="6436994298828707228">Povezivanje je blokirano jer ga je pokrenula javna stranica radi povezivanja s uređajima ili poslužiteljima na vašoj lokalnoj mreži.</translation>
+<translation id="6436994298828707228">Povezivanje je blokirano jer ga je pokrenula javna stranica radi povezivanja s uređajima ili serverima na vašoj lokalnoj mreži.</translation>
 <translation id="6437647869369934905">Google Crteži</translation>
 <translation id="643917412048333145">Haljine</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
@@ -3533,7 +3533,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6817217109584391709">javaScript</translation>
 <translation id="6820143000046097424">serijski priključci</translation>
 <translation id="6820686453637990663">CVC</translation>
-<translation id="6820949753458790123">Platite u više obroka</translation>
+<translation id="6820949753458790123">Plaćajte u malim ratama</translation>
 <translation id="6825578344716086703">Pokušali ste prići domeni <ph name="DOMAIN" />, ali je server prikazao potvrdu koja je potpisana koristeći slabi algoritam za potpisivanje (kao što je SHA-1). To znači da postoji mogućnost da su sigurnosni akreditivi koje je server prikazao krivotvoreni i da taj server možda nije server koji ste očekivali (možda komunicirate s napadačem).</translation>
 <translation id="6826993739343257035">Dozvoliti AR?</translation>
 <translation id="6828150717884939426">Pozovi</translation>
@@ -4508,7 +4508,7 @@ Dodatni detalji:
 <translation id="8406071103346257942">prestati koristiti zaključavanje ekrana za popunjavanje lozinki</translation>
 <translation id="8407031780528483338">Kuhinjsko posuđe</translation>
 <translation id="8409413588194360210">obrađivači plaćanja</translation>
-<translation id="8410956920192583322">Mjesečno ili u četiri obroka</translation>
+<translation id="8410956920192583322">Mjesečne ili 4 rate</translation>
 <translation id="8412145213513410671">Padovi (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Morate unijeti isti pristupni izraz dva puta.</translation>
 <translation id="8414322570408428950">Došlo je do događaja ekstenzije</translation>
@@ -4799,7 +4799,7 @@ Dodatni detalji:
 <translation id="8922734931659847428">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji starije tehnologije<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Bušenje u gornjem desnom uglu</translation>
 <translation id="8926389886865778422">Ne pitaj ponovo</translation>
-<translation id="8926400492587758246">Platite u malim mjesečnim obrocima</translation>
+<translation id="8926400492587758246">Plaćajte u malim mjesečnim ratama</translation>
 <translation id="8932102934695377596">Vaš sat kasni</translation>
 <translation id="893332455753468063">Dodaj ime</translation>
 <translation id="8938242527120341116">Filteri sadržaja na uređaju su blokirali <ph name="BLOCKED_URL" /></translation>

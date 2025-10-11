@@ -336,6 +336,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1216891999012841486">Pata maelezo zaidi kuhusu kurekebisha hitilafu za sasisho</translation>
 <translation id="1217114730239853757">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex? Ikiwa ndivyo, bonyeza kitufe cha nafasi.</translation>
 <translation id="1217117837721346030">Pakua faili inayotiliwa shaka</translation>
+<translation id="1217437913373100941">Kichupo kipya katika <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Itafuta data yako ya kifaa hivi karibuni</translation>
 <translation id="1217668622537098248">Rudi kwenye hali ya kubofya kushoto baada ya kitendo hiki</translation>
 <translation id="1218015446623563536">Futa Linux</translation>
@@ -3233,6 +3234,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
         <ph name="BREAK" />
         <ph name="BREAK" />
         Unaweza kudhibiti mipangilio katika kadi hii wakati wowote au uangalie chaguo zaidi kwenye kipengele cha Badilisha Chrome Upendavyo.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Kichupo kipya katika kichupo 1}other{Kichupo kipya katika vichupo #}}</translation>
 <translation id="3207960819495026254">Imealamishwa</translation>
 <translation id="3208584281581115441">Angalia sasa</translation>
 <translation id="3208703785962634733">Haijathibitishwa</translation>
@@ -3408,6 +3410,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video inacheza katika hali ya picha ndani ya picha</translation>
 <translation id="3335380372402547327">Kagua arifa zenye mweko</translation>
 <translation id="3335947283844343239">Fungua Tena Kichupo Kilichofugwa</translation>
+<translation id="3336661809256024098">Kichupo Kipya katika <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Sina uhakika</translation>
 <translation id="3337568642696914359">Usiruhusu tovuti zishughulikie itifaki</translation>
 <translation id="333863344734218290">Hukutahadharisha kuhusu tovuti za faragha na za umma zisizo salama</translation>
@@ -8950,6 +8953,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7211783048245131419">Bado hujakabidhi swichi yoyote</translation>
 <translation id="7212097698621322584">Weka PIN yako ya sasa ili uibadilishe. Ikiwa hujui PIN yako, utahitaji kubadilisha ufunguo wako wa usalama, kisha uunde PIN mpya.</translation>
 <translation id="7214047272988222011">Umeruhusu – <ph name="PERMISSION_DETAILS" />. Washa <ph name="LINK_BEGIN" />ufikiaji wa kamera ya kifaa<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Kichupo Kipya katika Kichupo 1}other{Kichupo Kipya katika Vichupo #}}</translation>
 <translation id="721490496276866468">Pakia manenosiri</translation>
 <translation id="7217208603285112910">Maudhui uliyochagua hayapatikani kwa <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Je, ungependa kufuta data ya tovuti?</translation>
@@ -9237,6 +9241,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7410344089573941623">Uliza iwapo <ph name="HOST" /> inataka kufikia kamera na maikrofoni yako</translation>
 <translation id="7410421966064092098">Tovuti haziwezi kusaidia kuthibitisha kuwa wewe si roboti</translation>
 <translation id="7410852728357935715">Tuma kwenye kifaa</translation>
+<translation id="741148343080227980">Unaweza kubadilisha jina lako <ph name="BEGIN_LINK" />katika Akaunti yako ya Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ndiyo, ninakubali</translation>
 <translation id="7412226954991670867">Kumbukumbu ya GPU</translation>
 <translation id="741370456693729525">Tumia lugha ya kila siku kutafuta historia yako ya kuvinjari na kupata tovuti ulizotembelea</translation>

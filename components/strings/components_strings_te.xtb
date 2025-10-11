@@ -3307,6 +3307,7 @@
 <translation id="6433501201775827830">మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> కనెక్ట్ కావడానికి నిరాకరించింది.</translation>
 <translation id="6433797564277305076">ఇప్పటి నుండి, పరికర అన్‌లాక్‌ను ఉపయోగించడం ద్వారా మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
+<translation id="6436994298828707228">మీ లోకల్ నెట్‌వర్క్‌లోని డివైజ్‌లు లేదా సర్వర్‌లకు కనెక్ట్ చేయడానికి పబ్లిక్ పేజీ ద్వారా ప్రారంభించబడినందున కనెక్షన్ బ్లాక్ చేయబడింది.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">డ్రసెస్</translation>
 <translation id="6440503408713884761">విస్మరించబడింది</translation>
@@ -3378,6 +3379,7 @@
 <translation id="6547208576736763147">ఎడమవైపు రెండు రంధ్రాలు</translation>
 <translation id="6549443526281184652">కాస్ట్యూమ్స్</translation>
 <translation id="6550245281449521513">మౌస్ లాక్ అనుమతించబడదు</translation>
+<translation id="6552566579578780089">పేమెంట్‌లు</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> రోజుల క్రితం చివరిగా సందర్శించారు</translation>
 <translation id="6556866813142980365">మళ్లీ చేయి</translation>
 <translation id="6557715786897013164">14 x 17 అంగుళాలు</translation>
@@ -3526,6 +3528,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">సీరియల్ పోర్ట్‌లు</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">సులభ వాయిదాలలో పేమెంట్ చేయండి</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ (SHA-1 వంటి) బలహీనమైన సంతకం అల్గారిథమ్‌ను ఉపయోగించి సంతకం చేసిన ప్రమాణపత్రాన్ని అందించింది. అంటే సర్వర్ అందించిన భద్రత ఆధారాలు నకిలీ కావచ్చు మరియు సర్వర్ మీరు ఊహించిన సర్వర్ కాకపోవచ్చు (మీరు హ్యాకర్‌తో పరస్పర చర్య చేస్తుండవచ్చు).</translation>
 <translation id="6826993739343257035">ARను అనుమతించాలా?</translation>
 <translation id="6828150717884939426">కాల్ చేయడం</translation>
@@ -3974,6 +3977,7 @@
 <translation id="753556296624075801">Google అందిస్తోంది</translation>
 <translation id="753713322968419914">Chrome ఆటోఫిల్ నుండి ఇంటి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="7537536606612762813">తప్పనిసరి</translation>
+<translation id="7541043894191476250">సందర్భోచితమైన టాస్క్‌లు</translation>
 <translation id="7543525346216957623">మీ తల్లి/తండ్రిని అడగండి</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ప్రారంభమవుతోంది</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>
@@ -4499,6 +4503,7 @@
 <translation id="8406071103346257942">పాస్‌వర్డ్‌లను పూరించడానికి మీ స్క్రీన్ లాక్‌ను ఉపయోగించడాన్ని ఆపివేయండి</translation>
 <translation id="8407031780528483338">వంట సామాగ్రి</translation>
 <translation id="8409413588194360210">పేమెంట్ హ్యాండ్లర్‌లు</translation>
+<translation id="8410956920192583322">నెలవారీ లేదా 4 వాయిదాలు</translation>
 <translation id="8412145213513410671">క్రాష్‌లు (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">అదే రహస్య పదబంధాన్ని రెండుసార్లు ఖచ్చితంగా మీరు నమోదు చేయాలి.</translation>
 <translation id="8414322570408428950">ఎక్స్‌టెన్షన్ ఈవెంట్ రంగులు</translation>
@@ -4789,6 +4794,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />లెగసీ టెక్నాలజీ ఈవెంట్‌లు<ph name="END_LINK" /> జరుగుతున్న చోట మీరు చూసే పేజీల URLలకు సంబంధించిన పరిమిత లిస్ట్</translation>
 <translation id="892588693504540538">కుడివైపు ఎగువ భాగంలో రంధ్రం</translation>
 <translation id="8926389886865778422">మళ్ళి అడగవద్దు</translation>
+<translation id="8926400492587758246">తక్కువ నెలవారీ వాయిదాలలో పేమెంట్ చేయండి</translation>
 <translation id="8932102934695377596">మీ గడియారం సమయం గతంలో ఉంది</translation>
 <translation id="893332455753468063">పేరుని జోడించండి</translation>
 <translation id="8938242527120341116">మీ డివైజ్ కంటెంట్ ఫిల్టర్‌లు, <ph name="BLOCKED_URL" />‌ను బ్లాక్ చేశాయి</translation>

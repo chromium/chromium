@@ -336,6 +336,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1216891999012841486">Más información para corregir errores de actualización</translation>
 <translation id="1217114730239853757">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="1217117837721346030">Descargar archivo sospechoso</translation>
+<translation id="1217437913373100941">Nueva pestaña en <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Pronto se borrarán tus datos locales</translation>
 <translation id="1217668622537098248">Volver al clic con el botón izquierdo después de la acción</translation>
 <translation id="1218015446623563536">Borrar Linux</translation>
@@ -3220,6 +3221,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puedes administrar la configuración desde esta tarjeta en cualquier momento o ver más opciones en Personalizar Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nueva pestaña en 1 pestaña}other{Nueva pestaña en # pestañas}}</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
 <translation id="3208703785962634733">Sin confirmar</translation>
@@ -3395,6 +3397,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: El video se reproduce en modo de pantalla en pantalla</translation>
 <translation id="3335380372402547327">Obtener vista previa de las notificaciones con flash</translation>
 <translation id="3335947283844343239">Volver a abrir pestaña cerrada</translation>
+<translation id="3336661809256024098">Nueva pestaña en <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">No lo sé</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="333863344734218290">Te advierte sobre sitios públicos y privados no seguros</translation>
@@ -8939,6 +8942,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
 <translation id="7214047272988222011">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el <ph name="LINK_BEGIN" />acceso a la cámara del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nueva pestaña en 1 pestaña}other{Nueva pestaña en # pestañas}}</translation>
 <translation id="721490496276866468">Importar contraseñas</translation>
 <translation id="7217208603285112910">No mostrar selección en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">¿Quieres borrar los datos del sitio?</translation>
@@ -9226,6 +9230,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7410344089573941623">Preguntar si <ph name="HOST" /> quiere acceder a la cámara y al micrófono</translation>
 <translation id="7410421966064092098">Los sitios no pueden ayudar a verificar que no eres un bot</translation>
 <translation id="7410852728357935715">Transmitir a un dispositivo</translation>
+<translation id="741148343080227980">Puedes editar tu nombre <ph name="BEGIN_LINK" />en tu Cuenta de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7412226954991670867">Memoria de GPU</translation>
 <translation id="741370456693729525">Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste</translation>

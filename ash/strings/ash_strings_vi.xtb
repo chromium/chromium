@@ -469,6 +469,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2549711466868162843">Cải thiện ánh sáng</translation>
 <translation id="2549985041256363841">Bắt đầu ghi</translation>
 <translation id="255671100581129685">Bạn không thể sử dụng Trợ lý Google trong phiên công khai.</translation>
+<translation id="2562459326218811217">Thiết bị đã cắm sạc nhưng không sạc. Hãy thử dùng bộ sạc có công suất cao hơn hoặc dùng bộ sạc gốc.</translation>
 <translation id="256712445991462162">tính năng phóng to ở vị trí cố định</translation>
 <translation id="2573588302192866788">Không thể kết nối với <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Đã tắt tính năng đăng nhập nhiều tài khoản</translation>
@@ -539,6 +540,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2814448776515246190">Chụp một phần màn hình</translation>
+<translation id="2815594810045873507">Hãy thử dùng bộ sạc có công suất cao hơn hoặc dùng bộ sạc gốc.</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="2822551631199737692">Máy ảnh đang được sử dụng</translation>
 <translation id="2825619548187458965">Giá</translation>
@@ -1731,6 +1733,7 @@ Mới cài đặt</translation>
 <translation id="6582012689384648647">Hãy cho phép truy cập vào YouTube Music để thưởng thức danh sách phát giúp tập trung được cá nhân hoá</translation>
 <translation id="6582034443359256692">Đang tính toán mức pin.</translation>
 <translation id="6585808820553845416">Phiên sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Không sạc được thiết bị</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Máy ảnh đang bám theo góc dưới bên trái. Xung đột với khu vực hệ thống.</translation>
 <translation id="6605415194043280389">Chế độ Tập trung đang bật</translation>

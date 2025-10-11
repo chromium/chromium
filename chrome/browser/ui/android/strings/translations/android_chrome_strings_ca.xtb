@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1363028406613469049">Fes un seguiment</translation>
 <translation id="1366525380420346469">Quan aquesta opció està activada</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Pots impedir que aquest lloc web enviï notificacions en el futur}other{Pots impedir que aquests llocs web enviïn notificacions en el futur}}</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
 <translation id="1376578503827013741">S'està calculant…</translation>
 <translation id="1381838868249179644">Per ajudar a protegir-te, s'han suprimit els permisos d'alguns llocs web</translation>

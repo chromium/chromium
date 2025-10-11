@@ -3310,6 +3310,7 @@
 <translation id="6433501201775827830">選擇搜尋引擎</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 拒絕連線。</translation>
 <translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認卡片的速度</translation>
+<translation id="6436994298828707228">公開頁面要連線到區域網路的裝置或伺服器，因此系統封鎖連線。</translation>
 <translation id="6437647869369934905">Google 繪圖</translation>
 <translation id="643917412048333145">洋裝</translation>
 <translation id="6440503408713884761">已忽略</translation>
@@ -3381,6 +3382,7 @@
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6549443526281184652">變裝道具</translation>
 <translation id="6550245281449521513">不允許鎖定滑鼠</translation>
+<translation id="6552566579578780089">付款方式</translation>
 <translation id="6554732001434021288">上次造訪日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 吋</translation>
@@ -3529,6 +3531,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">序列埠</translation>
 <translation id="6820686453637990663">信用卡驗證碼</translation>
+<translation id="6820949753458790123">輕鬆分期付款</translation>
 <translation id="6825578344716086703">你嘗試連上 <ph name="DOMAIN" />，但伺服器的憑證是以防護力薄弱的簽章演算法 (例如 SHA-1) 進行簽署。這代表伺服器提供的安全性憑證可能遭到偽造，而且這個伺服器可能並不是你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="6826993739343257035">要允許 AR 嗎？</translation>
 <translation id="6828150717884939426">撥號</translation>
@@ -3977,6 +3980,7 @@
 <translation id="753556296624075801">Google 技術提供</translation>
 <translation id="753713322968419914">要從 Chrome 自動填入功能中移除住家地址嗎？</translation>
 <translation id="7537536606612762813">強制</translation>
+<translation id="7541043894191476250">關聯工作</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>
@@ -4502,6 +4506,7 @@
 <translation id="8406071103346257942">停止使用螢幕鎖定功能填入密碼</translation>
 <translation id="8407031780528483338">烹飪用具</translation>
 <translation id="8409413588194360210">付款處理常式</translation>
+<translation id="8410956920192583322">按月付款或分成 4 期</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">你必須輸入兩次相同的通關密語。</translation>
 <translation id="8414322570408428950">發生擴充功能事件</translation>
@@ -4792,6 +4797,7 @@
 <translation id="8922734931659847428">你造訪的網頁網址清單 (僅列出發生<ph name="BEGIN_LINK" />舊版技術事件<ph name="END_LINK" />的網址)</translation>
 <translation id="892588693504540538">打孔 (右上方)</translation>
 <translation id="8926389886865778422">不再詢問這個問題</translation>
+<translation id="8926400492587758246">每月小額分期付款</translation>
 <translation id="8932102934695377596">你的時鐘時間過慢</translation>
 <translation id="893332455753468063">新增名稱</translation>
 <translation id="8938242527120341116">裝置的內容篩選器已封鎖 <ph name="BLOCKED_URL" /></translation>

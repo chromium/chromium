@@ -469,6 +469,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2549711466868162843">Apšvietimo tobulinimas</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
 <translation id="255671100581129685">„Google“ padėjėjas nepasiekiamas viešoje sesijoje.</translation>
+<translation id="2562459326218811217">Įrenginys prijungtas, bet neįkraunamas. Išbandykite didesnės galios (W) kroviklį arba naudokite originalų kroviklį.</translation>
 <translation id="256712445991462162">prie doko prijungtas didintuvas</translation>
 <translation id="2573588302192866788">Nepavyko susieti „<ph name="NAME" />“</translation>
 <translation id="2575685495496069081">Neleidžiama prisijungti prie kelių paskyrų</translation>
@@ -539,6 +540,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2814448776515246190">Dalinio vaizdo užfiksavimas</translation>
+<translation id="2815594810045873507">Išbandykite didesnės galios (W) kroviklį arba naudokite originalų kroviklį.</translation>
 <translation id="2819276065543622893">Būsite atjungti.</translation>
 <translation id="2822551631199737692">Naudojamas fotoaparatas</translation>
 <translation id="2825619548187458965">Lentyna</translation>
@@ -1731,6 +1733,7 @@ Naujas įdiegimas</translation>
 <translation id="6582012689384648647">Kad galėtumėte klausytis suasmenintų grojaraščių, padedančių sutelkti dėmesį, leiskite pasiekti „YouTube Music“</translation>
 <translation id="6582034443359256692">Skaičiuojamas akumuliatoriaus įkrovos lygis.</translation>
 <translation id="6585808820553845416">Sesija baigsis po <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Nepavyksta įkrauti įrenginio</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="6605415194043280389">„Focus“ įjungtas</translation>

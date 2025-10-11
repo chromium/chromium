@@ -3308,6 +3308,7 @@
 <translation id="6433501201775827830">Axtarış sistemini seçin</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> qoşulmaq istəmədi.</translation>
 <translation id="6433797564277305076">Bundan sonra cihazın kiliddən çıxarılmasından istifadə edərək kartlarınızı daha sürətli təsdiqləyin</translation>
+<translation id="6436994298828707228">Lokal şəbəkədəki cihaz və ya serverlərə qoşulmaq məqsədilə ictimai səhifə tərəfindən başladıldığı üçün bağlantı bloklanıb.</translation>
 <translation id="6437647869369934905">Google Çertyoj</translation>
 <translation id="643917412048333145">Geyimlər</translation>
 <translation id="6440503408713884761">İqnor edilənlər</translation>
@@ -3379,6 +3380,7 @@
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
 <translation id="6550245281449521513">Maus kilidinə icazə verilmir</translation>
+<translation id="6552566579578780089">Ödənişlər</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
 <translation id="6557715786897013164">14 x 17 düym</translation>
@@ -3527,6 +3529,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">ardıcıl portlar</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Asan taksitlərlə ödəyin</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeninə daxil olmağa cəhd etdiniz, amma server zəif imza alqoritmi ilə daxil olan sertifikat təqdim etdi. Bu o deməkdir ki, serverin təqdim etdiyi təhlükəsizlik mandatı saxtalaşdırıla bilər və server gözlədiyiniz server olmaya bilər (Siz hücumçu ilə ünsiyyətdə ola bilərsiniz).</translation>
 <translation id="6826993739343257035">AR üçün icazə verilsin?</translation>
 <translation id="6828150717884939426">Zəng</translation>
@@ -3974,6 +3977,7 @@
 <translation id="753556296624075801">Google tərəfindən dəstəklənir</translation>
 <translation id="753713322968419914">Ev ünvanı Chrome avto-doldurmadan silinsin?</translation>
 <translation id="7537536606612762813">Məcburi</translation>
+<translation id="7541043894191476250">Kontekst tapşırıqları</translation>
 <translation id="7543525346216957623">Valideyninizdən soruşun</translation>
 <translation id="7546409722674205727">Başlayır: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Bağlantı xətalarını həll edin</translation>
@@ -4499,6 +4503,7 @@
 <translation id="8406071103346257942">parolları daxil etmək üçün ekran kilidindən istifadə etməyi dayandırın</translation>
 <translation id="8407031780528483338">Qab-qacaq</translation>
 <translation id="8409413588194360210">ödəniş emalçıları</translation>
+<translation id="8410956920192583322">Aylıq və ya 4 taksit</translation>
 <translation id="8412145213513410671">Qəzalar (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Eyni parolunu iki dəfə daxil etməlisiniz.</translation>
 <translation id="8414322570408428950">Artırma ilə bağlı hadisə baş verib</translation>
@@ -4789,6 +4794,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Köhnə texnologiya hadisələri<ph name="END_LINK" /> olan səhifələrin məhdud URL siyahısı</translation>
 <translation id="892588693504540538">Yuxarı sağdan deşik açın</translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
+<translation id="8926400492587758246">Aylıq aşağı taksitlərlə ödəyin</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>
 <translation id="893332455753468063">Ad əlavə edin</translation>
 <translation id="8938242527120341116">Cihazınızın kontent filtrləri bloklanıb <ph name="BLOCKED_URL" /></translation>

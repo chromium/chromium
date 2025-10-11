@@ -336,6 +336,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1216891999012841486">Lugege lisateavet värskendamisvigade lahendamise kohta</translation>
 <translation id="1217114730239853757">Kas soovite aktiveerida Chrome OS Flexi sisseehitatud ekraanilugeja ChromeVox? Kui jah, siis vajutage tühikut.</translation>
 <translation id="1217117837721346030">Laadi kahtlane fail alla</translation>
+<translation id="1217437913373100941">Uus vaheleht grupis <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Teie kohalikud andmed kustutatakse peagi</translation>
 <translation id="1217668622537098248">Pärast toimingut vasakpoolsele klikile ennistamine</translation>
 <translation id="1218015446623563536">Linuxi kustutamine</translation>
@@ -3227,6 +3228,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Võite sellel kaardil igal ajal seadeid hallata või kasutada jaotises Chrome’i kohandamine saadaolevaid lisavalikuid.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Uus vaheleht ühel vahelehel}other{Uus vaheleht # vahelehel}}</translation>
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3208584281581115441">Kontrolli kohe</translation>
 <translation id="3208703785962634733">Kinnitamata</translation>
@@ -3402,6 +3404,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videot esitatakse režiimis Pilt pildis</translation>
 <translation id="3335380372402547327">Vilkuvate märguannete eelvaade</translation>
 <translation id="3335947283844343239">Ava uuesti suletud vaheleht</translation>
+<translation id="3336661809256024098">Uus vaheleht grupis <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Pole kindel</translation>
 <translation id="3337568642696914359">Ära luba saitidel protokolle käsitleda</translation>
 <translation id="333863344734218290">Hoiatab teid ebaturvaliste avalike ja privaatsete saitide eest</translation>
@@ -8946,6 +8949,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7211783048245131419">Ühtegi lülitit pole veel määratud</translation>
 <translation id="7212097698621322584">PIN-koodi muutmiseks sisestage see. Kui te oma PIN-koodi ei tea, peate lähtestama turvavõtme ja looma siis uue PIN-koodi.</translation>
 <translation id="7214047272988222011">Lubatud – <ph name="PERMISSION_DETAILS" />. Lülitage sisse <ph name="LINK_BEGIN" />süsteemi juurdepääs kaamerale<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Uus vaheleht ühel vahelehel}other{Uus vaheleht # vahelehel}}</translation>
 <translation id="721490496276866468">Paroolide importimine</translation>
 <translation id="7217208603285112910">Valik ei ole <ph name="LANGUAGE" /> keeles</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
@@ -9233,6 +9237,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7410344089573941623">Küsi, kui host <ph name="HOST" /> soovib juurdepääsu kaamerale ja mikrofonile</translation>
 <translation id="7410421966064092098">Saidid ei saa aidata kinnitada, et te pole robot</translation>
 <translation id="7410852728357935715">Ülekandmine seadmesse</translation>
+<translation id="741148343080227980">Nime saate muuta <ph name="BEGIN_LINK" />oma Google’i kontol <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7412226954991670867">GPU-mälu</translation>
 <translation id="741370456693729525">Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt</translation>

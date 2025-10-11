@@ -336,6 +336,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1216891999012841486">Läs mer om hur du åtgärdar uppdateringsfel</translation>
 <translation id="1217114730239853757">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS Flex? I så fall trycker du på blanksteg.</translation>
 <translation id="1217117837721346030">Ladda ned misstänkt fil</translation>
+<translation id="1217437913373100941">Ny flik i <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Din lokala data raderas inom kort</translation>
 <translation id="1217668622537098248">Återgå till att vänsterklicka efter åtgärden</translation>
 <translation id="1218015446623563536">Radera Linux</translation>
@@ -3236,6 +3237,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan hantera inställningarna från det här kortet när som helst eller visa fler alternativ i Anpassa Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Ny flik i 1 flik}other{Ny flik i # flikar}}</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3208703785962634733">Obekräftade</translation>
@@ -3411,6 +3413,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video spelas upp bild-i-bild-läge</translation>
 <translation id="3335380372402547327">Förhandsgranska blinkande aviseringar</translation>
 <translation id="3335947283844343239">Öppna stängd flik igen</translation>
+<translation id="3336661809256024098">Ny flik i <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Vet ej</translation>
 <translation id="3337568642696914359">Tillåt inte att webbplatser hanterar protokoll</translation>
 <translation id="333863344734218290">Varnar för osäkra offentliga och privata webbplatser</translation>
@@ -8955,6 +8958,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7211783048245131419">Ingen brytare har tilldelats ännu</translation>
 <translation id="7212097698621322584">Ange den nuvarande pinkoden om du vill ändra den. Om du inte kan pinkoden måste du återställa säkerhetsnyckeln och sedan ställa in en ny pinkod.</translation>
 <translation id="7214047272988222011">Tillåts – <ph name="PERMISSION_DETAILS" />. Aktivera <ph name="LINK_BEGIN" />systemets kameraåtkomst<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Ny flik i 1 flik}other{Ny flik i # flikar}}</translation>
 <translation id="721490496276866468">Importera lösenord</translation>
 <translation id="7217208603285112910">Markerad text är inte på <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vill du radera webbplatsdata?</translation>
@@ -9242,6 +9246,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7410344089573941623">Fråga om <ph name="HOST" /> vill använda kameran och mikrofonen</translation>
 <translation id="7410421966064092098">Webbplatser kan inte hjälpa till att verifiera att du inte är en bot</translation>
 <translation id="7410852728357935715">Casta till en enhet</translation>
+<translation id="741148343080227980">Du kan redigera ditt namn <ph name="BEGIN_LINK" />i Google-kontot <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja</translation>
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="741370456693729525">Använd vardagligt språk för att söka i webbhistoriken och hitta webbplatser du har besökt</translation>

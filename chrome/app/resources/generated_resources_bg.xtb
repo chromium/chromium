@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">Научете повече за отстраняването на грешки, възникнали при актуализиране</translation>
 <translation id="1217114730239853757">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex? Ако е така, натиснете клавиша за интервал.</translation>
 <translation id="1217117837721346030">Изтегляне на подозрителния файл</translation>
+<translation id="1217437913373100941">Нов раздел в(ъв) „<ph name="GROUP_NAME" />“</translation>
 <translation id="1217483152325416304">Локалните ви данни скоро ще бъдат изтрити</translation>
 <translation id="1217668622537098248">Връщане към кликване с ляв бутон след действието</translation>
 <translation id="1218015446623563536">Изтриване на Linux</translation>
@@ -3232,6 +3233,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         <ph name="BREAK" />
         <ph name="BREAK" />
         Можете да управлявате настройките от тази карта по всяко време или да видите още опции в „Персонализиране на Chrome“.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Нов раздел в 1 раздел}other{Нов раздел в # раздела}}</translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3208703785962634733">Непотвърдено</translation>
@@ -3407,6 +3409,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – видеоклипът се възпроизвежда в режим „Картина в картината“</translation>
 <translation id="3335380372402547327">Визуализация на известията с премигване</translation>
 <translation id="3335947283844343239">Повторно отваряне на затворения раздел</translation>
+<translation id="3336661809256024098">Нов раздел в(ъв) „<ph name="GROUP_NAME" />“</translation>
 <translation id="3336855445806447827">Не знам със сигурност</translation>
 <translation id="3337568642696914359">Да не се разрешава на сайтовете да обработват протоколи</translation>
 <translation id="333863344734218290">Предупреждава ви за незащитени обществени и частни сайтове</translation>
@@ -8953,6 +8956,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7211783048245131419">Не е зададен превключвател</translation>
 <translation id="7212097698621322584">Въведете текущия си ПИН код, за да го промените. Ако не го знаете, трябва да нулирате ключа за сигурност, след което да създадете нов ПИН код.</translation>
 <translation id="7214047272988222011">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете <ph name="LINK_BEGIN" />достъпа до системната камера<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Нов раздел в 1 раздел}other{Нов раздел в # раздела}}</translation>
 <translation id="721490496276866468">Импортиране на пароли</translation>
 <translation id="7217208603285112910">Избраното не е на <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Да се изтрият ли данните за сайтовете?</translation>
@@ -9240,6 +9244,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7410344089573941623">Да се получава запитване, ако <ph name="HOST" /> иска достъп до камерата и микрофона ви</translation>
 <translation id="7410421966064092098">Сайтовете не могат да ви помогнат да потвърдите, че не сте робот</translation>
 <translation id="7410852728357935715">Предаване към устройство</translation>
+<translation id="741148343080227980">Можете да редактирате името си <ph name="BEGIN_LINK" />в профила си в Google (<ph name="USERNAME" />)<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
 <translation id="7412226954991670867">Памет на графичния процесор</translation>
 <translation id="741370456693729525">Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили</translation>

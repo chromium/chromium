@@ -3312,6 +3312,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6433501201775827830">Veldu leitarvélina þína</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> neitaði að koma á tengingu.</translation>
 <translation id="6433797564277305076">Staðfestu kortin þín hraðar með því að nota „Taka tæki úr lás“ héðan í frá</translation>
+<translation id="6436994298828707228">Lokað er á tenginguna vegna þess að hún var hafin af opinberri síðu til að tengjast tækjum eða þjónum á staðbundna netinu þínu.</translation>
 <translation id="6437647869369934905">Google-teikningar</translation>
 <translation id="643917412048333145">Kjólar</translation>
 <translation id="6440503408713884761">Hunsað</translation>
@@ -3383,6 +3384,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6547208576736763147">Tvö göt vinstra megin</translation>
 <translation id="6549443526281184652">Búningar</translation>
 <translation id="6550245281449521513">Ekki leyfilegt að læsa mús</translation>
+<translation id="6552566579578780089">Greiðslur</translation>
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
 <translation id="6556866813142980365">Endurgera</translation>
 <translation id="6557715786897013164">14 x 17 to.</translation>
@@ -3531,6 +3533,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">raðtengi</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Borgaðu í auðveldum afborgunum</translation>
 <translation id="6825578344716086703">Þú reyndir að ná í <ph name="DOMAIN" /> en þjónninn gaf upp vottorð sem er undirritað með ótraustu undirritunarreikniriti (eins og SHA-1). Þetta merkir að öryggisskilríkin sem þjónninn gaf upp gætu verið fölsuð og að þjónninn gæti verð annar sem sá sem þú reiknaðir með (þú gætir verið í samskiptum við tölvuþrjót).</translation>
 <translation id="6826993739343257035">Viltu leyfa AR?</translation>
 <translation id="6828150717884939426">Hringja</translation>
@@ -3978,6 +3981,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="753556296624075801">Keyrt af Google</translation>
 <translation id="753713322968419914">Fjarlægja heimilisfang úr sjálfvirkri útfyllingu Chrome?</translation>
 <translation id="7537536606612762813">Áskilin</translation>
+<translation id="7541043894191476250">Samhengismiðuð verkefni</translation>
 <translation id="7543525346216957623">Spyrðu foreldri þitt</translation>
 <translation id="7546409722674205727">Ræsir <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Laga tengingarvillur</translation>
@@ -4503,6 +4507,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8406071103346257942">hætta að nota skjálásinn til að fylla út aðgangsorð</translation>
 <translation id="8407031780528483338">Eldhúsáhöld</translation>
 <translation id="8409413588194360210">greiðslumiðlara</translation>
+<translation id="8410956920192583322">Mánaðarlegar eða 4 afborganir</translation>
 <translation id="8412145213513410671">Hrun (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Þú verður að slá sama aðgangsorðið inn tvisvar.</translation>
 <translation id="8414322570408428950">Viðbótartilvik á sér stað</translation>
@@ -4793,6 +4798,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8922734931659847428">Takmarkaður listi vefslóða síðna sem þú opnar þar sem <ph name="BEGIN_LINK" />tilvik vegna eldri tækni<ph name="END_LINK" /> koma upp</translation>
 <translation id="892588693504540538">Gatað efst til hægri</translation>
 <translation id="8926389886865778422">Ekki spyrja aftur</translation>
+<translation id="8926400492587758246">Borgaðu í lágum mánaðarlegum afborgunum</translation>
 <translation id="8932102934695377596">Klukkan er á eftir</translation>
 <translation id="893332455753468063">Bæta við nafni</translation>
 <translation id="8938242527120341116">Efnissíur tækisins þíns lokuðu á <ph name="BLOCKED_URL" /></translation>

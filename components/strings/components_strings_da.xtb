@@ -3312,6 +3312,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6433501201775827830">Vælg din søgemaskine</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> nægtede at oprette forbindelse.</translation>
 <translation id="6433797564277305076">Bekræft dine kort hurtigere ved hjælp af enhedsoplåsning fra nu af</translation>
+<translation id="6436994298828707228">Forbindelsen er blokeret, fordi den blev startet af en offentlig side med henblik på at oprette forbindelse til enheder eller servere på dit lokale netværk.</translation>
 <translation id="6437647869369934905">Google Tegninger</translation>
 <translation id="643917412048333145">Kjoler</translation>
 <translation id="6440503408713884761">Ignoreret</translation>
@@ -3383,6 +3384,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6547208576736763147">To huller i venstre side</translation>
 <translation id="6549443526281184652">Kostumer</translation>
 <translation id="6550245281449521513">Lås af musen er ikke tilladt</translation>
+<translation id="6552566579578780089">Betalinger</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="6556866813142980365">Annuller fortrydelse</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
@@ -3531,6 +3533,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serieporte</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Betal nemt i rater</translation>
 <translation id="6825578344716086703">Du forsøgte at få fat i <ph name="DOMAIN" />, men serveren præsenterede et certifikat, der er signeret med en svag signaturalgoritme (f.eks. SHA-1). Det betyder, at sikkerhedsoplysningerne fra serveren kan være forfalskede, og at serveren muligvis ikke er den server, som du forventede (du kommunikerer muligvis med en person med ondsindede hensigter).</translation>
 <translation id="6826993739343257035">Vil du tillade AR?</translation>
 <translation id="6828150717884939426">Ring op</translation>
@@ -3979,6 +3982,7 @@ Yderligere oplysninger:
 <translation id="753556296624075801">Leveret af Google</translation>
 <translation id="753713322968419914">Vil du fjerne hjemmeadressen fra autofyld i Chrome?</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7541043894191476250">Kontekstbaserede opgaver</translation>
 <translation id="7543525346216957623">Spørg en af dine forældre</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ret forbindelsesfejl</translation>
@@ -4504,6 +4508,7 @@ Yderligere oplysninger:
 <translation id="8406071103346257942">stoppe med at bruge din skærmlås til at udfylde adgangskoder</translation>
 <translation id="8407031780528483338">Køkkengrej</translation>
 <translation id="8409413588194360210">betalingshandlers</translation>
+<translation id="8410956920192583322">Månedligt eller i 4 rater</translation>
 <translation id="8412145213513410671">Nedbrud (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du skal angive den samme adgangssætning to gange.</translation>
 <translation id="8414322570408428950">En udvidelseshændelse udføres</translation>
@@ -4795,6 +4800,7 @@ Yderligere oplysninger:
 <translation id="8922734931659847428">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer <ph name="BEGIN_LINK" />hændelser relateret til forældet teknologi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
+<translation id="8926400492587758246">Betal i lave månedlige rater</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>
 <translation id="893332455753468063">Tilføj navn</translation>
 <translation id="8938242527120341116">Indholdsfiltrene på din enhed har blokeret <ph name="BLOCKED_URL" /></translation>

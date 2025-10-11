@@ -337,6 +337,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1216891999012841486">Funda kabanzi mayelana nokulungisa amaphutha okubuyekeza</translation>
 <translation id="1217114730239853757">Ingabe ufuna ukwenza i-ChromeVox isebenze, isifundi sesikrini esakhelwe ngaphakathi se-ChromeOS Flex? Uma kunjalo, cindezela i-space bar.</translation>
 <translation id="1217117837721346030">Dawuniloda ifayela elisolisayo</translation>
+<translation id="1217437913373100941">Ithebhu entsha ku-<ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Idatha yakho yasendaweni maduze izosuswa</translation>
 <translation id="1217668622537098248">Buyela ekuchofozeni ngakwesokunxele ngemuva kwesenzo</translation>
 <translation id="1218015446623563536">Susa i-Linux</translation>
@@ -3237,6 +3238,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ungalawula amasethingi aleli khadi nganoma yisiphi isikhathi noma ubone izinketho ezengeziwe kokuthi Hlela I-Chrome Ngendlela Oyithandayo.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Ithebhu entsha kuthebhu e-1}one{Ithebhu entsha kumathebhu angu-#}other{Ithebhu entsha kumathebhu angu-#}}</translation>
 <translation id="3207960819495026254">Kubekwe uphawu lokubekisa</translation>
 <translation id="3208584281581115441">Hlola manje</translation>
 <translation id="3208703785962634733">Akuqinisekisiwe</translation>
@@ -3412,6 +3414,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Ividiyo idlala kumodi yesithombe-esithombeni</translation>
 <translation id="3335380372402547327">Buka kuqala izaziso ezisheshayo</translation>
 <translation id="3335947283844343239">Phinda uvule ithebhu evaliwe</translation>
+<translation id="3336661809256024098">Ithebhu Entsha ku-<ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Awuqinisekile</translation>
 <translation id="3337568642696914359">Ungavumeli amasayithi abambe amaphrothokholi</translation>
 <translation id="333863344734218290">Iyakuxwayisa kumasayithi angavikelekile omphakathi nayimfihlo</translation>
@@ -8957,6 +8960,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7211783048245131419">Ayikho iswishi enikeziwe okwamanje</translation>
 <translation id="7212097698621322584">Faka i-PIN yakho yamanje ukuze uyishintshe. Uma ungazi i-PIN yakho, uzodinga ukusetha kabusha ukhiye wokuqinisekisa ubunikazi, bese udale i-PIN entsha.</translation>
 <translation id="7214047272988222011">Kuvunyelwe – <ph name="PERMISSION_DETAILS" />. Vula <ph name="LINK_BEGIN" />ukufinyelela ikhamera yesistimu<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Ithebhu Entsha Kuthebhu e-1}one{Ithebhu Entsha Kumathebhu angu-#}other{Ithebhu Entsha Kumathebhu angu-#}}</translation>
 <translation id="721490496276866468">Ngenisa amaphasiwedi</translation>
 <translation id="7217208603285112910">Ukukhetha akukho nge-<ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Sula idatha yesayithi?</translation>
@@ -9244,6 +9248,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7410344089573941623">Buza uma i-<ph name="HOST" /> ifuna ukufinyelela kukhamela yakho nemakrofoni</translation>
 <translation id="7410421966064092098">Amasayithi awakwazi ukusiza ukuqinisekisa ukuthi awuyona i-bot</translation>
 <translation id="7410852728357935715">Sakaza kudivayisi</translation>
+<translation id="741148343080227980">Ungahlela igama lakho <ph name="BEGIN_LINK" />kuGoogle Account <ph name="USERNAME" /><ph name="END_LINK" /> yakho.</translation>
 <translation id="741204030948306876">Yebo, ngingenile</translation>
 <translation id="7412226954991670867">Imemori ye-GPU</translation>
 <translation id="741370456693729525">Sebenzisa ulimi lwansuku zonke ukuze useshe umlando wakho wokubhrawuza futhi uthole amasayithi owavakashele</translation>

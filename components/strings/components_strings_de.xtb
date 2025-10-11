@@ -3310,6 +3310,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6433501201775827830">Wähle deine Suchmaschine</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> hat die Verbindung abgelehnt.</translation>
 <translation id="6433797564277305076">Mithilfe der Geräteentsperrung kannst du deine Karten ab sofort schneller bestätigen</translation>
+<translation id="6436994298828707228">Die Verbindung wird blockiert, weil sie von einer öffentlichen Seite initiiert wurde, um eine Verbindung zu Geräten oder Servern in deinem lokalen Netzwerk herzustellen.</translation>
 <translation id="6437647869369934905">Google Zeichnungen</translation>
 <translation id="643917412048333145">Kleider</translation>
 <translation id="6440503408713884761">Ignoriert</translation>
@@ -3381,6 +3382,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6547208576736763147">Doppelte Lochung links</translation>
 <translation id="6549443526281184652">Kostüme</translation>
 <translation id="6550245281449521513">Maussperre nicht zulässig</translation>
+<translation id="6552566579578780089">Zahlungen</translation>
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
 <translation id="6557715786897013164">14 × 17 Zoll</translation>
@@ -3529,6 +3531,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Serielle Schnittstellen</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">In Raten zahlen</translation>
 <translation id="6825578344716086703">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat jedoch ein Zertifikat übermittelt, das einen schwachen Signaturalgorithmus verwendet, zum Beispiel SHA-1. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen gefälscht sein könnten und es sich möglicherweise gar nicht um den erwarteten Server handelt, sondern du mit einem Hacker kommunizierst.</translation>
 <translation id="6826993739343257035">AR zulassen?</translation>
 <translation id="6828150717884939426">Anrufen</translation>
@@ -3977,6 +3980,7 @@ Weitere Details:
 <translation id="753556296624075801">Powered by Google</translation>
 <translation id="753713322968419914">Privatadresse aus Chrome Autofill entfernen?</translation>
 <translation id="7537536606612762813">Verbindlich</translation>
+<translation id="7541043894191476250">Kontextbezogene Aufgaben</translation>
 <translation id="7543525346216957623">Frag deine Eltern</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> wird gestartet</translation>
 <translation id="7548892272833184391">Verbindungsfehler beheben</translation>
@@ -4502,6 +4506,7 @@ Weitere Details:
 <translation id="8406071103346257942">die Displaysperre nicht mehr zum Ausfüllen von Passwörtern zu verwenden</translation>
 <translation id="8407031780528483338">Kochgeschirr</translation>
 <translation id="8409413588194360210">Zahlungs-Handler</translation>
+<translation id="8410956920192583322">Monatlich oder in 4 Raten</translation>
 <translation id="8412145213513410671">Abstürze (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du musst zweimal dieselbe Passphrase eingeben.</translation>
 <translation id="8414322570408428950">Erweiterungsereignis tritt auf</translation>
@@ -4793,6 +4798,7 @@ Weitere Details:
 <translation id="8922734931659847428">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
+<translation id="8926400492587758246">In niedrigen monatlichen Raten zahlen</translation>
 <translation id="8932102934695377596">Deine Uhr geht nach</translation>
 <translation id="893332455753468063">Namen hinzufügen</translation>
 <translation id="8938242527120341116">Die Inhaltsfilter deines Geräts haben <ph name="BLOCKED_URL" /> blockiert</translation>

@@ -336,6 +336,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1216891999012841486">Más información sobre cómo solucionar errores de actualización</translation>
 <translation id="1217114730239853757">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex? Si es así, pulsa la barra espaciadora.</translation>
 <translation id="1217117837721346030">Descargar archivo sospechoso</translation>
+<translation id="1217437913373100941">Nueva pestaña en <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Tus datos locales se eliminarán pronto</translation>
 <translation id="1217668622537098248">Volver al clic izquierdo después de una acción</translation>
 <translation id="1218015446623563536">Eliminar Linux</translation>
@@ -3224,6 +3225,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puedes gestionar los ajustes de esta tarjeta en cualquier momento o ver más opciones en Personalizar Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nueva pestaña en 1 pestaña}other{Nueva pestaña en # pestañas}}</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
 <translation id="3208703785962634733">Sin confirmar</translation>
@@ -3399,6 +3401,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Reproduciendo vídeo en modo imagen en imagen</translation>
 <translation id="3335380372402547327">Previsualizar notificaciones con flash</translation>
 <translation id="3335947283844343239">Volver a abrir pestaña cerrada</translation>
+<translation id="3336661809256024098">Nueva pestaña en <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">No lo sé con seguridad</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="333863344734218290">Te avisa de los sitios públicos y privados no seguros</translation>
@@ -8940,6 +8943,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7211783048245131419">Aún no se ha asignado ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce tu PIN actual para cambiarlo. Si no sabes cuál es tu PIN, tendrás que restablecer la llave de seguridad y crear un nuevo PIN.</translation>
 <translation id="7214047272988222011">Permitido (<ph name="PERMISSION_DETAILS" />). Activa el <ph name="LINK_BEGIN" />acceso a la cámara del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nueva pestaña en 1 pestaña}other{Nueva pestaña en # pestañas}}</translation>
 <translation id="721490496276866468">Importar contraseñas</translation>
 <translation id="7217208603285112910">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">¿Eliminar datos del sitio?</translation>
@@ -9227,6 +9231,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7410344089573941623">Preguntar si <ph name="HOST" /> quiere acceder a la cámara y al micrófono</translation>
 <translation id="7410421966064092098">Los sitios no pueden ayudar a verificar que no eres un bot</translation>
 <translation id="7410852728357935715">Enviar a un dispositivo</translation>
+<translation id="741148343080227980">Puedes editar tu nombre <ph name="BEGIN_LINK" />en tu cuenta de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7412226954991670867">Memoria de la GPU</translation>
 <translation id="741370456693729525">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado.</translation>

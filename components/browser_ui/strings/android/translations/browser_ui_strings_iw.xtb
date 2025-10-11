@@ -570,6 +570,7 @@
 <translation id="7406113532070524618">ההגדרה הזו פועלת ללא זיהוי שלך ובלי לתת לאתרים גישה להיסטוריית הגלישה, אבל אתרים יכולים לשתף ביניהם כמות נתונים קטנה במסגרת האימות.</translation>
 <translation id="7409735910987429903">אתרים עשויים להציג חלונות קופצים עם מודעות, או להשתמש בהפניות אוטומטיות כדי להוביל אותך לאתרים שלא כדאי לבקר בהם</translation>
 <translation id="7412160840120117304">קוד הקסדצימלי של הצבע הראשי</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{שינוי מרחק התצוגה}one{‏שינוי מרחק התצוגה: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}two{‏שינוי מרחק התצוגה: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}other{‏שינוי מרחק התצוגה: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}}</translation>
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
 <translation id="7425915948813553151">עיצוב כהה באתרים</translation>

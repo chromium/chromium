@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">અપડેટ સંબંધિત બધી ભૂલો સુધારવા વિશે વધુ જાણો</translation>
 <translation id="1217114730239853757">શું તમે ChromeOS Flex માટેનું બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો? જો હા હોય, તો સ્પેસ બાર દબાવો.</translation>
 <translation id="1217117837721346030">શંકાસ્પદ ફાઇલ ડાઉનલોડ કરો</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" />માં નવું ટૅબ</translation>
 <translation id="1217483152325416304">તમારો સ્થાનિક ડેટા ટૂંક સમયમાં ડિલીટ કરવામાં આવશે</translation>
 <translation id="1217668622537098248">ક્રિયા કર્યા પછી ડાબી ક્લિક પર પાછા ફરો</translation>
 <translation id="1218015446623563536">Linux ડિલીટ કરો</translation>
@@ -3222,6 +3223,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         તમે કોઈપણ સમયે આ કાર્ડમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં જઈને વધુ વિકલ્પો જોઈ શકો છો.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 ટૅબમાં નવું ટૅબ}one{# ટૅબમાં નવું ટૅબ}other{# ટૅબમાં નવું ટૅબ}}</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208584281581115441">હમણાં ચેક કરો</translation>
 <translation id="3208703785962634733">પુષ્ટિ થયેલ નથી</translation>
@@ -3397,6 +3399,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - વીડિઓ ચિત્રમાં ચિત્ર મોડમાં ચાલી રહ્યો છે</translation>
 <translation id="3335380372402547327">પ્રીવ્યૂના ફ્લૅશ નોટિફિકેશન</translation>
 <translation id="3335947283844343239">બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" />માં નવું ટૅબ</translation>
 <translation id="3336855445806447827">નિશ્ચિત નથી</translation>
 <translation id="3337568642696914359">સાઇટને પ્રોટોકૉલ હૅન્ડલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="333863344734218290">અસુરક્ષિત સાર્વજનિક અને ખાનગી સાઇટ વિશે તમને ચેતવણી આપે છે</translation>
@@ -8945,6 +8948,7 @@ USB ડિવાઇસ</translation>
 <translation id="7211783048245131419">હજી સુધી કોઈ સ્વિચની સોંપણી કરવામાં આવી નથી</translation>
 <translation id="7212097698621322584">પિન બદલવા માટે તમારો વર્તમાન પિન દાખલ કરો. જો તમને તમારો પિન યાદ ન હોય, તો તમારે સુરક્ષા કોડ રીસેટ કરવો પડશે, અને પછી નવો પિન બનાવવો પડશે.</translation>
 <translation id="7214047272988222011">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />સિસ્ટમનો કૅમેરાનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 ટૅબમાં નવું ટૅબ}one{# ટૅબમાં નવું ટૅબ}other{# ટૅબમાં નવું ટૅબ}}</translation>
 <translation id="721490496276866468">પાસવર્ડ આયાત કરો</translation>
 <translation id="7217208603285112910">જે પસંદગી <ph name="LANGUAGE" />માં ન હોય</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
@@ -9232,6 +9236,7 @@ USB ડિવાઇસ</translation>
 <translation id="7410344089573941623">પૂછો કે <ph name="HOST" /> તમારા કૅમેરા અને માઇક્રોફોનને ઍક્સેસ કરવા માંગે છે કે કેમ</translation>
 <translation id="7410421966064092098">તમે બૉટ નથી તેની ચકાસણી કરવામાં સહાય ન કરી શકે એવી સાઇટ</translation>
 <translation id="7410852728357935715">કોઈ ડિવાઇસ પર કાસ્ટ કરો</translation>
+<translation id="741148343080227980">તમે <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટ <ph name="USERNAME" />માં<ph name="END_LINK" /> જઈને તમારા નામમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7412226954991670867">GPU મેમરી</translation>
 <translation id="741370456693729525">તમારા બ્રાઉઝિંગ ઇતિહાસમાં શોધવા માટે રોજિંદા વપરાશની ભાષાનો ઉપયોગ કરો અને તમે મુલાકાત લીધેલી સાઇટ શોધો</translation>

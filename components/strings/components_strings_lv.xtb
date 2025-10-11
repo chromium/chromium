@@ -3310,6 +3310,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6433501201775827830">Meklētājprogrammas izvēle</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> noraidīja savienojuma izveidi.</translation>
 <translation id="6433797564277305076">Turpmāk apstipriniet kartes ātrāk, izmantojot ierīces atbloķēšanu</translation>
+<translation id="6436994298828707228">Savienojums ir bloķēts, jo tas tika uzsākts publiskā lapā, lai izveidotu savienojumu ar ierīcēm vai serveriem jūsu lokālajā tīklā.</translation>
 <translation id="6437647869369934905">Google zīmējumi</translation>
 <translation id="643917412048333145">Kleitas</translation>
 <translation id="6440503408713884761">Ignorēts</translation>
@@ -3381,6 +3382,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6547208576736763147">Divi caurumi kreisajā pusē</translation>
 <translation id="6549443526281184652">Kostīmi</translation>
 <translation id="6550245281449521513">Peles bloķēšana nav atļauta</translation>
+<translation id="6552566579578780089">Maksājumi</translation>
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6556866813142980365">Atcelt atsaukšanu</translation>
 <translation id="6557715786897013164">14 x 17 collas</translation>
@@ -3529,6 +3531,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">seriālie porti</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Vienkārši nomaksas maksājumi</translation>
 <translation id="6825578344716086703">Jūs mēģinājāt sasniegt domēnu <ph name="DOMAIN" />, bet serveris uzrādīja sertifikātu, kas ir parakstīts, izmantojot vāju paraksta algoritmu (piemēram, SHA-1). Tas nozīmē, ka servera norādītie drošības akreditācijas dati var būt viltoti un šis serveris var nebūt tas serveris, kuru mēģināt sasniegt (iespējams, jūs sazināties ar uzbrucēju).</translation>
 <translation id="6826993739343257035">Vai atļaut PR?</translation>
 <translation id="6828150717884939426">Zvanīt</translation>
@@ -3977,6 +3980,7 @@ Papildu informācija:
 <translation id="753556296624075801">Nodrošina Google</translation>
 <translation id="753713322968419914">Vai noņemt mājas adresi no Chrome automātiskās aizpildes?</translation>
 <translation id="7537536606612762813">Obligāti</translation>
+<translation id="7541043894191476250">Kontekstuāli uzdevumi</translation>
 <translation id="7543525346216957623">Lūdziet kādam no vecākiem</translation>
 <translation id="7546409722674205727">Notiek lietotnes <ph name="APP_NAME" /> palaišana</translation>
 <translation id="7548892272833184391">Savienojuma kļūdu novēršana</translation>
@@ -4502,6 +4506,7 @@ Papildu informācija:
 <translation id="8406071103346257942">pārtraukt izmantot ekrāna bloķēšanu, lai aizpildītu paroles.</translation>
 <translation id="8407031780528483338">Virtuves piederumi</translation>
 <translation id="8409413588194360210">maksājumu apdarinātāji</translation>
+<translation id="8410956920192583322">Ikmēneša vai četri nomaksas maksājumi</translation>
 <translation id="8412145213513410671">Avārijas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Viena un tā pati ieejas frāze jāievada divreiz.</translation>
 <translation id="8414322570408428950">Rodas ar paplašinājumu saistīts notikums</translation>
@@ -4793,6 +4798,7 @@ Papildu informācija:
 <translation id="8922734931659847428">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas <ph name="BEGIN_LINK" />mantotās tehnoloģijas notikumi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
+<translation id="8926400492587758246">Nelieli ikmēneša nomaksas maksājumi</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>
 <translation id="893332455753468063">Vārda pievienošana</translation>
 <translation id="8938242527120341116">Jūsu ierīces satura filtri bloķēja šādu vietni: <ph name="BLOCKED_URL" /></translation>

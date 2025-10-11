@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">Իմանալ ավելին թարմացման սխալների շտկման մասին</translation>
 <translation id="1217114730239853757">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը ChromeOS Flex-ի համար։ Եթե այո, ապա սեղմեք բացատի ստեղնը։</translation>
 <translation id="1217117837721346030">Ներբեռնել կասկածելի ֆայլը</translation>
+<translation id="1217437913373100941">Նոր ներդիր՝ «<ph name="GROUP_NAME" />» խմբում</translation>
 <translation id="1217483152325416304">Ձեր լոկալ տվյալները շուտով կջնջվեն</translation>
 <translation id="1217668622537098248">Գործողությունից հետո վերադառնալ մկնիկի ձախ սեղմումին</translation>
 <translation id="1218015446623563536">Linux-ի ջնջում</translation>
@@ -3223,6 +3224,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ցանկացած ժամանակ կարող եք կառավարել այս քարտի կարգավորումները կամ դիտել լրացուցիչ ընտրանքները «Անհատականացնել Chrome-ը» բաժնում։</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Նոր ներդիր՝ 1 ներդիրում}one{Նոր ներդիր՝ # ներդիրում}other{Նոր ներդիր՝ # ներդիրում}}</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="3208703785962634733">Չհաստատված</translation>
@@ -3396,6 +3398,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – «Նկար նկարի մեջ» ռեժիմում նվագարկվող տեսանյութ</translation>
 <translation id="3335380372402547327">Դիտել թարթող ծանուցումները</translation>
 <translation id="3335947283844343239">Նորից բացել փակված ներդիրը</translation>
+<translation id="3336661809256024098">Նոր ներդիր՝ «<ph name="GROUP_NAME" />» խմբում</translation>
 <translation id="3336855445806447827">Չգիտեմ</translation>
 <translation id="3337568642696914359">Թույլ չտալ կայքերին մշակել հաղորդակարգեր</translation>
 <translation id="333863344734218290">Նախազգուշացնում է ձեզ ոչ ապահով հրապարակային և անձնական կայքերի մասին</translation>
@@ -8937,6 +8940,7 @@
 <translation id="7211783048245131419">Նշանակված փոխանջատիչներ չկան</translation>
 <translation id="7212097698621322584">Մուտքագրեք ձեր ընթացիկ PIN կոդը՝ այն փոխելու համար: Եթե չգիտեք ձեր PIN կոդը, զրոյացրեք անվտանգության բանալու կարգավորումները և նշեք նոր PIN կոդ։</translation>
 <translation id="7214047272988222011">Թույլատրված է – <ph name="PERMISSION_DETAILS" />։ Միացրեք <ph name="LINK_BEGIN" />համակարգի տեսախցիկի հասանելիությունը<ph name="LINK_END" />։</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Նոր ներդիր՝ 1 ներդիրում}one{Նոր ներդիր՝ # ներդիրում}other{Նոր ներդիր՝ # ներդիրում}}</translation>
 <translation id="721490496276866468">Ներմուծել գաղտնաբառերը</translation>
 <translation id="7217208603285112910">Ընտրված տարրը <ph name="LANGUAGE" /> լեզվով չէ</translation>
 <translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
@@ -9224,6 +9228,7 @@
 <translation id="7410344089573941623">Հարցնել, արդյոք <ph name="HOST" />-ն ուզում է օգտագործել ձեր տեսախցիկը և խոսափողը</translation>
 <translation id="7410421966064092098">Կայքերը չեն կարող օգնել ձեզ հաստատել, որ դուք ռոբոտ չեք</translation>
 <translation id="7410852728357935715">Հեռարձակել սարքին</translation>
+<translation id="741148343080227980">Դուք կարող եք փոփոխել ձեր անունը <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="741204030948306876">Լավ</translation>
 <translation id="7412226954991670867">GPU հիշողություն</translation>
 <translation id="741370456693729525">Օգտագործեք խոսակցական լեզուն՝ այցելությունների պատմության մեջ տվյալներ որոնելու և ձեր այցելած կայքերը գտնելու համար</translation>

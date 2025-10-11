@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Skrá út og slökkva á samstillingu?</translation>
 <translation id="1363028406613469049">Rekja</translation>
 <translation id="1366525380420346469">Þegar kveikt er á eiginleikanum</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Hægt er að loka á að þetta vefsvæði sendi frekari tilkynningar}one{Hægt er að loka á að þessi vefsvæði sendi frekari tilkynningar}other{Hægt er að loka á að þessi vefsvæði sendi frekari tilkynningar}}</translation>
 <translation id="1373696734384179344">Ekki nægt minni til að sækja valda efnið.</translation>
 <translation id="1376578503827013741">Reiknar…</translation>
 <translation id="1381838868249179644">Heimildir tiltekinna vefsvæða voru fjarlægðar til að tryggja öryggi þitt</translation>

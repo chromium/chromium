@@ -336,6 +336,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1216891999012841486">Meer informatie over hoe je updatefouten oplost</translation>
 <translation id="1217114730239853757">Wil je ChromeVox, de ingebouwde schermlezer voor Chrome OS Flex, activeren? Druk dan op de spatiebalk.</translation>
 <translation id="1217117837721346030">Verdacht bestand downloaden</translation>
+<translation id="1217437913373100941">Nieuw tabblad in <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Je lokale gegevens worden binnenkort verwijderd.</translation>
 <translation id="1217668622537098248">Terugzetten naar klikken met linkermuisknop na actie</translation>
 <translation id="1218015446623563536">Linux verwijderen</translation>
@@ -1389,7 +1390,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1932125073382155239">Back-up maken?</translation>
 <translation id="1933070475689690969">Gemini Apps-activiteit</translation>
 <translation id="1933489278505808700">Lezen en wijzigen toegestaan</translation>
-<translation id="1935303383381416800">Toestemming om je locatie te bekijken</translation>
+<translation id="1935303383381416800">Toestemming om je locatie te zien</translation>
 <translation id="193565226207940518">Supporttool</translation>
 <translation id="1936157145127842922">Weergeven in map</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{Pagina toegevoegd aan leeslijst}other{Pagina's toegevoegd aan leeslijst}}</translation>
@@ -3135,7 +3136,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
 <translation id="3141093262818886744">Toch openen</translation>
-<translation id="3141318088920353606">Luisteren...</translation>
+<translation id="3141318088920353606">Luisteren…</translation>
 <translation id="3142562627629111859">Nieuwe groep</translation>
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
@@ -3221,6 +3222,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
         <ph name="BREAK" />
 <ph name="BREAK" />
 Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nieuw tabblad op 1 tabblad}other{Nieuw tabblad op # tabbladen}}</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
 <translation id="3208584281581115441">Nu checken</translation>
 <translation id="3208703785962634733">Niet bevestigd</translation>
@@ -3396,6 +3398,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: video wordt afgespeeld in de scherm-in-scherm-modus</translation>
 <translation id="3335380372402547327">Voorbeeld van meldingen met flits weergeven</translation>
 <translation id="3335947283844343239">Open gesloten tabblad opnieuw</translation>
+<translation id="3336661809256024098">Nieuw tabblad in <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Weet niet</translation>
 <translation id="3337568642696914359">Niet toestaan dat sites protocollen verwerken</translation>
 <translation id="333863344734218290">Waarschuwt je voor niet-beveiligde openbare en privésites</translation>
@@ -6383,7 +6386,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5407167491482639988">Niet te begrijpen</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Uit je Google-account.</translation>
-<translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Overweeg dus goed of je lid wilt worden. De link verloopt over 48 uur.</translation>
+<translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Denk dus goed na voordat je lid wordt. De link verloopt over 48 uur.</translation>
 <translation id="5410889048775606433">Fuchsia</translation>
 <translation id="5411022484772257615">Kan schoolinschrijving niet afronden</translation>
 <translation id="54118879136097217">App installeren op je <ph name="DEVICE_TYPE" /></translation>
@@ -8934,6 +8937,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7211783048245131419">Er is nog geen schakelaar toegewezen</translation>
 <translation id="7212097698621322584">Voer je huidige pincode in om deze te wijzigen. Als je je pincode niet weet, moet je de beveiligingssleutel resetten en vervolgens een nieuwe pincode maken.</translation>
 <translation id="7214047272988222011">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet <ph name="LINK_BEGIN" />cameratoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nieuw tabblad op 1 tabblad}other{Nieuw tabblad op # tabbladen}}</translation>
 <translation id="721490496276866468">Wachtwoorden importeren</translation>
 <translation id="7217208603285112910">Selectie niet in het <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Sitegegevens verwijderen?</translation>
@@ -9221,6 +9225,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7410344089573941623">Vragen of <ph name="HOST" /> toegang wil tot je camera en microfoon</translation>
 <translation id="7410421966064092098">Sites kunnen niet verifiëren dat je geen bot bent</translation>
 <translation id="7410852728357935715">Casten naar een apparaat</translation>
+<translation id="741148343080227980">Je kunt je naam bewerken <ph name="BEGIN_LINK" />in je Google-account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
 <translation id="7412226954991670867">GPU-geheugen</translation>
 <translation id="741370456693729525">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht</translation>
@@ -10677,7 +10682,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/flex/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Welkomstsamenvatting</translation>
 <translation id="8386091599636877289">Beleid niet gevonden.</translation>
-<translation id="8387361103813440603">Geen toestemming om je locatie te bekijken</translation>
+<translation id="8387361103813440603">Geen toestemming om je locatie te zien</translation>
 <translation id="8387617938027387193">Verifiëren dat jij het bent</translation>
 <translation id="8388770971141403598">Secundaire profielen worden niet ondersteund</translation>
 <translation id="8389492867173948260">Hiermee kan deze extensie al je gegevens lezen en wijzigen op de websites die je bezoekt:</translation>

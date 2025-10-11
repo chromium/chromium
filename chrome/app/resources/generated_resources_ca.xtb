@@ -336,6 +336,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1216891999012841486">Més informació sobre com corregir els errors d'actualització</translation>
 <translation id="1217114730239853757">Vols activar ChromeVox, el lector de pantalla integrat per a ChromeOS Flex? Si és així, prem la barra espaiadora.</translation>
 <translation id="1217117837721346030">Baixa el fitxer sospitós</translation>
+<translation id="1217437913373100941">Pestanya nova a <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Les teves dades locals se suprimiran aviat</translation>
 <translation id="1217668622537098248">Torna al clic amb el botó esquerre després d'una acció</translation>
 <translation id="1218015446623563536">Suprimeix Linux</translation>
@@ -3221,6 +3222,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
         <ph name="BREAK" />
         <ph name="BREAK" />
         Pots gestionar la configuració d'aquesta targeta en qualsevol moment o veure més opcions a Personalitza Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Pestanya nova en 1 pestanya}other{Pestanya nova en # pestanyes}}</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3208703785962634733">No confirmat</translation>
@@ -3396,6 +3398,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: s'està reproduint el vídeo en mode d'imatge sobre imatge</translation>
 <translation id="3335380372402547327">Previsualitza les notificacions amb flaix</translation>
 <translation id="3335947283844343239">Torna a obrir la pestanya tancada</translation>
+<translation id="3336661809256024098">Pestanya nova a <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">No ho sé</translation>
 <translation id="3337568642696914359">No permetis que els llocs web gestionin protocols</translation>
 <translation id="333863344734218290">T'avisa de llocs web públics i privats no segurs</translation>
@@ -8936,6 +8939,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7211783048245131419">Encara no s'ha assignat cap interruptor</translation>
 <translation id="7212097698621322584">Introdueix el PIN actual per canviar-lo. Si no el saps, hauràs de restablir la clau de seguretat i, a continuació, crear un PIN nou.</translation>
 <translation id="7214047272988222011">Concedit: <ph name="PERMISSION_DETAILS" />. Activa l'<ph name="LINK_BEGIN" />accés a la càmera del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Pestanya nova en 1 pestanya}other{Pestanya nova en # pestanyes}}</translation>
 <translation id="721490496276866468">Importa les contrasenyes</translation>
 <translation id="7217208603285112910">La selecció no està en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Vols suprimir les dades del lloc web?</translation>
@@ -9223,6 +9227,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7410344089573941623">Pregunta si <ph name="HOST" /> vol accedir a la càmera i al micròfon</translation>
 <translation id="7410421966064092098">Els llocs web no poden ajudar a verificar que no ets un bot</translation>
 <translation id="7410852728357935715">Emet a un dispositiu</translation>
+<translation id="741148343080227980">Pots editar el teu nom <ph name="BEGIN_LINK" />al teu Compte de Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7412226954991670867">Memòria de la GPU</translation>
 <translation id="741370456693729525">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat</translation>

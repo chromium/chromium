@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">તમારું શોધ એન્જિન પસંદ કરો</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> એ કનેક્ટ કરવાનો ઇનકાર કર્યો.</translation>
 <translation id="6433797564277305076">હવેથી ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
+<translation id="6436994298828707228">તમારા સ્થાનિક નેટવર્ક પરના ડિવાઇસ અથવા સર્વર સાથે કનેક્ટ કરવા માટે આ કનેક્શન સાર્વજનિક પેજ પરથી શરૂ કરવામાં આવ્યું હોવાને કારણે તેને બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">પોશાક</translation>
 <translation id="6440503408713884761">અવગણી</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">ડાબી બાજુએ બે ચતુષ્કોણ કાણાં પાડો</translation>
 <translation id="6549443526281184652">પોશાકો</translation>
 <translation id="6550245281449521513">માઉસ લૉક કરવાની મંજૂરી નથી</translation>
+<translation id="6552566579578780089">ચુકવણીઓ</translation>
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
 <translation id="6556866813142980365">ફરી કરો</translation>
 <translation id="6557715786897013164">14 x 17 ઇંચ</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">સીરિયલ પોર્ટ</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">સરળ હપ્તાઓમાં ચુકવણી કરો</translation>
 <translation id="6825578344716086703">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે નબળા સહી ઍલ્ગોરિધમ (જેમ કે SHA-1)નો ઉપયોગ કરીને સહીિત કરેલું પ્રમાણપત્ર પ્રસ્તુત કર્યું. આનો અર્થ એ છે કે સર્વરે પ્રસ્તુત કરેલા સુરક્ષા પ્રમાણપત્રો બનાવટી હોય શકે છે અને તે સર્વર તમારું અપેક્ષિત સર્વર (તમે કોઈ હુમલાખોર સાથે વાર્તાલાપ કરતા હોય શકે) ન પણ હોય.</translation>
 <translation id="6826993739343257035">ARને મંજૂરી આપીએ?</translation>
 <translation id="6828150717884939426">કૉલ કરો</translation>
@@ -3979,6 +3982,7 @@
 <translation id="753556296624075801">Google દ્વારા સંચાલિત</translation>
 <translation id="753713322968419914">Chromeની ઑટોમૅટિક રીતે ભરવાની સુવિધામાંથી તમારા ઘરનું સરનામું કાઢી નાખીએ?</translation>
 <translation id="7537536606612762813">ફરજિયાત</translation>
+<translation id="7541043894191476250">સંદર્ભિત કાર્યો</translation>
 <translation id="7543525346216957623">તમારા માતા-પિતાને કહો</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> શરૂ થઈ રહી છે</translation>
 <translation id="7548892272833184391">કનેક્શન ભૂલો સુધારો</translation>
@@ -4504,6 +4508,7 @@
 <translation id="8406071103346257942">પાસવર્ડ ભરવા માટે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરવાનું રોકો</translation>
 <translation id="8407031780528483338">રસોઈ બનાવવાના વાસણો</translation>
 <translation id="8409413588194360210">ચુકવણી હૅન્ડલર</translation>
+<translation id="8410956920192583322">માસિક અથવા 4 હપ્તા</translation>
 <translation id="8412145213513410671">ક્રેશેસ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">તમારે તે જ પાસફ્રેઝ બે વાર દાખલ કરવો આવશ્યક છે.</translation>
 <translation id="8414322570408428950">એક્સ્ટેન્શન સંબંધિત ઇવેન્ટ થવા બાબતની માહિતી</translation>
@@ -4794,6 +4799,7 @@
 <translation id="8922734931659847428">જ્યાં <ph name="BEGIN_LINK" />જૂની ટેક્નોલોજીની ઇવેન્ટ<ph name="END_LINK" /> જોવા મળી રહી છે, તેવા તમે મુલાકાત લો છો તે પેજના URLsની મર્યાદિત સૂચિ</translation>
 <translation id="892588693504540538">ઉપર જમણી બાજુએ કાણું પાડો</translation>
 <translation id="8926389886865778422">ફરિથી પુછશો નહીં</translation>
+<translation id="8926400492587758246">ઓછી રકમવાળા માસિક હપ્તાઓમાં ચુકવણી કરો</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>
 <translation id="893332455753468063">નામ ઉમેરો</translation>
 <translation id="8938242527120341116">તમારા ડિવાઇસના કન્ટેન્ટના ફિલ્ટરને <ph name="BLOCKED_URL" /> દ્વારા બ્લૉક કરવામાં આવ્યા છે</translation>

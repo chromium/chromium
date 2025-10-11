@@ -147,7 +147,7 @@
 <translation id="2699790011615497488">Abrir o Gemini no Chrome Beta</translation>
 <translation id="2712141162840347885">Selecione o que quiser para pesquisar com o Google Lens ou pressione "Esc" para sair</translation>
 <translation id="2738871930057338499">Não foi possível conectar à Internet. HTTP 403 Proibido. Verifique sua configuração do proxy.</translation>
-<translation id="2742320827292110288">Aviso: o Google Chrome não impede que as extensões registrem seu histórico de navegação. Para desativar a extensão no modo de navegação anônima, desmarque esta opção.</translation>
+<translation id="2742320827292110288">Aviso: o Google Chrome não pode impedir que as extensões registrem seu histórico de navegação. Para desativar a extensão no modo de navegação anônima, desmarque esta opção.</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2765403129283291972">O Chrome precisa de permissão para este site acessar seu microfone</translation>
 <translation id="2770231113462710648">Alterar navegador padrão para:</translation>
@@ -519,6 +519,7 @@
 <translation id="6967962315388095737">Regra interna do Google Chrome Beta que permite o tráfego mDNS.</translation>
 <translation id="6979589607440534284">Saiba por que o Chrome bloqueia alguns arquivos (abre em uma nova guia)</translation>
 <translation id="6991926986715044139">Sempre mostrar o atalho do Google Lens</translation>
+<translation id="6999131147875565462">O Chrome fica mais rápido e os recursos que usam JavaScript vão funcionar conforme projetado</translation>
 <translation id="7011190694940573312">A instalação falhou porque não há suporte para esta versão do sistema operacional.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>

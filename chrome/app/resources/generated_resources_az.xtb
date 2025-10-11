@@ -336,6 +336,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1216891999012841486">Güncəlləmə xətalarını düzəltmək haqqında ətraflı məlumat</translation>
 <translation id="1217114730239853757">ChromeOS Flex üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, boşluq düyməsinə basın.</translation>
 <translation id="1217117837721346030">Şübhəli faylı endirin</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> qrupunda yeni tab</translation>
 <translation id="1217483152325416304">Lokal datanız tezliklə silinəcək</translation>
 <translation id="1217668622537098248">Əməliyyatdan sonra sol düyməyə klikləyin</translation>
 <translation id="1218015446623563536">Linux'u silin</translation>
@@ -3226,6 +3227,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
         <ph name="BREAK" />
         <ph name="BREAK" />
         Bu kartda ayarları idarə edə, yaxud "Chrome-u fərdiləşdirin" bölməsində digər seçimlərə baxa bilərsiniz.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 tabda yeni tab}other{# tabda yeni tab}}</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208584281581115441">İndi yoxlayın</translation>
 <translation id="3208703785962634733">Təsdiq olunmadı</translation>
@@ -3401,6 +3403,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video Şəkil içində Şəkil rejimində oxudulur</translation>
 <translation id="3335380372402547327">İşıqlı bildirişləri önizləyin</translation>
 <translation id="3335947283844343239">Bağlanmış Paneli yenidən açın</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> qrupunda Yeni Tab</translation>
 <translation id="3336855445806447827">Əmin deyiləm</translation>
 <translation id="3337568642696914359">Saytlara protokolları nizamlamaq icazəsi verməyin</translation>
 <translation id="333863344734218290">Güvənsiz ictimai və şəxsi saytlar barədə xəbərdarlıq edir</translation>
@@ -8940,6 +8943,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7211783048245131419">Hələ heç bir düymə təyin edilməyib</translation>
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>
 <translation id="7214047272988222011">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem kamera girişini<ph name="LINK_END" /> yandırın.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 Tabda Yeni Tab}other{# Tabda Yeni Tab}}</translation>
 <translation id="721490496276866468">Parolları import edin</translation>
 <translation id="7217208603285112910">Seçilmiş mətn <ph name="LANGUAGE" /> dilində deyil</translation>
 <translation id="7219254577985949841">Sayt datası silinsin?</translation>
@@ -9227,6 +9231,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7410344089573941623"><ph name="HOST" /> kamera və mikrofonunuza daxil olmaq istədiyi haqqında soruşun</translation>
 <translation id="7410421966064092098">Saytlar bot olmadığınızı təsdiqləməyə kömək edə bilməz</translation>
 <translation id="7410852728357935715">Cihazda paylaşın</translation>
+<translation id="741148343080227980">Adınızı <ph name="BEGIN_LINK" />Google hesabınızda<ph name="USERNAME" /><ph name="END_LINK" /> redaktə edə bilərsiniz.</translation>
 <translation id="741204030948306876">Bəli, razıyam</translation>
 <translation id="7412226954991670867">GPU yaddaş</translation>
 <translation id="741370456693729525">Brauzer tarixçəsində axtarmaq və daxil olduğunuz saytları tapmaq üçün gündəlik danışıqdan istifadə edin</translation>

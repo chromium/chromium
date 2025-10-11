@@ -336,6 +336,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1216891999012841486">Learn more about fixing update errors</translation>
 <translation id="1217114730239853757">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex? If so, press the space bar.</translation>
 <translation id="1217117837721346030">Download suspicious file</translation>
+<translation id="1217437913373100941">New tab in <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Your local data will soon be deleted</translation>
 <translation id="1217668622537098248">Revert to left click after action</translation>
 <translation id="1218015446623563536">Delete Linux</translation>
@@ -3236,6 +3237,7 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         <ph name="BREAK" />
         You can manage settings from this card at any time or see more options in Customise Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{New tab in 1 tab}other{New tab in # tabs}}</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
@@ -3411,6 +3413,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video playing in picture-in-picture mode</translation>
 <translation id="3335380372402547327">Preview flash notifications</translation>
 <translation id="3335947283844343239">Re-open Closed Tab</translation>
+<translation id="3336661809256024098">New tab in <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Not sure</translation>
 <translation id="3337568642696914359">Don't allow sites to handle protocols</translation>
 <translation id="333863344734218290">Warns you for insecure public and private sites</translation>
@@ -8955,6 +8958,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
 <translation id="7214047272988222011">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system camera access<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{New tab in 1 tab}other{New tab in # tabs}}</translation>
 <translation id="721490496276866468">Import passwords</translation>
 <translation id="7217208603285112910">Selection not in <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Delete site data?</translation>
@@ -9242,6 +9246,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7410344089573941623">Ask if <ph name="HOST" /> wants to access your camera and microphone</translation>
 <translation id="7410421966064092098">Sites can't help to verify that you're not a bot</translation>
 <translation id="7410852728357935715">Cast to a device</translation>
+<translation id="741148343080227980">You can edit your name <ph name="BEGIN_LINK" />in your Google Account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
 <translation id="7412226954991670867">GPU memory</translation>
 <translation id="741370456693729525">Use everyday language to search your browsing history and find sites that you visited.</translation>

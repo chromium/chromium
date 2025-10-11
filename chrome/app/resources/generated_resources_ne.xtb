@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">अपडेटसम्बन्धी त्रुटिहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="1217114730239853757">तपाईं ChromeOS Flex मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ? तपाईं ChromeVox एक्टिभेट गर्न चाहनुहुन्छ भने स्पेस बार की थिच्नुहोस्।</translation>
 <translation id="1217117837721346030">शङ्कास्पद फाइल डाउनलोड गर्नुहोस्</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> मा खोलिएको नयाँ ट्याब</translation>
 <translation id="1217483152325416304">तपाईंको स्थानीय डेटा चाँडै मेटाइने छ</translation>
 <translation id="1217668622537098248">कारबाही गरेपछि बायाँ क्लिकमा फर्कनुहोस्</translation>
 <translation id="1218015446623563536">Linux मेटनुहोस्</translation>
@@ -3223,6 +3224,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         तपाईं जुनसुकै बेला यो कार्डमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{एउटा ट्याबमा खोलिएको नयाँ ट्याब}other{# वटा ट्याबमा खोलिएको नयाँ ट्याब}}</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
 <translation id="3208703785962634733">प्रमाणित नगरिएको</translation>
@@ -3398,6 +3400,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - भिडियो Picture-in-Picture मोडमा प्ले हुँदै छ</translation>
 <translation id="3335380372402547327">फ्ल्यास नोटिफिकेसनको प्रिभ्यू हेर्नुहोस्</translation>
 <translation id="3335947283844343239">बन्द गरिएको ट्याब पुन: खोल्नुहोस्</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> मा खोलिएको नयाँ ट्याब</translation>
 <translation id="3336855445806447827">निश्चित छैन</translation>
 <translation id="3337568642696914359">साइटहरूलाई प्रोटोकोल व्यवस्थापन गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="333863344734218290">तपाईंलाई असुरक्षित सार्वजनिक तथा निजी साइटहरूका बारेमा चेतावनी दिन्छ</translation>
@@ -8939,6 +8942,7 @@
 <translation id="7211783048245131419">अहिलेसम्म कुनै पनि स्विच तोकिएको छैन</translation>
 <translation id="7212097698621322584">यसलाई बदल्न आफ्नो हालको PIN हाल्नुहोस्। तपाईंलाई आफ्नो PIN थाहा छैन भने तपाईंले सुरक्षा साँचो रिसेट गर्नु पर्छ र त्यसपछि नयाँ PIN सिर्जना गर्नु पर्छ।</translation>
 <translation id="7214047272988222011">प्रयोग गर्ने अनुमति दिइएको छ – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />सिस्टमको क्यामेरा प्रयोग गर्ने अनुमति<ph name="LINK_END" /> दिनुहोस्।</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{एउटा ट्याबमा खोलिएको नयाँ ट्याब}other{# वटा ट्याबमा खोलिएको नयाँ ट्याब}}</translation>
 <translation id="721490496276866468">पासवर्डहरू इम्पोर्ट गर्नुहोस्</translation>
 <translation id="7217208603285112910">चयन गरिएको सामग्री <ph name="LANGUAGE" /> भाषामा उपलब्ध छैन</translation>
 <translation id="7219254577985949841">साइट डेटा मेटाउने हो?</translation>
@@ -9226,6 +9230,7 @@
 <translation id="7410344089573941623"><ph name="HOST" />लाई तपाइँको क्यामेरा र माइक्रोफोन पहुँच गर्न चाहन्छ की भनेर सोध्नुहोस्।</translation>
 <translation id="7410421966064092098">साइटहरूले तपाईं बट होइन भन्ने कुरा पुष्टि गर्न सक्दैनन्</translation>
 <translation id="7410852728357935715">कुनै डिभाइसमा कास्ट गर्नुहोस्</translation>
+<translation id="741148343080227980">तपाईं <ph name="BEGIN_LINK" />आफ्नो Google खाता <ph name="USERNAME" /><ph name="END_LINK" /> मा गई आफ्नो नाम बदल्न सक्नुहुन्छ।</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7412226954991670867">GPU समृति</translation>
 <translation id="741370456693729525">ब्राउजिङ हिस्ट्री खोज्न र आफूले खोलेका साइटहरू भेट्टाउन बोलीचालीको भाषा प्रयोग गर्नुहोस्</translation>

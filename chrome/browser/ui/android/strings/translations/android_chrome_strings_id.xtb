@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
 <translation id="1363028406613469049">Lacak</translation>
 <translation id="1366525380420346469">Saat aktif</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Anda dapat mencegah situs ini agar tidak mengirim notifikasi pada masa mendatang}other{Anda dapat mencegah situs ini agar tidak mengirim notifikasi pada masa mendatang}}</translation>
 <translation id="1373696734384179344">Memori tidak cukup untuk mendownload konten yang dipilih.</translation>
 <translation id="1376578503827013741">Menghitung…</translation>
 <translation id="1381838868249179644">Untuk membantu menjaga keamanan Anda, izin telah dihapus dari beberapa situs</translation>

@@ -337,6 +337,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1216891999012841486">Saiba mais sobre como corrigir erros de atualização</translation>
 <translation id="1217114730239853757">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS Flex? Se for o caso, pressione a barra de espaço.</translation>
 <translation id="1217117837721346030">Baixar o arquivo suspeito</translation>
+<translation id="1217437913373100941">Nova guia em <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Seus dados locais serão excluídos em breve</translation>
 <translation id="1217668622537098248">Reverter para o clique com botão esquerdo após a ação</translation>
 <translation id="1218015446623563536">Excluir Linux</translation>
@@ -3236,6 +3237,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Você pode gerenciar as configurações deste card a qualquer momento ou conferir mais opções em "Personalizar o Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova guia em 1 guia}one{Nova guia em # guia}other{Nova guia em # guias}}</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208584281581115441">Confirmar agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
@@ -3411,6 +3413,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Vídeo reproduzido em picture-in-picture</translation>
 <translation id="3335380372402547327">Visualizar notificações com flash</translation>
 <translation id="3335947283844343239">Reabrir guia fechada</translation>
+<translation id="3336661809256024098">Nova guia em <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Não sei</translation>
 <translation id="3337568642696914359">Não permitir que os sites gerenciem protocolos</translation>
 <translation id="333863344734218290">Avisa sobre sites públicos e particulares sem segurança</translation>
@@ -6446,7 +6449,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5434065355175441495">PKCS #1 Criptografia RSA</translation>
 <translation id="5435274640623994081">Ativar registro de ícone auditivo</translation>
 <translation id="5435779377906857208">Sempre permitir que <ph name="HOST" /> acesse sua localização</translation>
-<translation id="5436211819997237281">A extensão atual está gerenciando sua página "Nova guia"</translation>
+<translation id="5436211819997237281">Extensão ativa na página "Nova guia"</translation>
 <translation id="5436492226391861498">Esperando pelo túnel de proxy...</translation>
 <translation id="5436510242972373446">Pesquisar em <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">A janela <ph name="WINDOW_SIDE" /> agora tem <ph name="WINDOW_SIZE_PERCENT" /> de largura e o painel <ph name="PANE_SIDE" /> tem <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -8959,6 +8962,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7211783048245131419">Nenhum interruptor foi atribuído até o momento</translation>
 <translation id="7212097698621322584">Insira seu PIN atual para alterá-lo. Se você não sabe seu PIN, redefina a chave de segurança e crie um novo.</translation>
 <translation id="7214047272988222011">Concedida (<ph name="PERMISSION_DETAILS" />). Ative o <ph name="LINK_BEGIN" />acesso à câmera do sistema<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova guia em 1 guia}one{Nova guia em # guia}other{Nova guia em # guias}}</translation>
 <translation id="721490496276866468">Importar senhas</translation>
 <translation id="7217208603285112910">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Excluir dados do site?</translation>
@@ -9246,6 +9250,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7410344089573941623">Perguntar se <ph name="HOST" /> deseja acessar sua câmera e seu microfone</translation>
 <translation id="7410421966064092098">Os sites não podem ajudar a verificar que você é uma pessoa real</translation>
 <translation id="7410852728357935715">Transmitir para um dispositivo</translation>
+<translation id="741148343080227980">Você pode editar seu nome <ph name="BEGIN_LINK" />na sua Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Sim</translation>
 <translation id="7412226954991670867">Memória GPU</translation>
 <translation id="741370456693729525">Pesquise seu histórico de navegação usando linguagem natural para encontrar sites que você visitou</translation>
@@ -11536,7 +11541,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8963117664422609631">Acessar as configurações do site</translation>
 <translation id="8964927371396953727">Confirme sua identidade para usar e salvar senhas na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Digite a senha antiga</translation>
-<translation id="8967403839792635452">Você desenvolve extensões? Fique por dentro das <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> com a documentação para desenvolvedores sobre extensões do Chrome.</translation>
+<translation id="8967403839792635452">Você desenvolve extensões? Acompanhe as <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> na documentação para desenvolvedores do Chrome.</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8967548289042494261">Remover <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Gravador de imagem do sistema ChromeOS</translation>

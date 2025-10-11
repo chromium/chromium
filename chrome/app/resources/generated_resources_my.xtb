@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">အပ်ဒိတ်အမှားပြုပြင်ခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="1217114730239853757">ChromeOS Flex အတွက် အသင့်ပါသည့် ဖန်သားပြင်ဖတ်အက်ပ် ChromeVox ကို ဖွင့်လိုပါသလား။ ဖွင့်လိုပါက နေရာခြားခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="1217117837721346030">သံသယဖြစ်ဖွယ်ဖိုင် ဒေါင်းလုဒ်လုပ်ရန်</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> ရှိ တဘ်အသစ်</translation>
 <translation id="1217483152325416304">သင့်စက်အတွင်း ဒေတာကို မကြာမီ ဖျက်လိုက်ပါမည်</translation>
 <translation id="1217668622537098248">လုပ်ဆောင်ချက်ပြီးသည့်အခါ မူရင်း ဘယ်ခလုတ်နှိပ်ရန်သုံးသည့်အတိုင်း ပြန်ထားပါ</translation>
 <translation id="1218015446623563536">Linux ကို ဖျက်ခြင်း</translation>
@@ -3235,6 +3236,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ဤကတ်မှ ဆက်တင်များကို အချိန်မရွေး စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{တဘ် ၁ ခုရှိ တဘ်အသစ်}other{တဘ် # ခုရှိ တဘ်အသစ်}}</translation>
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
 <translation id="3208584281581115441">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="3208703785962634733">အတည်မပြုသေး</translation>
@@ -3410,6 +3412,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ဗီဒီယိုကို နှစ်ခုထပ်၍ကြည့်ခြင်းမုဒ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="3335380372402547327">အလင်းရောင်ဖြင့် အကြောင်းကြားချက်များ အကြိုဗားရှင်း</translation>
 <translation id="3335947283844343239">ပိတ်ထားသည့် တဲဘ်ကို ပြန်ဖွင့်ရန်</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> ရှိ တဘ်အသစ်</translation>
 <translation id="3336855445806447827">မသေချာပါ</translation>
 <translation id="3337568642696914359">ပရိုတိုကောများကို စီမံရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="333863344734218290">မလုံခြုံသော အများသုံးနှင့် သီးသန့် ဝဘ်ဆိုက်များအကြောင်း သတိပေးရန်</translation>
@@ -8950,6 +8953,7 @@
 <translation id="7211783048245131419">မည်သည့်ခလုတ်ကိုမျှ မသတ်မှတ်ရသေးပါ</translation>
 <translation id="7212097698621322584">သင်၏ လက်ရှိပင်နံပါတ် ပြောင်းရန် ၎င်းကိုထည့်ပါ။ သင်၏ ပင်နံပါတ်ကို မသိလျှင် သင့်လုံခြုံရေးကီးကို ပြင်ဆင်သတ်မှတ်ပြီး ပင်နံပါတ်အသစ် ပြုလုပ်ပါ။</translation>
 <translation id="7214047272988222011">ခွင့်ပြုထားသည် - <ph name="PERMISSION_DETAILS" />။ <ph name="LINK_BEGIN" />စနစ်ကင်မရာ သုံးခွင့်<ph name="LINK_END" /> ဖွင့်ရန်။</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{တဘ် ၁ ခုရှိ တဘ်အသစ်}other{တဘ် # ခုရှိ တဘ်အသစ်}}</translation>
 <translation id="721490496276866468">စကားဝှက်များ ထည့်သွင်းပါ</translation>
 <translation id="7217208603285112910"><ph name="LANGUAGE" /> ဖြင့် မဟုတ်သော ရွေးချယ်မှု</translation>
 <translation id="7219254577985949841">ဝဘ်ဆိုက်ဒေတာ ဖျက်မလား။</translation>
@@ -9237,6 +9241,7 @@
 <translation id="7410344089573941623"><ph name="HOST" /> သည် သင့်ကင်မရာနှင့် မိုက်ခရိုဖုန်းအား အသုံးပြုလိုသလား မေးပါ</translation>
 <translation id="7410421966064092098">သင်သည် ဘော့တ်မဟုတ်ကြောင်းကို ဝဘ်ဆိုက်များက အတည်ပြုမပေးနိုင်ပါ</translation>
 <translation id="7410852728357935715">စက်တစ်ခုသို့ ကာစ်လုပ်ရန်</translation>
+<translation id="741148343080227980">သင့်အမည်ကို <ph name="BEGIN_LINK" />သင်၏ Google Account <ph name="USERNAME" /> တွင်<ph name="END_LINK" /> ပြင်နိုင်သည်။</translation>
 <translation id="741204030948306876">ပါဝင်ပါမည်</translation>
 <translation id="7412226954991670867">GPU မှတ်ဉာဏ်</translation>
 <translation id="741370456693729525">သင့်ကြည့်ရှုမှုမှတ်တမ်းနှင့် ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များကို ရှာရန်အတွက် နေ့စဉ်သုံးဘာသာစကားကို သုံးသည်</translation>

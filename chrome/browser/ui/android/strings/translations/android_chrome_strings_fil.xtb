@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1366525380420346469">Kapag naka-on</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Puwede mong pigilan ang site na itong magpadala ng mga notification sa hinaharap}one{Puwede mong pigilan ang mga site na itong magpadala ng mga notification sa hinaharap}other{Puwede mong pigilan ang mga site na itong magpadala ng mga notification sa hinaharap}}</translation>
 <translation id="1373696734384179344">Hindi sapat ang memory upang ma-download ang napiling content.</translation>
 <translation id="1376578503827013741">Kino-compute…</translation>
 <translation id="1381838868249179644">Para mapanatili kang ligtas, inalis ang mga pahintulot sa ilang site</translation>

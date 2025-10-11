@@ -3321,6 +3321,7 @@
 <translation id="6433501201775827830">Ընտրեք որոնիչը</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-ը մերժեց կապակցումը:</translation>
 <translation id="6433797564277305076">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը սարքի ապակողպման միջոցով</translation>
+<translation id="6436994298828707228">Միացումն արգելափակված է, քանի որ այն նախաձեռնվել է հրապարակային էջից՝ ձեր տեղական ցանցի սարքերին կամ սերվերներին միանալու համար։</translation>
 <translation id="6437647869369934905">Google Գծագրեր</translation>
 <translation id="643917412048333145">Զգեստներ</translation>
 <translation id="6440503408713884761">Անտեսված</translation>
@@ -3392,6 +3393,7 @@
 <translation id="6547208576736763147">Երկու անցք ձախ կողմում</translation>
 <translation id="6549443526281184652">Կոստյումներ</translation>
 <translation id="6550245281449521513">Մկնիկի կողպումը չի թույլատրվում</translation>
+<translation id="6552566579578780089">Վճարումներ</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
 <translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6557715786897013164">14 x 17 դյույմ</translation>
@@ -3540,6 +3542,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">հաջորդական միացքներ</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Հարմար տարաժամկետ վճարում</translation>
 <translation id="6825578344716086703">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերի ներկայացրած հավաստագիրը ստորագրված էր թույլ ալգորիթմով: Սա նշանակում է, որ սերվերի ներկայացրած անվտանգության հավատարմագրերը կարող են կեղծված լինել, իսկ սերվերը կարող է ձեր ակնկալած սերվերը չլինել (հնարավոր է՝ դուք կապ եք հաստատել հարձակվողի հետ):</translation>
 <translation id="6826993739343257035">Թույլատրե՞լ AR պարամետրը</translation>
 <translation id="6828150717884939426">Զանգել</translation>
@@ -3987,6 +3990,7 @@
 <translation id="753556296624075801">Google-ի տեխնոլոգիա</translation>
 <translation id="753713322968419914">Հեռացնե՞լ ձեր տան հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="7537536606612762813">Պարտադիր</translation>
+<translation id="7541043894191476250">Համատեքստային առաջադրանքներ</translation>
 <translation id="7543525346216957623">Հարցրեք ձեր ծնողին</translation>
 <translation id="7546409722674205727">«<ph name="APP_NAME" />» հավելվածը գործարկվում է</translation>
 <translation id="7548892272833184391">Ինչպես շտկել կապի սխալները</translation>
@@ -4512,6 +4516,7 @@
 <translation id="8406071103346257942">այլևս չօգտագործել էկրանի կողպումը՝ գաղտնաբառեր լրացնելու համար</translation>
 <translation id="8407031780528483338">Խոհանոցային պարագաներ</translation>
 <translation id="8409413588194360210">վճարումների մշակիչներ</translation>
+<translation id="8410956920192583322">Ամենամսյա կամ 4 հավասար վճարումներ</translation>
 <translation id="8412145213513410671">Խափանումներ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Դուք պետք է երկու անգամ մուտքագրեք միևնույն անցաբառը:</translation>
 <translation id="8414322570408428950">Ընդլայնման իրադարձություն է գրանցվել</translation>
@@ -4802,6 +4807,7 @@
 <translation id="8922734931659847428">Ձեր այցելած այն էջերի URL-ների սահմանափակ ցանկը, որտեղ տեղի են ունենում <ph name="BEGIN_LINK" />հնացած տեխնոլոգիաների հետ կապված իրադարձություններ<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Անցք վերևի աջ կողմում</translation>
 <translation id="8926389886865778422">Այլևս չհարցնել</translation>
+<translation id="8926400492587758246">Փոքր ամենամսյա վճարումներ</translation>
 <translation id="8932102934695377596">Ձեր ժամացույցը հետ է ընկել</translation>
 <translation id="893332455753468063">Ավելացրեք անունը</translation>
 <translation id="8938242527120341116">Ձեր սարքում բովանդակության զտիչներն արգելափակել են <ph name="BLOCKED_URL" /> կայքը</translation>

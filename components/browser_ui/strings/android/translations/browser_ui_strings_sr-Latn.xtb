@@ -569,6 +569,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7406113532070524618">Ovo podešavanje radi, a da ne mora da vas identifikuje ili da dozvoli sajtovima da vide istoriju pregledanja, iako sajtovi mogu da dele malu količinu podataka u okviru verifikacije</translation>
 <translation id="7409735910987429903">Sajtovi mogu da prikazuju iskačuće prozore sa oglasima ili da koriste preusmeravanja da bi vas upućivali na veb-sajtove koje možda ne želite da posetite</translation>
 <translation id="7412160840120117304">Heksadecimalni kôd primarne boje</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zumiranje}one{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}few{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>

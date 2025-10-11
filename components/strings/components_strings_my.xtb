@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">သင်၏ ရှာဖွေရေး အင်ဂျင်ကို ရွေးပါ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> သည်ချိတ်ဆက်ရန် ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="6433797564277305076">ယခုမှစ၍ စက်လော့ခ်ဖွင့်ခြင်းကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
+<translation id="6436994298828707228">အများမြင်စာမျက်နှာတစ်ခုက သင့်သီးသန့်ကွန်ရက်ရှိ စက် (သို့) ဆာဗာများသို့ ချိတ်ဆက်ရန် စတင်ခဲ့ခြင်းကြောင့် ချိတ်ဆက်မှုကို ပိတ်လိုက်သည်။</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">အမျိုးသမီး ဝတ်စုံ</translation>
 <translation id="6440503408713884761">လျစ်လျူရှုထားသည်</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">ဘယ်ဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6549443526281184652">ဝတ်စုံများ</translation>
 <translation id="6550245281449521513">မောက်စ်လော့ခ်ချခြင်း ခွင့်မပြုတော့ပါ</translation>
+<translation id="6552566579578780089">ငွေပေးချေမှုများ</translation>
 <translation id="6554732001434021288">ပြီးခဲ့သော <ph name="NUM_DAYS" /> ရက်က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
 <translation id="6556866813142980365">ပြန်လုပ်ရန်</translation>
 <translation id="6557715786897013164">၁၄ x ၁၇ လက်မ</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">အစဉ်လိုက်ပို့တ်များ</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">အရစ်ကျဖြင့် လွယ်ကူစွာ ပေးချေရန်</translation>
 <translation id="6825578344716086703">သင်သည် <ph name="DOMAIN" /> ကို ဖွင့်ရန် ကြိုးပမ်းခဲ့သော်လည်း အသိအမှတ်ပြုလက်မှတ်တစ်ခုမှာ (SHA-1 ကဲ့သို့) အားနည်းသည့် လက်မှတ်ထိုးခြင်းစနစ်ကိုအသုံးပြု၍ လက်မှတ်ထိုးထားကြောင်း ဆာဗာက တင်ပြထားပါသည်။ ဆိုလိုသည်မှာ ဆာဗာကပြသထားသည့် လုံခြုံရေးအထောက်အထားများသည် အတုပြုလုပ်ထားခြင်း ဖြစ်နိုင်ပြီး ဆာဗာသည်လည်း သင်အသုံးပြုလိုသည့် ဆာဗာမဖြစ်နိုင်ပါ (သင်သည် တိုက်ခိုက်သူနှင့် ဆက်သွယ်နေရခြင်းသာ ဖြစ်နိုင်ပါသည်)။</translation>
 <translation id="6826993739343257035">AR ကို ခွင့်ပြုမလား။</translation>
 <translation id="6828150717884939426">ဖုန်းဆက်ရန်</translation>
@@ -3979,6 +3982,7 @@
 <translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
 <translation id="753713322968419914">အိမ်လိပ်စာကို Chrome အော်တိုဖြည့်မှ ဖယ်ရှားမလား။</translation>
 <translation id="7537536606612762813">မလုပ်မနေရ</translation>
+<translation id="7541043894191476250">အခြေအနေအလိုက် လုပ်ဆောင်စရာ</translation>
 <translation id="7543525346216957623">သင့်မိဘကို မေးပါ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> စတင်နေသည်</translation>
 <translation id="7548892272833184391">ချိတ်ဆက်မှု အမှားများကို ပြုပြင်ရန်</translation>
@@ -4505,6 +4509,7 @@
 <translation id="8406071103346257942">စကားဝှက်ဖြည့်ရာ၌ ဖန်သားပြင်လော့ခ် သုံးခြင်းကို ရပ်လိုသည်</translation>
 <translation id="8407031780528483338">ဒယ်အိုး၊ ဒန်အိုးများ</translation>
 <translation id="8409413588194360210">ငွေပေးချေမှု စီမံသူများ</translation>
+<translation id="8410956920192583322">လစဉ် (သို့) အရစ်ကျ ၄ ကြိမ်</translation>
 <translation id="8412145213513410671">ပျက်စီးမှုများ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">တူညီသည့် လျှို့ဝှက်စကားစု နှစ်ကြိမ်ထည့်ရပါမည်။</translation>
 <translation id="8414322570408428950">နောက်ဆက်တွဲဖြစ်ရပ် ရှိသည်</translation>
@@ -4795,6 +4800,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />ယခင်နည်းပညာ ဖြစ်ရပ်များ<ph name="END_LINK" /> ရှိနေသည့် သင်ဝင်ကြည့်သော စာမျက်နှာ URL များ၏ ကန့်သတ်စာရင်း</translation>
 <translation id="892588693504540538">ညာဘက်ထိပ်တွင် ဖောက်ရန်</translation>
 <translation id="8926389886865778422">ထပ် မမေးပါနှင့်</translation>
+<translation id="8926400492587758246">သက်သာသော လစဉ်အရစ်ကျဖြင့် ပေးချေရန်</translation>
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>
 <translation id="893332455753468063">အမည် ထည့်သွင်းခြင်း</translation>
 <translation id="8938242527120341116">သင့်စက်၏ အကြောင်းအရာဖီလ်တာများက <ph name="BLOCKED_URL" /> ကို ပိတ်လိုက်သည်</translation>

@@ -3307,6 +3307,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6433501201775827830">Vyberte vyhledávač</translation>
 <translation id="6433595998831338502">Web <ph name="HOST_NAME" /> odmítl připojení.</translation>
 <translation id="6433797564277305076">Od teď karty potvrzovat rychleji pomocí odemknutí zařízení</translation>
+<translation id="6436994298828707228">Připojení je blokováno, protože bylo zahájeno veřejnou stránkou za účelem připojení k zařízením nebo serverům ve vaší místní síti.</translation>
 <translation id="6437647869369934905">Nákresy Google</translation>
 <translation id="643917412048333145">Šaty</translation>
 <translation id="6440503408713884761">Ignorováno</translation>
@@ -3378,6 +3379,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6547208576736763147">Dva otvory vlevo</translation>
 <translation id="6549443526281184652">Kostýmy</translation>
 <translation id="6550245281449521513">Zámek myši není povolen</translation>
+<translation id="6552566579578780089">Platby</translation>
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6557715786897013164">14 × 17″</translation>
@@ -3526,6 +3528,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">sériové porty</translation>
 <translation id="6820686453637990663">Bezpečnostní kód platební karty (CVC)</translation>
+<translation id="6820949753458790123">Zaplatit jednoduše na splátky</translation>
 <translation id="6825578344716086703">Pokusili jste se přejít na web <ph name="DOMAIN" />, server však předložil certifikát podepsaný slabým algoritmem (například SHA-1). To znamená, že bezpečnostní pověření předložená serverem mohou být falešná a může se jednat o úplně jiný server, než předpokládáte (můžete komunikovat s útočníkem).</translation>
 <translation id="6826993739343257035">Povolit rozšířenou realitu?</translation>
 <translation id="6828150717884939426">Zavolat</translation>
@@ -3973,6 +3976,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="753556296624075801">Používá technologii Google</translation>
 <translation id="753713322968419914">Odebrat z automatického vyplňování v Chromu adresu domů?</translation>
 <translation id="7537536606612762813">Povinná</translation>
+<translation id="7541043894191476250">Kontextové úkoly</translation>
 <translation id="7543525346216957623">Požádej rodiče</translation>
 <translation id="7546409722674205727">Spouštění aplikace <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Oprava chyb připojení</translation>
@@ -4498,6 +4502,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8406071103346257942">přestat používat k vyplňování hesel zámek obrazovky</translation>
 <translation id="8407031780528483338">Kuchyňské nádobí</translation>
 <translation id="8409413588194360210">obslužné nástroje pro platby</translation>
+<translation id="8410956920192583322">Měsíčně nebo ve 4 splátkách</translation>
 <translation id="8412145213513410671">Selhání (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Stejnou heslovou frázi musíte zadat dvakrát.</translation>
 <translation id="8414322570408428950">Dojde k události rozšíření</translation>
@@ -4789,6 +4794,7 @@ Další podrobnosti:
 <translation id="8922734931659847428">Omezený seznam navštívených adres URL stránek, na kterých dochází k <ph name="BEGIN_LINK" />událostem starších technologií<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Děrování vpravo nahoře</translation>
 <translation id="8926389886865778422">Dotaz již nezobrazovat</translation>
+<translation id="8926400492587758246">Zaplatit nízkými měsíčními splátkami</translation>
 <translation id="8932102934695377596">Vaše hodiny se zpožďují</translation>
 <translation id="893332455753468063">Přidání jména</translation>
 <translation id="8938242527120341116">Filtry obsahu v zařízení adresu <ph name="BLOCKED_URL" /> blokují</translation>

@@ -3308,6 +3308,7 @@
 <translation id="6433501201775827830">ਆਪਣਾ ਖੋਜ ਇੰਜਣ ਚੁਣੋ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ਨੇ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ।</translation>
 <translation id="6433797564277305076">ਹੁਣ ਤੋਂ ਡੀਵਾਈਸ ਅਣਲਾਕ ਸੁਵਿਧਾ ਨੂੰ ਵਰਤ ਕੇ ਆਪਣੇ ਕਾਰਡਾਂ ਦੀ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਤਸਦੀਕ ਕਰੋ</translation>
+<translation id="6436994298828707228">ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਡੀਵਾਈਸਾਂ ਜਾਂ ਸਰਵਰਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਜਨਤਕ ਪੰਨੇ ਵੱਲੋਂ ਸ਼ੁਰੂਆਤ ਕਰ ਦਿੱਤੇ ਜਾਣ ਕਰਕੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">ਪੁਸ਼ਾਕਾਂ</translation>
 <translation id="6440503408713884761">ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ</translation>
@@ -3379,6 +3380,7 @@
 <translation id="6547208576736763147">ਖੱਬੇ ਪਾਸੇ ਦੋ ਮੋਰੀਆਂ</translation>
 <translation id="6549443526281184652">ਪੁਸ਼ਾਕਾਂ</translation>
 <translation id="6550245281449521513">ਮਾਊਸ ਲਾਕ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
+<translation id="6552566579578780089">ਭੁਗਤਾਨ</translation>
 <translation id="6554732001434021288">ਪਿਛਲੀ ਵਾਰ <ph name="NUM_DAYS" /> ਦਿਨ ਪਹਿਲਾਂ ਦੇਖੀ ਗਈ</translation>
 <translation id="6556866813142980365">ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="6557715786897013164">14 x 17 ਇੰਚ</translation>
@@ -3527,6 +3529,7 @@
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">ਸੀਰੀਅਲ ਪੋਰਟ</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">ਆਸਾਨ ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="6825578344716086703">ਤੁਸੀਂ <ph name="DOMAIN" /> 'ਤੇ ਪਹੁੰਚਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਪਰ ਸਰਵਰ ਨੇ ਕਿਸੇ ਕਮਜ਼ੋਰ ਹਸਤਾਖਰ ਐਲਗੋਰਿਦਮ ਦੀ ਵਰਤੋਂ ਨਾਲ ਹਸਤਾਖਰ ਕੀਤੇ ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਪੇਸ਼ ਕੀਤਾ (ਜਿਵੇਂ ਕਿ SHA-1)। ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਸਰਵਰ ਵੱਲੋਂ ਪੇਸ਼ ਕੀਤੇ ਸੁਰੱਖਿਆ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਨਕਲੀ ਹੋ ਸਕਦੇ ਹਨ, ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਸਰਵਰ ਤੁਹਾਡਾ ਸੰਭਾਵਿਤ ਸਰਵਰ ਨਾ ਹੋਵੇ (ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਹਮਲਾਵਰ ਨਾਲ ਸੰਚਾਰ ਕਰ ਰਹੇ ਹੋਵੋ)।</translation>
 <translation id="6826993739343257035">ਕੀ AR ਨੂੰ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?</translation>
 <translation id="6828150717884939426">ਕਾਲ ਕਰੋ</translation>
@@ -3974,6 +3977,7 @@
 <translation id="753556296624075801">Google ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="753713322968419914">ਕੀ Chrome ਆਟੋਫਿਲ ਤੋਂ ਘਰ ਦਾ ਪਤਾ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="7537536606612762813">ਲਾਜ਼ਮੀ</translation>
+<translation id="7541043894191476250">ਸੰਦਰਭੀ ਕਾਰਜ</translation>
 <translation id="7543525346216957623">ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ਐਪ ਸ਼ੁਰੂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="7548892272833184391">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰੋ</translation>
@@ -4499,6 +4503,7 @@
 <translation id="8406071103346257942">ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਆਪਣੇ ਸਕ੍ਰੀਨ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="8407031780528483338">ਭਾਂਡੇ</translation>
 <translation id="8409413588194360210">ਭੁਗਤਾਨ ਹੈਂਡਲਰ</translation>
+<translation id="8410956920192583322">ਮਹੀਨਾਵਾਰ ਜਾਂ 4 ਕਿਸ਼ਤਾਂ ਵਿੱਚ</translation>
 <translation id="8412145213513410671">ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ਤੁਹਾਨੂੰ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਰਜ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="8414322570408428950">ਐਕਸਟੈਂਸ਼ਨ ਇਵੈਂਟ ਵਾਪਰਦਾ ਹੈ</translation>
@@ -4789,6 +4794,7 @@
 <translation id="8922734931659847428">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨਿਆਂ ਦੇ URL ਦੀ ਇੱਕ ਸੀਮਤ ਸੂਚੀ, ਜਿੱਥੇ <ph name="BEGIN_LINK" />ਵਿਰਾਸਤੀ ਤਕਨਾਲੋਜੀ ਇਵੈਂਟ<ph name="END_LINK" /> ਵਾਪਰ ਰਹੇ ਹਨ</translation>
 <translation id="892588693504540538">ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="8926389886865778422">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
+<translation id="8926400492587758246">ਆਸਾਨ ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="8932102934695377596">ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ</translation>
 <translation id="893332455753468063">ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8938242527120341116">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਸਮੱਗਰੀ ਫਿਲਟਰਾਂ ਨੇ <ph name="BLOCKED_URL" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ</translation>

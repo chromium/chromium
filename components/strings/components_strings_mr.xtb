@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> नी कनेक्ट करण्यास नकार दिला.</translation>
 <translation id="6433797564277305076">आतापासून डिव्‍हाइस अनलॉक वापरून तुमच्‍या कार्डची झटपट खात्री करा</translation>
+<translation id="6436994298828707228">कनेक्शन ब्लॉक केले आहे, कारण ते तुमच्या स्थानिक नेटवर्कवरील डिव्हाइसशी किंवा सर्व्हरशी कनेक्ट करण्यासाठी सार्वजनिक पेजद्वारे सुरू केले होते.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">ड्रेस</translation>
 <translation id="6440503408713884761">दुर्लक्ष केले</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">ड्युअल पंच लेफ्ट</translation>
 <translation id="6549443526281184652">पोशाख</translation>
 <translation id="6550245281449521513">माउस लॉकला अनुमती नाही</translation>
+<translation id="6552566579578780089">पेमेंट</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
 <translation id="6556866813142980365">पुन्हा करा</translation>
 <translation id="6557715786897013164">१४ x १७ इं</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">सिरीअल पोर्ट</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">सुलभ हप्त्यांमध्ये पेमेंट करा</translation>
 <translation id="6825578344716086703">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केला, परंतु सर्व्हरने एका कमकुवत स्वाक्षरी अल्गोरिदमचा (जसे SHA-1) वापर करून स्वाक्षरीकृत केलेले प्रमाणपत्र सादर केले. याचा अर्थ असा आहे, की सर्व्हरने सादर केलेली सुरक्षितता क्रेडेंशियल बनावट असू शकतात आणि हा सर्व्हर तुम्ही अपेक्षा करत असलेला नसेल. (तुम्ही कदाचित एखाद्या हल्लेखोराशी संभाषण करत आहात).</translation>
 <translation id="6826993739343257035">AR ला अनुमती द्यायची का?</translation>
 <translation id="6828150717884939426">कॉल करा</translation>
@@ -3979,6 +3982,7 @@
 <translation id="753556296624075801">Google द्वारे प्रायोजित</translation>
 <translation id="753713322968419914">Chrome मधून घराचा पत्ता काढून टाकायचा आहे का?</translation>
 <translation id="7537536606612762813">अनिवार्य</translation>
+<translation id="7541043894191476250">संदर्भानुसार टास्क</translation>
 <translation id="7543525346216957623">आपल्या पालकास विचारा</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> सुरू होत आहे</translation>
 <translation id="7548892272833184391">कनेक्शन एरर दुरुस्त करा</translation>
@@ -4504,6 +4508,7 @@
 <translation id="8406071103346257942">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरणे थांबवा</translation>
 <translation id="8407031780528483338">स्वयंपाकाच्या वस्तू</translation>
 <translation id="8409413588194360210">पेमेंट हँडलर</translation>
+<translation id="8410956920192583322">मासिक किंवा ४ हप्त्यांमध्ये</translation>
 <translation id="8412145213513410671">क्रॅश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे.</translation>
 <translation id="8414322570408428950">एक्स्टेंशनसंबंधित इव्‍हेंट आढळला आहे</translation>
@@ -4794,6 +4799,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />लेगसी तंत्रज्ञानासंबंधित इव्‍हेंट<ph name="END_LINK" /> होत आहेत अशा तुम्ही भेट देता त्या पेजच्या URLs ची मर्यादित सूची</translation>
 <translation id="892588693504540538">पंच टॉप राइट</translation>
 <translation id="8926389886865778422">पुन्हा विचारू नका</translation>
+<translation id="8926400492587758246">कमी मासिक हप्त्यांमध्ये पेमेंट करा</translation>
 <translation id="8932102934695377596">तुमचे घड्याळ मागे आहे</translation>
 <translation id="893332455753468063">नाव जोडा</translation>
 <translation id="8938242527120341116">तुमच्या डिव्हाइसशी संबंधित आशय फिल्टरने <ph name="BLOCKED_URL" /> ब्लॉक केली आहे</translation>

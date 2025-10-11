@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1366525380420346469">Når funksjonen er på</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Du kan forhindre dette nettstedet fra å sende flere varsler fremover}other{Du kan forhindre disse nettstedene fra å sende flere varsler fremover}}</translation>
 <translation id="1373696734384179344">Det er ikke nok ledig minne til å laste ned det valgte innholdet.</translation>
 <translation id="1376578503827013741">Beregner …</translation>
 <translation id="1381838868249179644">For å holde deg trygg har vi fjernet tillatelser fra noen nettsteder</translation>

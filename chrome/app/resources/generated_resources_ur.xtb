@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">اپ ڈیٹ کی خرابیوں کو درست کرنے کے بارے میں مزید جانیں</translation>
 <translation id="1217114730239853757">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو اسپیس بار کو دبائیں۔</translation>
 <translation id="1217117837721346030">مشکوک فائل ڈاؤن لوڈ کریں</translation>
+<translation id="1217437913373100941">‫<ph name="GROUP_NAME" /> میں نیا ٹیب</translation>
 <translation id="1217483152325416304">آپ کا مقامی ڈیٹا جلد ہی حذف ہو جائے گا</translation>
 <translation id="1217668622537098248">کارروائی کے بعد بائیں کلک پر واپس جائیں</translation>
 <translation id="1218015446623563536">‏Linux حذف کریں</translation>
@@ -3223,6 +3224,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         آپ کسی بھی وقت اس کارڈ سے ترتیبات کا نظم کر سکتے ہیں یا حسب ضرورت Chrome میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{‫1 ٹیب میں نیا ٹیب}other{‫# ٹیبز میں نیا ٹیب}}</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
 <translation id="3208703785962634733">غیر توثیق شدہ</translation>
@@ -3398,6 +3400,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - تصویر میں تصویر وضع میں ویڈیو چل رہی ہے</translation>
 <translation id="3335380372402547327">فلیش کرنے والی اطلاعات کا جائزہ لیں</translation>
 <translation id="3335947283844343239">بند ٹیب دوبارہ کھولیں</translation>
+<translation id="3336661809256024098">‫<ph name="GROUP_NAME" /> میں نیا ٹیب</translation>
 <translation id="3336855445806447827">پتہ نہیں</translation>
 <translation id="3337568642696914359">سائٹس کو پروٹوکولز ہینڈل کرنے کی اجازت نہ دیں</translation>
 <translation id="333863344734218290">آپ کو غیر محفوظ عوامی اور نجی سائٹس کے لیے وارننگ حاصل ہوتی ہے</translation>
@@ -8938,6 +8941,7 @@
 <translation id="7211783048245131419">ابھی تک کوئی بھی سوئچ تفویض نہیں کیا گیا</translation>
 <translation id="7212097698621322584">‏PIN تبدیل کرنے کیلئے، اپنا موجودہ PIN درج کریں۔ اگر آپ کو اپنا PIN نہیں معلوم ہے تو آپ کو پہلے اپنی سیکیورٹی کلید دوبارہ ترتیب دینی ہوگی اور پھر ایک نیا PIN تخلیق کرنا ہوگا۔</translation>
 <translation id="7214047272988222011">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ <ph name="LINK_BEGIN" />سسٹم کیمرا کی رسائی<ph name="LINK_END" /> آن کریں۔</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{‫1 ٹیب میں نیا ٹیب}other{‫# ٹیبز میں نیا ٹیب}}</translation>
 <translation id="721490496276866468">پاس ورڈز درآمد کریں</translation>
 <translation id="7217208603285112910"><ph name="LANGUAGE" /> میں انتخاب نہیں ہے</translation>
 <translation id="7219254577985949841">سائٹ ڈیٹا کو حذف کریں؟</translation>
@@ -9225,6 +9229,7 @@
 <translation id="7410344089573941623">پوچھیں کہ آیا <ph name="HOST" /> آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="7410421966064092098">سائٹس اس بات کی تصدیق کرنے میں مدد نہیں کر سکتی ہیں کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="7410852728357935715">آلہ میں کاسٹ کریں</translation>
+<translation id="741148343080227980">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="USERNAME" /> میں<ph name="END_LINK" /> اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7412226954991670867">‏GPU میموری</translation>
 <translation id="741370456693729525">اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں اور ان سائٹس کو تلاش کریں جن کو آپ نے ملاحظہ کیا</translation>

@@ -336,6 +336,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1216891999012841486">Lortu eguneratze-erroreak konpontzeari buruzko informazio gehiago</translation>
 <translation id="1217114730239853757">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, sakatu zuriune-barra.</translation>
 <translation id="1217117837721346030">Deskargatu fitxategi susmagarria</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> taldeko fitxa berria</translation>
 <translation id="1217483152325416304">Laster ezabatuko dira gailuan dituzun datuak</translation>
 <translation id="1217668622537098248">Itzuli ezkerreko botoiarekin klik egitera ekintza gauzatu ondoren</translation>
 <translation id="1218015446623563536">Ezabatu Linux</translation>
@@ -3221,6 +3222,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ezarpenak kudeatzeko, erabili txartel hau edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Fitxa berria fitxa batean}other{Fitxa berria # fitxatan}}</translation>
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
 <translation id="3208584281581115441">Egiaztatu</translation>
 <translation id="3208703785962634733">Berretsi gabe</translation>
@@ -3396,6 +3398,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: bideoa pantaila txiki gainjarriko moduan erreproduzitzen ari da</translation>
 <translation id="3335380372402547327">Aurreikusi argi-jakinarazpenak</translation>
 <translation id="3335947283844343239">Ireki aurretik itxitako fitxa</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> taldeko fitxa berria</translation>
 <translation id="3336855445806447827">Ez dakit ziur</translation>
 <translation id="3337568642696914359">Ez eman protokoloak kudeatzeko baimena webguneei</translation>
 <translation id="333863344734218290">Webgune ez-seguru publiko eta pribatuei buruzko abisuak erakusten ditu</translation>
@@ -8934,6 +8937,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7211783048245131419">Oraindik ez da esleitu erabilerraztasun-etengailurik</translation>
 <translation id="7212097698621322584">PINa aldatzeko, idatzi unekoa lehendabizi. Ez badakizu PINa zein den, segurtasun-giltza berrezarri beharko duzu, eta beste PIN bat sortu.</translation>
 <translation id="7214047272988222011">Baimena dauka (<ph name="PERMISSION_DETAILS" />). Aktibatu <ph name="LINK_BEGIN" />sistemaren kamera erabiltzeko baimena<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Fitxa berria fitxa batean}other{Fitxa berria # fitxatan}}</translation>
 <translation id="721490496276866468">Inportatu pasahitzak</translation>
 <translation id="7217208603285112910">Hautatutakoaren hizkuntza ez da <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Webguneko datuak ezabatu nahi dituzu?</translation>
@@ -9221,6 +9225,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7410344089573941623">Galdetu <ph name="HOST" /> webguneak kamera eta mikrofonoa atzitu nahi baditu</translation>
 <translation id="7410421966064092098">Webguneek ezin dute lagundu robot bat ez zarela egiaztatzen</translation>
 <translation id="7410852728357935715">Igorri gailu batera</translation>
+<translation id="741148343080227980">Izena <ph name="BEGIN_LINK" />Google-ko <ph name="USERNAME" /> kontuan<ph name="END_LINK" /> edita dezakezu.</translation>
 <translation id="741204030948306876">Bai, ados</translation>
 <translation id="7412226954991670867">GPU memoria</translation>
 <translation id="741370456693729525">Erabili eguneroko hizkera arakatze-historian bilaketak egiteko eta bisitatu dituzun webguneak aurkitzeko</translation>

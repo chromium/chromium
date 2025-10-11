@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Te deconectezi și dezactivezi sincronizarea?</translation>
 <translation id="1363028406613469049">Melodia</translation>
 <translation id="1366525380420346469">Când opțiunea este activată</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Poți împiedica acest site să trimită notificări pe viitor}few{Poți împiedica aceste site-uri să trimită notificări pe viitor}other{Poți împiedica aceste site-uri să trimită notificări pe viitor}}</translation>
 <translation id="1373696734384179344">Memorie insuficientă pentru descărcarea conținutului selectat.</translation>
 <translation id="1376578503827013741">Se calculează…</translation>
 <translation id="1381838868249179644">Pentru a te proteja, au fost eliminate permisiunile pentru unele site-uri</translation>

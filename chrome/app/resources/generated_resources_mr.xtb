@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">अपडेटशी संबंधित एररचे निराकरण करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="1217114730239853757">तुम्हाला ChromeOS Flex साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का? करायचे असल्यास, स्पेस बार प्रेस करा.</translation>
 <translation id="1217117837721346030">संशयास्पद फाइल डाउनलोड करा</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> मधील नवीन टॅब</translation>
 <translation id="1217483152325416304">तुमचा स्थानिक डेटा लवकरच हटवला जाईल</translation>
 <translation id="1217668622537098248">क्रिया केल्यानंतर डाव्या क्लिकवर परत जा</translation>
 <translation id="1218015446623563536">Linux हटवा</translation>
@@ -3236,6 +3237,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         तुम्ही या कार्डवरून सेटिंग्ज कधीही व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पहा.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{१ टॅबमधील नवीन टॅब}other{# टॅबमधील नवीन टॅब}}</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
 <translation id="3208703785962634733">पुष्टी न झालेले</translation>
@@ -3411,6 +3413,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - चित्रात-चित्र मोडमध्ये व्हिडिओ प्ले करत आहे</translation>
 <translation id="3335380372402547327">फ्लॅश नोटिफिकेशनचे पूर्वावलोकन करा</translation>
 <translation id="3335947283844343239">बंद केलेले टॅब पुन्हा उघडा</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> मधील नवीन टॅब</translation>
 <translation id="3336855445806447827">खात्री नाही</translation>
 <translation id="3337568642696914359">साइटना प्रोटोकॉल हाताळण्याची अनुमती देऊ नका</translation>
 <translation id="333863344734218290">तुम्हाला असुरक्षित सार्वजनिक आणि खाजगी साइटसाठी चेतावणी देते</translation>
@@ -8956,6 +8959,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7211783048245131419">अद्याप कोणताही स्विच असाइन करण्यात आलेला नाही</translation>
 <translation id="7212097698621322584">बदलण्यासाठी तुमचा सध्याचा पिन एंटर करा. तुम्हाला तुमचा पिन माहित नसल्यास, तुम्हाला तुमची सिक्युरिटी की रीसेट करणे आवश्यक असेल, त्यानंतर तुम्ही नविन पिन तयार करू शकता.</translation>
 <translation id="7214047272988222011">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम कॅमेरा अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{१ टॅब मधील नवीन टॅब}other{# टॅब मधील नवीन टॅब}}</translation>
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करा</translation>
 <translation id="7217208603285112910">निवडलेला मजकूर <ph name="LANGUAGE" /> मध्ये नाही</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
@@ -9243,6 +9247,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7410344089573941623"><ph name="HOST" /> तुमच्या कॅमेरा आणि मायक्रोफोन ॲक्सेस करू इच्छित असल्यास विचारा</translation>
 <translation id="7410421966064092098">तुम्ही बॉट नाही याची पडताळणी करण्यात साइट मदत करू शकत नाहीत</translation>
 <translation id="7410852728357935715">डिव्हाइसवर कास्ट करा</translation>
+<translation id="741148343080227980">तुम्ही <ph name="BEGIN_LINK" />तुमच्या Google खाते <ph name="USERNAME" /> मध्ये <ph name="END_LINK" /> तुमचे नाव संपादित करू शकता.</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7412226954991670867">GPU मेमरी</translation>
 <translation id="741370456693729525">तुमचा ब्राउझिंग इतिहास शोधण्यासाठी आणि तुम्ही भेट दिलेल्या साइट शोधण्यासाठी दररोजची भाषा वापरा</translation>

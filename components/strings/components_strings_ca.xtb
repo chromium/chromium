@@ -3312,6 +3312,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6433501201775827830">Tria el motor de cerca</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> no ens ha permès establir la connexió.</translation>
 <translation id="6433797564277305076">A partir d'ara, confirma les targetes més ràpidament amb el desbloqueig del dispositiu</translation>
+<translation id="6436994298828707228">La connexió s'ha bloquejat perquè una pàgina pública l'ha iniciat per connectar-se a dispositius o servidors de la teva xarxa local.</translation>
 <translation id="6437647869369934905">Dibuixos de Google</translation>
 <translation id="643917412048333145">Vestits</translation>
 <translation id="6440503408713884761">Ignorada</translation>
@@ -3383,6 +3384,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6547208576736763147">Encunyació doble a l'esquerra</translation>
 <translation id="6549443526281184652">Disfresses</translation>
 <translation id="6550245281449521513">No està permès bloquejar el ratolí</translation>
+<translation id="6552566579578780089">Pagaments</translation>
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="6556866813142980365">Refés</translation>
 <translation id="6557715786897013164">14 x 17 polzades</translation>
@@ -3531,6 +3533,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">ports en sèrie</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Paga en còmodes terminis</translation>
 <translation id="6825578344716086703">Has provat d'accedir a <ph name="DOMAIN" />, però el servidor ha presentat un certificat signat mitjançant un algoritme de signatura dèbil (com ara SHA-1). Això indica que les credencials de seguretat que ha presentat el servidor podrien haver estat falsificades i que pot ser que el servidor no sigui el que esperaves (és possible que t'estiguis comunicant amb un atacant).</translation>
 <translation id="6826993739343257035">Vols permetre la realitat augmentada?</translation>
 <translation id="6828150717884939426">Truca</translation>
@@ -3979,6 +3982,7 @@ Detalls addicionals:
 <translation id="753556296624075801">Amb la tecnologia de Google</translation>
 <translation id="753713322968419914">Vols suprimir l'adreça de casa de l'emplenament automàtic de Chrome?</translation>
 <translation id="7537536606612762813">Obligatòria</translation>
+<translation id="7541043894191476250">Tasques contextuals</translation>
 <translation id="7543525346216957623">Demana-ho al teu pare o a la teva mare</translation>
 <translation id="7546409722674205727">S'està iniciant <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errors de connexió</translation>
@@ -4504,6 +4508,7 @@ Detalls addicionals:
 <translation id="8406071103346257942">deixar d'utilitzar el bloqueig de pantalla per emplenar les contrasenyes</translation>
 <translation id="8407031780528483338">Estris de cuina</translation>
 <translation id="8409413588194360210">gestors de pagament</translation>
+<translation id="8410956920192583322">Mensual o 4 terminis</translation>
 <translation id="8412145213513410671">Bloqueigs (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Heu d'introduir la mateixa frase de contrasenya dues vegades.</translation>
 <translation id="8414322570408428950">Es produeix un esdeveniment d'extensió</translation>
@@ -4794,6 +4799,7 @@ Detalls addicionals:
 <translation id="8922734931659847428">Una llista limitada d'URL de les pàgines que visites en què es produeixen <ph name="BEGIN_LINK" />esdeveniments tecnològics heretats<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Encunyació a la part superior dreta</translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
+<translation id="8926400492587758246">Paga en mòdics terminis mensuals</translation>
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>
 <translation id="893332455753468063">Afegeix un nom</translation>
 <translation id="8938242527120341116">Els filtres de contingut del teu dispositiu han bloquejat <ph name="BLOCKED_URL" /></translation>

@@ -569,6 +569,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7406113532070524618">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação, embora os sites possam partilhar uma pequena quantidade de informações como parte da validação</translation>
 <translation id="7409735910987429903">Os sites podem enviar pop-ups para mostrar anúncios ou utilizar redirecionamentos para levar o utilizador a Websites que pode não querer visitar.</translation>
 <translation id="7412160840120117304">Cor principal (hexadecimal)</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}other{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>

@@ -3313,6 +3313,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6433501201775827830">Selecciona el motor de búsqueda</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rechazó la conexión.</translation>
 <translation id="6433797564277305076">A partir de ahora, usa el desbloqueo del dispositivo para confirmar tus tarjetas más rápido.</translation>
+<translation id="6436994298828707228">La conexión se bloqueó porque una página pública la inició para conectarse a los dispositivos o servidores de tu red local.</translation>
 <translation id="6437647869369934905">Dibujos de Google</translation>
 <translation id="643917412048333145">Vestidos</translation>
 <translation id="6440503408713884761">Ignorada</translation>
@@ -3384,6 +3385,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6547208576736763147">Perforación doble a la izquierda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
 <translation id="6550245281449521513">No se permite el bloqueo del mouse</translation>
+<translation id="6552566579578780089">Pagos</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6557715786897013164">35.6 × 43.2 cm (14 × 17 in)</translation>
@@ -3532,6 +3534,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">puertos en serie</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Paga en cuotas sencillas</translation>
 <translation id="6825578344716086703">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado firmado con un algoritmo de firma no seguro (como SHA-1). Esto significa que podrían haberse falsificado las credenciales de seguridad presentadas por el servidor y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).</translation>
 <translation id="6826993739343257035">¿Queres permitir la RA?</translation>
 <translation id="6828150717884939426">Llamar</translation>
@@ -3980,6 +3983,7 @@ Detalles adicionales:
 <translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="753713322968419914">¿Quieres quitar la dirección de casa de la función autocompletar de Chrome?</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
+<translation id="7541043894191476250">Tareas contextuales</translation>
 <translation id="7543525346216957623">Solicita permiso a tu madre o padre</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Cómo corregir errores de conexión</translation>
@@ -4505,6 +4509,7 @@ Detalles adicionales:
 <translation id="8406071103346257942">dejar de usar el bloqueo de pantalla para completar contraseñas.</translation>
 <translation id="8407031780528483338">Utensilios de cocina</translation>
 <translation id="8409413588194360210">controladores de pago</translation>
+<translation id="8410956920192583322">Mensual o en 4 cuotas</translation>
 <translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>
 <translation id="8414322570408428950">Se produce un evento de extensión</translation>
@@ -4796,6 +4801,7 @@ Detalles adicionales:
 <translation id="8922734931659847428">Una lista limitada de las URLs de las páginas que visitas, en las que se producen <ph name="BEGIN_LINK" />eventos tecnológicos heredados<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Perforación en la esquina superior derecha</translation>
 <translation id="8926389886865778422">No volver a preguntar</translation>
+<translation id="8926400492587758246">Paga en cuotas mensuales bajas</translation>
 <translation id="8932102934695377596">El reloj está atrasado</translation>
 <translation id="893332455753468063">Agregar nombre</translation>
 <translation id="8938242527120341116">Los filtros de contenido de tu dispositivo bloquearon <ph name="BLOCKED_URL" /></translation>

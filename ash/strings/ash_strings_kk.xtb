@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Жарықты жақсарту</translation>
 <translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
 <translation id="255671100581129685">Google Assistant баршаға ашық сеанста жұмыс істемейді.</translation>
+<translation id="2562459326218811217">Құрылғы жалғанған, бірақ зарядталып жатқан жоқ. Ватт (Вт) мөлшері жоғары зарядтағышты пайдаланып көріңіз немесе түпнұсқа зарядтағышты қолданыңыз.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> құрылғысы қосылмады</translation>
 <translation id="2575685495496069081">Бірнеше аккаунтқа кіру функциясы өшірілді</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
+<translation id="2815594810045873507">Ватт (Вт) мөлшері жоғары зарядтағышты пайдаланып көріңіз немесе түпнұсқа зарядтағышты қолданыңыз.</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
 <translation id="2822551631199737692">Камера қолданылып жатыр</translation>
 <translation id="2825619548187458965">Сөре</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Зейін қоюға арналған жекелендірілген ойнату тізімдерін алу үшін YouTube Music-ті пайдалануға рұқсат беріңіз.</translation>
 <translation id="6582034443359256692">Батареяның зарядталу деңгейі есептеліп жатыр.</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
+<translation id="6586685375736417639">Құрылғыны зарядтау мүмкін емес</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера төменгі сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="6605415194043280389">Зейін қою режимі қосулы</translation>

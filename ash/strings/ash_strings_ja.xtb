@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">明るさ補正</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
+<translation id="2562459326218811217">デバイスは電源に接続されていますが、充電されていません。ワット（W）数の大きい充電器を使用するか、付属の充電器を使用してください。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> を接続できませんでした</translation>
 <translation id="2575685495496069081">マルチログインは無効にされています</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
+<translation id="2815594810045873507">ワット（W）数の大きい充電器を使用するか、付属の充電器を使用してください。</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2825619548187458965">シェルフ</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">自分専用のフォーカス モード プレイリストを作成するには、YouTube Music へのアクセスを許可してください</translation>
 <translation id="6582034443359256692">バッテリー残量を計算しています。</translation>
 <translation id="6585808820553845416">セッション終了まであと <ph name="SESSION_TIME_REMAINING" />です。</translation>
+<translation id="6586685375736417639">デバイスを充電できません</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />、<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">カメラは左下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="6605415194043280389">フォーカス モードがオンです</translation>

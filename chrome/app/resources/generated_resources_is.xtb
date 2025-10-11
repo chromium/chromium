@@ -337,6 +337,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1216891999012841486">Nánar um lagfæringu á uppfærsluvillum</translation>
 <translation id="1217114730239853757">Viltu kveikja á ChromeVox, innbyggða skjálesaranum fyrir ChromeOS Flex? Ýttu á bilslána ef þú vilt það.</translation>
 <translation id="1217117837721346030">Sækja grunsamlega skrá</translation>
+<translation id="1217437913373100941">Nýr flipi í <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Staðbundnu gögnunum þínum verður brátt eytt</translation>
 <translation id="1217668622537098248">Til baka í vinstrismell eftir aðgerð</translation>
 <translation id="1218015446623563536">Eyða Linux</translation>
@@ -3237,6 +3238,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
         <ph name="BREAK" />
         <ph name="BREAK" />
         Þú getur stjórnað stillingum á spjaldinu hvenær sem er eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nýr flipi á 1 flipa}one{Nýr flipi á # flipa}other{Nýr flipi á # flipum}}</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3208584281581115441">Athuga núna</translation>
 <translation id="3208703785962634733">Óstaðfest</translation>
@@ -3412,6 +3414,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – myndskeið spilast með stillingunni „mynd í mynd“</translation>
 <translation id="3335380372402547327">Forskoða flass-tilkynningar</translation>
 <translation id="3335947283844343239">Enduropna lokaðan flipa</translation>
+<translation id="3336661809256024098">Nýr flipi í <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Ekki viss</translation>
 <translation id="3337568642696914359">Ekki leyfa vefsvæðum að sjá um samskiptareglur</translation>
 <translation id="333863344734218290">Varar þig við óöruggum opnum og lokuðum vefsvæðum</translation>
@@ -8957,6 +8960,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7211783048245131419">Ekki er búið að úthluta neinum rofa</translation>
 <translation id="7212097698621322584">Sláðu inn núverandi PIN-númer til að breyta því. Ef þú veist ekki PIN-númerið þitt þarftu að endurstilla öryggislykilinn og búa svo til nýtt PIN-númer.</translation>
 <translation id="7214047272988222011">Leyft – <ph name="PERMISSION_DETAILS" />. Kveiktu á <ph name="LINK_BEGIN" />aðgangi kerfisins að myndavélinni<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nýr flipi á 1 flipa}one{Nýr flipi á # flipa}other{Nýr flipi á # flipum}}</translation>
 <translation id="721490496276866468">Flytja inn aðgangsorð</translation>
 <translation id="7217208603285112910">Ekki þýða val á <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
@@ -9244,6 +9248,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7410344089573941623">Spyrja hvort <ph name="HOST" /> vill fá aðgang að myndavélinni og hljóðnemanum</translation>
 <translation id="7410421966064092098">Vefsvæði geta ekki hjálpað til við að staðfesta að þú sért ekki botti</translation>
 <translation id="7410852728357935715">Senda út í tæki</translation>
+<translation id="741148343080227980">Þú getur breytt nafninu þínu <ph name="BEGIN_LINK" />á Google-reikningnum þínum <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Hljómar vel</translation>
 <translation id="7412226954991670867">Minni skjástýringar</translation>
 <translation id="741370456693729525">Notaðu venjulegt orðalag til að leita í vafraferlinum þínum og finna vefsvæði sem þú skoðaðir</translation>

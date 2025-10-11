@@ -569,6 +569,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7406113532070524618">Šis nustatymas veikia jūsų neidentifikuojant arba neleidžiant svetainėms matyti jūsų naršymo istorijos, bet svetainės gali bendrinti nedidelį kiekį informacijos vykdydamos patvirtinimą</translation>
 <translation id="7409735910987429903">Svetainėse galima siųsti iššokančiuosius langus, norint rodyti skelbimus, arba naudoti peradresavimus, norint nukreipti jus į svetaines, kuriose galbūt nenorite apsilankyti</translation>
 <translation id="7412160840120117304">Pagrindinės spalvos šešioliktainis kodas</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Keisti mastelį}one{Keisti mastelį: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}few{Keisti mastelį: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}many{Keisti mastelį: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}other{Keisti mastelį: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7423538860840206698">Neleidžiama skaityti iškarpinės</translation>
 <translation id="7425915948813553151">Tamsioji tema, skirta svetainėms</translation>

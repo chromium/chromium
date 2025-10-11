@@ -336,6 +336,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1216891999012841486">Kom meer te wete oor hoe om opdateringfoute reg te maak</translation>
 <translation id="1217114730239853757">Wil jy ChromeVox, Chrome OS Flex se ingeboude skermleser, aktiveer? Indien wel, druk die spasiebalk.</translation>
 <translation id="1217117837721346030">Laai verdagte lêer af</translation>
+<translation id="1217437913373100941">Nuwe oortjie in <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Jou plaaslike data sal binnekort uitgevee word</translation>
 <translation id="1217668622537098248">Stel ná handeling terug na linksklik</translation>
 <translation id="1218015446623563536">Vee Linux uit</translation>
@@ -3236,6 +3237,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
         <ph name="BREAK" />
         <ph name="BREAK" />
         Jy kan enige tyd instellings vanaf hierdie kaart bestuur of meer opsies in Pasmaak Chrome sien.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nuwe oortjie in 1 oortjie}other{Nuwe oortjie in # oortjies}}</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3208703785962634733">Onbevestigde</translation>
@@ -3411,6 +3413,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video speel tans in prent-in-prent-modus</translation>
 <translation id="3335380372402547327">Voorbeskou flitskennisgewings</translation>
 <translation id="3335947283844343239">Maak toegemaakte oortjie weer oop</translation>
+<translation id="3336661809256024098">Nuwe oortjie in <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Nie seker nie</translation>
 <translation id="3337568642696914359">Moenie werwe toelaat om protokolle te hanteer nie</translation>
 <translation id="333863344734218290">Waarsku jou oor onveilige publieke en privaat werwe</translation>
@@ -8955,6 +8958,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7211783048245131419">Geen skakelaar is nog toegeken nie</translation>
 <translation id="7212097698621322584">Voer jou huidige PIN in om dit te verander. As jy nie jou PIN ken nie, moet jy die sekuriteitsleutel terugstel en dan 'n nuwe PIN skep.</translation>
 <translation id="7214047272988222011">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel <ph name="LINK_BEGIN" />stelselkameratoegang<ph name="LINK_END" /> aan.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nuwe oortjie in 1 oortjie}other{Nuwe oortjie in # oortjies}}</translation>
 <translation id="721490496276866468">Voer wagwoorde in</translation>
 <translation id="7217208603285112910">Seleksie nie in <ph name="LANGUAGE" /> nie</translation>
 <translation id="7219254577985949841">Vee werfdata uit?</translation>
@@ -9242,6 +9246,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7410344089573941623">Vra of <ph name="HOST" /> by jou kamera en mikrofoon wil ingaan</translation>
 <translation id="7410421966064092098">Werwe kan nie help om te verifieer dat jy nie ’n bot is nie</translation>
 <translation id="7410852728357935715">Saai uit na 'n toestel</translation>
+<translation id="741148343080227980">Jy kan jou naam wysig <ph name="BEGIN_LINK" />in jou Google-rekening <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ja, ek's in</translation>
 <translation id="7412226954991670867">GPU-geheue</translation>
 <translation id="741370456693729525">Gebruik alledaagse taal om jou blaaigeskiedenis te deursoek en die werwe wat jy besoek het, te kry</translation>

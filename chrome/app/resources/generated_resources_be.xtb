@@ -339,6 +339,7 @@
 <translation id="1216891999012841486">Даведацца больш пра выпраўленне памылак пры абнаўленні</translation>
 <translation id="1217114730239853757">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS Flex? Для актывацыі націсніце клавішу прабелу.</translation>
 <translation id="1217117837721346030">Спампаваць падазроны файл</translation>
+<translation id="1217437913373100941">Новая ўкладка ў групе "<ph name="GROUP_NAME" />"</translation>
 <translation id="1217483152325416304">Лакальныя даныя неўзабаве будуць выдалены</translation>
 <translation id="1217668622537098248">Пасля дзеяння вярнуцца да націскання левай кнопкай мышы</translation>
 <translation id="1218015446623563536">Выдаліць Linux</translation>
@@ -3224,6 +3225,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Вы можаце ў любы час кіраваць наладамі з гэтай карткі. Паглядзець дадатковыя параметры можна ў раздзеле "Наладзіць Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Новая ўкладка ў 1 укладцы}one{Новая ўкладка ў # укладцы}few{Новая ўкладка ў # укладках}many{Новая ўкладка ў # укладках}other{Новая ўкладка ў # укладкі}}</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208584281581115441">Праверыць</translation>
 <translation id="3208703785962634733">Непацверджаны</translation>
@@ -3399,6 +3401,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – відэа прайграецца ў рэжыме "відарыс у відарысе"</translation>
 <translation id="3335380372402547327">Прагледзець флэш-апавяшчэнні</translation>
 <translation id="3335947283844343239">Паўторна адкрыць закрытыя ўкладкі</translation>
+<translation id="3336661809256024098">Новая ўкладка ў групе "<ph name="GROUP_NAME" />"</translation>
 <translation id="3336855445806447827">Не ведаю</translation>
 <translation id="3337568642696914359">Не дазваляць сайтам кіраваць пратаколамі</translation>
 <translation id="333863344734218290">Папярэджваць пра небяспечныя агульнадаступныя і прыватныя сайты</translation>
@@ -8945,6 +8948,7 @@
 <translation id="7211783048245131419">Пераключальнік яшчэ не прызначаны</translation>
 <translation id="7212097698621322584">Каб змяніць бягучы PIN-код, увядзіце яго. Калі вы не ведаеце PIN-код, вам трэба будзе скінуць ключ бяспекі, а затым стварыць новы PIN-код.</translation>
 <translation id="7214047272988222011">Выкарыстанне дазволена (<ph name="PERMISSION_DETAILS" />). Уключыце <ph name="LINK_BEGIN" />доступ да сістэмнай камеры<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Новая ўкладка ў 1 укладцы}one{Новая ўкладка ў # укладцы}few{Новая ўкладка ў # укладках}many{Новая ўкладка ў # укладках}other{Новая ўкладка ў # укладкі}}</translation>
 <translation id="721490496276866468">Імпартаваць паролі</translation>
 <translation id="7217208603285112910">Мова выбранага фрагмента – не <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Выдаліць гэтыя даныя?</translation>
@@ -9232,6 +9236,7 @@
 <translation id="7410344089573941623">Пытаць, калі <ph name="HOST" /> хоча атрымаць доступ да камеры і мікрафона</translation>
 <translation id="7410421966064092098">Сайты не могуць перадаваць інфармацыю пра тое, што вы не бот</translation>
 <translation id="7410852728357935715">Трансліраваць на прыладу</translation>
+<translation id="741148343080227980">Вы можаце змяніць імя <ph name="BEGIN_LINK" />ва Уліковым запісе Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
 <translation id="7412226954991670867">Памяць GPU</translation>
 <translation id="741370456693729525">Выкарыстоўваць звычайныя фразы для пошуку наведаных старонак у гісторыі прагляду сайтаў</translation>

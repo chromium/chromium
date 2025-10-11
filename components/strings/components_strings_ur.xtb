@@ -3314,6 +3314,7 @@
 <translation id="6433501201775827830">اپنے تلاش انجن کا انتخاب کریں</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> نے منسلک ہونے سے منع کر دیا۔</translation>
 <translation id="6433797564277305076">اب سے آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کر کے تیزی سے اپنے کارڈ کی تصدیق کریں</translation>
+<translation id="6436994298828707228">کنکشن بلاک ہے کیونکہ یہ آپ کے مقامی نیٹ ورک پر آلات یا سرورز سے منسلک ہونے کے لیے ایک عوامی صفحہ کے ذریعے شروع کیا گیا تھا۔</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">ملبوسات</translation>
 <translation id="6440503408713884761">نظر انداز کردہ</translation>
@@ -3385,6 +3386,7 @@
 <translation id="6547208576736763147">بائیں طرف دُہرا سوراخ</translation>
 <translation id="6549443526281184652">ملبوسات</translation>
 <translation id="6550245281449521513">ماؤس لاک کی اجازت نہیں ہے</translation>
+<translation id="6552566579578780089">ادائیگیاں</translation>
 <translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
 <translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6557715786897013164">‏‎14 x 17 انچ</translation>
@@ -3533,6 +3535,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">سیریل پورٹس</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">آسان قسطوں میں ادائیگی کریں</translation>
 <translation id="6825578344716086703">‏آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک کمزور دستخط الگورتھم (جیسے SHA-1) استعمال کرتے ہوئے دستخط کردہ سرٹیفیکیٹ پیش کیا۔ اس کا مطلب یہ ہے کہ شاید سرور کی پیش کردہ سیکیورٹی اسناد میں جعل سازی کی گئی ہے اور ممکن ہے کہ سرور آپ کا متوقع سرور نہ ہو (ممکن ہے آپ کسی حملہ آور کے ساتھ مواصلت کر رہے ہوں)۔</translation>
 <translation id="6826993739343257035">‏AR کی اجازت دیں؟</translation>
 <translation id="6828150717884939426">کال کریں</translation>
@@ -3980,6 +3983,7 @@
 <translation id="753556296624075801">‏Google کے ذریعے تقویت یافتہ</translation>
 <translation id="753713322968419914">‏‫Chrome آٹو فل سے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="7537536606612762813">لازمی</translation>
+<translation id="7541043894191476250">سیاق و سباق سے متعلق ٹاسکس</translation>
 <translation id="7543525346216957623">اپنے والدین سے پوچھیں</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> کی شروعات</translation>
 <translation id="7548892272833184391">کنکشن کی خرابیاں ٹھیک کریں</translation>
@@ -4505,6 +4509,7 @@
 <translation id="8406071103346257942">پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرنا بند کریں</translation>
 <translation id="8407031780528483338">پکانے کے برتن</translation>
 <translation id="8409413588194360210">ادائیگی کے ہینڈلرز</translation>
+<translation id="8410956920192583322">ماہانہ یا 4 قسطیں</translation>
 <translation id="8412145213513410671">کریشز (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">آپ کو وہی پاس فریز دوبار درج کرنا ضروری ہے۔</translation>
 <translation id="8414322570408428950">ایکسٹینشن سے متعلق ایونٹ ہوتا ہے</translation>
@@ -4795,6 +4800,7 @@
 <translation id="8922734931659847428">‏آپ کے ملاحظہ کردہ صفحات کے URLs کی ایک محدود کردہ فہرست جہاں <ph name="BEGIN_LINK" />ٹیکنالوجی کے پرانے ایونٹس<ph name="END_LINK" /> رونما ہو رہے ہیں</translation>
 <translation id="892588693504540538">اوپر دائیں طرف سوراخ</translation>
 <translation id="8926389886865778422">دوبارہ سوال نہ کریں</translation>
+<translation id="8926400492587758246">کم ماہانہ قسطوں میں ادائیگی کریں</translation>
 <translation id="8932102934695377596">آپ کی گھڑی پیچھے ہے</translation>
 <translation id="893332455753468063">نام شامل کریں</translation>
 <translation id="8938242527120341116">آپ کے آلے کے مواد کے فلٹرز بلاک ہیں <ph name="BLOCKED_URL" /></translation>

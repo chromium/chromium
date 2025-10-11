@@ -469,6 +469,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2549711466868162843">Poboljšano osvetljenje</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="255671100581129685">Google pomoćnik nije dostupan u javnoj sesiji.</translation>
+<translation id="2562459326218811217">Uređaj je priključen, ali se ne puni. Probajte sa punjačem sa više vati (W) ili koristite originalni punjač.</translation>
 <translation id="256712445991462162">montirana lupa ekrana</translation>
 <translation id="2573588302192866788">Nije uspelo povezivanje <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Onemogućeno je višestruko prijavljivanje</translation>
@@ -539,6 +540,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
+<translation id="2815594810045873507">Probajte sa punjačem sa više vati (W) ili koristite originalni punjač.</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
 <translation id="2822551631199737692">Kamera se koristi</translation>
 <translation id="2825619548187458965">Polica</translation>
@@ -1732,6 +1734,7 @@ Novo instaliranje</translation>
 <translation id="6582012689384648647">Za personalizovane fokusirane plejliste dozvolite pristup YouTube Music-u</translation>
 <translation id="6582034443359256692">Izračunava se nivo napunjenosti baterije.</translation>
 <translation id="6585808820553845416">Sesija se završava za <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Uređaj ne može da se puni</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera je uklopljena u donji levi ugao. Neusaglašenost sa površinom sistema.</translation>
 <translation id="6605415194043280389">Fokus je uključen</translation>

@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Kijelentkezik, és kikapcsolja a szinkronizálást?</translation>
 <translation id="1363028406613469049">Szám</translation>
 <translation id="1366525380420346469">Amikor be van kapcsolva</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Megakadályozhatja, hogy ez a webhely a jövőben értesítéseket küldjön}other{Megakadályozhatja, hogy ezek a webhelyek a jövőben értesítéseket küldjenek}}</translation>
 <translation id="1373696734384179344">Nincs elegendő memória a kiválasztott tartalom letöltéséhez.</translation>
 <translation id="1376578503827013741">Számítás…</translation>
 <translation id="1381838868249179644">A biztonsága érdekében a böngésző eltávolította néhány webhely engedélyeit</translation>

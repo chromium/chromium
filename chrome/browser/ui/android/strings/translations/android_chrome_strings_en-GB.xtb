@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1366525380420346469">When on</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{You can stop this site from sending future notifications}other{You can stop these sites from sending future notifications}}</translation>
 <translation id="1373696734384179344">Insufficient memory to download the selected content.</translation>
 <translation id="1376578503827013741">Computing…</translation>
 <translation id="1381838868249179644">To help keep you safe, permissions were removed from some sites</translation>

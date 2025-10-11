@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1366525380420346469">Når funktionen er aktiveret</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Du kan forhindre dette website i at sende notifikationer fremover}one{Du kan forhindre dette website i at sende notifikationer i fremtiden}other{Du kan forhindre disse websites i at sende notifikationer i fremtiden}}</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
 <translation id="1376578503827013741">Beregner…</translation>
 <translation id="1381838868249179644">Tilladelserne er blevet fjernet fra nogle websites for at beskytte dig</translation>

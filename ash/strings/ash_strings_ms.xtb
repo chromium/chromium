@@ -469,6 +469,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2549711466868162843">Betulkan pencahayaan</translation>
 <translation id="2549985041256363841">Mulakan rakaman</translation>
 <translation id="255671100581129685">Google Assistant tidak tersedia dalam sesi awam.</translation>
+<translation id="2562459326218811217">Peranti dipalamkan tetapi tidak dicas. Cuba pengecas dengan watt (W) yang lebih tinggi atau gunakan pengecas asal anda.</translation>
 <translation id="256712445991462162">penggadang yang didokkan</translation>
 <translation id="2573588302192866788">Tidak dapat menyambungkan <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Log masuk berbilang telah dilumpuhkan</translation>
@@ -539,6 +540,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2814448776515246190">Tangkapan separa</translation>
+<translation id="2815594810045873507">Cuba pengecas dengan watt (W) yang lebih tinggi atau gunakan pengecas asal anda.</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
 <translation id="2825619548187458965">Rak</translation>
@@ -1731,6 +1733,7 @@ Pemasangan baharu</translation>
 <translation id="6582012689384648647">Untuk mendapatkan senarai main untuk fokus yang diperibadikan, benarkan akses kepada YouTube Music</translation>
 <translation id="6582034443359256692">Mengira paras pengecasan bateri.</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Tidak boleh mengecas peranti</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera diautojajar ke penjuru kiri sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="6605415194043280389">Fokus dihidupkan</translation>

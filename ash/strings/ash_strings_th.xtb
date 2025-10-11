@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">ปรับแสง</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
 <translation id="255671100581129685">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธารณะ</translation>
+<translation id="2562459326218811217">เสียบปลั๊กอุปกรณ์แล้ว แต่ชาร์จไม่ได้ ลองใช้ที่ชาร์จที่มีวัตต์ (W) สูงขึ้นหรือใช้ที่ชาร์จแบบเดิม</translation>
 <translation id="256712445991462162">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2573588302192866788">เชื่อมต่อ <ph name="NAME" /> ไม่ได้</translation>
 <translation id="2575685495496069081">ปิดใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีอยู่</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
+<translation id="2815594810045873507">ลองใช้ที่ชาร์จที่มีวัตต์ (W) สูงขึ้นหรือใช้ที่ชาร์จแบบเดิม</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
 <translation id="2822551631199737692">ใช้กล้องอยู่</translation>
 <translation id="2825619548187458965">ชั้นวาง</translation>
@@ -1726,6 +1728,7 @@
 <translation id="6582012689384648647">อนุญาตให้เข้าถึง YouTube Music เพื่อรับเพลย์ลิสต์เพื่อการโฟกัสที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6582034443359256692">กําลังคํานวณระดับการชาร์จแบตเตอรี่</translation>
 <translation id="6585808820553845416">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
+<translation id="6586685375736417639">ชาร์จอุปกรณ์ไม่ได้</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">จัดกล้องพอดีกับมุมซ้ายล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="6605415194043280389">โหมดโฟกัสเปิดอยู่</translation>

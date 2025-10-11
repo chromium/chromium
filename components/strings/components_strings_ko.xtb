@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">검색엔진 선택</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />에서 연결을 거부했습니다.</translation>
 <translation id="6433797564277305076">앞으로는 기기 잠금 해제를 사용하여 빠르게 카드를 확인합니다</translation>
+<translation id="6436994298828707228">공개 페이지에서 로컬 네트워크에 있는 기기나 서버에 연결하려 했기 때문에 연결이 차단되었습니다.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">드레스</translation>
 <translation id="6440503408713884761">무시됨</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
 <translation id="6549443526281184652">코스튬</translation>
 <translation id="6550245281449521513">마우스 잠금이 허용되지 않음</translation>
+<translation id="6552566579578780089">결제</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6557715786897013164">14x17인치</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">자바스크립트</translation>
 <translation id="6820143000046097424">직렬 포트</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">간편한 할부 결제</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" />에 접속하려 했으나 서버에서 안전성이 낮은 서명 알고리즘을 사용하여 서명된 인증서(예: SHA-1)를 전달했습니다. 이는 서버에서 전달한 보안 사용자 인증 정보가 위조되었을 수 있으며 사용하려는 서버가 아님을 의미합니다. 서버를 가장한 공격자와 통신 중일 수 있습니다.</translation>
 <translation id="6826993739343257035">AR을 허용하시겠습니까?</translation>
 <translation id="6828150717884939426">통화</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">Google 제공</translation>
 <translation id="753713322968419914">Chrome 자동 완성에서 집 주소를 삭제하시겠습니까?</translation>
 <translation id="7537536606612762813">필수</translation>
+<translation id="7541043894191476250">맥락에 맞는 작업</translation>
 <translation id="7543525346216957623">부모님께 물어보세요</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>
 <translation id="7548892272833184391">연결 문제해결</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">비밀번호 입력 시 화면 잠금 사용 중지</translation>
 <translation id="8407031780528483338">조리 기구</translation>
 <translation id="8409413588194360210">결제 핸들러</translation>
+<translation id="8410956920192583322">월별 또는 4회 할부</translation>
 <translation id="8412145213513410671">비정상 종료(<ph name="CRASH_COUNT" />회)</translation>
 <translation id="8412392972487953978">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="8414322570408428950">확장 프로그램 이벤트 발생</translation>
@@ -4793,6 +4798,7 @@
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />기존 기술 이벤트<ph name="END_LINK" />가 발생하는 페이지의 제한된 URL 목록</translation>
 <translation id="892588693504540538">오른쪽 상단 펀칭</translation>
 <translation id="8926389886865778422">이 메시지 그만 보기</translation>
+<translation id="8926400492587758246">소액 월 할부 결제</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>
 <translation id="893332455753468063">이름 추가</translation>
 <translation id="8938242527120341116">기기의 콘텐츠 필터로 인해 <ph name="BLOCKED_URL" /> 사이트가 차단되었습니다.</translation>

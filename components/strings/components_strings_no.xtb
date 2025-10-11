@@ -3312,6 +3312,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6433501201775827830">Velg søkemotor</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> avviste tilkoblingsforsøket.</translation>
 <translation id="6433797564277305076">Bekreft kortene dine raskere ved å bruke enhetsopplåsing fremover</translation>
+<translation id="6436994298828707228">Tilkoblingen er blokkert fordi den ble startet av en offentlig side for å koble til enheter eller tjenere på det lokale nettverket ditt.</translation>
 <translation id="6437647869369934905">Google Tegninger</translation>
 <translation id="643917412048333145">Kjoler</translation>
 <translation id="6440503408713884761">Ignorert</translation>
@@ -3383,6 +3384,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6547208576736763147">To hull venstre</translation>
 <translation id="6549443526281184652">Kostymer</translation>
 <translation id="6550245281449521513">Muselås er ikke tillatt</translation>
+<translation id="6552566579578780089">Betalinger</translation>
 <translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
 <translation id="6556866813142980365">Gjør om</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
@@ -3531,6 +3533,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serielle porter</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Betal enkelt med avdrag</translation>
 <translation id="6825578344716086703">Du prøvde å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som er signert med en svak signaturalgoritme (for eksempel SHA-1). Dette betyr at sikkerhetslegitimasjonen tjeneren presenterte, kan være forfalsket. Tjeneren kan med andre ord være en annen tjener enn du tror (og du kommuniserer kanskje med en angriper).</translation>
 <translation id="6826993739343257035">Vil du tillate AR?</translation>
 <translation id="6828150717884939426">Ring</translation>
@@ -3978,6 +3981,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="753556296624075801">Drevet av Google</translation>
 <translation id="753713322968419914">Vil du fjerne hjemmeadressen fra autofyll i Chrome?</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7541043894191476250">Kontekstuelle oppgaver</translation>
 <translation id="7543525346216957623">Spør forelderen din</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Fiks tilkoblingsfeil</translation>
@@ -4503,6 +4507,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8406071103346257942">slutte å bruke skjermlåsen til å fylle ut passord</translation>
 <translation id="8407031780528483338">Kjøkkenutstyr</translation>
 <translation id="8409413588194360210">betalingsbehandlere</translation>
+<translation id="8410956920192583322">Månedlig eller i 4 avdrag</translation>
 <translation id="8412145213513410671">Kræsj (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du må angi den samme passordfrasen to ganger.</translation>
 <translation id="8414322570408428950">Utvidelseshendelse inntreffer</translation>
@@ -4793,6 +4798,7 @@ Mer informasjon:
 <translation id="8922734931659847428">En begrenset liste over nettadressene til sider du besøker som bruker <ph name="BEGIN_LINK" />hendelser fra eldre teknologi<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Hull oppe til høyre</translation>
 <translation id="8926389886865778422">Ikke spør igjen</translation>
+<translation id="8926400492587758246">Betal i lave månedlige avdrag</translation>
 <translation id="8932102934695377596">Klokken går for sent</translation>
 <translation id="893332455753468063">Legg til navn</translation>
 <translation id="8938242527120341116">Innholdsfiltrene på enheten blokkerte <ph name="BLOCKED_URL" /></translation>

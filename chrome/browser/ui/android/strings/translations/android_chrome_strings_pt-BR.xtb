@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
 <translation id="1363028406613469049">Rastrear</translation>
 <translation id="1366525380420346469">Quando ativado</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Você pode impedir que esse site envie outras notificações}one{Você pode impedir que esse site envie outras notificações}other{Você pode impedir que esses sites enviem outras notificações}}</translation>
 <translation id="1373696734384179344">Memória insuficiente para fazer o download do conteúdo selecionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
 <translation id="1381838868249179644">Para proteger você, as permissões de alguns sites foram removidas</translation>

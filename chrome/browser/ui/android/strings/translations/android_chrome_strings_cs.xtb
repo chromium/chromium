@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">Odhlásit a vypnout synchronizaci?</translation>
 <translation id="1363028406613469049">Stopa</translation>
 <translation id="1366525380420346469">Když je tato funkce zapnutá</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{Tomuto webu můžete zabránit v odesílání budoucích oznámení}few{Těmto webům můžete zabránit v odesílání budoucích oznámení}many{Těmto webům můžete zabránit v odesílání budoucích oznámení}other{Těmto webům můžete zabránit v odesílání budoucích oznámení}}</translation>
 <translation id="1373696734384179344">Ke stažení vybraného obsahu není k dispozici dostatek paměti.</translation>
 <translation id="1376578503827013741">Probíhá výpočet…</translation>
 <translation id="1381838868249179644">Kvůli ochraně vaší bezpečnosti byla některým webům odebrána oprávnění</translation>

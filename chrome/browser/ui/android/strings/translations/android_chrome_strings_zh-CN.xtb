@@ -87,6 +87,7 @@
 <translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
 <translation id="1363028406613469049">跟踪</translation>
 <translation id="1366525380420346469">开启时</translation>
+<translation id="1372840539168747818">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知}other{您可以阻止这些网站继续发送通知}}</translation>
 <translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
 <translation id="1376578503827013741">正在计算…</translation>
 <translation id="1381838868249179644">为保护您的安全，Chrome 已移除某些网站的权限</translation>
@@ -664,7 +665,7 @@
 <translation id="4116038641877404294">下载网页以便离线查看</translation>
 <translation id="4121654769234887259">您不需要记住此密码。系统会将它保存到 <ph name="USERNAME" /> 的 Google 密码管理工具中。</translation>
 <translation id="4124152339699379357">通知权限流程已全屏打开</translation>
-<translation id="4132137475637520539">允许知道链接的任何人加入</translation>
+<translation id="4132137475637520539">允许任何知道链接的人加入</translation>
 <translation id="4135200667068010335">要与之分享标签页的设备的列表已关闭。</translation>
 <translation id="4137746084635924146">当前设备语言</translation>
 <translation id="414128724510021958">默认请求桌面版网站</translation>

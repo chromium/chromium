@@ -336,6 +336,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1216891999012841486">Pelajari lebih lanjut cara memperbaiki error update</translation>
 <translation id="1217114730239853757">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS Flex? Jika iya, tekan tombol spasi.</translation>
 <translation id="1217117837721346030">Download file yang mencurigakan</translation>
+<translation id="1217437913373100941">Tab baru di <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Data lokal Anda akan segera dihapus</translation>
 <translation id="1217668622537098248">Kembali ke klik kiri setelah tindakan</translation>
 <translation id="1218015446623563536">Hapus Linux</translation>
@@ -3236,6 +3237,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Anda dapat mengelola setelan dari kartu ini kapan saja atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Tab baru di 1 tab}other{Tab baru di # tab}}</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="3208703785962634733">Tidak dipastikan</translation>
@@ -3411,6 +3413,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video diputar dalam mode picture-in-picture</translation>
 <translation id="3335380372402547327">Lihat pratinjau notifikasi flash</translation>
 <translation id="3335947283844343239">Buka Kembali Tab yang Ditutup</translation>
+<translation id="3336661809256024098">Tab Baru di <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Tidak yakin</translation>
 <translation id="3337568642696914359">Jangan izinkan situs menangani protokol</translation>
 <translation id="333863344734218290">Memperingatkan Anda tentang situs publik &amp; pribadi yang tidak aman</translation>
@@ -8955,6 +8958,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7211783048245131419">Belum ada kunci tombol akses yang ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN saat ini untuk mengubahnya. Jika tidak mengetahui PIN Anda, reset kunci keamanan, lalu buat PIN baru.</translation>
 <translation id="7214047272988222011">Diizinkan – <ph name="PERMISSION_DETAILS" />. Aktifkan <ph name="LINK_BEGIN" />akses kamera sistem<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Tab Baru di 1 Tab}other{Tab Baru di # Tab}}</translation>
 <translation id="721490496276866468">Impor sandi</translation>
 <translation id="7217208603285112910">Pilihan tidak dalam bahasa <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Hapus data situs?</translation>
@@ -9242,6 +9246,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7410344089573941623">Tanyakan jika <ph name="HOST" /> ingin mengakses kamera dan mikrofon Anda</translation>
 <translation id="7410421966064092098">Situs tidak dapat membantu memverifikasi bahwa Anda bukan bot</translation>
 <translation id="7410852728357935715">Transmisikan ke perangkat</translation>
+<translation id="741148343080227980">Anda dapat mengedit nama Anda <ph name="BEGIN_LINK" />di Akun Google Anda <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7412226954991670867">Memori GPU</translation>
 <translation id="741370456693729525">Gunakan bahasa sehari-hari untuk menelusuri histori penjelajahan dan menemukan situs yang pernah Anda buka</translation>

@@ -337,6 +337,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1216891999012841486">En savoir plus sur la correction des erreurs de mise à jour</translation>
 <translation id="1217114730239853757">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour ChromeOS Flex ? Si oui, appuyez sur la barre d'espace.</translation>
 <translation id="1217117837721346030">Télécharger le fichier suspect</translation>
+<translation id="1217437913373100941">Nouvel onglet dans <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Vos données locales seront bientôt supprimées</translation>
 <translation id="1217668622537098248">Réactiver le clic gauche après l'action</translation>
 <translation id="1218015446623563536">Supprimer Linux</translation>
@@ -3222,6 +3223,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
         <ph name="BREAK" />
         <ph name="BREAK" />
         Vous pouvez gérer les paramètres de cette fiche à tout moment ou voir plus d'options dans "Personnaliser Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3208703785962634733">Non confirmé</translation>
@@ -3397,6 +3399,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Vidéo diffusée en mode PIP</translation>
 <translation id="3335380372402547327">Prévisualiser les notifications lumineuses</translation>
 <translation id="3335947283844343239">Rouvrir l'onglet fermé</translation>
+<translation id="3336661809256024098">Nouvel onglet dans <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Je ne sais pas.</translation>
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>
 <translation id="333863344734218290">Vous avertit pour les sites publics et privés non sécurisés</translation>
@@ -8942,6 +8945,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7211783048245131419">Aucune action n'a encore été associée à un contacteur</translation>
 <translation id="7212097698621322584">Saisissez votre code actuel pour pouvoir le modifier. Si vous ne vous en souvenez plus, vous devez réinitialiser la clé de sécurité, puis créer un autre code.</translation>
 <translation id="7214047272988222011">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès à l'appareil photo du système<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
 <translation id="7217208603285112910">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Supprimer les données du site ?</translation>
@@ -9229,6 +9233,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7410344089573941623">Demander si <ph name="HOST" /> souhaite accéder à votre caméra et à votre micro</translation>
 <translation id="7410421966064092098">Les sites ne peuvent pas aider à confirmer que vous n'êtes pas un robot</translation>
 <translation id="7410852728357935715">Caster sur un appareil</translation>
+<translation id="741148343080227980">Vous pouvez modifier votre nom <ph name="BEGIN_LINK" />dans votre compte Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">J'accepte</translation>
 <translation id="7412226954991670867">Mémoire processeur graphique</translation>
 <translation id="741370456693729525">Utilisez un langage courant pour faire une recherche dans votre historique de navigation et trouver les sites que vous avez consultés</translation>

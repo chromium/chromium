@@ -3309,6 +3309,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6433501201775827830">Keresőmotor kiválasztása</translation>
 <translation id="6433595998831338502">A(z) <ph name="HOST_NAME" /> visszautasította a csatlakozást.</translation>
 <translation id="6433797564277305076">Mostantól gyorsabban igazolhatja kártyáit az eszköz feloldási módszerének használatával</translation>
+<translation id="6436994298828707228">A kapcsolat le van tiltva, mert egy nyilvános oldal kezdeményezte annak érdekében, hogy csatlakozhasson az Ön helyi hálózatán lévő eszközökhöz vagy szerverekhez.</translation>
 <translation id="6437647869369934905">Google Rajzok</translation>
 <translation id="643917412048333145">Ruhák</translation>
 <translation id="6440503408713884761">Figyelmen kívül hagyva</translation>
@@ -3380,6 +3381,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6547208576736763147">Kettő lyuk a bal oldalon</translation>
 <translation id="6549443526281184652">Jelmezek</translation>
 <translation id="6550245281449521513">Az egér zárolása nem engedélyezett</translation>
+<translation id="6552566579578780089">Fizetések</translation>
 <translation id="6554732001434021288">Utolsó látogatás: <ph name="NUM_DAYS" /> napja</translation>
 <translation id="6556866813142980365">Újra</translation>
 <translation id="6557715786897013164">14 × 17 hüvelyk</translation>
@@ -3528,6 +3530,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">soros portok</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Fizetés egyszerű részletfizetéssel</translation>
 <translation id="6825578344716086703">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver gyenge aláírási algoritmust használó tanúsítványt mutatott be. Ez alapján elképzelhető, hogy a szerver által megadott biztonsági tanúsítványt meghamisították, és a szerver nem az, amelyikre számított (lehet, hogy éppen valamilyen támadóval kommunikál).</translation>
 <translation id="6826993739343257035">Engedélyezi az AR-t?</translation>
 <translation id="6828150717884939426">Hívás</translation>
@@ -3976,6 +3979,7 @@ További részletek:
 <translation id="753556296624075801">Üzemeltető: Google</translation>
 <translation id="753713322968419914">Eltávolítja az otthoni címet a Chrome automatikus kitöltés funkciójából?</translation>
 <translation id="7537536606612762813">Kötelező</translation>
+<translation id="7541043894191476250">Kontextuális feladatok</translation>
 <translation id="7543525346216957623">Kérd a szülő segítségét</translation>
 <translation id="7546409722674205727">A(z) <ph name="APP_NAME" /> elindul…</translation>
 <translation id="7548892272833184391">A kapcsolódási hibák elhárítása</translation>
@@ -4502,6 +4506,7 @@ További részletek:
 <translation id="8406071103346257942">leállítani a képernyőzár jelszavak kitöltéséhez való használatát</translation>
 <translation id="8407031780528483338">Konyhai eszközök</translation>
 <translation id="8409413588194360210">fizetéskezelők</translation>
+<translation id="8410956920192583322">Havonta vagy 4 részletben</translation>
 <translation id="8412145213513410671">Rendszerösszeomlások ( <ph name="CRASH_COUNT" /> )</translation>
 <translation id="8412392972487953978">Mindkét alkalommal ugyanazt az összetett jelszót kell megadnia.</translation>
 <translation id="8414322570408428950">Bővítményhez kapcsolódó esemény történik</translation>
@@ -4793,6 +4798,7 @@ További részletek:
 <translation id="8922734931659847428">A felkeresett oldalak URL-jeinek korlátozott listája, ahol <ph name="BEGIN_LINK" />régi technológiai események<ph name="END_LINK" /> történnek</translation>
 <translation id="892588693504540538">Lyuk jobbra fent</translation>
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
+<translation id="8926400492587758246">Fizetés kis összegű havi részletekben</translation>
 <translation id="8932102934695377596">Késik az órája</translation>
 <translation id="893332455753468063">Név hozzáadása</translation>
 <translation id="8938242527120341116">Az eszköz tartalomszűrői letiltották a következő elemet: <ph name="BLOCKED_URL" /></translation>

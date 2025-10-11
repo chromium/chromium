@@ -336,6 +336,7 @@
 <translation id="1216891999012841486">Güncelleme hatalarını düzeltme hakkında daha fazla bilgi</translation>
 <translation id="1217114730239853757">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise boşluk çubuğuna basın.</translation>
 <translation id="1217117837721346030">Şüpheli dosyayı indir</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> grubunda yeni sekme</translation>
 <translation id="1217483152325416304">Yerel verileriniz yakında silinecek</translation>
 <translation id="1217668622537098248">İşlemden sonra sol tıklamaya geri döndürür</translation>
 <translation id="1218015446623563536">Linux'ı Silin</translation>
@@ -3219,6 +3220,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ayarları dilediğiniz zaman bu karttan yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 sekmede yeni sekme}other{# sekmede yeni sekme}}</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208584281581115441">Şimdi kontrol et</translation>
 <translation id="3208703785962634733">Onaylanmayan</translation>
@@ -3394,6 +3396,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video pencere içinde pencere modunda oynatılıyor</translation>
 <translation id="3335380372402547327">Işıklı Bildirim önizlemesini göster</translation>
 <translation id="3335947283844343239">Kapatılan Sekmeyi Tekrar Aç</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> grubunda Yeni Sekme</translation>
 <translation id="3336855445806447827">Emin değilim</translation>
 <translation id="3337568642696914359">Sitelerin protokolleri işlemesine izin verme</translation>
 <translation id="333863344734218290">Sizi herkese açık ve gizli durumdaki güvensiz sitelerle ilgili uyarır</translation>
@@ -8938,6 +8941,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7211783048245131419">Henüz atanmış anahtar yok</translation>
 <translation id="7212097698621322584">Değiştirmek için geçerli PIN'inizi girin. PIN'inizi bilmiyorsanız güvenlik anahtarınızı sıfırlayarak yeni bir PIN oluşturmanız gerekir.</translation>
 <translation id="7214047272988222011">İzin veriliyor – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem kamera erişimini<ph name="LINK_END" /> açın.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 Sekmede Yeni Sekme}other{# Sekmede Yeni Sekme}}</translation>
 <translation id="721490496276866468">Şifreleri içe aktar</translation>
 <translation id="7217208603285112910">Seçim <ph name="LANGUAGE" /> değil</translation>
 <translation id="7219254577985949841">Site verileri silinsin mi?</translation>
@@ -9225,6 +9229,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7410344089573941623"><ph name="HOST" /> sitesi kamerama ve mikrofonuma erişmek isterse sor</translation>
 <translation id="7410421966064092098">Siteler, bot olmadığınızı doğrulamaya yardımcı olamaz</translation>
 <translation id="7410852728357935715">Bir cihaza yayınla</translation>
+<translation id="741148343080227980">Adınızı <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="USERNAME" />)<ph name="END_LINK" /> düzenleyebilirsiniz.</translation>
 <translation id="741204030948306876">Evet, istiyorum</translation>
 <translation id="7412226954991670867">GPU Belleği</translation>
 <translation id="741370456693729525">Günlük dil kullanarak tarama geçmişinizde arama yapabilir ve ziyaret ettiğiniz siteleri bulabilirsiniz</translation>

@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Βελτίωση φωτισμού</translation>
 <translation id="2549985041256363841">Έναρξη εγγραφής</translation>
 <translation id="255671100581129685">Ο Βοηθός Google δεν διατίθεται σε δημόσιες περιόδους λειτουργίας.</translation>
+<translation id="2562459326218811217">Η συσκευή είναι συνδεδεμένη στην πρίζα, αλλά δεν φορτίζει. Δοκιμάστε έναν φορτιστή με περισσότερα watt (W) ή χρησιμοποιήστε τον αρχικό φορτιστή.</translation>
 <translation id="256712445991462162">ο μεγεθυντικός φακός σε παράθυρο</translation>
 <translation id="2573588302192866788">Αδυναμία σύνδεσης <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Η σύνδεση σε πολλούς λογαριασμούς απενεργοποιήθηκε</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2814448776515246190">Μερική λήψη</translation>
+<translation id="2815594810045873507">Δοκιμάστε έναν φορτιστή με περισσότερα watt (W) ή χρησιμοποιήστε τον αρχικό φορτιστή.</translation>
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
 <translation id="2822551631199737692">Κάμερα σε χρήση</translation>
 <translation id="2825619548187458965">Ράφι</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Για εξατομικευμένες λίστες αναπαραγωγής για συγκέντρωση, επιτρέψτε την πρόσβαση στο YouTube Music</translation>
 <translation id="6582034443359256692">Υπολογισμός επιπέδου φόρτισης μπαταρίας σε εξέλιξη.</translation>
 <translation id="6585808820553845416">Η περίοδος λειτουργίας λήγει σε <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Δεν είναι δυνατή η φόρτιση της συσκευής</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω αριστερή γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
 <translation id="6605415194043280389">Η λειτουργία συγκέντρωσης είναι ενεργοποιημένη</translation>

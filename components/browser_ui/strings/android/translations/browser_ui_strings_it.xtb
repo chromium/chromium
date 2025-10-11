@@ -637,7 +637,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="818487310457576362">Trascina dal lato dello schermo per uscire dalla modalità a schermo intero.</translation>
 <translation id="8186479265534291036">Il sito non funziona? Cookie di terze parti bloccati</translation>
-<translation id="8197286292360124385">Autorizzazione <ph name="PERMISSION_1" /> consentita</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" />: Autorizzazione concessa</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8211406090763984747">La connessione è sicura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
