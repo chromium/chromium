@@ -78,6 +78,9 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   // Holds the callback to the Invoke method. Null before invoke is called.
   InvokeCallback invoke_callback_;
 
+  // The unique ID of the navigation entry at the time of validation.
+  int validated_entry_id_ = 0;
+
   tabs::TabHandle tab_handle_;
 
   base::WeakPtrFactory<HistoryTool> weak_ptr_factory_{this};

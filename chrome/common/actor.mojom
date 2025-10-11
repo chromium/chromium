@@ -356,6 +356,10 @@ enum ActionResultCode {
   // History navigation committed to an error page.
   kHistoryErrorPage = 805,
 
+  // The navigation entry at the current offset changed between validation and
+  // time of use.
+  kHistoryNavigationEntryChanged = 806,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

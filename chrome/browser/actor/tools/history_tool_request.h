@@ -33,6 +33,7 @@ class HistoryToolRequest : public TabToolRequest {
   std::string JournalEvent() const override;
   std::optional<ObservationDelayController::PageStabilityConfig>
   GetObservationPageStabilityConfig() const override;
+  bool RequiresUrlCheckInCurrentTab() const override;
 
   // Whether the navigation is backwards or forwards in session history.
   Direction direction_;

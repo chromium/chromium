@@ -55,4 +55,10 @@ HistoryToolRequest::GetObservationPageStabilityConfig() const {
   }
 }
 
+bool HistoryToolRequest::RequiresUrlCheckInCurrentTab() const {
+  // A history tool is tab scoped but navigates *away* from the current URL --
+  // the destination URL is checked in HistoryTool::Validate().
+  return false;
+}
+
 }  // namespace actor

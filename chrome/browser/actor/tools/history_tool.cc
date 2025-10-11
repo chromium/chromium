@@ -6,13 +6,16 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
@@ -23,6 +26,12 @@ namespace {
 // The polling interval used to update the pending_navigations_ list.
 constexpr base::TimeDelta kPendingNavigationPollingInterval =
     base::Milliseconds(100);
+
+actor::mojom::ActionResultPtr MayActOnUrlToResult(bool may_act) {
+  return may_act
+             ? actor::MakeOkResult()
+             : actor::MakeResult(actor::mojom::ActionResultCode::kUrlBlocked);
+}
 
 }  // namespace
 
@@ -45,7 +54,26 @@ HistoryTool::HistoryTool(TaskId task_id,
 HistoryTool::~HistoryTool() = default;
 
 void HistoryTool::Validate(ValidateCallback callback) {
-  PostResponseTask(std::move(callback), MakeOkResult());
+  // Get the navigation entry that would be navigated to.
+  int offset = direction_ == HistoryToolRequest::Direction::kBack ? -1 : 1;
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetEntryAtOffset(offset);
+
+  // If there is no entry, the navigation will fail at the time of use, so
+  // we can pass validation for now.
+  if (!entry) {
+    PostResponseTask(std::move(callback), MakeOkResult());
+    return;
+  }
+
+  validated_entry_id_ = entry->GetUniqueID();
+
+  // Check if the destination URL is blocked.
+  MayActOnUrl(entry->GetURL(),
+              /*allow_insecure_http=*/true,
+              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+              journal(), task_id(),
+              base::BindOnce(&MayActOnUrlToResult).Then(std::move(callback)));
 }
 
 mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(
@@ -60,7 +88,17 @@ mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(
              !controller.CanGoForward()) {
     result = MakeResult(mojom::ActionResultCode::kHistoryNoForwardEntries);
   } else {
-    result = MakeOkResult();
+    // Ensure the entry being navigated to is the same as when it was
+    // validated.
+    int offset = direction_ == HistoryToolRequest::Direction::kBack ? -1 : 1;
+    content::NavigationEntry* entry =
+        web_contents()->GetController().GetEntryAtOffset(offset);
+    if (!entry || entry->GetUniqueID() != validated_entry_id_) {
+      result =
+          MakeResult(mojom::ActionResultCode::kHistoryNavigationEntryChanged);
+    } else {
+      result = MakeOkResult();
+    }
   }
 
   return result;
