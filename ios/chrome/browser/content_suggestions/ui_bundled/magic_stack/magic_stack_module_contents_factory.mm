@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
@@ -164,6 +165,7 @@
   } else {
     TabResumptionView* tabResumptionView =
         [[TabResumptionView alloc] initWithItem:tabResumptionItem];
+    [tabResumptionItem.consumerSource addConsumer:tabResumptionView];
     tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
     return tabResumptionView;
   }

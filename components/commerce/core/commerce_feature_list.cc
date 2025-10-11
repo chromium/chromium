@@ -256,6 +256,9 @@ extern const char kShopCardArm4[] = "arm_4";
 // (max 3 impressions). So ShopCard variations of Tab Resumption can
 // be conclusively benchmarked against regular Tab Resumption.
 extern const char kShopCardArm5[] = "arm_5";
+// Similar to arm 3, but price drop and product image data acquisition
+// occurs after the card is rendered and is updated if applicable.
+extern const char kShopCardArm6[] = "arm_6";
 extern const char kShopCardFrontPosition[] = "shop_card_front";
 extern const char kShopCardMaxImpressions[] = "max_impressions";
 

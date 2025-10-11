@@ -679,6 +679,14 @@ const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsFront[] = {
     {"ShopCardVariant", "arm_5"},
     {"ShopCardPosition", "shop_card_front"},
 };
+const FeatureEntry::FeatureParam kPriceDropOnTabDelayedDataAcquisition[] = {
+    {"ShopCardVariant", "arm_6"},
+};
+const FeatureEntry::FeatureParam kPriceDropOnTabDelayedDataAcquisitionFront[] =
+    {
+        {"ShopCardVariant", "arm_6"},
+        {"ShopCardPosition", "shop_card_front"},
+};
 
 // Address Bar Position
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
@@ -797,6 +805,13 @@ const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
     {"Card 5 Tab Resumption with Impression Limits at front of magic stack",
      kTabResumptionWithImpressionLimitsFront,
      std::size(kTabResumptionWithImpressionLimitsFront), nullptr},
+    {"Card 6 Price Drop on Tab Resumption with delayed data acquisition",
+     kPriceDropOnTabDelayedDataAcquisition,
+     std::size(kPriceDropOnTabDelayedDataAcquisition), nullptr},
+    {"Card 6 Price Drop on Tab Resumption with delayed data acquisition at "
+     "front of magic stack",
+     kPriceDropOnTabDelayedDataAcquisitionFront,
+     std::size(kPriceDropOnTabDelayedDataAcquisitionFront), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
