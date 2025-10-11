@@ -19,6 +19,11 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformMostVisitedTilesUser);
 // Model to predict whether the user belongs to MostVisitedTilesUser segment.
 class MostVisitedTilesUser : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureMobileNTPMostVisited,
+    kFeatureCount,
+  };
+
   static constexpr char kMostVisitedTilesUserKey[] = "most_visited_tiles_user";
   static constexpr char kMostVisitedTilesUserUmaName[] = "MostVisitedTilesUser";
 
