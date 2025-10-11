@@ -37,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base",
+    "//components/guest_contents/common:mojom",
     "//testing/gtest",
   ]
 }
