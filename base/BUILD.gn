@@ -3436,7 +3436,6 @@ test("base_unittests") {
     "i18n/time_formatting_unittest.cc",
     "i18n/timezone_unittest.cc",
     "i18n/transliterator_unittest.cc",
-    "immediate_crash_unittest.cc",
     "json/json_reader_unittest.cc",
     "json/json_value_converter_unittest.cc",
     "json/json_value_serializer_unittest.cc",
@@ -3736,6 +3735,13 @@ test("base_unittests") {
     # Cronet buildbot do not run base_unittests, so exclusing this test
     # instead of adding a nogncheck is preferred (crbug.com/1400235).
     sources += [ "location_unittest.cc" ]
+  }
+
+  if (!(current_cpu == "riscv64" || current_cpu == "loong64" ||
+        current_cpu == "ppc64")) {
+    # On unofficial CPU architectures, there are no defined TRAP_SEQUENCE to test
+    # and building immediate_crash_unittest would fail.
+    sources += [ "immediate_crash_unittest.cc" ]
   }
 
   sources += [
