@@ -34,9 +34,9 @@ div-with-text{
 }
 section-with-wide-gamut-colors{
   "color-unclamped-rgba": [
-    1.905670166015625,
-    -0.4917716979980469,
-    1.0208816528320312,
+    1.9055674076080322,
+    -0.49176037311553955,
+    1.0208687782287598,
     1
   ],
   "color-css-text": "color(xyz-d50 2 0.9 0.79)",

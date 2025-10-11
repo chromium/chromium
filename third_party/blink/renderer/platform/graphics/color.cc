@@ -36,6 +36,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
+#include "skia/ext/skcms_ext.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/color_conversions.h"
 
 namespace blink {
@@ -154,6 +156,61 @@ float AngleToUnitCircleDegrees(float angle) {
 float QuantizeTo8Bit(float v) {
   const float scale_factor = nextafterf(256.0f, 0.0f);
   return static_cast<int>(v * scale_factor) / 255.0f;
+}
+
+// Many of the Color::ColorSpaces can be represented by an SkColorSpace. This
+// function will return the matrix and transfer function for those spaces, and
+// will CHECK for all other spaces.
+void GetSkColorSpaceParams(Color::ColorSpace color_space,
+                           skcms_Matrix3x3& m,
+                           skcms_TransferFunction& t) {
+  switch (color_space) {
+    case Color::ColorSpace::kSRGB:
+      m = SkNamedGamut::kSRGB;
+      t = SkNamedTransferFn::kSRGB;
+      return;
+    case Color::ColorSpace::kSRGBLinear:
+      m = SkNamedGamut::kSRGB;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kDisplayP3:
+      m = SkNamedGamut::kDisplayP3;
+      t = SkNamedTransferFn::kSRGB;
+      return;
+    case Color::ColorSpace::kA98RGB:
+      m = SkNamedGamut::kAdobeRGB;
+      t = SkNamedTransferFn::k2Dot2;
+      return;
+    case Color::ColorSpace::kProPhotoRGB: {
+      SkNamedPrimaries::kProPhotoRGB.toXYZD50(&m);
+      t = SkNamedTransferFn::kProPhotoRGB;
+      return;
+    }
+    case Color::ColorSpace::kRec2020:
+      m = SkNamedGamut::kRec2020;
+      t = SkNamedTransferFn::kRec2020;
+      return;
+    case Color::ColorSpace::kXYZD50:
+      m = SkNamedGamut::kXYZ;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kXYZD65: {
+      constexpr float kD65_x = 0.3127f;
+      constexpr float kD65_y = 0.3290f;
+      skcms_AdaptToXYZD50(kD65_x, kD65_y, &m);
+      t = SkNamedTransferFn::kLinear;
+      return;
+    }
+    case Color::ColorSpace::kSRGBLegacy:
+    case Color::ColorSpace::kLab:
+    case Color::ColorSpace::kOklab:
+    case Color::ColorSpace::kLch:
+    case Color::ColorSpace::kOklch:
+    case Color::ColorSpace::kHSL:
+    case Color::ColorSpace::kHWB:
+    case Color::ColorSpace::kNone:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -516,21 +573,21 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       return gfx::SRGBToXYZD50(r, g, b);
     }
     case ColorSpace::kSRGB:
-      return gfx::SRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kSRGBLinear:
-      return gfx::SRGBLinearToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kDisplayP3:
-      return gfx::DisplayP3ToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kA98RGB:
-      return gfx::AdobeRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kProPhotoRGB:
-      return gfx::ProPhotoToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kRec2020:
-      return gfx::Rec2020ToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kXYZD50:
-      return {param0_, param1_, param2_};
-    case ColorSpace::kXYZD65:
-      return gfx::XYZD65ToD50(param0_, param1_, param2_);
+    case ColorSpace::kXYZD65: {
+      skcms_Matrix3x3 m;
+      skcms_TransferFunction t;
+      GetSkColorSpaceParams(color_space_, m, t);
+      skcms::Vector3 c{{param0_, param1_, param2_}};
+      c = skcms::TransferFunction_apply(t, c);
+      c = skcms::Matrix3x3_apply(m, c);
+      return std::make_tuple(c.vals[0], c.vals[1], c.vals[2]);
+    }
     case ColorSpace::kLab:
       return gfx::LabToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kOklab: {
@@ -603,39 +660,23 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       color_space_ = ColorSpace::kXYZD65;
       return;
     }
-    case ColorSpace::kXYZD50: {
-      std::tie(param0_, param1_, param2_) = ExportAsXYZD50Floats();
-      color_space_ = ColorSpace::kXYZD50;
-      return;
-    }
-    case ColorSpace::kSRGBLinear: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGBLinear(x, y, z);
-      color_space_ = ColorSpace::kSRGBLinear;
-      return;
-    }
-    case ColorSpace::kDisplayP3: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToDisplayP3(x, y, z);
-      color_space_ = ColorSpace::kDisplayP3;
-      return;
-    }
-    case ColorSpace::kA98RGB: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToAdobeRGB(x, y, z);
-      color_space_ = ColorSpace::kA98RGB;
-      return;
-    }
-    case ColorSpace::kProPhotoRGB: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToProPhoto(x, y, z);
-      color_space_ = ColorSpace::kProPhotoRGB;
-      return;
-    }
+    case ColorSpace::kXYZD50:
+    case ColorSpace::kSRGBLinear:
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
     case ColorSpace::kRec2020: {
+      skcms_Matrix3x3 m;
+      skcms_TransferFunction t;
+      GetSkColorSpaceParams(destination_color_space, m, t);
       auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToRec2020(x, y, z);
-      color_space_ = ColorSpace::kRec2020;
+      skcms::Vector3 c({x, y, z});
+      c = skcms::Matrix3x3_apply_inverse(m, c);
+      c = skcms::TransferFunction_apply_inverse(t, c);
+      param0_ = c.vals[0];
+      param1_ = c.vals[1];
+      param2_ = c.vals[2];
+      color_space_ = destination_color_space;
       return;
     }
     case ColorSpace::kLab: {
@@ -864,20 +905,34 @@ SkColor4f Color::ToSkColor4fInternal(bool gamut_map_oklab_oklch) const {
       auto [r, g, b] = gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
       return SkColor4f{r, g, b, alpha_};
     }
-    case ColorSpace::kSRGBLinear:
-      return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kSRGBLinear: {
+      // Several SVG rendering tests expect the inaccurate results from this
+      // formulation and need to be rebaselined.
+      // https://crbug.com/450045076
+      skcms_TransferFunction tf_inv;
+      skcms_TransferFunction_invert(&SkNamedTransferFn::kSRGB, &tf_inv);
+      return SkColor4f{skcms_TransferFunction_eval(&tf_inv, param0_),
+                       skcms_TransferFunction_eval(&tf_inv, param1_),
+                       skcms_TransferFunction_eval(&tf_inv, param2_), alpha_};
+    }
     case ColorSpace::kDisplayP3:
-      return gfx::DisplayP3ToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kA98RGB:
-      return gfx::AdobeRGBToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kProPhotoRGB:
-      return gfx::ProPhotoToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kRec2020:
-      return gfx::Rec2020ToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kXYZD50:
-      return gfx::XYZD50ToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kXYZD65:
-      return gfx::XYZD65ToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kXYZD65: {
+      skcms_Matrix3x3 m;
+      skcms_TransferFunction t;
+      GetSkColorSpaceParams(color_space_, m, t);
+      skcms::Vector3 c({param0_, param1_, param2_});
+      c = skcms::TransferFunction_apply(t, c);
+      if (!skcms::Equal(m, SkNamedGamut::kSRGB)) {
+        c = skcms::Matrix3x3_apply(m, c);
+        c = skcms::Matrix3x3_apply_inverse(SkNamedGamut::kSRGB, c);
+      }
+      c = skcms::TransferFunction_apply_inverse(SkNamedTransferFn::kSRGB, c);
+      return {c.vals[0], c.vals[1], c.vals[2], alpha_};
+    }
     case ColorSpace::kLab:
       return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kOklab:

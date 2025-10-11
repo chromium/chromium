@@ -34,30 +34,6 @@ COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> LabToLch(float l, float a, float b);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50ToDisplayP3(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> ProPhotoToXYZD50(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50ToProPhoto(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> AdobeRGBToXYZD50(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50ToAdobeRGB(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> Rec2020ToXYZD50(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> XYZD50ToRec2020(float x, float y, float z);
-
-COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> XYZD50ToD65(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
@@ -79,13 +55,11 @@ COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> XYZD50TosRGBLinear(float x, float y, float z);
 
 COMPONENT_EXPORT(GFX)
-std::tuple<float, float, float> SRGBLinearToXYZD50(float r, float g, float b);
-
-COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b);
 
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> HSLToSRGB(float h, float s, float l);
+
 COMPONENT_EXPORT(GFX)
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b);
 
@@ -117,21 +91,6 @@ SkColor4f OklchToSkColor4f(float l, float a, float h, float alpha);
 
 COMPONENT_EXPORT(GFX)
 SkColor4f OklchGamutMapToSkColor4f(float l, float a, float h, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f ProPhotoToSkColor4f(float r, float g, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f DisplayP3ToSkColor4f(float r, float g, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f AdobeRGBToSkColor4f(float r, float g, float b, float alpha);
-
-COMPONENT_EXPORT(GFX)
-SkColor4f Rec2020ToSkColor4f(float r, float g, float b, float alpha);
 
 COMPONENT_EXPORT(GFX)
 SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha);
