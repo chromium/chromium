@@ -6,6 +6,7 @@ import './searchbox_compose_button.js';
 import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
+import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -16,8 +17,11 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './searchbox.css.js';
 import {getHtml} from './searchbox.html.js';
@@ -25,6 +29,10 @@ import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {decodeString16, mojoString16} from './utils.js';
+import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
+import type {FileUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {FileUploadStatus} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 
 // LINT.IfChange(GhostLoaderTagName)
 const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
@@ -166,6 +174,7 @@ export interface SearchboxElement {
     input: HTMLInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
+    context: ContextualEntrypointAndCarouselElement,
   };
 }
 
@@ -357,6 +366,11 @@ export class SearchboxElement extends SearchboxElementBase {
         type: Boolean,
         reflect: true,
       },
+
+      hasContextFiles_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -403,12 +417,14 @@ export class SearchboxElement extends SearchboxElementBase {
   protected accessor thumbnailUrl_: string = '';
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
+  protected accessor hasContextFiles_: boolean = false;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
+  private contextStatusChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
 
   constructor() {
@@ -430,6 +446,9 @@ export class SearchboxElement extends SearchboxElementBase {
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
+    this.contextStatusChangedListenerId_ =
+        this.callbackRouter_.onContextualInputStatusChanged.addListener(
+            this.onContextualInputStatusChanged_.bind(this));
 
     if (loadTimeData.getBoolean('searchboxCyclingPlaceholders')) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();
@@ -442,10 +461,19 @@ export class SearchboxElement extends SearchboxElementBase {
           Number(config.fadeTextAnimationDuration.microseconds / 1000n));
       this.placeholderCycler_.start();
     }
+
+    if (this.realboxLayoutMode === 'Tall') {
+      this.pageHandler_.notifySessionStarted();
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    if (this.realboxLayoutMode === 'Tall') {
+      this.pageHandler_.notifySessionAbandoned();
+    }
+
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
@@ -453,6 +481,8 @@ export class SearchboxElement extends SearchboxElementBase {
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
+    assert(this.contextStatusChangedListenerId_);
+    this.callbackRouter_.removeListener(this.contextStatusChangedListenerId_);
 
     this.placeholderCycler_?.stop();
   }
@@ -584,6 +614,12 @@ export class SearchboxElement extends SearchboxElementBase {
   private onSetThumbnail_(thumbnailUrl: string, isDeletable: boolean) {
     this.thumbnailUrl_ = thumbnailUrl;
     this.isThumbnailDeletable_ = isDeletable;
+  }
+
+  private onContextualInputStatusChanged_(
+      token: UnguessableToken, status: FileUploadStatus,
+      errorType: FileUploadErrorType) {
+    this.$.context.updateFileStatus(token, status, errorType);
   }
 
   //============================================================================
@@ -968,6 +1004,70 @@ export class SearchboxElement extends SearchboxElementBase {
   protected onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
+  }
+
+  protected async addFileContext_(e: CustomEvent<{
+      files: File[], isImage: boolean,
+      onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
+  }>) {
+    const composeboxFiles: Map<UnguessableToken, ComposeboxFile> = new Map();
+    for (const file of e.detail.files) {
+      const fileBuffer = await file.arrayBuffer();
+      const bigBuffer:
+            BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
+      const {token} = await this.pageHandler_.addFileContext(
+          {
+            fileName: file.name,
+            mimeType: file.type,
+            selectionTime: new Date(),
+          },
+          bigBuffer);
+
+      const attachment: ComposeboxFile = {
+          uuid: token,
+          name: file.name,
+          objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
+          type: file.type,
+          status: FileUploadStatus.kNotUploaded,
+          url: null,
+        };
+      composeboxFiles.set(token, attachment);
+    }
+    e.detail.onContextAdded(composeboxFiles);
+  }
+
+  protected async addTabContext_(e: CustomEvent<{
+      id: number, title: string, url: Url,
+      onContextAdded: (file: ComposeboxFile) => void,
+  }>) {
+    const {token} = await this.pageHandler_.addTabContext(e.detail.id);
+    if (!token) {
+      return;
+    }
+
+    const attachment: ComposeboxFile = {
+      uuid: token,
+      name: e.detail.title,
+      objectUrl: null,
+      type: 'tab',
+      status: FileUploadStatus.kNotUploaded,
+      url: e.detail.url,
+    };
+    e.detail.onContextAdded(attachment);
+  }
+
+  protected deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
+    this.pageHandler_.deleteContext(e.detail.uuid);
+  }
+
+  protected async refreshTabSuggestions_(
+      e: CustomEvent<{onRefreshComplete: (tabs: TabInfo[]) => void}>) {
+    const {tabs} = await this.pageHandler_.getRecentTabs();
+    e.detail.onRefreshComplete(tabs);
+  }
+
+  protected onContextFilesChanged_(e: CustomEvent<{files: number}>) {
+    this.hasContextFiles_ = e.detail.files > 0;
   }
 
   protected onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {

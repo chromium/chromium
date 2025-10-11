@@ -331,12 +331,26 @@ cr-searchbox-icon {
   z-index: 100;
 }
 
-cr-searchbox-dropdown {
+.dropdownContainer {
+  background-color: var(--color-searchbox-results-background);
+  border-radius: calc(0.5 * var(--cr-searchbox-height));
+  box-shadow: var(--cr-searchbox-shadow);
+  gap: 16px;
   left: 0;
+  margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
+  overflow: hidden;
+  padding-bottom: 8px;
+  padding-top: var(--cr-searchbox-height);
   position: absolute;
   right: 0;
   top: 0;
   z-index: 99;
+}
+
+@media (forced-colors: active) {
+  .dropdownContainer {
+    border: 1px solid ActiveBorder;
+  }
 }
 
 .truncate {
@@ -365,11 +379,18 @@ cr-searchbox-dropdown {
 :host([realbox-layout-mode='Tall']) {
   --cr-searchbox-border-radius: 26px;
   --cr-searchbox-compose-button-position-top: 12px;
-  --cr-searchbox-dropdown-padding-bottom: 48px;
-  --cr-searchbox-dropdown-padding-top: 56px;
-  --cr-searchbox-height: 114px;
+  --cr-searchbox-dropdown-padding-bottom: 12px;
+  --cr-searchbox-dropdown-padding-top: 62px;
+  --cr-searchbox-height: 112px;
   --cr-searchbox-icon-height: 40px;
   --cr-searchbox-input-padding-top_: 22px;
+  --text-input-inline-start-spacing: 16px;
+}
+
+:host([realbox-layout-mode='Tall']) .dropdownContainer {
+  border-radius: var(--cr-searchbox-border-radius);
+  padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
+  padding-top: var(--cr-searchbox-dropdown-padding-top);
 }
 
 :host([realbox-layout-mode='Tall']) #inputWrapper {
@@ -401,6 +422,11 @@ cr-searchbox-dropdown {
   bottom: 12px;
   height: var(--cr-searchbox-icon-height);
   padding: 8px 12px;
+}
+
+:host([realbox-layout-mode='Tall'][has-context-files_]) #voiceSearchButton,
+:host([realbox-layout-mode='Tall'][has-context-files_]) #lensSearchButton {
+  display: none;
 }
 
 :host([realbox-layout-mode='Tall'][dropdown-is-visible]) cr-searchbox-icon {
