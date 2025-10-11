@@ -260,7 +260,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* isSearch= */ true,
                 /* hasTabMatch= */ false,
                 TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+        mProcessor.setRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -289,7 +289,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* isSearch= */ false,
                 /* hasTabMatch= */ false,
                 TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
+        mProcessor.setRefineAction(mModel, mInput, mSuggestion, 0);
 
         var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(1, actions.size());
@@ -329,62 +329,6 @@ public class BaseSuggestionProcessorUnitTest {
         Assert.assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
-    }
-
-    @Test
-    public void setTabSwitchOrRefineAction_refineSwitchToTab() {
-        createSuggestion(
-                OmniboxSuggestionType.URL_WHAT_YOU_TYPED,
-                /* isSearch= */ false,
-                /* hasTabMatch= */ true,
-                TEST_URL);
-        mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
-
-        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        Assert.assertEquals(1, actions.size());
-
-        var action = actions.get(0);
-
-        var expectedDescription =
-                mContext.getString(
-                        R.string.accessibility_omnibox_switch_to_tab,
-                        mSuggestion.getFillIntoEdit());
-        Assert.assertEquals(expectedDescription, action.accessibilityDescription);
-        Assert.assertEquals(
-                R.drawable.switch_to_tab, shadowOf(action.icon.drawable).getCreatedFromResId());
-    }
-
-    @Test
-    public void setTabSwitchOrRefineAction_refineSwitchToTab_HubPageClassificationSkipsIcon() {
-        // When the ANDROID_HUB PageClassification is seen, the switch to tab refine icon is
-        // intentionally skipped.
-        mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
-
-        {
-            // With explicit tab match
-            createSuggestion(
-                    OmniboxSuggestionType.OPEN_TAB,
-                    /* isSearch= */ false,
-                    /* hasTabMatch= */ true,
-                    TEST_URL);
-            mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
-
-            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-            Assert.assertEquals(null, actions);
-        }
-
-        {
-            // Without explicit tab match
-            createSuggestion(
-                    OmniboxSuggestionType.OPEN_TAB,
-                    /* isSearch= */ false,
-                    /* hasTabMatch= */ false,
-                    TEST_URL);
-            mProcessor.setTabSwitchOrRefineAction(mModel, mInput, mSuggestion, 0);
-
-            var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-            Assert.assertEquals(null, actions);
-        }
     }
 
     @Test
@@ -462,5 +406,54 @@ public class BaseSuggestionProcessorUnitTest {
                     R.drawable.search_spark_rainbow,
                     shadowOf(action.icon.drawable).getCreatedFromResId());
         }
+    }
+
+    @Test
+    public void addActionButtonIfAvailable_HubPageClassificationSkipsButton() {
+        // When the ANDROID_HUB PageClassification is seen, the action button is intentionally
+        // skipped.
+        mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+
+        createSuggestionWithActions(
+                OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,
+                /* isSearch= */ true,
+                TEST_URL,
+                List.of(
+                        new OmniboxActionInSuggest(
+                                0,
+                                "hint",
+                                "accessibility",
+                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                                "https://google.com",
+                                /* tabId= */ 0,
+                                /* showAsActionButton= */ true)));
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(null, actions);
+    }
+
+    @Test
+    public void addTabSwitchActionButton() {
+        createSuggestionWithActions(
+                OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED,
+                /* isSearch= */ true,
+                TEST_URL,
+                List.of(
+                        new OmniboxActionInSuggest(
+                                0,
+                                "hint",
+                                "accessibility",
+                                SuggestTemplateInfo.TemplateAction.ActionType
+                                        .CHROME_TAB_SWITCH_VALUE,
+                                "https://google.com",
+                                /* tabId= */ 0,
+                                /* showAsActionButton= */ true)));
+
+        var actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        Assert.assertEquals(1, actions.size());
+
+        var action = actions.get(0);
+        Assert.assertEquals(
+                R.drawable.switch_to_tab, shadowOf(action.icon.drawable).getCreatedFromResId());
     }
 }

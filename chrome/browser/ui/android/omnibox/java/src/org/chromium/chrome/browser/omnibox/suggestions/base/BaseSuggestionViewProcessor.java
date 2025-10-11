@@ -131,7 +131,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     /**
-     * Setup action icon base on the suggestion, either show query build arrow or switch to tab.
+     * Setup action icon as query build arrow.
      *
      * @param model Property model to update.
      * @param input The input to produce this suggestion.
@@ -139,45 +139,35 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param position The position of the button in the list.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public void setTabSwitchOrRefineAction(
+    public void setRefineAction(
             PropertyModel model,
             AutocompleteInput input,
             AutocompleteMatch suggestion,
             int position) {
-        @DrawableRes int icon;
-        String iconString;
-        Runnable action;
         if (suggestion.hasTabMatch() || suggestion.getType() == OmniboxSuggestionType.OPEN_TAB) {
-            // Hub doesn't have refine icons for switch-to-tab.
-            if (input.getPageClassification() == PageClassification.ANDROID_HUB_VALUE) {
-                return;
-            }
-            icon = R.drawable.switch_to_tab;
-            iconString =
-                    OmniboxResourceProvider.getString(
-                            mContext, R.string.accessibility_omnibox_switch_to_tab);
-            action = () -> mSuggestionHost.onSwitchToTab(suggestion, position);
-        } else {
-            iconString =
-                    OmniboxResourceProvider.getString(
-                            mContext,
-                            R.string.accessibility_omnibox_btn_refine,
-                            suggestion.getFillIntoEdit());
-            icon =
-                    mUiContext.toolbarPositionSupplier.get() == ControlsPosition.TOP
-                            ? R.drawable.btn_suggestion_refine_up
-                            : R.drawable.btn_suggestion_refine_down;
-
-            action =
-                    () -> {
-                        if (suggestion.isSearchSuggestion()) {
-                            RecordUserAction.record("MobileOmniboxRefineSuggestion.Search");
-                        } else {
-                            RecordUserAction.record("MobileOmniboxRefineSuggestion.Url");
-                        }
-                        mSuggestionHost.onRefineSuggestion(suggestion);
-                    };
+            return;
         }
+
+        String iconString =
+                OmniboxResourceProvider.getString(
+                        mContext,
+                        R.string.accessibility_omnibox_btn_refine,
+                        suggestion.getFillIntoEdit());
+        @DrawableRes
+        int icon =
+                mUiContext.toolbarPositionSupplier.get() == ControlsPosition.TOP
+                        ? R.drawable.btn_suggestion_refine_up
+                        : R.drawable.btn_suggestion_refine_down;
+
+        Runnable action =
+                () -> {
+                    if (suggestion.isSearchSuggestion()) {
+                        RecordUserAction.record("MobileOmniboxRefineSuggestion.Search");
+                    } else {
+                        RecordUserAction.record("MobileOmniboxRefineSuggestion.Url");
+                    }
+                    mSuggestionHost.onRefineSuggestion(suggestion);
+                };
         setActionButtons(
                 model,
                 List.of(

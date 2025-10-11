@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -90,7 +91,8 @@ public class OmniboxPedalUnitTest {
                                         "",
                                         null,
                                         R.style.TextAppearance_ChipText,
-                                        /* showAsActionButton= */ false) {
+                                        /* showAsActionButton= */ false,
+                                        WindowOpenDisposition.CURRENT_TAB) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));

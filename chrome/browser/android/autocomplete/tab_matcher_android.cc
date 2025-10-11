@@ -191,7 +191,6 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
     const AutocompleteInput* input) const {
   using chrome::android::ActivityType;
   GURLToTabInfoMap tab_infos;
-  JNIEnv* env = base::android::AttachCurrentThread();
 
   for (TabAndroid* tab : GetOpenAndroidTabs(input)) {
     // Browser did not load the tab yet after Chrome started. To avoid
@@ -208,7 +207,6 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
     const GURL& tab_stripped_url = user_data->GetStrippedURL();
     TabInfo info;
     info.has_matching_tab = true;
-    info.android_tab = JavaObjectWeakGlobalRef(env, tab->GetJavaObject());
     info.android_tab_id = tab->GetAndroidId();
     tab_infos[tab_stripped_url] = info;
   }

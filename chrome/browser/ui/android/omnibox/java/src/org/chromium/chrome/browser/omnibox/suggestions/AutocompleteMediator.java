@@ -18,7 +18,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -44,16 +43,13 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.On
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -106,9 +102,7 @@ class AutocompleteMediator
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
-    private final Callback<Tab> mBringTabToFrontCallback;
     private final Callback<String> mBringTabGroupToFrontCallback;
-    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final OmniboxActionDelegate mOmniboxActionDelegate;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final SuggestionsListAnimationDriver mAnimationDriver;
@@ -189,9 +183,7 @@ class AutocompleteMediator
             Supplier<@Nullable Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
-            Callback<Tab> bringTabToFrontCallback,
             Callback<String> bringTabGroupToFrontCallback,
-            Supplier<TabWindowManager> tabWindowManagerSupplier,
             BookmarkState bookmarkState,
             OmniboxActionDelegate omniboxActionDelegate,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -207,9 +199,7 @@ class AutocompleteMediator
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
-        mBringTabToFrontCallback = bringTabToFrontCallback;
         mBringTabGroupToFrontCallback = bringTabGroupToFrontCallback;
-        mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mNavigationAttachmentsCoordinator = navigationAttachmentsCoordinator;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mOmniboxActionDelegate = omniboxActionDelegate;
@@ -547,12 +537,21 @@ class AutocompleteMediator
                 switchToTabGroup(suggestion);
                 return;
             } else {
-                if (maybeSwitchToTab(suggestion)) {
-                    // This bypasses the execution flow that captures histograms for all other
-                    // cases.
-                    recordMetrics(
-                            suggestion, null, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
-                    return;
+                var actions = suggestion.getActions();
+                if (!actions.isEmpty()) {
+                    var action = actions.get(0);
+                    if (action instanceof OmniboxActionInSuggest omniboxActionInSuggest) {
+                        if (mOmniboxActionDelegate.switchToTab(omniboxActionInSuggest.tabId)) {
+                            // This bypasses the execution flow that captures histograms for all
+                            // other cases.
+                            recordMetrics(
+                                    suggestion,
+                                    null,
+                                    matchIndex,
+                                    WindowOpenDisposition.SWITCH_TO_TAB);
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -604,7 +603,7 @@ class AutocompleteMediator
     public void onOmniboxActionClicked(OmniboxAction action, int position) {
         var match = getSuggestionAt(position);
         if (match != null) {
-            recordMetrics(match, action, position, WindowOpenDisposition.CURRENT_TAB);
+            recordMetrics(match, action, position, action.disposition);
         }
         action.execute(mOmniboxActionDelegate);
         finishInteraction();
@@ -638,43 +637,6 @@ class AutocompleteMediator
                             ? RefineActionUsage.SEARCH_WITH_ZERO_PREFIX
                             : RefineActionUsage.SEARCH_WITH_PREFIX;
         }
-    }
-
-    @Override
-    public void onSwitchToTab(AutocompleteMatch match, int matchIndex) {
-        if (maybeSwitchToTab(match)) {
-            recordMetrics(match, null, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
-        } else {
-            onSuggestionClicked(match, matchIndex, match.getUrl());
-        }
-    }
-
-    @VisibleForTesting
-    public boolean maybeSwitchToTab(AutocompleteMatch match) {
-        Tab tab = mAutocomplete != null ? mAutocomplete.getMatchingTabForSuggestion(match) : null;
-        TabWindowManager tabWindowManager = mTabWindowManagerSupplier.get();
-        if (tab == null || tabWindowManager == null) return false;
-
-        // When invoked directly from a browser, we want to trigger switch to tab animation.
-        // If invoked from other activities, ex. searchActivity, we do not need to trigger the
-        // animation since Android will show the animation for switching apps.
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) return false;
-        if (windowAndroid.getActivityState() == ActivityState.STOPPED
-                || windowAndroid.getActivityState() == ActivityState.DESTROYED) {
-            mBringTabToFrontCallback.onResult(tab);
-            return true;
-        }
-
-        TabModel tabModel = tabWindowManager.getTabModelForTab(tab);
-        if (tabModel == null) return false;
-
-        int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-        // In the event the user deleted the tab as part during the interaction with the
-        // Omnibox, reject the switch to tab action.
-        if (tabIndex == TabModel.INVALID_TAB_INDEX) return false;
-        tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
-        return true;
     }
 
     @VisibleForTesting

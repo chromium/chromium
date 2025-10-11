@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -151,11 +150,9 @@ public class LocationBarCoordinator
      * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
      * @param pageInfoAction Displays page info popup.
-     * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
      * @param bringTabGroupToFrontCallback Callback to bring the browser foreground and switch to a
      *     tab group.
      * @param omniboxUma Interface for logging UMA histogram.
-     * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
@@ -192,10 +189,8 @@ public class LocationBarCoordinator
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior,
             PageInfoAction pageInfoAction,
-            Callback<Tab> bringTabToFrontCallback,
             Callback<String> bringTabGroupToFrontCallback,
             OmniboxUma omniboxUma,
-            Supplier<TabWindowManager> tabWindowManagerSupplier,
             BookmarkState bookmarkState,
             BooleanSupplier isToolbarMicEnabledSupplier,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
@@ -311,9 +306,7 @@ public class LocationBarCoordinator
                         shareDelegateSupplier,
                         locationBarDataProvider,
                         profileObservableSupplier,
-                        bringTabToFrontCallback,
                         bringTabGroupToFrontCallback,
-                        tabWindowManagerSupplier,
                         bookmarkState,
                         omniboxActionDelegate,
                         omniboxSuggestionsDropdownScrollListener,

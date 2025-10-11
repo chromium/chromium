@@ -37,6 +37,7 @@ import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateI
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -140,7 +141,8 @@ public class OmniboxActionInSuggestUnitTest {
                                         "accessibility",
                                         null,
                                         R.style.TextAppearance_ChipText,
-                                        /* showAsActionButton= */ false) {
+                                        /* showAsActionButton= */ false,
+                                        WindowOpenDisposition.CURRENT_TAB) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
@@ -349,5 +351,27 @@ public class OmniboxActionInSuggestUnitTest {
         assertNotNull(url);
         assertEquals(UrlConstants.CHROME_DINO_URL, url);
         verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void getDisposition() {
+        for (var actionType : sKnownActionTypes) {
+            var action =
+                    new OmniboxActionInSuggest(
+                            0,
+                            "hint",
+                            "accessibility",
+                            actionType,
+                            "",
+                            /* tabId= */ 0,
+                            /* showAsActionButton= */ false);
+            assertEquals(
+                    actionType
+                                    == SuggestTemplateInfo.TemplateAction.ActionType
+                                            .CHROME_TAB_SWITCH_VALUE
+                            ? WindowOpenDisposition.SWITCH_TO_TAB
+                            : WindowOpenDisposition.CURRENT_TAB,
+                    action.disposition);
+        }
     }
 }

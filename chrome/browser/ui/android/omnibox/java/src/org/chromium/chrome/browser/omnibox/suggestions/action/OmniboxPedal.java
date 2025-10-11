@@ -16,6 +16,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
@@ -43,7 +44,8 @@ public class OmniboxPedal extends OmniboxAction {
                         ? DINO_GAME_ICON
                         : OmniboxAction.DEFAULT_ICON,
                 R.style.TextAppearance_ChipText,
-                /* showAsActionButton= */ false);
+                /* showAsActionButton= */ false,
+                WindowOpenDisposition.CURRENT_TAB);
         this.pedalId = pedalId;
     }
 

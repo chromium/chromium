@@ -3375,15 +3375,21 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST}},
-       // ZPS
-       {{}, {}, {}, {}},
-       // Typed
 #if BUILDFLAG(IS_ANDROID)
+       // ZPS
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}},
+       // Typed
        {{ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST}}
 #else
+       // ZPS
+       {{}, {}, {}, {}},
+       // Typed
        {{ACTION_IN_SUGGEST}, {}, {}, {}}
 #endif
       },
@@ -3392,15 +3398,21 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
         {ACTION_IN_SUGGEST, PEDAL},
         {ACTION_IN_SUGGEST, PEDAL},
         {ACTION_IN_SUGGEST, PEDAL}},
-       // ZPS
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-  // Typed
 #if BUILDFLAG(IS_ANDROID)
+       // ZPS
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}},
+       // Typed
        {{ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST},
         {ACTION_IN_SUGGEST}}
 #else
+       // ZPS
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
+       // Typed
        {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}
 #endif
       },

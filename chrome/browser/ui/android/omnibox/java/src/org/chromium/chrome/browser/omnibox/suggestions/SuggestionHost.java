@@ -65,14 +65,6 @@ public interface SuggestionHost {
     void onDeleteMatchElement(AutocompleteMatch suggestion, String titleText, int element);
 
     /**
-     * Triggered when the user selects a switch to tab action.
-     *
-     * @param suggestion Suggestion for which a corresponding tab is already open.
-     * @param position The position of the suggestion on the list.
-     */
-    void onSwitchToTab(AutocompleteMatch suggestion, int position);
-
-    /**
      * Update the content of the Omnibox without triggering the Navigation.
      *
      * @param text The text to be displayed in the Omnibox.

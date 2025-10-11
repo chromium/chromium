@@ -177,7 +177,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                         .getTextWithoutAutocomplete()
                         .trim()
                         .equalsIgnoreCase(suggestion.getDisplayText())) {
-            setTabSwitchOrRefineAction(model, input, suggestion, position);
+            setRefineAction(model, input, suggestion, position);
         }
     }
 

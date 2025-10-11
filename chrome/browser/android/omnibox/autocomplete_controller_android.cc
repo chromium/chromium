@@ -458,16 +458,6 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
   return url::GURLAndroid::FromNativeGURL(env, match->destination_url);
 }
 
-
-
-ScopedJavaLocalRef<jobject>
-AutocompleteControllerAndroid::GetMatchingTabForSuggestion(
-    JNIEnv* env,
-    uintptr_t match_ptr) {
-  const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
-  return match.GetMatchingJavaTab().get(env);
-}
-
 void AutocompleteControllerAndroid::Shutdown() {
   // Cancel all pending actions and clear any remaining matches.
   autocomplete_controller_.reset();

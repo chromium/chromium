@@ -746,10 +746,8 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
     std::vector<OmniboxActionId> include_pedals_and_others;
     std::vector<OmniboxActionId> exclude_pedals;
     if constexpr (is_android) {
-      if (!is_zero_suggest) {
-        include_pedals_and_others.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
-        exclude_pedals.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
-      }
+      include_pedals_and_others.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
+      exclude_pedals.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
     }
     include_pedals_and_others.push_back(OmniboxActionId::PEDAL);
 
@@ -1033,36 +1031,24 @@ void AutocompleteResult::ConvertOpenTabMatches(
           if constexpr (is_android) {
             // On Android, attach the action as ActionInSuggest that will be
             // interpreted as either action button or chip per the form factor.
-            // TODO (jianli): Remove the feature param check after Java changes
-            // land.
+            omnibox::SuggestTemplateInfo::TemplateAction template_action;
+            template_action.set_action_type(
+                omnibox::
+                    SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);
+            template_action.set_action_uri(match.destination_url.spec());
+            auto action_in_suggest =
+                base::MakeRefCounted<OmniboxActionInSuggest>(
+                    std::move(template_action), std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
-            if (OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip
-                    .Get()) {
+            action_in_suggest->tab_id = tab_info->second.android_tab_id;
 #endif
-              omnibox::SuggestTemplateInfo::TemplateAction template_action;
-              template_action.set_action_type(
-                  omnibox::
-                      SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);
-              template_action.set_action_uri(match.destination_url.spec());
-              auto action_in_suggest =
-                  base::MakeRefCounted<OmniboxActionInSuggest>(
-                      std::move(template_action), std::nullopt);
-#if BUILDFLAG(IS_ANDROID)
-              action_in_suggest->tab_id = tab_info->second.android_tab_id;
-#endif
-              match.actions.push_back(action_in_suggest);
-#if BUILDFLAG(IS_ANDROID)
-            }
-#endif
+            match.actions.push_back(action_in_suggest);
           } else {
             match.actions.push_back(
                 base::MakeRefCounted<TabSwitchAction>(match.destination_url));
           }
         }
       }
-#if BUILDFLAG(IS_ANDROID)
-      match.UpdateMatchingJavaTab(tab_info->second.android_tab);
-#endif
     }
   }
 

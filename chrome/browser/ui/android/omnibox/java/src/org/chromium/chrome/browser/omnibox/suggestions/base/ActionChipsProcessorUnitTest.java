@@ -25,6 +25,7 @@ import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -55,7 +56,8 @@ public class ActionChipsProcessorUnitTest {
                 "accessibility hint",
                 OmniboxAction.DEFAULT_ICON,
                 textAppearance,
-                /* showAsActionButton= */ false) {
+                /* showAsActionButton= */ false,
+                WindowOpenDisposition.CURRENT_TAB) {
             @Override
             public void execute(OmniboxActionDelegate delegate) {}
         };

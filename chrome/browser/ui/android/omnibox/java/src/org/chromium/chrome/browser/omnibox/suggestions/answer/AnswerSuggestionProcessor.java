@@ -123,7 +123,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (shouldShowCardUi) {
             setActionButtons(model, null);
         } else {
-            setTabSwitchOrRefineAction(model, input, suggestion, position);
+            setRefineAction(model, input, suggestion, position);
         }
         if (suggestion.getAnswerTemplate() != null) {
             GURL imageUrl =

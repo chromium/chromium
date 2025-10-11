@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -189,8 +190,25 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     /** Create switch to tab suggestion for test. */
-    private void createSwitchToTabSuggestion(int type, String title) {
-        mSuggestion = createSuggestionBuilder(type, title).setHasTabMatch(true).build();
+    private void createSwitchToTabSuggestion(int type) {
+        mSuggestion =
+                new AutocompleteMatchBuilder(type)
+                        .setIsSearch(true)
+                        .setHasTabMatch(true)
+                        .setUrl(JUnitTestGURLs.URL_1)
+                        .setDisplayText("tab switch")
+                        .setActions(
+                                List.of(
+                                        new OmniboxActionInSuggest(
+                                                0,
+                                                "tab switch",
+                                                "tab switch",
+                                                SuggestTemplateInfo.TemplateAction.ActionType
+                                                        .CHROME_TAB_SWITCH_VALUE,
+                                                "https://google.com",
+                                                /* tabId= */ 0,
+                                                /* showAsActionButton= */ true)))
+                        .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
@@ -390,11 +408,10 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void switchTabIconShownForSwitchToTabSuggestions() {
-        final String tabMatch = "tab match";
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
-        createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
+        createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED);
         PropertyModel model = mProcessor.createModel();
 
         mProcessor.populateModel(mInput, mSuggestion, model, 0);

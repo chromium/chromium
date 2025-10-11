@@ -2214,9 +2214,8 @@ void AutocompleteController::NotifyChanged() {
 
   // Swap matches from `internal_result_` to `published_result_` and copy them
   // back from `published_result_` to `internal_result_`. This allows
-  // `published_result_` to retain `java_match_` and the computed
-  // `matching_java_tab_` which otherwise would have been lost if
-  // `internal_result_` simply copied matches from `internal_result_`.
+  // `published_result_` to retain `java_match_` which otherwise would have been
+  // lost if `internal_result_` simply copied matches from `internal_result_`.
   published_result_.SwapMatchesWith(&internal_result_);
   internal_result_.CopyMatchesFrom(published_result_);
 

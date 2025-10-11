@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -371,20 +370,6 @@ public class AutocompleteController {
     }
 
     /**
-     * Retrieves matching tab for suggestion at specific index.
-     *
-     * @param match the AutocompleteMatch to retrieve Tab info for
-     * @return tab that hosts matching URL
-     */
-    @Nullable
-    public Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
-        if (mNativeController == 0) return null;
-        if (!hasValidNativeObjectRef(match, VerificationPoint.GET_MATCHING_TAB)) return null;
-        return AutocompleteControllerJni.get()
-                .getMatchingTabForSuggestion(mNativeController, match.getNativeObjectRef());
-    }
-
-    /**
      * Pass the UI specific measurement information to Native code to aid Adaptive Suggestions.
      *
      * @param dropdownHeightWithKeyboardActive the height of visible part of the suggestions
@@ -467,9 +452,6 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange);
-
-        Tab getMatchingTabForSuggestion(
-                long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
 
         void setVoiceMatches(
                 long nativeAutocompleteControllerAndroid,
