@@ -6437,7 +6437,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5434065355175441495">PKCS #1 Criptografia RSA</translation>
 <translation id="5435274640623994081">Ativar registro de ícone auditivo</translation>
 <translation id="5435779377906857208">Sempre permitir que <ph name="HOST" /> acesse sua localização</translation>
-<translation id="5436211819997237281">A extensão atual está gerenciando sua página "Nova guia"</translation>
+<translation id="5436211819997237281">Extensão ativa na página "Nova guia"</translation>
 <translation id="5436492226391861498">Esperando pelo túnel de proxy...</translation>
 <translation id="5436510242972373446">Pesquisar em <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">A janela <ph name="WINDOW_SIDE" /> agora tem <ph name="WINDOW_SIZE_PERCENT" /> de largura e o painel <ph name="PANE_SIDE" /> tem <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -11521,7 +11521,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8963117664422609631">Acessar as configurações do site</translation>
 <translation id="8964927371396953727">Confirme sua identidade para usar e salvar senhas na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Digite a senha antiga</translation>
-<translation id="8967403839792635452">Você desenvolve extensões? Fique por dentro das <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> com a documentação para desenvolvedores sobre extensões do Chrome.</translation>
+<translation id="8967403839792635452">Você desenvolve extensões? Acompanhe as <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> na documentação para desenvolvedores do Chrome.</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8967548289042494261">Remover <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Gravador de imagem do sistema ChromeOS</translation>
