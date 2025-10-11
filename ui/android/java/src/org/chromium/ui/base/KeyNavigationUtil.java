@@ -80,28 +80,6 @@ public class KeyNavigationUtil {
                 || (isGoRight(event) && LocalizationUtils.isLayoutRtl());
     }
 
-    /** Returns whether {@param event} is tab navigation forward. */
-    public static boolean isTabForward(KeyEvent event) {
-        return isActionDown(event)
-                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
-                && event.hasNoModifiers();
-    }
-
-    /** Returns whether {@param event} is tab navigation backward. */
-    public static boolean isTabBackward(KeyEvent event) {
-        return isActionDown(event)
-                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
-                &&
-                // The only modifier we allow is shift.
-                // If it has other modifiers, it might be a keyboard shortcut, not tab navigation.
-                event.getModifiers() == KeyEvent.META_SHIFT_ON;
-    }
-
-    /** Returns whether {@param event} is tab navigation (tab or shift+tab, no other modifiers). */
-    public static boolean isTabNavigation(KeyEvent event) {
-        return isTabForward(event) || isTabBackward(event);
-    }
-
     /**
      * Whether this event should move keyboard focus in the forward direction.
      *
@@ -109,7 +87,9 @@ public class KeyNavigationUtil {
      * @return Whether this event should move keyboard focus in the forward direction.
      */
     public static boolean isMoveFocusForward(KeyEvent event) {
-        return isActionDown(event) && (isGoForward(event) || isTabForward(event));
+        return isActionDown(event)
+                && (isGoForward(event)
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && !event.isShiftPressed()));
     }
 
     /**
@@ -119,7 +99,9 @@ public class KeyNavigationUtil {
      * @return Whether this event should move keyboard focus in the backward direction.
      */
     public static boolean isMoveFocusBackward(KeyEvent event) {
-        return isActionDown(event) && (isGoBackward(event) || isTabBackward(event));
+        return isActionDown(event)
+                && (isGoBackward(event)
+                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB && event.isShiftPressed()));
     }
 
     /**
