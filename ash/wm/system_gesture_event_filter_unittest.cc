@@ -374,7 +374,7 @@ TEST_F(SystemGestureEventFilterTest, DragRightNearEdgeSnaps) {
 TEST_F(SystemGestureEventFilterTest,
        ControlWindowGetsMultiFingerGestureEvents) {
   std::unique_ptr<aura::Window> parent(
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100}}));
 
   aura::test::EventCountDelegate delegate;
   delegate.set_window_component(HTCLIENT);

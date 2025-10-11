@@ -695,11 +695,11 @@ class ShellShutdownTest : public AshTestBase {
 
 TEST_F(ShellShutdownTest, ActivateWindow) {
   aura::Window* to_observe =
-      CreateTestWindowInShellWithBounds(gfx::Rect(40, 0, 60, 40));
+      CreateTestWindowInShell({.bounds = {40, 0, 60, 40}, .window_id = 0});
   to_observe->Show();
 
   aura::Window* to_activate =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 30, 20));
+      CreateTestWindowInShell({.bounds = {30, 20}, .window_id = 0});
   // Put `to_activate` in a container after desks containers so that its
   // destruction (and activations of `to_activate`) comes after desk containers
   // destruction.

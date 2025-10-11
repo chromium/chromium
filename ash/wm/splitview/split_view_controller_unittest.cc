@@ -1162,7 +1162,7 @@ TEST_F(SplitViewControllerTest, TabletModeMultiDisplay) {
   auto* split_view_controller2 =
       SplitViewController::Get(Shell::GetAllRootWindows()[1]);
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100}}));
   split_view_controller1->SnapWindow(w1.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller1->InSplitViewMode());
   EXPECT_TRUE(split_view_controller1->split_view_divider()->divider_widget());
@@ -1175,7 +1175,7 @@ TEST_F(SplitViewControllerTest, TabletModeMultiDisplay) {
 
   // 2. Snap 2 windows on display 1.
   std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100}}));
   split_view_controller1->SnapWindow(w1.get(), SnapPosition::kPrimary);
   split_view_controller1->SnapWindow(w2.get(), SnapPosition::kSecondary);
   EXPECT_FALSE(split_view_controller2->InSplitViewMode());
@@ -1208,9 +1208,9 @@ TEST_F(SplitViewControllerTest,
                                                  std::nullopt);
 
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100}}));
   std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {900, 0, 100, 100}}));
   ASSERT_NE(w1->GetRootWindow(), w2->GetRootWindow());
 
   // Snap the window on the second display.
@@ -1245,7 +1245,7 @@ TEST_F(SplitViewControllerTest,
 
   // Create a window on the secondary display.
   std::unique_ptr<aura::Window> w(
-      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {900, 0, 100, 100}}));
 
   // Snap the window on the second display.
   auto* split_view_controller = SplitViewController::Get(w->GetRootWindow());

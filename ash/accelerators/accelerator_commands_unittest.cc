@@ -25,9 +25,9 @@ using AcceleratorCommandsTest = AshTestBase;
 
 TEST_F(AcceleratorCommandsTest, ToggleMinimized) {
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state1 = WindowState::Get(window1.get());
   WindowState* window_state2 = WindowState::Get(window2.get());
   window_state1->Activate();
@@ -53,7 +53,7 @@ TEST_F(AcceleratorCommandsTest, ToggleMinimized) {
 
 TEST_F(AcceleratorCommandsTest, ToggleMaximized) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Activate();
 
@@ -78,7 +78,7 @@ TEST_F(AcceleratorCommandsTest, ToggleMaximized) {
 
 TEST_F(AcceleratorCommandsTest, Unpin) {
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state1 = WindowState::Get(window1.get());
   window_state1->Activate();
 

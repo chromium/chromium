@@ -79,7 +79,7 @@ class DisplayMoveWindowUtilTest : public AshTestBase {
 
 TEST_F(DisplayMoveWindowUtilTest, SingleDisplay) {
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   EXPECT_FALSE(CanHandleMoveActiveWindowBetweenDisplays());
 }
@@ -90,7 +90,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowBounds) {
   // Layout: [p][1]
   UpdateDisplay("400x300,400x300");
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   PerformMoveWindowAccel();
   EXPECT_EQ(gfx::Rect(410, 20, 200, 100), window->GetBoundsInScreen());
@@ -102,7 +102,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   UpdateDisplay("400x300,800x300");
 
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   display::Screen* screen = display::Screen::Get();
   ASSERT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -190,7 +190,7 @@ TEST_F(DisplayMoveWindowUtilTest, FourDisplays) {
             display_manager()->GetDisplayAt(3).bounds());
 
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   ASSERT_EQ(list[0], screen->GetDisplayNearestWindow(window).id());
 
@@ -211,7 +211,7 @@ TEST_F(DisplayMoveWindowUtilTest, A11yAlert) {
   TestAccessibilityControllerClient client;
 
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   PerformMoveWindowAccel();
   EXPECT_EQ(AccessibilityAlert::WINDOW_MOVED_TO_ANOTHER_DISPLAY,
@@ -259,7 +259,7 @@ TEST_F(DisplayMoveWindowUtilTest, KeepWindowBoundsIfNotChangedByUser) {
   const int shelf_inset = 300 - ShelfConfig::Get()->shelf_size();
   // Create and activate window on display [1].
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(410, 20, 200, 400));
+      CreateTestWindowInShell({.bounds = {410, 20, 200, 400}, .window_id = 0});
   wm::ActivateWindow(window);
   display::Screen* screen = display::Screen::Get();
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(),
@@ -295,7 +295,7 @@ TEST_F(DisplayMoveWindowUtilTest, AutoManaged) {
   // Create and show window on display [p]. Enable auto window position managed,
   // which will center the window on display [p].
   aura::Window* window1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   WindowState* window1_state = WindowState::Get(window1);
   window1_state->SetWindowPositionManaged(true);
   window1->Hide();
@@ -308,7 +308,7 @@ TEST_F(DisplayMoveWindowUtilTest, AutoManaged) {
   // Create and show window on display [p]. Enable auto window position managed,
   // which will do auto window management (pushing the other window to side).
   aura::Window* window2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   WindowState* window2_state = WindowState::Get(window2);
   window2_state->SetWindowPositionManaged(true);
   window2->Hide();
@@ -340,7 +340,7 @@ TEST_F(DisplayMoveWindowUtilTest, AutoManaged) {
 TEST_F(DisplayMoveWindowUtilTest, WindowWithTransientChild) {
   UpdateDisplay("400x300,400x300");
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(window);
 
   // Create a |child| window and make it a transient child of |window|.
@@ -403,7 +403,7 @@ TEST_F(DisplayMoveWindowUtilTest, ActiveTransientChildWindow) {
 TEST_F(DisplayMoveWindowUtilTest, TransientParentNotInCycleWindowList) {
   UpdateDisplay("400x300,400x300");
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 50, 50));
+      CreateTestWindowInShell({.bounds = {100, 100, 50, 50}, .window_id = 0});
   wm::ActivateWindow(w1);
 
   // Create a window |w2| in non-switchable window container.
@@ -446,7 +446,7 @@ TEST_F(DisplayMoveWindowUtilTest, TransientParentNotInCycleWindowList) {
 TEST_F(DisplayMoveWindowUtilTest, RestoreMaximizedWindowAfterMovement) {
   UpdateDisplay("400x300,400x300");
   aura::Window* w =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(w);
 
   WindowState* window_state = WindowState::Get(w);
@@ -466,7 +466,7 @@ TEST_F(DisplayMoveWindowUtilTest, RestoreMaximizedWindowAfterMovement) {
 TEST_F(DisplayMoveWindowUtilTest, RestoreHistoryOnUpdatedRestoreBounds) {
   UpdateDisplay("400x300,400x300");
   aura::Window* w =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 20, 200, 100));
+      CreateTestWindowInShell({.bounds = {10, 20, 200, 100}, .window_id = 0});
   wm::ActivateWindow(w);
 
   const gfx::Rect restore_bounds_in_second_display(410, 20, 200, 100);

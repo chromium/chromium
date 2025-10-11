@@ -685,7 +685,7 @@ TEST_F(AcceleratorControllerTest, IsRegistered) {
 
 TEST_F(AcceleratorControllerTest, WindowSnap) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
 
   window_state->Activate();
@@ -830,7 +830,7 @@ TEST_F(AcceleratorControllerTest, WindowSnapUpsideDown) {
 // Tests that window snapping works.
 TEST_F(AcceleratorControllerTest, TestRepeatedSnap) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Activate();
@@ -902,11 +902,11 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView, WindowSnapUma) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 10, 20, 20)));
+      CreateTestWindowInShell({.bounds = {10, 10, 20, 20}, .window_id = 0}));
   // Some test cases use clamshell split view, for which we need a second window
   // so overview will be nonempty. Otherwise split view will end when it starts.
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   base::HistogramBase::Count32 left_clamshell_no_overview = 0;
   base::HistogramBase::Count32 left_clamshell_overview = 0;
   base::HistogramBase::Count32 left_tablet = 0;
@@ -1030,10 +1030,10 @@ TEST_F(AcceleratorControllerTestWithClamshellSplitView,
        WindowSnapOrientationUma) {
   UpdateDisplay("800x600");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state2 = WindowState::Get(window2.get());
   base::HistogramTester histogram_tester;
   constexpr char kSnapWindowDeviceOrientationHistogram[] =
@@ -1373,7 +1373,7 @@ TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
 // window in overview.
 TEST_F(AcceleratorControllerTest, MinimizedWindowInOverview) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Minimize();
   EXPECT_TRUE(window_state->IsMinimized());
@@ -2397,7 +2397,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
         << " kDeveloperAcceleratorData action: " << action;
   }
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   wm::ActivateWindow(window.get());
   ShellTestApi().SimulateModalWindowOpenForTest(true);
   for (const auto& action : all_actions) {
@@ -2526,7 +2526,8 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   // Make sure we don't alert if we do have a window.
   std::unique_ptr<aura::Window> window;
   for (const auto& iter : accelerators_needing_window) {
-    window.reset(CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+    window.reset(
+        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
     wm::ActivateWindow(window.get());
     accessibility_controller->TriggerAccessibilityAlert(
         AccessibilityAlert::NONE);
@@ -2536,7 +2537,8 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
 
   // Don't alert if we have a minimized window either.
   for (const auto& iter : accelerators_needing_window) {
-    window.reset(CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+    window.reset(
+        CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
     wm::ActivateWindow(window.get());
     controller_->PerformActionIfEnabled(AcceleratorAction::kWindowMinimize, {});
     accessibility_controller->TriggerAccessibilityAlert(

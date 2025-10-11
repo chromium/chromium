@@ -829,12 +829,12 @@ TEST_F(WindowCycleControllerTest, MultiDisplayPositioning) {
     gfx::Rect second_display_bounds =
         display_manager()->GetDisplayAt(1).bounds();
     std::unique_ptr<Window> window0(
-        CreateTestWindowInShellWithBounds(second_display_bounds));
+        CreateTestWindowInShell({.bounds = second_display_bounds}));
     // Activate this window so that the secondary display becomes the one where
     // the Alt+Tab UI is shown.
     wm::ActivateWindow(window0.get());
     std::unique_ptr<Window> window1(
-        CreateTestWindowInShellWithBounds(second_display_bounds));
+        CreateTestWindowInShell({.bounds = second_display_bounds}));
 
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
     controller->HandleCycleWindow(

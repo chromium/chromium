@@ -383,7 +383,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
 
   // Test that the nudge updates its baseline when the shelf hides itself.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect()));
+      CreateTestWindowInShell({.window_id = 0}));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());

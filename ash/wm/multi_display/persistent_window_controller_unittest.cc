@@ -42,9 +42,9 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -125,11 +125,11 @@ TEST_F(PersistentWindowControllerTest, ThreeDisplays) {
   UpdateDisplay("500x600,500x600,500x600");
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   aura::Window* w3 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(1002, 0, 400, 200));
+      CreateTestWindowInShell({.bounds = {1002, 0, 400, 200}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1002, 0, 400, 200), w3->GetBoundsInScreen());
@@ -203,9 +203,9 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
   UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -229,9 +229,9 @@ TEST_F(PersistentWindowControllerTest,
   ASSERT_EQ(1.2f, display_manager()->GetDisplayAt(1).device_scale_factor());
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
 
   // Enables mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
@@ -252,11 +252,11 @@ TEST_F(PersistentWindowControllerTest,
 TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   UpdateDisplay("500x600,500x600,500x600");
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   aura::Window* w3 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(1002, 0, 400, 200));
+      CreateTestWindowInShell({.bounds = {1002, 0, 400, 200}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1002, 0, 400, 200), w3->GetBoundsInScreen());
@@ -298,9 +298,9 @@ TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
   UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -354,9 +354,9 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -394,9 +394,9 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
 TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
   UpdateDisplay("500x600,500x600");
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -448,9 +448,9 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+      CreateTestWindowInShell({.bounds = {200, 0, 100, 200}, .window_id = 0});
   aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+      CreateTestWindowInShell({.bounds = {501, 0, 200, 100}, .window_id = 0});
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
@@ -758,7 +758,8 @@ TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
       .SetFirstDisplayAsInternalDisplay();
 
   gfx::Rect bounds_in_landscape = gfx::Rect(420, 200, 200, 100);
-  aura::Window* w1 = CreateTestWindowInShellWithBounds(bounds_in_landscape);
+  aura::Window* w1 =
+      CreateTestWindowInShell({.bounds = bounds_in_landscape, .window_id = 0});
 
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
@@ -836,7 +837,8 @@ TEST_F(PersistentWindowControllerTest, RotationOnLockScreen) {
       .SetFirstDisplayAsInternalDisplay();
 
   const gfx::Rect bounds_in_landscape = gfx::Rect(420, 200, 200, 100);
-  aura::Window* w1 = CreateTestWindowInShellWithBounds(bounds_in_landscape);
+  aura::Window* w1 =
+      CreateTestWindowInShell({.bounds = bounds_in_landscape, .window_id = 0});
 
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
@@ -870,9 +872,10 @@ TEST_F(PersistentWindowControllerTest, RotationOnDisplayReconnecting) {
 
   const gfx::Rect w1_bounds_in_landscape = gfx::Rect(200, 0, 100, 200);
   const gfx::Rect w2_bounds_in_second_display = gfx::Rect(501, 0, 200, 100);
-  aura::Window* w1 = CreateTestWindowInShellWithBounds(w1_bounds_in_landscape);
-  aura::Window* w2 =
-      CreateTestWindowInShellWithBounds(w2_bounds_in_second_display);
+  aura::Window* w1 = CreateTestWindowInShell(
+      {.bounds = w1_bounds_in_landscape, .window_id = 0});
+  aura::Window* w2 = CreateTestWindowInShell(
+      {.bounds = w2_bounds_in_second_display, .window_id = 0});
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
   const int64_t secondary_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -923,7 +926,7 @@ TEST_F(PersistentWindowControllerTest, NoRestoreOnRotationForSnappedWindows) {
             chromeos::OrientationType::kLandscapePrimary);
 
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 200, 200));
+      CreateTestWindowInShell({.bounds = {200, 200}, .window_id = 0});
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 

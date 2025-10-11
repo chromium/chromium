@@ -288,7 +288,7 @@ TEST_F(OverviewControllerTest, OcclusionTestWithSnapshot) {
 TEST_F(OverviewControllerTest, PipMustNotInOverviewGridTest) {
   gfx::Rect bounds{100, 100};
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
   WaitForShowAnimation(window.get());
   auto* controller = Shell::Get()->overview_controller();
   EnterOverview();
@@ -433,7 +433,7 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationTablet) {
 
   const gfx::Rect bounds(200, 200);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
 
   EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
@@ -460,7 +460,7 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationClamshell) {
 
   const gfx::Rect bounds(200, 200);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
 
   EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
@@ -485,7 +485,7 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
 
   const gfx::Rect bounds(200, 200);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
   wm::ActivateWindow(window.get());
 
   // Start overview session - set non zero animation duration so overview is
@@ -812,7 +812,7 @@ class OverviewEnterFromWallpaperTest : public OverviewControllerTest {
 TEST_F(OverviewEnterFromWallpaperTest,
        OverviewEnterExitClamshellFromWallpaper) {
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(400, 400)));
+      CreateTestWindowInShell({.bounds = {400, 400}}));
 
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 

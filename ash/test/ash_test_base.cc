@@ -400,11 +400,6 @@ aura::Window* AshTestBase::CreateTestWindowInShell(
       .release();
 }
 
-aura::Window* AshTestBase::CreateTestWindowInShellWithBounds(
-    const gfx::Rect& bounds) {
-  return CreateTestWindowInShellWithDelegate(NULL, 0, bounds);
-}
-
 aura::Window* AshTestBase::CreateTestWindowInShellWithDelegate(
     aura::WindowDelegate* delegate,
     int window_id,

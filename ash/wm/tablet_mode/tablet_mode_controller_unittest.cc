@@ -610,9 +610,9 @@ TEST_F(TabletModeControllerTest, VerticalHingeTest) {
 TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   UpdateDisplay("800x600,800x600");
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100}}));
   std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(800, 0, 100, 100)));
+      CreateTestWindowInShell({.bounds = {800, 0, 100, 100}}));
   ASSERT_NE(w1->GetRootWindow(), w2->GetRootWindow());
   ASSERT_FALSE(display::Screen::Get()->InTabletMode());
 
@@ -791,7 +791,7 @@ TEST_F(TabletModeControllerInitedFromPowerManagerClientTest,
 TEST_F(TabletModeControllerTest, RestoreAfterExit) {
   UpdateDisplay("1000x600");
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 10, 900, 300)));
+      CreateTestWindowInShell({.bounds = {10, 10, 900, 300}}));
   tablet_mode_controller()->SetEnabledForTest(true);
   Shell::Get()->screen_orientation_controller()->SetLockToRotation(
       display::Display::ROTATE_90);

@@ -145,7 +145,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityTest) {
   // switch becomes asynchronous, but the display tablet state is synchronously
   // updated.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   ASSERT_FALSE(GetTray()->GetVisible());
   TabletMode::Waiter waiter(/*enable=*/true);
@@ -168,7 +168,7 @@ TEST_F(OverviewButtonTrayTest, PerformAction) {
 
   // Overview Mode only works when there is a window
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   GetTray()->SetVisiblePreferred(true);
   GestureTapOn(GetTray());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -197,9 +197,9 @@ TEST_F(OverviewButtonTrayTest, PerformDoubleTapAction) {
 
   // Add two windows and activate the second one to test quick switch.
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   wm::ActivateWindow(window2.get());
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 
@@ -247,7 +247,7 @@ TEST_F(OverviewButtonTrayTest, TrayOverviewUserAction) {
   // should record the user action.
   base::UserActionTester user_action_tester;
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   GestureTapOn(GetTray());
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kTrayOverview));
@@ -315,7 +315,7 @@ TEST_F(OverviewButtonTrayTest, ActiveStateOnlyDuringOverviewMode) {
 
   // Overview Mode only works when there is a window
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -460,7 +460,7 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   // When there is a window, a screenshot will be taken before shelf enters
   // tablet mode state.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   EXPECT_FALSE(GetTray()->GetVisible());
   TabletMode::Waiter waiter(/*enable=*/true);
@@ -568,7 +568,7 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest, VisibilityTest) {
   // When there is an window, it'll take an screenshot and the tablet mode
   // switch becomes asynchronous.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
 
   ASSERT_FALSE(GetTray()->GetVisible());
 
@@ -620,7 +620,7 @@ TEST_P(OverviewButtonTrayWithShelfControlsHiddenTest,
 
   // Create a window to show in overview.
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+      CreateTestWindowInShell({.bounds = {5, 5, 20, 20}, .window_id = 0}));
   EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_FALSE(GetTray()->GetVisible());

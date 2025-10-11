@@ -886,7 +886,7 @@ TEST_F(WindowStateTest, FullscreenToCurrentDisplayExplicitly) {
   // Start from the 1st display.
   const gfx::Rect initial_bounds(100, 10, 200, 100);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(initial_bounds));
+      CreateTestWindowInShell({.bounds = initial_bounds}));
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
             displays[0].id());
   WindowState* window_state = WindowState::Get(window.get());
@@ -922,7 +922,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromNormal) {
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(initial_bounds));
+      CreateTestWindowInShell({.bounds = initial_bounds}));
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
             displays[1].id());
   WindowState* window_state = WindowState::Get(window.get());
@@ -958,7 +958,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromOtherStates) {
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(initial_bounds));
+      CreateTestWindowInShell({.bounds = initial_bounds}));
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
             displays[1].id());
   WindowState* window_state = WindowState::Get(window.get());
@@ -1026,7 +1026,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromFullscreen) {
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(initial_bounds));
+      CreateTestWindowInShell({.bounds = initial_bounds}));
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
             displays[1].id());
   WindowState* window_state = WindowState::Get(window.get());
@@ -1070,7 +1070,7 @@ TEST_F(WindowStateTest, FullscreenToAnotherDisplayWithMinimize) {
   // Start from the 2nd display.
   const gfx::Rect initial_bounds(900, 10, 200, 100);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(initial_bounds));
+      CreateTestWindowInShell({.bounds = initial_bounds}));
   EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
             displays[1].id());
   WindowState* window_state = WindowState::Get(window.get());

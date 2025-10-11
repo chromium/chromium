@@ -123,7 +123,7 @@ class WorkspaceControllerTest : public AshTestBase {
   }
 
   aura::Window* CreatePopupLikeWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShellWithBounds({bounds});
+    aura::Window* window = CreateTestWindowInShell({.bounds = bounds});
     window->Show();
     return window;
   }
@@ -942,11 +942,11 @@ TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
 // Test if the single window will be restored at original position.
 TEST_F(WorkspaceControllerTest, TestSingleWindowsRestoredBounds) {
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+      CreateTestWindowInShell({.bounds = {100, 100, 100, 100}}));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(gfx::Rect(110, 110, 100, 100)));
+      CreateTestWindowInShell({.bounds = {110, 110, 100, 100}}));
   std::unique_ptr<aura::Window> window3(
-      CreateTestWindowInShellWithBounds(gfx::Rect(120, 120, 100, 100)));
+      CreateTestWindowInShell({.bounds = {120, 120, 100, 100}}));
   window1->Hide();
   window2->Hide();
   window3->Hide();
@@ -1033,7 +1033,7 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
   UpdateDisplay("400x300");
   gfx::Rect default_bounds(10, 0, 100, 100);
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(default_bounds));
+      CreateTestWindowInShell({.bounds = default_bounds}));
   WindowState* window1_state = WindowState::Get(window1.get());
   window1->Hide();
   window1_state->SetWindowPositionManaged(true);
@@ -1041,7 +1041,7 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
   // First window is centered.
   EXPECT_EQ("150,0 100x100", window1->bounds().ToString());
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(default_bounds));
+      CreateTestWindowInShell({.bounds = default_bounds}));
   WindowState* window2_state = WindowState::Get(window2.get());
   window2->Hide();
   window2_state->SetWindowPositionManaged(true);

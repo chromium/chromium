@@ -104,7 +104,7 @@ TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
 TEST_F(WindowUtilTest, MoveWindowToDisplay) {
   UpdateDisplay("500x400, 600x400");
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
+      CreateTestWindowInShell({.bounds = {12, 20, 100, 100}}));
   display::Screen* screen = display::Screen::Get();
   const int64_t original_display_id =
       screen->GetDisplayNearestWindow(window.get()).id();

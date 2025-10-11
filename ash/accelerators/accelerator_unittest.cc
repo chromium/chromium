@@ -139,9 +139,9 @@ TEST_F(AcceleratorTest, Basic) {
 TEST_F(AcceleratorTest, NonRepeatableNeedingWindowActions) {
   // Create a bunch of windows to work with.
   aura::Window* window_1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
+      CreateTestWindowInShell({.bounds = {100, 100}, .window_id = 0});
   aura::Window* window_2 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
+      CreateTestWindowInShell({.bounds = {100, 100}, .window_id = 0});
   window_1->Show();
   wm::ActivateWindow(window_1);
   window_2->Show();

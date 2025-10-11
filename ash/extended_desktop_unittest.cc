@@ -623,7 +623,7 @@ TEST_F(ExtendedDesktopTest, MoveWindowWithTransient) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   // Create and activate a normal window |w1|.
   aura::Window* w1 =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 10, 100, 100));
+      CreateTestWindowInShell({.bounds = {10, 10, 100, 100}, .window_id = 0});
   wm::ActivateWindow(w1);
   // |w1_t1| is a transient child window of |w1|.
   std::unique_ptr<aura::Window> w1_t1 =
@@ -683,7 +683,7 @@ TEST_F(ExtendedDesktopTest, PostMoveParentTransientChild) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   // Create and activate a normal window.
   aura::Window* window =
-      CreateTestWindowInShellWithBounds(gfx::Rect(10, 10, 100, 100));
+      CreateTestWindowInShell({.bounds = {10, 10, 100, 100}, .window_id = 0});
   wm::ActivateWindow(window);
   // Create a transient child window of |window| without parenting to |window|
   // yet.
