@@ -1811,49 +1811,6 @@ TEST_P(RegistrationTest, ContinueFalse) {
   EXPECT_EQ(error.type, SessionError::kServerRequestedTermination);
 }
 
-TEST_P(RegistrationTest, RetriesOnKeyFailure) {
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
-  ASSERT_TRUE(server_.Start());
-
-  unexportable_keys::MockUnexportableKeyService mock_service;
-
-  // We only want to mock the first call to SignSlowlyAsync, so proxy
-  // other required calls to `unexportable_key_service()`.
-  EXPECT_CALL(mock_service, GetAlgorithm(_))
-      .WillRepeatedly(
-          Invoke(&unexportable_key_service(),
-                 &unexportable_keys::UnexportableKeyService::GetAlgorithm));
-  EXPECT_CALL(mock_service, GetSubjectPublicKeyInfo(_))
-      .WillRepeatedly(Invoke(
-          &unexportable_key_service(),
-          &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
-  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _, _))
-      .WillOnce(base::test::RunOnceCallback<4>(
-          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)))
-      .WillOnce(
-          Invoke(&unexportable_key_service(),
-                 &unexportable_keys::UnexportableKeyService::SignSlowlyAsync));
-
-  TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
-  auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
-  unexportable_keys::UnexportableKeyId key = CreateKey();
-  std::unique_ptr<RegistrationFetcher> fetcher =
-      RegistrationFetcher::CreateFetcher(
-          request_param, session_service(), std::ref(mock_service),
-          context_.get(), std::ref(isolation_info),
-          /*net_log_source=*/std::nullopt,
-          /*original_request_initiator=*/std::nullopt);
-  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
-                                     callback.callback());
-  callback.WaitForCall();
-  const RegistrationResult& out_session = callback.outcome();
-  ASSERT_TRUE(out_session.is_session());
-}
-
 TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(

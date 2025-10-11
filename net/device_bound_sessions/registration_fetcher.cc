@@ -121,7 +121,7 @@ void SignChallengeWithKey(
 
   unexportable_key_service.SignSlowlyAsync(
       key_id, base::as_byte_span(*header_and_payload), kTaskPriority,
-      /*max_retries=*/0,
+      /*max_retries=*/3,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
                      std::move(expected_public_key).value(),
                      std::ref(unexportable_key_service), *header_and_payload,
@@ -453,7 +453,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     return SessionError::kSuccess;
   }
 
-  static constexpr size_t kMaxSigningFailures = 2;
   static constexpr size_t kMaxChallenges = 5;
 
   void AttemptChallengeSigning() {
@@ -473,17 +472,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       std::optional<RegistrationFetcher::RegistrationToken>
           registration_token) {
     if (!registration_token) {
-      number_of_signing_failures_++;
-      if (number_of_signing_failures_ < kMaxSigningFailures) {
-        AttemptChallengeSigning();
-        // `this` may be deleted.
-        return;
-      } else {
-        RunCallback(
-            RegistrationResult(SessionError{SessionError::kSigningError}));
-        // `this` may be deleted.
-        return;
-      }
+      RunCallback(
+          RegistrationResult(SessionError{SessionError::kSigningError}));
+      // `this` may be deleted.
+      return;
     }
 
     url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
@@ -783,7 +775,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   GURL provider_url_;
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
-  size_t number_of_signing_failures_ = 0;
   size_t number_of_challenges_ = 0;
 
   base::WeakPtrFactory<RegistrationFetcherImpl> weak_ptr_factory_{this};
