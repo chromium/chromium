@@ -77,8 +77,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.listmenu.ListMenuFlyoutController;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -775,17 +777,15 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 items.add(listItem);
             }
         }
-        setupCallbacksRecursively(
-                /* headerModelList= */ null,
-                items,
-                this::dismissMenu,
-                // TODO(crbug.com/433410990): Implement flyouts for selected text context menu.
-                new ListMenuFlyoutController<>(
-                        new ListMenuFlyoutController.FlyoutHandler<SelectionPopupController>() {
+
+        HierarchicalMenuController hierarchicalMenuController =
+                new HierarchicalMenuController<SelectionPopupController>(
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        // TODO(crbug.com/433410990): Implement flyouts for selected text context
+                        // menu.
+                        new FlyoutController.FlyoutHandler<SelectionPopupController>() {
                             @Override
-                            public List<
-                                            ListMenuFlyoutController.FlyoutPopupEntry<
-                                                    SelectionPopupController>>
+                            public List<FlyoutController.FlyoutPopupEntry<SelectionPopupController>>
                                     getFlyoutWindows() {
                                 return Collections.emptyList();
                             }
@@ -796,8 +796,15 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
                             @Override
                             public void removeFlyoutWindows(int removeFromIndex) {}
-                        }),
+                        });
+
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                items,
+                this::dismissMenu,
+                hierarchicalMenuController.getFlyoutController(),
                 /* drillDownOverrideValue= */ true);
+
         SelectionDropdownMenuDelegate.ItemClickListener itemClickListener =
                 getDropdownItemClickListener(mDropdownMenuDelegate);
         mDropdownMenuDelegate.show(mContext, mView, items, itemClickListener, x, y);

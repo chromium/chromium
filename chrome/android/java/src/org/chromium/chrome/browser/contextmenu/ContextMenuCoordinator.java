@@ -42,9 +42,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
-import org.chromium.ui.listmenu.ListMenuFlyoutController;
-import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
-import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -331,6 +332,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         this::dismiss,
                         mUsePopupWindow);
 
+        HierarchicalMenuController hierarchicalMenuController =
+                new HierarchicalMenuController(new ListMenuUtils.ListMenuKeyProvider(), this);
+
+        FlyoutController flyoutController = hierarchicalMenuController.getFlyoutController();
+        assert flyoutController != null;
+
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
                 mediator.updateAndGetModelList(
@@ -339,7 +346,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         // preview the page before initiating any actions. This is not needed for
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage(),
-                        new ListMenuFlyoutController(this));
+                        flyoutController);
 
         ModelListAdapter adapter = createAdapter(listItems);
 

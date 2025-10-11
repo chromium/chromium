@@ -175,7 +175,7 @@ public class BrowserUiListMenuUnitTest {
         data.add(submenuParentItem);
         mBasicListMenu = getBasicListMenu(mActivity, data, (item, view) -> {}, 0, colorIntForTest);
         mBasicListMenu.setupCallbacksRecursively(
-                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutController= */ null);
+                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutHandler= */ null);
         mView = mBasicListMenu.getContentView();
         int itemHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_item_min_height);
@@ -224,7 +224,7 @@ public class BrowserUiListMenuUnitTest {
 
     private ListView setupListViewForSubmenuTesting() {
         mBasicListMenu.setupCallbacksRecursively(
-                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutController= */ null);
+                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutHandler= */ null);
         mView = mBasicListMenu.getContentView();
         int width = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
         int height = 300; // Some arbitrary value small enough to make the bottom part scrollable

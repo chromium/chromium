@@ -18,7 +18,6 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.listmenu.ListMenuFlyoutController;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -86,7 +85,7 @@ public final class ExtensionActionContextMenuUtils {
                     buttonView.dismiss();
                 },
                 /* drillDownOverrideValue= */ null,
-                new ListMenuFlyoutController(buttonView.getHost()));
+                buttonView.getHost());
 
         ListMenuDelegate listDelegate =
                 new ListMenuDelegate() {

@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.listmenu;
-
-import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+package org.chromium.ui.hierarchicalmenu;
 
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -15,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +27,12 @@ import java.util.List;
  *     any other UI component used to display the submenu.
  */
 @NullMarked
-public class ListMenuFlyoutController<T> {
+public class FlyoutController<T> {
     private final FlyoutHandler<T> mFlyoutHandler;
     private @Nullable Runnable mFlyoutAfterDelayRunnable;
     private @Nullable View mPendingFlyoutParentView;
     private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
+    private final HierarchicalMenuKeyProvider mKeyProvider;
 
     private @Nullable Handler mHoverExitDelayHandler;
     private @Nullable Runnable mPendingHoverExitRunnable;
@@ -89,8 +88,10 @@ public class ListMenuFlyoutController<T> {
         void removeFlyoutWindows(int removeFromIndex);
     }
 
-    public ListMenuFlyoutController(FlyoutHandler<T> flyoutHandler) {
+    public FlyoutController(
+            FlyoutHandler<T> flyoutHandler, HierarchicalMenuKeyProvider keyProvider) {
         mFlyoutHandler = flyoutHandler;
+        mKeyProvider = keyProvider;
     }
 
     /**
@@ -144,7 +145,7 @@ public class ListMenuFlyoutController<T> {
                 cancelFlyoutDelay(view);
                 mPendingHoverExitRunnable =
                         () -> {
-                            if (item.model.get(IS_HIGHLIGHTED)) {
+                            if (item.model.get(mKeyProvider.getIsHighlightedKey())) {
                                 updateHighlights(
                                         highlightPath.subList(0, highlightPath.size() - 1));
                             }
@@ -258,12 +259,14 @@ public class ListMenuFlyoutController<T> {
             }
         }
 
+        WritableBooleanPropertyKey isHighlightedKey = mKeyProvider.getIsHighlightedKey();
+
         for (int i = forkIndex + 1; i < mLastHighlightedPath.size(); i++) {
-            mLastHighlightedPath.get(i).model.set(IS_HIGHLIGHTED, false);
+            mLastHighlightedPath.get(i).model.set(isHighlightedKey, false);
         }
 
         for (int i = forkIndex + 1; i < highlightPath.size(); i++) {
-            highlightPath.get(i).model.set(IS_HIGHLIGHTED, true);
+            highlightPath.get(i).model.set(isHighlightedKey, true);
         }
 
         mLastHighlightedPath = highlightPath;
@@ -291,7 +294,7 @@ public class ListMenuFlyoutController<T> {
         }
 
         // Create a new child popup if the item has submenu and we removed the child window.
-        if (item.model.containsKey(SUBMENU_ITEMS) && !keepChildWindow) {
+        if (item.model.containsKey(mKeyProvider.getSubmenuItemsKey()) && !keepChildWindow) {
             mFlyoutHandler.addFlyoutWindow(item, view, levelOfHoveredItem);
         }
     }

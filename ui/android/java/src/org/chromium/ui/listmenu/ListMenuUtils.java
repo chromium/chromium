@@ -8,6 +8,7 @@ import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
@@ -27,13 +28,19 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuKeyProvider;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,7 +125,7 @@ public class ListMenuUtils {
             ModelList contentModelList,
             ListItem item,
             @Nullable Boolean drillDownOverrideValue) {
-        if (!ListMenuFlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
+        if (!FlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
             return;
         }
 
@@ -212,7 +219,7 @@ public class ListMenuUtils {
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The item to start with.
      * @param dismissDialog The {@link Runnable} to run.
-     * @param flyoutController The {@link ListMenuFlyoutController} to manage the popups.
+     * @param flyoutController The {@link FlyoutController} to manage the popups.
      * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
      *     it's true and flyout if it's false to display submenus. If null, this class determines
      *     the appropriate style based on system conditions.
@@ -222,7 +229,7 @@ public class ListMenuUtils {
             ModelList contentModelList,
             ListItem item,
             Runnable dismissDialog,
-            @Nullable ListMenuFlyoutController flyoutController,
+            @Nullable FlyoutController flyoutController,
             int levelOfHoveredItem,
             @Nullable Boolean drillDownOverrideValue,
             List<ListItem> ancestorPath) {
@@ -233,7 +240,7 @@ public class ListMenuUtils {
 
         // We add `HOVER_LISTENER` to items without submenus too because we might need to dismiss
         // open flyout popups.
-        if (!ListMenuFlyoutController.shouldUseDrillDown(drillDownOverrideValue)
+        if (!FlyoutController.shouldUseDrillDown(drillDownOverrideValue)
                 && flyoutController != null
                 && item.model.containsKey(HOVER_LISTENER)) {
             item.model.set(
@@ -276,7 +283,7 @@ public class ListMenuUtils {
                         if (existingListener != null) {
                             existingListener.onClick(view);
                         }
-                        if (ListMenuFlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
+                        if (FlyoutController.shouldUseDrillDown(drillDownOverrideValue)) {
                             onItemWithSubmenuClicked(
                                     headerModelList,
                                     contentModelList,
@@ -317,7 +324,7 @@ public class ListMenuUtils {
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param dismissDialog The {@link Runnable} to run.
-     * @param flyoutController The {@link ListMenuFlyoutController} to manage the flyout popups.
+     * @param flyoutController The {@link FlyoutController} to manage the flyout popups.
      * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
      *     it's true and flyout if it's false to display submenus. If null, this class determines
      *     the appropriate style based on system conditions.
@@ -326,7 +333,7 @@ public class ListMenuUtils {
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
             Runnable dismissDialog,
-            @Nullable ListMenuFlyoutController flyoutController,
+            @Nullable FlyoutController flyoutController,
             @Nullable Boolean drillDownOverrideValue) {
         long time = SystemClock.elapsedRealtime();
         if (headerModelList != null) {
@@ -454,6 +461,58 @@ public class ListMenuUtils {
         } else {
             contentView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             contentView.clearFocus();
+        }
+    }
+
+    public static class ListMenuKeyProvider implements HierarchicalMenuKeyProvider {
+        @Override
+        public PropertyKey[] getAllHeaderItemKeys() {
+            return ListMenuSubmenuItemProperties.ALL_KEYS;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<View.@Nullable OnClickListener> getClickListenerKey() {
+            return CLICK_LISTENER;
+        }
+
+        @Override
+        public WritableBooleanPropertyKey getEnabledKey() {
+            return ENABLED;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<View.@Nullable OnHoverListener> getHoverListenerKey() {
+            return HOVER_LISTENER;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<CharSequence> getTitleKey() {
+            return TITLE;
+        }
+
+        @Override
+        public WritableIntPropertyKey getTitleIdKey() {
+            return TITLE_ID;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<View.OnKeyListener> getKeyListenerKey() {
+            return KEY_LISTENER;
+        }
+
+        @Override
+        public WritableObjectPropertyKey<List<ListItem>> getSubmenuItemsKey() {
+            return SUBMENU_ITEMS;
+        }
+
+        @Override
+        public WritableBooleanPropertyKey getIsHighlightedKey() {
+            return IS_HIGHLIGHTED;
+        }
+
+        @Override
+        public int getSubmenuHeaderType() {
+            return ListItemType.SUBMENU_HEADER;
         }
     }
 }

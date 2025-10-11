@@ -435,6 +435,9 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
     "java/src/org/chromium/ui/gl/ChromeSurfaceTexture.java",
     "java/src/org/chromium/ui/gl/ScopedJavaSurfaceControl.java",
+    "java/src/org/chromium/ui/hierarchicalmenu/FlyoutController.java",
+    "java/src/org/chromium/ui/hierarchicalmenu/HierarchicalMenuController.java",
+    "java/src/org/chromium/ui/hierarchicalmenu/HierarchicalMenuKeyProvider.java",
     "java/src/org/chromium/ui/insets/CaptionBarInsetsRectProvider.java",
     "java/src/org/chromium/ui/insets/InsetObserver.java",
     "java/src/org/chromium/ui/insets/InsetsRectProvider.java",
@@ -448,7 +451,6 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/listmenu/ListMenuButton.java",
     "java/src/org/chromium/ui/listmenu/ListMenuCheckItemProperties.java",
     "java/src/org/chromium/ui/listmenu/ListMenuDelegate.java",
-    "java/src/org/chromium/ui/listmenu/ListMenuFlyoutController.java",
     "java/src/org/chromium/ui/listmenu/ListMenuHost.java",
     "java/src/org/chromium/ui/listmenu/ListMenuItemAdapter.java",
     "java/src/org/chromium/ui/listmenu/ListMenuItemProperties.java",
@@ -653,6 +655,7 @@ robolectric_library("ui_junit_test_support") {
 android_library("ui_java_test_support") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/ui/hierarchicalmenu/HierarchicalMenuTestUtils.java",
     "javatests/src/org/chromium/ui/listmenu/ListMenuTestUtils.java",
     "javatests/src/org/chromium/ui/test/transit/SoftKeyboardCondition.java",
     "javatests/src/org/chromium/ui/test/transit/SoftKeyboardElement.java",
@@ -754,10 +757,10 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/dragdrop/DropDataProviderImplTest.java",
     "junit/src/org/chromium/ui/drawable/AnimationLooperTest.java",
     "junit/src/org/chromium/ui/drawable/StateListDrawableBuilderTest.java",
+    "junit/src/org/chromium/ui/hierarchicalmenu/FlyoutControllerUnitTest.java",
     "junit/src/org/chromium/ui/insets/InsetObserverTest.java",
     "junit/src/org/chromium/ui/insets/InsetsRectProviderTest.java",
     "junit/src/org/chromium/ui/insets/WindowInsetsUtilsUnitTest.java",
-    "junit/src/org/chromium/ui/listmenu/ListMenuFlyoutControllerUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuHostUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuUtilsUnitTest.java",
     "junit/src/org/chromium/ui/modaldialog/ModalDialogManagerTest.java",

@@ -64,7 +64,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
-import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;

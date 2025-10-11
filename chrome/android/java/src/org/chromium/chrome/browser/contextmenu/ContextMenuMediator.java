@@ -19,8 +19,8 @@ import androidx.annotation.IdRes;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.ListItemType;
-import org.chromium.ui.listmenu.ListMenuFlyoutController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,7 +92,7 @@ public class ContextMenuMediator {
      * @return The {@link ModelList} to show in the context menu.
      */
     /*package*/ ModelList updateAndGetModelList(
-            List<ModelList> items, boolean hasHeader, ListMenuFlyoutController flyoutController) {
+            List<ModelList> items, boolean hasHeader, FlyoutController flyoutController) {
 
         mModelList.clear();
 

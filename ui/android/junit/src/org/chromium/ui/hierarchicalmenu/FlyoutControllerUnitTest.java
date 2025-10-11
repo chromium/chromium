@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.listmenu;
+package org.chromium.ui.hierarchicalmenu;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,14 +12,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_MENU_ITEM_KEYS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_SUBMENU_ITEM_KEYS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.CLICK_LISTENER;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ENABLED;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.IS_HIGHLIGHTED;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_ID;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -39,17 +41,17 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutHandler;
-import org.chromium.ui.listmenu.ListMenuFlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Unit tests for {@link ListMenuFlyoutController}. */
+/** Unit tests for {@link FlyoutController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ListMenuFlyoutControllerUnitTest {
+public class FlyoutControllerUnitTest {
 
     private static final int TEST_MENU_ITEM_ID = 3; // Arbitrary int for testing
     private static final String TOP_LEVEL_ITEM = "Top level item";
@@ -64,8 +66,7 @@ public class ListMenuFlyoutControllerUnitTest {
     @Mock private ListView mListView;
     @Mock private FlyoutHandler<Object> mFlyoutHandler;
 
-    // This is the class under test
-    private ListMenuFlyoutController mFlyoutController;
+    private FlyoutController mFlyoutController;
 
     private ListItem mListItemWithModelClickCallback;
     private ListItem mSubmenuLevel1;
@@ -75,12 +76,13 @@ public class ListMenuFlyoutControllerUnitTest {
 
     @Before
     public void setUp() {
-        mFlyoutController = new ListMenuFlyoutController(mFlyoutHandler);
+        mFlyoutController =
+                new FlyoutController(mFlyoutHandler, HierarchicalMenuTestUtils.createKeyProvider());
 
         mListItemWithModelClickCallback =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(ENABLED, true)
                                 .with(TITLE, SUBMENU_1_CHILD_0)
                                 .with(CLICK_LISTENER, mItemClickListener)
@@ -90,7 +92,7 @@ public class ListMenuFlyoutControllerUnitTest {
         mSubmenuLevel1 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_1)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mListItemWithModelClickCallback))
@@ -100,7 +102,7 @@ public class ListMenuFlyoutControllerUnitTest {
         mSubmenu0Child1 =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_0_CHILD_1)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
@@ -109,7 +111,7 @@ public class ListMenuFlyoutControllerUnitTest {
         mSubmenuLevel0 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_0)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mSubmenuLevel1, mSubmenu0Child1))
@@ -119,7 +121,7 @@ public class ListMenuFlyoutControllerUnitTest {
         mListItemWithoutModelClickCallback =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(TITLE, TOP_LEVEL_ITEM)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)

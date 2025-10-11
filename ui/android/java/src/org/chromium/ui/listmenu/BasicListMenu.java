@@ -29,6 +29,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -249,17 +251,21 @@ public class BasicListMenu implements ListMenu {
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param dismissDialog The {@link Runnable} to run.
-     * @param ListMenuFlyoutController The {@link ListMenuFlyoutController} to use for flyout menus.
+     * @param FlyoutHandler The {@link FlyoutHandler} to use for flyout menus.
      */
     public void setupCallbacksRecursively(
             Runnable dismissDialog,
             @Nullable Boolean drillDownOverrideValue,
-            @Nullable ListMenuFlyoutController flyoutController) {
+            @Nullable FlyoutHandler flyoutHandler) {
+        HierarchicalMenuController hierarchicalMenuController =
+                new HierarchicalMenuController(
+                        new ListMenuUtils.ListMenuKeyProvider(), flyoutHandler);
+
         ListMenuUtils.setupCallbacksRecursively(
                 mHeaderModelList,
                 mContentModelList,
                 dismissDialog,
-                flyoutController,
+                hierarchicalMenuController.getFlyoutController(),
                 drillDownOverrideValue);
     }
 
