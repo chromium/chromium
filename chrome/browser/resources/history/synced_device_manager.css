@@ -92,7 +92,7 @@ history-synced-device-card {
 
 .sync-history-promo {
   margin-top: 12px;
-  text-align: center;
+  margin-bottom: 0;
   font-size: 24px;
   font-weight: 500;
 }
