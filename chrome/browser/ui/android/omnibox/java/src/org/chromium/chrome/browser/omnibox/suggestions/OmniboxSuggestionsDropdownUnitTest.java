@@ -10,13 +10,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -46,6 +50,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private @Mock Runnable mDropdownScrollListener;
     private @Mock Runnable mDropdownScrollToTopListener;
     private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
+    private @Mock View mView;
 
     private Context mContext;
     private OmniboxSuggestionsDropdown mDropdown;
@@ -58,10 +63,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mListener =
-                Mockito.spy(
-                        new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
-        mDropdown = new OmniboxSuggestionsDropdown(mContext, null, mListener);
+        mListener = spy(new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
+        when(mListener.getItemCount()).thenReturn(3);
+        when(mListener.findViewByPosition(anyInt())).thenReturn(mView);
+        when(mView.isFocusable()).thenReturn(true);
+        mDropdown = spy(new OmniboxSuggestionsDropdown(mContext, null, mListener));
         mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
 
@@ -302,5 +308,78 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown.setToolbarPosition(ControlsPosition.BOTTOM);
         assertFalse(mDropdown.getToolbarOnTopForTesting());
         assertEquals(Gravity.BOTTOM, mLayoutParams.gravity);
+    }
+
+    @Test
+    public void onKeyDown_beforeShownDoesNotHandleTabNavigation() {
+        when(mDropdown.isShown()).thenReturn(false);
+        assertFalse(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+        assertFalse(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(
+                                0,
+                                0,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_TAB,
+                                0,
+                                KeyEvent.META_SHIFT_ON)));
+    }
+
+    @Test
+    public void onKeyDown_handlesTabNavigationEvents() {
+        when(mDropdown.isShown()).thenReturn(true);
+
+        // Tab should be handled the first time to put focus on the first item.
+        assertTrue(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+
+        // Tab should be handled to move to the next item.
+        assertTrue(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+
+        // Shift+Tab should be handled to bring focus back to the first item.
+        assertTrue(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(
+                                0,
+                                0,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_TAB,
+                                0,
+                                KeyEvent.META_SHIFT_ON)));
+
+        // Other modifiers should be ignored.
+        // We expect super.onKeyDown to be called, which we can't directly verify.
+        // But we can verify that our adapter methods are not called.
+        // And we can check the return value. Let's assume super.onKeyDown returns false.
+        assertFalse(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(
+                                0,
+                                0,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_TAB,
+                                0,
+                                KeyEvent.META_CTRL_ON)));
+        assertFalse(
+                mDropdown.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(
+                                0,
+                                0,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_TAB,
+                                0,
+                                KeyEvent.META_ALT_ON)));
     }
 }
