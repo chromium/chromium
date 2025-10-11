@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
@@ -30,11 +31,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Function;
 
 /** Provides resources specific to Omnibox. */
 @NullMarked
@@ -43,6 +47,7 @@ public class OmniboxResourceProvider {
 
     private static SparseArray<ConstantState> sDrawableCache = new SparseArray<>();
     private static SparseArray<String> sStringCache = new SparseArray<>();
+    private static @Nullable Function<Tab, @Nullable Bitmap> sTabFaviconFactory;
 
     /**
      * As {@link androidx.appcompat.content.res.AppCompatResources#getDrawable(Context, int)} but
@@ -606,5 +611,14 @@ public class OmniboxResourceProvider {
     @ColorInt
     public static int getAdditionalTextColor(Context context) {
         return SemanticColorUtils.getDefaultTextColorSecondary(context);
+    }
+
+    public static @Nullable Bitmap getFaviconBitmapForTab(Tab tab) {
+        if (sTabFaviconFactory == null) return null;
+        return sTabFaviconFactory.apply(tab);
+    }
+
+    public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
+        sTabFaviconFactory = tabFaviconFactory;
     }
 }

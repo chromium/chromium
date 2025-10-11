@@ -225,7 +225,7 @@ class LocationBarMediator
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    private final @Nullable ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
@@ -253,7 +253,7 @@ class LocationBarMediator
             OmniboxUma omniboxUma,
             BooleanSupplier isToolbarMicEnabledSupplier,
             OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
-            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ObservableSupplier<@NavigationFulfillmentType Integer>
@@ -718,8 +718,7 @@ class LocationBarMediator
                         ResourceRequestBody.createFromBytes(omniboxLoadUrlParams.postData));
             }
 
-            TabModelSelector tabModelSelector =
-                    mTabModelSelectorSupplier == null ? null : mTabModelSelectorSupplier.get();
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
                 tabModelSelector.openNewTab(
                         loadUrlParams,
@@ -819,8 +818,7 @@ class LocationBarMediator
 
     /** package */
     void composeplateButtonClicked(View view) {
-        TabModelSelector tabModelSelector =
-                mTabModelSelectorSupplier == null ? null : mTabModelSelectorSupplier.get();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (!mNativeInitialized || mLocationBarDataProvider == null || tabModelSelector == null) {
             return;
         }

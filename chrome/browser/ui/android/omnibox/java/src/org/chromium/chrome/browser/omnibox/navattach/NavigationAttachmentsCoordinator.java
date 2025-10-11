@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
@@ -22,6 +23,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Coordinator for the Navigation Attachments component. */
 @NullMarked
@@ -40,7 +43,8 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
             WindowAndroid windowAndroid,
             ViewGroup parent,
             ObservableSupplier<Profile> profileObservableSupplier,
-            LocationBarDataProvider locationBarDataProvider) {
+            LocationBarDataProvider locationBarDataProvider,
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
             mMediator = null;
@@ -53,10 +57,13 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
 
         mAimToggleOnly = OmniboxFeatures.sAimToggleOnly.getValue();
         mLocationBarDataProvider = locationBarDataProvider;
+        ModelList tabAttachmentsModelList = new ModelList();
 
         var popup =
                 new NavigationAttachmentsPopup(
-                        context, parent.findViewById(R.id.location_bar_attachments_add));
+                        context,
+                        parent.findViewById(R.id.location_bar_attachments_add),
+                        tabAttachmentsModelList);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
 
         var modelList = new ModelList();
@@ -79,7 +86,9 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                         mViewHolder,
                         modelList,
                         profileObservableSupplier,
-                        mNavigationFulfillmentTypeSupplier);
+                        mNavigationFulfillmentTypeSupplier,
+                        tabModelSelectorSupplier,
+                        tabAttachmentsModelList);
     }
 
     public void destroy() {

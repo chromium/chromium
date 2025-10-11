@@ -12,8 +12,19 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <!--
-    TODO(crbug.com/436888404): either drop clipboard or use proper strings.
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tab_attachment_recycler_view"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:fadingEdgeLength="8dp"
+        android:paddingStart="@dimen/omnibox_suggestion_content_padding"
+        android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
+        android:focusable="false"/>
+
+    <!-- TODO(crbug.com/436888404): either drop clipboard or use proper strings.
     -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_paste_from_clipboard_button"

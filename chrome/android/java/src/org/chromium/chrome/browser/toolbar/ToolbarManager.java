@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -1250,7 +1251,8 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                                     mActivity, mIsCustomTab),
-                            pageZoomManager);
+                            pageZoomManager,
+                            TabFavicon::getBitmap);
             mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);

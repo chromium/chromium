@@ -10,6 +10,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -72,6 +74,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -203,14 +206,15 @@ public class LocationBarCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
-            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
             Supplier<Integer> bottomWindowPaddingSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             boolean isToolbarPositionCustomizationEnabled,
-            @Nullable PageZoomManager pageZoomManager) {
+            @Nullable PageZoomManager pageZoomManager,
+            Function<Tab, @Nullable Bitmap> tabFaviconFunction) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -240,13 +244,15 @@ public class LocationBarCoordinator
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
+        OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
         mNavigationAttachmentsCoordinator =
                 new NavigationAttachmentsCoordinator(
                         context,
                         windowAndroid,
                         mLocationBarLayout,
                         profileObservableSupplier,
-                        locationBarDataProvider);
+                        locationBarDataProvider,
+                        tabModelSelectorSupplier);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null

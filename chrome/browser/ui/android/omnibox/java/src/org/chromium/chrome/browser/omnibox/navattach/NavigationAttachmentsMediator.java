@@ -22,6 +22,8 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.common.collect.Ordering;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -32,7 +34,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -44,18 +49,23 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
 class NavigationAttachmentsMediator {
     private static final String MIMETYPE_IMAGE_ANY = "image/*";
+    private static final int MAX_RECENT_TABS_TO_PRESENT = 5;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
     private final PropertyModel mModel;
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ModelList mTabAttachmentsModelList;
     private final Drawable mFallbackDrawable;
     private final ObservableSupplierImpl<@NavigationFulfillmentType Integer>
             mNavigationFulfillmentTypeSupplier;
@@ -70,13 +80,17 @@ class NavigationAttachmentsMediator {
             ModelList modelList,
             ObservableSupplier<Profile> profileObservableSupplier,
             ObservableSupplierImpl<@NavigationFulfillmentType Integer>
-                    navigationFulfillmentTypeSupplier) {
+                    navigationFulfillmentTypeSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            ModelList tabAttachmentsModelList) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
         mModel = model;
         mPopup = viewHolder.popup;
         mModelList = modelList;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabAttachmentsModelList = tabAttachmentsModelList;
         mFallbackDrawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
         mNavigationFulfillmentTypeSupplier = navigationFulfillmentTypeSupplier;
@@ -175,10 +189,36 @@ class NavigationAttachmentsMediator {
         if (mPopup.isShowing()) {
             mPopup.dismiss();
         } else {
+            buildModelListForRecentTabs();
             mModel.set(
                     NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE,
                     Clipboard.getInstance().hasImage());
             mPopup.show();
+        }
+    }
+
+    private void buildModelListForRecentTabs() {
+        if (mTabModelSelectorSupplier.get() == null) return;
+        mTabAttachmentsModelList.clear();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        List<Tab> tabs =
+                Ordering.from(Comparator.comparingLong(Tab::getTimestampMillis))
+                        .greatestOf(tabModelSelector.getCurrentModel(), MAX_RECENT_TABS_TO_PRESENT);
+        for (Tab tab : tabs) {
+            PropertyModel tabProperties =
+                    new PropertyModel.Builder(TabAttachmentPopupChoiceProperties.ALL_KEYS)
+                            .with(
+                                    TabAttachmentPopupChoiceProperties.THUMBNAIL,
+                                    new BitmapDrawable(
+                                            mContext.getResources(),
+                                            OmniboxResourceProvider.getFaviconBitmapForTab(tab)))
+                            .with(TabAttachmentPopupChoiceProperties.TITLE, tab.getTitle())
+                            .build();
+            ListItem listItem =
+                    new ListItem(
+                            TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
+                            tabProperties);
+            mTabAttachmentsModelList.add(listItem);
         }
     }
 

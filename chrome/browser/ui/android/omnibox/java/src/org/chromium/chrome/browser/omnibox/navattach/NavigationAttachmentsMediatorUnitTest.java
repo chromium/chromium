@@ -16,6 +16,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
 import org.junit.Before;
@@ -32,7 +33,11 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -40,6 +45,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,11 +60,19 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock Profile mProfile;
     private @Mock ComposeBoxQueryControllerBridge.Natives mNativeMock;
     private @Mock Clipboard mClipboard;
+    private @Mock TabModelSelector mTabModelSelector;
+    private @Mock Bitmap mBitmap;
+    private @Mock TabModel mTabModel;
+    private @Mock Tab mTab1;
+    private @Mock Tab mTab2;
 
     private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier = () -> mTabModelSelector;
+    private final ModelList mTabAttachmentsModelList = new ModelList();
+    private final List<Tab> mTabs = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -73,10 +89,15 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 mViewHolder,
                                 new ModelList(),
                                 mProfileSupplier,
-                                new ObservableSupplierImpl<>()));
+                                new ObservableSupplierImpl<>(),
+                                mTabModelSelectorSupplier,
+                                mTabAttachmentsModelList));
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
         doReturn(123L).when(mNativeMock).init(mProfile);
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
         Clipboard.setInstanceForTesting(mClipboard);
+        OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
     }
 
     @Test
@@ -121,6 +142,40 @@ public class NavigationAttachmentsMediatorUnitTest {
         doReturn(true).when(mPopup).isShowing();
         runnable.run();
         verify(mPopup).dismiss();
+    }
+
+    @Test
+    public void popupAddsTabs() {
+        doReturn("Title1").when(mTab1).getTitle();
+        doReturn(100L).when(mTab1).getTimestampMillis();
+        doReturn("Title2").when(mTab2).getTitle();
+        doReturn(123L).when(mTab2).getTimestampMillis();
+        mTabs.add(mTab1);
+        mTabs.add(mTab2);
+        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+        Runnable runnable = mModel.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED);
+        doReturn(false).when(mPopup).isShowing();
+        runnable.run();
+
+        assertEquals(2, mTabAttachmentsModelList.size());
+        assertEquals(
+                TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
+                mTabAttachmentsModelList.get(0).type);
+        assertEquals(
+                "Title2",
+                mTabAttachmentsModelList
+                        .get(0)
+                        .model
+                        .get(TabAttachmentPopupChoiceProperties.TITLE));
+        assertEquals(
+                TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
+                mTabAttachmentsModelList.get(1).type);
+        assertEquals(
+                "Title1",
+                mTabAttachmentsModelList
+                        .get(1)
+                        .model
+                        .get(TabAttachmentPopupChoiceProperties.TITLE));
     }
 
     @Test
@@ -174,7 +229,9 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mViewHolder,
                         modelList,
                         mProfileSupplier,
-                        new ObservableSupplierImpl<>());
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelectorSupplier,
+                        mTabAttachmentsModelList);
         mMediator.initializeBridge(mProfile);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
@@ -206,7 +263,9 @@ public class NavigationAttachmentsMediatorUnitTest {
                         mViewHolder,
                         new ModelList(),
                         mProfileSupplier,
-                        new ObservableSupplierImpl<>());
+                        new ObservableSupplierImpl<>(),
+                        mTabModelSelectorSupplier,
+                        mTabAttachmentsModelList);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);
