@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
+#include "components/omnibox/browser/vector_icons.h"
 
 using composebox::SessionState;
 
@@ -196,4 +197,16 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
                                         error_type);
   composebox_metrics_recorder_->OnFileUploadStatusChanged(
       mime_type, file_upload_status, error_type);
+}
+
+std::string ContextualSearchboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) {
+  // The default icon for contextual suggestions is the subdirectory arrow right
+  // icon. For the Lens composebox and realbox, we want to stay consistent with
+  // the search loupe instead.
+  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    return searchbox_internal::kSearchIconResourceName;
+  }
+
+  return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
