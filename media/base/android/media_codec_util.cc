@@ -26,12 +26,8 @@
 #include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaIntArrayToIntVector;
-using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::android_info::SDK_VERSION_P;
 
 namespace media {
 
@@ -57,7 +53,7 @@ constexpr char kDtsxP2MimeType[] = "audio/vnd.dts.uhd;profile=p2";
 
 static CodecProfileLevel MediaCodecProfileLevelToChromiumProfileLevel(
     JNIEnv* env,
-    const JavaRef<jobject>& j_codec_profile_level) {
+    const base::android::JavaRef<jobject>& j_codec_profile_level) {
   VideoCodec codec = static_cast<VideoCodec>(
       Java_CodecProfileLevelAdapter_getCodec(env, j_codec_profile_level));
   VideoCodecProfile profile = static_cast<VideoCodecProfile>(
@@ -186,7 +182,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
   struct CodecAlignment {
     const char* name_regex;
     gfx::Size alignment;
-    int sdk_int = base::android::android_info::SDK_VERSION_NOUGAT;
+    int sdk_int = base::android::android_info::SDK_VERSION_Q;
   };
   using base::android::android_info::SDK_VERSION_Q;
   using base::android::android_info::SDK_VERSION_R;
@@ -212,10 +208,8 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       // Qualcomm
       {"c2.qti.(avc|vp8)", gfx::Size(16, 16)},
       {"c2.qti.(hevc|vp9)", gfx::Size(8, 8)},
-      {"omx.qcom.video.decoder.avc", gfx::Size(16, 16), SDK_VERSION_Q},
-      {"omx.qcom.video.decoder.avc", gfx::Size(1, 1)},
-      {"omx.qcom.video.decoder.hevc", gfx::Size(8, 8), SDK_VERSION_Q},
-      {"omx.qcom.video.decoder.hevc", gfx::Size(1, 1)},
+      {"omx.qcom.video.decoder.avc", gfx::Size(16, 16)},
+      {"omx.qcom.video.decoder.hevc", gfx::Size(8, 8)},
       {"omx.qcom.video.decoder.vp8", gfx::Size(16, 16), SDK_VERSION_R},
       {"omx.qcom.video.decoder.vp8", gfx::Size(1, 1)},
       {"omx.qcom.video.decoder.vp9", gfx::Size(8, 8), SDK_VERSION_R},
@@ -278,22 +272,12 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
       env, j_mime, static_cast<int>(direction), /*requireSoftwareCodec=*/false,
       /*requireHardwareCodec=*/true);
 
-  auto codec_name = ConvertJavaStringToUTF8(env, j_codec_name.obj());
+  auto codec_name =
+      base::android::ConvertJavaStringToUTF8(env, j_codec_name.obj());
   DVLOG(1) << __func__ << "Default hardware codec for " << GetCodecName(codec)
            << " : " << codec_name
            << ", direction: " << static_cast<int>(direction);
-  if (codec_name.empty())
-    return true;
-
-  // MediaTek hardware vp8 is known slower than the software implementation.
-  if (base::StartsWith(codec_name, "OMX.MTK.") && codec == VideoCodec::kVP8) {
-    // We may still reject VP8 hardware decoding later on certain chipsets,
-    // see IsDecoderSupportedByDevice(). We don't have the the chipset ID
-    // here to check now though.
-    return base::android::android_info::sdk_int() < SDK_VERSION_P;
-  }
-
-  return false;
+  return codec_name.empty();
 }
 
 }  // namespace media

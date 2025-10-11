@@ -9,10 +9,6 @@
 
 namespace media {
 
-// These will come from mockable BuildInfo, once it exists.
-using base::android::android_info::SDK_VERSION_NOUGAT;
-using base::android::android_info::SDK_VERSION_NOUGAT_MR1;
-
 class MediaCodecUtilTest : public testing::Test {
  public:
   MediaCodecUtilTest() {}
@@ -45,11 +41,11 @@ TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
   EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
             MediaCodecUtil::LookupCodedSizeAlignment(
                 "c2.android.avc.decoder",
-                base::android::android_info::SDK_VERSION_NOUGAT));
+                base::android::android_info::SDK_VERSION_Q));
   EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
             MediaCodecUtil::LookupCodedSizeAlignment(
                 "c2.android.hevc.decoder",
-                base::android::android_info::SDK_VERSION_NOUGAT));
+                base::android::android_info::SDK_VERSION_Q));
 }
 
 }  // namespace media
