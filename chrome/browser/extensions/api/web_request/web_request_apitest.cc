@@ -6343,8 +6343,6 @@ class WebRequestPersistentListenersTest
   std::unique_ptr<ExtensionTestMessageListener> test_listener_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Doesn't run on desktop android, probably bug in PRE implementation.
 // Tests that webRequest listeners are persistent across browser restarts.
 IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
                        PRE_TestListenersArePersistent) {
@@ -6396,6 +6394,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
   EXPECT_EQ(2, request_count.GetInt());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports manifest V3 / service worker.
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground,
     WebRequestPersistentListenersTest,
@@ -6407,6 +6407,8 @@ INSTANTIATE_TEST_SUITE_P(
             ContextType::kPersistentBackground,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     WebRequestPersistentListenersTest,
@@ -6418,7 +6420,6 @@ INSTANTIATE_TEST_SUITE_P(
             ContextType::kServiceWorker,
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
  public:
