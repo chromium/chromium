@@ -53,11 +53,8 @@ class COMPOSITOR_EXPORT CompositorObserver {
   // To determine when presentation occurred see `OnDidPresentCompositorFrame`.
   virtual void OnCompositingAckDeprecated(Compositor* compositor) {}
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Called when a child of the compositor is resizing.
-  virtual void OnCompositingChildResizing() {}
-  virtual void OnChildResizeActivated() {}
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  virtual void OnCompositingChildResizing(Compositor* compositor) {}
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   // Called when a swap with new size is completed.
