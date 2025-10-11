@@ -24,7 +24,7 @@ bool IsDownloadBubbleEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
-  return true;
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
