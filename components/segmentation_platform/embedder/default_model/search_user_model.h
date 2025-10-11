@@ -15,6 +15,8 @@ struct Config;
 // metadata for the search user optimization target.
 class SearchUserModel : public DefaultModelProvider {
  public:
+  enum Feature { kFeatureOmniboxSuggestionUsed, kFeatureCount };
+
   SearchUserModel();
   ~SearchUserModel() override = default;
 
