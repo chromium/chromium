@@ -13,6 +13,12 @@ namespace blink {
 
 namespace bindings {
 
+// TODO(427166012): remove once we're done troubleshooting.
+template <class T>
+struct ReceiverValidatorForDebugging {
+  static inline void Validate(v8::Isolate*, v8::Local<v8::Object>, T*) {}
+};
+
 template <class V8T, class T>
 class V8InterfaceBridge : public V8InterfaceBridgeBase {
  public:
@@ -28,8 +34,10 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
   // no longer "unsafe", and should be renamed or merged with ToWrappable().
   static inline T* ToWrappableUnsafe(v8::Isolate* isolate,
                                      v8::Local<v8::Object> value) {
-    return static_cast<T*>(
+    T* wrappable = static_cast<T*>(
         v8::Object::Unwrap<ScriptWrappable>(isolate, value, V8T::kTagRange));
+    ReceiverValidatorForDebugging<T>::Validate(isolate, value, wrappable);
+    return wrappable;
   }
 
   static inline bool HasInstance(v8::Isolate* isolate,

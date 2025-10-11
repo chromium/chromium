@@ -36,6 +36,16 @@ class CompressionStream final : public ScriptWrappable {
   bool initialized_ = false;
 };
 
+// TODO(427166012): remove once we're done with troubleshooting.
+namespace bindings {
+template <>
+struct ReceiverValidatorForDebugging<CompressionStream> {
+  static void Validate(v8::Isolate*,
+                       v8::Local<v8::Object>,
+                       CompressionStream* receiver);
+};
+}  // namespace bindings
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_COMPRESSION_COMPRESSION_STREAM_H_
