@@ -2955,11 +2955,11 @@ external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-
 external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py [ Failure ]
 
 # Flaky output
-external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Pass Failure ]
+crbug.com/450876665 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
-external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Timeout ]
+crbug.com/450776558 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
+crbug.com/450957697 external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Timeout ]
 crbug.com/450555241 [ Win ] external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/450513405 external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
 crbug.com/450513405 external/wpt/css/css-anchor-position/position-area-overflow-icb-002.html [ Failure ]
@@ -2967,7 +2967,7 @@ crbug.com/450532078 external/wpt/css/css-overflow/overflow-clip-margin-border-ra
 crbug.com/450513406 external/wpt/css/css-writing-modes/text-shadow-sideways-001.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect [ Pass Timeout ]
 crbug.com/450555241 external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect3 [ Skip Timeout ]
-crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Failure Crash ]
+crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Crash Failure ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/global.py [ Failure ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/invalid.py [ Failure ]
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/network_conditions_offline.py [ Failure ]
@@ -9763,7 +9763,7 @@ crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-
 crbug.com/449751911 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout ]
 
 # WebAudio AudioWorklet test failure in MSAN
-crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Timeout Pass ]
+crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Pass Timeout ]
 
 # Gardener 2025-10-10
 crbug.com/450592015 [ Mac12-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
