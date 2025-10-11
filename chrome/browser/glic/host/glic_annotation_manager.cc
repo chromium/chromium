@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
@@ -142,7 +143,8 @@ GlicAnnotationManager::~GlicAnnotationManager() = default;
 
 void GlicAnnotationManager::ScrollTo(
     mojom::ScrollToParamsPtr params,
-    mojom::WebClientHandler::ScrollToCallback callback) {
+    mojom::WebClientHandler::ScrollToCallback callback,
+    Host* host) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
   if (annotation_task_ && annotation_task_->IsRunning()) {
     annotation_task_->FailTaskOrDropAnnotation(
@@ -286,7 +288,7 @@ void GlicAnnotationManager::ScrollTo(
       search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
       this, std::move(agent_remote), std::move(agent_host_receiver),
-      std::move(wrapped_callback), *focused_rfh);
+      std::move(wrapped_callback), *focused_rfh, host);
 }
 
 void GlicAnnotationManager::RemoveAnnotation(
@@ -302,16 +304,19 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
     mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
         agent_host_pending_receiver,
     mojom::WebClientHandler::ScrollToCallback callback,
-    content::RenderFrameHost& render_frame_host)
+    content::RenderFrameHost& render_frame_host,
+    Host* host)
     : annotation_manager_(*annotation_manager),
       annotation_agent_(std::move(agent_remote)),
       annotation_agent_host_receiver_(this,
                                       std::move(agent_host_pending_receiver)),
       scroll_to_callback_(std::move(callback)),
       document_(render_frame_host.GetWeakDocumentPtr()),
-      start_time_(base::TimeTicks::Now()) {
+      start_time_(base::TimeTicks::Now()),
+      host_(host) {
   GlicKeyedService* service = annotation_manager_->service_;
   CHECK(service);
+  CHECK(host_);
   // Using base::Unretained is safe here because `this` owns the subscription.
   tab_change_subscription_ =
       service->sharing_manager().AddFocusedTabChangedCallback(
@@ -323,7 +328,11 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
       &AnnotationTask::RemoteDisconnected, base::Unretained(this)));
 
   // Listens to the panel-closing notification.
-  service->window_controller().AddStateObserver(this);
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    host_->AddPanelStateObserver(this);
+  } else {
+    service->window_controller().AddStateObserver(this);
+  }
 
   pref_change_registrar_.Init(service->profile()->GetPrefs());
   // base::Unretained is safe because `this` owns `pref_change_registrar_`.
@@ -339,7 +348,12 @@ GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
     std::move(scroll_to_callback_)
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
-  annotation_manager_->service_->window_controller().RemoveStateObserver(this);
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    host_->RemovePanelStateObserver(this);
+  } else {
+    annotation_manager_->service_->window_controller().RemoveStateObserver(
+        this);
+  }
 }
 
 bool GlicAnnotationManager::AnnotationTask::IsRunning() const {

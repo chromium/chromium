@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,16 +30,17 @@ class GlicAnnotationManager {
   ~GlicAnnotationManager();
 
   // Scrolls to and highlights content in its owner's (GlicKeyedService)
-  // currently focused tab. |callback| is run after the content is found in
+  // currently focused tab. 1callback1 is run after the content is found in
   // the renderer process, and a scroll is triggered, or if a failure occurs.
   // (See ScrollToErrorReason in glic.mojom for a list of possible failure
   // reasons.)
   // Note: This currently only supports scrolling to and highlighting based on
   // a single selector. If this is called a second time before finishing
   // the first request, the first request is cancelled.
-  // TODO(crbug.com/397664100): Support scrolling without highlighting.
+  // TODO(crbug.com//397664100): Support scrolling without highlighting.
   void ScrollTo(mojom::ScrollToParamsPtr params,
-                mojom::WebClientHandler::ScrollToCallback callback);
+                mojom::WebClientHandler::ScrollToCallback callback,
+                Host* host);
 
   // Removes any existing annotations.
   void RemoveAnnotation(mojom::ScrollToErrorReason reason);
@@ -52,14 +54,15 @@ class GlicAnnotationManager {
   // is navigated from or ScrollTo() is called again.
   class AnnotationTask : public blink::mojom::AnnotationAgentHost,
                          content::WebContentsObserver,
-                         GlicWindowController::StateObserver {
+                         PanelStateObserver {
    public:
     AnnotationTask(GlicAnnotationManager* manager,
                    mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent,
                    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
                        annotation_agent_host,
                    mojom::WebClientHandler::ScrollToCallback callback,
-                   content::RenderFrameHost& render_frame_host);
+                   content::RenderFrameHost& render_frame_host,
+                   Host* host);
     ~AnnotationTask() override;
 
     // Returns true if the task is still running, false if it is complete. The
@@ -115,7 +118,7 @@ class GlicAnnotationManager {
     // content::WebContentsObserver overrides.
     void PrimaryPageChanged(content::Page& page) override;
 
-    // `GlicWindowController::StateObserver`:
+    // `PanelStateObserver`:
     void PanelStateChanged(
         const mojom::PanelState& panel_state,
         const GlicWindowController::PanelStateContext& context) override;
@@ -154,6 +157,8 @@ class GlicAnnotationManager {
 
     // Used to record the match duration of `ScrollTo()`.
     const base::TimeTicks start_time_;
+
+    const raw_ptr<Host> host_;
   };
 
   // See documentation for `annotation_agent_container_` below.
