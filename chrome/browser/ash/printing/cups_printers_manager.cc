@@ -8,9 +8,11 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -342,7 +344,15 @@ class CupsPrintersManagerImpl
         }
       }
     }
-    NotifyObservers({PrinterClass::kEnterprise});
+
+    if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
+      // Retrigger the setup of enterprise USB printers. This also removes any
+      // detected (but not saved) USB printers which should be enterprise
+      // managed. `PrinterClass::kEnterprise` observers are also notified here.
+      RebuildDetectedLists();
+    } else {
+      NotifyObservers({PrinterClass::kEnterprise});
+    }
   }
 
   // CrosNetworkConfigObserver implementation.
@@ -567,6 +577,7 @@ class CupsPrintersManagerImpl
     // UNREACHABLE if the printer is disconnected.
     if (printer->IsUsbProtocol()) {
       CupsPrinterStatus printer_status(printer_id);
+      // TODO(b/443704245): Also make status work for enterprise USB printers.
       if (FindDetectedPrinter(printer_id)) {
         printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kNoError,
@@ -798,6 +809,43 @@ class CupsPrintersManagerImpl
     return printers_.Get(PrinterClass::kEnterprise, id);
   }
 
+  // It's possible that multiple printers have the same `usb_device_id`, eg. two
+  // different configurations for the same printer.
+  std::vector<Printer> FindUsbEnterprisePrinters(
+      std::optional<Printer::UsbDeviceId> usb_device_id) const {
+    if (!usb_device_id.has_value()) {
+      return std::vector<Printer>{};
+    }
+    std::vector<Printer> result;
+    for (Printer ep : printers_.Get(PrinterClass::kEnterprise)) {
+      if (ep.IsUsbProtocol() && ep.usb_device_id() == usb_device_id) {
+        result.push_back(std::move(ep));
+      }
+    }
+    return result;
+  }
+
+  bool AnyEnterprisePrinterMatches(
+      std::optional<Printer::UsbDeviceId> usb_device_id) const {
+    return FindUsbEnterprisePrinters(usb_device_id).size() > 0;
+  }
+
+  void UpdateEnterprisePrintersWithDetected(const Printer& detected_printer) {
+    for (chromeos::Printer enterprise :
+         FindUsbEnterprisePrinters(detected_printer.usb_device_id())) {
+      // Modify the enterprise printer if needed adding the serial (only needed
+      // for "usb" protocol, "ippusb" should be good to go).
+      if (enterprise.GetProtocol() == Printer::PrinterProtocol::kUsb) {
+        // Note: `detected_printer.uri` has "usb" as the protocol and contains
+        // the correct serial for the printer, since it was set in
+        // `UsbPrinterDetector::DoAddDevice` and never changed.
+        enterprise.SetUri(detected_printer.uri());
+        printers_.Remove(chromeos::PrinterClass::kEnterprise, enterprise.id());
+        printers_.Insert(chromeos::PrinterClass::kEnterprise, enterprise);
+      }
+    }
+  }
+
   // TODO(baileyberro): Remove the need for this function by pushing additional
   // logic into PrintersMap. https://crbug.com/956172
   void ResetNearbyPrintersLists() {
@@ -888,14 +936,26 @@ class CupsPrintersManagerImpl
       const std::vector<PrinterDetector::DetectedPrinter>& detected_list) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
-    // Update the list of connected printers (skip the saved ones).
+    // Update the list of connected printers.
     std::vector<PrinterDetector::DetectedPrinter> printers;
     for (const PrinterDetector::DetectedPrinter& detected : detected_list) {
-      if (!printers_.IsPrinterInClass(PrinterClass::kSaved,
-                                      detected.printer.id())) {
+      if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
+        UpdateEnterprisePrintersWithDetected(detected.printer);
+        // Skip further set up for any enterprise managed or saved printers.
+        if (AnyEnterprisePrinterMatches(detected.printer.usb_device_id()) ||
+            printers_.IsPrinterInClass(PrinterClass::kSaved,
+                                       detected.printer.id())) {
+          continue;
+        }
         printers.push_back(detected);
+      } else {
+        if (!printers_.IsPrinterInClass(PrinterClass::kSaved,
+                                        detected.printer.id())) {
+          printers.push_back(detected);
+        }
       }
     }
+
     auto_usb_printer_configurer_->UpdateListOfConnectedPrinters(
         std::move(printers));
 
@@ -1026,17 +1086,21 @@ class CupsPrintersManagerImpl
     }
   }
 
-  // Rebuild the Automatic and Discovered printers lists from the (cached) raw
-  // detections.  This will also generate OnPrintersChanged events for any
-  // observers observering either of the detected lists (kAutomatic and
-  // kDiscovered).
+  // Rebuild the Automatic, Discovered, and Enterprise printers lists from the
+  // (cached) raw detections. This will also generate OnPrintersChanged events
+  // for any observers observering any of the lists.
   void RebuildDetectedLists() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     ResetNearbyPrintersLists();
     AddDetectedUsbPrinters(usb_detections_);
     AddDetectedNetworkPrinters(zeroconf_detections_);
     AddDetectedNetworkPrinters(servers_detections_);
-    NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered});
+    if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
+      NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered,
+                       PrinterClass::kEnterprise});
+    } else {
+      NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered});
+    }
   }
 
   void OnUsbPrinterSetupDone(std::string printer_id) {
