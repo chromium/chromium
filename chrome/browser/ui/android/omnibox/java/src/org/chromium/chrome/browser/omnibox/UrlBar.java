@@ -997,7 +997,9 @@ public class UrlBar extends AutocompleteEditText {
         int urlTextLength = url.length();
 
         Layout textLayout = assumeNonNull(getLayout());
-        assert getLayout().getLineCount() == 1;
+
+        if (mFocused) return;
+
         final int originEndIndex = Math.min(mOriginEndIndex, urlTextLength);
         if (mOriginEndIndex > urlTextLength) {
             // If discovered locally, please update crbug.com/859219 with the steps to reproduce.
