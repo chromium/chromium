@@ -1309,7 +1309,12 @@ TEST_P(SiteSettingsHandlerSchemeTest, HandleClearUnpartitionedUsage) {
       expected_browsing_data_model_entries);
 }
 
-class SiteSettingsHandlerTest : public SiteSettingsHandlerBaseTest {};
+class SiteSettingsHandlerTest : public SiteSettingsHandlerBaseTest {
+#if BUILDFLAG(IS_CHROMEOS)
+ private:
+  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
   // Test the JS -> C++ -> JS callback path for getting and setting defaults.

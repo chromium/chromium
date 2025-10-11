@@ -2381,6 +2381,16 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+    auto& smart_card_context =
+        SmartCardPermissionContextFactory::GetForProfile(*profile);
+    if (chooser_observations_.IsObservingSource(&smart_card_context)) {
+      chooser_observations_.RemoveObservation(&smart_card_context);
+    }
+  }
+#endif
+
   observed_profiles_.RemoveObservation(profile);
 }
 
