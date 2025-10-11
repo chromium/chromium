@@ -443,10 +443,9 @@ try_.builder(
             "release_builder",
             "remoteexec",
             "mac",
-            "arm64",
+            "x64",
         ],
     ),
-    cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 

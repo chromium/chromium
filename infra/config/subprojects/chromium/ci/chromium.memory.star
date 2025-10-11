@@ -755,13 +755,12 @@ ci.builder(
             "remoteexec",
             "dcheck_always_on",
             "mac",
-            "arm64",
+            "x64",
         ],
     ),
-    builderless = True,
+    builderless = False,
     cores = None,  # Swapping between 8 and 24
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "bld",
@@ -1013,7 +1012,7 @@ ci.builder(
                     "--test-launcher-print-test-stdio=always",
                 ],
             ),
-            "mac_default_arm64",
+            "mac_default_x64",
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
@@ -1047,9 +1046,9 @@ ci.builder(
             ),
         },
     ),
-    builderless = True,
+    builderless = False,
+    cores = 12,
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "tst",
