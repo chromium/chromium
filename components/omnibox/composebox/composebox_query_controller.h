@@ -423,6 +423,11 @@ class ComposeboxQueryController {
       endpoint_fetcher::EndpointFetcherCallback response_received_callback,
       UploadProgressCallback upload_progress_callback = base::NullCallback());
 
+  // Creates the encoded visual search interaction log data to attach to search
+  // urls.
+  std::optional<std::string> GetEncodedVisualSearchInteractionLogData(
+      const std::optional<std::string>& query_text);
+
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
 

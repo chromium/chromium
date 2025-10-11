@@ -41,6 +41,7 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -61,6 +62,7 @@ constexpr char kLocale[] = "en-US";
 constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
 constexpr char kRequestIdParameterKey[] = "vsrid";
+constexpr char kVisualSearchInteractionDataParameterKey[] = "vsint";
 constexpr char kVisualInputTypeParameterKey[] = "vit";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kTestCellAddress[] = "test_cell_address";
@@ -294,6 +296,20 @@ class ComposeboxQueryControllerTest
         contextual_inputs_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
         &serialized_proto));
     lens::LensOverlayContextualInputs proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto;
+  }
+
+  lens::LensOverlayVisualSearchInteractionData GetVsintFromUrl(
+      const GURL& url) {
+    std::string vsint_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(
+        url, kVisualSearchInteractionDataParameterKey, &vsint_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        vsint_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::LensOverlayVisualSearchInteractionData proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto;
   }
@@ -974,6 +990,17 @@ TEST_F(ComposeboxQueryControllerTest,
   GURL aim_url =
       controller().CreateSearchUrl(std::move(search_url_request_info));
 
+  // Check that the vsint is populated correctly.
+  auto vsint = GetVsintFromUrl(aim_url);
+  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
+  EXPECT_TRUE(vsint.log_data().is_parent_query());
+  EXPECT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
+  EXPECT_TRUE(vsint.has_zoomed_crop());
+  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
+  EXPECT_EQ(vsint.zoomed_crop().crop().coordinate_type(),
+            lens::CoordinateType::NORMALIZED);
+
   // Get the file and viewport upload requests.
   std::optional<lens::LensOverlayServerRequest> file_upload_request;
   std::optional<lens::LensOverlayServerRequest> viewport_upload_request;
@@ -1575,6 +1602,14 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   GURL aim_url =
       controller().CreateSearchUrl(std::move(search_url_request_info));
 
+  // Check that the vsint is populated correctly.
+  auto vsint = GetVsintFromUrl(aim_url);
+  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
+  EXPECT_TRUE(vsint.log_data().is_parent_query());
+  EXPECT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  EXPECT_FALSE(vsint.has_zoomed_crop());
+
   // Assert: Lens request id is NOT added to multimodal pdf queries.
   std::string vsrid_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
@@ -1638,6 +1673,14 @@ TEST_F(ComposeboxQueryControllerTest,
   GURL search_url =
       controller().CreateSearchUrl(std::move(search_url_request_info));
 
+  // Check that the vsint is populated correctly.
+  auto vsint = GetVsintFromUrl(search_url);
+  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
+  EXPECT_TRUE(vsint.log_data().is_parent_query());
+  EXPECT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  EXPECT_FALSE(vsint.has_zoomed_crop());
+
   // Assert: Lens request id is added to multimodal pdf queries.
   std::string vsrid_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
@@ -1683,6 +1726,14 @@ TEST_F(ComposeboxQueryControllerTest,
   GURL no_query_text_url = controller().CreateSearchUrl(
       std::move(search_url_request_info_no_query_text));
 
+  // Check that the vsint is populated correctly.
+  auto vsint_2 = GetVsintFromUrl(no_query_text_url);
+  EXPECT_EQ(vsint_2.text_select().selected_texts(), "");
+  EXPECT_TRUE(vsint_2.log_data().is_parent_query());
+  EXPECT_EQ(vsint_2.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  EXPECT_FALSE(vsint_2.has_zoomed_crop());
+
   // Check that the udm value is set to 26 (unimodal search).
   std::string udm_value_26;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
@@ -1718,6 +1769,17 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   search_url_request_info->query_start_time = kTestQueryStartTime;
   GURL aim_url =
       controller().CreateSearchUrl(std::move(search_url_request_info));
+
+  // Check that the vsint is populated correctly.
+  auto vsint = GetVsintFromUrl(aim_url);
+  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
+  EXPECT_TRUE(vsint.log_data().is_parent_query());
+  EXPECT_EQ(vsint.interaction_type(),
+            lens::LensOverlayInteractionRequestMetadata::REGION);
+  EXPECT_TRUE(vsint.has_zoomed_crop());
+  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
+  EXPECT_EQ(vsint.zoomed_crop().crop().coordinate_type(),
+            lens::CoordinateType::NORMALIZED);
 
   // Assert: Lens request id is NOT added to multimodal pdf queries.
   std::string vsrid_value;
