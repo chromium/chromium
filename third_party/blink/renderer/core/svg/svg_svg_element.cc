@@ -252,7 +252,7 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
 
 bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (!RuntimeEnabledFeatures::
-          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+          CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
     if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
         !IsOutermostSVGSVGElement()) {
       return false;
@@ -266,7 +266,7 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (!RuntimeEnabledFeatures::
-          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+          CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
     // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
     // bail here in that case to avoid having the generic logic in SVGElement
     // picking it up.
@@ -301,9 +301,8 @@ void SVGSVGElement::SvgAttributeChanged(
         UpdatePresentationAttributeStyle(params.property);
         if (layout_object)
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
-      } else if (
-          RuntimeEnabledFeatures::
-              WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+      } else if (RuntimeEnabledFeatures::
+                     CollectWidthAndHeightAsStylesForNestedSvgEnabled()) {
         UpdatePresentationAttributeStyle(params.property);
       }
     } else {

@@ -1228,7 +1228,7 @@ void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
         CascadeOrigin::kAuthorPresentationalHint);
 
     if (RuntimeEnabledFeatures::
-            WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled() &&
+            CollectWidthAndHeightAsStylesForNestedSvgEnabled() &&
         state.GetStyledElement() != &element) {
       auto* svg_svg_element =
           DynamicTo<SVGSVGElement>(state.GetStyledElement());
