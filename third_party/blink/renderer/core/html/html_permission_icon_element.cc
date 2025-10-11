@@ -11,12 +11,51 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 namespace {
 constexpr float kMaxIconSizeToFontSizeRatio = 1.5;
 constexpr float kMaxMarginInlineEndToFontSizeRatio = 3.0;
+
+// Helpers to get svg icon. We can use DEFINE_STATIC_LOCAL as all the icons are
+// using a single thread.
+const String& SpinningIconSVG() {
+  DEFINE_STATIC_LOCAL(
+      const String, kSpinningIconSVG,
+      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_SPIN_SVG)));
+  return kSpinningIconSVG;
+}
+
+const String& LocationPreciseIconSVG() {
+  DEFINE_STATIC_LOCAL(const String, svg,
+                      (UncompressResourceAsASCIIString(
+                          IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG)));
+  return svg;
+}
+
+const String& LocationIconSVG() {
+  DEFINE_STATIC_LOCAL(
+      const String, kLocationIconSVG,
+      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_LOCATION_SVG)));
+  return kLocationIconSVG;
+}
+
+const String& CameraIconSVG() {
+  DEFINE_STATIC_LOCAL(
+      const String, kCameraIconSVG,
+      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_CAMERA_SVG)));
+  return kCameraIconSVG;
+}
+
+const String& MicrophoneIconSVG() {
+  DEFINE_STATIC_LOCAL(
+      const String, kMicrophoneIconSVG,
+      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_MICROPHONE_SVG)));
+  return kMicrophoneIconSVG;
+}
+
 }  // namespace
 
 using mojom::blink::PermissionName;
@@ -29,39 +68,47 @@ HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
 }
 
 void HTMLPermissionIconElement::SetIcon(PermissionName permission_type,
-                                        bool is_precise_location) {
+                                        bool is_precise_location,
+                                        VisualState visual_state) {
   // We need `PostTask` here because creating a new element (the svg instead of
   // setInnerHtml) starts dispatching events and it hits a DCHECK.
   GetDocument()
       .GetTaskRunner(TaskType::kInternalDefault)
       ->PostTask(FROM_HERE, BindOnce(&HTMLPermissionIconElement::SetIconImpl,
                                      WrapWeakPersistent(this), permission_type,
-                                     is_precise_location));
+                                     is_precise_location, visual_state));
 }
 
 void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
-                                            bool is_precise_location) {
-  if (is_icon_set_) {
+                                            bool is_precise_location,
+                                            VisualState visual_state) {
+  if (permission_type == PermissionName::GEOLOCATION) {
+    if (visual_state == VisualState::kWaiting) {
+      SetInnerHTMLWithoutTrustedTypes(SpinningIconSVG());
+    } else {
+      SetInnerHTMLWithoutTrustedTypes(
+          is_precise_location ? LocationPreciseIconSVG() : LocationIconSVG());
+    }
     return;
   }
+
+  if (is_static_icon_set_) {
+    return;
+  }
+
   switch (permission_type) {
-    case PermissionName::GEOLOCATION:
-      SetInnerHTMLWithoutTrustedTypes(UncompressResourceAsASCIIString(
-          is_precise_location ? IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG
-                              : IDR_PERMISSION_ICON_LOCATION_SVG));
+    case PermissionName::VIDEO_CAPTURE: {
+      SetInnerHTMLWithoutTrustedTypes(CameraIconSVG());
       break;
-    case PermissionName::VIDEO_CAPTURE:
-      SetInnerHTMLWithoutTrustedTypes(String(
-          UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_CAMERA_SVG)));
+    }
+    case PermissionName::AUDIO_CAPTURE: {
+      SetInnerHTMLWithoutTrustedTypes(MicrophoneIconSVG());
       break;
-    case PermissionName::AUDIO_CAPTURE:
-      SetInnerHTMLWithoutTrustedTypes(
-          UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_MICROPHONE_SVG));
-      break;
+    }
     default:
       return;
   }
-  is_icon_set_ = true;
+  is_static_icon_set_ = true;
 }
 
 void HTMLPermissionIconElement::AdjustStyle(ComputedStyleBuilder& builder) {

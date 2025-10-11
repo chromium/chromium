@@ -14,11 +14,20 @@
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {
 
+namespace {
+// The minimum time that the spinning icon should be displayed.
+constexpr base::TimeDelta kMinimumSpinningIconTime = base::Seconds(2);
+}  // namespace
+
 HTMLGeolocationElement::HTMLGeolocationElement(Document& document)
-    : HTMLPermissionElement(document, html_names::kGeolocationTag) {
+    : HTMLPermissionElement(document, html_names::kGeolocationTag),
+      spinning_icon_timer_(document.GetTaskRunner(TaskType::kInternalDefault),
+                           this,
+                           &HTMLGeolocationElement::SpinningIconTimerFired) {
   CHECK(RuntimeEnabledFeatures::GeolocationElementEnabled(
       document.GetExecutionContext()));
   setType(AtomicString("geolocation"));
@@ -35,18 +44,31 @@ GeolocationPositionError* HTMLGeolocationElement::error() const {
 void HTMLGeolocationElement::Trace(Visitor* visitor) const {
   visitor->Trace(position_);
   visitor->Trace(error_);
+  visitor->Trace(spinning_icon_timer_);
   HTMLPermissionElement::Trace(visitor);
 }
 
-void HTMLGeolocationElement::UpdateAppearance() {
-  UpdateIcon(mojom::blink::PermissionName::GEOLOCATION);
+bool HTMLGeolocationElement::ShouldShowSpinningIcon() {
+  return is_geolocation_request_in_progress_ ||
+         (base::TimeTicks::Now() - spinning_started_time_ <
+          kMinimumSpinningIconTime);
+}
 
-  // TODO(crbug.com/435376388): There will be more strings related to location
-  // data querying, for example: Sending location.
-  uint16_t message_id = GetTranslatedMessageID(
-      is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
-                            : IDS_PERMISSION_REQUEST_GEOLOCATION,
-      ComputeInheritedLanguage().LowerASCII());
+void HTMLGeolocationElement::UpdateAppearance() {
+  uint16_t message_id;
+  if (ShouldShowSpinningIcon()) {
+    UpdateIcon(mojom::blink::PermissionName::GEOLOCATION,
+               HTMLPermissionIconElement::VisualState::kWaiting);
+    message_id =
+        GetTranslatedMessageID(IDS_PERMISSION_REQUEST_USING_LOCATION,
+                               ComputeInheritedLanguage().LowerASCII());
+  } else {
+    UpdateIcon(mojom::blink::PermissionName::GEOLOCATION);
+    message_id = GetTranslatedMessageID(
+        is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
+                              : IDS_PERMISSION_REQUEST_GEOLOCATION,
+        ComputeInheritedLanguage().LowerASCII());
+  }
   CHECK(message_id);
   permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
 }
@@ -100,12 +122,24 @@ void HTMLGeolocationElement::AttributeChanged(
 
 void HTMLGeolocationElement::GetCurrentPosition() {
   auto* geolocation = GetGeolocation();
-  if (!geolocation) {
+  if (!geolocation && !WebTestSupport::IsRunningWebTest()) {
     return;
   }
-  geolocation->GetCurrentPosition(
-      blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
-                           WrapWeakPersistent(this)));
+
+  is_geolocation_request_in_progress_ = true;
+  spinning_started_time_ = base::TimeTicks::Now();
+  spinning_icon_timer_.StartOneShot(kMinimumSpinningIconTime, FROM_HERE);
+  UpdateAppearance();
+  auto* dom_window = GetDocument().domWindow();
+  if (!dom_window) {
+    return;
+  }
+
+  if (!WebTestSupport::IsRunningWebTest()) {
+    geolocation->GetCurrentPosition(
+        blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
+                             WrapWeakPersistent(this)));
+  }
 }
 
 void HTMLGeolocationElement::WatchPosition() {
@@ -119,6 +153,8 @@ void HTMLGeolocationElement::WatchPosition() {
 }
 void HTMLGeolocationElement::CurrentPositionCallback(
     base::expected<Geoposition*, GeolocationPositionError*> position) {
+  is_geolocation_request_in_progress_ = false;
+  MaybeStopSpinning();
   if (position.has_value()) {
     position_ = position.value();
     error_ = nullptr;
@@ -128,6 +164,17 @@ void HTMLGeolocationElement::CurrentPositionCallback(
   }
   EnqueueEvent(*Event::CreateCancelableBubble(event_type_names::kLocation),
                TaskType::kUserInteraction);
+}
+
+void HTMLGeolocationElement::SpinningIconTimerFired(TimerBase*) {
+  MaybeStopSpinning();
+}
+
+void HTMLGeolocationElement::MaybeStopSpinning() {
+  if (!ShouldShowSpinningIcon()) {
+    spinning_icon_timer_.Stop();
+    UpdateAppearance();
+  }
 }
 
 }  // namespace blink

@@ -117,7 +117,9 @@ class CORE_EXPORT HTMLPermissionElement
                                   const AtomicString& language_string);
   virtual void UpdateAppearance();
 
-  virtual void UpdateIcon(mojom::blink::PermissionName);
+  void UpdateIcon(mojom::blink::PermissionName permission,
+                  HTMLPermissionIconElement::VisualState state =
+                      HTMLPermissionIconElement::VisualState::kIdle);
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();
@@ -147,6 +149,8 @@ class CORE_EXPORT HTMLPermissionElement
   friend class HTMLPermissionElementLayoutChangeTest;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationUsingLocationAppearance);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationTranslateInnerText);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,

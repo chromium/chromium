@@ -221,6 +221,9 @@
       <message name="IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
         Use precise location
       </message>
+      <message name="IDS_PERMISSION_REQUEST_USING_LOCATION" desc="Label for a permission element when location is being used">
+        Using location...
+      </message>
     </messages>
   </release>
 </grit>

@@ -45,6 +45,7 @@ constexpr char16_t kGeolocationStringTa[] = u"இருப்பிடத்த�
 
 constexpr char kGeolocationString[] = "Use location";
 constexpr char kPreciseGeolocationString[] = "Use precise location";
+constexpr char kUsingLocationString[] = "Using location...";
 
 class LocalePlatformSupport : public TestingPlatformSupport {
  public:
@@ -54,6 +55,8 @@ class LocalePlatformSupport : public TestingPlatformSupport {
         return kGeolocationString;
       case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION:
         return kPreciseGeolocationString;
+      case IDS_PERMISSION_REQUEST_USING_LOCATION:
+        return kUsingLocationString;
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_PT:
         return WebString::FromUTF16(kGeolocationStringPt);
       case IDS_PERMISSION_REQUEST_GEOLOCATION_pt_BR:
@@ -206,7 +209,9 @@ TEST_F(HTMLGeolocationElementTestBase, GetTypeAttribute) {
 
 class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
  protected:
-  HTMLGeolocationElementTest() = default;
+  HTMLGeolocationElementTest()
+      : HTMLGeolocationElementTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     HTMLGeolocationElementTestBase::SetUp();
@@ -339,6 +344,124 @@ TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
         geolocation_element->permission_text_span_for_testing()->innerText());
     GetDocument().body()->RemoveChild(geolocation_element);
   }
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+
+  // 1. Test GetCurrentPosition
+  geolocation_element->GetCurrentPosition();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Text should remain "using" even if permission is granted.
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+
+  // Simulate success response
+  task_environment().FastForwardBy(base::Seconds(3));
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 2. Test GetCurrentPosition with error response
+  geolocation_element->GetCurrentPosition();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Simulate error response
+  task_environment().FastForwardBy(base::Seconds(3));
+  geolocation_element->CurrentPositionCallback(base::unexpected(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 3. Test that the spinning icon and "using" text are displayed for at
+  // least 2 seconds, even if the response is received earlier.
+  geolocation_element->GetCurrentPosition();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Fast forward time by 1 second.
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Simulate receiving a response after 1 second.
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Fast forward time by another 1.1 seconds, making the total time > 2
+  // seconds.
+  task_environment().FastForwardBy(base::Seconds(1.1));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // 4. Test that the spinning icon and "using" text are displayed until a
+  // response is received, even if it takes longer than 2 seconds.
+  geolocation_element->GetCurrentPosition();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_TRUE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Fast forward time by 2.1 seconds.
+  task_environment().FastForwardBy(base::Seconds(2.1));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kUsingLocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
+
+  // Simulate receiving a response after 2.1 seconds.
+  geolocation_element->CurrentPositionCallback(base::ok(nullptr));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      kGeolocationString,
+      geolocation_element->permission_text_span_for_testing()->innerText());
+  EXPECT_FALSE(geolocation_element->SpinningIconTimerForTesting().IsActive());
 }
 
 class HTMLGeolocationElementSimTest : public SimTest {

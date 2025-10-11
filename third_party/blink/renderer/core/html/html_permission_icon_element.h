@@ -15,16 +15,23 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
  public:
   explicit HTMLPermissionIconElement(Document&);
 
+  enum class VisualState {
+    kIdle,
+    kWaiting,
+  };
+
   CascadeFilter GetCascadeFilter() const override {
     // Reject all properties for which 'kValidForPermissionIcon' is false.
     return CascadeFilter(CSSProperty::kValidForPermissionIcon);
   }
   void SetIcon(mojom::blink::PermissionName permission_type,
-               bool is_precise_location);
+               bool is_precise_location,
+               VisualState visual_state = VisualState::kIdle);
 
  private:
   void SetIconImpl(mojom::blink::PermissionName permission_type,
-                   bool is_precise_location);
+                   bool is_precise_location,
+                   VisualState visual_state);
   // blink::Element overrides.
   void AdjustStyle(ComputedStyleBuilder& builder) override;
 
@@ -35,11 +42,6 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
                                       std::optional<float> upper_bound,
                                       bool should_multiply_by_content_size);
 
-  // Guard used to prevent re-setting the icon on the permission element. The
-  // state of the element can change, and the text changes with it, but the icon
-  // is always the same. There is no need to set it again.
-  bool is_icon_set_ = false;
-
   // A bool that tracks whether a specific console message was sent already to
   // ensure it's not sent again.
   bool length_console_error_sent_ = false;
@@ -47,6 +49,10 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
   // A bool that tracks whether a specific console message was sent already to
   // ensure it's not sent again.
   bool width_console_error_sent_ = false;
+
+  // Guard used to prevent re-setting the icon on the permission element for
+  // static icons.
+  bool is_static_icon_set_ = false;
 };
 }  // namespace blink
 

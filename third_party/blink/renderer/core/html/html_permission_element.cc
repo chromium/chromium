@@ -622,13 +622,16 @@ void HTMLPermissionElement::UpdateAppearance() {
       GetLocale().QueryString(translated_message_id));
 }
 
-void HTMLPermissionElement::UpdateIcon(PermissionName permnission) {
+void HTMLPermissionElement::UpdateIcon(
+    PermissionName permnission,
+    HTMLPermissionIconElement::VisualState visual_state) {
   if (!RuntimeEnabledFeatures::PermissionElementIconEnabled(
           GetDocument().GetExecutionContext())) {
     return;
   }
 
-  permission_internal_icon_->SetIcon(permnission, is_precise_location_);
+  permission_internal_icon_->SetIcon(permnission, is_precise_location_,
+                                     visual_state);
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
