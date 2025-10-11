@@ -535,20 +535,6 @@ void VariationsService::EnsureLocaleEquals(const std::string& locale) {
   }
 #endif
 
-  // Uses a CHECK rather than a DCHECK to ensure that issues are caught since
-  // problems in this area may only appear in the wild due to official builds
-  // and end user machines.
-  if (locale != field_trial_creator_.application_locale()) {
-    // TODO(crbug.com/41430274): Report the two values in crash keys.
-    static auto* lhs_key = base::debug::AllocateCrashKeyString(
-        "mismatched_locale_lhs", base::debug::CrashKeySize::Size256);
-    static auto* rhs_key = base::debug::AllocateCrashKeyString(
-        "mismatched_locale_rhs", base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_lhs(lhs_key, locale);
-    base::debug::ScopedCrashKeyString scoped_rhs(
-        rhs_key, field_trial_creator_.application_locale());
-    CHECK_EQ(locale, field_trial_creator_.application_locale());
-  }
 #endif
 }
 

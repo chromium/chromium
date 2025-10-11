@@ -472,6 +472,9 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                                                 bool crash_on_failure) {
   DCHECK(!locale_resources_data_.get()) << "locale.pak already loaded";
   std::string app_locale = l10n_util::GetApplicationLocale(pref_locale);
+  // "en" locale can be problematic on some systems, pre-win10 at least.
+  if (app_locale == "en")
+    app_locale = "en-GB";
   base::FilePath locale_file_path = GetOverriddenPakPath();
   if (locale_file_path.empty())
     locale_file_path = GetLocaleFilePath(app_locale);
@@ -502,8 +505,8 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     DataPack::ErrorState& error = result.error();
     // https://crbug.com/40688225 and https://crbug.com/394631579: Chrome can't
     // start when the locale file cannot be loaded. Crash early and gather some
-    // data.
-
+    // data. Also print on screen for rapid verification.
+    LOG(ERROR) << locale_file_path;
     // The local contained in prefs; provided by the caller.
     SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
                               pref_locale);
