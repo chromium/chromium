@@ -1848,6 +1848,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_htmlVsAriaAttributes() {
+        performHtmlTest("html-vs-aria-attributes.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_htmlAttributesAndTagNames() {
         performHtmlTest("html-attributes-and-tag-names.html");
     }

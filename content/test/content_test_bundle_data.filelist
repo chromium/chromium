@@ -4094,9 +4094,10 @@ data/accessibility/html/html-expected-fuchsia.txt
 data/accessibility/html/html-expected-mac.txt
 data/accessibility/html/html-expected-uia-win.txt
 data/accessibility/html/html-expected-win.txt
-data/accessibility/html/html.html
+data/accessibility/html/html-vs-aria-attributes-expected-android-external.txt
 data/accessibility/html/html-vs-aria-attributes-expected-blink.txt
 data/accessibility/html/html-vs-aria-attributes.html
+data/accessibility/html/html.html
 data/accessibility/html/i-expected-android-assist-data.txt
 data/accessibility/html/i-expected-android-external.txt
 data/accessibility/html/i-expected-android.txt
