@@ -1708,6 +1708,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual bool IsInertRoot() const;
 
   FocusgroupData GetFocusgroupData() const;
+  Element* FocusgroupLastFocused() const;
+  void SetFocusgroupLastFocused(Element* element);
 
   bool checkVisibility(CheckVisibilityOptions* options) const;
 

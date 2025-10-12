@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 
@@ -46,6 +47,65 @@ TEST_F(ElementTest, FocusableDesignMode) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(document.documentElement()->IsFocusable())
       << "<html> with designMode=on should be focusable.";
+}
+
+TEST_F(ElementTest, FocusgroupLastFocusedStorageBasic) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id='container' focusgroup="toolbar">
+      <button id='a'>a</button>
+      <button id='b'>b</button>
+    </div>
+  )HTML");
+
+  Element* container = document.getElementById(AtomicString("container"));
+  Element* a = document.getElementById(AtomicString("a"));
+  Element* b = document.getElementById(AtomicString("b"));
+
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_EQ(nullptr, container->FocusgroupLastFocused());
+
+  container->SetFocusgroupLastFocused(a);
+  EXPECT_EQ(a, container->FocusgroupLastFocused());
+
+  container->SetFocusgroupLastFocused(b);
+  EXPECT_EQ(b, container->FocusgroupLastFocused());
+}
+
+TEST_F(ElementTest, FocusgroupLastFocusedWeakReference) {
+  Document& document = GetDocument();
+
+  SetBodyContent(R"HTML(
+    <div id='container' focusgroup="toolbar">
+      <button>a</button>
+    </div>
+  )HTML");
+
+  Element* container = document.getElementById(AtomicString("container"));
+  ASSERT_TRUE(container);
+
+  Element* button = document.CreateElementForBinding(AtomicString("button"));
+  container->appendChild(button);
+
+  // Set the last focused element.
+  container->SetFocusgroupLastFocused(button);
+  EXPECT_EQ(button, container->FocusgroupLastFocused());
+
+  // Remove the button from the tree.
+  button->remove();
+  button = nullptr;
+
+  // Force garbage collection - the weak reference should allow collection.
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      ThreadState::StackState::kNoHeapPointers);
+
+  // The weak reference should now return nullptr since the element was garbage
+  // collected.
+  EXPECT_EQ(nullptr, container->FocusgroupLastFocused())
+      << "WeakMember should not prevent garbage collection of removed elements";
 }
 
 TEST_F(ElementTest,

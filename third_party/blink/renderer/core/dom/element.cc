@@ -11905,6 +11905,21 @@ FocusgroupData Element::GetFocusgroupData() const {
   return {};
 }
 
+Element* Element::FocusgroupLastFocused() const {
+  // It only makes sense to check this on a focusgroup.
+  DCHECK(IsActualFocusgroup(GetFocusgroupData()));
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetFocusgroupLastFocused();
+  }
+  return nullptr;
+}
+
+void Element::SetFocusgroupLastFocused(Element* element) {
+  // It only makes sense to set this on a focusgroup.
+  DCHECK(IsActualFocusgroup(GetFocusgroupData()));
+  EnsureElementRareData().SetFocusgroupLastFocused(element);
+}
+
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   if (options->checkVisibilityCSS()) {
     UseCounter::Count(

@@ -50,6 +50,7 @@ class InvokerData;
 class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
+class Element;
 
 enum class ElementFlags;
 
@@ -96,8 +97,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kCSSPseudoElementData = 36,
     kCustomElementRegistry = 37,
     kAnimationTriggerData = 38,
+    kFocusgroupLastFocused = 39,
 
-    kNumFields = 39,
+    kNumFields = 40,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -332,6 +334,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   ElementAnimationTriggerData* AnimationTriggerData();
   ElementAnimationTriggerData& EnsureAnimationTriggerData();
+
+  void SetFocusgroupLastFocused(Element* element);
+  Element* GetFocusgroupLastFocused() const;
 
   void SetDidAttachInternals() { fields_.did_attach_internals = true; }
   bool DidAttachInternals() const { return fields_.did_attach_internals; }
