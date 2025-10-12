@@ -3311,6 +3311,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6433501201775827830">Zgjidh motorin e kërkimit</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> e refuzoi lidhjen.</translation>
 <translation id="6433797564277305076">Konfirmo kartat e tua më shpejt duke përdorur shkyçjen e pajisjes nga tani e tutje</translation>
+<translation id="6436994298828707228">Lidhja është bllokuar sepse ajo është nisur nga një faqe publike për t'u lidhur me pajisjet ose serverët në rrjetin tënd lokal.</translation>
 <translation id="6437647869369934905">Vizatimet e Google</translation>
 <translation id="643917412048333145">Fustane</translation>
 <translation id="6440503408713884761">Shpërfillur</translation>
@@ -3382,6 +3383,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6547208576736763147">Dy shpime majtas</translation>
 <translation id="6549443526281184652">Kostumet</translation>
 <translation id="6550245281449521513">Kyçja e miut nuk lejohet</translation>
+<translation id="6552566579578780089">Pagesat</translation>
 <translation id="6554732001434021288">Vizituar së fundi <ph name="NUM_DAYS" /> ditë më parë</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6557715786897013164">14 x 17 inç</translation>
@@ -3530,6 +3532,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">portat seriale</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Paguaj me këste të lehta</translation>
 <translation id="6825578344716086703">U përpoqe të gjeje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë të nënshkruar duke përdorur një algoritëm të dobët nënshkrimi. Kjo do të thotë se kredencialet e sigurisë që paraqiti serveri mund të jenë të falsifikuara dhe serveri mund të mos jetë ai që prisje (mund të jesh duke komunikuar me një sulmues).</translation>
 <translation id="6826993739343257035">Të lejohet AR?</translation>
 <translation id="6828150717884939426">Telefono</translation>
@@ -3977,6 +3980,7 @@ Detaje shtesë:
 <translation id="753556296624075801">Mundësuar nga Google</translation>
 <translation id="753713322968419914">Të hiqet adresa e shtëpisë nga plotësimi automatik i Chrome?</translation>
 <translation id="7537536606612762813">E detyrueshme</translation>
+<translation id="7541043894191476250">Detyrat kontekstuale</translation>
 <translation id="7543525346216957623">Pyet prindin tënd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> po niset</translation>
 <translation id="7548892272833184391">Rregullo gabimet në lidhje</translation>
@@ -4502,6 +4506,7 @@ Detaje shtesë:
 <translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>
 <translation id="8407031780528483338">Enë gatimi</translation>
 <translation id="8409413588194360210">përpunuesit e pagesave</translation>
+<translation id="8410956920192583322">Çdo muaj ose me 4 këste</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
 <translation id="8414322570408428950">Ndodh ngjarja e shtesës</translation>
@@ -4792,6 +4797,7 @@ Detaje shtesë:
 <translation id="8922734931659847428">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka <ph name="BEGIN_LINK" />ngjarje të teknologjisë së vjetër<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
 <translation id="8926389886865778422">Mos pyet përsëri</translation>
+<translation id="8926400492587758246">Paguaj me këste të ulëta mujore</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>
 <translation id="893332455753468063">Shto emër</translation>
 <translation id="8938242527120341116">Filtrat e përmbajtjes të pajisjes sate bllokuan <ph name="BLOCKED_URL" /></translation>

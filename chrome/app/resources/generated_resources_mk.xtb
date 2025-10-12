@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">Дознајте повеќе за поправањето грешки на ажурирања</translation>
 <translation id="1217114730239853757">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за ChromeOS Flex? Ако сакате, притиснете на копчето за празно место.</translation>
 <translation id="1217117837721346030">Преземи сомнителна датотека</translation>
+<translation id="1217437913373100941">Нова картичка во <ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">Вашите локални податоци наскоро ќе бидат избришани</translation>
 <translation id="1217668622537098248">Врати се на лев клик после дејството</translation>
 <translation id="1218015446623563536">Бришење на Linux</translation>
@@ -3237,6 +3238,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Може да управувате со поставките од оваа картичка во секое време или да гледате повеќе опции во „Приспособување на Chrome“.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Нова картичка во 1 картичка}one{Нова картичка во # картичка}other{Нова картичка во # картички}}</translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3208703785962634733">Непотврдена</translation>
@@ -3412,6 +3414,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - видеото е пуштено во режимот „слика во слика“</translation>
 <translation id="3335380372402547327">Прегледајте ги известувањата со блиц</translation>
 <translation id="3335947283844343239">Повторно отвори затворена картичка</translation>
+<translation id="3336661809256024098">Нова картичка во <ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не им дозволувај на сајтовите да ракуваат со протоколи</translation>
 <translation id="333863344734218290">Ве предупредува за небезбедни јавни и приватни сајтови</translation>
@@ -8957,6 +8960,7 @@
 <translation id="7211783048245131419">Сѐ уште не е назначен прекинувач</translation>
 <translation id="7212097698621322584">Внесете го тековниот PIN за да го промените. Ако не го знаете PIN-кодот, ќе треба да го ресетирате безбедносниот клуч, а потоа да создадете нов PIN.</translation>
 <translation id="7214047272988222011">Дозволено – <ph name="PERMISSION_DETAILS" />. Вклучете <ph name="LINK_BEGIN" />пристап до камерата за оперативниот систем<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Нова картичка во 1 картичка}one{Нова картичка во # картичка}other{Нова картичка во # картички}}</translation>
 <translation id="721490496276866468">Увезете ги лозинките</translation>
 <translation id="7217208603285112910">Изборот не е на <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Да се избришат податоците од сајтот?</translation>
@@ -9244,6 +9248,7 @@
 <translation id="7410344089573941623">Прашај дали <ph name="HOST" /> сака да пристапи до вашите фотоапарат и микрофон</translation>
 <translation id="7410421966064092098">Сајтовите не може да помогнат при потврдувањето дека не сте бот</translation>
 <translation id="7410852728357935715">Емитувај на уред</translation>
+<translation id="741148343080227980">Може да го измените вашето име <ph name="BEGIN_LINK" />во вашата сметка на Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7412226954991670867">ГПУ-меморија</translation>
 <translation id="741370456693729525">Користете секојдневен јазик за да ја пребарувате вашата историја на прелистувањето и да наоѓате сајтови што сте ги посетиле</translation>

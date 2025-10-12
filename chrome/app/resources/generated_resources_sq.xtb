@@ -336,6 +336,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1216891999012841486">Mëso më shumë rreth rregullimit të gabimeve të përditësimit</translation>
 <translation id="1217114730239853757">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp tastin e hapësirës.</translation>
 <translation id="1217117837721346030">Shkarko skedarin e dyshimtë</translation>
+<translation id="1217437913373100941">Skedë e re në grupin "<ph name="GROUP_NAME" />"</translation>
 <translation id="1217483152325416304">Të dhënat e tua lokale do të fshihen së shpejti</translation>
 <translation id="1217668622537098248">Kthehu prapa te klikimi me butonin majtas pas veprimit</translation>
 <translation id="1218015446623563536">Fshi Linux</translation>
@@ -3219,6 +3220,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Mund t'i menaxhosh cilësimet nga kjo kartë në çdo kohë ose mund të shikosh më shumë opsione te "Personalizo Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Skedë e re në 1 skedë}other{Skedë e re në # skeda}}</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="3208703785962634733">I pakonfirmuar</translation>
@@ -3394,6 +3396,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Videoja po luhet në modalitetin "figurë brenda figurës"</translation>
 <translation id="3335380372402547327">Shiko paraprakisht njoftimet me blic</translation>
 <translation id="3335947283844343239">Rihap skedën e mbyllur</translation>
+<translation id="3336661809256024098">Skedë e re në grupin "<ph name="GROUP_NAME" />"</translation>
 <translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3337568642696914359">Mos lejo që sajtet të menaxhojnë protokollet</translation>
 <translation id="333863344734218290">Të paralajmëron për sajtet private dhe publike të pasigurta</translation>
@@ -8935,6 +8938,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7211783048245131419">Nuk është caktuar ende asnjë çelës</translation>
 <translation id="7212097698621322584">Fut kodin PIN aktual për ta ndryshuar. Nëse nuk e di kodin PIN, duhet të rivendosësh çelësin e sigurisë, dhe më pas të krijosh një kod të ri PIN.</translation>
 <translation id="7214047272988222011">Lejohet - <ph name="PERMISSION_DETAILS" />. Aktivizo <ph name="LINK_BEGIN" />qasjen te kamera e sistemit<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Skedë e re në 1 skedë}other{Skedë e re në # skeda}}</translation>
 <translation id="721490496276866468">Importo fjalëkalimet</translation>
 <translation id="7217208603285112910">Zgjedhja nuk është në <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
@@ -9222,6 +9226,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7410344089573941623">Pyet nëse <ph name="HOST" /> dëshiron të qaset te kamera dhe mikrofoni</translation>
 <translation id="7410421966064092098">Sajtet nuk mund të ndihmojnë për të verifikuar që je një robot</translation>
 <translation id="7410852728357935715">Transmeto te një pajisje</translation>
+<translation id="741148343080227980">Mund të modifikosh emrin tënd <ph name="BEGIN_LINK" />në "Llogarinë tënde të Google" <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="741370456693729525">Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit dhe për të gjetur sajtet që ke vizituar</translation>

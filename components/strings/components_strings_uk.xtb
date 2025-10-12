@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">Виберіть пошукову систему</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> відхилив запит на з’єднання.</translation>
 <translation id="6433797564277305076">Відтепер ви можете підтверджувати картки швидше за допомогою функції розблокування пристрою</translation>
+<translation id="6436994298828707228">З’єднання заблоковано, оскільки його ініціювала загальнодоступна сторінка для підключення до пристроїв або серверів у вашій приватній мережі.</translation>
 <translation id="6437647869369934905">Google Малюнки</translation>
 <translation id="643917412048333145">Сукні</translation>
 <translation id="6440503408713884761">Ігнорується</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">Пробити два отвори ліворуч</translation>
 <translation id="6549443526281184652">Костюми</translation>
 <translation id="6550245281449521513">Блокування миші заборонено</translation>
+<translation id="6552566579578780089">Способи оплати</translation>
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
 <translation id="6556866813142980365">Повторити</translation>
 <translation id="6557715786897013164">14 x 17 дюйм.</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">послідовні порти</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">Зручні платежі на виплат</translation>
 <translation id="6825578344716086703">Ви спробували зв’язатися з доменом <ph name="DOMAIN" />, проте сервер надав сертифікат, підписаний із використанням слабкого алгоритму підпису (як-от SHA-1). Це означає, що облікові дані безпеки, надані сервером, можуть бути сфальсифікованими, а сервер – не тим, який вам потрібен (ви можете передавати свої дані зловмиснику).</translation>
 <translation id="6826993739343257035">Дозволити доповнену реальність?</translation>
 <translation id="6828150717884939426">Виклик</translation>
@@ -3979,6 +3982,7 @@
 <translation id="753556296624075801">Технологія Google</translation>
 <translation id="753713322968419914">Вилучити домашню адресу з автозаповнення в Chrome?</translation>
 <translation id="7537536606612762813">Обов’язкове</translation>
+<translation id="7541043894191476250">Контекстні завдання</translation>
 <translation id="7543525346216957623">Попросіть когось із батьків</translation>
 <translation id="7546409722674205727">Запуск додатка <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Як виправити помилки з’єднання</translation>
@@ -4504,6 +4508,7 @@
 <translation id="8406071103346257942">припинити використовувати функцію блокування екрана для заповнення паролів</translation>
 <translation id="8407031780528483338">Кухонний посуд</translation>
 <translation id="8409413588194360210">обробники платежів</translation>
+<translation id="8410956920192583322">Щомісяця або 4 платежі на виплат</translation>
 <translation id="8412145213513410671">Аварійне завершення роботи (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Потрібно двічі ввести однакову парольну фразу.</translation>
 <translation id="8414322570408428950">Відбувається подія розширення</translation>
@@ -4795,6 +4800,7 @@
 <translation id="8922734931659847428">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено <ph name="BEGIN_LINK" />події застарілих технологій<ph name="END_LINK" /></translation>
 <translation id="892588693504540538">Пробити отвір угорі праворуч</translation>
 <translation id="8926389886865778422">Не запитувати знову</translation>
+<translation id="8926400492587758246">Сплачуйте щомісяця невеликими частинами</translation>
 <translation id="8932102934695377596">Ваш годинник відстає</translation>
 <translation id="893332455753468063">Додайте ім’я</translation>
 <translation id="8938242527120341116">Фільтри контенту на вашому пристрої заблокували URL-адресу <ph name="BLOCKED_URL" /></translation>

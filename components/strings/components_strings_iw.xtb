@@ -3317,6 +3317,7 @@ Del</translation>
 <translation id="6433501201775827830">בחירת מנוע החיפוש</translation>
 <translation id="6433595998831338502">לא ניתן היה להתחבר אל <ph name="HOST_NAME" />.</translation>
 <translation id="6433797564277305076">כדי לאשר את הכרטיסים שלך מהר יותר, אפשר להשתמש בביטול נעילת המכשיר מעכשיו והלאה</translation>
+<translation id="6436994298828707228">החיבור הופעל על ידי דף ציבורי כדי להתחבר למכשירים או לשרתים ברשת מקומית, ולכן הוא נחסם.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">שמלות</translation>
 <translation id="6440503408713884761">המערכת מתעלמת מהפריט</translation>
@@ -3388,6 +3389,7 @@ Del</translation>
 <translation id="6547208576736763147">שני ניקובים בצד שמאל</translation>
 <translation id="6549443526281184652">תחפושות</translation>
 <translation id="6550245281449521513">אין הרשאה לנעילת העכבר</translation>
+<translation id="6552566579578780089">תשלומים</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6557715786897013164">‏14x17 אינץ'</translation>
@@ -3536,6 +3538,7 @@ Del</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">יציאות טוריות</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">לשלם בתשלומים נוחים</translation>
 <translation id="6825578344716086703">‏ניסית להגיע אל <ph name="DOMAIN" />, אבל השרת הציג אישור שנחתם באמצעות אלגוריתם חתימה חלש (כמו SHA-1). המשמעות היא שפרטי האבטחה שהוצגו על-ידי השרת עלולים להיות מזויפים, וייתכן שהשרת הוא לא השרת שציפית לו (ייתכן שנוצר קשר בינך לבין התוקף).</translation>
 <translation id="6826993739343257035">‏להתיר AR?</translation>
 <translation id="6828150717884939426">שיחה</translation>
@@ -3984,6 +3987,7 @@ Del</translation>
 <translation id="753556296624075801">‏מופעל על ידי Google</translation>
 <translation id="753713322968419914">‏להסיר את כתובת המגורים מהמילוי האוטומטי של Chrome?</translation>
 <translation id="7537536606612762813">חובה</translation>
+<translation id="7541043894191476250">משימות לפי הקשר</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
 <translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>
 <translation id="7548892272833184391">פתרון שגיאות חיבור</translation>
@@ -4509,6 +4513,7 @@ Del</translation>
 <translation id="8406071103346257942">להפסיק להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="8407031780528483338">כלי בישול</translation>
 <translation id="8409413588194360210">‏רכיבי handler של תשלומים</translation>
+<translation id="8410956920192583322">תשלום חודשי או 4 תשלומים.</translation>
 <translation id="8412145213513410671">קריסות (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">עליך להזין את אותו משפט-סיסמה פעמיים.</translation>
 <translation id="8414322570408428950">מתרחש אירוע של תוסף</translation>
@@ -4799,6 +4804,7 @@ Del</translation>
 <translation id="8922734931659847428">‏רשימה חלקית של כתובות URL של דפים עם <ph name="BEGIN_LINK" />אירועי שימוש בטכנולוגיה מדור קודם<ph name="END_LINK" /> שביקרת בהם</translation>
 <translation id="892588693504540538">ניקוב בפינה הימנית העליונה</translation>
 <translation id="8926389886865778422">אין לשאול שוב</translation>
+<translation id="8926400492587758246">לשלם בתשלומים עם החזר חודשי נמוך</translation>
 <translation id="8932102934695377596">השעון שלך מאחר</translation>
 <translation id="893332455753468063">הוספת שם</translation>
 <translation id="8938242527120341116">מסנני התוכן של המכשיר חסמו את <ph name="BLOCKED_URL" /></translation>

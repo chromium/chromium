@@ -3312,6 +3312,7 @@
 <translation id="6433501201775827830">ඔබේ සෙවුම් එන්ජිම තෝරා ගන්න</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> සබැඳීම ප්‍රතික්ෂේප කරන ලදී.</translation>
 <translation id="6433797564277305076">දැන් සිට උපාංග අගුලු හැරීම භාවිත කර ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
+<translation id="6436994298828707228">ඔබේ ස්ථානික ජාලයෙහි උපාංග හෝ සේවාදායක වෙත සම්බන්ධ වීමට එය පොදු පිටුවක් මගින් ආරම්භ කර ඇති නිසා සම්බන්ධතාවය අවහිර කර ඇත.</translation>
 <translation id="6437647869369934905">Google Drawings</translation>
 <translation id="643917412048333145">ඇඳුම්</translation>
 <translation id="6440503408713884761">නොතැකූ</translation>
@@ -3383,6 +3384,7 @@
 <translation id="6547208576736763147">වමට ද්වි අනින්න</translation>
 <translation id="6549443526281184652">ඇඳුම් පැළඳුම්</translation>
 <translation id="6550245281449521513">මූසික අගුලට ඉඩ නැත</translation>
+<translation id="6552566579578780089">ගෙවීම්</translation>
 <translation id="6554732001434021288">දින <ph name="NUM_DAYS" />කට පෙර අවසන් වරට පිවිසි</translation>
 <translation id="6556866813142980365">නැවත කරන්න</translation>
 <translation id="6557715786897013164">අඟ 14 x 17</translation>
@@ -3531,6 +3533,7 @@
 <translation id="6817217109584391709">ජාවාස්ක්‍රිප්ට්</translation>
 <translation id="6820143000046097424">අනුක්‍රමික තොට</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6820949753458790123">පහසු වාරික වලින් ගෙවන්න</translation>
 <translation id="6825578344716086703">ඔබ <ph name="DOMAIN" /> වෙත ළඟා වීමට උත්සහ කළ නමුත්, සේවාදායක ලබා දුන් සහතිකය සන්කර ඇත්තේ දුර්වල ඇල්ගොරිතමයක් (SHA-1 වැනි) භාවිතයෙනි. එහි තේරුම සේවාදායකය ලබා දුන් ආරක්ෂක තොරතුරු ව්‍යාජ ඒවා විය හැකි අතර ඔබ සබඳවන්නේ ඔබ බලාපොරොත්තු වන සේවාදායකය සමඟ නොවිය හැක (ඔබ සන්නිවේදනය කරන්නේ ප්‍රහාරකයා සමඟ විය හැක).</translation>
 <translation id="6826993739343257035">AR ඉඩ දෙන්නද?</translation>
 <translation id="6828150717884939426">අමතන්න</translation>
@@ -3978,6 +3981,7 @@
 <translation id="753556296624075801">Google මඟින් බලගැන්වේ</translation>
 <translation id="753713322968419914">Chrome ස්වයං පිරවුමෙන් නිවසේ ලිපිනය ඉවත් කරන්න ද?</translation>
 <translation id="7537536606612762813">අත්‍යාවශ්‍ය</translation>
+<translation id="7541043894191476250">සන්දර්භීය කාර්යයන්</translation>
 <translation id="7543525346216957623">ඔබේ දෙමව්පියන්ගෙන් අසන්න</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ආරම්භ කරමින්</translation>
 <translation id="7548892272833184391">සබැඳුම දෝෂ නිරාකරණය කරන්න</translation>
@@ -4503,6 +4507,7 @@
 <translation id="8406071103346257942">මුරපද පිරවීම සඳහා ඔබේ තිර අගුල භාවිතා කිරීම නවත්වන්න</translation>
 <translation id="8407031780528483338">පිසීමේ භාජන</translation>
 <translation id="8409413588194360210">ගෙවීම් හසුරු</translation>
+<translation id="8410956920192583322">මාසිකව හෝ වාරික 4කින්</translation>
 <translation id="8412145213513410671">පිපුරුම් (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ඔබ එකම රහස් පදය දෙවරක් ඇතුළු කළ යුතුය.</translation>
 <translation id="8414322570408428950">දිගු සිදුවීම සිදු වේ</translation>
@@ -4793,6 +4798,7 @@
 <translation id="8922734931659847428">ඔබ පිවිසෙන පිටුවල URL ලිපිනවල සීමිත ලැයිස්තුවක් <ph name="BEGIN_LINK" />ලෙගසි තාක්ෂණ සිදුවීම්<ph name="END_LINK" /> සිදු වේ</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>
 <translation id="8926389886865778422">නැවත නොඅසන්න</translation>
+<translation id="8926400492587758246">අඩු මාසික වාරික වලින් ගෙවන්න</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>
 <translation id="893332455753468063">නම එක් කරන්න</translation>
 <translation id="8938242527120341116">ඔබේ උපාංගයේ අන්තර්ගත පෙරහන් අවහිර කර ඇත <ph name="BLOCKED_URL" /></translation>

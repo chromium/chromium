@@ -338,6 +338,7 @@
 <translation id="1216891999012841486">מידע נוסף על תיקון של שגיאות עדכון</translation>
 <translation id="1217114730239853757">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex? אם כן, יש להקיש על מקש הרווח.</translation>
 <translation id="1217117837721346030">הורדת קובץ חשוד</translation>
+<translation id="1217437913373100941">כרטיסייה חדשה ב-<ph name="GROUP_NAME" /></translation>
 <translation id="1217483152325416304">הנתונים המקומיים שלך יימחקו בקרוב</translation>
 <translation id="1217668622537098248">חזרה ללחיצה שמאלית אחרי פעולה</translation>
 <translation id="1218015446623563536">‏מחיקת Linux</translation>
@@ -3235,6 +3236,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         תמיד אפשר לנהל את ההגדרות בכרטיס הזה, או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{כרטיסייה חדשה בכרטיסייה אחת}one{כרטיסייה חדשה ב-# כרטיסיות}two{כרטיסייה חדשה ב-# כרטיסיות}other{כרטיסייה חדשה ב-# כרטיסיות}}</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">לבדיקה</translation>
 <translation id="3208703785962634733">לא מאושר</translation>
@@ -3410,6 +3412,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - הסרטון פועל במצב תמונה בתוך תמונה</translation>
 <translation id="3335380372402547327">תצוגה מקדימה של ההבהוב על התראות</translation>
 <translation id="3335947283844343239">פתיחה מחדש כרטיסייה שנסגרה</translation>
+<translation id="3336661809256024098">כרטיסייה חדשה ב-<ph name="GROUP_NAME" /></translation>
 <translation id="3336855445806447827">לא בטוח</translation>
 <translation id="3337568642696914359">לא לאפשר לאתרים לטפל בפרוטוקולים</translation>
 <translation id="333863344734218290">קבלת אזהרה לגבי אתרים ציבוריים ופרטיים לא מאובטחים</translation>
@@ -8959,6 +8962,7 @@
 <translation id="7211783048245131419">עוד לא הוקצו מתגים.</translation>
 <translation id="7212097698621322584">צריך להזין את קוד האימות הנוכחי כדי לשנות אותו. אם קוד האימות לא ידוע לך, צריך לאפס את מפתח האבטחה ולאחר מכן ליצור קוד אימות חדש.</translation>
 <translation id="7214047272988222011">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למצלמת המערכת<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{כרטיסייה חדשה בכרטיסייה אחת}one{כרטיסייה חדשה ב-# כרטיסיות}two{כרטיסייה חדשה ב-# כרטיסיות}other{כרטיסייה חדשה ב-# כרטיסיות}}</translation>
 <translation id="721490496276866468">ייבוא סיסמאות</translation>
 <translation id="7217208603285112910">הקטע שבחרת הוא לא ב<ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
@@ -9246,6 +9250,7 @@
 <translation id="7410344089573941623">לבקש ממני רשות אם <ph name="HOST" /> רוצה גישה למצלמה ולמיקרופון</translation>
 <translation id="7410421966064092098">אתרים לא יכולים לעזור לאמת שלא מדובר בבוט</translation>
 <translation id="7410852728357935715">‏הפעלת Cast למכשיר</translation>
+<translation id="741148343080227980">‏אפשר לערוך את השם <ph name="BEGIN_LINK" />בחשבון <ph name="USERNAME" /> ב-Google<ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7412226954991670867">‏זיכרון GPU</translation>
 <translation id="741370456693729525">התכונה משתמשת בשפה יומיומית כדי לחפש בהיסטוריית הגלישה ולמצוא אתרים שביקרת בהם</translation>

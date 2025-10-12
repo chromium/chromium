@@ -982,6 +982,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2596415276201385844">Xavfsiz aloqa o‘rnatish uchun tizim soati to‘g‘ri sozlangan bo‘lishi kerak. Chunki veb-saytlar o‘zini tanitish uchun ishlatadigan sertifikatlar muayyan vaqt oralig‘idagina kuchga ega. Qurilmangizdagi vaqt noto‘g‘riligi tufayli, Chrome sertifikatlarni tekshira olmaydi.</translation>
 <translation id="2597378329261239068">Bu hujjat parol bilan himoyalangan. Iltimos parolni kiriting.</translation>
 <translation id="2600083925285092409">Bu karta Google Play hisobiga saqlanganidan keyin uning maʼlumotlarini Chromium xaridlarida avtomatik kiritish mumkin</translation>
+<translation id="2602283642570832995">Bu amal <ph name="DOMAIN" /> siyosatlarini buzishi mumkin</translation>
 <translation id="2605979593348332811">Ism talaffuzi</translation>
 <translation id="2606760465469169465">Avtomatik tekshiruv</translation>
 <translation id="2608019759319359258">Bloklangan mavzular reklamani moslashtirishda ishlatilmaydi</translation>
@@ -2016,6 +2017,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4281998142035485137">{0,plural, =1{Maxfiy fayl ochilsinmi?}other{Maxfiy fayllar ochilsinmi?}}</translation>
 <translation id="4282280603030594840">Avtomobil xaridi</translation>
 <translation id="4282346679996504092">Ushbu mahsulot uchun ogohlantirishlar oʻchirildi va bukmark olib tashlandi</translation>
+<translation id="4284885181066817063"><ph name="DOMAIN" /> tomonidan bloklangan</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>
 <translation id="4287495839370498922">Chrome brauzerida reklamalardagi kuchaytirilgan maxfiylik</translation>
 <translation id="4288101205645068104">Transport vositasini oʻchirish</translation>

@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">ປັບປຸງແສງ</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
 <translation id="255671100581129685">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນສາທາລະນະ.</translation>
+<translation id="2562459326218811217">ສຽບອຸປະກອນແລ້ວ ແຕ່ບໍ່ສາກ. ລອງໃຊ້ສາຍສາກທີ່ມີ watts (W) ຫຼາຍຂຶ້ນ ຫຼື ໃຊ້ເຄື່ອງສາກເດີມຂອງທ່ານ.</translation>
 <translation id="256712445991462162">ແວ່ນຂະຫຍາຍໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="2573588302192866788">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ໄດ້</translation>
 <translation id="2575685495496069081">ປິດນຳໃຊ້ການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີ</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2814448776515246190">ຖ່າຍຮູບບາງສ່ວນ</translation>
+<translation id="2815594810045873507">ລອງໃຊ້ສາຍສາກທີ່ມີ watts (W) ຫຼາຍຂຶ້ນ ຫຼື ໃຊ້ເຄື່ອງສາກເດີມຂອງທ່ານ.</translation>
 <translation id="2819276065543622893">ທ່ານຈະຖືກອອກຈາກລະບົບດຽວນີ້.</translation>
 <translation id="2822551631199737692">ມີການໃຊ້ກ້ອງຖ່າຍຮູບຢູ່</translation>
 <translation id="2825619548187458965">ຖ້ານ</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">ສຳລັບລາຍການຫຼິ້ນແບບໂຟກັສທີ່ປັບແຕ່ງສ່ວນຕົວ, ໃຫ້ອະນຸຍາດສິດເຂົ້າເຖິງ YouTube Music</translation>
 <translation id="6582034443359256692">ກຳລັງຄິດໄລ່ລະດັບການສາກແບັດເຕີຣີ.</translation>
 <translation id="6585808820553845416">ຊ່ວງເວລາເຂົ້າໃຊ້ສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /> .</translation>
+<translation id="6586685375736417639">ບໍ່ສາມາດສາກອຸປະກອນໄດ້</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="6605415194043280389">ໂໝດໂຟກັສເປີດຢູ່</translation>

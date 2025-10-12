@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">යාවත්කාලීන දෝෂ නිරාකරණ කිරීම පිළිබඳව තව දැන ගන්න</translation>
 <translation id="1217114730239853757">ඔබට ChromeOS Flex සඳහා වන ආවේණික තිර කියවනය, ChromeVox සක්‍රිය කිරීමට අවශ්‍යද? එසේ නම්, ඉඩ තීරුව ඔබන්න.</translation>
 <translation id="1217117837721346030">සැක සහිත ගොනුව බාගන්න</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" /> හි නව පටිත්ත</translation>
 <translation id="1217483152325416304">ඔබේ ස්ථානීය දත්ත ඉක්මනින් මකනු ලැබේ</translation>
 <translation id="1217668622537098248">ක්‍රියාවෙන් පසු වම් ක්ලිකයට ප්‍රතිවර්තනය</translation>
 <translation id="1218015446623563536">Linux මකන්න</translation>
@@ -3223,6 +3224,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ඔබට මෙම කාඩ්පතින් ඕනෑම වේලාවක සැකසීම් කළමනා කිරීමට හෝ Chrome අභිරුචිය තුළ තව විකල්ප බැලීමට හැකිය.</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{1 පටිත්තක නව පටිත්තක්}one{පටිති #ක නව පටිත්ත}other{පටිති #ක නව පටිත්ත}}</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="3208703785962634733">තහවුරු කර නොමැත</translation>
@@ -3398,6 +3400,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - පින්තූරය-තුළ-පින්තූරය ආකාරයෙහි ඇති වීඩියෝව</translation>
 <translation id="3335380372402547327">ෆ්ලෑෂ් දැනුම්දීම් පෙරදසුන් කරන්න</translation>
 <translation id="3335947283844343239">වැසූ ටැබය යළි විවෘත කරන්න</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" /> හි නව පටිත්ත</translation>
 <translation id="3336855445806447827">ස්ථිර නැත</translation>
 <translation id="3337568642696914359">ප්‍රොටොකෝල හැසිරවීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="333863344734218290">අනාරක්ෂිත පොදු සහ පෞද්ගලික අඩවි සඳහා ඔබට අනතුරු අඟවයි</translation>
@@ -8942,6 +8945,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7211783048245131419">තවම ස්විචයක් පවරා නැත</translation>
 <translation id="7212097698621322584">එය වෙනස් කිරීමට ඔබේ රහස් අංකය ඇතුළත් කරන්න. ඔබ ඔබේ රහස් අංකය නොදන්නෙහි නම්, ඔබ ආරක්‍ෂක යතුර යළි සකසා, නව රහස් අංකයක් සෑදිය යුතු ය.</translation>
 <translation id="7214047272988222011">ඉඩ දෙන ලදි – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />පද්ධති කැමරා ප්‍රවේශය<ph name="LINK_END" /> සක්‍රීය කරන්න.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{1 පටිත්තක නව පටිත්තක්}one{පටිති #ක නව පටිත්ත}other{පටිති #ක නව පටිත්ත}}</translation>
 <translation id="721490496276866468">මුරපද ආයාත කරන්න</translation>
 <translation id="7217208603285112910">තේරීම <ph name="LANGUAGE" /> හි නොවේ</translation>
 <translation id="7219254577985949841">අඩවි දත්ත මකන්නද?</translation>
@@ -9229,6 +9233,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7410344089573941623"><ph name="HOST" /> ඔබේ කැමරාව සහ මයික්‍රොෆෝනයට ප්‍රවේශ වන්නේ නම් අසන්න</translation>
 <translation id="7410421966064092098">ඔබ බොට් කෙනෙක් නොවන බව සත්‍යාපනය කිරීමට අඩවිවලට උදවු කළ නොහැක</translation>
 <translation id="7410852728357935715">උපාංගයක් වෙත විකාශ කරන්න</translation>
+<translation id="741148343080227980">ඔබට <ph name="BEGIN_LINK" />ඔබේ Google ගිණුමෙන් <ph name="USERNAME" /><ph name="END_LINK" /> ඔබේ නම සංස්කරණය කළ හැක.</translation>
 <translation id="741204030948306876">ඔව්, මම කැමතියි</translation>
 <translation id="7412226954991670867">GPU මතකය</translation>
 <translation id="741370456693729525">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීමට සහ ඔබ පැමිණි අඩවි සොයා ගැනීමට එදිනෙදා භාෂාව භාවිත කරන්න</translation>

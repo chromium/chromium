@@ -339,6 +339,7 @@
 <translation id="1216891999012841486">Докладніше про те, як виправляти помилки під час оновлення</translation>
 <translation id="1217114730239853757">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="1217117837721346030">Завантажити підозрілий файл</translation>
+<translation id="1217437913373100941">Нова вкладка в групі "<ph name="GROUP_NAME" />"</translation>
 <translation id="1217483152325416304">Ваші локальні дані невдовзі буде видалено</translation>
 <translation id="1217668622537098248">Після дії повернутися до натискання лівою кнопкою</translation>
 <translation id="1218015446623563536">Видалення Linux</translation>
@@ -3239,6 +3240,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ви можете будь-коли змінити налаштування цієї картки або переглянути інші параметри в розділі "Налаштувати Chrome".</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{Нова вкладка в групі з 1 вкладкою}one{Нова вкладка в групі з # вкладкою}few{Нова вкладка в групі з # вкладками}many{Нова вкладка в групі з # вкладок}other{Нова вкладка в групі з # вкладки}}</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3208584281581115441">Перевірити</translation>
 <translation id="3208703785962634733">Не підтверджено</translation>
@@ -3414,6 +3416,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: відео відтворюється в режимі "картинка в картинці"</translation>
 <translation id="3335380372402547327">Спробувати сповіщення зі спалахом</translation>
 <translation id="3335947283844343239">Знову відкрити закриту вкладку</translation>
+<translation id="3336661809256024098">Нова вкладка в групі "<ph name="GROUP_NAME" />"</translation>
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Заборонити сайтам обробляти протоколи</translation>
 <translation id="333863344734218290">Попереджати про небезпечні загальнодоступні й приватні сайти</translation>
@@ -8959,6 +8962,7 @@
 <translation id="7211783048245131419">Перемикачу ще не призначено дію</translation>
 <translation id="7212097698621322584">Введіть поточний PIN-код, щоб змінити його. Якщо ви не знаєте його, необхідно скинути ключ безпеки, а тоді створити новий PIN-код.</translation>
 <translation id="7214047272988222011">Дозволено: <ph name="PERMISSION_DETAILS" />. Надайте <ph name="LINK_BEGIN" />доступ до системної камери<ph name="LINK_END" />.</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{Нова вкладка в групі з 1 вкладкою}one{Нова вкладка в групі з # вкладкою}few{Нова вкладка в групі з # вкладками}many{Нова вкладка в групі з # вкладок}other{Нова вкладка в групі з # вкладки}}</translation>
 <translation id="721490496276866468">Імпортувати паролі</translation>
 <translation id="7217208603285112910">Мова вибраного тексту не <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Видалити дані сайту?</translation>
@@ -9246,6 +9250,7 @@
 <translation id="7410344089573941623">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до ваших камери та мікрофона</translation>
 <translation id="7410421966064092098">Сайти не можуть підтверджувати, що ви не бот</translation>
 <translation id="7410852728357935715">Транслювати на пристрій</translation>
+<translation id="741148343080227980">Ви можете змінити ім’я <ph name="BEGIN_LINK" />в обліковому записі Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7412226954991670867">Пам’ять GPU</translation>
 <translation id="741370456693729525">Шукайте інформацію в історії вебперегляду й знаходьте відвідані вебсайти за допомогою запитів розмовною мовою</translation>

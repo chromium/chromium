@@ -337,6 +337,7 @@
 <translation id="1216891999012841486">আপডেট সংক্রান্ত সমস্যা সমাধানের জন্য আরও জানুন</translation>
 <translation id="1217114730239853757">আপনি কি ChromeOS Flex-এর বিল্ট-ইন স্ক্রিন রিডার ChromeVox অ্যাক্টিভেট চালু করতে চাইছেন? উত্তর হ্যাঁ হলে, স্পেসবার প্রেস করুন।</translation>
 <translation id="1217117837721346030">সন্দেহজনক ফাইল ডাউনলোড করুন</translation>
+<translation id="1217437913373100941"><ph name="GROUP_NAME" />-এ নতুন ট্যাব</translation>
 <translation id="1217483152325416304">আপনার স্থানীয় ডেটা শীঘ্রই মুছে যাবে</translation>
 <translation id="1217668622537098248">কাজটি হয়ে গেলে লেফ্ট ক্লিকে ফিরে যান</translation>
 <translation id="1218015446623563536">Linux মুছে ফেলুন</translation>
@@ -3237,6 +3238,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Customize Chrome-এ আপনি যেকোনও সময় এই কার্ড থেকে সেটিংস ম্যানেজ করতে অথবা আরও বিকল্প দেখতে পারবেন।</translation>
+<translation id="3207909572959773060">{NUM_TABS,plural, =1{১টি ট্যাবে নতুন ট্যাব}one{#টি ট্যাবে নতুন ট্যাব}other{#টি ট্যাবে নতুন ট্যাব}}</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
 <translation id="3208703785962634733">অনিশ্চিত</translation>
@@ -3412,6 +3414,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ভিডিওটি ছবির-মধ্যে-ছবি মোডে চালানো হচ্ছে</translation>
 <translation id="3335380372402547327">ফ্ল্যাশ নোটিফিকেশনের প্রিভিউ দেখুন</translation>
 <translation id="3335947283844343239">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
+<translation id="3336661809256024098"><ph name="GROUP_NAME" />-এ নতুন ট্যাব</translation>
 <translation id="3336855445806447827">নিশ্চিত নই</translation>
 <translation id="3337568642696914359">প্রোটোকল ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="333863344734218290">এর ফলে আপনি অসুরক্ষিত সাইট সম্পর্কে বিজ্ঞপ্তি পেতে পারেন</translation>
@@ -8959,6 +8962,7 @@
 <translation id="7211783048245131419">এখনও কোনও সুইচ অ্যাসাইন করা হয়নি</translation>
 <translation id="7212097698621322584">পরিবর্তন করার জন্য আপনি পিন লিখুন। আপনি যদি পিন না জানেন তাহলে আপনাকে নিরাপত্তা কী রিসেট করতে হবে, তারপর নতুন পিন তৈরি করুন।</translation>
 <translation id="7214047272988222011">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />সিস্টেম ক্যামেরার অ্যাক্সেস<ph name="LINK_END" /> চালু করুন।</translation>
+<translation id="7214104268140700348">{NUM_TABS,plural, =1{১টি ট্যাবে নতুন ট্যাব}one{#টি ট্যাবে নতুন ট্যাব}other{#টি ট্যাবে নতুন ট্যাব}}</translation>
 <translation id="721490496276866468">পাসওয়ার্ড ইমপোর্ট করুন</translation>
 <translation id="7217208603285112910">বেছে নেওয়া কন্টেন্ট <ph name="LANGUAGE" /> ভাষায় নেই</translation>
 <translation id="7219254577985949841">সাইট ডেটা মুছবেন?</translation>
@@ -9246,6 +9250,7 @@
 <translation id="7410344089573941623"><ph name="HOST" /> আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস  করতে চায় কিনা জিজ্ঞাসা করুন</translation>
 <translation id="7410421966064092098">আপনি বট নন তা যাচাই করতে সাইটগুলি সাহায্য করতে পারে না</translation>
 <translation id="7410852728357935715">কোনও ডিভাইসে কাস্ট করুন</translation>
+<translation id="741148343080227980"><ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্ট <ph name="USERNAME" /> থেকে<ph name="END_LINK" /> আপনি নিজের নাম এডিট করতে পারবেন।</translation>
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
 <translation id="7412226954991670867">GPU মেমোরি</translation>
 <translation id="741370456693729525">ব্রাউজিং ইতিহাস সার্চ করতে এবং আপনার দেখা সাইটগুলি খুঁজে পেতে দৈনন্দিন ভাষা ব্যবহার করুন</translation>
