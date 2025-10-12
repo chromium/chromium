@@ -19,9 +19,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -191,11 +188,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mSnackbarManagerSupplier,
                         mBottomSheetControllerSupplier,
                         getModalDialogManagerSupplier()),
-                true /* recursive */);
+                /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new WideDisplayPaddingApplier(), false /* recursive */);
+                new WideDisplayPaddingApplier(), /* recursive= */ false);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new SettingsMetricsReporter(), false /* recursive */);
+                new SettingsMetricsReporter(), /* recursive= */ false);
 
         if (isContainmentEnabled()) {
             // In multi-column mode, the main settings fragment is a child of the
@@ -283,12 +280,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (!mStandalone) {
             if (ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
                 assert mMultiColumnSettings != null;
-                mMultiColumnTitleUpdater = new MultiColumnTitleUpdater();
+                mMultiColumnTitleUpdater =
+                        new MultiColumnTitleUpdater(
+                                mMultiColumnSettings,
+                                /* context= */ this,
+                                findViewById(R.id.settings_detailed_pane_title),
+                                this::setTitle);
                 mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
-                        mTitleUpdater, true /* recursive */);
+                        mTitleUpdater, /* recursive= */ true);
             }
         }
 
@@ -923,135 +925,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             }
             mCurrentPageTitle = settingsFragment.getPageTitle();
             mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
-        }
-    }
-
-    private static class DetailedTitle extends TextView {
-        private final Callback<String> mSetter =
-                (title) -> {
-                    if (title == null) {
-                        title = "";
-                    }
-                    setText(title);
-                };
-
-        private @Nullable ObservableSupplier<String> mSupplier;
-
-        DetailedTitle(Context context) {
-            super(context);
-
-            // Use the same TextAppearance with the main settings title.
-            setTextAppearance(R.style.TextAppearance_Headline_Primary);
-        }
-
-        void setSupplier(@Nullable ObservableSupplier<String> supplier) {
-            if (mSupplier == supplier) {
-                return;
-            }
-            if (mSupplier != null) {
-                mSupplier.removeObserver(mSetter);
-            }
-            mSupplier = supplier;
-            if (mSupplier != null) {
-                mSupplier.addSyncObserverAndCallIfNonNull(mSetter);
-            }
-        }
-    }
-
-    private class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
-        private final Callback<String> mSetTitleCallback =
-                (title) -> {
-                    if (title == null) {
-                        title = "";
-                    }
-                    setTitle(title);
-                };
-
-        private @Nullable ObservableSupplier<String> mCurrentPageTitle;
-
-        @Override
-        public void onTitleUpdated() {
-            assert mMultiColumnSettings != null;
-
-            // Update the detailed page title.
-            LinearLayout titleLayout = findViewById(R.id.settings_detailed_pane_title);
-            for (int i = 0; i < titleLayout.getChildCount(); ++i) {
-                View view = titleLayout.getChildAt(i);
-                if (view instanceof DetailedTitle detailedTitle) {
-                    detailedTitle.setSupplier(null);
-                }
-            }
-            titleLayout.removeAllViews();
-
-            // Padding for the chevron separator.
-            int paddingPx =
-                    getResources().getDimensionPixelSize(R.dimen.settings_detailed_title_padding);
-
-            var titles = mMultiColumnSettings.getTitles();
-            for (int i = 0; i < titles.size(); ++i) {
-                if (i != 0) {
-                    // '>' separator.
-                    var view = new ImageView(SettingsActivity.this);
-                    view.setPadding(paddingPx, 0, paddingPx, 0);
-                    view.setImageResource(R.drawable.chevron_right);
-                    titleLayout.addView(view);
-                }
-                var view = new DetailedTitle(SettingsActivity.this);
-                view.setSupplier(titles.get(i));
-                titleLayout.addView(view);
-            }
-
-            // Update the main menu text.
-            if (mCurrentPageTitle != null) {
-                mCurrentPageTitle.removeObserver(mSetTitleCallback);
-            }
-            if (mMultiColumnSettings.isTwoPane() || titles.isEmpty()) {
-                setTitle(R.string.settings);
-                mCurrentPageTitle = null;
-            } else {
-                mCurrentPageTitle = titles.get(titles.size() - 1);
-                mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
-            }
-        }
-
-        @Override
-        public void onHeaderLayoutUpdated() {
-            assert mMultiColumnSettings != null;
-
-            LinearLayout titleLayout = findViewById(R.id.settings_detailed_pane_title);
-            if (mCurrentPageTitle != null) {
-                mCurrentPageTitle.removeObserver(mSetTitleCallback);
-            }
-
-            if (!mMultiColumnSettings.isTwoPane()) {
-                // In the single pane mode, do not show the detailed title.
-                titleLayout.setVisibility(View.GONE);
-
-                // Set the visible page's title.
-                var titles = mMultiColumnSettings.getTitles();
-                if (titles.isEmpty()) {
-                    setTitle(R.string.settings);
-                    mCurrentPageTitle = null;
-                } else {
-                    mCurrentPageTitle = titles.get(titles.size() - 1);
-                    mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
-                }
-                return;
-            }
-
-            // In the two pane mode, the main title is always "Settings".
-            setTitle(R.string.settings);
-
-            // Enable detailed page title.
-            titleLayout.setVisibility(View.VISIBLE);
-
-            // Set left margin to align with the detailed pane.
-            View view = mMultiColumnSettings.getHeaderView();
-            ViewGroup.MarginLayoutParams params =
-                    (ViewGroup.MarginLayoutParams) titleLayout.getLayoutParams();
-            params.setMargins(view.getLayoutParams().width, 0, 0, 0);
-            titleLayout.setLayoutParams(params);
-            titleLayout.invalidate();
         }
     }
 
