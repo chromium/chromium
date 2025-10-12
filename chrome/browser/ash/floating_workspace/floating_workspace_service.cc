@@ -348,10 +348,8 @@ void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
   }
   CaptureAndUploadActiveDesk();
   if (!timer_.IsRunning()) {
-    timer_.Start(
-        FROM_HERE,
-        ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get(),
-        this, &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
+    timer_.Start(FROM_HERE, kFwsPeriodicJobInterval, this,
+                 &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
   }
 }
 

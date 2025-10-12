@@ -40,6 +40,10 @@ namespace ash {
 // connection.
 inline constexpr base::TimeDelta kFwsNetworkScreenDelay = base::Seconds(2);
 
+// How often Floating Workspace checks if the current desk template has changed
+// and should be uploaded to Chrome Sync.
+inline constexpr base::TimeDelta kFwsPeriodicJobInterval = base::Seconds(30);
+
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.

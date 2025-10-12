@@ -68,9 +68,7 @@ bool IsFloatingWorkspaceEnabled(const Profile* profile) {
       return true;
     }
   }
-
-  // TODO(crbug.com/297795546): Remove external ash feature flag.
-  return features::IsFloatingWorkspaceV2Enabled();
+  return false;
 }
 
 bool IsFloatingSsoEnabled(Profile* profile) {
