@@ -398,6 +398,10 @@ CONTENT_EXPORT extern const base::FeatureParam<std::string>
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kForcedOffCapturingAppsUserSetting;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubframeProcessShutdownDelay);
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kSubframeProcessShutdownDelaySeconds;
+
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in
 // alphabetical order, or in one of the ifdefs (also in order in each section).
 

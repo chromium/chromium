@@ -1362,6 +1362,18 @@ const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
 const base::FeatureParam<std::string> kForcedOffCapturingAppsUserSetting{
     &kPwaNavigationCapturing, "user_settings_forced_off_apps", ""};
 
+// Enables overriding the default subframe process shutdown delay via the
+// "delay_seconds" field trial parameter. This allows for experimentation with
+// different timeout values for keeping subframe processes alive for potential
+// reuse.
+BASE_FEATURE(kSubframeProcessShutdownDelay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Specifies the custom shutdown delay in seconds to use when the
+// kSubframeProcessShutdownDelay feature is enabled.
+// Default value, matching the original kSubframeProcessShutdownDelay.
+const base::FeatureParam<int> kSubframeProcessShutdownDelaySeconds{
+    &kSubframeProcessShutdownDelay, "delay_seconds", 2};
+
 namespace {
 enum class VideoCaptureServiceConfiguration {
   kEnabledForOutOfProcess,
