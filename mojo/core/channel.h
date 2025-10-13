@@ -360,11 +360,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   Channel(const Channel&) = delete;
   Channel& operator=(const Channel&) = delete;
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  // At this point only ChannelPosix needs InitFeatures.
-  static void set_posix_use_writev(bool use_writev);
-#endif
-
   static void set_use_trivial_messages(bool use_trivial_messages);
 
   bool is_for_ipcz() const { return is_for_ipcz_; }

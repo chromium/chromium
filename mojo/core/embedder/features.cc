@@ -9,16 +9,12 @@
 namespace mojo {
 namespace core {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMojoLinuxChannelSharedMem, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages{
     &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemPages", 4};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-
-BASE_FEATURE(kMojoPosixUseWritev, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 
 BASE_FEATURE(kMojoInlineMessagePayloads, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -91,17 +91,6 @@ class ChannelPosix : public Channel,
               ;
   bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
-  bool WriteOutgoingMessagesWithWritev() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
-  // FlushOutgoingMessagesWritevNoLock is equivalent to
-  // FlushOutgoingMessagesNoLock except it looks for opportunities to make
-  // only a single write syscall by using writev(2) instead of write(2). In
-  // most situations this is very straight forward; however, when a handle
-  // needs to be transferred we cannot use writev(2) and instead will fall
-  // back to the standard write.
-  bool FlushOutgoingMessagesWritevNoLock()
-      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
 #if BUILDFLAG(IS_IOS)
   bool CloseHandles(const int* fds, size_t num_fds)
       LOCKS_EXCLUDED(fds_to_close_lock_);

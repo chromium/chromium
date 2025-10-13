@@ -79,9 +79,6 @@ void InitFeatures() {
   CHECK(base::FeatureList::GetInstance());
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  Channel::set_posix_use_writev(
-      base::FeatureList::IsEnabled(kMojoPosixUseWritev));
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   bool shared_mem_enabled =
       base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);

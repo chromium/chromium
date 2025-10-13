@@ -73,15 +73,6 @@ ssize_t SocketWrite(base::PlatformFile socket,
   return send(socket, bytes, num_bytes, MSG_NOSIGNAL);
 }
 
-ssize_t SocketWritev(base::PlatformFile socket,
-                     struct iovec* iov,
-                     size_t num_iov) {
-  struct msghdr msg = {};
-  msg.msg_iov = iov;
-  msg.msg_iovlen = num_iov;
-  return HANDLE_EINTR(sendmsg(socket, &msg, MSG_NOSIGNAL));
-}
-
 ssize_t SendmsgWithHandles(base::PlatformFile socket,
                            struct iovec* iov,
                            size_t num_iov,
