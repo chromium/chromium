@@ -28,6 +28,7 @@ class ContextualTask;
 // Data block for UrlAttachment, intended to be modified only by
 // ContextDecorator implementations.
 struct UrlAttachmentDecoratorData {
+  // Filled in by ContextualTaskContextSource::kFallbackTitle.
   struct FallbackTitleData {
     std::u16string title;
   };
