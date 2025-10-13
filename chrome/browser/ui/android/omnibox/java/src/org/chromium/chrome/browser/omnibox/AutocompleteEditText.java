@@ -128,7 +128,16 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      * @return The user text without the autocomplete text.
      */
     public String getTextWithoutAutocomplete() {
-        if (mModel == null) return "";
+        // Return the current Text value when the content is requested before the InputConnection is
+        // created. This may happen when the user triggers ACTION_WEB_SEARCH, calling up the Omnibox
+        // for the selected text.
+        // When the InputConnection is empty we're guaranteed that there's no autocompletion
+        // available.
+        if (mModel == null) {
+            CharSequence result = getText();
+            if (TextUtils.isEmpty(result)) return "";
+            return result.toString();
+        }
         return mModel.getTextWithoutAutocomplete();
     }
 
@@ -136,7 +145,16 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      * @return Text that includes autocomplete.
      */
     public String getTextWithAutocomplete() {
-        if (mModel == null) return "";
+        // Return the current Text value when the content is requested before the InputConnection is
+        // created. This may happen when the user triggers ACTION_WEB_SEARCH, calling up the Omnibox
+        // for the selected text.
+        // When the InputConnection is empty we're guaranteed that there's no autocompletion
+        // available.
+        if (mModel == null) {
+            CharSequence result = getText();
+            if (TextUtils.isEmpty(result)) return "";
+            return result.toString();
+        }
         return mModel.getTextWithAutocomplete();
     }
 
