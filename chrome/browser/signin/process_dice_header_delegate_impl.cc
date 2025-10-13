@@ -84,13 +84,10 @@ void RetryInterceptionBubble(base::WeakPtr<content::WebContents> web_contents,
   // Try to show the interceptions bubble by treating this case as WebSignin
   // on any regular tab.
   // TODO(crbug.com/426555085): Remove the access_point argument.
-  if (base::FeatureList::IsEnabled(
-          switches::kRetryInterceptionBubbleOnDiceSyncHeaderTimeout)) {
-    interceptor->MaybeInterceptWebSignin(
-        web_contents.get(), bubble_params.account_id,
-        signin_metrics::AccessPoint::kWebSignin, bubble_params.is_new_account,
-        /*is_sync_signin=*/false);
-  }
+  interceptor->MaybeInterceptWebSignin(
+      web_contents.get(), bubble_params.account_id,
+      signin_metrics::AccessPoint::kWebSignin, bubble_params.is_new_account,
+      /*is_sync_signin=*/false);
 }
 }  // namespace
 
@@ -221,8 +218,8 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
   const SigninUIError error = CanOfferSignin(
       &profile_.get(), account_info.gaia, account_info.email,
       /*allow_account_from_other_profile=*/allow_account_from_other_profile);
-  if (error.IsOk() ||
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (error.IsOk() || !base::FeatureList::IsEnabled(
+                          syncer::kReplaceSyncPromosWithSignInPromos)) {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(&profile_.get());
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
@@ -238,14 +235,16 @@ bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
   return false;
 }
 
-// Should Sign in to Chrome for all access points when Uno is enabled. Except
-// for Web Signin where we first check the user choice first on whether to
-// automatically sign in or not.
+// Attempts to sign-in to Chrome from a web sign-in. This is only done for the
+// `kWebSignin` access point, and only if the user has enabled the "Remember
+// sign-in choice" setting or if the `kBrowserSigninAutoAccept` command line
+// flag is set. Other access points are signed in to Chrome through the
+// `EnableSync()` method.
 // TODO(crbug.com/425645725): Rename using a more appropriate name once the
 // signin to browser is cleaned-up.
 void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
     CoreAccountId account_id) {
-  CHECK(!account_id.empty());
+ CHECK(!account_id.empty());
 
   // Do not sign in if the access point is unknown.
   if (access_point_ == signin_metrics::AccessPoint::kUnknown) {
@@ -284,25 +283,16 @@ void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
 
   const bool has_primary_account =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  if (base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
-    if (should_auto_sign_in && !has_primary_account) {
-      // Sign-in the user in the browser if user can sign. If not, we fail
-      // silently as the signin attempt was not an explicit user action.
-      AttemptSettingPrimaryAccount(account_info, /*show_signin_error=*/false);
-    }
-    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
-                                            has_primary_account);
-    return;
+  if (should_auto_sign_in && !has_primary_account) {
+    // Sign-in the user in the browser if user can sign. If not, we fail
+    // silently as the signin attempt was not an explicit user action.
+    AttemptSettingPrimaryAccount(account_info, /*show_signin_error=*/false);
   }
-  // Legacy Gaia flow integration.
-  if (!has_primary_account) {
-    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
-                                  access_point_);
-    AttemptSettingPrimaryAccount(account_info);
-    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
-                                            has_primary_account);
-  }
+  // TODO(crbug.com/425645725): Once this metric is removed, the whole function
+  // can be simplified. See example at:
+  // https://crrev.com/c/7027059/3..5/chrome/browser/signin/process_dice_header_delegate_impl.cc
+  RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
+                                          has_primary_account);
 }
 
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
@@ -335,23 +325,20 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountInfo& account_info) {
   // TODO(crbug.com/420635510): Address the case of a flashing Interception
   // bubble which gets self-dismissed when the browser user is signed in.
-  if (base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(&profile_.get());
-    CHECK(identity_manager);
-    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
-                                    access_point_);
-      if (!AttemptSettingPrimaryAccount(account_info)) {
-        return;
-      }
-      // Record an entry marks the place where the user is signed-in in the
-      // new Gaia integration flow.
-      base::UmaHistogramEnumeration(
-          "Signin.SigninManager.SetPrimaryAccountSigninInStage",
-          PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile_.get());
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                  access_point_);
+    if (!AttemptSettingPrimaryAccount(account_info)) {
+      return;
     }
+    // Record an entry marks the place where the user is signed-in in the
+    // new Gaia integration flow.
+    base::UmaHistogramEnumeration(
+        "Signin.SigninManager.SetPrimaryAccountSigninInStage",
+        PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived);
   }
 
   content::WebContents* web_contents = web_contents_.get();

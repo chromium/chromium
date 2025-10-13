@@ -215,16 +215,9 @@ class SigninUiUtilTestBase : public SigninBrowserTestBase {
   base::AutoReset<SigninUiDelegate*> delegate_auto_reset_;
 };
 
-class SigninUiUtilTest : public SigninUiUtilTestBase,
-                         public base::test::WithFeatureOverride {
+class SigninUiUtilTest : public SigninUiUtilTestBase {
  public:
-  SigninUiUtilTest()
-      : base::test::WithFeatureOverride(
-            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) {}
-
-  bool WithUpdatedGaiaIntegrationEnabled() const {
-    return IsParamFeatureEnabled();
-  }
+  SigninUiUtilTest() = default;
 
   void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
                         signin_metrics::PromoAction promo_action,
@@ -241,34 +234,14 @@ class SigninUiUtilTest : public SigninUiUtilTestBase,
 
 class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
     : public SigninUiUtilTestBase,
-      public testing::WithParamInterface<std::tuple<
-          /*BrowserSigninInSyncHeaderOnGaiaIntegration=*/bool,
-          /*ReplaceSyncPromosWithSignInPromos=*/bool>> {
+      public base::test::WithFeatureOverride {
  public:
-  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (WithUpdatedGaiaIntegrationEnabled()) {
-      enabled_features.push_back(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration);
-    } else {
-      disabled_features.push_back(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration);
-    }
-    if (IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
-      disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  bool WithUpdatedGaiaIntegrationEnabled() const {
-    return std::get<0>(GetParam());
-  }
+  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
 
   bool IsReplaceSyncPromosWithSignInPromosEnabled() const {
-    return std::get<1>(GetParam());
+    return IsParamFeatureEnabled();
   }
 
   void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
@@ -317,14 +290,8 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SigninUiUtilTest);
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
-    testing::Combine(
-        /*BrowserSigninInSyncHeaderOnGaiaIntegration=*/testing::Bool(),
-        /*ReplaceSyncPromosWithSignInPromos=*/testing::Bool()));
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos);
 
 IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncWithExistingAccount) {
@@ -493,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -523,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
       TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -554,23 +521,20 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
       TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
   SignIn(CoreAccountInfo());
 
   // Verify that the active tab has the correct DICE sign-in URL.
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(WithUpdatedGaiaIntegrationEnabled()
-                ? signin::GetChromeSyncURLForDice(
-                      {.email = std::string(),
-                       .continue_url = GURL(google_util::kGoogleHomepageURL)})
-                : signin::GetAddAccountURLForDice(
-                      std::string(), GURL(google_util::kGoogleHomepageURL)),
+  EXPECT_EQ(signin::GetChromeSyncURLForDice(
+                {.email = std::string(),
+                 .continue_url = GURL(google_util::kGoogleHomepageURL)}),
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://foo/1"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -582,16 +546,13 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(WithUpdatedGaiaIntegrationEnabled()
-                ? signin::GetChromeSyncURLForDice(
-                      {.email = std::string(),
-                       .continue_url = GURL(google_util::kGoogleHomepageURL)})
-                : signin::GetAddAccountURLForDice(
-                      std::string(), GURL(google_util::kGoogleHomepageURL)),
+  EXPECT_EQ(signin::GetChromeSyncURLForDice(
+                {.email = std::string(),
+                 .continue_url = GURL(google_util::kGoogleHomepageURL)}),
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   auto enable_disclaimer_on_primary_account_change_resetter =
       enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
           browser()->profile());
@@ -703,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   EXPECT_EQ(2, tab_strip->active_index());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowReauthTab) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -767,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
             std::string::npos);
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest,
                        ShowExtensionSigninPrompt_AsLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
@@ -797,13 +758,11 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   ASSERT_TRUE(tab);
   EXPECT_TRUE(base::StartsWith(
       tab->GetVisibleURL().spec(),
-      WithUpdatedGaiaIntegrationEnabled()
-          ? GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec()
-          : GaiaUrls::GetInstance()->add_account_url().spec(),
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
       base::CompareCase::INSENSITIVE_ASCII));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest,
                        ShowSigninPromptFromPromoWithExistingAccount) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);
@@ -815,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,
   EXPECT_EQ(1, tab_strip->count());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);
 
@@ -907,7 +866,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   TestEnableSyncPromoWithExistingWebOnlyAccount();
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -925,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -951,7 +910,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
                        base::CompareCase::INSENSITIVE_ASCII));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SigninUiUtilTest,
     ShouldShowAnimatedIdentityOnOpeningWindowIfMultipleWindowsAtStartup) {
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*browser()->profile()));
@@ -980,8 +939,6 @@ class DiceSigninUiUtilBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     return new_profile;
   }
-
- private:
 };
 
 // Tests that `ShowExtensionSigninPrompt()` doesn't crash when it cannot create

@@ -558,7 +558,6 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
-
   // Test primary adult account.
   {
     AccountCapabilitiesObserver capabilities_observer(identity_manager());
@@ -673,21 +672,12 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
-class LiveSignInGaiaIntegrationTest
-    : public base::test::WithFeatureOverride,
-      public InteractiveBrowserTestT<LiveSignInTest> {
- public:
-  LiveSignInGaiaIntegrationTest()
-      : base::test::WithFeatureOverride(
-            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) {}
-
-  bool IsFixGaiaIntegrationEnabled() const { return IsParamFeatureEnabled(); }
-};
+using LiveSignInGaiaIntegrationTest = InteractiveBrowserTestT<LiveSignInTest>;
 
 // Regression test for crbug.com/420635510.
 // Tests that a doing a web signin from a tab that was previously opened for
 // a browser signin, does not sign in the user in the browser.
-IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
   base::HistogramTester histogram_tester;
   sign_in_functions.StartSignInFromSettings();
@@ -708,23 +698,16 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
       browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->GetTabCount());
 
-  // When the updated Gaia integration is used, the user should not be signed-in
-  // in the browser.
-  EXPECT_EQ(IsFixGaiaIntegrationEnabled(),
-            !identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  // The user should not be signed-in in the browser.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
-  if (IsFixGaiaIntegrationEnabled()) {
-    RunTestSequence(WaitForShow(
-        DiceWebSigninInterceptionBubbleView::kDiceWebSigninInterceptionBubble));
-  }
+  RunTestSequence(WaitForShow(
+      DiceWebSigninInterceptionBubbleView::kDiceWebSigninInterceptionBubble));
 
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",
-      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin,
-      IsFixGaiaIntegrationEnabled() ? 1 : 0);
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInGaiaIntegrationTest);
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

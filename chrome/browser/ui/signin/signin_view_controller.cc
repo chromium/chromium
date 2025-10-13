@@ -249,11 +249,7 @@ GURL GetSigninUrlForDiceSigninTab(
         {.email = email_hint, .continue_url = continue_url});
   }
 
-  bool use_chrome_sync_url =
-      base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) ||
-      access_point == signin_metrics::AccessPoint::kExtensions;
-
+  bool use_chrome_sync_url = true;
   // A reauth is requested, or the account is already signed in (which is
   // effectively a reauth).
   if (signin_reason == signin_metrics::Reason::kReauthentication ||

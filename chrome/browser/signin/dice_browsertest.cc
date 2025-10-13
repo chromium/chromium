@@ -1225,11 +1225,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   histogram_tester.ExpectBucketCount(
       "Signin.SigninManager.SetPrimaryAccountSigninInStage",
       PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived,
-      /*expected_count=*/
-      base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)
-          ? 1
-          : 0);
+      /*expected_count=*/1);
   // The interception bubble should not have been shown.
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",
@@ -1401,11 +1397,6 @@ class DiceBrowserSiginInInterceptionInteractiveTest
 // has not arrived within a timeout window.
 IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
                        ShowsUnoBubbleWhenSyncHeaderArrivalExceedsTimeout) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
   auto uno_bubble_retry_delay = base::Milliseconds(500);
@@ -1460,22 +1451,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 0);
 }
 
-class DiceAddAccountTabBrowserTest : public DiceBrowserTest,
-                                     public base::test::WithFeatureOverride {
- public:
-  DiceAddAccountTabBrowserTest()
-      : base::test::WithFeatureOverride(
-            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) {}
-
-  bool IsFixGaiaIntegrationEnabled() const { return IsParamFeatureEnabled(); }
-};
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DiceAddAccountTabBrowserTest);
-
 // Tests that user is signed in to the browser when the Dice "add account" tab
 // is used.
-IN_PROC_BROWSER_TEST_P(DiceAddAccountTabBrowserTest,
-                       BrowserSignInFromAddAccountTab) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, BrowserSignInFromAddAccountTab) {
   base::HistogramTester histogram_tester;
   // Signin using the Add account endpoint.
   browser()->GetFeatures().signin_view_controller()->ShowDiceAddAccountTab(
@@ -1489,10 +1467,8 @@ IN_PROC_BROWSER_TEST_P(DiceAddAccountTabBrowserTest,
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
 
-  if (IsFixGaiaIntegrationEnabled()) {
-    // Receive ENABLE_SYNC.
-    SendEnableSyncResponse();
-  }
+  // Receive ENABLE_SYNC.
+  SendEnableSyncResponse();
 
   WaitForSigninSucceeded();
   EXPECT_TRUE(
@@ -1504,7 +1480,7 @@ IN_PROC_BROWSER_TEST_P(DiceAddAccountTabBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Signin.SigninManager.SetPrimaryAccountSigninInStage",
       PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived,
-      /*expected_count=*/IsFixGaiaIntegrationEnabled() ? 1 : 0);
+      /*expected_count=*/1);
 }
 
 class DiceBrowserTestWithSyncOptinScreen : public DiceBrowserTest {
@@ -1876,53 +1852,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
   // Should still count as an explicit sign in since the choice was explicit
   // set.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
-}
-
-class DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos
-    : public DiceBrowserTestWithExplicitSignin {
- public:
-  DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos() {
-    scoped_feature_list_with_set_disabled.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{switches::kBrowserSigninInSyncHeaderOnGaiaIntegration});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_with_set_disabled;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos,
-    SigninWhenAccountAllowedByPattern) {
-  g_browser_process->local_state()->SetString(
-      prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
-
-  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
-  SimulateWebSigninMainAccount();
-
-  EXPECT_EQ(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-      true);
-  EXPECT_EQ(
-      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
-      false);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos,
-    SigninDisallowedWhenAccountNotAllowedByPattern) {
-  g_browser_process->local_state()->SetString(
-      prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");
-
-  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
-  SimulateWebSigninMainAccount();
-
-  EXPECT_EQ(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-      false);
-  EXPECT_EQ(
-      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
-      true);
 }
 
 class DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos
