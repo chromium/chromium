@@ -1129,15 +1129,9 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
   RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('3pcdOff')");
 }
 
-// Privacy guide integration tests.
-// TODO(crbug.com/424171352): Flaky, supposedly due to timeouts on debug builds.
-#if !defined(NDEBUG)
-#define MAYBE_Integration DISABLED_Integration
-#else
-#define MAYBE_Integration Integration
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MAYBE_Integration) {
-  RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, Integration) {
+  RunTest("settings/privacy_guide_integration_test.js",
+          "runMochaSuite('PrivacyGuideEligibleReachedMetrics')");
 }
 
 // Privacy guide fragment tests.
