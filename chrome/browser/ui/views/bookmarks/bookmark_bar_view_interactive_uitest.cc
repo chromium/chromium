@@ -238,7 +238,9 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
 // completion because the native widget's state is not properly updated.
 // TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
 // should be re-enabled once fix.
-#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE_WAYLAND)
+// TODO(crbug.com/448993919): Re-enable this test on Mac.
+#if BUILDFLAG(IS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_DISABLED(test_name) DISABLED_##test_name
 #else
 #define MAYBE_DISABLED(test_name) test_name
