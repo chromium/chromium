@@ -166,6 +166,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {
+  if (_allowsReturnKeyWithEmptyText == allowsReturnKeyWithEmptyText) {
+    return;
+  }
+  _allowsReturnKeyWithEmptyText = allowsReturnKeyWithEmptyText;
+  [self reloadInputViews];
+}
+
 - (void)setText:(NSAttributedString*)text
     userTextLength:(size_t)userTextLength {
   DCHECK_LE(userTextLength, text.length);
