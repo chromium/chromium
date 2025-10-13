@@ -415,13 +415,13 @@ TEST_P(PEPCInitiatedPermissionRequestTestWithAutolocate,
 
   // Grant just below the threshold.
   for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
-    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+    EXPECT_FALSE(history->RecordTemporaryGrant(
         origin(), ContentSettingsType::GEOLOCATION));
   }
 
   // The next grant will trigger the auto-grant.
-  EXPECT_TRUE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-      origin(), ContentSettingsType::GEOLOCATION));
+  EXPECT_TRUE(history->RecordTemporaryGrant(origin(),
+                                            ContentSettingsType::GEOLOCATION));
   EXPECT_TRUE(history->CheckHeuristicallyAutoGranted(
       origin(), ContentSettingsType::GEOLOCATION, /*needs_update*/ false));
 
@@ -446,9 +446,9 @@ TEST_P(PEPCInitiatedPermissionRequestTestWithAutolocate,
     // Let's test dismissing the prompt resets the heuristic.
     // Now, reset the heuristic grant and increase the count by 2.
     history->ResetHeuristicData(origin(), ContentSettingsType::GEOLOCATION);
-    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+    EXPECT_FALSE(history->RecordTemporaryGrant(
         origin(), ContentSettingsType::GEOLOCATION));
-    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+    EXPECT_FALSE(history->RecordTemporaryGrant(
         origin(), ContentSettingsType::GEOLOCATION));
     prompt_factory()->set_response_type(
         PermissionRequestManager::AutoResponseType::DISMISS);

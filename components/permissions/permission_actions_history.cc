@@ -42,9 +42,10 @@ namespace {
 //
 // Website settings are used to store data related to heuristic grants. This
 // data is stored per-origin and per-permission type, and includes:
-// - kTempGrantCountKey: Stores the number of temporary grants for a permission.
-// - kAutoGrantHeuristicallyKey: Stores the timestamp when an auto-grant
-//   started taking effect. This auto-grant has a 7-day expiration.
+// - kTemporaryGrantCountKey: Stores the number of heuristic temporary grants
+// for a permission.
+// - kTemporaryGrantTimeStampKey: Stores the timestamp of the most recent
+// temporary grant, including auto-grants.
 constexpr char kPermissionActionEntryActionKey[] = "action";
 constexpr char kPermissionActionEntryTimestampKey[] = "time";
 constexpr char kPermissionActionEntryPromptDispositionKey[] =
@@ -57,11 +58,11 @@ constexpr base::TimeDelta kPermissionActionMaxAge = base::Days(90);
 constexpr int kHeuristicGrantThreshold = 3;
 
 // The duration after which the auto-grant expires.
-constexpr base::TimeDelta kAutoGrantHeuristicallyExpiration = base::Days(7);
+constexpr base::TimeDelta kAutoGrantHeuristicallyExpiration = base::Days(28);
 
 // Keys for storing data in website settings.
-constexpr char kTempGrantCountKey[] = "temp_grant_count";
-constexpr char kAutoGrantHeuristicallyKey[] = "auto_grant_heuristically_days";
+constexpr char kTemporaryGrantCountKey[] = "temporary_grant_count";
+constexpr char kTemporaryGrantTimeStampKey[] = "temporary_grant_time_days";
 
 base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
                                              const GURL& origin_url) {
@@ -82,25 +83,6 @@ base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
       PermissionUtil::GetPermissionString(content_type));
 }
 
-// Record incrementally by one the number of temporary grants for `permission`
-// type at `url`.
-int RecordTemporaryGrantCount(const GURL& url,
-                              ContentSettingsType permission,
-                              HostContentSettingsMap* settings_map) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
-  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
-
-  std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
-  int current_count = value.value_or(0);
-  permission_dict->Set(kTempGrantCountKey, base::Value(++current_count));
-
-  settings_map->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
-      base::Value(std::move(dict)));
-
-  return current_count;
-}
-
 // Returns the current number of temporary grants recorded for `permission`
 // type at `url`.
 int GetTemporaryGrantCount(const GURL& url,
@@ -109,7 +91,7 @@ int GetTemporaryGrantCount(const GURL& url,
   base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
   base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
-  std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
+  std::optional<int> value = permission_dict->FindInt(kTemporaryGrantCountKey);
   return value.value_or(0);
 }
 
@@ -208,17 +190,28 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   }
 }
 
-bool PermissionActionsHistory::RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+bool PermissionActionsHistory::RecordTemporaryGrant(
     const GURL& url,
     ContentSettingsType permission) {
-  int current_count = GetTemporaryGrantCount(url, permission, settings_map_);
-  if (current_count >= kHeuristicGrantThreshold) {
-    SetAutoGrantHeuristically(url, permission);
-    return true;
-  }
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
+  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
-  RecordTemporaryGrantCount(url, permission, settings_map_);
-  return false;
+  std::optional<int> value = permission_dict->FindInt(kTemporaryGrantCountKey);
+  int current_count = value.value_or(0);
+
+  permission_dict->Set(kTemporaryGrantCountKey, current_count + 1);
+  permission_dict->Set(kTemporaryGrantTimeStampKey,
+                       base::TimeToValue(base::Time::Now()));
+
+  settings_map_->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+      base::Value(std::move(dict)));
+
+  bool auto_granted = current_count >= kHeuristicGrantThreshold;
+  if (auto_granted) {
+    NotifyAutoGrantedHeuristically(url, permission);
+  }
+  return auto_granted;
 }
 
 void PermissionActionsHistory::ResetHeuristicData(
@@ -249,20 +242,6 @@ void PermissionActionsHistory::ResetHeuristicData(
   }
 }
 
-void PermissionActionsHistory::SetAutoGrantHeuristically(
-    const GURL& request_origin,
-    ContentSettingsType permission) {
-  base::Value::Dict dict =
-      GetOriginActionHistoryData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
-  permission_dict->Set(kAutoGrantHeuristicallyKey,
-                       base::TimeToValue(base::Time::Now()));
-  settings_map_->SetWebsiteSettingDefaultScope(
-      request_origin, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
-      base::Value(std::move(dict)));
-  NotifyAutoGrantedHeuristically(request_origin, permission);
-}
-
 bool PermissionActionsHistory::CheckHeuristicallyAutoGranted(
     const GURL& request_origin,
     ContentSettingsType permission,
@@ -271,27 +250,46 @@ bool PermissionActionsHistory::CheckHeuristicallyAutoGranted(
       GetOriginActionHistoryData(settings_map_, request_origin);
   base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
-  std::optional<base::Time> auto_grant_time =
-      base::ValueToTime(permission_dict->Find(kAutoGrantHeuristicallyKey));
-  if (!auto_grant_time.has_value()) {
+  std::optional<base::Time> last_grant_time =
+      base::ValueToTime(permission_dict->Find(kTemporaryGrantTimeStampKey));
+  std::optional<int> grant_count_opt =
+      permission_dict->FindInt(kTemporaryGrantCountKey);
+  int grant_count = grant_count_opt.value_or(0);
+
+  // Check if the last grant has expired. If the grant has expired, decay the
+  // count. If the count was at or above the threshold, it decays to 2.
+  // Otherwise, the heuristic data is reset completely.
+  if (last_grant_time.has_value() && base::Time::Now() - *last_grant_time >
+                                         kAutoGrantHeuristicallyExpiration) {
+    if (grant_count >= kHeuristicGrantThreshold) {
+      permission_dict->Set(kTemporaryGrantCountKey,
+                           kHeuristicGrantThreshold - 1);
+      permission_dict->Set(kTemporaryGrantTimeStampKey,
+                           base::TimeToValue(base::Time::Now()));
+      settings_map_->SetWebsiteSettingDefaultScope(
+          request_origin, GURL(),
+          ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+          base::Value(std::move(dict)));
+    } else {
+      ResetHeuristicData(request_origin, permission);
+    }
     return false;
   }
 
-  if (base::Time::Now() - *auto_grant_time >
-      kAutoGrantHeuristicallyExpiration) {
-    ResetHeuristicData(request_origin, permission);
-    return false;
+  if (grant_count >= kHeuristicGrantThreshold) {
+    if (needs_update) {
+      permission_dict->Set(kTemporaryGrantTimeStampKey,
+                           base::TimeToValue(base::Time::Now()));
+      settings_map_->SetWebsiteSettingDefaultScope(
+          request_origin, GURL(),
+          ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+          base::Value(std::move(dict)));
+    }
+    return true;
   }
 
-  if (needs_update) {
-    permission_dict->Set(kAutoGrantHeuristicallyKey,
-                         base::TimeToValue(base::Time::Now()));
-    settings_map_->SetWebsiteSettingDefaultScope(
-        request_origin, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
-        base::Value(std::move(dict)));
-  }
-
-  return true;
+  // The grant count is below the threshold, so it is not auto-granted.
+  return false;
 }
 
 void PermissionActionsHistory::AddObserver(Observer* obs) {

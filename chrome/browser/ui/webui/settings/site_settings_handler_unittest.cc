@@ -2272,7 +2272,7 @@ TEST_F(SiteSettingsHandlerTest, ClearHeuristicData) {
 
   {
     // Grant a temporary permission to create heuristic data.
-    permission_actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+    permission_actions_history->RecordTemporaryGrant(
         GURL(kOrigin), ContentSettingsType::GEOLOCATION);
 
     // Verify that heuristic data exists.
@@ -2298,7 +2298,7 @@ TEST_F(SiteSettingsHandlerTest, ClearHeuristicData) {
   });
   for (const ContentSetting content_setting : kContentSettings) {
     // Grant a temporary permission to create heuristic data.
-    permission_actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+    permission_actions_history->RecordTemporaryGrant(
         GURL(kOrigin), ContentSettingsType::GEOLOCATION);
 
     // Verify that heuristic data exists.

@@ -3604,15 +3604,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionHeuristicData) {
   const GURL kOrigin2("http://host2.com:1");
   {
     // Test REMOVE_HISTORY.
-    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-        kOrigin1, permission));
+    EXPECT_FALSE(history->RecordTemporaryGrant(kOrigin1, permission));
 
     for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
-      history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(kOrigin2,
-                                                              permission);
+      history->RecordTemporaryGrant(kOrigin2, permission);
     }
-    EXPECT_TRUE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-        kOrigin2, permission));
 
     BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA,
@@ -3638,15 +3634,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionHeuristicData) {
   }
   {
     // Test REMOVE_SITE_DATA.
-    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-        kOrigin1, permission));
+    EXPECT_FALSE(history->RecordTemporaryGrant(kOrigin1, permission));
 
     for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
-      history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(kOrigin2,
-                                                              permission);
+      history->RecordTemporaryGrant(kOrigin2, permission);
     }
-    EXPECT_TRUE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-        kOrigin2, permission));
+    EXPECT_TRUE(history->RecordTemporaryGrant(kOrigin2, permission));
     BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA,
                                 std::move(filter_builder_2));

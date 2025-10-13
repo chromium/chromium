@@ -1199,7 +1199,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
           PermissionsClient::Get()->GetPermissionActionsHistory(
               browser_context);
       if (permission_action == PermissionAction::GRANTED_ONCE) {
-        actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+        actions_history->RecordTemporaryGrant(
             request->requesting_origin(), request->GetContentSettingsType());
       } else if (permission_action == PermissionAction::DISMISSED) {
         actions_history->ResetHeuristicData(request->requesting_origin(),

@@ -90,14 +90,11 @@ class PermissionActionsHistory : public KeyedService {
   // Registers the preferences related to blocklisting in the given PrefService.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Incrementally records the number of temporary grants for a given
-  // `permission` type at `request_origin` by one.
-  // It then sets a heuristic auto-grant if the temporary grant count reaches a
-  // predefined threshold. Returns `true` if the counter reaches the threshold
-  // and auto-grant is activated; otherwise, it returns `false`.
-  bool RecordTemporaryGrantAndSetAutoGrantIfNecessary(
-      const GURL& request_origin,
-      ContentSettingsType permission);
+  // Incrementally records the number of temporary grants and the timestamp of
+  // the most recent temporary grant for a given `permission` type at
+  // `url` by one. Returns `true` if the counter reaches the
+  // threshold and auto-grant is activated; otherwise, it returns `false`.
+  bool RecordTemporaryGrant(const GURL& url, ContentSettingsType permission);
 
   // Resets the heuristic data for the given URL and permission, for
   // example when the user manually resets permissions.
@@ -107,11 +104,6 @@ class PermissionActionsHistory : public KeyedService {
   // matching |filter|.
   void ResetHeuristicData(
       base::RepeatingCallback<bool(const GURL& url)> filter);
-
-  // Sets the heuristic auto grant for |permission| on |request_origin| and
-  // notifies observers.
-  void SetAutoGrantHeuristically(const GURL& request_origin,
-                                 ContentSettingsType permission);
 
   // Checks if a permission has been heuristically auto-granted. If
   // `needs_update` is true, update the auto-granted stored data if exists.
