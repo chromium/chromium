@@ -77,14 +77,14 @@ bool ReminderNotificationClient::HandleNotificationInteraction(
   NSString* url_string = user_info[@"url"];
 
   if (!url_string || url_string.length == 0) {
-    // TODO(crbug.com/390432325): Consider adding UMA logs for missing URL.
+    // TODO(crbug.com/422449238): Consider adding UMA logs for missing URL.
     return false;
   }
 
   GURL url(base::SysNSStringToUTF8(url_string));
 
   if (!url.is_valid()) {
-    // TODO(crbug.com/390432325): Consider adding UMA logs for invalid URL.
+    // TODO(crbug.com/422449238): Consider adding UMA logs for invalid URL.
     return false;
   }
 
