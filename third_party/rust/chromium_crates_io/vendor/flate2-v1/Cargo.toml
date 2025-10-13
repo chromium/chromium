@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.2"
+version = "1.1.4"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -201,7 +201,7 @@ name = "zero-write"
 path = "tests/zero-write.rs"
 
 [dependencies.cloudflare-zlib-sys]
-version = "0.3.5"
+version = "0.3.6"
 optional = true
 
 [dependencies.crc32fast]
@@ -227,7 +227,10 @@ default-features = false
 
 [dependencies.miniz_oxide]
 version = "0.8.5"
-features = ["with-alloc"]
+features = [
+    "with-alloc",
+    "simd",
+]
 optional = true
 default-features = false
 
@@ -240,5 +243,8 @@ version = "0.9"
 
 [target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
 version = "0.8.5"
-features = ["with-alloc"]
+features = [
+    "with-alloc",
+    "simd",
+]
 default-features = false

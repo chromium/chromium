@@ -17,7 +17,7 @@ fn main() {
     let start = Instant::now();
     let mut decoder = bufread::GzDecoder::new(input);
     copy(&mut decoder, &mut output).unwrap();
-    println!("Source len: {:?}", source_len);
+    println!("Source len: {source_len:?}");
     println!("Target len: {:?}", output.metadata().unwrap().len());
     println!("Elapsed: {:?}", start.elapsed());
 }

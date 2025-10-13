@@ -449,7 +449,7 @@ mod test {
 
         let compressed = {
             let mut e = write::GzEncoder::new(Vec::new(), Compression::default());
-            e.write(expected.as_ref()).unwrap();
+            e.write_all(expected.as_ref()).unwrap();
             let mut b = e.finish().unwrap();
             b.push(b'x');
             b

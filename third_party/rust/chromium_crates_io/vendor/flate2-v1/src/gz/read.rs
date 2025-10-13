@@ -316,16 +316,16 @@ mod tests {
         }
 
         pub fn set_position(&mut self, pos: u64) {
-            return self.cursor.set_position(pos);
+            self.cursor.set_position(pos)
         }
     }
 
     impl Write for BlockingCursor {
         fn write(&mut self, buf: &[u8]) -> Result<usize> {
-            return self.cursor.write(buf);
+            self.cursor.write(buf)
         }
         fn flush(&mut self) -> Result<()> {
-            return self.cursor.flush();
+            self.cursor.flush()
         }
     }
 
@@ -345,7 +345,7 @@ mod tests {
                 }
                 Ok(_n) => {}
             }
-            return r;
+            r
         }
     }
 

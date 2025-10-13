@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fmt;
 use std::io;
+use std::mem::MaybeUninit;
 
 use crate::ffi::{self, Backend, Deflate, DeflateBackend, ErrorMessage, Inflate, InflateBackend};
 use crate::Compression;
@@ -55,7 +56,7 @@ pub enum FlushCompress {
     ///
     /// All input data so far will be available to the decompressor (as with
     /// `Flush::Sync`). This completes the current deflate block and follows it
-    /// with an empty fixed codes block that is 10 bytes long, and it assures
+    /// with an empty fixed codes block that is 10 bits long, and it assures
     /// that enough bytes are output in order for the decompressor to finish the
     /// block before the empty fixed code block.
     Partial = ffi::MZ_PARTIAL_FLUSH as isize,
@@ -337,6 +338,20 @@ impl Compress {
         self.inner.compress(input, output, flush)
     }
 
+    /// Similar to [`Self::compress`] but accepts uninitialized buffer.
+    ///
+    /// If you want to avoid the overhead of zero initializing the
+    /// buffer and you don't want to use a [`Vec`], then please use
+    /// this API.
+    pub fn compress_uninit(
+        &mut self,
+        input: &[u8],
+        output: &mut [MaybeUninit<u8>],
+        flush: FlushCompress,
+    ) -> Result<Status, CompressError> {
+        self.inner.compress_uninit(input, output, flush)
+    }
+
     /// Compresses the input data into the extra space of the output, consuming
     /// only as much input as needed and writing as much output as possible.
     ///
@@ -351,12 +366,15 @@ impl Compress {
         output: &mut Vec<u8>,
         flush: FlushCompress,
     ) -> Result<Status, CompressError> {
-        write_to_spare_capacity_of_vec(output, |out| {
-            let before = self.total_out();
-            let ret = self.compress(input, out, flush);
-            let bytes_written = self.total_out() - before;
-            (bytes_written as usize, ret)
-        })
+        // SAFETY: bytes_written is the number of bytes written into `out`
+        unsafe {
+            write_to_spare_capacity_of_vec(output, |out| {
+                let before = self.total_out();
+                let ret = self.compress_uninit(input, out, flush);
+                let bytes_written = self.total_out() - before;
+                (bytes_written as usize, ret)
+            })
+        }
     }
 }
 
@@ -455,6 +473,20 @@ impl Decompress {
         self.inner.decompress(input, output, flush)
     }
 
+    /// Similar to [`Self::decompress`] but accepts uninitialized buffer
+    ///
+    /// If you want to avoid the overhead of zero initializing the
+    /// buffer and you don't want to use a [`Vec`], then please use
+    /// this API.
+    pub fn decompress_uninit(
+        &mut self,
+        input: &[u8],
+        output: &mut [MaybeUninit<u8>],
+        flush: FlushDecompress,
+    ) -> Result<Status, DecompressError> {
+        self.inner.decompress_uninit(input, output, flush)
+    }
+
     /// Decompresses the input data into the extra space in the output vector
     /// specified by `output`.
     ///
@@ -475,12 +507,15 @@ impl Decompress {
         output: &mut Vec<u8>,
         flush: FlushDecompress,
     ) -> Result<Status, DecompressError> {
-        write_to_spare_capacity_of_vec(output, |out| {
-            let before = self.total_out();
-            let ret = self.decompress(input, out, flush);
-            let bytes_written = self.total_out() - before;
-            (bytes_written as usize, ret)
-        })
+        // SAFETY: bytes_written is the number of bytes written into `out`
+        unsafe {
+            write_to_spare_capacity_of_vec(output, |out| {
+                let before = self.total_out();
+                let ret = self.decompress_uninit(input, out, flush);
+                let bytes_written = self.total_out() - before;
+                (bytes_written as usize, ret)
+            })
+        }
     }
 
     /// Specifies the decompression dictionary to use.
@@ -543,7 +578,7 @@ impl fmt::Display for DecompressError {
             DecompressErrorInner::NeedsDictionary { .. } => Some("requires a dictionary"),
         };
         match msg {
-            Some(msg) => write!(f, "deflate decompression error: {}", msg),
+            Some(msg) => write!(f, "deflate decompression error: {msg}"),
             None => write!(f, "deflate decompression error"),
         }
     }
@@ -567,7 +602,7 @@ impl From<CompressError> for io::Error {
 impl fmt::Display for CompressError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.msg.get() {
-            Some(msg) => write!(f, "deflate compression error: {}", msg),
+            Some(msg) => write!(f, "deflate compression error: {msg}"),
             None => write!(f, "deflate compression error"),
         }
     }
@@ -580,18 +615,20 @@ impl fmt::Display for CompressError {
 ///
 /// `writer` needs to return the number of bytes written (and can also return
 /// another arbitrary return value).
-fn write_to_spare_capacity_of_vec<T>(
+///
+/// # Safety:
+///
+/// The length returned by the `writer` must be equal to actual number of bytes written
+/// to the uninitialized slice passed in and initialized.
+unsafe fn write_to_spare_capacity_of_vec<T>(
     output: &mut Vec<u8>,
-    writer: impl FnOnce(&mut [u8]) -> (usize, T),
+    writer: impl FnOnce(&mut [MaybeUninit<u8>]) -> (usize, T),
 ) -> T {
     let cap = output.capacity();
     let len = output.len();
 
-    output.resize(output.capacity(), 0);
-    let (bytes_written, ret) = writer(&mut output[len..]);
-
-    let new_len = core::cmp::min(len + bytes_written, cap); // Sanitizes `bytes_written`.
-    output.resize(new_len, 0 /* unused */);
+    let (bytes_written, ret) = writer(output.spare_capacity_mut());
+    output.set_len(cap.min(len + bytes_written)); // Sanitizes `bytes_written`.
 
     ret
 }
@@ -608,7 +645,7 @@ mod tests {
 
     #[test]
     fn issue51() {
-        let data = vec![
+        let data = [
             0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xb3, 0xc9, 0x28, 0xc9,
             0xcd, 0xb1, 0xe3, 0xe5, 0xb2, 0xc9, 0x48, 0x4d, 0x4c, 0xb1, 0xb3, 0x29, 0xc9, 0x2c,
             0xc9, 0x49, 0xb5, 0x33, 0x31, 0x30, 0x51, 0xf0, 0xcb, 0x2f, 0x51, 0x70, 0xcb, 0x2f,

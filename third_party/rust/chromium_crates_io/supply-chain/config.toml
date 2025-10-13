@@ -158,7 +158,7 @@ criteria = []
 [policy."fixed_decimal:0.7.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."flate2:1.1.2"]
+[policy."flate2:1.1.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."foldhash:0.2.0"]
