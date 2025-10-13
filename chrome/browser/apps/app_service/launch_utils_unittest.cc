@@ -220,7 +220,9 @@ class FakePublisher : public AppPublisher {
     AppPtr app = std::make_unique<App>(AppType::kWeb, app_id);
     app->readiness = Readiness::kReady;
     app->handles_intents = true;
-    app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
+
+    app->intent_filters.emplace();
+    app->intent_filters->push_back(apps_util::MakeIntentFilterForUrlScope(
         scope, /*omit_port_for_testing=*/true));
 
     std::vector<AppPtr> apps;

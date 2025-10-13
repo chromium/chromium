@@ -131,7 +131,15 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // This vector stores all the intent filters defined in this app. Each
   // intent filter defines a matching criteria for whether an intent can
   // be handled by this app. One app can have multiple intent filters.
-  IntentFilters intent_filters;
+  // For the most part zero-length `intent_filters` are equal to nullopt
+  // `intent_filters`; however, they carry different semantical meaning when
+  // applying updates: nullopt `intent_filters` in the delta means that the
+  // field remains unchanged after merging, whereas zero-length `intent_filters`
+  // resets it.
+  // Leave this field untouched if the app has nothing to do with intent
+  // handling; otherwise initialize it with a zero-length array if the
+  // intention is to reset it.
+  std::optional<IntentFilters> intent_filters;
 
   // Whether the app can be free resized. If this is true, various resizing
   // operations will be restricted.

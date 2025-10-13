@@ -171,7 +171,8 @@ class SharesheetBubbleViewPolicyBrowserTest
     fake_app->handles_intents = true;
     apps::IntentFilterPtr filter =
         apps_util::MakeIntentFilterForMimeType(mime_type);
-    fake_app->intent_filters.push_back(std::move(filter));
+    fake_app->intent_filters.emplace();
+    fake_app->intent_filters->push_back(std::move(filter));
 
     fake_apps.push_back(std::move(fake_app));
 

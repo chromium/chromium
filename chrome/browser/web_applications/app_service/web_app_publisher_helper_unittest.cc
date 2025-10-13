@@ -79,7 +79,10 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
 };
 
 bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
-  for (const auto& filter : app->intent_filters) {
+  if (!app->intent_filters) {
+    return false;
+  }
+  for (const auto& filter : *app->intent_filters) {
     if (intent->MatchFilter(filter)) {
       return true;
     }

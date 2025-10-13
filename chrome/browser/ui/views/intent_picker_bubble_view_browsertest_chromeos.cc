@@ -189,7 +189,8 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
 
     auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
     app->name = app_name;
-    app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(url));
+    app->intent_filters.emplace();
+    app->intent_filters->push_back(apps_util::MakeIntentFilterForUrlScope(url));
     std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
     app_service_proxy_->OnApps(std::move(apps), apps::AppType::kArc,

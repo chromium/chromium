@@ -768,8 +768,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   // Add the intent filters for PWAs.
-  base::Extend(app->intent_filters,
-               CreateIntentFiltersForWebApp(*provider_, *web_app));
+  app->intent_filters = CreateIntentFiltersForWebApp(*provider_, *web_app);
 
   // These filters are used by the settings page to display would-be-handled
   // extensions even when the feature is not enabled for the app, whereas
@@ -780,7 +779,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   if (all_file_handlers && !all_file_handlers->empty()) {
     std::set<std::string> extensions_set =
         apps::GetFileExtensionsFromFileHandlers(*all_file_handlers);
-    app->intent_filters.push_back(apps_util::CreateFileFilter(
+    app->intent_filters->push_back(apps_util::CreateFileFilter(
         {apps_util::kIntentActionPotentialFileHandler},
         /*mime_types=*/{},
         /*file_extensions=*/
@@ -788,16 +787,16 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   }
 
   if (IsNoteTakingWebApp(*web_app)) {
-    app->intent_filters.push_back(apps_util::CreateNoteTakingFilter());
+    app->intent_filters->push_back(apps_util::CreateNoteTakingFilter());
   }
 
   if (IsLockScreenCapable(*web_app)) {
-    app->intent_filters.push_back(apps_util::CreateLockScreenFilter());
+    app->intent_filters->push_back(apps_util::CreateLockScreenFilter());
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (web_app->app_id() == guest_os::kTerminalSystemAppId) {
-    app->intent_filters.push_back(apps_util::CreateFileFilter(
+    app->intent_filters->push_back(apps_util::CreateFileFilter(
         {apps_util::kIntentActionView},
         /*mime_types=*/
         {extensions::app_file_handler_util::kMimeTypeInodeDirectory},

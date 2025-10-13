@@ -1540,7 +1540,8 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   // Set hard-coded Play Store intent filters if not set. This is a stop-gap
   // solution to handle Play Store URLs before ARC gets ready.
   // TODO(b/259205050): Remove this once intent filters are properly cached.
-  if (app->intent_filters.empty() && app_id == arc::kPlayStoreAppId) {
+  if ((!app->intent_filters || app->intent_filters->empty()) &&
+      app_id == arc::kPlayStoreAppId) {
     app->intent_filters = GetHardcodedPlayStoreIntentFilters();
   }
 

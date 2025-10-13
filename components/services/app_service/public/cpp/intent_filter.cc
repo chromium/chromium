@@ -259,6 +259,16 @@ bool IsEqual(const IntentFilters& source, const IntentFilters& target) {
   return true;
 }
 
+bool IsEqual(const std::optional<IntentFilters>& source,
+             const std::optional<IntentFilters>& target) {
+  bool source_empty = !source || source->empty();
+  bool target_empty = !target || target->empty();
+  if (!source_empty && !target_empty) {
+    return IsEqual(*source, *target);
+  }
+  return source_empty == target_empty;
+}
+
 bool Contains(const IntentFilters& intent_filters,
               const IntentFilterPtr& intent_filter) {
   for (const auto& filter : intent_filters) {

@@ -469,7 +469,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     std::vector<AppPtr> apps;
     AppPtr app = std::make_unique<App>(AppType::kWeb, kTestAppId);
     app->readiness = Readiness::kReady;
-    app->intent_filters.push_back(
+    app->intent_filters.emplace().push_back(
         apps_util::MakeIntentFilterForUrlScope(kTestUrl));
     apps.push_back(std::move(app));
 
@@ -523,14 +523,15 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   std::vector<AppPtr> apps;
   AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
   app1->readiness = Readiness::kReady;
-  app1->intent_filters.push_back(url_filter_1->Clone());
-  app1->intent_filters.push_back(url_filter_2->Clone());
-  app1->intent_filters.push_back(send_filter->Clone());
+  app1->intent_filters.emplace();
+  app1->intent_filters->push_back(url_filter_1->Clone());
+  app1->intent_filters->push_back(url_filter_2->Clone());
+  app1->intent_filters->push_back(send_filter->Clone());
   apps.push_back(std::move(app1));
 
   AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
   app2->readiness = Readiness::kReady;
-  app2->intent_filters.push_back(url_filter_1->Clone());
+  app2->intent_filters.emplace().push_back(url_filter_1->Clone());
   apps.push_back(std::move(app2));
 
   OnApps(std::move(apps), AppType::kWeb);
@@ -579,12 +580,12 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetProtocolLinkPreference) {
   std::vector<AppPtr> apps;
   AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
   app1->readiness = Readiness::kReady;
-  app1->intent_filters.push_back(protocol_link_filter->Clone());
+  app1->intent_filters.emplace().push_back(protocol_link_filter->Clone());
   apps.push_back(std::move(app1));
 
   AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
   app2->readiness = Readiness::kReady;
-  app2->intent_filters.push_back(protocol_link_filter->Clone());
+  app2->intent_filters.emplace().push_back(protocol_link_filter->Clone());
   apps.push_back(std::move(app2));
 
   OnApps(std::move(apps), AppType::kWeb);
@@ -609,7 +610,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetProtocolLinkPreferenceBeforeInit) {
   std::vector<AppPtr> apps;
   AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
   app1->readiness = Readiness::kReady;
-  app1->intent_filters.push_back(
+  app1->intent_filters.emplace().push_back(
       CreateIntentFilterForProtocolScheme("web+meow"));
   apps.push_back(std::move(app1));
 
@@ -636,7 +637,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetProtocolLinkPreferencePersistence) {
     std::vector<AppPtr> apps;
     AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
     app1->readiness = Readiness::kReady;
-    app1->intent_filters.push_back(
+    app1->intent_filters.emplace().push_back(
         CreateIntentFilterForProtocolScheme("web+meow"));
     apps.push_back(std::move(app1));
 
@@ -1092,7 +1093,8 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
                                          apps::PatternMatchType::kLiteral);
   intent_filter->activity_name = "name 1";
   intent_filter->activity_label = "same label";
-  app->intent_filters.push_back(std::move(intent_filter));
+  app->intent_filters.emplace();
+  app->intent_filters->push_back(std::move(intent_filter));
 
   // A regular mime type file filter which we expect to match.
   auto intent_filter2 = std::make_unique<apps::IntentFilter>();
@@ -1104,7 +1106,7 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
                                           apps::PatternMatchType::kMimeType);
   intent_filter2->activity_name = "name 2";
   intent_filter2->activity_label = "same label";
-  app->intent_filters.push_back(std::move(intent_filter2));
+  app->intent_filters->push_back(std::move(intent_filter2));
 
   apps.push_back(std::move(app));
   proxy()->OnApps(std::move(apps), AppType::kWeb, false);
