@@ -187,17 +187,19 @@ class CookieControlsBubbleViewPixelTest
   CookieControlsBubbleViewPixelTest& operator=(
       const CookieControlsBubbleViewPixelTest&) = delete;
 
-  void BlockThirdPartyCookies() {
-    bool pre_3pcd = GetParam() == CookieBlocking3pcdStatus::kNotIn3pcd;
-    if (pre_3pcd) {
-      browser()->profile()->GetPrefs()->SetInteger(
-          prefs::kCookieControlsMode,
-          static_cast<int>(
-              content_settings::CookieControlsMode::kBlockThirdParty));
-    } else {
-      browser()->profile()->GetPrefs()->SetBoolean(
-          prefs::kTrackingProtection3pcdEnabled, true);
+  void SetUp() override {
+    if (GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd) {
+      scoped_feature_list_.InitAndEnableFeature(
+          content_settings::features::kTrackingProtection3pcd);
     }
+    CookieControlsBubbleViewPixelTestBase::SetUp();
+  }
+
+  void BlockThirdPartyCookies() {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
   }
 
   void SetStatus(CookieControlsState controls_state,
