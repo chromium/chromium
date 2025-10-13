@@ -6,6 +6,8 @@
 #define UI_GFX_NATIVE_PIXMAP_H_
 
 #include "base/memory/ref_counted.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -36,6 +38,9 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
   // The following methods return format, modifier and size of the buffer,
   // respectively.
   virtual gfx::BufferFormat GetBufferFormat() const = 0;
+  viz::SharedImageFormat GetSharedImageFormat() const {
+    return viz::GetSharedImageFormat(GetBufferFormat());
+  }
   virtual uint64_t GetBufferFormatModifier() const = 0;
   virtual gfx::Size GetBufferSize() const = 0;
 

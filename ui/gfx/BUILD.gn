@@ -641,6 +641,7 @@ source_set("memory_buffer_sources") {
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
@@ -684,8 +685,6 @@ source_set("memory_buffer_sources") {
       "native_pixmap_handle.cc",
       "native_pixmap_handle.h",
     ]
-
-    deps += [ "//components/viz/common/resources:shared_image_format" ]
   }
 
   if (enable_vulkan) {
