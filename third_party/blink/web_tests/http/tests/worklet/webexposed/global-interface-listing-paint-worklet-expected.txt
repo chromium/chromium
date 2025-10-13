@@ -18,9 +18,6 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
-CONSOLE MESSAGE:     method toHSL
-CONSOLE MESSAGE:     method toHWB
-CONSOLE MESSAGE:     method toRGB
 CONSOLE MESSAGE: interface CSSHSL : CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter alpha
@@ -510,9 +507,6 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
-CONSOLE MESSAGE:     method toHSL
-CONSOLE MESSAGE:     method toHWB
-CONSOLE MESSAGE:     method toRGB
 CONSOLE MESSAGE: interface CSSHSL : CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter alpha

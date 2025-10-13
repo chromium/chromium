@@ -539,9 +539,6 @@ interface CSSColorValue
     static method parse
     attribute @@toStringTag
     method constructor
-    method toHSL
-    method toHWB
-    method toRGB
 interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText

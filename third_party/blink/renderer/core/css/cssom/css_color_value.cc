@@ -25,18 +25,6 @@
 
 namespace blink {
 
-CSSRGB* CSSColorValue::toRGB() const {
-  return MakeGarbageCollected<CSSRGB>(ToColor(), Color::ColorSpace::kSRGB);
-}
-
-CSSHSL* CSSColorValue::toHSL() const {
-  return MakeGarbageCollected<CSSHSL>(ToColor());
-}
-
-CSSHWB* CSSColorValue::toHWB() const {
-  return MakeGarbageCollected<CSSHWB>(ToColor());
-}
-
 const CSSValue* CSSColorValue::ToCSSValue() const {
   return cssvalue::CSSColor::Create(ToColor());
 }

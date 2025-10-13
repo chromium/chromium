@@ -1,11 +1,3 @@
 This is a testharness.js-based test.
 [FAIL] Support for CSSPositionValue
   assert_false: expected false got true
-[FAIL] toRGB should not exist on CSSColorValue
-  assert_false: expected false got true
-[FAIL] toHSL should not exist on CSSColorValue
-  assert_false: expected false got true
-[FAIL] toHWB should not exist on CSSColorValue
-  assert_false: expected false got true
-Harness: the test ran to completion.
-
