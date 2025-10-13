@@ -43,9 +43,8 @@ DOMHighResTimeStamp RTCEncodedFrameTimestampFromUnixRealClock(
 
 }  // namespace
 
-DOMHighResTimeStamp RTCEncodedFrameTimestampFromTimeTicks(
-    ExecutionContext* context,
-    base::TimeTicks timestamp) {
+DOMHighResTimeStamp RTCTimeStampFromTimeTicks(ExecutionContext* context,
+                                              base::TimeTicks timestamp) {
   Performance* performance = GetPerformanceFromExecutionContext(context);
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       performance->GetTimeOriginInternal(), timestamp,
@@ -58,7 +57,7 @@ DOMHighResTimeStamp RTCEncodedFrameTimestampFromCaptureTimeInfo(
     CaptureTimeInfo capture_time_info) {
   switch (capture_time_info.clock_type) {
     case CaptureTimeInfo::ClockType::kTimeTicks:
-      return RTCEncodedFrameTimestampFromTimeTicks(
+      return RTCTimeStampFromTimeTicks(
           context, base::TimeTicks() + capture_time_info.capture_time);
     case CaptureTimeInfo::ClockType::kNtpRealClock:
       base::TimeDelta time_since_unix_epoch =

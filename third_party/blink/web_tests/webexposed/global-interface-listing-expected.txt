@@ -8342,6 +8342,7 @@ interface RouteMap
 interface RtcReceivedPacket
     attribute @@toStringTag
     getter data
+    getter receiveTime
     method constructor
 interface RtcTransport
     attribute @@toStringTag

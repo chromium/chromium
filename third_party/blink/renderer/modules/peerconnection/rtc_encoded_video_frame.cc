@@ -213,7 +213,7 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
     if (std::optional<base::TimeTicks> receive_time =
             delegate_->ReceiveTime()) {
       metadata->setReceiveTime(
-          RTCEncodedFrameTimestampFromTimeTicks(context, *receive_time));
+          RTCTimeStampFromTimeTicks(context, *receive_time));
     }
     if (std::optional<CaptureTimeInfo> capture_time_info =
             delegate_->CaptureTime()) {

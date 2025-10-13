@@ -1948,6 +1948,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface RtcReceivedPacket
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
+[Worker]     getter receiveTime
 [Worker]     method constructor
 [Worker] interface RtcTransport
 [Worker]     attribute @@toStringTag

@@ -8,4 +8,5 @@
 ] interface RtcReceivedPacket {
   // TODO(crbug.com/443019066): Change to support BYOB.
   readonly attribute ArrayBuffer data;
+  readonly attribute DOMHighResTimeStamp receiveTime;
 };

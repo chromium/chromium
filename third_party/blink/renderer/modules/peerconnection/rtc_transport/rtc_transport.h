@@ -98,7 +98,8 @@ class MODULES_EXPORT RtcTransport final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidate, kIcecandidate)
 
-  void OnPacketReceivedOnMainThread(Vector<uint8_t> data);
+  void OnPacketReceivedOnMainThread(Vector<uint8_t> data,
+                                    webrtc::Timestamp receive_time);
   void OnCandidateGatheredOnMainThread(webrtc::Candidate candidate);
 
   // ScriptWrappable implementation

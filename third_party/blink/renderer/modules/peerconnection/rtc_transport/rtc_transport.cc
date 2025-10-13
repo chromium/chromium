@@ -19,13 +19,16 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -103,13 +106,14 @@ class DatagramConnectionObserver : public webrtc::DatagramConnection::Observer {
                             candidate_copy));
   }
 
-  void OnPacketReceived(webrtc::ArrayView<const uint8_t> data) override {
+  void OnPacketReceived(webrtc::ArrayView<const uint8_t> data,
+                        PacketMetadata metadata) override {
     Vector<uint8_t> data_vec(data);
     PostCrossThreadTask(
         *main_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&RtcTransport::OnPacketReceivedOnMainThread,
                             MakeUnwrappingCrossThreadWeakHandle(transport_),
-                            std::move(data_vec)));
+                            std::move(data_vec), metadata.receive_time));
   }
 
   // TODO(crbug.com/443019066): Hook up this with JS events once the API design
@@ -381,9 +385,13 @@ void RtcTransport::OnCandidateGatheredOnMainThread(
           candidate.address().port(), IceCandidateTypeFrom(candidate.type()))));
 }
 
-void RtcTransport::OnPacketReceivedOnMainThread(Vector<uint8_t> data) {
-  received_packets_.push_back(
-      MakeGarbageCollected<RtcReceivedPacket>(DOMArrayBuffer::Create(data)));
+void RtcTransport::OnPacketReceivedOnMainThread(
+    Vector<uint8_t> data,
+    webrtc::Timestamp receive_time) {
+  received_packets_.push_back(MakeGarbageCollected<RtcReceivedPacket>(
+      DOMArrayBuffer::Create(data),
+      RTCTimeStampFromTimeTicks(GetExecutionContext(),
+                                ConvertToBaseTimeTicks(receive_time))));
 }
 
 void RtcTransport::addRemoteCandidate(RtcTransportICECandidateInit* init,

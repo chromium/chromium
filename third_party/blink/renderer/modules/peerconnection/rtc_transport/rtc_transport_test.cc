@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -22,6 +23,12 @@
 
 namespace blink {
 using testing::_;
+
+webrtc::Timestamp GetWebRTCTimeOrigin(LocalDOMWindow* window) {
+  return webrtc::Timestamp::Micros(
+      (WindowPerformance::GetTimeOrigin(window) - base::TimeTicks())
+          .InMicroseconds());
+}
 
 RtcTransportConfig* CreateRtcTransportConfig() {
   auto* ice_server = RTCIceServer::Create();
@@ -176,12 +183,19 @@ TEST_F(RtcTransportTest, GetReceivedPackets) {
   CreateInitializedTransport();
   Vector<uint8_t> data;
   data.Append("packet", 6);
-  transport_->OnPacketReceivedOnMainThread(data);
+  int kReceiveTimeMillis = 12345;
+
+  transport_->OnPacketReceivedOnMainThread(
+      data, GetWebRTCTimeOrigin(GetDocument().domWindow()) +
+                webrtc::TimeDelta::Millis(kReceiveTimeMillis));
 
   HeapVector<Member<RtcReceivedPacket>> packets =
       transport_->getReceivedPackets();
   EXPECT_EQ(packets.size(), 1u);
   EXPECT_EQ(packets[0]->data()->ByteSpan(), String("packet").RawByteSpan());
+  // The precision for DOMHighResTimestamp is 0.1ms. Test equality by making
+  // sure the difference between expected and received  is less than 0.2ms.
+  EXPECT_LT(std::abs(packets[0]->receiveTime() - kReceiveTimeMillis), 0.2);
 }
 
 TEST_F(RtcTransportTest, Writable) {

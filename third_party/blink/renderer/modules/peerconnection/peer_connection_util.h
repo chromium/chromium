@@ -36,8 +36,8 @@ struct CaptureTimeInfo {
 };
 
 // Returns a DOMHighResTimeStamp relative to Performance.timeOrigin.
-MODULES_EXPORT DOMHighResTimeStamp
-RTCEncodedFrameTimestampFromTimeTicks(ExecutionContext*, base::TimeTicks);
+MODULES_EXPORT DOMHighResTimeStamp RTCTimeStampFromTimeTicks(ExecutionContext*,
+                                                             base::TimeTicks);
 
 // Returns a DOMHighResTimeStamp relative to Performance.timeOrigin.
 MODULES_EXPORT DOMHighResTimeStamp

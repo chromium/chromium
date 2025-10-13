@@ -32,14 +32,14 @@ DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
 
 }  // namespace
 
-TEST(PeerConnectionUtilTest, RTCEncodedFrameTimestampFromTimeTicks) {
+TEST(PeerConnectionUtilTest, RTCTimeStampFromTimeTicks) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   // Use timestamps precise to 0.1ms, since that is the precision of
   // DOMHighResTimeStamp without cross-origin isolation.
   std::vector<double> timestamps_ms = {123.4, -123.4};
   for (double timestamp_ms : timestamps_ms) {
-    DOMHighResTimeStamp timestamp = RTCEncodedFrameTimestampFromTimeTicks(
+    DOMHighResTimeStamp timestamp = RTCTimeStampFromTimeTicks(
         v8_scope.GetExecutionContext(),
         GetTimeOriginTimeTicks(v8_scope) + base::Milliseconds(timestamp_ms));
     // Use 0.2ms as tolerance to account for the 0.1ms precision.
