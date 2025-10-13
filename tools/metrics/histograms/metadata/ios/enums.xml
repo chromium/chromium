@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Obsolete - SignIn Sync"/>
   <int value="2" label="Default Browser"/>
   <int value="3" label="Autofill"/>
-  <int value="4" label="Follow"/>
+  <int value="4" label="Obsolete - Follow"/>
   <int value="5" label="All Set"/>
   <int value="6" label="Notifications"/>
   <int value="7" label="Obsolete in M138 - Docking"/>

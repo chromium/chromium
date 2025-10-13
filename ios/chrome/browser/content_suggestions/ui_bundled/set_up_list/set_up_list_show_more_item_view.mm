@@ -198,9 +198,6 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
-    case SetUpListItemType::kFollow:
-      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED();
   }
 }
 
@@ -239,7 +236,6 @@ NSAttributedString* Strikethrough(NSString* text) {
               ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
               : IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION);
     case SetUpListItemType::kAllSet:
-    case SetUpListItemType::kFollow:
       NOTREACHED();
   }
 }

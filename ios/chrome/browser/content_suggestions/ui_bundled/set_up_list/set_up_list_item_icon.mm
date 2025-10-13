@@ -274,9 +274,6 @@ UIView* IconInSquare(NSString* symbol,
           kCheckmarkSealFillSymbol, _compactLayout,
           @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
     }
-    case SetUpListItemType::kFollow:
-      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED();
   }
 }
 

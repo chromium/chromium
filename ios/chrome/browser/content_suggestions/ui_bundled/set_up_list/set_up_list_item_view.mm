@@ -358,9 +358,6 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
-    case SetUpListItemType::kFollow:
-      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED();
   }
 }
 
@@ -375,9 +372,6 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.notifications_description);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
-    case SetUpListItemType::kFollow:
-      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED();
   }
 }
 
@@ -391,8 +385,6 @@ struct ViewConfig {
       return set_up_list::kContentNotificationItemID;
     case SetUpListItemType::kAllSet:
       return set_up_list::kAllSetItemID;
-    case SetUpListItemType::kFollow:
-      return set_up_list::kFollowItemID;
   }
 }
 

@@ -274,13 +274,6 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
             SetUpListItemState::kCompleteNotInList);
 }
 
-// Tests that the SetUpList uses the correct criteria when including the
-// Follow item.
-TEST_F(SetUpListTest, BuildListWithFollow) {
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kFollow);
-}
-
 // Tests that SetUpList observes local state changes, updates the item, and
 // calls the delegate.
 TEST_F(SetUpListTest, ObservesPrefs) {

@@ -55,7 +55,6 @@ bool GetIsItemComplete(SetUpListItemType type,
       return push_notification_settings::
           IsMobileNotificationsEnabledForAnyClient(account.gaia, prefs);
     }
-    case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED();
   }
@@ -153,7 +152,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
     set_up_list_prefs::MarkAllItemsComplete(localState);
   }
 
-  // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
   return [[self alloc] initWithItems:items localState:localState];
 }
 
@@ -169,8 +167,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
         set_up_list_prefs::kDefaultBrowserItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kAutofillItemState, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
   }

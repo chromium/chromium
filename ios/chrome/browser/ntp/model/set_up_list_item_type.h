@@ -13,7 +13,7 @@ enum class SetUpListItemType {
   // Removed: kSignInSync = 1,
   kDefaultBrowser = 2,
   kAutofill = 3,
-  kFollow = 4,
+  // Removed: kFollow = 4,
   kAllSet = 5,
   kNotifications = 6,
   // Removed: kDocking = 7,
