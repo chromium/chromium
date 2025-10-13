@@ -7,6 +7,8 @@
 
 #include <inttypes.h>
 
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,6 +29,9 @@ class GbmBuffer {
   // fixed, as the size would be queried directly from the underlying bo.
   virtual gfx::Size GetSize() const = 0;
   virtual gfx::BufferFormat GetBufferFormat() const = 0;
+  viz::SharedImageFormat GetSharedImageFormat() const {
+    return viz::GetSharedImageFormat(GetBufferFormat());
+  }
   virtual bool AreFdsValid() const = 0;
   virtual size_t GetNumPlanes() const = 0;
   virtual bool SupportsZeroCopyWebGPUImport() const = 0;
