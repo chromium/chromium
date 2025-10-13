@@ -273,7 +273,9 @@ void LensOverlayController::CloseUI(
   // it gets cleaned up to prevent dangling ptrs. This needs to be done even
   // when the overlay state is kOff because the overlay may have been used for
   // contextual suggestions.
-  lens_overlay_query_controller_->ResetPageContentData();
+  if (lens_overlay_query_controller_) {
+    lens_overlay_query_controller_->ResetPageContentData();
+  }
   lens_overlay_query_controller_ = nullptr;
 
   if (state_ == State::kOff) {
