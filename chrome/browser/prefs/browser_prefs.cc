@@ -107,7 +107,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/collaboration/public/pref_names.h"
-#include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -2050,7 +2050,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chrome_browser_net::NetErrorTabHelper::RegisterProfilePrefs(registry);
   chrome_prefs::RegisterProfilePrefs(registry);
   collaboration::prefs::RegisterProfilePrefs(registry);
-  commerce::RegisterPrefs(registry);
+  commerce::RegisterProfilePrefs(registry);
   cross_device::RegisterProfilePrefs(registry);
   enterprise::RegisterIdentifiersProfilePrefs(registry);
   enterprise_connectors::RegisterProfilePrefs(registry);

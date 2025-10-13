@@ -364,6 +364,7 @@ source_set("shopping_service_unit_tests") {
     ":feature_utils",
     ":metrics",
     ":pref_names",
+    ":prefs",
     ":shopping_service_test_support",
     "compare:unit_tests",
     "product_specifications",
@@ -383,12 +384,17 @@ source_set("shopping_service_unit_tests") {
 }
 
 source_set("pref_names") {
+  sources = [ "pref_names.h" ]
+}
+
+source_set("prefs") {
   sources = [
-    "pref_names.cc",
-    "pref_names.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 
   deps = [
+    ":pref_names",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
@@ -433,6 +439,7 @@ source_set("account_checker_test_support") {
   deps = [
     ":account_checker",
     ":pref_names",
+    ":prefs",
     "//base",
     "//components/optimization_guide/core:features",
     "//components/prefs",
@@ -451,6 +458,7 @@ source_set("account_checker_unittests") {
     ":commerce_constants",
     ":feature_list",
     ":pref_names",
+    ":prefs",
     "//base",
     "//base/test:test_support",
     "//components/endpoint_fetcher:test_support",

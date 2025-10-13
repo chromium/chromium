@@ -98,7 +98,7 @@ source_set("impl") {
     "//components/browsing_data/core",
     "//components/certificate_transparency",
     "//components/collaboration/public:prefs",
-    "//components/commerce/core:pref_names",
+    "//components/commerce/core:prefs",
     "//components/content_settings/core/browser",
     "//components/custom_handlers",
     "//components/domain_reliability:prefs",

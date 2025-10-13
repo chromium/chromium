@@ -35,7 +35,7 @@ source_set("browser_prefs") {
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/collaboration/public:prefs",
-    "//components/commerce/core:pref_names",
+    "//components/commerce/core:prefs",
     "//components/component_updater",
     "//components/component_updater/installer_policies",
     "//components/content_settings/core/browser",

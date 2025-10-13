@@ -17,7 +17,7 @@
 #import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/collaboration/public/pref_names.h"
-#import "components/commerce/core/pref_names.h"
+#import "components/commerce/core/prefs.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -679,7 +679,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   collaboration::prefs::RegisterProfilePrefs(registry);
-  commerce::RegisterPrefs(registry);
+  commerce::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   cross_device::RegisterProfilePrefs(registry);
   CrossPlatformPromosService::RegisterProfilePrefs(registry);

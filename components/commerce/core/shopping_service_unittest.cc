@@ -21,6 +21,7 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_discount_infos_storage.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
@@ -1360,7 +1361,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_Policy) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1378,7 +1379,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
   test_features_.InitWithFeatures({}, {kShoppingList});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1393,7 +1394,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1412,7 +1413,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1431,7 +1432,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1450,7 +1451,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1469,7 +1470,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1492,7 +1493,7 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithFeatures({kShoppingList}, {});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1514,7 +1515,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
   test_features_.InitWithFeatures({}, {kShoppingList});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1534,7 +1535,7 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithEmptyFeatureAndFieldTrialLists();
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
@@ -1565,7 +1566,7 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithFeatures({}, {kShoppingList});
 
   TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
+  RegisterProfilePrefs(prefs.registry());
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;

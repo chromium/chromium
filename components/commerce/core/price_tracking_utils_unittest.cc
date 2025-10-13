@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
@@ -42,7 +43,7 @@ class PriceTrackingUtilsTest : public testing::Test {
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterPrefs(pref_service_->registry());
+    RegisterProfilePrefs(pref_service_->registry());
   }
 
   base::test::ScopedFeatureList test_features_;

@@ -17,6 +17,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -87,7 +88,7 @@ class AccountCheckerTest : public testing::Test {
 
   void SetUp() override {
     test_features_.InitAndEnableFeature(kShoppingList);
-    RegisterPrefs(pref_service_.registry());
+    RegisterProfilePrefs(pref_service_.registry());
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
