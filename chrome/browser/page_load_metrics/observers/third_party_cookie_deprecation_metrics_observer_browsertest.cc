@@ -328,9 +328,6 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
         prefs::kTrackingProtectionOnboardingStatus,
         static_cast<int>(privacy_sandbox::TrackingProtectionOnboarding::
                              OnboardingStatus::kOnboarded));
-    // Enable 3pcd as it's no longer done through the onboarding service.
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   content::WebContents* web_contents() {
@@ -395,8 +392,7 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
          {{tpcd::experiment::kDisable3PCookiesName,
            base::ToString(is_experiment_cookies_disabled_)}}},
         {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}}};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        content_settings::features::kTrackingProtection3pcd};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (std::get<2>(GetParam())) {
       enabled_features.push_back({network::features::kGetCookiesOnSet, {}});
     } else {
@@ -945,9 +941,6 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
     if (is_tracking_protection_onboarded_) {
       enabled_features.push_back(
           {content_settings::features::kTrackingProtection3pcd, {}});
-    } else {
-      disabled_features.push_back(
-          content_settings::features::kTrackingProtection3pcd);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -1388,8 +1381,9 @@ class ThirdPartyCookieDeprecationObserverCookieReadBrowserTest
           {{"SkipTpcdMitigationsForAdsMetadata", "true"},
            {"SkipTpcdMitigationsForAdsHeuristics", "true"},
            {"SkipTpcdMitigationsForAdsSupport", "true"},
-           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"}}}},
-        {content_settings::features::kTrackingProtection3pcd});
+           {"SkipTpcdMitigationsForAdsTopLevelTrial", "true"}}},
+         {content_settings::features::kTrackingProtection3pcd, {}}},
+        {});
   }
 
   void SetUpThirdPartyCookieExperimentWithClientState() {
@@ -1444,8 +1438,17 @@ class ThirdPartyCookieDeprecationObserverCookieReadBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
-                       NotOnboarded_CookieStatusRecorded) {
+class ThirdPartyCookieDeprecationObserverCookieReadNotOnboardedBrowserTest
+    : public ThirdPartyCookieDeprecationObserverCookieReadBrowserTest {
+ public:
+  void SetUp() override {
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ThirdPartyCookieDeprecationObserverCookieReadNotOnboardedBrowserTest,
+    NotOnboarded_CookieStatusRecorded) {
   SetUpThirdPartyCookieExperimentWithClientState();
 
   NavigateToPageWithFrame(kHostA);
@@ -1611,15 +1614,16 @@ class ThirdPartyCookieDeprecationObserverTriggerBrowserTest
   ~ThirdPartyCookieDeprecationObserverTriggerBrowserTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {}, {content_settings::features::kTrackingProtection3pcd});
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 };
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
                        ThirdPartyCookiesSingleWrite) {
-  // Setup tracking protection onboard to block 3PC.
+  // Block 3PCs.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   SetUpTrackingProtectionOnboard();
   content::CookieChangeObserver observer(web_contents(), 1);
   NavigateToPageWithFrame(kHostA);
@@ -1643,8 +1647,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
   EXPECT_EQ(1, observer1.num_read_seen());
   EXPECT_EQ(1, observer1.num_write_seen());
 
-  // Setup tracking protection onboard to block 3PC.
-  SetUpTrackingProtectionOnboard();
+  // Block 3PCs.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   content::CookieChangeObserver observer2(web_contents(), 1);
   // 3p cookie read
   NavigateFrameTo(kHostB, "/");
@@ -1655,8 +1661,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverTriggerBrowserTest,
                        ThirdPartyCookiesBothWriteRead) {
-  // Setup tracking protection onboard to block 3PC.
-  SetUpTrackingProtectionOnboard();
+  // Block 3PCs.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   // Only 3p cookie write is triggered because the 3p cookie write is blocked
   // and no cookie to read.
   content::CookieChangeObserver observer(web_contents(), 1);
