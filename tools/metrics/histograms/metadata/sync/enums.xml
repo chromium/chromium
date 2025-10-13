@@ -814,8 +814,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Changes match"/>
   <int value="1" label="Use local"/>
   <int value="2" label="Use remote"/>
-  <int value="3" label="Ignore local encryption"/>
-  <int value="4" label="Ignore remote encryption"/>
+  <int value="3" label="Ignore local no-op change"/>
+  <int value="4" label="Ignore remote no-op change"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/conflict_resolution.h:SyncConflictResolution) -->

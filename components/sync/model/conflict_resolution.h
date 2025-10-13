@@ -19,12 +19,10 @@ enum class ConflictResolution {
   kChangesMatch = 0,
   kUseLocal = 1,
   kUseRemote = 2,
-  // TODO(crbug.com/40668179): rename the following to kIgnoreRemoteNoOpUpdate,
-  // and similarly for the local encryption case.
-  kIgnoreLocalEncryption = 3,
-  kIgnoreRemoteEncryption = 4,
+  kIgnoreLocalNoOpUpdate = 3,
+  kIgnoreRemoteNoOpUpdate = 4,
 
-  kMaxValue = kIgnoreRemoteEncryption
+  kMaxValue = kIgnoreRemoteNoOpUpdate
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncConflictResolution)
 

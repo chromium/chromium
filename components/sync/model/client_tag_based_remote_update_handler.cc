@@ -285,14 +285,14 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
     // Local tombstone vs remote update (non-deletion). Should be undeleted.
     resolution_type = ConflictResolution::kUseRemote;
   } else if (entity->MatchesOwnBaseData()) {
-    // If there is no real local change, then the entity must be unsynced due to
-    // a pending local re-encryption request. In this case, the remote data
-    // should win.
-    resolution_type = ConflictResolution::kIgnoreLocalEncryption;
+    // If there is no real local change, the remote data should win (e.g. when
+    // the entity is unsynced due to a pending local re-encryption request).
+    resolution_type = ConflictResolution::kIgnoreLocalNoOpUpdate;
   } else if (entity->MatchesBaseData(remote_data)) {
     // The remote data isn't actually changing from the last remote data that
-    // was seen, so it must have been a re-encryption and can be ignored.
-    resolution_type = ConflictResolution::kIgnoreRemoteEncryption;
+    // was seen, so it can be ignored (e.g. in case of a re-encryption, or some
+    // remote update which was reverted).
+    resolution_type = ConflictResolution::kIgnoreRemoteNoOpUpdate;
   } else {
     // There's a real data conflict here; let the bridge resolve it.
     resolution_type =
@@ -320,13 +320,13 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       }
       break;
     case ConflictResolution::kUseLocal:
-    case ConflictResolution::kIgnoreRemoteEncryption:
+    case ConflictResolution::kIgnoreRemoteNoOpUpdate:
       // Record that we received the update from the server but leave the
       // pending commit intact.
       entity->RecordIgnoredRemoteUpdate(update);
       break;
     case ConflictResolution::kUseRemote:
-    case ConflictResolution::kIgnoreLocalEncryption:
+    case ConflictResolution::kIgnoreLocalNoOpUpdate:
       // Update client data to match server.
       if (update.entity.is_deleted()) {
         DCHECK(!entity->metadata().is_deleted());
