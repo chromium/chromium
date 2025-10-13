@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -30,6 +31,13 @@ namespace chromeos {
 
 namespace {
 
+// Prod Identity Card Connector extension ID.
+constexpr char kIdentityCardConnectorExtensionId[] =
+    "agicampiiinkgdgceoknnjecpoamgigi";
+
+// Holds the ID to check instead of the prod ID when running tests.
+const char* g_test_extension_id_override = nullptr;
+
 base::Value::Dict GetForceInstalledExtensionsFromPrefs(
     const PrefService* prefs) {
   const PrefService::Preference* const login_screen_extensions_pref =
@@ -50,16 +58,40 @@ base::Value::Dict GetForceInstalledExtensionsFromPrefs(
   return login_screen_extensions_pref_value->GetDict().Clone();
 }
 
+// Returns true if the Identity Card Connector extension (or a test override)
+// is force-installed via policy.
+bool IsBadgeBasedAuthenticationEnabled(
+    const base::Value::Dict& force_installed_extensions) {
+  std::string target_id;
+  if (g_test_extension_id_override) {
+    CHECK_IS_TEST();
+    target_id = g_test_extension_id_override;
+  } else {
+    target_id = kIdentityCardConnectorExtensionId;
+  }
+
+  return force_installed_extensions.Find(target_id) != nullptr;
+}
+
 // Whether extensions should be loaded on the lock screen instead of the sign-in
 // profile.
-bool IsLockScreenTakingOver() {
+bool IsLockScreenTakingOver(
+    const base::Value::Dict& force_installed_extensions) {
   const auto session_state =
       session_manager::SessionManager::Get()->session_state();
   return chromeos::features::IsLockScreenBadgeAuthEnabled() &&
          session_state == session_manager::SessionState::LOCKED &&
-         ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext();
+         ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext() &&
+         IsBadgeBasedAuthenticationEnabled(force_installed_extensions);
 }
+
 }  // namespace
+
+// static
+void AuthenticationScreenExtensionsExternalLoader::
+    SetTestBadgeAuthExtensionIdForTesting(const char* id) {
+  g_test_extension_id_override = id;
+}
 
 AuthenticationScreenExtensionsExternalLoader::
     AuthenticationScreenExtensionsExternalLoader(Profile* profile)
@@ -136,7 +168,10 @@ void AuthenticationScreenExtensionsExternalLoader::
 }
 
 void AuthenticationScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
-  bool is_lock_screen_taking_over = IsLockScreenTakingOver();
+  auto force_installed_extensions =
+      GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs());
+  bool is_lock_screen_taking_over =
+      IsLockScreenTakingOver(force_installed_extensions);
   bool should_load_extensions;
   if (ash::IsSigninBrowserContext(profile_)) {
     should_load_extensions = !is_lock_screen_taking_over;
@@ -145,13 +180,9 @@ void AuthenticationScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
     should_load_extensions = is_lock_screen_taking_over;
   }
 
-  auto force_installed_extensions =
-      should_load_extensions
-          ? GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs())
-          : base::Value::Dict();
-  // TODO(crbug.com/447591120): On the lock profile, only load badge based auth
-  // extensions.
-  external_cache_.UpdateExtensionsList(std::move(force_installed_extensions));
+  external_cache_.UpdateExtensionsList(
+      should_load_extensions ? std::move(force_installed_extensions)
+                             : base::Value::Dict());
 }
 
 }  // namespace chromeos

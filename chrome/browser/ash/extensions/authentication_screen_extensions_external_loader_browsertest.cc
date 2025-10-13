@@ -53,6 +53,7 @@ Profile* GetOriginalLockScreenProfile() {
 }
 }  // namespace
 
+// TODO(crbug.com/451518907): Add tests with 2 extensions.
 class AuthenticationScreenExtensionsExternalLoaderBrowserTest
     : public MixinBasedInProcessBrowserTest {
  public:
@@ -142,6 +143,9 @@ class AuthenticationScreenExtensionsExternalLoaderBrowserTest
 // if the lock screen profile has not yet been created.
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
                        NotUnloadedWhenNoLockProfile) {
+  AuthenticationScreenExtensionsExternalLoader::
+      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
+
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kExtensionDirPath),
@@ -160,10 +164,41 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
   EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
 }
 
+// Tests that sign-in screen extensions remain loaded when the session is locked
+// but Badge Based Authentication isn't enabled.
+IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
+                       NotUnloadedWhenBadgeBasedAuthNotEnabled) {
+  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kExtensionDirPath),
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kExtensionPemPath),
+      ExtensionForceInstallMixin::WaitMode::kLoad));
+  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
+
+  LogIn();
+  // Ensure that the Lock Screen profile exists.
+  base::test::TestFuture<Profile*> profile_future;
+  g_browser_process->profile_manager()->CreateProfileAsync(
+      ash::ProfileHelper::GetLockScreenProfileDir(),
+      profile_future.GetCallback());
+  ASSERT_TRUE(profile_future.Get()) << "Lock profile wasn't created";
+  ash::ScreenLockerTester().Lock();
+
+  // Even though the lock profile exists, "ICC" isn't enabled so the extension
+  // remains on the sign-in profile.
+  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
+}
+
 // Tests that sign-in screen extensions are unloaded when the session is locked
-// if the lock screen profile already exists.
+// if the lock screen profile already exists and Badge Based Auth is enabled.
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
                        UnloadedWhenLockProfileExists) {
+  AuthenticationScreenExtensionsExternalLoader::
+      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
+
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kExtensionDirPath),

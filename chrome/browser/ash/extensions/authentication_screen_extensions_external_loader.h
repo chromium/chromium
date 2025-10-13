@@ -52,6 +52,9 @@ class AuthenticationScreenExtensionsExternalLoader
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
+  // Allows tests to override the default production extension ID being checked.
+  static void SetTestBadgeAuthExtensionIdForTesting(const char* id);
+
  private:
   friend class base::RefCounted<AuthenticationScreenExtensionsExternalLoader>;
 

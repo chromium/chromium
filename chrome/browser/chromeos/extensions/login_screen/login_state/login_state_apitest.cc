@@ -6,6 +6,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -146,6 +147,9 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
 // extensions running in the lock profile.
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
                        GetProfileType_LockProfile) {
+  chromeos::AuthenticationScreenExtensionsExternalLoader::
+      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
+
   SetCustomTestArg("LOCK_PROFILE");
   ResultCatcher catcher;
 

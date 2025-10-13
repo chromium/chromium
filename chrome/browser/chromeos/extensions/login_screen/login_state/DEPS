@@ -24,4 +24,5 @@ include_rules = [
   "+chrome/browser/policy/extension_force_install_mixin.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ash/login/test/session_manager_state_waiter.h",
+  "+chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h",
 ]

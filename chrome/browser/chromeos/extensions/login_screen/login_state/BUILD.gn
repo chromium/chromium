@@ -44,6 +44,7 @@ source_set("browser_tests") {
 
   deps = [
     ":login_state",
+    "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
