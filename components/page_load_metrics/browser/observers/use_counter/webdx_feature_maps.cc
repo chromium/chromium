@@ -457,6 +457,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kXRDOMOverlay, WebDXFeature::kWebxrDomOverlays},
           {WebFeature::kReportingObserver, WebDXFeature::kReporting},
           {WebFeature::kReportingEndpointsHeader, WebDXFeature::kReporting},
+          {WebFeature::kV8MLContext_Dispatch_Method, WebDXFeature::kWebnn},
           // Add new features above this line.
       }};
 
