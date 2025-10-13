@@ -1107,7 +1107,7 @@ clang_tot_linux_builder(
             "msan",
             "release",
             "x64",
-            "remoteexec",
+            # TODO(crbug.com/450862240) enable "remoteexec" here
         ],
     ),
     targets = targets.bundle(
@@ -1122,7 +1122,6 @@ clang_tot_linux_builder(
         ],
     ),
     short_name = "msn",
-    siso_remote_jobs = min(siso.remote_jobs.HIGH_JOBS_FOR_CI, 400),
 )
 
 clang_tot_linux_builder(
