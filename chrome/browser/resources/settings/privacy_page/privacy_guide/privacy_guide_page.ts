@@ -254,7 +254,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
           // unavailable. Otherwise we would skip it in
           // `navigateForwardIfCurrentCardNoLongerAvailable` before
           // `onSyncStatusChanged_` is called asynchronously.
-          isAvailable: () => !this.syncStatus_ || this.isSyncOn_(),
+          isAvailable: () =>
+              !this.syncStatus_ || this.shouldShowHistorySyncCard_(),
         },
       ],
       [
@@ -519,10 +520,14 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     };
   }
 
-  private isSyncOn_(): boolean {
+  private shouldShowHistorySyncCard_(): boolean {
     assert(this.syncStatus_);
-    return this.syncStatus_.signedInState === SignedInState.SYNCING &&
-        !this.syncStatus_.hasError;
+    if (this.syncStatus_.hasError) {
+      return false;
+    }
+    return this.syncStatus_.signedInState === SignedInState.SYNCING ||
+        (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+         this.syncStatus_.signedInState === SignedInState.SIGNED_IN);
   }
 
   private shouldShowCookiesCard_(): boolean {
