@@ -28,11 +28,9 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.TabClosureType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -166,7 +164,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ALLOW_TAB_CLOSING_UPON_MINIMIZATION})
     public void testCloseTabDuringMinimization() {
         createBackPressHandler(true, true);
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(true);

@@ -162,8 +162,6 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarCustomizationV2";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY =
             "AdaptiveButtonInTopToolbarPageSummary";
-    public static final String ALLOW_TAB_CLOSING_UPON_MINIMIZATION =
-            "AllowTabClosingUponMinimization";
     public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER =
             "AndroidAnimatedProgressBarInBrowser";
     public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ =
@@ -715,11 +713,6 @@ public abstract class ChromeFeatureList {
 
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
-    public static final CachedFlag sAllowTabClosingUponMinimization =
-            newCachedFlag(
-                    ALLOW_TAB_CLOSING_UPON_MINIMIZATION,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, true);
     public static final CachedFlag sAndroidAnimatedProgressBarInViz =
@@ -1106,7 +1099,6 @@ public abstract class ChromeFeatureList {
             List.of(
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
-                    sAllowTabClosingUponMinimization,
                     sAndroidAnimatedProgressBarInBrowser,
                     sAndroidAnimatedProgressBarInViz,
                     sAndroidAppIntegrationModule,

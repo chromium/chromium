@@ -201,7 +201,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAccountForSuppressedKeyboardInsets,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
-    &kAllowTabClosingUponMinimization,
     &kAndroidAppearanceSettings,
     &kAndroidAppIntegrationMultiDataSource,
     &kAndroidBookmarkBar,
@@ -540,9 +539,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
 
 BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAllowTabClosingUponMinimization,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource,
              base::FEATURE_ENABLED_BY_DEFAULT);

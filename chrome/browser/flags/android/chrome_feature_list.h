@@ -17,7 +17,6 @@ namespace chrome::android {
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary);
-BASE_DECLARE_FEATURE(kAllowTabClosingUponMinimization);
 BASE_DECLARE_FEATURE(kNewTabPageCustomization);
 BASE_DECLARE_FEATURE(kNewTabPageCustomizationV2);
 BASE_DECLARE_FEATURE(kNewTabPageCustomizationToolbarButton);

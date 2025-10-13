@@ -74,9 +74,6 @@ extern const char kAllowLegacyMV2ExtensionsDescription[];
 extern const char kAllowNonFamilyLinkUrlFilterModeName[];
 extern const char kAllowNonFamilyLinkUrlFilterModeDescription[];
 
-extern const char kAllowTabClosingUponMinimizationName[];
-extern const char kAllowTabClosingUponMinimizationDescription[];
-
 extern const char kAndroidAdaptiveFrameRateName[];
 extern const char kAndroidAdaptiveFrameRateDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

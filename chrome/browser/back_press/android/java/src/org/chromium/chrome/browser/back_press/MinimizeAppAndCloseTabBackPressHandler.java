@@ -18,7 +18,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -97,7 +96,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
         boolean isAtLeastB =
                 (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                         >= VERSION_CODES.BAKLAVA;
-        return isAtLeastB && ChromeFeatureList.sAllowTabClosingUponMinimization.isEnabled();
+        return isAtLeastB;
     }
 
     /**

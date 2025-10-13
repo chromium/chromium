@@ -197,11 +197,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "allow-tab-closing-upon-minimization",
-    "owners": ["lazzzis@google.com", "twellington@chromium.org", "clank-app-team@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "allow-user-installed-chrome-apps",
     "owners": ["//apps/DEPRECATION_OWNERS"],
     "expiry_milestone": 169
