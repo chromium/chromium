@@ -51,16 +51,20 @@ bool IsValidExternalImageDestinationFormat(
   switch (dawn_texture_format) {
     case wgpu::TextureFormat::R8Unorm:
     case wgpu::TextureFormat::R16Float:
+    case wgpu::TextureFormat::R16Unorm:
     case wgpu::TextureFormat::R32Float:
     case wgpu::TextureFormat::RG8Unorm:
     case wgpu::TextureFormat::RG16Float:
+    case wgpu::TextureFormat::RG16Unorm:
     case wgpu::TextureFormat::RG32Float:
     case wgpu::TextureFormat::RGBA8Unorm:
     case wgpu::TextureFormat::RGBA8UnormSrgb:
     case wgpu::TextureFormat::BGRA8Unorm:
     case wgpu::TextureFormat::BGRA8UnormSrgb:
     case wgpu::TextureFormat::RGB10A2Unorm:
+    case wgpu::TextureFormat::RG11B10Ufloat:
     case wgpu::TextureFormat::RGBA16Float:
+    case wgpu::TextureFormat::RGBA16Unorm:
     case wgpu::TextureFormat::RGBA32Float:
       return true;
     default:
