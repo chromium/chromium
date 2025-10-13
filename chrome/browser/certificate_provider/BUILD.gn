@@ -42,6 +42,8 @@ source_set("impl") {
     "//chrome/browser/ui/ash/login",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ui/wm",
     "//extensions/browser",
     "//extensions/common",
     "//third_party/boringssl",
@@ -50,7 +52,6 @@ source_set("impl") {
     "//ui/views",
 
     # Remove this dependency when the following headers get componentized:
-    # - c/b/ui/browser.h, browser_finder.h, browser_window.h
     # - c/b/ui/views/notifications/request_pin_view_chromeos.h
     "//chrome/browser/ui",
   ]

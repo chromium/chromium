@@ -7,38 +7,60 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/views/notifications/request_pin_view_chromeos.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/login/login_display_host.h"
-#endif
 
 namespace chromeos {
 
 namespace {
 
 gfx::NativeWindow GetBrowserParentWindow() {
-#if BUILDFLAG(IS_CHROMEOS)
   if (ash::LoginDisplayHost::default_host())
     return ash::LoginDisplayHost::default_host()->GetNativeWindow();
-#endif
-  Browser* browser =
-      chrome::FindTabbedBrowser(ProfileManager::GetPrimaryUserProfile(), true);
-  if (browser)
-    return browser->window()->GetNativeWindow();
 
-  return nullptr;
+  // TODO(crbug.com/450116701): Avoid profile (another chrome/browser
+  // dependency) altogether and use SessionManager::GetPrimarySession()
+  // and Session::account_id().
+  AccountId primary_user_profile_account_id =
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(
+          ProfileManager::GetPrimaryUserProfile()->GetOriginalProfile()));
+
+  gfx::NativeWindow window = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetAccountId() != primary_user_profile_account_id) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.GetType() != ash::BrowserType::kNormal) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (aura::Window* native_window = browser.GetNativeWindow();
+            !chromeos::DesksHelper::Get(native_window)
+                 ->BelongsToActiveDesk(native_window)) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        if (browser.IsAttemptingToClose() || browser.IsClosing()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+
+        window = browser.GetNativeWindow();
+        return ash::BrowserController::kBreakIteration;
+      });
+  return window;
 }
 
 }  // namespace
