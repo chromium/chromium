@@ -13,7 +13,6 @@
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
@@ -154,21 +153,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)setAllowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {
-  _allowsReturnKeyWithEmptyText = allowsReturnKeyWithEmptyText;
-
-  // To make sure the keyboard is correctly taking the new value into account,
-  // call `-reloadInputViews`. That being said, `-reloadInputViews` can
-  // update the input mode, which can itself call again this method.
-  // `-reloadInputViews` being non-reentrant (contention on
-  // `+[UIKeyboardAutomatic sharedInstance]`), call this asynchronously.
-  __weak __typeof(self) weakSelf = self;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf reloadInputViews];
-      }));
 }
 
 - (void)setText:(NSAttributedString*)text
