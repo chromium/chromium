@@ -834,6 +834,106 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
       syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, kGroupName));
 }
 
+// Tests that a client with an implicit passphrase accepts a remote migration to
+// keystore passphrase, when the local keybag is unlocked or decryptable as a
+// result of the user having entered their implicit passphrase.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriSyncTest,
+    ShouldAcceptRemoteMigrationToKeystoreFromUnlockedImplicitPassphrase) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeyParams.password, kKeyParams.derivation_params);
+  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
+                                     specifics.mutable_encryption_keybag()));
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  const password_manager::PasswordForm password_form =
+      passwords_helper::CreateTestPasswordForm(0);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form, kKeyParams.password, kKeyParams.derivation_params,
+      GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  ASSERT_EQ(GetSyncService(0)->GetPassphraseType(),
+            syncer::PassphraseType::kImplicitPassphrase);
+
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  ASSERT_TRUE(WaitForPasswordForms({password_form}));
+
+  // Mimic a transition to keystore passphrase on the server.
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  SetNigoriInFakeServer(BuildKeystoreNigoriSpecifics(
+                            /*keybag_keys_params=*/{kKeystoreKeyParams},
+                            /*keystore_decryptor_params*/ {kKeystoreKeyParams},
+                            /*keystore_key_params=*/kKeystoreKeyParams),
+                        GetFakeServer());
+  EXPECT_TRUE(PassphraseTypeChecker(GetSyncService(0),
+                                    syncer::PassphraseType::kKeystorePassphrase)
+                  .Wait());
+  // The password should have been re-encrypted.
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {password_form}, kKeystoreKeyParams.password,
+                  kKeystoreKeyParams.derivation_params)
+                  .Wait());
+}
+
+// Tests that a client with an implicit passphrase accepts a remote migration to
+// keystore passphrase, when the local keybag cannot be decrypted, because the
+// user didn't enter their implicit passphrase.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriSyncTest,
+    ShouldAcceptRemoteMigrationToKeystoreFromImplicitPassphraseWithoutKey) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeyParams.password, kKeyParams.derivation_params);
+  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
+                                     specifics.mutable_encryption_keybag()));
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  ASSERT_EQ(GetSyncService(0)->GetPassphraseType(),
+            syncer::PassphraseType::kImplicitPassphrase);
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  // Mimic a transition to keystore passphrase on the server.
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  SetNigoriInFakeServer(BuildKeystoreNigoriSpecifics(
+                            /*keybag_keys_params=*/{kKeystoreKeyParams},
+                            /*keystore_decryptor_params*/ {kKeystoreKeyParams},
+                            /*keystore_key_params=*/kKeystoreKeyParams),
+                        GetFakeServer());
+  EXPECT_TRUE(PassphraseTypeChecker(GetSyncService(0),
+                                    syncer::PassphraseType::kKeystorePassphrase)
+                  .Wait());
+  EXPECT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
+
+  // Verify that newly saved passwords are encrypted with keystore passphrase.
+  const password_manager::PasswordForm password_form =
+      passwords_helper::CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(password_form);
+  EXPECT_TRUE(ServerPasswordsEqualityChecker(
+                  {password_form}, kKeystoreKeyParams.password,
+                  kKeystoreKeyParams.derivation_params)
+                  .Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     ShouldBootstrapCrossUserSharingPublicPrivateKeyPairWhenReceivedDefault) {
