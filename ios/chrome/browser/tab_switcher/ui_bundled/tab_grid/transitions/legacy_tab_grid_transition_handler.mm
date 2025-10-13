@@ -107,8 +107,6 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
     }
   }];
 
-  // TODO(crbug.com/41393272): Have the tab view animate itself out alongside
-  // this transition instead of just zeroing the alpha here.
   browser.view.alpha = 0;
 
   // Run the main animation. There is an issue if the animation is run directly.

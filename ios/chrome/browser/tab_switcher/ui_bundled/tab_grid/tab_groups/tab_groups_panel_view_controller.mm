@@ -617,8 +617,6 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
 // Animates the empty state into view.
 - (void)animateEmptyStateIn {
-  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
-  // they belong.
   [_emptyStateAnimator stopAnimation:YES];
   UIView* emptyStateView = _emptyStateView;
   _emptyStateAnimator = [[UIViewPropertyAnimator alloc]
@@ -633,8 +631,6 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 
 // Removes the empty state out of view, with animation if `animated` is YES.
 - (void)removeEmptyStateAnimated:(BOOL)animated {
-  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
-  // they belong.
   [_emptyStateAnimator stopAnimation:YES];
   UIView* emptyStateView = _emptyStateView;
   auto removeEmptyState = ^{

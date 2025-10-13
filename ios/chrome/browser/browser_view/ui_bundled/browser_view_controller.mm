@@ -1448,12 +1448,12 @@ const CGFloat kTopDynamicIslandInset = 24;
     NamedGuide* contentAreaGuide = [NamedGuide guideWithName:kContentAreaGuide
                                                         view:self.view];
 
-    // TODO(crbug.com/40724393): Sometimes, `contentAreaGuide` and
-    // `primaryToolbarView` aren't in the same view hierarchy; this seems to be
-    // impossible,  but it does still happen. This will cause an exception in
-    // when activiating these constraints. To gather more information about this
-    // state, explciitly check the view hierarchy roots. Local variables are
-    // used so that the CHECK message is cleared.
+    // Sometimes, `contentAreaGuide` and `primaryToolbarView` aren't in the same
+    // view hierarchy; this seems to be impossible,  but it does still happen.
+    // This will cause an exception in when activiating these constraints. To
+    // gather more information about this state, explciitly check the view
+    // hierarchy roots. Local variables are used so that the CHECK message is
+    // clearer.
     UIView* rootViewForToolbar = ViewHierarchyRootForView(primaryToolbarView);
     UIView* rootViewForContentGuide =
         ViewHierarchyRootForView(contentAreaGuide.owningView);

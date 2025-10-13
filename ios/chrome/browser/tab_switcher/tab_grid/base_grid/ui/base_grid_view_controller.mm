@@ -1839,8 +1839,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Animates the empty state into view.
 - (void)animateEmptyStateIn {
-  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
-  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   self.emptyStateAnimator = [[UIViewPropertyAnimator alloc]
       initWithDuration:1.0 - self.emptyStateView.alpha
@@ -1854,8 +1852,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Removes the empty state out of view, with animation if `animated` is YES.
 - (void)removeEmptyStateAnimated:(BOOL)animated {
-  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
-  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   auto removeEmptyState = ^{
     self.emptyStateView.alpha = 0.0;

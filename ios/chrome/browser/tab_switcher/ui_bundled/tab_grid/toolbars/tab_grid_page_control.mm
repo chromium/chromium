@@ -816,9 +816,8 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   } else if (CGRectContainsPoint(self.tabGroupsGuide.layoutFrame, point)) {
     page = TabGridPageTabGroups;
   } else {
-    // bug: taps in the left- or rightmost `kSliderOverhang` points of the
-    // control will fall through to this case.
-    // TODO(crbug.com/41366258): Fix this.
+    // TODO(crbug.com/451554492): taps in the left- or rightmost
+    // `kSliderOverhang` points of the control will fall through to this case.
     page = TabGridPageRegularTabs;
   }
   if (page != self.selectedPage) {
