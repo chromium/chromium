@@ -505,8 +505,20 @@ bool DeviceCommandStartCrdSessionJob::ShouldAutoAcceptSession(
     return false;
   }
 
-  return is_in_managed_environment && ShouldShowConfirmationDialog() &&
-         GetDeviceIdleTime() <= kAutoApproveDeviceIdlenessCutoff;
+  if (!is_in_managed_environment || !ShouldShowConfirmationDialog()) {
+    return false;
+  }
+
+  // This enables shared unattended Chrome Remote Desktop (CRD) sessions to
+  // auto-launched managed guest sessions. Specifically, this is for scenarios
+  // where there is an active managed guest session, and the device has been
+  // idle since the last reboot.
+  if (GetCurrentUserSessionType() == UserSessionType::MANAGED_GUEST_SESSION &&
+      IsDeviceIdleSinceReboot()) {
+    return true;
+  }
+
+  return GetDeviceIdleTime() <= kAutoApproveDeviceIdlenessCutoff;
 }
 
 ErrorCallback DeviceCommandStartCrdSessionJob::GetErrorCallback() {

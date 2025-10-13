@@ -39,6 +39,9 @@ const std::string GetCrdCrashKeyValue(CrdSessionType crd_session_type,
 // reboot.
 base::TimeDelta GetDeviceIdleTime();
 
+// Returns true if the device has been idle since the last reboot.
+bool IsDeviceIdleSinceReboot();
+
 // Returns the type of the currently active user session.
 UserSessionType GetCurrentUserSessionType();
 

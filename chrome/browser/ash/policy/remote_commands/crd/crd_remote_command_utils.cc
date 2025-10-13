@@ -133,6 +133,12 @@ base::TimeDelta GetDeviceIdleTime() {
   return base::TimeTicks::Now() - last_activity;
 }
 
+bool IsDeviceIdleSinceReboot() {
+  base::TimeTicks last_activity =
+      CHECK_DEREF(ui::UserActivityDetector::Get()).last_activity_time();
+  return last_activity.is_null();
+}
+
 UserSessionType GetCurrentUserSessionType() {
   const auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
 
