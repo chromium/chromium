@@ -6,6 +6,7 @@ create {
       version: "2.82.1"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:gnome:glib"
   }
   build {
     install: "install.sh"
