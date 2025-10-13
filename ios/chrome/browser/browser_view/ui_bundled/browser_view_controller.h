@@ -32,7 +32,6 @@ class FullscreenController;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
 @protocol OmniboxCommands;
-class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
@@ -64,7 +63,6 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
-  raw_ptr<PagePlaceholderBrowserAgent> pagePlaceholderBrowserAgent;
   raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   raw_ptr<TabUsageRecorderBrowserAgent> tabUsageRecorderBrowserAgent;

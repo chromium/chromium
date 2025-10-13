@@ -230,11 +230,10 @@ const CGFloat kTopDynamicIslandInset = 24;
   UIView* _topBackgroundView;
 
   // The service used to load url parameters in current or new tab.
-  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _urlLoadingBrowserAgent;
+  raw_ptr<UrlLoadingBrowserAgent> _urlLoadingBrowserAgent;
 
   // Used to report usage of a single Browser's tab.
-  raw_ptr<TabUsageRecorderBrowserAgent, DanglingUntriaged>
-      _tabUsageRecorderBrowserAgent;
+  raw_ptr<TabUsageRecorderBrowserAgent> _tabUsageRecorderBrowserAgent;
 
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
@@ -807,8 +806,8 @@ const CGFloat kTopDynamicIslandInset = 24;
   _isShutdown = YES;
 
   // Disconnect child coordinators.
-    [self.tabStripCoordinator stop];
-    self.tabStripCoordinator = nil;
+  [self.tabStripCoordinator stop];
+  self.tabStripCoordinator = nil;
   self.tabStripView = nil;
 
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
@@ -819,6 +818,10 @@ const CGFloat kTopDynamicIslandInset = 24;
   [_voiceSearchController disconnect];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _bookmarksCoordinator = nil;
+
+  // Clears the pointer to C++ objects.
+  _urlLoadingBrowserAgent = nullptr;
+  _tabUsageRecorderBrowserAgent = nullptr;
 }
 
 #pragma mark - UIAccessibilityAction

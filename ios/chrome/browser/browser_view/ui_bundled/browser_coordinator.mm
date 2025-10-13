@@ -1148,16 +1148,16 @@ const char kChromeAppStoreUrl[] =
 
 // Shuts down the BrowserViewController.
 - (void)destroyViewController {
-  self.viewController.active = NO;
-  self.viewController.webUsageEnabled = NO;
-  self.viewController.browserViewVisibilityAudience = nil;
+  _viewController.active = NO;
+  _viewController.webUsageEnabled = NO;
+  _viewController.browserViewVisibilityAudience = nil;
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
 
   // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
-  [self.dispatcher stopDispatchingToTarget:self.viewController];
-  [self.viewController shutdown];
+  [self.dispatcher stopDispatchingToTarget:_viewController];
+  [_viewController shutdown];
   _viewController = nil;
 }
 
@@ -1409,24 +1409,7 @@ const char kChromeAppStoreUrl[] =
 
 // Destroys the browser view controller dependencies.
 - (void)destroyViewControllerDependencies {
-  _viewControllerDependencies.toolbarAccessoryPresenter = nil;
-  _viewControllerDependencies.popupMenuCoordinator = nil;
-  _viewControllerDependencies.ntpCoordinator = nil;
-  _viewControllerDependencies.toolbarCoordinator = nil;
-  _viewControllerDependencies.tabStripCoordinator = nil;
-  _viewControllerDependencies.sideSwipeCoordinator = nil;
-  _viewControllerDependencies.bookmarksCoordinator = nil;
-  _viewControllerDependencies.fullscreenController = nil;
-  _viewControllerDependencies.textZoomHandler = nil;
-  _viewControllerDependencies.helpHandler = nil;
-  _viewControllerDependencies.popupMenuCommandsHandler = nil;
-  _viewControllerDependencies.applicationCommandsHandler = nil;
-  _viewControllerDependencies.findInPageCommandsHandler = nil;
-  _viewControllerDependencies.urlLoadingBrowserAgent = nil;
-  _viewControllerDependencies.tabUsageRecorderBrowserAgent = nil;
-  _viewControllerDependencies.layoutGuideCenter = nil;
-  _viewControllerDependencies.voiceSearchController = nil;
-  _viewControllerDependencies.safeAreaProvider = nil;
+  _viewControllerDependencies = BrowserViewControllerDependencies{};
 
   [_voiceSearchController dismissMicPermissionHelp];
   [_voiceSearchController disconnect];
