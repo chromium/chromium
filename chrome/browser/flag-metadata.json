@@ -8811,14 +8811,9 @@
     "expiry_milestone": 145
   },
   {
-    "name": "replace-sync-promos-with-sign-in-promos",
-    "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "replace-sync-promos-with-sign-in-promos-desktop",
     "owners": [ "amelies@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 148
   },
   {
     "name": "report-notification-content-detection-data",

@@ -42,14 +42,18 @@ BASE_DECLARE_FEATURE(kSyncAIThread);
 // Enables syncing of contextual tasks.
 BASE_DECLARE_FEATURE(kSyncContextualTask);
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
+// On Android:
 // - Batch upload of left-behind bookmarks from the bookmark manager
 // - Turn on bookmarks and reading list when signing in from bookmark manager
 // - Confirmation dialog when turning off “Allow Chrome sign-in”
 // - Promo for signed-in users with bookmarks toggle off
+// On desktop:
+// Adding history sync opt-in entry points, and other follow-ups to
+// `kReplaceSyncPromosWithSignInPromos`.
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
