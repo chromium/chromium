@@ -5,7 +5,7 @@ cpp-httplib
 
 A C++11 single-file header-only cross platform HTTP/HTTPS library.
 
-It's extremely easy to setup. Just include the **httplib.h** file in your code!
+It's extremely easy to set up. Just include the **httplib.h** file in your code!
 
 > [!IMPORTANT]
 > This library uses 'blocking' socket I/O. If you are looking for a library with 'non-blocking' socket I/O, this is not the one that you want.
@@ -84,6 +84,49 @@ cli.enable_server_hostname_verification(false);
 
 > [!NOTE]
 > When using SSL, it seems impossible to avoid SIGPIPE in all cases, since on some operating systems, SIGPIPE can only be suppressed on a per-message basis, but there is no way to make the OpenSSL library do so for its internal communications. If your program needs to avoid being terminated on SIGPIPE, the only fully general way might be to set up a signal handler for SIGPIPE to handle or ignore it yourself.
+
+### SSL Error Handling
+
+When SSL operations fail, cpp-httplib provides detailed error information through two separate error fields:
+
+```c++
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "path/to/httplib.h"
+
+httplib::Client cli("https://example.com");
+
+auto res = cli.Get("/");
+if (!res) {
+  // Check the error type
+  auto err = res.error();
+
+  switch (err) {
+    case httplib::Error::SSLConnection:
+      std::cout << "SSL connection failed, SSL error: "
+                << res->ssl_error() << std::endl;
+      break;
+
+    case httplib::Error::SSLLoadingCerts:
+      std::cout << "SSL cert loading failed, OpenSSL error: "
+                << std::hex << res->ssl_openssl_error() << std::endl;
+      break;
+
+    case httplib::Error::SSLServerVerification:
+      std::cout << "SSL verification failed, X509 error: "
+                << res->ssl_openssl_error() << std::endl;
+      break;
+
+    case httplib::Error::SSLServerHostnameVerification:
+      std::cout << "SSL hostname verification failed, X509 error: "
+                << res->ssl_openssl_error() << std::endl;
+      break;
+
+    default:
+      std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+    }
+  }
+}
+```
 
 Server
 ------
@@ -187,7 +230,7 @@ svr.set_file_extension_and_mimetype_mapping("cpp", "text/x-c");
 svr.set_file_extension_and_mimetype_mapping("hh", "text/x-h");
 ```
 
-The followings are built-in mappings:
+The following are built-in mappings:
 
 | Extension  |          MIME Type          | Extension  |          MIME Type          |
 | :--------- | :-------------------------- | :--------- | :-------------------------- |
@@ -201,7 +244,7 @@ The followings are built-in mappings:
 | bmp        | image/bmp                   | 7z         | application/x-7z-compressed |
 | gif        | image/gif                   | atom       | application/atom+xml        |
 | png        | image/png                   | pdf        | application/pdf             |
-| svg        | image/svg+xml               | mjs, js    | application/javascript      |
+| svg        | image/svg+xml               | mjs, js    | text/javascript             |
 | webp       | image/webp                  | json       | application/json            |
 | ico        | image/x-icon                | rss        | application/rss+xml         |
 | tif        | image/tiff                  | tar        | application/x-tar           |
@@ -226,9 +269,45 @@ svr.set_file_request_handler([](const Request &req, Response &res) {
 
 ### Logging
 
+cpp-httplib provides separate logging capabilities for access logs and error logs, similar to web servers like Nginx and Apache.
+
+#### Access Logging
+
+Access loggers capture successful HTTP requests and responses:
+
 ```cpp
-svr.set_logger([](const auto& req, const auto& res) {
-  your_logger(req, res);
+svr.set_logger([](const httplib::Request& req, const httplib::Response& res) {
+  std::cout << req.method << " " << req.path << " -> " << res.status << std::endl;
+});
+```
+
+#### Pre-compression Logging
+
+You can also set a pre-compression logger to capture request/response data before compression is applied:
+
+```cpp
+svr.set_pre_compression_logger([](const httplib::Request& req, const httplib::Response& res) {
+  // Log before compression - res.body contains uncompressed content
+  // Content-Encoding header is not yet set
+  your_pre_compression_logger(req, res);
+});
+```
+
+The pre-compression logger is only called when compression would be applied. For responses without compression, only the access logger is called.
+
+#### Error Logging
+
+Error loggers capture failed requests and connection issues. Unlike access loggers, error loggers only receive the Error and Request information, as errors typically occur before a meaningful Response can be generated.
+
+```cpp
+svr.set_error_logger([](const httplib::Error& err, const httplib::Request* req) {
+  std::cerr << httplib::to_string(err) << " while processing request";
+  if (req) {
+    std::cerr << ", client: " << req->get_header_value("X-Forwarded-For")
+              << ", request: '" << req->method << " " << req->path << " " << req->version << "'"
+              << ", host: " << req->get_header_value("Host");
+  }
+  std::cerr << std::endl;
 });
 ```
 
@@ -285,16 +364,96 @@ svr.set_post_routing_handler([](const auto& req, auto& res) {
 });
 ```
 
-### 'multipart/form-data' POST data
+### Pre request handler
 
 ```cpp
-svr.Post("/multipart", [&](const auto& req, auto& res) {
-  auto size = req.files.size();
-  auto ret = req.has_file("name1");
-  const auto& file = req.get_file_value("name1");
-  // file.filename;
-  // file.content_type;
-  // file.content;
+svr.set_pre_request_handler([](const auto& req, auto& res) {
+  if (req.matched_route == "/user/:user") {
+    auto user = req.path_params.at("user");
+    if (user != "john") {
+      res.status = StatusCode::Forbidden_403;
+      res.set_content("error", "text/html");
+      return Server::HandlerResponse::Handled;
+    }
+  }
+  return Server::HandlerResponse::Unhandled;
+});
+```
+
+### Form data handling
+
+#### URL-encoded form data ('application/x-www-form-urlencoded')
+
+```cpp
+svr.Post("/form", [&](const auto& req, auto& res) {
+  // URL query parameters and form-encoded data are accessible via req.params
+  std::string username = req.get_param_value("username");
+  std::string password = req.get_param_value("password");
+
+  // Handle multiple values with same name
+  auto interests = req.get_param_values("interests");
+
+  // Check existence
+  if (req.has_param("newsletter")) {
+    // Handle newsletter subscription
+  }
+});
+```
+
+#### 'multipart/form-data' POST data
+
+```cpp
+svr.Post("/multipart", [&](const Request& req, Response& res) {
+  // Access text fields (from form inputs without files)
+  std::string username = req.form.get_field("username");
+  std::string bio = req.form.get_field("bio");
+
+  // Access uploaded files
+  if (req.form.has_file("avatar")) {
+    const auto& file = req.form.get_file("avatar");
+    std::cout << "Uploaded file: " << file.filename
+              << " (" << file.content_type << ") - "
+              << file.content.size() << " bytes" << std::endl;
+
+    // Access additional headers if needed
+    for (const auto& header : file.headers) {
+      std::cout << "Header: " << header.first << " = " << header.second << std::endl;
+    }
+
+    // Save to disk
+    std::ofstream ofs(file.filename, std::ios::binary);
+    ofs << file.content;
+  }
+
+  // Handle multiple values with same name
+  auto tags = req.form.get_fields("tags");  // e.g., multiple checkboxes
+  for (const auto& tag : tags) {
+    std::cout << "Tag: " << tag << std::endl;
+  }
+
+  auto documents = req.form.get_files("documents");  // multiple file upload
+  for (const auto& doc : documents) {
+    std::cout << "Document: " << doc.filename
+              << " (" << doc.content.size() << " bytes)" << std::endl;
+  }
+
+  // Check existence before accessing
+  if (req.form.has_field("newsletter")) {
+    std::cout << "Newsletter subscription: " << req.form.get_field("newsletter") << std::endl;
+  }
+
+  // Get counts for validation
+  if (req.form.get_field_count("tags") > 5) {
+    res.status = StatusCode::BadRequest_400;
+    res.set_content("Too many tags", "text/plain");
+    return;
+  }
+
+  // Summary
+  std::cout << "Received " << req.form.fields.size() << " text fields and "
+            << req.form.files.size() << " files" << std::endl;
+
+  res.set_content("Upload successful", "text/plain");
 });
 ```
 
@@ -305,16 +464,29 @@ svr.Post("/content_receiver",
   [&](const Request &req, Response &res, const ContentReader &content_reader) {
     if (req.is_multipart_form_data()) {
       // NOTE: `content_reader` is blocking until every form data field is read
-      MultipartFormDataItems files;
+      // This approach allows streaming processing of large files
+      std::vector<FormData> items;
       content_reader(
-        [&](const MultipartFormData &file) {
-          files.push_back(file);
+        [&](const FormData &item) {
+          items.push_back(item);
           return true;
         },
         [&](const char *data, size_t data_length) {
-          files.back().content.append(data, data_length);
+          items.back().content.append(data, data_length);
           return true;
         });
+
+      // Process the received items
+      for (const auto& item : items) {
+        if (item.filename.empty()) {
+          // Text field
+          std::cout << "Field: " << item.name << " = " << item.content << std::endl;
+        } else {
+          // File
+          std::cout << "File: " << item.name << " (" << item.filename << ") - "
+                    << item.content.size() << " bytes" << std::endl;
+        }
+      }
     } else {
       std::string body;
       content_reader([&](const char *data, size_t data_length) {
@@ -435,7 +607,7 @@ svr.set_expect_100_continue_handler([](const Request &req, Response &res) {
 ### Keep-Alive connection
 
 ```cpp
-svr.set_keep_alive_max_count(2); // Default is 5
+svr.set_keep_alive_max_count(2); // Default is 100
 svr.set_keep_alive_timeout(10);  // Default is 5
 ```
 
@@ -562,10 +734,57 @@ enum Error {
   SSLConnection,
   SSLLoadingCerts,
   SSLServerVerification,
+  SSLServerHostnameVerification,
   UnsupportedMultipartBoundaryChars,
   Compression,
   ConnectionTimeout,
+  ProxyConnection,
 };
+```
+
+### Client Logging
+
+#### Access Logging
+
+```cpp
+cli.set_logger([](const httplib::Request& req, const httplib::Response& res) {
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::steady_clock::now() - start_time).count();
+  std::cout << "✓ " << req.method << " " << req.path
+            << " -> " << res.status << " (" << res.body.size() << " bytes, "
+            << duration << "ms)" << std::endl;
+});
+```
+
+#### Error Logging
+
+```cpp
+cli.set_error_logger([](const httplib::Error& err, const httplib::Request* req) {
+  std::cerr << "✗ ";
+  if (req) {
+    std::cerr << req->method << " " << req->path << " ";
+  }
+  std::cerr << "failed: " << httplib::to_string(err);
+
+  // Add specific guidance based on error type
+  switch (err) {
+    case httplib::Error::Connection:
+      std::cerr << " (verify server is running and reachable)";
+      break;
+    case httplib::Error::SSLConnection:
+      std::cerr << " (check SSL certificate and TLS configuration)";
+      break;
+    case httplib::Error::ConnectionTimeout:
+      std::cerr << " (increase timeout or check network latency)";
+      break;
+    case httplib::Error::Read:
+      std::cerr << " (server may have closed connection prematurely)";
+      break;
+    default:
+      break;
+  }
+  std::cerr << std::endl;
+});
 ```
 
 ### GET with HTTP headers
@@ -618,7 +837,7 @@ auto res = cli.Post("/post", params);
 ### POST with Multipart Form Data
 
 ```c++
-httplib::MultipartFormDataItems items = {
+httplib::UploadFormDataItems items = {
   { "text1", "text default", "", "" },
   { "text2", "aωb", "", "" },
   { "file1", "h\ne\n\nl\nl\no\n", "hello.txt", "text/plain" },
@@ -655,8 +874,8 @@ cli.set_connection_timeout(0, 300000); // 300 milliseconds
 cli.set_read_timeout(5, 0); // 5 seconds
 cli.set_write_timeout(5, 0); // 5 seconds
 
-// This method works the same as curl's `--max-timeout` option
-svr.set_max_timeout(5000); // 5 seconds
+// This method works the same as curl's `--max-time` option
+cli.set_max_timeout(5000); // 5 seconds
 ```
 
 ### Receive content with a content receiver
@@ -721,7 +940,7 @@ auto res = cli.Post(
 httplib::Client cli(url, port);
 
 // prints: 0 / 000 bytes => 50% complete
-auto res = cli.Get("/", [](uint64_t len, uint64_t total) {
+auto res = cli.Get("/", [](size_t len, size_t total) {
   printf("%lld / %lld bytes => %d%% complete\n",
     len, total,
     (int)(len*100/total));
@@ -820,6 +1039,45 @@ res->status; // 200
 cli.set_interface("eth0"); // Interface name, IP address or host name
 ```
 
+### Automatic Path Encoding
+
+The client automatically encodes special characters in URL paths by default:
+
+```cpp
+httplib::Client cli("https://example.com");
+
+// Automatic path encoding (default behavior)
+cli.set_path_encode(true);
+auto res = cli.Get("/path with spaces/file.txt"); // Automatically encodes spaces
+
+// Disable automatic path encoding
+cli.set_path_encode(false);
+auto res = cli.Get("/already%20encoded/path"); // Use pre-encoded paths
+```
+
+- `set_path_encode(bool on)` - Controls automatic encoding of special characters in URL paths
+  - `true` (default): Automatically encodes spaces, plus signs, newlines, and other special characters
+  - `false`: Sends paths as-is without encoding (useful for pre-encoded URLs)
+
+### Performance Note for Local Connections
+
+> [!WARNING]
+> On Windows systems with improperly configured IPv6 settings, using "localhost" as the hostname may cause significant connection delays (up to 2 seconds per request) due to DNS resolution issues. This affects both client and server operations. For better performance when connecting to local services, use "127.0.0.1" instead of "localhost".
+> 
+> See: https://github.com/yhirose/cpp-httplib/issues/366#issuecomment-593004264
+
+```cpp
+// May be slower on Windows due to DNS resolution delays
+httplib::Client cli("localhost", 8080);
+httplib::Server svr;
+svr.listen("localhost", 8080);
+
+// Faster alternative for local connections
+httplib::Client cli("127.0.0.1", 8080);
+httplib::Server svr;
+svr.listen("127.0.0.1", 8080);
+```
+
 Compression
 -----------
 
@@ -830,6 +1088,7 @@ The server can apply compression to the following MIME type contents:
   * application/javascript
   * application/json
   * application/xml
+  * application/protobuf
   * application/xhtml+xml
 
 ### Zlib Support
@@ -841,13 +1100,18 @@ The server can apply compression to the following MIME type contents:
 Brotli compression is available with `CPPHTTPLIB_BROTLI_SUPPORT`. Necessary libraries should be linked.
 Please see https://github.com/google/brotli for more detail.
 
+### Zstd Support
+
+Zstd compression is available with `CPPHTTPLIB_ZSTD_SUPPORT`. Necessary libraries should be linked.
+Please see https://github.com/facebook/zstd for more detail.
+
 ### Default `Accept-Encoding` value
 
 The default `Accept-Encoding` value contains all possible compression types. So, the following two examples are same.
 
 ```c++
 res = cli.Get("/resource/foo");
-res = cli.Get("/resource/foo", {{"Accept-Encoding", "gzip, deflate, br"}});
+res = cli.Get("/resource/foo", {{"Accept-Encoding", "br, gzip, deflate, zstd"}});
 ```
 
 If we don't want a response without compression, we have to set `Accept-Encoding` to an empty string. This behavior is similar to curl.
@@ -887,7 +1151,36 @@ httplib::Client cli("./my-socket.sock");
 cli.set_address_family(AF_UNIX);
 ```
 
-"my-socket.sock" can be a relative path or an absolute path. You application must have the appropriate permissions for the path. You can also use an abstract socket address on Linux. To use an abstract socket address, prepend a null byte ('\x00') to the path.
+"my-socket.sock" can be a relative path or an absolute path. Your application must have the appropriate permissions for the path. You can also use an abstract socket address on Linux. To use an abstract socket address, prepend a null byte ('\x00') to the path.
+
+This library automatically sets the Host header to "localhost" for Unix socket connections, similar to curl's behavior:
+
+
+URI Encoding/Decoding Utilities
+-------------------------------
+
+cpp-httplib provides utility functions for URI encoding and decoding:
+
+```cpp
+#include <httplib.h>
+
+std::string url = "https://example.com/search?q=hello world";
+std::string encoded = httplib::encode_uri(url);
+std::string decoded = httplib::decode_uri(encoded);
+
+std::string param = "hello world";
+std::string encoded_component = httplib::encode_uri_component(param);
+std::string decoded_component = httplib::decode_uri_component(encoded_component);
+```
+
+### Functions
+
+- `encode_uri(const std::string &value)` - Encodes a full URI, preserving reserved characters like `://`, `?`, `&`, `=`
+- `decode_uri(const std::string &value)` - Decodes a URI-encoded string
+- `encode_uri_component(const std::string &value)` - Encodes a URI component (query parameter, path segment), encoding all reserved characters
+- `decode_uri_component(const std::string &value)` - Decodes a URI component
+
+Use `encode_uri()` for full URLs and `encode_uri_component()` for individual query parameters or path segments.
 
 
 Split httplib.h into .h and .cc
@@ -937,6 +1230,24 @@ Serving HTTP on 0.0.0.0 port 80 ...
 
 NOTE
 ----
+
+### Regular Expression Stack Overflow
+
+> [!CAUTION]
+> When using complex regex patterns in route handlers, be aware that certain patterns may cause stack overflow during pattern matching. This is a known issue with `std::regex` implementations and affects the `dispatch_request()` method.
+> 
+> ```cpp
+> // This pattern can cause stack overflow with large input
+> svr.Get(".*", handler);
+> ```
+> 
+> Consider using simpler patterns or path parameters to avoid this issue:
+> 
+> ```cpp
+> // Safer alternatives
+> svr.Get("/users/:id", handler);           // Path parameters
+> svr.Get(R"(/api/v\d+/.*)", handler);     // More specific patterns
+> ```
 
 ### g++
 
