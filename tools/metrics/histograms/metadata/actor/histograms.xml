@@ -80,6 +80,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.MayOriginGatePageTransition" enum="Boolean"
+    expires_after="2026-03-30">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <summary>
+    Records whether a page transition for a cross-origin navigation would have
+    had origin gating, a safety feature which ensures the actor only interacts
+    with trusted origins, is applied. We origin gate cross-origin client-
+    initiated redirects and server redirects on the last link of the redirect
+    chain.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Count.Cancelled" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

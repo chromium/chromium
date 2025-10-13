@@ -168,6 +168,9 @@ class UkmPageLoadMetricsObserver
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetCoreWebVitalsLcpTimingInfo();
 
+  bool PageLoadMayOriginGate(
+      content::NavigationHandle* navigation_handle) const;
+
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetSoftNavigationLargestContentfulPaint() const;
 
