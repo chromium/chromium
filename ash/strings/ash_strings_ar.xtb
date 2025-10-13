@@ -470,6 +470,7 @@
 <translation id="2549711466868162843">تحسين الإضاءة</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
 <translation id="255671100581129685">‏لا يتوفَّر "مساعد Google" في جلسة عامة.</translation>
+<translation id="2562459326218811217">‏الجهاز متصل بمصدر الطاقة، ولكن لا يتم شحنه. عليك استخدام شاحن بقدرة واط (W) أكبر أو الشاحن الأصلي.</translation>
 <translation id="256712445991462162">المكبِّر الذي تم إرساؤه</translation>
 <translation id="2573588302192866788">تعذّر ربط <ph name="NAME" />.</translation>
 <translation id="2575685495496069081">تمّ إيقاف الدخول المتعدّد</translation>
@@ -538,6 +539,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2814448776515246190">تصوير جزئي</translation>
+<translation id="2815594810045873507">‏عليك استخدام شاحن بقدرة واط (W) أكبر أو الشاحن الأصلي.</translation>
 <translation id="2819276065543622893">سيتم تسجيل خروجك الآن.</translation>
 <translation id="2822551631199737692">الكاميرا قيد الاستخدام</translation>
 <translation id="2825619548187458965">الرف</translation>
@@ -1729,6 +1731,7 @@
 <translation id="6582012689384648647">‏للاستماع إلى قوائم تشغيل مخصَّصة تساعدك على التركيز، يجب السماح بالوصول إلى YouTube Music</translation>
 <translation id="6582034443359256692">جارٍ حساب مستوى شحن البطارية</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">يتعذّر شحن الجهاز</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="6605415194043280389">"وضع التركيز" مفعَّل</translation>

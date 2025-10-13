@@ -569,6 +569,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7406113532070524618">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja. vendar lahko spletna mesta v okviru preverjanja delijo majhno količino podatkov.</translation>
 <translation id="7409735910987429903">Spletna mesta lahko prikazujejo oglase v pojavnih oknih ali uporabljajo preusmeritve na spletna mesta, ki jih morda ne želite obiskati.</translation>
 <translation id="7412160840120117304">Šestnajstiška koda glavne barve</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Povečava/pomanjšava}one{Povečava/pomanjšava: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}two{Povečava/pomanjšava: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}few{Povečava/pomanjšava: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}other{Povečava/pomanjšava: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>

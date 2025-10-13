@@ -569,6 +569,7 @@
 <translation id="7406113532070524618">يعمل هذا الإعداد بدون تحديد هويتك أو السماح للمواقع الإلكترونية بالاطّلاع على سجلّ التصفُّح، إلا أنّ المواقع الإلكترونية يمكنها مشاركة قليلاً من المعلومات في إطار عملية إثبات الهوية.</translation>
 <translation id="7409735910987429903">قد ترسل المواقع الإلكترونية نوافذ منبثقة لعرض الإعلانات أو تستخدم عمليات إعادة التوجيه لتوجيهك إلى مواقع إلكترونية قد لا ترغب في زيارتها.</translation>
 <translation id="7412160840120117304">اللون الأساسي الست عشري</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{تكبير أو تصغير}zero{‏تكبير أو تصغير: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}two{‏تكبير أو تصغير: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}few{‏تكبير أو تصغير: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}many{‏تكبير أو تصغير: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}other{‏تكبير أو تصغير: ‎<ph name="ZOOM_PERCENTAGE_NUMBER" />%%‎}}</translation>
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7423538860840206698">تم الحظر من قراءة الحافظة</translation>
 <translation id="7425915948813553151">المظهر الداكن للمواقع الإلكترونية</translation>

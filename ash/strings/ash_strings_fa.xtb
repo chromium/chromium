@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">بهبود میزان نور</translation>
 <translation id="2549985041256363841">شروع ضبط</translation>
 <translation id="255671100581129685">‏«دستیار Google» در جلسه عمومی در دسترس نیست.</translation>
+<translation id="2562459326218811217">دستگاه به برق متصل است اما شارژ نمی‌شود. شارژری با توان (وات) بیشتر را امتحان کنید یا از شارژر اصلی‌تان استفاده کنید.</translation>
 <translation id="256712445991462162">ذره‌بین متصل</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> متصل نشد</translation>
 <translation id="2575685495496069081">ورود چندگانه به سیستم غیرفعال شده است</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294">‫<ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2814448776515246190">ضبط جزئی</translation>
+<translation id="2815594810045873507">شارژری با توان (وات) بیشتر را امتحان کنید یا از شارژر اصلی‌تان استفاده کنید.</translation>
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
 <translation id="2822551631199737692">دوربین درحال استفاده است</translation>
 <translation id="2825619548187458965">قفسه</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">‏برای فهرست‌های پخش تمرکز که برای شما شخصی‌سازی شده است، دسترسی به YouTube Music را مجاز کنید</translation>
 <translation id="6582034443359256692">درحال محاسبه سطح باتری.</translation>
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
+<translation id="6586685375736417639">امکان شارژ دستگاه وجود ندارد</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">دوربین به گوشه پایین سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="6605415194043280389">«تمرکز» روشن است.</translation>
