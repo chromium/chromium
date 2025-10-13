@@ -1892,6 +1892,30 @@ TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
 }
 
 TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     WalletDataIncludingClientTagHash) {
+  const ClientTagHash kTestClientTagHash =
+      ClientTagHash::FromUnhashed(AUTOFILL_WALLET_DATA, "12345");
+
+  UpdateResponseData response_data;
+
+  // Set up the entity with an arbitrary value for an arbitrary field in the
+  // specifics (so that it _has_ autofill wallet specifics).
+  sync_pb::SyncEntity entity;
+  entity.set_client_tag_hash(kTestClientTagHash.value());
+  entity.mutable_specifics()->mutable_autofill_wallet()->set_type(
+      sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
+
+  ASSERT_EQ(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
+          FakeCryptographer(), AUTOFILL_WALLET_DATA, entity, &response_data));
+
+  // The client tag hash makes it through.
+  EXPECT_EQ(response_data.entity.client_tag_hash.value(),
+            kTestClientTagHash.value());
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      OfferDataWithMissingClientTagHash) {
   UpdateResponseData response_data;
 

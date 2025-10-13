@@ -121,57 +121,67 @@ class CommitQueueProxy : public CommitQueue {
       base::SequencedTaskRunner::GetCurrentDefault();
 };
 
-void AdaptClientTagForFullUpdateData(DataType data_type,
-                                     syncer::EntityData* data) {
+void MaybeAdaptClientTagIfMissing(DataType data_type,
+                                  syncer::EntityData& data) {
+  CHECK(!data.specifics.has_encrypted());
+  if (!data.client_tag_hash.value().empty()) {
+    // Client tag hash is already set, nothing to do.
+    return;
+  }
   // Server does not send any client tags for wallet data entities or offer data
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedDataTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
-  if (data->legacy_parent_id == "0") {
+  if (data.legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
   }
-  DCHECK(!data->specifics.has_encrypted());
-  if (data_type == AUTOFILL_WALLET_DATA) {
-    CHECK(data->specifics.has_autofill_wallet());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_DATA,
-        autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
-            data->specifics.autofill_wallet()));
-  } else if (data_type == AUTOFILL_WALLET_OFFER) {
-    CHECK(data->specifics.has_autofill_offer());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_OFFER,
-        autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
-            data->specifics.autofill_offer()));
-  } else if (data_type == AUTOFILL_VALUABLE) {
-    CHECK(data->specifics.has_autofill_valuable());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_VALUABLE,
-        autofill::GetUnhashedClientTagFromAutofillValuableSpecifics(
-            data->specifics.autofill_valuable()));
-  } else {
-    NOTREACHED();
+  switch (data_type) {
+    case AUTOFILL_WALLET_DATA:
+      CHECK(data.specifics.has_autofill_wallet());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_DATA,
+          autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
+              data.specifics.autofill_wallet()));
+      break;
+    case AUTOFILL_WALLET_OFFER:
+      CHECK(data.specifics.has_autofill_offer());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_OFFER,
+          autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
+              data.specifics.autofill_offer()));
+      break;
+    case AUTOFILL_VALUABLE:
+      CHECK(data.specifics.has_autofill_valuable());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_VALUABLE,
+          autofill::GetUnhashedClientTagFromAutofillValuableSpecifics(
+              data.specifics.autofill_valuable()));
+      break;
+    default:
+      // Other datatypes populate the client tag hash in the protocol and there
+      // is no need to infer it client-side.
+      break;
   }
 }
 
-void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
+void AdaptWebAuthnClientTagHash(syncer::EntityData& data) {
   // Google Play Services may create entities where the client_tag_hash doesn't
   // conform to the form expected by Chromium. These values are the hex-encoded,
   // 16-byte random `sync_id` value, and will therefore always be 32 bytes long.
   // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
   // and therefore always 28 bytes.
-  const std::string& client_tag_hash = data->client_tag_hash.value();
+  const std::string& client_tag_hash = data.client_tag_hash.value();
   std::string sync_id;
   if (client_tag_hash.size() == 32 &&
       base::HexStringToString(client_tag_hash, &sync_id) &&
       // Deletions don't include the specifics, only the client_tag_hash.
-      (!data->specifics.has_webauthn_credential() ||
+      (!data.specifics.has_webauthn_credential() ||
        // Otherwise, check that the client_tag_hash really is the hex encoded
        // sync_id.
-       sync_id == data->specifics.webauthn_credential().sync_id())) {
-    data->client_tag_hash =
+       sync_id == data.specifics.webauthn_credential().sync_id())) {
+    data.client_tag_hash =
         ClientTagHash::FromUnhashed(DataType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
@@ -710,13 +720,10 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     // because the logic requires access to tracked entities. Hence, it is
     // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
-  } else if (data_type == AUTOFILL_WALLET_DATA ||
-             data_type == AUTOFILL_WALLET_OFFER ||
-             data_type == AUTOFILL_VALUABLE) {
-    AdaptClientTagForFullUpdateData(data_type, &data);
   } else if (data_type == WEBAUTHN_CREDENTIAL) {
-    AdaptWebAuthnClientTagHash(&data);
+    AdaptWebAuthnClientTagHash(data);
   }
+  MaybeAdaptClientTagIfMissing(data_type, data);
 
   response_data->entity = std::move(data);
   return SUCCESS;
