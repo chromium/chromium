@@ -36,27 +36,6 @@ class WebUIBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  // Helper function to set up embedded web contents for tests.
-  // Returns the embedded web contents after it has been converted to a guest.
-  content::WebContents* SetUpEmbeddedWebContents() {
-    EXPECT_TRUE(browser()->window());
-
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(web_contents);
-    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-    // Make sure that the web contents actually got converted to a guest before
-    // we navigate it again, so that WebContentsViewChildFrame gets involved.
-    EXPECT_TRUE(base::test::RunUntil(
-        [web_contents]() { return !!web_contents->GetOuterWebContents(); }));
-
-    GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-    return web_contents;
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -109,47 +88,86 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_NavigatePage) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Begin security related tests. These tests validate the security
 // boundary between a GuestContents and the parent.
+class WebUIBrowserSecurityTest : public WebUIBrowserTest {
+ public:
+  void SetUp() override { WebUIBrowserTest::SetUp(); }
+
+  content::WebContents* GetInnerWebContents() {
+    if (!inner_webcontents_) {
+      inner_webcontents_ = SetUpEmbeddedWebContents()->GetWeakPtr();
+    }
+    return inner_webcontents_.get();
+  }
+
+  content::WebContents* GetOuterWebContents() {
+    return GetInnerWebContents()->GetOuterWebContents();
+  }
+
+ private:
+  // Helper function to set up embedded web contents for tests.
+  // Returns the embedded web contents after it has been converted to a guest.
+  content::WebContents* SetUpEmbeddedWebContents() {
+    EXPECT_TRUE(browser()->window());
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(web_contents);
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+    // Make sure that the web contents actually got converted to a guest before
+    // we navigate it again, so that WebContentsViewChildFrame gets involved.
+    EXPECT_TRUE(base::test::RunUntil(
+        [web_contents]() { return !!web_contents->GetOuterWebContents(); }));
+
+    GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    return web_contents;
+  }
+
+  base::WeakPtr<content::WebContents> inner_webcontents_;
+};
 
 // Test that parent history is not affected by embedded navigation.
 // The history.length should be independent between inner and outer webcontents.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, HistoryLengthIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
-  EXPECT_EQ(2, EvalJs(inner_webcontents, "window.history.length"));
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, HistoryLengthIndependent) {
+  content::WebContents* outer_webcontents = GetOuterWebContents();
 
-  content::WebContents* outer_webcontents =
-      inner_webcontents->GetOuterWebContents();
   EXPECT_FALSE(outer_webcontents->GetOuterWebContents());
   EXPECT_TRUE(outer_webcontents);
+  EXPECT_EQ(1, EvalJs(outer_webcontents, "window.history.length"));
+
+  // Navigate the inner contents another cross origin URL and verify outer
+  // remains 1.
+  GURL url = embedded_https_test_server().GetURL("b.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(1, EvalJs(outer_webcontents, "window.history.length"));
 }
 
 // Test that the frame tree isolation between inner and outer webcontents.
 // Neither should include the other in their frames collection.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, FramesIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
-  EXPECT_EQ(0, EvalJs(inner_webcontents, "window.frames.length"));
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, FramesIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
 
-  content::WebContents* outer_webcontents =
-      inner_webcontents->GetOuterWebContents();
+  EXPECT_EQ(0, EvalJs(inner_webcontents, "window.frames.length"));
   EXPECT_EQ(0, EvalJs(outer_webcontents, "window.frames.length"));
 }
 
 // Test that the parent window does not count the embedded content as a frame.
 // The outer web contents should have window.length = 0 since the embedded
 // content should not be counted in the parent's frame count.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowLengthIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, WindowLengthIndependent) {
+  content::WebContents* outer_webcontents = GetOuterWebContents();
 
-  content::WebContents* outer_webcontents =
-      inner_webcontents->GetOuterWebContents();
   EXPECT_EQ(0, EvalJs(outer_webcontents, "window.length"));
 }
 
 // Test that the embedded content acts as top level.
 // window.top in the embedded content should equal window (itself),
 // not the actual parent's top-level window.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowTopIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, WindowTopIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
 
   EXPECT_TRUE(EvalJs(inner_webcontents, "window.top === window").ExtractBool());
 }
@@ -157,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowTopIndependent) {
 // Test that the embedded content acts as top level.
 // window.opener should be null since the embedded content should not
 // have access to the parent that "opened" it.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowOpenerIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, WindowOpenerIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
 
   EXPECT_TRUE(
       EvalJs(inner_webcontents, "window.opener === null").ExtractBool());
@@ -167,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowOpenerIndependent) {
 // Test that the embedded content acts as top level.
 // window.parent should equal window (itself) since there should be
 // no accessible parent window from the embedded content's perspective.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowParentIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest, WindowParentIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
 
   EXPECT_TRUE(
       EvalJs(inner_webcontents, "window.parent === window").ExtractBool());
@@ -177,11 +195,66 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowParentIndependent) {
 // Test that the embedded content acts as top level.
 // window.frameElement should be null since the embedded content should
 // not appear to be contained within a frame element.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, WindowFrameElementIndependent) {
-  content::WebContents* inner_webcontents = SetUpEmbeddedWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest,
+                       WindowFrameElementIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
 
   EXPECT_TRUE(
       EvalJs(inner_webcontents, "window.frameElement === null").ExtractBool());
+}
+
+// Test that inner webcontents cannot target outer webcontents
+// _parent and _top should all target the inner webcontents itself.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest,
+                       WindowOpenTargetingIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  // Store current URLs to verify navigation targets
+  GURL outer_url = outer_webcontents->GetLastCommittedURL();
+
+  // Test _parent targeting from inner webcontents.
+  GURL test_url =
+      embedded_https_test_server().GetURL("b.com", "/defaultresponse");
+  EXPECT_TRUE(
+      ExecJs(inner_webcontents,
+             content::JsReplace("window.open($1, '_parent')", test_url)));
+
+  // Verify inner webcontents navigated, outer did not.
+  EXPECT_TRUE(content::WaitForLoadStop(inner_webcontents));
+  EXPECT_EQ(inner_webcontents->GetLastCommittedURL().host(), test_url.host());
+  EXPECT_EQ(outer_webcontents->GetLastCommittedURL(), outer_url);
+
+  // Test _top
+  test_url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ExecJs(inner_webcontents,
+                     content::JsReplace("window.open($1, '_top')", test_url)));
+
+  // Verify inner webcontents navigated, outer did not.
+  EXPECT_TRUE(content::WaitForLoadStop(inner_webcontents));
+  EXPECT_EQ(inner_webcontents->GetLastCommittedURL().host(), test_url.host());
+  EXPECT_EQ(outer_webcontents->GetLastCommittedURL(), outer_url);
+}
+
+// Test that cross-context window references are not useful.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSecurityTest,
+                       WindowOpenReferenceIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  // Part 1. outer makes a window, it's not accessible in inner.
+  EXPECT_TRUE(ExecJs(outer_webcontents,
+                     "window.testWindow = window.open('about:blank')"));
+  EXPECT_TRUE(EvalJs(outer_webcontents, "window.hasOwnProperty('testWindow')")
+                  .ExtractBool());
+  EXPECT_FALSE(EvalJs(inner_webcontents, "window.hasOwnProperty('testWindow')")
+                   .ExtractBool());
+
+  // Part 2. inner makes a window, it's not accessible in outer.
+  EXPECT_TRUE(ExecJs(inner_webcontents,
+                     "window.innerWindow = window.open('about:blank')"));
+  EXPECT_FALSE(EvalJs(outer_webcontents, "window.hasOwnProperty('innerWindow')")
+                   .ExtractBool());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
