@@ -50,7 +50,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -511,20 +510,17 @@ AwBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-net::HttpRequestHeaders AwBrowserContext::GetExtraHeadersForUrl(
-    const GURL& url) {
+std::string AwBrowserContext::GetExtraHeadersForUrl(const GURL& url) {
   // This method of mapping headers to urls supports the WebView.loadUrl with
   // extra headers method, and should only be used to support this flow, but not
   // for any other purposes of attaching extra headers to requests.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!url.is_valid()) {
-    return net::HttpRequestHeaders();
+    return std::string();
   }
-  auto iter = extra_headers_for_urls_.find(url.spec());
-  if (iter == extra_headers_for_urls_.end()) {
-    return net::HttpRequestHeaders();
-  }
-  return iter->second;
+  std::map<std::string, std::string>::iterator iter =
+      extra_headers_for_urls_.find(url.spec());
+  return iter != extra_headers_for_urls_.end() ? iter->second : std::string();
 }
 
 void AwBrowserContext::RebuildTable(
@@ -658,17 +654,7 @@ void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,
     return;
   }
   if (!headers.empty()) {
-    net::HttpRequestHeaders new_headers;
-    for (std::string_view header : base::SplitStringPieceUsingSubstr(
-             headers, "\r\n", base::TRIM_WHITESPACE,
-             base::SPLIT_WANT_NONEMPTY)) {
-      size_t pos = header.find(':');
-      if (pos != std::string::npos) {
-        new_headers.SetHeader(header.substr(0, pos),
-                              net::HttpUtil::TrimLWS(header.substr(pos + 1)));
-      }
-      extra_headers_for_urls_[url.spec()] = new_headers;
-    }
+    extra_headers_for_urls_[url.spec()] = headers;
   } else {
     extra_headers_for_urls_.erase(url.spec());
   }

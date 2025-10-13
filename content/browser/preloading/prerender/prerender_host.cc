@@ -303,7 +303,7 @@ PrerenderHost& PrerenderHost::GetFromFrameTree(FrameTree* frame_tree) {
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
 #if BUILDFLAG(IS_ANDROID)
-    const net::HttpRequestHeaders& potential_activation_additional_headers,
+    const std::string& potential_activation_additional_headers_str,
 #endif  // BUILDFLAG(IS_ANDROID)
     const std::string& prerender_headers_str,
     PreloadingTriggerType trigger_type,
@@ -317,9 +317,8 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   potential_activation_headers.AddHeadersFromString(
       potential_activation_headers_str);
 #if BUILDFLAG(IS_ANDROID)
-  potential_activation_headers.MergeFrom(
-      potential_activation_additional_headers);
-
+  potential_activation_headers.AddHeadersFromString(
+      potential_activation_additional_headers_str);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // `prerender_headers` contains the "Purpose: prefetch" and "Sec-Purpose:
@@ -1050,18 +1049,18 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  net::HttpRequestHeaders activation_additional_headers;
+  std::string activation_additional_headers_str;
   bool workaround_enabled = base::FeatureList::IsEnabled(
       kPrerenderActivationMismatchWebViewWorkaround);
   if (!workaround_enabled || !IsSpeculationRuleType(trigger_type())) {
-    activation_additional_headers =
+    activation_additional_headers_str =
         web_contents_->GetBrowserContext()->GetExtraHeadersForUrl(
             potential_activation_url);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
 #if BUILDFLAG(IS_ANDROID)
-                                       activation_additional_headers,
+                                       activation_additional_headers_str,
 #endif  // BUILDFLAG(IS_ANDROID)
                                        begin_params_->headers, trigger_type(),
                                        GetHistogramSuffix(),
