@@ -92,6 +92,11 @@ class ReportResultTest(unittest.TestCase):
             duration=1230,
             test_log='log',
             test_file='//some_test.yaml',
+            test_id_structured={
+                'coarseName': '',
+                'fineName': '',
+                'caseNameComponents': ['some_test.yaml']
+            },
         )
 
     def test_report_result_failure(self):
@@ -109,6 +114,11 @@ class ReportResultTest(unittest.TestCase):
             duration=1230,
             test_log='log',
             test_file='//some_test.yaml',
+            test_id_structured={
+                'coarseName': '',
+                'fineName': '',
+                'caseNameComponents': ['some_test.yaml']
+            },
         )
 
 

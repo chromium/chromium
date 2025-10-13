@@ -66,6 +66,11 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
         status=result_types.PASS if test_result.success else result_types.FAIL,
         duration=test_result.duration * 1000,
         test_log=test_result.test_log,
+        test_id_structured={
+            'coarseName': '',  # Leave blank for scheme 'flat'.
+            'fineName': '',  # Leave blank for scheme 'flat'.
+            'caseNameComponents': [str(posix_path)],
+        },
         test_file=f'//{str(posix_path)}')
 
 
