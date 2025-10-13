@@ -22,17 +22,15 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
-      std::unique_ptr<ContextualSessionService::SessionHandle>
-          contextual_session_handle)
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
                                    std::move(metrics_recorder),
                                    std::make_unique<OmniboxController>(
                                        /*view=*/nullptr,
-                                       std::make_unique<TestOmniboxClient>()),
-                                   std::move(contextual_session_handle)) {}
+                                       std::make_unique<TestOmniboxClient>())) {
+  }
 
   ~TestSearchboxHandler() override = default;
 
@@ -50,8 +48,7 @@ class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         browser()->profile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
-        /*metrics_recorder=*/nullptr,
-        /*contextual_session_handle=*/nullptr);
+        /*metrics_recorder=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

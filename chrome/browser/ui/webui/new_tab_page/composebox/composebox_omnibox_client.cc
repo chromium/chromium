@@ -7,8 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
-#include "components/omnibox/composebox/contextual_session_service.h"
 #include "net/base/url_util.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -17,11 +15,8 @@ namespace composebox {
 ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     Profile* profile,
     content::WebContents* web_contents,
-    BaseComposeboxHandler* composebox_handler,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle)
-    : ContextualOmniboxClient(profile, web_contents,
-                              std::move(contextual_session_handle)),
+    BaseComposeboxHandler* composebox_handler)
+    : ContextualOmniboxClient(profile, web_contents),
       composebox_handler_(composebox_handler) {}
 
 ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;

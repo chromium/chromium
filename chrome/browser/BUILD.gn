@@ -855,6 +855,8 @@ static_library("browser") {
     "offline_items_collection/offline_content_aggregator_factory.h",
     "omnibox/contextual_session_service_factory.cc",
     "omnibox/contextual_session_service_factory.h",
+    "omnibox/contextual_session_web_contents_helper.cc",
+    "omnibox/contextual_session_web_contents_helper.h",
     "origin_trials/origin_trials_factory.cc",
     "origin_trials/origin_trials_factory.h",
     "page_content_annotations/annotate_page_content_request.cc",

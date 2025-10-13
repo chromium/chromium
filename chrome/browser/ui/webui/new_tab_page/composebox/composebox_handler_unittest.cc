@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/omnibox/contextual_session_web_contents_helper.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -79,7 +80,9 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         version_info::Channel::UNKNOWN, "en-US");
     auto contextual_session_handle =
         service_->CreateSessionForTesting(std::move(query_controller_ptr));
-    auto session_id = contextual_session_handle->session_id();
+    ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
+        web_contents())
+        ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr =
@@ -89,7 +92,6 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        std::move(contextual_session_handle), service_->GetSession(session_id),
         std::move(metrics_recorder_ptr), profile(), web_contents());
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());

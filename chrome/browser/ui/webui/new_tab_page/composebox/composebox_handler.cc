@@ -22,10 +22,6 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        contextual_session_handle,
-    std::unique_ptr<ContextualSessionService::SessionHandle>
-        secondary_contextual_session_handle,
     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents)
@@ -39,9 +35,7 @@ ComposeboxHandler::ComposeboxHandler(
               std::make_unique<composebox::ComposeboxOmniboxClient>(
                   profile,
                   web_contents,
-                  this,
-                  std::move(secondary_contextual_session_handle))),
-          std::move(contextual_session_handle)),
+                  this))),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {

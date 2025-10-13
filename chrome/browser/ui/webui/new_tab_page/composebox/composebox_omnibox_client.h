@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/composebox/contextual_session_service.h"
 #include "ui/base/window_open_disposition.h"
 
 class GURL;
@@ -35,12 +34,9 @@ namespace composebox {
 
 class ComposeboxOmniboxClient final : public ContextualOmniboxClient {
  public:
-  ComposeboxOmniboxClient(
-      Profile* profile,
-      content::WebContents* web_contents,
-      BaseComposeboxHandler* composebox_handler,
-      std::unique_ptr<ContextualSessionService::SessionHandle>
-          contextual_session_handle);
+  ComposeboxOmniboxClient(Profile* profile,
+                          content::WebContents* web_contents,
+                          BaseComposeboxHandler* composebox_handler);
 
   ~ComposeboxOmniboxClient() override;
 

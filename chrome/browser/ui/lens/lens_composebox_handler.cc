@@ -38,8 +38,7 @@ LensComposeboxHandler::LensComposeboxHandler(
               std::make_unique<composebox::ComposeboxOmniboxClient>(
                   profile,
                   web_contents,
-                  this,
-                  /*query_controller=*/nullptr))),
+                  this))),
       lens_composebox_controller_(parent_controller),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {

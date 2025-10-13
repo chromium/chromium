@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/omnibox/contextual_session_web_contents_helper.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -93,17 +94,15 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
-      std::unique_ptr<ContextualSessionService::SessionHandle>
-          contextual_session_handle)
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
                                    std::move(metrics_recorder),
                                    std::make_unique<OmniboxController>(
                                        /*view=*/nullptr,
-                                       std::make_unique<TestOmniboxClient>()),
-                                   std::move(contextual_session_handle)) {}
+                                       std::make_unique<TestOmniboxClient>())) {
+  }
   ~FakeContextualSearchboxHandler() override = default;
 
   // searchbox::mojom::PageHandler
@@ -142,6 +141,9 @@ class ContextualSearchboxHandlerTest
         version_info::Channel::UNKNOWN, "en-US");
     auto contextual_session_handle =
         service_->CreateSessionForTesting(std::move(query_controller_ptr));
+    ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
+        web_contents())
+        ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr =
@@ -149,8 +151,7 @@ class ContextualSearchboxHandlerTest
     metrics_recorder_ = metrics_recorder_ptr.get();
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents(), std::move(metrics_recorder_ptr),
-        std::move(contextual_session_handle));
+        web_contents(), std::move(metrics_recorder_ptr));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }

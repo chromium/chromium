@@ -37,6 +37,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/omnibox/contextual_session_service_factory.h"
+#include "chrome/browser/omnibox/contextual_session_web_contents_helper.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -851,30 +852,31 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  std::unique_ptr<ContextualSessionService::SessionHandle>
-      contextual_session_handle;
-  std::unique_ptr<ContextualSessionService::SessionHandle>
-      secondary_contextual_session_handle;
   std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
   // Only create the composebox query controller and metrics recorder needed for
   // contextual search if realbox next is enabled.
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile_)) {
-    auto* contextual_session_service =
-        ContextualSessionServiceFactory::GetForProfile(profile_);
-    contextual_session_handle = contextual_session_service->CreateSession(
-        ntp_composebox::kSendLnsSurfaceParam.Get(),
-        ntp_composebox::kMaxNumFiles.Get() > 1,
-        ntp_composebox::kEnableViewportImages.Get());
-    secondary_contextual_session_handle =
-      contextual_session_service->GetSession(
-          contextual_session_handle->session_id());
+    // Create a contextual session for this WebContents if one does not exist.
+    if (auto* contextual_session_web_contents_helper =
+            ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
+                web_contents());
+        !contextual_session_web_contents_helper->session_handle()) {
+      auto* contextual_session_service =
+          ContextualSessionServiceFactory::GetForProfile(profile_);
+      auto contextual_session_handle =
+          contextual_session_service->CreateSession(
+              ntp_composebox::kSendLnsSurfaceParam.Get(),
+              ntp_composebox::kMaxNumFiles.Get() > 1,
+              ntp_composebox::kEnableViewportImages.Get());
+      contextual_session_web_contents_helper->set_session_handle(
+          std::move(contextual_session_handle));
+    }
     composebox_metrics_recorder = std::make_unique<ComposeboxMetricsRecorder>(
         kComposeboxMetricsReporterPrefName);
   }
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), std::move(contextual_session_handle),
-      std::move(secondary_contextual_session_handle),
-      std::move(composebox_metrics_recorder), profile_, web_contents());
+      std::move(pending_page_handler), std::move(composebox_metrics_recorder),
+      profile_, web_contents());
 }
 
 void NewTabPageUI::BindInterface(
@@ -1074,20 +1076,25 @@ void NewTabPageUI::CreatePageHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
-  auto* contextual_session_service =
-      ContextualSessionServiceFactory::GetForProfile(profile_);
-  auto contextual_session_handle = contextual_session_service->CreateSession(
-      ntp_composebox::kSendLnsSurfaceParam.Get(),
-      ntp_composebox::kMaxNumFiles.Get() > 1,
-      ntp_composebox::kEnableViewportImages.Get());
-  auto secondary_contextual_session_handle =
-      contextual_session_service->GetSession(
-          contextual_session_handle->session_id());
+
+  // Create a contextual session for this WebContents if one does not exist.
+  if (auto* contextual_session_web_contents_helper =
+          ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
+              web_contents());
+      !contextual_session_web_contents_helper->session_handle()) {
+    auto* contextual_session_service =
+        ContextualSessionServiceFactory::GetForProfile(profile_);
+    auto contextual_session_handle = contextual_session_service->CreateSession(
+        ntp_composebox::kSendLnsSurfaceParam.Get(),
+        ntp_composebox::kMaxNumFiles.Get() > 1,
+        ntp_composebox::kEnableViewportImages.Get());
+    contextual_session_web_contents_helper->set_session_handle(
+        std::move(contextual_session_handle));
+  }
+
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
-      std::move(contextual_session_handle),
-      std::move(secondary_contextual_session_handle),
       std::make_unique<ComposeboxMetricsRecorder>(
           kComposeboxMetricsReporterPrefName),
       profile_, web_contents());
