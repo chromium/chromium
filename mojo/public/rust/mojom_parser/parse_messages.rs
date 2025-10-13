@@ -64,7 +64,7 @@ pub fn parse_message(data_slice: &[u8], ty: &MojomType) -> Result<MojomValue> {
     let mut data = ParserData::new(data_slice);
     let _ = parse_header(&mut data)?;
     match ty {
-        MojomType::Struct { ref fields } => {
+        MojomType::Struct { fields } => {
             let ret = crate::parse_values::parse_struct(&mut data, fields)?;
             if data.remaining_bytes() != 0 {
                 // We don't support the interface ID struct yet

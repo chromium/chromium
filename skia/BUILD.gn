@@ -645,6 +645,7 @@ component("skia_switches") {
 
 rust_static_library("rust_png_ffi") {
   visibility = [ ":*" ]
+  edition = "2021"
   allow_unsafe = true  # For FFI
   crate_root = skia_codec_rust_png_ffi_crate_root
   sources = skia_codec_rust_png_ffi_rs_srcs

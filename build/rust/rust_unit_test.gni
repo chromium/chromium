@@ -59,6 +59,8 @@ template("rust_unit_test") {
     }
   }
   _configs = invoker.configs
+
+  # TODO(https://crbug.com/450891119): Change the default to "2024".
   _edition = "2021"
   if (defined(invoker.edition)) {
     _edition = invoker.edition

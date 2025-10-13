@@ -41,6 +41,7 @@ if (use_bundled_fontconfig) {
 
   rust_static_library("fontconfig_fontations_ffi") {
     allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    edition = "2021"
     crate_root = "src/fc-fontations/mod.rs"
     sources = [
       "src/fc-fontations/attributes.rs",

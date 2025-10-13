@@ -6,7 +6,7 @@ chromium::import! {
     "//build/rust/tests/bindgen_cpp_test_with_cpp_linkage:cpp_lib_bindgen";
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn rust_main() {
     let from_cpp =
         unsafe { cpp_lib_bindgen::functions::normal_fn(cpp_lib_bindgen::functions::kNumber) };

@@ -284,7 +284,7 @@ pub fn gtest(
             // of `run_test_fn`. We can not use `pub` to resolve this unfortunately. When `#[used]`
             // is fixed in https://github.com/rust-lang/rust/issues/47384, this may also be
             // resolved as well.
-            #[no_mangle]
+            #[unsafe(no_mangle)]
             extern "C" fn #run_test_fn(
                 suite: std::pin::Pin<&mut ::rust_gtest_interop::OpaqueTestingTest>
             ) {

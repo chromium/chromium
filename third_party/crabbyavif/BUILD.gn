@@ -144,6 +144,7 @@ rust_static_library("crabbyavif_libyuv_sys") {
 
 rust_static_library("crabbyavif") {
   crate_root = "src/src/lib.rs"
+  edition = "2021"
 
   # This library exposes a C API and uses a couple of C/C++ libraries. So unsafe
   # has to be allowed in order to allow those. The core library itself does not
