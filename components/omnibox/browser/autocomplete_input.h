@@ -17,6 +17,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -366,6 +367,15 @@ class AutocompleteInput {
     lens_overlay_suggest_inputs_ = lens_overlay_suggest_inputs;
   }
 
+  omnibox::ChromeAimToolsAndModels aim_tool_mode() const {
+    return aim_tool_mode_;
+  }
+
+  void set_aim_tool_mode(
+      const omnibox::ChromeAimToolsAndModels& aim_tool_mode) {
+    aim_tool_mode_ = aim_tool_mode;
+  }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -432,6 +442,9 @@ class AutocompleteInput {
   // the suggest requests.
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;
+  // Tool mode.
+  omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;

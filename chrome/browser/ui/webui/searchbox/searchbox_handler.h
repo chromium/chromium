@@ -130,6 +130,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
+  virtual omnibox::ChromeAimToolsAndModels GetAimToolMode();
+
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<OmniboxController> controller_;

@@ -962,6 +962,7 @@ void AutocompleteInput::Clear() {
   focus_type_ = metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
   lens_overlay_suggest_inputs_.reset();
+  aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
   https_port_for_testing_ = 0;
   use_fake_https_for_https_upgrade_testing_ = false;
 }

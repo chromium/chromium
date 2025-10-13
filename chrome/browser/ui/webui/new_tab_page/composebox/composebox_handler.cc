@@ -50,12 +50,26 @@ ComposeboxHandler::ComposeboxHandler(
 
 ComposeboxHandler::~ComposeboxHandler() = default;
 
+omnibox::ChromeAimToolsAndModels ComposeboxHandler::GetAimToolMode() {
+  return aim_tool_mode_;
+}
+
+// TODO(crbug.com/450894455): Clean up how we set the tool mode. Create a enum
+// on the WebUI side that can set this.
 void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
-  deep_search_mode_enabled_ = enabled;
+  if (enabled) {
+    aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH;
+  } else {
+    aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+  }
 }
 
 void ComposeboxHandler::SetCreateImageMode(bool enabled) {
-  create_image_mode_enabled_ = enabled;
+  if (enabled) {
+    aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_CANVAS;
+  } else {
+    aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+  }
 }
 
 void ComposeboxHandler::FocusChanged(bool focused) {
@@ -99,12 +113,15 @@ void ComposeboxHandler::SubmitQuery(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     std::map<std::string, std::string> additional_params) {
-  if (deep_search_mode_enabled_) {
-    additional_params["dr"] = "1";
-  }
-
-  if (create_image_mode_enabled_) {
-    additional_params["imgn"] = "1";
+  switch (aim_tool_mode_) {
+    case omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH:
+      additional_params["dr"] = "1";
+      break;
+    case omnibox::ChromeAimToolsAndModels::TOOL_MODE_CANVAS:
+      additional_params["imgn"] = "1";
+      break;
+    default:
+      break;
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, std::move(additional_params));

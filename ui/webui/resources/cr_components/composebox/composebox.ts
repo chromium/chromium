@@ -480,18 +480,6 @@ export class ComposeboxElement extends I18nMixinLit
     e.preventDefault();
   }
 
-  protected setDeepSearchMode_(e: CustomEvent<{inDeepSearchMode: boolean}>) {
-    this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
-    this.pageHandler_.setDeepSearchMode(this.inDeepSearchMode_);
-    this.updateInputPlaceholder_();
-  }
-
-  protected setCreateImageMode_(e: CustomEvent<{inCreateImageMode: boolean}>) {
-    this.inCreateImageMode_ = e.detail.inCreateImageMode;
-    this.pageHandler_.setCreateImageMode(this.inDeepSearchMode_);
-    this.updateInputPlaceholder_();
-  }
-
   private updateInputPlaceholder_() {
     if (this.inDeepSearchMode_) {
       this.inputPlaceholder_ =
@@ -503,6 +491,30 @@ export class ComposeboxElement extends I18nMixinLit
       this.inputPlaceholder_ =
           loadTimeData.getString('searchboxComposePlaceholder');
     }
+  }
+
+  protected async setDeepSearchMode_(
+      e: CustomEvent<{inDeepSearchMode: boolean}>) {
+    this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
+    this.clearAutocompleteMatches_();
+    this.lastQueriedInput_ = this.$.input.value;
+    this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
+    this.updateInputPlaceholder_();
+
+    await this.updateComplete;
+    this.$.input.focus();
+  }
+
+  protected async setCreateImageMode_(
+      e: CustomEvent<{inCreateImageMode: boolean}>) {
+    this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
+    this.clearAutocompleteMatches_();
+    this.lastQueriedInput_ = this.$.input.value;
+    this.searchboxHandler_.queryAutocomplete(this.$.input.value, false);
+    this.updateInputPlaceholder_();
+
+    await this.updateComplete;
+    this.$.input.focus();
   }
 
   // Sets the input property to compute the cancel button title without using

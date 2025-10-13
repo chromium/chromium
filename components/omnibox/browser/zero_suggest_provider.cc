@@ -597,6 +597,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  search_terms_args.aim_tool_mode = input.aim_tool_mode();
 
   MaybeAddContextualSuggestParams(client(), input, search_terms_args);
 

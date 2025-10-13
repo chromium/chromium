@@ -823,6 +823,8 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
     autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
 
+  autocomplete_input.set_aim_tool_mode(GetAimToolMode());
+
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
 }
@@ -1018,6 +1020,10 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
     return nullptr;
   }
   return &match;
+}
+
+omnibox::ChromeAimToolsAndModels SearchboxHandler::GetAimToolMode() {
+  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 }
 
 OmniboxController* SearchboxHandler::omnibox_controller() {

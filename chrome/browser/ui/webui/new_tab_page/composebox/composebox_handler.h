@@ -80,9 +80,13 @@ class ComposeboxHandler
       WindowOpenDisposition disposition,
       std::map<std::string, std::string> additional_params) override;
 
+  omnibox::ChromeAimToolsAndModels GetAimToolMode() override;
+
  private:
-  bool deep_search_mode_enabled_ = false;
-  bool create_image_mode_enabled_ = false;
+  // The tool mode for the composebox, if any. These tool modes are disjoint
+  // and it's only possible for one mode to be set at one time.
+  omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
   raw_ptr<content::WebContents> web_contents_;
 
   // These are located at the end of the list of member variables to ensure the

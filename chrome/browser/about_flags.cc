@@ -1667,11 +1667,13 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
+    {"ShowComposeboxZps", "true"},
 };
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
+    {"ShowComposeboxZps", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
@@ -1696,9 +1698,9 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews,
      std::size(kComposeboxShowContextMenuAndZpsMultiFileAndTabPreviews),
      nullptr},
-    {"- Show Context Menu with Tools and Models", kShowToolsAndModels,
+    {"- Show Context Menu with Tools and Models, ZPS", kShowToolsAndModels,
      std::size(kShowToolsAndModels), nullptr},
-    {"- Show Create Image in Context Menu", kShowCreateImageTool,
+    {"- Show Create Image in Context Menu, ZPS", kShowCreateImageTool,
      std::size(kShowCreateImageTool), nullptr},
 };
 
