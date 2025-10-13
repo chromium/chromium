@@ -729,8 +729,10 @@ void SeedReaderWriter::MigrateToLocalState() {
   const bool success =
       base::ReadFileToString(seed_writer_->path(), &seed_file_data);
   if (success && !seed_file_data.empty()) {
-    std::string base64_seed_data = base::Base64Encode(seed_file_data);
-    local_state_->SetString(fields_prefs_->seed, base64_seed_data);
+    std::string seed_data = seed_file_data == kIdenticalToSafeSeedSentinel
+                                ? kIdenticalToSafeSeedSentinel
+                                : base::Base64Encode(seed_file_data);
+    local_state_->SetString(fields_prefs_->seed, seed_data);
   }
   DeleteSeedFile();
 }
