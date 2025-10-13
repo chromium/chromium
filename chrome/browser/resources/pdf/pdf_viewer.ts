@@ -1414,10 +1414,26 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return bubble;
   }
 
-  private onSaveToDriveStateChanged_(oldSaveToDriveState: SaveToDriveState) {
-    // Transition from UNINITIALIZED to UPLOADING.
-    if (oldSaveToDriveState === SaveToDriveState.UNINITIALIZED &&
-        this.isSaveToDriveUploading_()) {
+  private onSaveToDriveStateChanged_(oldState: SaveToDriveState) {
+    const newState = this.saveToDriveState_;
+    if (saveToDriveStateIsFinalState(newState)) {
+      if (newState === SaveToDriveState.SUCCESS) {
+        this.onSaveSuccessful_(this.saveToDriveRequestType_);
+      } else if (oldState === SaveToDriveState.UPLOADING) {
+        // TODO(crbug.com/450600664): Fix an edge case where beforeunload dialog
+        // is still blocking if an EDITED upload is cancelled after a successful
+        // EDITED disk save.
+        // <if expr="enable_pdf_ink2">
+        this.onSaveFailedOrCancelled_(this.saveToDriveRequestType_);
+        // </if>
+      }
+      this.getSaveToDriveBubble_().showAt(
+          this.$.toolbar.getSaveToDriveBubbleAnchor(),
+          /*autoDismiss=*/ true);
+      return;
+    }
+
+    if (newState === SaveToDriveState.UPLOADING) {
       // Block unloading the window if upload is in progress.
       this.setShowBeforeUnloadDialog_(true);
       if (isEditedSaveRequestType(this.saveToDriveRequestType_)) {
@@ -1425,37 +1441,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       }
       return;
     }
-    // Transition from a final state (COMPLETE, or any error state) to
-    // UNINITIALIZED.
-    if (oldSaveToDriveState !== SaveToDriveState.UPLOADING) {
-      // TODO(crbug.com/427449996): Add an assertion to check that the current
-      // state is UNINITIALIZED. Also update the tests to accommodate the
-      // change.
+
+    assert(
+        newState === SaveToDriveState.UNINITIALIZED,
+        `Unexpected state: ${newState}`);
+    if (oldState !== SaveToDriveState.UPLOADING) {
+      // TODO(crbug.com/427449996): Update the tests to make sure they all end
+      // with an UNINITIALIZED state.
       this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
-      return;
     }
-    // Transition from UPLOADING to SUCCESS, cancelled, or error state.
-    if (this.saveToDriveState_ === SaveToDriveState.SUCCESS) {
-      this.onSaveSuccessful_(this.saveToDriveRequestType_);
-    } else {
-      // TODO(crbug.com/427449996): Fix an edge case where beforeunload dialog
-      // is still blocking if an EDITED upload is cancelled after a successful
-      // EDITED disk save. This could happen in the following order:
-      // 1. Make an edit.
-      // 2. Initiate an EDITED save to Drive.
-      // 3. Initiate an EDITED disk save.
-      // 4. Cancel the EDITED save to Drive upload.
-      // 5. `hasUnsavedEdits_` is restored to true from step 4.
-      // <if expr="enable_pdf_ink2">
-      this.onSaveFailedOrCancelled_(this.saveToDriveRequestType_);
-      // </if>
-      if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
-        return;
-      }
-    }
-    this.getSaveToDriveBubble_().showAt(
-        this.$.toolbar.getSaveToDriveBubbleAnchor(),
-        /*autoDismiss=*/ true);
   }
   // </if> enable_pdf_save_to_drive
 

@@ -312,6 +312,11 @@ const tests = [
     const navigator = setUpTestNavigator();
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
 
+    privateProxy.sendUninitializedState();
+    await microtasksFinished();
+    privateProxy.sendUploadInProgress(0, 100);
+    await microtasksFinished();
+
     // Set upload completed state and open the bubble.
     privateProxy.sendUploadCompleted();
     const controls =
@@ -588,6 +593,26 @@ const tests = [
     await microtasksFinished();
 
     assertBubbleDescription(bubble, 'Check your internet connection');
+
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
+
+    chrome.test.succeed();
+  },
+
+  async function testBubbleChangeFromUninitializedToSessionTimeoutError() {
+    const privateProxy = setUpTestPdfViewerPrivateProxy(viewer);
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    privateProxy.sendUninitializedState();
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    privateProxy.sendSessionTimeoutError();
+    await microtasksFinished();
+
+    // The bubble should open automatically.
+    chrome.test.assertTrue(bubble.$.dialog.open);
 
     // Reset the bubble open state for the next test.
     closeBubble(bubble);
