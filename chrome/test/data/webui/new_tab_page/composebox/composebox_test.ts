@@ -1162,10 +1162,15 @@ suite('NewTabPageComposeboxTest', () => {
   test('tab adds smart compose to input', async () => {
     createComposeboxElement();
     await microtasksFinished();
+    // Autocomplete queried once when composebox is opened.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
 
     // Add input.
     composeboxElement.$.input.value = 'smart ';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    // Autocomplete queried on input.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
 
     searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResult({
@@ -1187,6 +1192,8 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(tabEvent.defaultPrevented);
 
     assertEquals('smart compose', composeboxElement.$.input.value);
+    // Autocomplete queried when smart compose accepted.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
   });
 
   test('composebox does not open match when only file present', async () => {

@@ -568,6 +568,7 @@ export class ComposeboxElement extends I18nMixinLit
           this.input_ = this.input_ + this.smartComposeInlineHint_;
           this.smartComposeInlineHint_ = '';
           e.preventDefault();
+          this.queryAutocomplete(/* clearMatches= */ true);
         }
         return;
       }
