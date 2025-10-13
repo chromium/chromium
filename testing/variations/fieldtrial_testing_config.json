@@ -8868,16 +8868,21 @@
             ]
         }
     ],
-    "DeviceBoundSessionCredentials": [
+    "DeviceBoundSessionCredentials2": [
         {
             "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250312",
+                    "name": "Enabled_20251014",
+                    "params": {
+                        "OriginTrialFeedback": "true",
+                        "SchemaVersion": "2"
+                    },
                     "enable_features": [
                         "DeviceBoundSessions",
+                        "DeviceBoundSessionsFederatedRegistration",
                         "PersistDeviceBoundSessions"
                     ]
                 }
