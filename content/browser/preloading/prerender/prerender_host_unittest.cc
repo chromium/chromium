@@ -714,14 +714,10 @@ TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {
       PrerenderFinalStatus::kActivationNavigationParameterMismatch);
   const std::string prerender_headers = "rtt: 1 \r\n downlink: 3";
   const std::string potential_activation_headers = "rtt: 2 \r\n downlink: 4";
-#if BUILDFLAG(IS_ANDROID)
-  net::HttpRequestHeaders potential_activation_additional_headers;
-#endif
-
   EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_headers,
 #if BUILDFLAG(IS_ANDROID)
-      potential_activation_additional_headers,
+      /*potential_activation_additional_headers=*/"",
 #endif  // BUILDFLAG(IS_ANDROID)
       prerender_headers, PreloadingTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/false,
@@ -733,14 +729,11 @@ TEST(AreHttpRequestHeadersCompatible, XHeaders) {
       PrerenderFinalStatus::kActivationNavigationParameterMismatch);
   const std::string prerender_headers = "x-hello: 1";
   const std::string potential_activation_headers = "X-world: 2";
-#if BUILDFLAG(IS_ANDROID)
-  net::HttpRequestHeaders potential_activation_additional_headers;
-#endif
 
   EXPECT_FALSE(PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_headers,
 #if BUILDFLAG(IS_ANDROID)
-      potential_activation_additional_headers,
+      /*potential_activation_additional_headers=*/"",
 #endif  // BUILDFLAG(IS_ANDROID)
       prerender_headers, PreloadingTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/false,
@@ -749,7 +742,7 @@ TEST(AreHttpRequestHeadersCompatible, XHeaders) {
   EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_headers,
 #if BUILDFLAG(IS_ANDROID)
-      potential_activation_additional_headers,
+      /*potential_activation_additional_headers=*/"",
 #endif  // BUILDFLAG(IS_ANDROID)
       prerender_headers, PreloadingTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/true,

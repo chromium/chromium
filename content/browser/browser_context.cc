@@ -468,8 +468,8 @@ BrowserContext::GetOriginTrialsControllerDelegate() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-net::HttpRequestHeaders BrowserContext::GetExtraHeadersForUrl(const GURL& url) {
-  return net::HttpRequestHeaders();
+std::string BrowserContext::GetExtraHeadersForUrl(const GURL& url) {
+  return std::string();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
