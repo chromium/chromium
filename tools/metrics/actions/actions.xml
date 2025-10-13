@@ -14104,6 +14104,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.ContextMenuSelection.ToggleGlic">
+  <owner>agale@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks clicks on the toggle glic option from the glic os launcher context
+    menu.
+  </description>
+</action>
+
 <action name="GlicOsEntrypoint.Settings.ShortcutDisabled">
   <owner>pauladedeji@google.com</owner>
   <owner>erikchen@chromium.org</owner>

@@ -53,20 +53,37 @@
 namespace {
 
 int GetTooltipMessageId(bool panel_showing) {
+  // If GlicMultiInstance is enabled, show a single menu item and corresponding
+  // tooltip for toggling the UI.
+  bool multi_instance_enabled =
+      base::FeatureList::IsEnabled(features::kGlicMultiInstance);
+
   switch (chrome::GetChannel()) {
     case version_info::Channel::CANARY: {
+      if (multi_instance_enabled) {
+        return IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_CANARY;
+      }
       return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_CANARY
                            : IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY;
     }
     case version_info::Channel::DEV: {
+      if (multi_instance_enabled) {
+        return IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_DEV;
+      }
       return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_DEV
                            : IDS_GLIC_STATUS_ICON_TOOLTIP_DEV;
     }
     case version_info::Channel::BETA: {
+      if (multi_instance_enabled) {
+        return IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_BETA;
+      }
       return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA
                            : IDS_GLIC_STATUS_ICON_TOOLTIP_BETA;
     }
     default: {
+      if (multi_instance_enabled) {
+        return IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE;
+      }
       return panel_showing ? IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE
                            : IDS_GLIC_STATUS_ICON_TOOLTIP;
     }
@@ -199,6 +216,12 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
           "GlicOsEntrypoint.ContextMenuSelection.CloseGlic"));
       break;
     }
+    case IDC_GLIC_STATUS_ICON_MENU_TOGGLE: {
+      controller_->Toggle(mojom::InvocationSource::kOsButtonMenu);
+      base::RecordAction(base::UserMetricsAction(
+          "GlicOsEntrypoint.ContextMenuSelection.ToggleGlic"));
+      break;
+    }
     default: {
       NOTREACHED();
     }
@@ -234,6 +257,11 @@ void GlicStatusIcon::OnLastActiveGlicProfileChanged(Profile* profile) {
 void GlicStatusIcon::PanelStateChanged(
     const mojom::PanelState& panel_state,
     const GlicWindowController::PanelStateContext& context) {
+  // If GlicMultiInstance is enabled, show a single menu item for toggling the
+  // UI and thus don't update based on state changes.
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    return;
+  }
   UpdateVisibilityOfShowAndCloseInContextMenu();
   status_icon_->SetToolTip(
       l10n_util::GetStringUTF16(GetTooltipMessageId(controller_->IsShowing())));
@@ -255,6 +283,11 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   CHECK(close_menu_item_index);
   context_menu_->SetForceShowAcceleratorForItemAt(close_menu_item_index.value(),
                                                   !hotkey.IsEmpty());
+  std::optional<size_t> toggle_menu_item_index =
+      context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_TOGGLE);
+  CHECK(toggle_menu_item_index);
+  context_menu_->SetForceShowAcceleratorForItemAt(
+      toggle_menu_item_index.value(), !hotkey.IsEmpty());
 }
 
 void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
@@ -284,7 +317,17 @@ void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
 }
 
 void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
+  // If GlicMultiInstance is enabled, always show a single menu item for
+  // toggling the UI. Otherwise, show either the "Close" or "Show" menu item
+  // accordingly.
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, true);
+    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_CLOSE, false);
+    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_SHOW, false);
+    return;
+  }
   if (context_menu_) {
+    context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_TOGGLE, false);
     const bool showing = controller_->IsShowing();
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
                                        showing);
@@ -308,7 +351,11 @@ gfx::ImageSkia GlicStatusIcon::GetIcon() const {
 }
 
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
-  std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
+  std::unique_ptr<StatusIconMenuModel> menu =
+      std::make_unique<StatusIconMenuModel>(this);
+
+  menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_TOGGLE,
+                l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_TOGGLE));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CLOSE,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_CLOSE));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SHOW,

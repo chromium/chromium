@@ -2823,11 +2823,26 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open. It indicates that this is the Beta version of the browser.">
           Close Gemini in Chrome Beta
         </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE" desc="This is the tooltip that is shown when the Gemini status icon is hovered.">
+          Toggle Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_CANARY" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Canary version of the browser.">
+          Toggle Gemini in Chrome Canary
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_DEV" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Dev version of the browser.">
+          Toggle Gemini in Chrome Dev
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_BETA" desc="This is the tooltip that is shown when the Gemini status icon is hovered. It indicates that this is the Beta version of the browser.">
+          Toggle Gemini in Chrome Beta
+        </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" desc="This is the menu item for showing the Gemini experience in Chrome.">
           Open Gemini in Chrome
         </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" desc="This is the menu item for closing the Gemini window.">
           Close Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" desc="This is the menu item for toggling the Gemini UI.">
+          Toggle Gemini in Chrome
         </message>
         <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" desc="This is the text of the Gemini ineligible profile notice.">
           To use Gemini in Chrome, sign in with a different Google Account

@@ -586,6 +586,7 @@
 #define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
 #define IDC_GLIC_STATUS_ICON_MENU_EXIT                        53314
 #define IDC_GLIC_STATUS_ICON_MENU_CLOSE                       53315
+#define IDC_GLIC_STATUS_ICON_MENU_TOGGLE                      53316
 
 // Glic button context menu and tabstrip context menu
 #define IDC_GLIC_TOGGLE_PIN 53320

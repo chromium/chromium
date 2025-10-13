@@ -2801,11 +2801,26 @@ Chromium is unable to recover your settings.
         <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Beta version of the browser.">
           Close Gemini (Beta)
         </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
+          Toggle Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Canary version of the browser.">
+          Toggle Gemini (Canary)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Dev version of the browser.">
+          Toggle Gemini (Dev)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_TOGGLE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered. It indicates that this is the Beta version of the browser.">
+          Toggle Gemini (Beta)
+        </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
           Open Gemini in Chromium
         </message>
         <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Glic window.">
           Close Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_TOGGLE" translateable="false" desc="This is the menu item for toggling the glic UI.">
+          Toggle Gemini in Chromium
         </message>
         <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the glic ineligible profile notice.">
           To use Gemini in Chromium, sign in with a different Google Account
