@@ -154,7 +154,7 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-  net::HttpRequestHeaders GetExtraHeadersForUrl(const GURL& url) override;
+  std::string GetExtraHeadersForUrl(const GURL& url) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
@@ -288,7 +288,7 @@ class AwBrowserContext : public content::BrowserContext,
 
   // Map of extra headers for specific URLs supplied through the loadUrl(String,
   // Map) API.
-  std::map<std::string, net::HttpRequestHeaders> extra_headers_for_urls_;
+  std::map<std::string, std::string> extra_headers_for_urls_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
