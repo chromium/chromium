@@ -1724,6 +1724,12 @@ void MenuController::SetSelection(MenuItemView* menu_item,
   pending_state_.item = menu_item;
   pending_state_.submenu_open = (selection_types & SELECTION_OPEN_SUBMENU) != 0;
 
+  // Possible fix for https:://crbug.com/443019015, in case `this` is getting
+  // deleted as a side effect of code above. From the crash dumps, it's pretty
+  // clear that both `cancel_all_timer_` and `this` have been deleted.
+  if (!this_ref) {
+    return;
+  }
   // Stop timers.
   StopCancelAllTimer();
   // Resets show timer only when pending menu item is changed.
