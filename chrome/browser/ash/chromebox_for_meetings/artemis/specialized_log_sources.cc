@@ -18,8 +18,13 @@ constexpr LazyRE2 kAuditLogLineRegex = {
     // severity, so match on a blank string and force to the default.
     "type=[A-Z0-9_]+ msg=audit\\(([0-9.]+):[0-9]+\\): ()((?s).*)"};
 
-AuditLogSource::AuditLogSource(base::TimeDelta poll_rate, size_t batch_size)
-    : LogSource(kCfmAuditLogFile, poll_rate, batch_size) {}
+AuditLogSource::AuditLogSource(size_t data_buffer_size_limit,
+                               base::TimeDelta poll_rate,
+                               size_t num_lines_per_batch)
+    : LogSource(kCfmAuditLogFile,
+                data_buffer_size_limit,
+                poll_rate,
+                num_lines_per_batch) {}
 
 AuditLogSource::~AuditLogSource() = default;
 
@@ -42,9 +47,13 @@ uint64_t AuditLogSource::TimestampStringToUnixTime(
 
 /*** bios_info.txt ***/
 
-BiosInfoLogSource::BiosInfoLogSource(base::TimeDelta poll_rate,
-                                     size_t batch_size)
-    : LogSource(kCfmBiosInfoLogFile, poll_rate, batch_size) {}
+BiosInfoLogSource::BiosInfoLogSource(size_t data_buffer_size_limit,
+                                     base::TimeDelta poll_rate,
+                                     size_t num_lines_per_batch)
+    : LogSource(kCfmBiosInfoLogFile,
+                data_buffer_size_limit,
+                poll_rate,
+                num_lines_per_batch) {}
 
 BiosInfoLogSource::~BiosInfoLogSource() = default;
 
@@ -59,9 +68,13 @@ constexpr LazyRE2 kEventlogLogLineRegex = {
     // severity, so match on a blank string and force to the default.
     "[0-9]+ \\| ((?s).+?) \\| ()((?s).*)"};
 
-EventlogLogSource::EventlogLogSource(base::TimeDelta poll_rate,
-                                     size_t batch_size)
-    : LogSource(kCfmEventlogLogFile, poll_rate, batch_size) {}
+EventlogLogSource::EventlogLogSource(size_t data_buffer_size_limit,
+                                     base::TimeDelta poll_rate,
+                                     size_t num_lines_per_batch)
+    : LogSource(kCfmEventlogLogFile,
+                data_buffer_size_limit,
+                poll_rate,
+                num_lines_per_batch) {}
 
 EventlogLogSource::~EventlogLogSource() = default;
 
@@ -71,11 +84,13 @@ RE2& EventlogLogSource::GetLogLineRegex() {
 
 /*** .varations-list.txt ***/
 
-VariationsListLogSource::VariationsListLogSource(base::TimeDelta poll_rate,
-                                                 size_t batch_size)
+VariationsListLogSource::VariationsListLogSource(size_t data_buffer_size_limit,
+                                                 base::TimeDelta poll_rate,
+                                                 size_t num_lines_per_batch)
     : LogSource(GetVariationsLogPath(kCfmVariationsListLogFile),
+                data_buffer_size_limit,
                 poll_rate,
-                batch_size) {}
+                num_lines_per_batch) {}
 
 VariationsListLogSource::~VariationsListLogSource() = default;
 

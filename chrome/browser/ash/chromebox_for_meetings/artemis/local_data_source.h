@@ -17,15 +17,10 @@
 
 namespace ash::cfm {
 
-// Maximum bytes that can be in the internal buffer before we halt
-// collecting data temporarily. In the working case, we should never
-// hit this limit, but we may reach it if we're unable to enqueue logs
-// via Fetch() for whatever reason (eg a network outage).
-inline constexpr int kMaxInternalBufferSize = 500000;  // 500Kb
-
 class LocalDataSource : public mojom::DataSource {
  public:
-  LocalDataSource(base::TimeDelta poll_rate,
+  LocalDataSource(size_t data_buffer_size_limit,
+                  base::TimeDelta poll_rate,
                   bool data_needs_redacting,
                   bool is_incremental);
   LocalDataSource(const LocalDataSource&) = delete;
@@ -77,6 +72,10 @@ class LocalDataSource : public mojom::DataSource {
   // Returns true if this data source is expected to contain timestamps,
   // and returns false otherwise.
   virtual bool AreTimestampsExpected() const;
+
+  // Max limit in bytes for internal data buffer. Buffer fills will temporarily
+  // halt if we exceed this limit and won't resume until the data is consumed.
+  size_t data_buffer_size_limit_;
 
  private:
   bool IsDataBufferOverMaxLimit();

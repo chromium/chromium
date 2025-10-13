@@ -210,7 +210,8 @@ void DataAggregatorService::AddLocalCommandSource(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& device_id, const std::string& command,
              const base::TimeDelta& poll_freq) {
-            auto source = std::make_unique<CommandSource>(command, poll_freq);
+            auto source = std::make_unique<CommandSource>(
+                command, kPayloadMaxSizeBytes, poll_freq);
             source->AssignDeviceID(device_id);
             source->StartCollectingData();
 
@@ -251,7 +252,8 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& device_id, const std::string& filepath) {
-            auto source = LogSource::Create(filepath, kDefaultLogPollFrequency,
+            auto source = LogSource::Create(filepath, kPayloadMaxSizeBytes,
+                                            kDefaultLogPollFrequency,
                                             kDefaultLogBatchSize);
             source->AssignDeviceID(device_id);
             source->StartCollectingData();

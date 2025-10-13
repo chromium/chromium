@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -19,6 +20,7 @@ using mojom::DataFilter::FilterType::CHANGE;
 using mojom::DataFilter::FilterType::REGEX;
 
 constexpr std::string kDataSourceName = "fake_display_name";
+constexpr size_t kDataBufferSizeLimit = 1000;  // 1Kb
 
 // These are all arguments passed to the |LocalDataSource| object.
 // Add them as named variables for clarity.
@@ -77,7 +79,10 @@ class LocalDataSourcePeer : public LocalDataSource {
   LocalDataSourcePeer(base::TimeDelta poll_rate,
                       bool data_needs_redacting,
                       bool is_incremental)
-      : LocalDataSource(poll_rate, data_needs_redacting, is_incremental) {
+      : LocalDataSource(kDataBufferSizeLimit,
+                        poll_rate,
+                        data_needs_redacting,
+                        is_incremental) {
     // The data that will be returned on the next call to GetNextData().
     next_data_ = "";
 
@@ -203,7 +208,7 @@ TEST(ArtemisLocalDataSourceTest, TestBufferSizeIsCapped) {
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
   std::vector<std::string> large_data = {
-      std::string(kMaxInternalBufferSize + 1, '!')};
+      std::string(kDataBufferSizeLimit + 1, '!')};
 
   // Fill buffer to exceed our max limit
   source.FillDataBufferForTesting(large_data);
