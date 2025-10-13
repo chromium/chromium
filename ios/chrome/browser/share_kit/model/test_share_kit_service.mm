@@ -63,7 +63,7 @@ tab_groups::SavedTabGroup CreateGroup(
 }
 
 // Creates a group member with the given `gaia_id` and `member_role`.
-data_sharing_pb::GroupMember CreateGroupMember(NSString* gaia_id,
+data_sharing_pb::GroupMember CreateGroupMember(const GaiaId& gaia_id,
                                                MemberRole member_role) {
   GroupMember member;
   if (member_role == data_sharing_pb::MEMBER_ROLE_OWNER) {
@@ -73,7 +73,7 @@ data_sharing_pb::GroupMember CreateGroupMember(NSString* gaia_id,
     member.set_display_name("Member");
     member.set_email("member@mail.com");
   }
-  member.set_gaia_id(base::SysNSStringToUTF8(gaia_id));
+  member.set_gaia_id(gaia_id.ToString());
   member.set_avatar_url("chrome://newtab");
   member.set_given_name("Given Name");
   member.set_role(member_role);
@@ -88,14 +88,14 @@ GroupData CreateGroupData(MemberRole member_role,
   group_data.set_group_id(collaboration_id);
   group_data.set_display_name("Display Name");
   *group_data.add_members() =
-      CreateGroupMember([FakeSystemIdentity fakeIdentity1].gaiaID, member_role);
+      CreateGroupMember([FakeSystemIdentity fakeIdentity1].gaiaId, member_role);
   MemberRole member_role2 = member_role == data_sharing_pb::MEMBER_ROLE_OWNER
                                 ? data_sharing_pb::MEMBER_ROLE_MEMBER
                                 : data_sharing_pb::MEMBER_ROLE_OWNER;
   *group_data.add_members() = CreateGroupMember(
-      [FakeSystemIdentity fakeIdentity2].gaiaID, member_role2);
+      [FakeSystemIdentity fakeIdentity2].gaiaId, member_role2);
   *group_data.add_members() =
-      CreateGroupMember([FakeSystemIdentity fakeIdentity3].gaiaID,
+      CreateGroupMember([FakeSystemIdentity fakeIdentity3].gaiaId,
                         data_sharing_pb::MEMBER_ROLE_MEMBER);
   group_data.set_access_token("fake_access_token");
   return group_data;
