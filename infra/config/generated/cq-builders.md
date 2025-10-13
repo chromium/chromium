@@ -861,7 +861,7 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chrome
-* [win-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/win-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""win-perf-trigger""))
+* [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0
 
 ### chromium

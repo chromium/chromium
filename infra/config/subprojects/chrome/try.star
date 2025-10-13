@@ -326,6 +326,36 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-perf-trigger",
+    # The current whitelist includes:
+    #  Googlers: internal users are always welcome
+    #  project-chromium-robot-committers: this list includes autoroll bots,
+    #       rubber stamper for reverts, etc.
+    #       We definitely want to have autoroll bots here because we have no
+    #       Perf tests on those sub repos, and we want to catch the regressions
+    #       during rollout.
+    #       For stamper, we should add the footer (TBD) to allow ignoring the
+    #       perf result.
+    owner_whitelist = ["googlers", "project-chromium-robot-committers"],
+    tryjob = try_.job(
+        # In the current setting, we will use static mapping to decide whether
+        # changing a file can has impact on a certain benchmark. Due to the
+        # limitation on resources, we will run Speedometer3 benchmark only.
+        # As a result, only those CLs changing a file(s) listed in the static
+        # map will trigger a perf tests.
+        # As a result, while we have the experiment_percentage as X%, the
+        # actual number of CLs which trigger a Pinpoint try job should be far
+        # less than X% based on the following facts:
+        #  - all CLs will trigger this try job.
+        #  - most of the jobs triggered will not have match in the static map
+        #    and thus will exist in a couple of minutes.
+        #  - so far we only have 166 files listed in the map, which is a tiny
+        #    amount compared to the number of files in the chromium repo.
+        experiment_percentage = 100,
+    ),
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-pgo",
 )
@@ -455,36 +485,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win-cft",
-)
-
-chrome_internal_verifier(
-    builder = "win-perf-trigger",
-    # The current whitelist includes:
-    #  Googlers: internal users are always welcome
-    #  project-chromium-robot-committers: this list includes autoroll bots,
-    #       rubber stamper for reverts, etc.
-    #       We definitely want to have autoroll bots here because we have no
-    #       Perf tests on those sub repos, and we want to catch the regressions
-    #       during rollout.
-    #       For stamper, we should add the footer (TBD) to allow ignoring the
-    #       perf result.
-    owner_whitelist = ["googlers", "project-chromium-robot-committers"],
-    tryjob = try_.job(
-        # In the current setting, we will use static mapping to decide whether
-        # changing a file can has impact on a certain benchmark. Due to the
-        # limitation on resources, we will run Speedometer3 benchmark only.
-        # As a result, only those CLs changing a file(s) listed in the static
-        # map will trigger a perf tests.
-        # As a result, while we have the experiment_percentage as X%, the
-        # actual number of CLs which trigger a Pinpoint try job should be far
-        # less than X% based on the following facts:
-        #  - all CLs will trigger this try job.
-        #  - most of the jobs triggered will not have match in the static map
-        #    and thus will exist in a couple of minutes.
-        #  - so far we only have 166 files listed in the map, which is a tiny
-        #    amount compared to the number of files in the chromium repo.
-        experiment_percentage = 100,
-    ),
 )
 
 chrome_internal_verifier(
