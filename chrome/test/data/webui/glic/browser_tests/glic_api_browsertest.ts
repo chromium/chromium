@@ -14,6 +14,18 @@ class ApiTests extends ApiTestFixtureBase {
     await this.client.waitForFirstOpen();
   }
 
+  async detachIfInMultiInstance() {
+    if (this.host.getHostCapabilities?.().has(HostCapability.MULTI_INSTANCE)) {
+      assertDefined(this.host.detachPanel);
+      this.host.detachPanel();
+
+      assertDefined(this.host.getPanelState);
+      const panelStates = observeSequence(this.host.getPanelState());
+      await panelStates.waitFor(
+          state => state.kind === PanelStateKind.DETACHED);
+    }
+  }
+
   // WARNING: Remember to update
   // chrome/browser/glic/host/glic_api_browsertest.cc if you add a new test!
 
@@ -77,6 +89,28 @@ class ApiTests extends ApiTestFixtureBase {
 
     await this.advanceToNextStep();
     this.host.setAudioDucking(false);
+  }
+
+  async testCreateTabByClickingOnLinkDaisyChains() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getPinnedTabs);
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    // The opened tab should be pinned.
+    await observeSequence(this.host.getPinnedTabs())
+        .waitFor(tabs => tabs.length === 2);
+
+    // TODO(wry): Chrome switches tabs correctly, but focus is not updating.
+    // The following code should work:
+
+    // await observeSequence(this.host.getFocusedTabStateV2()).waitFor(update
+    // => {
+    //   return update.hasFocus?.tabData?.url?.includes('chromium.org') ??
+    //   false;
+    // });
   }
 
   async testCreateTabFailsIfNotActive() {
@@ -198,17 +232,9 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testIsBrowserOpen() {
     assertDefined(this.host.isBrowserOpen);
-    if (this.host.getHostCapabilities?.().has(HostCapability.MULTI_INSTANCE)) {
-      // This test closes the browser, so we need to detach the side panel to
-      // avoid closing glic.
-      assertDefined(this.host.detachPanel);
-      this.host.detachPanel();
-
-      assertDefined(this.host.getPanelState);
-      const panelStates = observeSequence(this.host.getPanelState());
-      await panelStates.waitFor(
-          state => state.kind === PanelStateKind.DETACHED);
-    }
+    // This test closes the browser, so we need to detach the side panel to
+    // avoid closing glic.
+    await this.detachIfInMultiInstance();
     const isBrowserOpen = observeSequence(this.host.isBrowserOpen());
     assertTrue(await isBrowserOpen.next());
     // Close the browser.

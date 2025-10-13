@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"

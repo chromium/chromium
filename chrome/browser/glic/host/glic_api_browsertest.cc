@@ -99,15 +99,18 @@
 #define SLOW_BINARY
 #endif
 
+// This skips a test for the multi-instance variant.
+#define SKIP_TEST_FOR_MULTI_INSTANCE()                        \
+  do {                                                        \
+    if (GetParam().multi_instance) {                          \
+      GTEST_SKIP() << "Not supported in multi-instance mode"; \
+      return;                                                 \
+    }                                                         \
+  } while (0)
+
 // This skips a test for the multi-instance variant. It's a marker to remember
 // to revisit this test later.
-#define TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST()           \
-  do {                                                   \
-    if (GetParam().multi_instance) {                     \
-      GTEST_SKIP() << "MultiInstance not yet supported"; \
-      return;                                            \
-    }                                                    \
-  } while (0)
+#define TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST() SKIP_TEST_FOR_MULTI_INSTANCE()
 
 namespace glic {
 namespace {
@@ -573,7 +576,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -597,7 +599,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
@@ -637,7 +638,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -649,15 +649,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // Note that the client does receive the bootstrap message, but never calls
   // back, so from the host's perspective bootstrapping is still pending.
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                      0 /*BOOTSTRAP_PENDING*/, 1);
+  // There may be warmed instances that also receive this error, so expect at
+  // least one count.
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
+            0);
 #endif
 }
 
 // In this test, the client page does not initiate the bootstrap process, so no
 // client connects.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -667,13 +669,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                      0 /*BOOTSTRAP_PENDING*/, 1);
+  // May have more than one sample because there can be a warmed instance.
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
+            0);
 #endif
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -685,8 +688,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
       .params = base::Value(base::Value::Dict().Set("failWith", "timeout")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                      3 /*WEB_CLIENT_NOT_INITIALIZED*/, 1);
+  // There may be warmed instances that also receive this error, so expect at
+  // least one count.
+  EXPECT_GT(
+      histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
+                                      3 /*WEB_CLIENT_NOT_INITIALIZED*/),
+      0);
 #endif
 }
 
@@ -799,6 +806,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
     return audio_ducker->GetAudioDuckingState() ==
            AudioDucker::AudioDuckingState::kNoDucking;
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Test only supported with multi-instance on";
+  }
+
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
@@ -990,7 +1009,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testActiveBrowser) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO: resize is not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
@@ -998,7 +1018,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO: resize is not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   // Check the default resize setting here.
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
@@ -1008,6 +1029,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
+  // TODO: resize is not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
@@ -1045,7 +1068,8 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestionsApi) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO: zero state suggestions not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -1063,7 +1087,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        MAYBE_testGetZeroStateSuggestionsMultipleNavigations) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO: zero state suggestions not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -1090,7 +1115,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestionsFailsWhenHidden) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO: zero state suggestions not yet implemented for multi-instance.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   // Initial state.
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
@@ -1223,7 +1249,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetFocusedTabStateV2WithNavigationWhenInactive) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  SKIP_TEST_FOR_MULTI_INSTANCE();
+  TrackGlicInstanceById(GetGlicInstance()->id());
   // Confirm that the observer is notified through getFocusedTabState of the
   // initial state, i.e. the first page navigation. It should then hide.
   ExecuteJsTest();
@@ -1335,7 +1362,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        MAYBE_testGetContextFromFocusedTabWithPdfFile) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   RunTestSequence(NavigateWebContents(
       kFirstTab,
       InProcessBrowserTest::embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -2225,7 +2251,7 @@ class MAYBE_GlicApiTestWithOneTabMoreDebounceDelay
 #endif
 IN_PROC_BROWSER_TEST_P(MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
                        MAYBE_testSingleFocusedTabUpdatesOnTabEvents) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   // Initial state with first tab.
   ExecuteJsTest();
 
@@ -2368,7 +2394,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataUpdates) {
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        MAYBE_testGetPageMetadataOnNavigation) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Runs the JS test until the first `advanceToNextStep()`.
   ExecuteJsTest();
 
@@ -2382,7 +2407,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadataTabDestroyed) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // TODO(harringtond): Re-enable this when multi-instance supports floating.
+  // We can float the window before closing the tab.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   // Runs the JS test until the first `advanceToNextStep()`.
   ExecuteJsTest();
 
