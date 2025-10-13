@@ -27,7 +27,6 @@ constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
 constexpr size_t kDefaultLogBatchSize = 100;  // lines
 
 constexpr size_t kPayloadMaxSizeBytes = 50 * 1000;  // 50Kb
-constexpr base::TimeDelta kPayloadEnqueueTimeout = base::Minutes(10);
 constexpr size_t kMaxPayloadQueueSize = 10;  // # payloads
 
 constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
@@ -573,29 +572,20 @@ void DataAggregatorService::AppendEntriesToActivePayload(
     }
   }
 
-  if (IsPayloadReadyForUpload()) {
-    VLOG(1) << "Payload is ready to be enqueued. Pushing to wire.";
+  if (DidActivePayloadReachMaxSize()) {
+    VLOG(1) << "Payload is ready to be enqueued. Pushing to pending queue.";
     AddActivePayloadToPendingQueue();
-    EnqueueNextPendingTransportPayload();
+
+    // Additionally, push the next payload to the wire if we aren't currently
+    // enqueuing anything else.
+    if (!enqueue_in_progress_) {
+      EnqueueNextPendingTransportPayload();
+    }
   }
 }
 
-bool DataAggregatorService::IsPayloadReadyForUpload() const {
-  // Flush the payload to the wire if it exceeds our max size.
-  if (active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes) {
-    VLOG(2) << "Payload reached maximum size; pushing to wire";
-    return true;
-  }
-
-  // Use a timeout to force flush to the wire. This ensures that we're
-  // always uploading data, even in the event of a data "stall", where
-  // a small amount of data is available for an extended period of time.
-  if ((base::TimeTicks::Now() - last_upload_time_) >= kPayloadEnqueueTimeout) {
-    VLOG(2) << "Payload timeout reached; force pushing";
-    return true;
-  }
-
-  return false;
+bool DataAggregatorService::DidActivePayloadReachMaxSize() const {
+  return active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes;
 }
 
 void DataAggregatorService::AddActivePayloadToPendingQueue() {
@@ -637,10 +627,6 @@ void DataAggregatorService::EnqueueNextPendingTransportPayload() {
     return;
   }
 
-  base::UmaHistogramCounts1M(
-      kEnqueuedPayloadSizeMetricName,
-      pending_transport_payloads_.front().ByteSizeLong());
-
   InitiateEnqueueRequest();
 }
 
@@ -651,6 +637,10 @@ void DataAggregatorService::InitiateEnqueueRequest() {
     LOG(WARNING) << "Requested payload enqueue, but payload queue is empty.";
     return;
   }
+
+  base::UmaHistogramCounts1M(
+      kEnqueuedPayloadSizeMetricName,
+      pending_transport_payloads_.front().ByteSizeLong());
 
   auto enqueue_success_callback =
       base::BindOnce(&DataAggregatorService::HandleEnqueueResponse,
