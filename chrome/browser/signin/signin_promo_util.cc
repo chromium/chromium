@@ -167,17 +167,17 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
 
   // Batch Upload Bookmarks promo: for users that have local bookmarks and were
   // previously syncing with the current primary account.
-  if (WasPreviouslySyncingWithPrimaryAccount(profile) &&
-      local_map_result.contains(syncer::BOOKMARKS) &&
-      !local_map_result[syncer::BOOKMARKS].local_data_models.empty()) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::
-                kBatchUploadBookmarksPromo,
-            .local_data_count = local_data_count});
-    return;
+  if (WasPreviouslySyncingWithPrimaryAccount(profile)) {
+    if (auto it = local_map_result.find(syncer::BOOKMARKS);
+        it != local_map_result.end() && !it->second.local_data_models.empty()) {
+      std::move(result_callback)
+          .Run(ProfileMenuAvatarButtonPromoInfo{
+              .type = ProfileMenuAvatarButtonPromoInfo::Type::
+                  kBatchUploadBookmarksPromo,
+              .local_data_count = local_data_count});
+      return;
+    }
   }
-
   // History sync promo.
   if (signin_util::ShouldShowHistorySyncOptinScreen(*profile) ==
       signin_util::ShouldShowHistorySyncOptinResult::kShow) {
