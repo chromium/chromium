@@ -1126,8 +1126,12 @@
   <message name="IDS_AUTOFILL_BNPL_TOS_CANCEL_BUTTON_LABEL" desc="The cancel button label of the Buy-Now-Pay-Later Terms of Service dialog. If the user cancels this dialog, the flow will end and the dialog will close.">
     Cancel
   </message>
-  <message name="IDS_AUTOFILL_BNPL_TOS_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new unlinked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog.">
+  <!-- TODO(crbug.com/424259928): Make BNPL ToS titles translateable. These were temporarily marked as `translateable="false"` for M142 mergeback. This is okay because the BNPL feature is currently only enabled for English language locales. -->
+  <message name="IDS_AUTOFILL_BNPL_TOS_UNLINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new unlinked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog." translateable="false">
     Link account and pay with <ph name="BNPL_ISSUER_NAME">$1</ph>?
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_TOS_LINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new linked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog." translateable="false">
+    Continue to pay with <ph name="BNPL_ISSUER_NAME">$1</ph>?
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_TITLE_DESCRIPTION" desc="Accessibility description for the title of the Buy-Now-Pay-Later Terms of Service dialog containing the combined GPay and BNPL Issuer logo image.">
     <ph name="TOS_TITLE">$1<ex>Link account and pay with Affirm?</ex></ph> <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay, Affirm logo</ex></ph>
