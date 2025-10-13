@@ -25,6 +25,13 @@ class RollBackModeBInfoBarControllerTest
         std::make_unique<RollBackModeBInfoBarController>(web_contents());
   }
 
+  void Navigate(bool has_committed = true, bool primary_main_frame = true) {
+    content::MockNavigationHandle navigation_handle(GURL(), main_rfh());
+    navigation_handle.set_has_committed(has_committed);
+    navigation_handle.set_is_in_primary_main_frame(primary_main_frame);
+    controller()->DidFinishNavigation(&navigation_handle);
+  }
+
   RollBackModeBInfoBarController* controller() { return controller_.get(); }
 
  private:
@@ -34,8 +41,7 @@ class RollBackModeBInfoBarControllerTest
 
 TEST_F(RollBackModeBInfoBarControllerTest, DoesNotAddInfobarWhenPrefIsFalse) {
   profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB, false);
-  content::MockNavigationHandle navigation_handle(GURL(), main_rfh());
-  controller()->DidFinishNavigation(&navigation_handle);
+  Navigate();
 
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents());
@@ -45,8 +51,7 @@ TEST_F(RollBackModeBInfoBarControllerTest, DoesNotAddInfobarWhenPrefIsFalse) {
 
 TEST_F(RollBackModeBInfoBarControllerTest, ShowsAndHidesInfobarAndSetsPref) {
   profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB, true);
-  content::MockNavigationHandle navigation_handle(GURL(), main_rfh());
-  controller()->DidFinishNavigation(&navigation_handle);
+  Navigate();
 
   // Verify infobar was added and pref was set.
   auto* infobar_manager =
@@ -65,6 +70,28 @@ TEST_F(RollBackModeBInfoBarControllerTest, ShowsAndHidesInfobarAndSetsPref) {
   // Visibility change to `HIDDEN` should hide infobar.
   controller()->OnVisibilityChanged(content::Visibility::HIDDEN);
   EXPECT_TRUE(infobar_manager->infobars().empty());
+}
+
+TEST_F(RollBackModeBInfoBarControllerTest,
+       DoesNotAddInfobarWhenNavigationNotCommitted) {
+  profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB, true);
+  Navigate(/*has_committed=*/false);
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+}
+
+TEST_F(RollBackModeBInfoBarControllerTest,
+       DoesNotAddInfobarWhenNavigationNotInPrimaryMainFrame) {
+  profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB, true);
+  Navigate(/*has_committed=*/true, /*primary_main_frame=*/false);
+
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowRollbackUiModeB));
 }
 
 }  // namespace

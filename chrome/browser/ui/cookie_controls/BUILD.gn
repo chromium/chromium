@@ -17,6 +17,8 @@ source_set("cookie_controls") {
       "//base",
       "//chrome/browser/infobars",
       "//chrome/browser/privacy_sandbox:roll_back_3pcd_notice_action",
+      "//chrome/browser/sync",
+      "//components/privacy_sandbox:tracking_protection_settings",
       "//content/public/browser",
     ]
   }

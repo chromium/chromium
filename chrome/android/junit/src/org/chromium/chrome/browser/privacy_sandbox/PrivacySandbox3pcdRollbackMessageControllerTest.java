@@ -10,8 +10,11 @@ import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -31,10 +34,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.messages.DismissReason;
@@ -45,7 +51,10 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link PrivacySandbox3pcdRollbackMessageController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -54,21 +63,25 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class PrivacySandbox3pcdRollbackMessageControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private TrackingProtectionSettingsBridge.Natives mTrackingProtectionSettingsBridgeJni;
     @Mock UserPrefs.Natives mUserPrefsJniMock;
+
     @Mock PrefService mPrefService;
+    @Mock private Tab mTab;
+    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private Context mContext;
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private Profile mProfile;
+
+    private PrivacySandbox3pcdRollbackMessageController mController;
 
     private PropertyModel showMessage() {
         when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
 
-        Assert.assertTrue(
-                PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                        mContext, mProfile, mMessageDispatcher));
+        Assert.assertTrue(mController.maybeShow());
         verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), eq(true));
         return modelCaptor.getValue();
     }
@@ -87,30 +100,69 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
         watcher.assertExpected();
     }
 
+    private void navigate(boolean hasCommitted) {
+        NavigationHandle navigation =
+                NavigationHandle.createForTesting(JUnitTestGURLs.EXAMPLE_URL, false, 0, false);
+        navigation.didFinish(
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* isErrorPage= */ false,
+                hasCommitted,
+                /* isPrimaryMainFrameFragmentNavigation= */ false,
+                /* isDownload= */ false,
+                /* isValidSearchFormUrl= */ false,
+                /* transition= */ 0,
+                /* errorCode= */ 0,
+                /* httpStatuscode= */ 200,
+                /* isExternalProtocol= */ false,
+                /* isPdf= */ false,
+                /* mimeType= */ "",
+                Page.createForTesting());
+        ActivityTabTabObserver observer = assertNonNull(mController.getActivityTabTabObserver());
+        observer.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
+    }
+
     @Before
-    public void before() {
+    public void setUp() {
         doReturn(Mockito.mock(Resources.class)).when(mContext).getResources();
+        TrackingProtectionSettingsBridgeJni.setInstanceForTesting(
+                mTrackingProtectionSettingsBridgeJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+
+        mController =
+                new PrivacySandbox3pcdRollbackMessageController(
+                        mContext, mProfile, mActivityTabProvider, mMessageDispatcher);
     }
 
     @Test
     public void maybeShow_doesNotShowForOtrProfile() {
         when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        Assert.assertFalse(
-                PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                        mContext, mProfile, mMessageDispatcher));
+        Assert.assertFalse(mController.maybeShow());
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
     }
 
     @Test
     public void maybeShow_doesNotShowWhenPrefFalse() {
         when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(false);
-        Assert.assertFalse(
-                PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                        mContext, mProfile, mMessageDispatcher));
+        Assert.assertFalse(mController.maybeShow());
+        verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    public void maybeShow_showsOnNavigationWhenCommitted() {
+        when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        navigate(/* hasCommitted= */ true);
+        verify(mMessageDispatcher, times(1)).enqueueWindowScopedMessage(any(), eq(true));
+    }
+
+    @Test
+    public void maybeShow_doesNotShowOnNavigationWhenNotCommitted() {
+        when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        navigate(/* hasCommitted= */ false);
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
     }
 

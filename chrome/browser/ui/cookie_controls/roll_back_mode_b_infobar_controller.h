@@ -23,6 +23,8 @@ class RollBackModeBInfoBarController : public content::WebContentsObserver,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // InfoBarManager::Observer:

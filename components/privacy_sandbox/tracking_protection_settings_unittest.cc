@@ -22,6 +22,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -348,8 +349,7 @@ TEST_F(TrackingProtectionSettingsTest,
 // Rollback does not apply to iOS.
 #if !BUILDFLAG(IS_IOS)
 
-class TrackingProtectionSettingsRollbackTest
-    : public TrackingProtectionSettingsTest {
+class MaybeSetRollbackPrefsModeBTest : public TrackingProtectionSettingsTest {
  public:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {privacy_sandbox::kRollBackModeB};
@@ -374,39 +374,51 @@ class TrackingProtectionSettingsRollbackTest
         "Privacy.3PCD.RollbackNotice.ShouldShow", show_rollback_ui, 1);
   }
 
+  void SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus status) {
+    test_sync_service_.SetDownloadStatusFor({syncer::DataType::PREFERENCES},
+                                            status);
+  }
+
+  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
+
  private:
+  syncer::TestSyncService test_sync_service_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(TrackingProtectionSettingsRollbackTest,
-       Allowed3pcsDisables3pcdPrefAndEnablesRollbackUi) {
+TEST_F(MaybeSetRollbackPrefsModeBTest, ShowsNoticeWhen3pcsAllowed) {
+  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
-  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
-                                 management_service(),
-                                 /*is_incognito=*/false);
+  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kOff, true);
 }
 
-TEST_F(TrackingProtectionSettingsRollbackTest,
-       Blocked3pcsIn3pcdDisables3pcdPrefAndRollbackUi) {
+TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotOffboardWhenWaitingForPrefSync) {
+  SetSyncStatus(
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
+  Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
+  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
+}
+
+TEST_F(MaybeSetRollbackPrefsModeBTest,
+       Blocks3pcsAndDoesNotShowNoticeWhen3pcsBlockedIn3pcd) {
+  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, true);
-  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
-                                 management_service(),
-                                 /*is_incognito=*/false);
+  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }
 
-TEST_F(TrackingProtectionSettingsRollbackTest,
-       Blocked3pcsDisables3pcdPrefAndRollbackUi) {
+TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotShowNoticeWhen3pcsBlocked) {
+  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
-  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
-                                 management_service(),
-                                 /*is_incognito=*/false);
+  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }
+
 #endif
 
 }  // namespace
