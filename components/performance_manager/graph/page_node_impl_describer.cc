@@ -29,7 +29,6 @@ const char* PermissionStatusToString(
     case blink::mojom::PermissionStatus::ASK:
       return "ask";
     case blink::mojom::PermissionStatus::DENIED:
-    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       return "denied";
     case blink::mojom::PermissionStatus::GRANTED:
       return "granted";

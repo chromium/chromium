@@ -303,7 +303,6 @@ class LocalNetworkAccessPermission final
       case mojom::blink::PermissionStatus::ASK:
       // Treat ASK i.e. the user closing the prompt, as denied.
       case mojom::blink::PermissionStatus::DENIED:
-      case mojom::blink::PermissionStatus::UNSATISFIED_OPTIONS:
         callback_(webrtc::LocalNetworkAccessPermissionStatus::kDenied);
         break;
     }

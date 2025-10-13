@@ -7,19 +7,11 @@ module blink.mojom;
 // Do not remove items from, or reorder this enum as it is used in histograms.
 // New items should be added at the end.
 // Permission status is used in the permission infrastructure to express whether
-// a permission as queried is granted, denied, can be prompted for upon
-// returning from the query, or has unsatisfied options (semantically similar to
-// denied, but a downgraded request may yield a grant. Possible use cases:
-// coarse geolocation may be granted while precise geolocation is denied --> a
-// request for precise may return UNSATISFIED_OPTIONS, which may cause the
-// permission to downgrade the request to a coarse request). A permission
-// request may trigger a prompt and will return a PermissionStatus upon
-// returning by passing it to the registered BrowserPermissionCallback. However,
-// a PermissionStatus can be queried without requesting it.
+// a permission as queried is granted, denied or can be prompted for upon
+// returning from the query.
 enum PermissionStatus {
   GRANTED,
   DENIED,
   ASK,
-  UNSATISFIED_OPTIONS,
-  LAST = UNSATISFIED_OPTIONS
+  LAST = ASK
 };

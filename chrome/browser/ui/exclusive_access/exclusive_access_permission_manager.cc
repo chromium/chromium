@@ -150,7 +150,6 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
       requests.result_callbacks.push_back(std::move(granted_callback));
       break;
     case blink::mojom::PermissionStatus::DENIED:
-    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
     case blink::mojom::PermissionStatus::ASK:
       requests.result_callbacks.push_back(std::move(denied_callback));
       break;

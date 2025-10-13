@@ -206,7 +206,6 @@ ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
             switch (status) {
               case mojom::blink::PermissionStatus::GRANTED:
               case mojom::blink::PermissionStatus::DENIED:
-              case mojom::blink::PermissionStatus::UNSATISFIED_OPTIONS:
                 resolver->Resolve(ToV8PermissionState(status));
                 break;
               case mojom::blink::PermissionStatus::ASK:

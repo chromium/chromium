@@ -802,12 +802,12 @@ TEST_F(PermissionManagerWithGeolocationTest, GetGeolocationPermissionStatus) {
       url(), url(), content_settings_type,
       GeolocationSetting{PermissionOption::kAllowed,
                          PermissionOption::kDenied});
-  CheckPermissionStatus(permission_type, PermissionStatus::UNSATISFIED_OPTIONS);
+  CheckPermissionStatus(permission_type, PermissionStatus::GRANTED);
 
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,
       GeolocationSetting{PermissionOption::kAllowed, PermissionOption::kAsk});
-  CheckPermissionStatus(permission_type, PermissionStatus::UNSATISFIED_OPTIONS);
+  CheckPermissionStatus(permission_type, PermissionStatus::GRANTED);
 
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,
@@ -817,7 +817,7 @@ TEST_F(PermissionManagerWithGeolocationTest, GetGeolocationPermissionStatus) {
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,
       GeolocationSetting{PermissionOption::kAsk, PermissionOption::kDenied});
-  CheckPermissionStatus(permission_type, PermissionStatus::DENIED);
+  CheckPermissionStatus(permission_type, PermissionStatus::ASK);
 
   GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
       url(), url(), content_settings_type,

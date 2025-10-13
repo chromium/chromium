@@ -49,7 +49,7 @@ TEST_F(GeolocationPermissionResolverTest,
   EXPECT_EQ(approximate_request_resolver()->DeterminePermissionStatus(setting),
             blink::mojom::PermissionStatus::GRANTED);
   EXPECT_EQ(precise_request_resolver()->DeterminePermissionStatus(setting),
-            blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS);
+            blink::mojom::PermissionStatus::GRANTED);
 }
 
 TEST_F(GeolocationPermissionResolverTest,
@@ -71,7 +71,7 @@ TEST_F(GeolocationPermissionResolverTest,
   EXPECT_EQ(approximate_request_resolver()->DeterminePermissionStatus(setting),
             blink::mojom::PermissionStatus::GRANTED);
   EXPECT_EQ(precise_request_resolver()->DeterminePermissionStatus(setting),
-            blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS);
+            blink::mojom::PermissionStatus::GRANTED);
 }
 
 TEST_F(GeolocationPermissionResolverTest,

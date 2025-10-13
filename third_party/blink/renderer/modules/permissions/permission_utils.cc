@@ -46,7 +46,6 @@ constexpr V8PermissionState::Enum ToPermissionStateEnum(
     case mojom::blink::PermissionStatus::GRANTED:
       return V8PermissionState::Enum::kGranted;
     case mojom::blink::PermissionStatus::DENIED:
-    case mojom::blink::PermissionStatus::UNSATISFIED_OPTIONS:
       return V8PermissionState::Enum::kDenied;
     case mojom::blink::PermissionStatus::ASK:
       return V8PermissionState::Enum::kPrompt;

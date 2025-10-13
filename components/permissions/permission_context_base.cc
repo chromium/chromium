@@ -152,10 +152,8 @@ void PermissionContextBase::RequestPermission(
   bool status_ignorable = PermissionUtil::CanPermissionRequestIgnoreStatus(
       request_data, result.source);
 
-  if (!status_ignorable &&
-      (result.status == PermissionStatus::GRANTED ||
-       result.status == PermissionStatus::DENIED ||
-       result.status == PermissionStatus::UNSATISFIED_OPTIONS)) {
+  if (!status_ignorable && (result.status == PermissionStatus::GRANTED ||
+                            result.status == PermissionStatus::DENIED)) {
     static constexpr char kResetInstructions[] =
         " This can be reset in "
 #if BUILDFLAG(IS_ANDROID)

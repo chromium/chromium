@@ -635,7 +635,6 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
     context->MaybeUpdateCachedHasDevicePermission(web_contents);
   }
   DCHECK(result.status == PermissionStatus::GRANTED ||
-         result.status == PermissionStatus::UNSATISFIED_OPTIONS ||
          result.status == PermissionStatus::ASK ||
          result.status == PermissionStatus::DENIED)
       << result.status;

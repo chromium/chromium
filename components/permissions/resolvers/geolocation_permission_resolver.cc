@@ -9,26 +9,13 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-
-namespace {
-content::PermissionStatus GeolocationOptionToPermissionStatus(
-    PermissionOption option) {
-  switch (option) {
-    case PermissionOption::kAsk:
-      return content::PermissionStatus::ASK;
-    case PermissionOption::kAllowed:
-      return content::PermissionStatus::GRANTED;
-    case PermissionOption::kDenied:
-      return content::PermissionStatus::DENIED;
-  }
-}
-}  // namespace
 
 namespace permissions {
 
@@ -41,15 +28,18 @@ blink::mojom::PermissionStatus
 GeolocationPermissionResolver::DeterminePermissionStatus(
     const PermissionSetting& setting) const {
   GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
-
-  if (requested_precise_) {
-    if (geo_setting.precise != PermissionOption::kAllowed &&
-        geo_setting.approximate == PermissionOption::kAllowed) {
-      return content::PermissionStatus::UNSATISFIED_OPTIONS;
-    }
-    return GeolocationOptionToPermissionStatus(geo_setting.precise);
+  if (geo_setting.precise == PermissionOption::kAllowed) {
+    return blink::mojom::PermissionStatus::GRANTED;
   }
-  return GeolocationOptionToPermissionStatus(geo_setting.approximate);
+  switch (geo_setting.approximate) {
+    case PermissionOption::kAllowed:
+      return blink::mojom::PermissionStatus::GRANTED;
+    case PermissionOption::kDenied:
+      return blink::mojom::PermissionStatus::DENIED;
+    case PermissionOption::kAsk:
+      return blink::mojom::PermissionStatus::ASK;
+  }
+  NOTREACHED();
 }
 
 PermissionSetting

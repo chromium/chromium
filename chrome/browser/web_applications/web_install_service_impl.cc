@@ -400,7 +400,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
               content::PermissionStatusSource::UNSPECIFIED)}));
       return;
     case PermissionStatus::DENIED:
-    case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
       std::move(callback).Run(
           std::vector<content::PermissionResult>({content::PermissionResult(
               PermissionStatus::DENIED,
