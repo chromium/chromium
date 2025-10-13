@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <set>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
@@ -75,6 +76,7 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
       mojom::FontIdentityPtr* out_identity);
 
 #if BUILDFLAG(ENABLE_PDF)
+  std::vector<std::string> ListFamilies();
   void MatchFontWithFallback(std::string family,
                              bool is_bold,
                              bool is_italic,
@@ -168,6 +170,11 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
       bool* out_valid,
       mojom::FontIdentityPtr* out_font_identity,
       mojom::FontIdentityPtr font_identity);
+  void ListFamiliesImpl(base::WaitableEvent* done_event,
+                        std::vector<std::string>* families);
+  void OnListFamiliesComplete(base::WaitableEvent* done_event,
+                              std::vector<std::string>* families,
+                              const std::vector<std::string>& response);
 
 #if BUILDFLAG(ENABLE_PDF)
   void MatchFontWithFallbackImpl(base::WaitableEvent* done_event,
