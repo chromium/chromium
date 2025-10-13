@@ -15,6 +15,7 @@ ci.defaults.set(
     executable = "recipe:chromium/eval_prompts",
     builder_group = "chromium.prompt_eval",
     pool = ci_constants.DEFAULT_POOL,
+    builderless = False,
     cores = 8,
     contact_team_email = "chrome-dev-infra-team@google.com",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
