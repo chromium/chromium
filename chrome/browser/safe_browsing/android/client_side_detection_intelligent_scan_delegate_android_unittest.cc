@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/unguessable_token.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
@@ -292,7 +293,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
   // Session should be reset after a successful response.
-  EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
   histogram_tester_.ExpectUniqueSample(
@@ -347,7 +348,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   base::test::TestFuture<IntelligentScanResult> future1;
   delegate_->InquireOnDeviceModel("test rendered text", future1.GetCallback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
 
   // The second inquire is sent before the first one completes.
   delegate_->SetPauseSessionExecutionForTesting(false);
@@ -361,17 +362,19 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       ResetOnDeviceSession_AfterSessionCreation) {
+       CancelOnDeviceSession_AfterSessionCreation) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
   task_environment_.RunUntilIdle();
   delegate_->SetPauseSessionExecutionForTesting(true);
-  delegate_->InquireOnDeviceModel("test rendered text", base::DoNothing());
+  std::optional<base::UnguessableToken> session_id =
+      delegate_->InquireOnDeviceModel("test rendered text", base::DoNothing());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+
   // Reset the session after session is created.
-  EXPECT_TRUE(delegate_->ResetOnDeviceSession());
-  EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
+  EXPECT_TRUE(delegate_->CancelSession(*session_id));
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -382,11 +385,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   delegate_->SetPauseSessionExecutionForTesting(true);
   delegate_->InquireOnDeviceModel("test rendered text", base::DoNothing());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
   SetEnhancedProtectionPrefForTests(&pref_service_, false);
   task_environment_.RunUntilIdle();
   // Session should be reset after the enhanced protection is disabled.
-  EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 }
 
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithFeatureDisabled

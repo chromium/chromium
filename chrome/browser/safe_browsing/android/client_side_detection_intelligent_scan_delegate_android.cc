@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -27,6 +28,7 @@ using optimization_guide::mojom::ModelBasedCapabilityKey::kScamDetection;
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
  public:
   Inquiry(ClientSideDetectionIntelligentScanDelegateAndroid* parent,
+          const base::UnguessableToken& session_id,
           InquireOnDeviceModelDoneCallback callback);
   ~Inquiry();
 
@@ -46,6 +48,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   // owns this object.
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> parent_;
   std::unique_ptr<ModelExecutorSession> session_;
+  base::UnguessableToken session_id_;
   InquireOnDeviceModelDoneCallback callback_;
   std::string rendered_texts_;
   base::TimeTicks session_creation_start_time_;
@@ -56,15 +59,18 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
 
 ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Inquiry(
     ClientSideDetectionIntelligentScanDelegateAndroid* parent,
+    const base::UnguessableToken& session_id,
     InquireOnDeviceModelDoneCallback callback)
-    : parent_(parent), callback_(std::move(callback)) {}
+    : parent_(parent),
+      session_id_(session_id),
+      callback_(std::move(callback)) {}
 
 ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::~Inquiry() =
     default;
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
     const std::string& rendered_texts) {
-  CHECK(!session_) << "Start() should only be called once.";
+  CHECK(!session_) << "Start() should only be called once per inquiry.";
 
   rendered_texts_ = rendered_texts;
   using ::optimization_guide::SessionConfigParams;
@@ -148,7 +154,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
 
   // Reset session immediately so that future inference is not affected by the
   // old context.
-  parent_->ResetOnDeviceSession();
+  parent_->CancelSession(session_id_);
 }
 
 ClientSideDetectionIntelligentScanDelegateAndroid::
@@ -216,29 +222,36 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
   return true;
 }
 
-void ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
+std::optional<base::UnguessableToken>
+ClientSideDetectionIntelligentScanDelegateAndroid::InquireOnDeviceModel(
     std::string rendered_texts,
     InquireOnDeviceModelDoneCallback callback) {
   if (!IsOnDeviceModelAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
         IntelligentScanResult::kModelVersionUnavailable));
-    return;
+    return std::nullopt;
   }
 
-  // TODO(crbug.com/444148365): Intelligent scan delegate is per profile and may
-  // be shared with multiple ClientSideDetectionHost, so it is possible that one
-  // session created by one ClientSideDetectionHost is still alive when another
-  // ClientSideDetectionHost tries to create a new session. We should support
-  // multiple sessions per delegate.
-  ResetOnDeviceSession();
-
-  current_inquiry_ = std::make_unique<Inquiry>(this, std::move(callback));
-  current_inquiry_->Start(rendered_texts);
+  base::UnguessableToken session_id = base::UnguessableToken::Create();
+  std::unique_ptr<Inquiry> new_inquiry =
+      std::make_unique<Inquiry>(this, session_id, std::move(callback));
+  inquiries_[session_id] = std::move(new_inquiry);
+  inquiries_[session_id]->Start(rendered_texts);
+  return session_id;
 }
 
-bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetOnDeviceSession() {
-  bool did_reset_session = !!current_inquiry_;
-  current_inquiry_.reset();
+bool ClientSideDetectionIntelligentScanDelegateAndroid::CancelSession(
+    const base::UnguessableToken& session_id) {
+  if (!inquiries_.contains(session_id)) {
+    return false;
+  }
+  inquiries_.erase(session_id);
+  return true;
+}
+
+bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetAllSessions() {
+  bool did_reset_session = !inquiries_.empty();
+  inquiries_.clear();
   return did_reset_session;
 }
 
@@ -264,8 +277,8 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Shutdown() {
   client_side_detection::LogOnDeviceModelSessionAliveOnDelegateShutdown(
-      !!current_inquiry_);
-  ResetOnDeviceSession();
+      !inquiries_.empty());
+  ResetAllSessions();
   model_broker_client_.reset();
   pref_change_registrar_.RemoveAll();
 }
@@ -279,7 +292,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::OnPrefsUpdated() {
   if (IsEnhancedProtectionEnabled(*pref_) && is_feature_enabled) {
     StartModelDownload();
   } else {
-    ResetOnDeviceSession();
+    ResetAllSessions();
   }
 }
 

@@ -770,6 +770,9 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
+  if (intelligent_scan_session_id_.has_value()) {
+    intelligent_scan_delegate_->CancelSession(*intelligent_scan_session_id_);
+  }
 }
 
 void ClientSideDetectionHost::RegisterPermissionRequestManager() {
@@ -1043,11 +1046,14 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   if (should_classify) {
-    // Cancel any ongoing on device sessions.
-    bool did_reset_session = intelligent_scan_delegate_->ResetOnDeviceSession();
+    bool intelligent_scan_session_ongoing =
+        intelligent_scan_session_id_.has_value();
     base::UmaHistogramBoolean(
         "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
-        did_reset_session);
+        intelligent_scan_session_ongoing);
+    if (intelligent_scan_session_ongoing) {
+      intelligent_scan_delegate_->CancelSession(*intelligent_scan_session_id_);
+    }
 
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
@@ -1503,17 +1509,19 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     return;
   }
 
-  intelligent_scan_delegate_->InquireOnDeviceModel(
-      inner_text,
-      base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
-                     weak_factory_.GetWeakPtr(), std::move(verdict),
-                     did_match_high_confidence_allowlist));
+  intelligent_scan_session_id_ =
+      intelligent_scan_delegate_->InquireOnDeviceModel(
+          inner_text,
+          base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
+                         weak_factory_.GetWeakPtr(), std::move(verdict),
+                         did_match_high_confidence_allowlist));
 }
 
 void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     IntelligentScanDelegate::IntelligentScanResult response) {
+  intelligent_scan_session_id_.reset();
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
       response.execution_success);

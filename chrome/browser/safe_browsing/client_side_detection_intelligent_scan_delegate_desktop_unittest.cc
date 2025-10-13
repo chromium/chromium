@@ -544,9 +544,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
 
-  // We will expect a second time, but since the InquireOnDeviceModel function
-  // wasn't finished and the future callback wasn't completed, we will remove
-  // the "old" session and recreate a new one.
+  // A second session can be created while the first one is still alive.
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
       .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -562,9 +560,100 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 2);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 2);
-  // We do not test for execution_success field here because the session
-  // creation has succeeded, but model execution callback is not set, so the
-  // future callback won't be answered.
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestMultipleSessions) {
+  EnableOnDeviceModel();
+
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          });
+
+  base::test::TestFuture<IntelligentScanResult> future1;
+  std::optional<base::UnguessableToken> session_id1 =
+      delegate_->InquireOnDeviceModel("", future1.GetCallback());
+  EXPECT_FALSE(session_id1->is_empty());
+
+  testing::NiceMock<MockSession> session2;
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session2);
+          });
+
+  base::test::TestFuture<IntelligentScanResult> future2;
+  std::optional<base::UnguessableToken> session_id2 =
+      delegate_->InquireOnDeviceModel("", future2.GetCallback());
+
+  // Both session IDs should still be alive.
+  EXPECT_FALSE(session_id1->is_empty());
+  EXPECT_FALSE(session_id2->is_empty());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 2);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestCancelSession) {
+  EnableOnDeviceModelWithSession();
+
+  base::test::TestFuture<IntelligentScanResult> future;
+  std::optional<base::UnguessableToken> session_id =
+      delegate_->InquireOnDeviceModel("", future.GetCallback());
+  EXPECT_FALSE(session_id->is_empty());
+
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+  EXPECT_TRUE(delegate_->CancelSession(*session_id));
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
+
+  // The callback should not be called.
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestMultipleSessionsCancellation) {
+  EnableOnDeviceModel();
+
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          });
+
+  base::test::TestFuture<IntelligentScanResult> future1;
+  std::optional<base::UnguessableToken> session_id1 =
+      delegate_->InquireOnDeviceModel("", future1.GetCallback());
+  EXPECT_FALSE(session_id1->is_empty());
+
+  testing::NiceMock<MockSession> session2;
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session2);
+          });
+
+  base::test::TestFuture<IntelligentScanResult> future2;
+  std::optional<base::UnguessableToken> session_id2 =
+      delegate_->InquireOnDeviceModel("", future2.GetCallback());
+
+  // Both session IDs should still be alive.
+  EXPECT_FALSE(session_id1->is_empty());
+  EXPECT_FALSE(session_id2->is_empty());
+
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 2);
+  EXPECT_TRUE(delegate_->CancelSession(*session_id1));
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+  EXPECT_TRUE(delegate_->CancelSession(*session_id2));
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -752,18 +841,31 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        ResetOnDeviceSession) {
   EnableOnDeviceModelWithSession();
 
-  bool did_reset = delegate_->ResetOnDeviceSession();
+  bool did_reset = delegate_->ResetAllSessions();
   EXPECT_FALSE(did_reset);
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
 
-  EXPECT_TRUE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
 
-  did_reset = delegate_->ResetOnDeviceSession();
+  // Create a second session
+  EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          });
+  base::test::TestFuture<IntelligentScanResult> future2;
+  delegate_->InquireOnDeviceModel("", future2.GetCallback());
+
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 2);
+
+  did_reset = delegate_->ResetAllSessions();
   EXPECT_TRUE(did_reset);
 
-  EXPECT_FALSE(delegate_->IsSessionAliveForTesting());
+  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,

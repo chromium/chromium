@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_ANDROID_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
@@ -39,22 +41,24 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // IntelligentScanDelegate implementation.
   bool ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) override;
   bool IsOnDeviceModelAvailable(bool log_failed_eligibility_reason) override;
-  void InquireOnDeviceModel(std::string rendered_texts,
-                            InquireOnDeviceModelDoneCallback callback) override;
-  bool ResetOnDeviceSession() override;
+  std::optional<base::UnguessableToken> InquireOnDeviceModel(
+      std::string rendered_texts,
+      InquireOnDeviceModelDoneCallback callback) override;
+  bool CancelSession(const base::UnguessableToken& session_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
 
   // KeyedService implementation.
   void Shutdown() override;
 
-  bool IsSessionAliveForTesting() { return !!current_inquiry_; }
+  int GetAliveSessionCountForTesting() { return inquiries_.size(); }
   void SetPauseSessionExecutionForTesting(bool pause) {
     pause_session_execution_for_testing_ = pause;
   }
 
  private:
   class Inquiry;
+  bool ResetAllSessions();
 
   void OnPrefsUpdated();
 
@@ -68,7 +72,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
 
   // A wrapper of the current on-device model session. This is null if there is
   // no active inquiry.
-  std::unique_ptr<Inquiry> current_inquiry_;
+  base::flat_map<base::UnguessableToken, std::unique_ptr<Inquiry>> inquiries_;
 
   // PrefChangeRegistrar used to track when the enhanced protection state
   // changes.

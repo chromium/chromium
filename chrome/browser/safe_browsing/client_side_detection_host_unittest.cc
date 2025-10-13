@@ -293,11 +293,11 @@ class MockIntelligentScanDelegate
               (ClientPhishingRequest*),
               (override));
   MOCK_METHOD(bool, IsOnDeviceModelAvailable, (bool), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::optional<base::UnguessableToken>,
               InquireOnDeviceModel,
               (std::string, InquireOnDeviceModelDoneCallback),
               (override));
-  MOCK_METHOD(bool, ResetOnDeviceSession, (), (override));
+  MOCK_METHOD(bool, CancelSession, (const base::UnguessableToken&), (override));
   MOCK_METHOD(bool,
               ShouldShowScamWarning,
               (std::optional<IntelligentScanVerdict>),
@@ -3134,19 +3134,21 @@ class ClientSideDetectionHostScamDetectionTest
                       base::OnceCallback<void(
                           ClientSideDetectionHost::IntelligentScanDelegate::
                               IntelligentScanResult)> callback) {
+              base::UnguessableToken token = base::UnguessableToken::Create();
               ClientSideDetectionHost::IntelligentScanDelegate::
                   IntelligentScanResult scam_detection_response;
               scam_detection_response.execution_success = false;
               scam_detection_response.model_version = -1;
               if (!should_return_response) {
                 std::move(callback).Run(scam_detection_response);
-                return;
+                return token;
               }
               scam_detection_response.execution_success = true;
               scam_detection_response.model_version = example_model_version_;
               scam_detection_response.brand = example_brand_;
               scam_detection_response.intent = example_intent_;
               std::move(callback).Run(scam_detection_response);
+              return token;
             });
   }
 
