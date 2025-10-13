@@ -11,6 +11,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -146,7 +148,7 @@ BrowserNotClosingPrecondition::~BrowserNotClosingPrecondition() = default;
 user_education::FeaturePromoResult
 BrowserNotClosingPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection&) const {
-  if (browser_view_->browser()->IsBrowserClosing() ||
+  if (browser_view_->browser()->capabilities()->IsAttemptingToCloseBrowser() ||
       browser_view_->GetWidget()->IsClosed()) {
     return user_education::FeaturePromoResult::kBlockedByContext;
   }

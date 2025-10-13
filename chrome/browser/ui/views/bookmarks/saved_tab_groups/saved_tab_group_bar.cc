@@ -16,8 +16,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
@@ -72,7 +73,7 @@ constexpr int kDropIndicatorThicknessDips = 2;
 
 }  // namespace
 
-SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
+SavedTabGroupBar::SavedTabGroupBar(BrowserWindowInterface* browser,
                                    TabGroupSyncService* tab_group_service,
                                    bool animations_enabled)
     : tab_group_service_(tab_group_service),
@@ -98,10 +99,11 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
   tab_group_service_->AddObserver(this);
 }
 
-SavedTabGroupBar::SavedTabGroupBar(Browser* browser, bool animations_enabled)
+SavedTabGroupBar::SavedTabGroupBar(BrowserWindowInterface* browser,
+                                   bool animations_enabled)
     : SavedTabGroupBar(browser,
                        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                           browser->profile()),
+                           browser->GetProfile()),
                        animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
@@ -116,7 +118,8 @@ void SavedTabGroupBar::ShowEverythingMenu() {
   }
 
   everything_menu_ = std::make_unique<STGEverythingMenu>(
-      overflow_button_->button_controller(), browser_,
+      overflow_button_->button_controller(),
+      browser_->GetBrowserForMigrationOnly(),
       STGEverythingMenu::MenuContext::kSavedTabGroupBar);
 
   everything_menu_->RunMenu();
@@ -389,7 +392,7 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
           group,
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.saved_guid()),
-          browser_, animations_enabled_),
+          browser_->GetBrowserForMigrationOnly(), animations_enabled_),
       clamped_index);
   view->SetProperty(views::kMarginsKey, gfx::Insets::VH(kButtonPadding, 0));
   if (group.saved_tabs().size() == 0) {
@@ -541,9 +544,9 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
           group->is_shared_tab_group() && !group->local_group_id().has_value();
 
       tab_group_service_->OpenTabGroup(
-          group->saved_guid(),
-          std::make_unique<TabGroupActionContextDesktop>(
-              browser_, OpeningSource::kOpenedFromRevisitUi));
+          group->saved_guid(), std::make_unique<TabGroupActionContextDesktop>(
+                                   browser_->GetBrowserForMigrationOnly(),
+                                   OpeningSource::kOpenedFromRevisitUi));
       if (will_open_shared_group) {
         saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
             saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
@@ -666,7 +669,7 @@ SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
 
 void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
   // Do not show close promo while the browser is closing
-  if (!browser_ || browser_->IsBrowserClosing()) {
+  if (!browser_ || browser_->capabilities()->IsAttemptingToCloseBrowser()) {
     return;
   }
 

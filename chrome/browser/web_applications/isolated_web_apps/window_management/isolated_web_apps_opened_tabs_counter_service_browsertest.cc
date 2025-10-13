@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -342,9 +344,9 @@ IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
     ClickCloseWindowsButtonClosesChildWindowsAndNotification) {
   webapps::AppId app_id = InstallIsolatedWebApp();
-  Browser* iwa_browser = OpenIwaWindow(app_id);
-  content::WebContents* iwa_opener_web_contents =
-      iwa_browser->tab_strip_model()->GetActiveWebContents();
+  BrowserWindowInterface* const iwa_browser = OpenIwaWindow(app_id);
+  content::WebContents* const iwa_opener_web_contents =
+      iwa_browser->GetTabStripModel()->GetActiveWebContents();
 
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
@@ -386,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(
       isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_, app_id));
 
   EXPECT_EQ(0u, GetNotificationCount());
-  ASSERT_FALSE(iwa_browser->IsBrowserClosing());
+  ASSERT_FALSE(iwa_browser->capabilities()->IsAttemptingToCloseBrowser());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,

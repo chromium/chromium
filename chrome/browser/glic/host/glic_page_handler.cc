@@ -202,14 +202,15 @@ class ActiveStateCalculator : public PanelStateObserver {
     PostRecalcAndNotify();
   }
 
-  bool SetAttachedBrowser(Browser* attached_browser) {
+  bool SetAttachedBrowser(BrowserWindowInterface* attached_browser) {
     if (attached_browser_ == attached_browser) {
       return false;
     }
     attached_browser_subscriptions_.clear();
     attached_browser_ = attached_browser;
 
-    if (attached_browser_ && !attached_browser_->IsBrowserClosing()) {
+    if (attached_browser_ && !attached_browser_->GetBrowserForMigrationOnly()
+                                  ->is_delete_scheduled()) {
       attached_browser_subscriptions_.push_back(
           attached_browser_->RegisterDidBecomeActive(base::BindRepeating(
               &ActiveStateCalculator::AttachedBrowserActiveChanged,
@@ -237,7 +238,8 @@ class ActiveStateCalculator : public PanelStateObserver {
     if (!attached_browser_) {
       return true;
     }
-    if (attached_browser_->IsBrowserClosing()) {
+    if (attached_browser_->GetBrowserForMigrationOnly()
+            ->is_delete_scheduled()) {
       return false;
     }
 
@@ -251,7 +253,7 @@ class ActiveStateCalculator : public PanelStateObserver {
   base::ObserverList<Observer> observers_;
   glic::mojom::PanelState::Kind panel_state_kind_;
   bool is_active_ = false;
-  raw_ptr<Browser> attached_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> attached_browser_ = nullptr;
 };
 
 class BrowserIsOpenCalculator : public BrowserListObserver {

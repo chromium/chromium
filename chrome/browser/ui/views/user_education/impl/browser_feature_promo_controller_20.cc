@@ -17,6 +17,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -53,7 +55,7 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
   // see https://crbug.com/346461762 for an example. This can also crash
   // unit_tests that use a BrowserWindow but not a browser, so also check if
   // the browser view's widget is closing.
-  if (browser_view->browser()->IsBrowserClosing() ||
+  if (browser_view->browser()->capabilities()->IsAttemptingToCloseBrowser() ||
       browser_view->GetWidget()->IsClosed()) {
     return user_education::FeaturePromoResult::kBlockedByContext;
   }

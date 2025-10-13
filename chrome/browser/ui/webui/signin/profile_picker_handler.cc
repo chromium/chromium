@@ -38,6 +38,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -198,7 +199,7 @@ base::Value::Dict CreateProfileState(const ProfileAttributesEntry* entry,
 void OpenLearnMoreURL(bool is_profile_list_empty, Browser* browser) {
   // Browser may be closing if the Profile was locked after being loaded for
   // example.
-  if (!browser || browser->IsBrowserClosing()) {
+  if (!browser || browser->is_delete_scheduled()) {
     return;
   }
 

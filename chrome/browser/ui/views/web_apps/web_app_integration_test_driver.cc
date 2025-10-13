@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -651,11 +652,9 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
     if (app_browser != nullptr) {
       LOG(INFO) << base::StringPrintf(
           "An app browser is still open at %p: IsAttemptingToClose(): %v, "
-          "IsBrowserClosing(): %v, is_delete_scheduled(): %v",
+          "is_delete_scheduled(): %v",
           app_browser,
-          app_browser->GetBrowserForMigrationOnly()
-              ->IsAttemptingToCloseBrowser(),
-          app_browser->GetBrowserForMigrationOnly()->IsBrowserClosing(),
+          app_browser->capabilities()->IsAttemptingToCloseBrowser(),
           app_browser->GetBrowserForMigrationOnly()->is_delete_scheduled());
       return;
     }

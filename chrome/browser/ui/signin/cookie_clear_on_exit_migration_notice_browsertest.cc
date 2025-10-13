@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -247,8 +248,7 @@ IN_PROC_BROWSER_TEST_F(CookieClearOnExitMigrationNoticeBrowserTest,
   // User is migrated, and browser is not closed.
   EXPECT_TRUE(GetProfile()->GetPrefs()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
-  EXPECT_FALSE(browser()->IsAttemptingToCloseBrowser());
-  EXPECT_FALSE(browser()->IsBrowserClosing());
+  EXPECT_FALSE(browser()->capabilities()->IsAttemptingToCloseBrowser());
 
   // The browser can now be closed normally.
   CloseBrowserSynchronously(browser());

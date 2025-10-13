@@ -21,7 +21,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class PageNavigator;
@@ -50,8 +50,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Exposed constant for spacing between elements.
   static constexpr int kBetweenElementSpacing = 8;
 
-  explicit SavedTabGroupBar(Browser* browser, bool animations_enabled = true);
-  SavedTabGroupBar(Browser* browser,
+  explicit SavedTabGroupBar(BrowserWindowInterface* browser,
+                            bool animations_enabled = true);
+  SavedTabGroupBar(BrowserWindowInterface* browser,
                    TabGroupSyncService* tab_group_service,
                    bool animations_enabled = true);
   SavedTabGroupBar(const SavedTabGroupBar&) = delete;
@@ -221,7 +222,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.
   std::unique_ptr<SavedTabGroupDragData> drag_data_;
