@@ -68,12 +68,9 @@ declare_args() {
   #
   # One important consideration is whether the linker uses the same LLVM
   # version as `rustc` (i.e. if it can understand the LLVM-IR from the
-  # compilation artifacts produced by `rustc`).  In LaCrOS and ash builds this
-  # may not be true - see b/299483903.
-  #
-  # TODO(crbug.com/40281834): Re-enable ThinLTO for Rust on LaCrOS
-  # TODO(b/300937673): Re-enable ThinLTO for Rust on ash-chrome
-  toolchain_supports_rust_thin_lto = !is_chromeos
+  # compilation artifacts produced by `rustc`).  For more context please see
+  # older bugs like b/299483903, https://crbug.com/40281834, or b/300937673.
+  toolchain_supports_rust_thin_lto = true
 
   # Any extra std rlibs in your Rust toolchain, relative to the standard
   # Rust toolchain. Typically used with 'rust_sysroot_absolute'
