@@ -27,30 +27,6 @@ extern const base::FeatureParam<int> kPasswordCheckFriWeight;
 extern const base::FeatureParam<int> kPasswordCheckSatWeight;
 extern const base::FeatureParam<int> kPasswordCheckSunWeight;
 
-// TODO(crbug.com/399056993): Remove flags to experiment with engagement scores
-// in the notification module.
-extern const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsMinEnagementLimit;
-extern const base::FeatureParam<int>
-    kSafetyCheckNotificationPermissionsLowEnagementLimit;
-
-extern const char kPasswordCheckNotificationIntervalName[];
-extern const char kRevokedPermissionsNotificationIntervalName[];
-extern const char kNotificationPermissionsNotificationIntervalName[];
-extern const char kSafeBrowsingNotificationIntervalName[];
-
-extern const base::FeatureParam<base::TimeDelta>
-    kPasswordCheckNotificationInterval;
-
-extern const base::FeatureParam<base::TimeDelta>
-    kRevokedPermissionsNotificationInterval;
-
-extern const base::FeatureParam<base::TimeDelta>
-    kNotificationPermissionsNotificationInterval;
-
-extern const base::FeatureParam<base::TimeDelta>
-    kSafeBrowsingNotificationInterval;
-
 }  // namespace safety_check::features
 
 #endif  // COMPONENTS_SAFETY_CHECK_FEATURES_H_
