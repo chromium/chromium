@@ -362,8 +362,8 @@ cr-searchbox-icon {
 
 :host([ntp-realbox-next-enabled]) input::placeholder {
   font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
+  color: var(--color-new-tab-page-composebox-type-ahead);
+  font-weight: 400;
 }
 
 :host([ntp-realbox-next-enabled]) {
