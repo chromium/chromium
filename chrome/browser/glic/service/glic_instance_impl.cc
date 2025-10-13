@@ -605,10 +605,6 @@ void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
-void GlicInstanceImpl::Attach(tabs::TabInterface* tab) {
-  Show(SidePanelShowOptions(*tab));
-}
-
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
   if (state == mojom::WebUiState::kReady) {
     if (auto* embedder = GetActiveEmbedder()) {

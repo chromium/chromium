@@ -84,7 +84,7 @@ class GlicInstanceImpl : public GlicInstance,
   gfx::Size GetPanelSize() override;
 
   // These methods should only be called by the GlicInstanceCoordinator.
-  void Show(const ShowOptions& options);
+  void Show(const ShowOptions& options) override;
   void Close(EmbedderKey key);
   void Toggle(const ShowOptions& options, bool prevent_close);
 
@@ -142,7 +142,6 @@ class GlicInstanceImpl : public GlicInstance,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void WillCloseFor(EmbedderKey key) override;
-  void Attach(tabs::TabInterface* tab) override;
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance
   void Detach(tabs::TabInterface* tab) override;
