@@ -202,6 +202,7 @@ def IsGitAncestorToHead(git_repository, commit):
 
 def GitCherryPick(git_repository,
                   commit,
+                  extra_flags=[],
                   git_remote=None,
                   git_remote_name='github'):
   print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
@@ -221,7 +222,7 @@ def GitCherryPick(git_repository,
   RunCommand([
       'git', '-C', git_repository, 'cherry-pick', '--keep-redundant-commits',
       commit
-  ],
+  ] + extra_flags,
              env=env)
 
 
@@ -849,6 +850,19 @@ def main():
   if not args.skip_checkout:
     with timer.time('checkout llvm'):
       CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
+      # TODO(crbug.com/435127246): Permanent cherry-pick on this branch,
+      # but temporary on HEAD.
+      GitCherryPick(LLVM_DIR, '69b8d6d4ead01b88fb8d6642914ca7492e32fdb6', extra_flags=['-Xtheirs'])
+      conflict = 'lld/test/COFF/arm64x-delayimport.test'
+      with open(os.path.join(LLVM_DIR, conflict), 'r+b') as f:
+        data = f.read()
+        data = data.replace(b'DISASM-NEXT: 180001050: 910d2000     add     x0, x0, #0x348',
+                            b'DISASM-NEXT: 180001050: 910d4000     add     x0, x0, #0x350')
+        f.seek(0)
+        f.write(data)
+        f.truncate()
+      RunCommand(['git', '-C', LLVM_DIR, 'add', conflict]);
+      RunCommand(['git', '-C', LLVM_DIR, 'commit', '-m', 'resolve conflict with PR149521']);
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)

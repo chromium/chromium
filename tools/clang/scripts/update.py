@@ -40,7 +40,7 @@ import zlib
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 CLANG_REVISION = 'llvmorg-21-init-16348-gbd809ffb'
-CLANG_SUB_REVISION = 17
+CLANG_SUB_REVISION = 18
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 # TODO(crbug.com/432036065): Bump to 22 in next Clang roll.
