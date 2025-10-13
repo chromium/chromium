@@ -283,6 +283,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return GetResourceProvider();
   }
 
+  void EnableAccelerationIfPossible() override;
+
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   UniqueFontSelector* GetFontSelector() const final;
@@ -310,8 +312,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void Dispose() override;
 
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
-
-  void EnableAccelerationIfPossible() override;
 
   void DrawElementInternal(Element* element,
                            double x,

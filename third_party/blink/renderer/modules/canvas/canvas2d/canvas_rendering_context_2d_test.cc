@@ -2546,7 +2546,7 @@ TEST_P(
 
   CanvasElement().DisableAccelerationForCanvas2D();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
-  CanvasElement().EnableAccelerationForCanvas2D();
+  Context2D()->EnableAccelerationIfPossible();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
   WaitForHibernation();
