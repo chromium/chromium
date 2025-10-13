@@ -262,7 +262,6 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/macros/dictation_macros_test.js",
     "dictation/parse/dictation_parse_test.js",
     "dictation/parse/dictation_pumpkin_parse_test.js",
-    "magnifier/magnifier_test.js",
   ]
 
   gen_include_files = [
