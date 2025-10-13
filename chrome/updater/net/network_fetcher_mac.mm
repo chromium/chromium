@@ -773,7 +773,7 @@ void OutOfProcessNetworkFetcher::PostRequest(
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
     std::move(post_request_complete_callback)
-        .Run(nullptr, dial_result, {}, {}, {}, -1);
+        .Run(std::nullopt, dial_result, {}, {}, {}, -1);
     return;
   }
 

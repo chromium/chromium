@@ -277,6 +277,26 @@ namespace remote_cocoa {
 using mojom::SelectFileDialogType;
 using mojom::SelectFileTypeInfoPtr;
 
+class SelectFileDialogBridge::ScopedPreventKeyWindow {
+ public:
+  ScopedPreventKeyWindow(NativeWidgetMacNSWindow* window) {
+    bridge_ = window.bridge->GetWeakPtr();
+    window.preventKeyWindow = YES;
+  }
+
+  ScopedPreventKeyWindow(const SelectFileDialogBridge&) = delete;
+  ScopedPreventKeyWindow& operator=(const SelectFileDialogBridge&) = delete;
+
+  ~ScopedPreventKeyWindow() {
+    if (bridge_) {
+      bridge_->ns_window().preventKeyWindow = NO;
+    }
+  }
+
+ private:
+  base::WeakPtr<NativeWidgetNSWindowBridge> bridge_;
+};
+
 SelectFileDialogBridge::SelectFileDialogBridge(NSWindow* owning_window)
     : owning_window_(owning_window), weak_factory_(this) {}
 
@@ -637,26 +657,6 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
 
   std::move(show_callback_).Run(did_cancel, paths, index, file_tags);
 }
-
-class SelectFileDialogBridge::ScopedPreventKeyWindow {
- public:
-  ScopedPreventKeyWindow(NativeWidgetMacNSWindow* window) {
-    bridge_ = window.bridge->GetWeakPtr();
-    window.preventKeyWindow = YES;
-  }
-
-  ScopedPreventKeyWindow(const SelectFileDialogBridge&) = delete;
-  ScopedPreventKeyWindow& operator=(const SelectFileDialogBridge&) = delete;
-
-  ~ScopedPreventKeyWindow() {
-    if (bridge_) {
-      bridge_->ns_window().preventKeyWindow = NO;
-    }
-  }
-
- private:
-  base::WeakPtr<NativeWidgetNSWindowBridge> bridge_;
-};
 
 // static
 NSSavePanel* SelectFileDialogBridge::GetLastCreatedNativePanelForTesting() {
