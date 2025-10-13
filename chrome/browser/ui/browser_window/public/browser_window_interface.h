@@ -171,6 +171,31 @@ class BrowserWindowInterface : public content::PageNavigator {
   };
   virtual Type GetType() const = 0;
 
+  // Represents the result of a check for whether a new browser window can be
+  // created. See also CreateBrowserWindow().
+  // TODO(devlin): The naming here implies that this is the *result* of a
+  // creation request, but this is only used to indicate *whether* a new request
+  // is allowed. Tweak to "CreationAllowed" or similar?
+  enum class CreationStatus {
+    // A new browser window can be created.
+    kOk,
+    // Indicates that the browser is shutting down.
+    // TODO(devlin): Why not call this kErrorShuttingDown? That's more clear.
+    kErrorNoProcess,
+    // Indicates the profile is unsuitable for a new window. This can happen for
+    // profiles that don't allow new windows, like certain incognito profiles or
+    // other special profiles (signin screen, etc).
+    kErrorProfileUnsuitable,
+
+  // TODO(devlin): Update this to be BUILDFLAG(IS_CHROMEOS). That's the only
+  // spot we have kiosk mode.
+#if !BUILDFLAG(IS_ANDROID)
+    // Indicates the profile is currently loading kiosk mode, so no new windows
+    // should be allowed.
+    kErrorLoadingKiosk,
+#endif
+  };
+
   // S T O P
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the

@@ -79,4 +79,11 @@ void CreateBrowserWindow(
     BrowserWindowCreateParams create_params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
+// Returns whether a browser window can currently be created for the specified
+// // profile. This condition may change during runtime for a given `profile`
+// (e.g. a profile may support Browser windows but creating a Browser is
+// disallowed during shutdown).
+BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
+    Profile& profile);
+
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_CREATE_BROWSER_WINDOW_H_

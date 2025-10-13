@@ -1428,6 +1428,7 @@ static_library("ui") {
       "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/passwords/bubble_controllers",

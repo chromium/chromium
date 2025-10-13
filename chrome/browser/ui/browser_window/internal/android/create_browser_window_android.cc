@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/profiles/profile.h"
 
 BrowserWindowInterface* CreateBrowserWindow(
     BrowserWindowCreateParams create_params) {
@@ -19,4 +20,13 @@ void CreateBrowserWindow(
     base::OnceCallback<void(BrowserWindowInterface*)> callback) {
   // TODO(http://crbug.com/424860292): Implement this on Android.
   NOTIMPLEMENTED();
+}
+
+BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
+    Profile& profile) {
+  if (profile.ShutdownStarted()) {
+    return BrowserWindowInterface::CreationStatus::kErrorNoProcess;
+  }
+
+  return BrowserWindowInterface::CreationStatus::kOk;
 }
