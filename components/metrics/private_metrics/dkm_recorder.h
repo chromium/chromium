@@ -19,7 +19,7 @@ namespace metrics::private_metrics {
 // dkm::builders::MyEvent(source_id)
 //    .SetMyMetric(metric_value)
 //    .Record(DkmRecorder::Get());
-class COMPONENT_EXPORT(PRIVATE_METRICS_RECORDER) DkmRecorder {
+class COMPONENT_EXPORT(PRIVATE_METRICS_RECORDERS) DkmRecorder {
  public:
   DkmRecorder();
 

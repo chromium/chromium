@@ -15,12 +15,12 @@ component("dwa_recorder") {
   deps = [ "//base" ]
 }
 
-component("private_metrics_recorder") {
+component("private_metrics_recorders") {
   sources = [
     "dkm_recorder.cc",
     "dkm_recorder.h",
   ]
-  defines = [ "IS_PRIVATE_METRICS_RECORDER_IMPL" ]
+  defines = [ "IS_PRIVATE_METRICS_RECORDERS_IMPL" ]
   public_deps = [
     "//components/metrics/private_metrics/mojom",
     "//third_party/metrics_proto",
@@ -60,7 +60,7 @@ static_library("private_metrics") {
   ]
   public_deps = [
     ":dwa_recorder",
-    ":private_metrics_recorder",
+    ":private_metrics_recorders",
     "//components/metrics/dwa/mojom",
     "//components/metrics/private_metrics/mojom",
     "//third_party/federated_compute:confidential_compute_proto",
