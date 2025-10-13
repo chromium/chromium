@@ -536,6 +536,10 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       extension_id, browser_context_->UniqueId(), *activation_token};
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
+  // At this point `ExtensionRegistrar` has already triggered a worker stop
+  // synchronously via `ServiceWorkerManager::OnExtensionUnloaded`, as part of
+  // the deactivation process.
+  DCHECK(!worker_state->IsReady());
 
   RunAndClearPendingTasksWithNullContext(context_id);
   worker_state_observations_.RemoveObservation(worker_state);

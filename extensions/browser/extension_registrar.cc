@@ -1033,6 +1033,12 @@ void ExtensionRegistrar::ActivateExtension(const Extension* extension,
 
 void ExtensionRegistrar::DeactivateExtension(const Extension* extension,
                                              UnloadedExtensionReason reason) {
+  // NOTE: Call `TriggerOnUnloaded` before `DeactivateTaskQueueForExtension`.
+  // If an extension service worker is running, this stops it, which triggers a
+  // synchronous notification. This notification updates the
+  // `ServiceWorkerState` and untracks the worker from `ProcessManager`.
+  // `ServiceWorkerTaskQueue` can then operate in a consistent state, safely
+  // assuming the worker is no longer active.
   registry_->TriggerOnUnloaded(extension, reason);
   renderer_helper_->OnExtensionUnloaded(*extension);
   DeactivateTaskQueueForExtension(browser_context_, extension);
