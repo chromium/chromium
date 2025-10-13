@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -192,8 +191,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private @Nullable Function<Integer, View> mFetchViewByIndex;
     private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
 
-    /** Not null when drawing the hub edge to edge. */
-    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private TabListCoordinator.@Nullable DragObserver mDragObserver;
     private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
@@ -451,20 +449,18 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     PropertyModelChangeProcessor.create(
                             containerViewModel, recyclerView, TabListContainerViewBinder::bind);
 
-            if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-                mEdgeToEdgePadAdjuster =
-                        new EdgeToEdgePadAdjuster() {
-                            @Override
-                            public void overrideBottomInset(int inset) {
-                                mEdgeToEdgeBottomInsets = inset;
-                                updateBottomPadding();
-                            }
+            mEdgeToEdgePadAdjuster =
+                    new EdgeToEdgePadAdjuster() {
+                        @Override
+                        public void overrideBottomInset(int inset) {
+                            mEdgeToEdgeBottomInsets = inset;
+                            updateBottomPadding();
+                        }
 
-                            @Override
-                            public void destroy() {}
-                        };
-                mEdgeToEdgeSupplier.addObserver(mOnEdgeToEdgeControllerChangedCallback);
-            }
+                        @Override
+                        public void destroy() {}
+                    };
+            mEdgeToEdgeSupplier.addObserver(mOnEdgeToEdgeControllerChangedCallback);
 
             RecordHistogram.recordTimesHistogram(
                     "Android.TabSwitcher.SetupRecyclerView.Time",
@@ -935,7 +931,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     /** Return the Edge to edge pad adjuster. */
-    @Nullable
     EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
         return mEdgeToEdgePadAdjuster;
     }
@@ -968,13 +963,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void updateBottomPadding() {
-        int bottomPadding = 0;
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            bottomPadding = mEdgeToEdgeBottomInsets;
-            mContainerViewModel.set(
-                    TabListContainerProperties.IS_CLIP_TO_PADDING, bottomPadding == 0);
-        }
-        mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, bottomPadding);
+        mContainerViewModel.set(
+                TabListContainerProperties.IS_CLIP_TO_PADDING, mEdgeToEdgeBottomInsets == 0);
+        mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, mEdgeToEdgeBottomInsets);
     }
 
     private void onFilterChange(@Nullable TabGroupModelFilter filter) {

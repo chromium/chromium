@@ -211,11 +211,6 @@ public class EdgeToEdgeUtils {
         return sIsTargetSdkEnforceEdgeToEdge;
     }
 
-    /** Whether key native pages should draw to edge. */
-    public static boolean isDrawKeyNativePageToEdgeEnabled() {
-        return isBottomChinFeatureEnabled();
-    }
-
     /**
      * Whether reporting the page's safe area constraint to the bottom chin. Required when {@link
      * isEdgeToEdgeBottomChinEnabled}.
@@ -322,10 +317,7 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
-        if (tab.shouldEnableEmbeddedMediaExperience()) {
-            return isDrawKeyNativePageToEdgeEnabled();
-        }
-        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+        if (sAlwaysDrawWebEdgeToEdgeForTesting || tab.shouldEnableEmbeddedMediaExperience()) {
             return true;
         }
         return getWasViewportFitCover(tab);
@@ -340,11 +332,8 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
-        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+        if (sAlwaysDrawWebEdgeToEdgeForTesting || tab.shouldEnableEmbeddedMediaExperience()) {
             return true;
-        }
-        if (tab.shouldEnableEmbeddedMediaExperience()) {
-            return isDrawKeyNativePageToEdgeEnabled();
         }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
@@ -360,8 +349,6 @@ public class EdgeToEdgeUtils {
 
     /** Whether a native tab will be drawn edge to to edge. */
     static boolean isNativeTabDrawingToEdge(@Nullable Tab activeTab) {
-        if (!isDrawKeyNativePageToEdgeEnabled()) return false;
-
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
         if (activeTab == null) return false;
 

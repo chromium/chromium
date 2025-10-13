@@ -117,8 +117,7 @@ public class EdgeToEdgeControllerFactory {
      * @param view The view to be adjusted.
      */
     public static EdgeToEdgePadAdjuster createForView(View view) {
-        return new SimpleEdgeToEdgePadAdjuster(
-                view, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+        return new SimpleEdgeToEdgePadAdjuster(view, /* enableClipToPadding= */ true);
     }
 
     /**
@@ -132,7 +131,7 @@ public class EdgeToEdgeControllerFactory {
     public static EdgeToEdgePadAdjuster createForView(
             View view, EdgeToEdgeController edgeToEdgeController) {
         return new SimpleEdgeToEdgePadAdjuster(
-                view, edgeToEdgeController, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+                view, edgeToEdgeController, /* enableClipToPadding= */ true);
     }
 
     /**
@@ -146,8 +145,6 @@ public class EdgeToEdgeControllerFactory {
             View view,
             @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         return new SimpleEdgeToEdgePadAdjuster(
-                view,
-                edgeToEdgeControllerSupplier,
-                EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+                view, edgeToEdgeControllerSupplier, /* enableClipToPadding= */ true);
     }
 }

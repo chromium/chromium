@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -45,7 +44,7 @@ public class IncognitoNewTabPage extends BasicNativePage
     private boolean mIsLoaded;
 
     private final IncognitoNewTabPageManager mIncognitoNewTabPageManager;
-    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -95,11 +94,9 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         initWithView(mIncognitoNewTabPageView);
 
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mEdgeToEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
-        }
+        mEdgeToEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
     }
 
     /**

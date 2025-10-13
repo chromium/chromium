@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -68,7 +67,7 @@ public class HubBottomToolbarCoordinator {
 
         mMediator = new HubBottomToolbarMediator(model, mDelegate);
 
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled() && hubBottomToolbarView != null) {
+        if (hubBottomToolbarView != null) {
             mEdgeToEdgePadAdjuster =
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             hubBottomToolbarView, edgeToEdgeSupplier);
