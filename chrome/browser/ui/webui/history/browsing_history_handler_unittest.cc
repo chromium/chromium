@@ -319,10 +319,9 @@ TEST_F(BrowsingHistoryHandlerTest, RequestAccountInfo) {
       callback;
   history::mojom::AccountInfoPtr account_info_ptr;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::Invoke(
-          [&](history::mojom::AccountInfoPtr ptr) {
-            account_info_ptr = std::move(ptr);
-          }));
+      .WillOnce([&](history::mojom::AccountInfoPtr ptr) {
+        account_info_ptr = std::move(ptr);
+      });
 
   handler()->RequestAccountInfo(callback.Get());
 

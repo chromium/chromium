@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-using ::testing::Invoke;
+
 using ::testing::WithArg;
 
 // Helper class that validates ClipboardItem types match expected format list.
@@ -135,10 +135,10 @@ TEST_F(ClipboardTest, SelectiveClipboardFormatRead) {
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
       .WillOnce(WithArg<2>(
-          Invoke([](mojom::blink::PermissionService::RequestPermissionCallback
-                        callback) {
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
             std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
-          })));
+          }));
   BindMockPermissionService(executionContext);
 
   SetSecureOrigin(executionContext);
@@ -178,10 +178,10 @@ TEST_F(ClipboardTest, ReadAllClipboardFormats) {
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
       .WillOnce(WithArg<2>(
-          Invoke([](mojom::blink::PermissionService::RequestPermissionCallback
-                        callback) {
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
             std::move(callback).Run(mojom::blink::PermissionStatus::GRANTED);
-          })));
+          }));
   BindMockPermissionService(executionContext);
 
   SetSecureOrigin(executionContext);

@@ -16,7 +16,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace contextual_tasks {
@@ -45,23 +44,23 @@ TEST_F(FaviconContextDecoratorTest, DecorateContextWithFavicons) {
   auto context = std::make_unique<ContextualTaskContext>(task);
 
   EXPECT_CALL(mock_favicon_service_, GetFaviconImageForPageURL(kUrl1, _, _))
-      .WillOnce(Invoke([&](const GURL& page_url,
-                           favicon_base::FaviconImageCallback callback,
-                           base::CancelableTaskTracker* tracker) {
+      .WillOnce([&](const GURL& page_url,
+                    favicon_base::FaviconImageCallback callback,
+                    base::CancelableTaskTracker* tracker) {
         favicon_base::FaviconImageResult result;
         result.image = kTestImage;
         result.icon_url = kIconUrl;
         std::move(callback).Run(result);
         return base::CancelableTaskTracker::kBadTaskId;
-      }));
+      });
   EXPECT_CALL(mock_favicon_service_, GetFaviconImageForPageURL(kUrl2, _, _))
-      .WillOnce(Invoke([&](const GURL& page_url,
-                           favicon_base::FaviconImageCallback callback,
-                           base::CancelableTaskTracker* tracker) {
+      .WillOnce([&](const GURL& page_url,
+                    favicon_base::FaviconImageCallback callback,
+                    base::CancelableTaskTracker* tracker) {
         // No favicon for this URL.
         std::move(callback).Run(favicon_base::FaviconImageResult());
         return base::CancelableTaskTracker::kBadTaskId;
-      }));
+      });
 
   FaviconContextDecorator decorator(&mock_favicon_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;

@@ -20,7 +20,6 @@ namespace {
 using test::SingleSubmissionKeyMetricExpectations;
 using test::VerifySingleSubmissionKeyMetricExpectations;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 class MockSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
@@ -59,7 +58,7 @@ class OtpFormEventLoggerIntegrationTest
             &autofill_client());
     // Default action: always run the callback with a default/empty response
     ON_CALL(*mock_crowdsourcing_manager, StartQueryRequest)
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [](const std::vector<
                    raw_ptr<const FormStructure, VectorExperimental>>&,
                std::optional<net::IsolationInfo>,
@@ -70,7 +69,7 @@ class OtpFormEventLoggerIntegrationTest
               std::move(callback).Run(
                   AutofillCrowdsourcingManager::QueryResponse("", {}));
               return true;
-            }));
+            });
     autofill_client().set_crowdsourcing_manager(
         std::move(mock_crowdsourcing_manager));
   }
@@ -87,7 +86,7 @@ class OtpFormEventLoggerIntegrationTest
 
     EXPECT_CALL(*mock_crowdsourcing_manager_ptr, StartQueryRequest)
         .Times(testing::AtLeast(0))
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [response, form_signature](
                 const std::vector<
                     raw_ptr<const FormStructure, VectorExperimental>>&,
@@ -101,7 +100,7 @@ class OtpFormEventLoggerIntegrationTest
                   AutofillCrowdsourcingManager::QueryResponse(
                       response, {form_signature}));
               return true;
-            }));
+            });
   }
 
   FormData CreateOtpForm() {
@@ -127,7 +126,7 @@ class OtpFormEventLoggerIntegrationTest
     one_time_tokens::OtpFetchReply reply = CreateOtpFetchReply(returns_otp);
     EXPECT_CALL(*backend, RetrieveSmsOtp)
         .WillRepeatedly(
-            Invoke([reply](auto callback) { std::move(callback).Run(reply); }));
+            [reply](auto callback) { std::move(callback).Run(reply); });
   }
 
   one_time_tokens::OtpFetchReply CreateOtpFetchReply(bool returns_otp) {

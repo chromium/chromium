@@ -1661,10 +1661,10 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
       store(),
       RestoreSessionBindingKey(
           SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(Invoke([&](const SessionKey& session_key,
-                           SessionStore::RestoreSessionBindingKeyCallback cb) {
+      .WillOnce([&](const SessionKey& session_key,
+                    SessionStore::RestoreSessionBindingKeyCallback cb) {
         restore_key_callback = std::move(cb);
-      }));
+      });
   service().DeferRequestForRefresh(request.get(), *maybe_deferral,
                                    base::DoNothing());
   // Simulate the request being cleaned up before the callback has been called.

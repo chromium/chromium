@@ -476,14 +476,14 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
 
   EXPECT_CALL(*mock_decorator_,
               DecorateContext(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](std::unique_ptr<ContextualTaskContext> context,
              const std::set<ContextualTaskContextSource>& sources,
              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                  callback) {
             // Mock decorator just passes the context through.
             std::move(callback).Run(std::move(context));
-          }));
+          });
 
   std::unique_ptr<ContextualTaskContext> context =
       GetContextForTask(task.GetTaskId());
@@ -502,7 +502,7 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
 
   EXPECT_CALL(*mock_decorator_,
               DecorateContext(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](std::unique_ptr<ContextualTaskContext> context,
              const std::set<ContextualTaskContextSource>& sources,
              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
@@ -514,7 +514,7 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_WithTitle) {
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(context)));
-          }));
+          });
 
   std::unique_ptr<ContextualTaskContext> context =
       GetContextForTask(task.GetTaskId());

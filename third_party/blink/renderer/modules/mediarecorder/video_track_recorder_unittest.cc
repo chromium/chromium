@@ -1369,7 +1369,7 @@ TEST_P(VideoTrackRecorderPassthroughTest, HandlesFrames) {
   scoped_refptr<media::DecoderBuffer> encoded_data;
   EXPECT_CALL(*mock_callback_interface_,
               OnPassthroughVideo(IsSameCodec(GetParam()), IsKeyFrame(true), _))
-      .WillOnce(DoAll(SaveArg<1>(&encoded_data)));
+      .WillOnce(SaveArg<1>(&encoded_data));
   auto now = base::TimeTicks::Now();
   video_track_recorder_->OnEncodedVideoFrameForTesting(now, frame, now);
   std::string str = "abc";

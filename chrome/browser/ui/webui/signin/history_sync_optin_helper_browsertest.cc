@@ -267,11 +267,11 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen)
-      .WillOnce(testing::Invoke(
-          [&](Profile* profile, HistorySyncOptinHelper::FlowCompletedCallback
-                                    history_optin_completed_callback) {
-            future.SetValue(profile);
-          }));
+      .WillOnce([&](Profile* profile,
+                    HistorySyncOptinHelper::FlowCompletedCallback
+                        history_optin_completed_callback) {
+        future.SetValue(profile);
+      });
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,

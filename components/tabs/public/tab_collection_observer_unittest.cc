@@ -81,13 +81,12 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
 
   EXPECT_CALL(*GetGroupFactory(), Create)
-      .WillOnce(testing::Invoke(
-          [&](tabs::TabGroupTabCollection* collection,
-              const tab_groups::TabGroupId& id,
-              const tab_groups::TabGroupVisualData& visual_data) {
-            // Return a valid MockTabGroup object.
-            return std::make_unique<MockTabGroup>(collection, id, visual_data);
-          }));
+      .WillOnce([&](tabs::TabGroupTabCollection* collection,
+                    const tab_groups::TabGroupId& id,
+                    const tab_groups::TabGroupVisualData& visual_data) {
+        // Return a valid MockTabGroup object.
+        return std::make_unique<MockTabGroup>(collection, id, visual_data);
+      });
 
   tabs::TabStripCollection* collection = GetTabstripCollection();
   std::unique_ptr<tabs::TabGroupTabCollection> grouped_collection =
@@ -190,13 +189,12 @@ TEST_F(TabCollectionObserverTest, OnTabCollectionAttached) {
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
 
   EXPECT_CALL(*GetGroupFactory(), Create)
-      .WillOnce(testing::Invoke(
-          [&](tabs::TabGroupTabCollection* collection,
-              const tab_groups::TabGroupId& id,
-              const tab_groups::TabGroupVisualData& visual_data) {
-            // Return a valid MockTabGroup object.
-            return std::make_unique<MockTabGroup>(collection, id, visual_data);
-          }));
+      .WillOnce([&](tabs::TabGroupTabCollection* collection,
+                    const tab_groups::TabGroupId& id,
+                    const tab_groups::TabGroupVisualData& visual_data) {
+        // Return a valid MockTabGroup object.
+        return std::make_unique<MockTabGroup>(collection, id, visual_data);
+      });
 
   tabs::TabStripCollection* collection = GetTabstripCollection();
   std::unique_ptr<tabs::TabGroupTabCollection> grouped_collection =
@@ -299,16 +297,13 @@ TEST_F(TabCollectionObserverTest, OnSplitCreated) {
               testing::Field(&TabCollectionObserver::Position::index,
                              testing::Eq(expected_split_position.index))),
           testing::SizeIs(1)))
-      .WillOnce(
-          testing::Invoke([&](const TabCollectionObserver::Position& position,
-                              const TabCollectionNodes& handles) {
-            // Save the handle of the newly added split collection for the next
-            // expectation.
-            new_split_handle =
-                std::get<tabs::TabCollection::Handle>(handles[0]);
-            EXPECT_EQ(new_split_handle.Get()->type(),
-                      TabCollection::Type::SPLIT);
-          }))
+      .WillOnce([&](const TabCollectionObserver::Position& position,
+                    const TabCollectionNodes& handles) {
+        // Save the handle of the newly added split collection for the next
+        // expectation.
+        new_split_handle = std::get<tabs::TabCollection::Handle>(handles[0]);
+        EXPECT_EQ(new_split_handle.Get()->type(), TabCollection::Type::SPLIT);
+      })
       .RetiresOnSaturation();
 
   // Second Notification: Tabs are added to the split collection.
@@ -339,13 +334,12 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
 
   EXPECT_CALL(*GetGroupFactory(), Create)
-      .WillOnce(testing::Invoke(
-          [&](tabs::TabGroupTabCollection* collection,
-              const tab_groups::TabGroupId& id,
-              const tab_groups::TabGroupVisualData& visual_data) {
-            // Return a valid MockTabGroup object.
-            return std::make_unique<MockTabGroup>(collection, id, visual_data);
-          }));
+      .WillOnce([&](tabs::TabGroupTabCollection* collection,
+                    const tab_groups::TabGroupId& id,
+                    const tab_groups::TabGroupVisualData& visual_data) {
+        // Return a valid MockTabGroup object.
+        return std::make_unique<MockTabGroup>(collection, id, visual_data);
+      });
 
   std::unique_ptr<tabs::MockTabInterface> pinned_tab = CreateMockTab();
   std::unique_ptr<tabs::MockTabInterface> unpinned_tab = CreateMockTab();
@@ -429,13 +423,12 @@ TEST_F(TabCollectionObserverTest, OnCollectionRemoved) {
   // Set up a group.
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
   EXPECT_CALL(*GetGroupFactory(), Create)
-      .WillOnce(testing::Invoke(
-          [&](tabs::TabGroupTabCollection* collection,
-              const tab_groups::TabGroupId& id,
-              const tab_groups::TabGroupVisualData& visual_data) {
-            // Return a valid MockTabGroup object.
-            return std::make_unique<MockTabGroup>(collection, id, visual_data);
-          }));
+      .WillOnce([&](tabs::TabGroupTabCollection* collection,
+                    const tab_groups::TabGroupId& id,
+                    const tab_groups::TabGroupVisualData& visual_data) {
+        // Return a valid MockTabGroup object.
+        return std::make_unique<MockTabGroup>(collection, id, visual_data);
+      });
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
       std::make_unique<tabs::TabGroupTabCollection>(
           *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());

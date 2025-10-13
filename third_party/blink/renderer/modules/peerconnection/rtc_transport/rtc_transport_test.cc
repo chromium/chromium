@@ -142,13 +142,13 @@ TEST_F(RtcTransportTest, AddRemoteCandidate) {
   init->setPassword("password");
 
   EXPECT_CALL(*mock_connection_, AddRemoteCandidate(testing::_))
-      .WillOnce(testing::Invoke([](const webrtc::Candidate& candidate) {
+      .WillOnce([](const webrtc::Candidate& candidate) {
         EXPECT_EQ(candidate.protocol(), "udp");
         EXPECT_EQ(candidate.address().ToString(), "1.2.3.4:1234");
         EXPECT_EQ(candidate.username(), "username");
         EXPECT_EQ(candidate.password(), "password");
         EXPECT_EQ(candidate.type(), webrtc::IceCandidateType::kHost);
-      }));
+      });
 
   transport_->addRemoteCandidate(init, ASSERT_NO_EXCEPTION);
 }
@@ -169,12 +169,11 @@ TEST_F(RtcTransportTest, SendPackets) {
   packets.push_back(params2);
 
   EXPECT_CALL(*mock_connection_, SendPackets(testing::_))
-      .WillOnce(testing::Invoke(
-          [](std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) {
-            EXPECT_EQ(packet_payloads->size(), 2u);
-            EXPECT_EQ(packet_payloads->at(0), String("packet1").RawByteSpan());
-            EXPECT_EQ(packet_payloads->at(1), String("packet2").RawByteSpan());
-          }));
+      .WillOnce([](std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) {
+        EXPECT_EQ(packet_payloads->size(), 2u);
+        EXPECT_EQ(packet_payloads->at(0), String("packet1").RawByteSpan());
+        EXPECT_EQ(packet_payloads->at(1), String("packet2").RawByteSpan());
+      });
 
   transport_->sendPackets(packets);
 }
@@ -204,10 +203,9 @@ TEST_F(RtcTransportTest, Writable) {
   ScriptState* script_state = scope.GetScriptState();
 
   EXPECT_CALL(*mock_connection_, Writable(testing::_))
-      .WillOnce(
-          testing::Invoke([](ScriptPromiseResolver<IDLBoolean>* resolver) {
-            resolver->Resolve(true);
-          }));
+      .WillOnce([](ScriptPromiseResolver<IDLBoolean>* resolver) {
+        resolver->Resolve(true);
+      });
 
   ScriptPromiseTester tester(script_state, transport_->writable(script_state));
   tester.WaitUntilSettled();
@@ -317,11 +315,10 @@ TEST_F(RtcTransportTest, SetRemoteDtlsParameters) {
       *mock_connection_,
       SetRemoteDtlsParameters(testing::Eq(String("sha-256")), testing::_,
                               webrtc::DatagramConnection::SSLRole::kServer))
-      .WillOnce(testing::Invoke(
-          [](String digestAlgorithm, Vector<uint8_t> fingerprint,
-             webrtc::DatagramConnection::SSLRole ssl_role) {
-            EXPECT_EQ(fingerprint, String("fingerprint").RawByteSpan());
-          }));
+      .WillOnce([](String digestAlgorithm, Vector<uint8_t> fingerprint,
+                   webrtc::DatagramConnection::SSLRole ssl_role) {
+        EXPECT_EQ(fingerprint, String("fingerprint").RawByteSpan());
+      });
 
   transport_->setRemoteDtlsParameters(params);
 }

@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::Invoke;
 using testing::Return;
 using testing::WithArgs;
 
@@ -164,22 +163,21 @@ TEST_F(LoopbackMixinTest, OnData_MixesAudioAndForwardsToCallback) {
 
   // When PullLoopbackData is called, copy the prepared audio into the output.
   EXPECT_CALL(*mock_provider_ptr, PullLoopbackData(_, now, _))
-      .WillOnce(
-          Invoke([&](media::AudioBus* audio_bus,
-                     base::TimeTicks /*capture_time*/, double /*volume*/) {
-            loopback_audio->CopyTo(audio_bus);
-            return base::TimeTicks::Now();
-          }));
+      .WillOnce([&](media::AudioBus* audio_bus,
+                    base::TimeTicks /*capture_time*/, double /*volume*/) {
+        loopback_audio->CopyTo(audio_bus);
+        return base::TimeTicks::Now();
+      });
 
   LoopbackMixinUnderTest mixin(std::move(mock_provider), params_,
                                on_data_callback_.Get());
 
   // Set expectation on the final callback.
   EXPECT_CALL(on_data_callback_, Run(_, now, volume, glitch_info))
-      .WillOnce(WithArgs<0>(Invoke([&](const media::AudioBus* mixed_bus) {
+      .WillOnce(WithArgs<0>([&](const media::AudioBus* mixed_bus) {
         // Verify the audio data was mixed correctly.
         VerifyAudioBus(mixed_bus, kExpectedMixedValue);
-      })));
+      }));
 
   // Trigger the mixing process.
   mixin.OnData(source_audio.get(), now, volume, glitch_info);

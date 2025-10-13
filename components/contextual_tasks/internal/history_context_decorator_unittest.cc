@@ -14,7 +14,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace contextual_tasks {
 
@@ -54,23 +53,23 @@ TEST_F(HistoryContextDecoratorTest, DecorateContextWithHistory) {
   auto context = std::make_unique<ContextualTaskContext>(task);
 
   EXPECT_CALL(mock_history_service_, QueryURL(kUrl1, _, _))
-      .WillOnce(Invoke([&](const GURL& url,
-                           history::HistoryService::QueryURLCallback callback,
-                           base::CancelableTaskTracker* tracker) {
+      .WillOnce([&](const GURL& url,
+                    history::HistoryService::QueryURLCallback callback,
+                    base::CancelableTaskTracker* tracker) {
         history::QueryURLResult result;
         result.success = true;
         result.row.set_title(kTitle1);
         std::move(callback).Run(std::move(result));
         return base::CancelableTaskTracker::kBadTaskId;
-      }));
+      });
   EXPECT_CALL(mock_history_service_, QueryURL(kUrl2, _, _))
-      .WillOnce(Invoke([&](const GURL& url,
-                           history::HistoryService::QueryURLCallback callback,
-                           base::CancelableTaskTracker* tracker) {
+      .WillOnce([&](const GURL& url,
+                    history::HistoryService::QueryURLCallback callback,
+                    base::CancelableTaskTracker* tracker) {
         // No title for this URL.
         std::move(callback).Run(history::QueryURLResult());
         return base::CancelableTaskTracker::kBadTaskId;
-      }));
+      });
 
   HistoryContextDecorator decorator(&mock_history_service_);
   base::test::TestFuture<std::unique_ptr<ContextualTaskContext>> future;
