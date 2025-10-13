@@ -349,3 +349,68 @@ def ExecuteCheckBooleansAreEnums(input_api, output_api):
   if results:
     return [output_api.PresubmitPromptOrNotify(units_warning, results)]
   return results
+
+
+def CheckRemovedSegmentationHistograms(input_api, output_api):
+  """Checks if any histogram used by segmentation platform is removed."""
+  # Only run check if XML files are changed.
+  if not any(f.LocalPath().endswith('.xml')
+             for f in input_api.AffectedFiles(include_deletes=True)):
+    return []
+
+  removed_histograms = set()
+  try:
+    import print_histogram_names
+    # get_histogram_diff compares the working directory with HEAD, which is
+    # what we wantfor presubmit.
+    _added_names, removed_names = print_histogram_names.get_histogram_diff(
+        'HEAD~')
+    removed_histograms = set(removed_names)
+  except Exception as e:
+    return [output_api.PresubmitError(f'Error getting histogram diff: {e}')]
+
+  # It's important to add the directory of generate_histogram_list.py to
+  # sys.path. PRESUBMIT.py is in src/tools/metrics/histograms.
+  # generate_histogram_list.py is in
+  # src/components/segmentation_platform/tools.
+  tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
+                                     '..', 'components',
+                                     'segmentation_platform', 'tools')
+  sys_path_modified = False
+  if tools_dir not in sys.path:
+    sys.path.append(tools_dir)
+    sys_path_modified = True
+
+  try:
+    import generate_histogram_list
+  except ImportError:
+    return [
+        output_api.PresubmitError(
+            'Could not import generate_histogram_list.py. Make sure the path '
+            'is correct.')
+    ]
+  finally:
+    if sys_path_modified:
+      # Avoid polluting sys.path.
+      sys.path.remove(tools_dir)
+
+  # Load the list of all histograms required by segmentation models.
+  segmentation_histograms = generate_histogram_list.GetActualHistogramNames()
+
+  if not segmentation_histograms:
+    # If the file is empty or doesn't exist, there's nothing to check.
+    return []
+
+  removed_segmentation_histograms = removed_histograms.intersection(
+      segmentation_histograms)
+
+  if removed_segmentation_histograms:
+    return [
+        output_api.PresubmitError(
+            'The following histograms are used by segmentation platform and '
+            'should not be removed without a migration plan. Please reach out '
+            'to chrome-segmentation-platform@google.com for questions.',
+            items=sorted(list(removed_segmentation_histograms)))
+    ]
+
+  return []

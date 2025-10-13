@@ -17,10 +17,13 @@ import sys
 if __name__ == '__main__' and not os.path.exists('components'):
     sys.exit('This script must be run from the chromium src directory.')
 
+SRC_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
 # Path to the directory containing segmentation platform models.
 # TODO(haileywang): Also include home_modules/ folder.
-MODEL_DIR = os.path.join('components', 'segmentation_platform', 'embedder',
-                         'default_model')
+MODEL_DIR = os.path.join(SRC_ROOT, 'components', 'segmentation_platform',
+                         'embedder', 'default_model')
 
 # Name of the golden files.
 # TODO(haileywang): Add ukm metrics.
@@ -30,7 +33,7 @@ USER_ACTIONS_FILENAME = 'user_actions.txt'
 
 def _GetComponentDirectoryPath():
     """Returns the path to the current component."""
-    return os.path.join('components', 'segmentation_platform')
+    return os.path.join(SRC_ROOT, 'components', 'segmentation_platform')
 
 
 def _GetHistogramsFilePath():
@@ -103,6 +106,15 @@ def GetActualHistogramsFileContent():
         return ""
     with open(file_path, 'r', encoding='utf-8') as f:
         return f.read()
+
+
+def GetActualHistogramNames():
+    """Returns the list of histogram names in the golden file."""
+    histograms_content = GetActualHistogramsFileContent()
+    segmentation_histograms = set(line.strip()
+                                  for line in histograms_content.splitlines())
+    segmentation_histograms.discard('')
+    return segmentation_histograms
 
 
 def GetExpectedHistogramsFileContent():
