@@ -49,6 +49,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
@@ -733,6 +735,25 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
       (update.ReadinessChanged() &&
        !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());
+  }
+
+  // Remove protocol links preferences that are no longer handled by this app
+  // (if any); we do this by comparing the negative delta between intents
+  // handled by `update.State()` and `update.Delta()`.
+  if (update.State() && update.Delta() && update.IntentFiltersChanged() &&
+      update.State()->intent_filters && update.Delta()->intent_filters) {
+    IntentFilters removed_protocol_link_filters;
+    for (const auto& filter : *update.State()->intent_filters) {
+      if (!apps_util::IsSupportedLinkForApp(update.AppId(), filter) &&
+          !Contains(*update.Delta()->intent_filters, filter)) {
+        removed_protocol_link_filters.push_back(filter->Clone());
+      }
+    }
+
+    if (!removed_protocol_link_filters.empty()) {
+      preferred_apps_impl_->RemoveProtocolLinkFilters(
+          update.AppId(), std::move(removed_protocol_link_filters));
+    }
   }
 }
 

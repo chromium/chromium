@@ -61,6 +61,8 @@ class PreferredAppsImpl {
 #if BUILDFLAG(IS_CHROMEOS)
   void SetProtocolLinkPreference(const std::string& app_id,
                                  IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFilters(const std::string& app_id,
+                                 IntentFilters protocol_link_filters);
 #endif
   void RemoveSupportedLinksPreference(const std::string& app_id);
 
@@ -95,6 +97,8 @@ class PreferredAppsImpl {
 #if BUILDFLAG(IS_CHROMEOS)
   void SetProtocolLinkPreferenceImpl(const std::string& app_id,
                                      IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFiltersImpl(const std::string& app_id,
+                                     IntentFilters protocol_link_filters);
 #endif
   void RemoveSupportedLinksPreferenceImpl(const std::string& app_id);
 

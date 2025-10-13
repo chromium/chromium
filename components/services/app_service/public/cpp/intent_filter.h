@@ -215,7 +215,7 @@ bool IsEqual(const IntentFilters& source, const IntentFilters& target);
 // * If both `source` and `target` are defined, normal comparison rules apply;
 // * If both `source` and `target` are undefined, they're equal;
 // * If only one of the two is undefined, then they're equal if and only if the
-// other one has a non-zero length.
+// other one has length of zero.
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const std::optional<IntentFilters>& source,
              const std::optional<IntentFilters>& target);

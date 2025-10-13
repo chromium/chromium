@@ -111,6 +111,15 @@ void PreferredAppsImpl::SetProtocolLinkPreference(
       &PreferredAppsImpl::SetProtocolLinkPreferenceImpl,
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(protocol_link_filter)));
 }
+
+void PreferredAppsImpl::RemoveProtocolLinkFilters(
+    const std::string& app_id,
+    IntentFilters protocol_link_filters) {
+  RunAfterPreferredAppsReady(
+      base::BindOnce(&PreferredAppsImpl::RemoveProtocolLinkFiltersImpl,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(protocol_link_filters)));
+}
 #endif
 
 void PreferredAppsImpl::RemoveSupportedLinksPreference(
@@ -294,6 +303,23 @@ void PreferredAppsImpl::SetProtocolLinkPreferenceImpl(
   CHECK(!apps_util::IsSupportedLinkForApp(app_id, protocol_link_filter));
   preferred_apps_list_.AddPreferredApp(app_id, protocol_link_filter);
   WriteToJSON(profile_dir_, preferred_apps_list_);
+
+  // We don't dispatch any events to observers as protocol links are not equal
+  // to supported links.
+}
+
+void PreferredAppsImpl::RemoveProtocolLinkFiltersImpl(
+    const std::string& app_id,
+    IntentFilters protocol_link_filters) {
+  bool needs_write = false;
+  for (const auto& filter : protocol_link_filters) {
+    CHECK(!apps_util::IsSupportedLinkForApp(app_id, filter));
+    needs_write |=
+        !preferred_apps_list_.DeletePreferredApp(app_id, filter).empty();
+  }
+  if (needs_write) {
+    WriteToJSON(profile_dir_, preferred_apps_list_);
+  }
 
   // We don't dispatch any events to observers as protocol links are not equal
   // to supported links.

@@ -577,18 +577,20 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetProtocolLinkPreference) {
 
   auto protocol_link_filter = CreateIntentFilterForProtocolScheme("web+meow");
 
-  std::vector<AppPtr> apps;
-  AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
-  app1->readiness = Readiness::kReady;
-  app1->intent_filters.emplace().push_back(protocol_link_filter->Clone());
-  apps.push_back(std::move(app1));
+  {
+    std::vector<AppPtr> apps;
+    AppPtr app1 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
+    app1->readiness = Readiness::kReady;
+    app1->intent_filters.emplace().push_back(protocol_link_filter->Clone());
+    apps.push_back(std::move(app1));
 
-  AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
-  app2->readiness = Readiness::kReady;
-  app2->intent_filters.emplace().push_back(protocol_link_filter->Clone());
-  apps.push_back(std::move(app2));
+    AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
+    app2->readiness = Readiness::kReady;
+    app2->intent_filters.emplace().push_back(protocol_link_filter->Clone());
+    apps.push_back(std::move(app2));
 
-  OnApps(std::move(apps), AppType::kWeb);
+    OnApps(std::move(apps), AppType::kWeb);
+  }
 
   proxy()->SetProtocolLinkPreference(kTestAppId1, "web+meow");
   ASSERT_EQ(kTestAppId1,
@@ -596,6 +598,21 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetProtocolLinkPreference) {
 
   proxy()->SetProtocolLinkPreference(kTestAppId2, "web+meow");
   ASSERT_EQ(kTestAppId2,
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
+
+  // Revoke app2's ability to handle protocol links.
+  {
+    std::vector<AppPtr> apps;
+
+    AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId2);
+    app2->readiness = Readiness::kReady;
+    app2->intent_filters.emplace();
+    apps.push_back(std::move(app2));
+
+    OnApps(std::move(apps), AppType::kWeb);
+  }
+
+  ASSERT_EQ(std::nullopt,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
 }
 
