@@ -255,13 +255,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
           "runMochaSuite('NewTabPageAppTest ActionChips')");
 }
 
-// TODO(crbug.com/448987783): Re-enable test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_WallpaperSearch DISABLED_WallpaperSearch
-#else
-#define MAYBE_WallpaperSearch WallpaperSearch
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_WallpaperSearch) {
+// TODO(crbug.com/428156129): Re-enable test
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, DISABLED_WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
 }
