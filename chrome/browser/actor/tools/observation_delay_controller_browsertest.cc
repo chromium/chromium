@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<void> result;
-  controller.Wait(result.GetCallback());
+  controller.Wait(*active_tab(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
   TestNavigationManager manager(web_contents(), url2);
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<void> result;
-  controller.Wait(result.GetCallback());
+  controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<void> result;
-  controller.Wait(result.GetCallback());
+  controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<void> result;
-  controller.Wait(result.GetCallback());
+  controller.Wait(*active_tab(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
 

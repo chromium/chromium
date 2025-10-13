@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,11 +53,20 @@ class ObservationDelayController : public content::WebContentsObserver {
       TaskId task_id,
       AggregatedJournal& journal,
       std::optional<PageStabilityConfig> page_stability_config);
+  // Constructor for when we're not watching for page stability and do not have
+  // a target RenderFrameHost available.
+  ObservationDelayController(TaskId task_id, AggregatedJournal& journal);
   ~ObservationDelayController() override;
 
   // Note: Callback will always be executed asynchronously. It may be run after
   // this object is deleted so must manage its own lifetime.
-  void Wait(ReadyCallback callback);
+  // Note: If a RenderFrame was provided in the constructor, `target_tab` should
+  // contain it.
+  //
+  // `target_tab`: The tab on which to wait. The WebContents of this tab will be
+  // observed by this controller, overwriting any previously observed
+  // WebContents.
+  void Wait(tabs::TabInterface& target_tab, ReadyCallback callback);
 
   // content::WebContentsObserver
   void DidStopLoading() override;

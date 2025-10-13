@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -107,6 +111,35 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
     // in the set.
     EXPECT_TRUE(actor_task().GetTabs().contains(active_tab()->GetHandle()));
   }
+}
+
+// This test ensures that the CreateTab action waits long enough after acting
+// for a screenshot to be successfully taken.
+IN_PROC_BROWSER_TEST_F(
+    ActorTabManagementToolBrowserTest,
+    TabManagementTool_CreateForegroundTabAndEnsureScreenshotIsTaken) {
+  const GURL start_tab_url =
+      embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
+
+  std::unique_ptr<ToolRequest> action =
+      MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
+  ActResultFuture act_result;
+  actor_task().Act(ToRequestList(action), act_result.GetCallback());
+  ExpectOkResult(act_result);
+
+  ActorKeyedService* actor_keyed_service =
+      ActorKeyedService::Get(browser()->profile());
+
+  TestFuture<ActorKeyedService::TabObservationResult> future;
+  actor_keyed_service->RequestTabObservation(
+      *tabs::TabInterface::GetFromContents(web_contents()), actor_task().id(),
+      future.GetCallback());
+
+  const ActorKeyedService::TabObservationResult& observation_result =
+      future.Get();
+  ASSERT_TRUE(observation_result.has_value());
+  ASSERT_TRUE(observation_result.value()->screenshot_result.has_value());
 }
 
 }  // namespace

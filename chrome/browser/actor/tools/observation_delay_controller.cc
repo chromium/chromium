@@ -22,6 +22,8 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/tabs/public/tab_handle_factory.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -84,10 +86,23 @@ ObservationDelayController::ObservationDelayController(
   }
 }
 
+ObservationDelayController::ObservationDelayController(
+    TaskId task_id,
+    AggregatedJournal& journal)
+    : journal_(journal), task_id_(task_id) {
+  journal.Log(
+      GURL::EmptyGURL(), task_id, mojom::JournalTrack::kActor,
+      "ObservationDelay: Created",
+      JournalDetailsBuilder().Add("May Use PageStability", false).Build());
+}
+
 ObservationDelayController::~ObservationDelayController() = default;
 
-void ObservationDelayController::Wait(ReadyCallback callback) {
+void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
+                                      ReadyCallback callback) {
   ready_callback_ = std::move(callback);
+
+  WebContentsObserver::Observe(target_tab.GetContents());
 
   wait_journal_entry_ = journal_->CreatePendingAsyncEntry(
       GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,

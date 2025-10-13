@@ -225,19 +225,20 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
-  if (observation_delayer_->web_contents()) {
+  if (tabs::TabInterface* target_tab =
+          active_state_->tool->GetTargetTab().Get()) {
     observation_delayer_->Wait(
+        *target_tab,
         base::BindOnce(&ToolController::PostInvokeTool,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
-    journal().Log(
-        active_state_->tool->JournalURL(), task_->id(),
-        mojom::JournalTrack::kActor, "ToolController DidFinishToolInvoke",
-        JournalDetailsBuilder()
-            .AddError("WebContents is gone when tool finishes successfully")
-            .Build());
+    journal().Log(active_state_->tool->JournalURL(), task_->id(),
+                  mojom::JournalTrack::kActor,
+                  "ToolController DidFinishToolInvoke",
+                  JournalDetailsBuilder()
+                      .AddError("Tab is gone when tool finishes successfully")
+                      .Build());
     PostInvokeTool(std::move(result));
-    return;
   }
 }
 

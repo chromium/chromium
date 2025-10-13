@@ -11,10 +11,12 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
@@ -104,14 +106,18 @@ std::unique_ptr<ObservationDelayController>
 TabManagementTool::GetObservationDelayer(
     std::optional<ObservationDelayController::PageStabilityConfig>
         page_stability_config) {
-  return nullptr;
+  if (action_ != kCreate) {
+    return nullptr;
+  }
+
+  return std::make_unique<ObservationDelayController>(task_id(), journal());
 }
 
 void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
                                               mojom::ActionResultPtr result,
                                               InvokeCallback callback) const {
-  if (action_ == kCreate && did_create_tab_handle_) {
-    task.AddTab(*did_create_tab_handle_, std::move(callback));
+  if (action_ == kCreate && target_tab_) {
+    task.AddTab(*target_tab_, std::move(callback));
   } else {
     std::move(callback).Run(std::move(result));
   }
@@ -125,10 +131,14 @@ void TabManagementTool::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  if (action_ != kCreate) {
+    return;
+  }
+
   if (change.type() == TabStripModelChange::kInserted) {
     if (callback_) {
       CHECK_GT(change.GetInsert()->contents.size(), 0ul);
-      did_create_tab_handle_ = change.GetInsert()->contents[0].tab->GetHandle();
+      target_tab_ = change.GetInsert()->contents[0].tab->GetHandle();
       PostResponseTask(std::move(callback_), MakeOkResult());
     }
   }

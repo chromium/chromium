@@ -66,10 +66,8 @@ class TabManagementTool : public Tool,
 
   InvokeCallback callback_;
 
-  // If a tab was created, this will store the handle.
-  std::optional<tabs::TabHandle> did_create_tab_handle_;
-
-  // Used for activate or close action.
+  // Used for activate or close action. For the create action, this will be
+  // updated to the newly created tab after `Invoke()` is called.
   std::optional<tabs::TabHandle> target_tab_;
 
   // If creating a tab, whether to create in the foreground.
