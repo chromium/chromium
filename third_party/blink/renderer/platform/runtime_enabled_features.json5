@@ -1104,11 +1104,6 @@
       status: "stable"
     },
     {
-      // See https://crbug.com/426067493 for details.
-      name: "ConsiderUpstreamPositionForFindingNextLine",
-      status: "stable",
-    },
-    {
       // See https://crbug.com/40679713 for details.
       name: "ConsiderUpstreamPositionForFindingPreviousLine",
       status: "stable",
