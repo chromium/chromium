@@ -97,6 +97,7 @@ export class WebClient implements GlicWebClient {
   onNotifyPanelWasClosed: () => void = () => {};
   panelOpenState = ObservableValue.withValue<boolean>(false);
   panelOpenStateKind = ObservableValue.withNoValue<PanelStateKind>();
+  panelOpenData = ObservableValue.withNoValue<PanelOpeningData>();
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
@@ -108,6 +109,7 @@ export class WebClient implements GlicWebClient {
     this.panelOpenState.assignAndSignal(true);
     this.panelOpenStateKind.assignAndSignal(
         checkDefined(panelOpeningData.panelState?.kind));
+    this.panelOpenData.assignAndSignal(panelOpeningData);
     this.firstOpened.resolve();
 
     const openPanelInfo: OpenPanelInfo = {

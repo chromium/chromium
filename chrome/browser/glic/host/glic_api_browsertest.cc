@@ -2306,6 +2306,29 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+                       testSwitchConversationToExistingInstance) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+  // Open glic. It will register a conversation.
+  ExecuteJsTest({.params = base::Value("first")});
+
+  // Open a second tab and second glic instance. It will switch conversations
+  // resulting in deleting the second glic instance.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  SetGlicInstanceTabIndex(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("second")});
+
+  // This should continue the test in the first instance, because tab 2 is now
+  // bound to that instance.
+  ContinueJsTest();
+}
+
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest() {

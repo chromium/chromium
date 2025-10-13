@@ -1948,6 +1948,24 @@ class ApiTests extends ApiTestFixtureBase {
     await additionalContextPromise;
   }
 
+  async testSwitchConversationToExistingInstance() {
+    assertDefined(this.host.registerConversation);
+    assertDefined(this.host.switchConversation);
+    if (this.testParams === 'first') {
+      await this.host.registerConversation(
+          {conversationTitle: 'Hello', conversationId: 'id_hello'});
+      await this.advanceToNextStep();
+    } else if (this.testParams === 'second') {
+      assertEquals(
+          undefined,
+          this.client.panelOpenData.getCurrentValue()?.conversationId);
+      await this.host.switchConversation(
+          {conversationTitle: 'Hello', conversationId: 'id_hello'});
+      // Note that switchConversation does resolve, even though this instance
+      // will be destroyed very soon.
+    }
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();
