@@ -682,12 +682,10 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
   if (success && !scroll_input_submitted_time_.is_null()) {
     base::TimeDelta time_to_scroll =
         base::TimeTicks::Now() - scroll_input_submitted_time_;
-    if (scroll_input_mode_ != mojom::WebClientMode::kUnknown) {
-      std::string_view mode_string = GetInputModeString(scroll_input_mode_);
-      base::UmaHistogramMediumTimes(
-          base::StrCat({"Glic.ScrollTo.UserPromptToScrollTime.", mode_string}),
-          time_to_scroll);
-    }
+    std::string_view mode_string = GetInputModeString(scroll_input_mode_);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Glic.ScrollTo.UserPromptToScrollTime.", mode_string}),
+        time_to_scroll);
   }
   scroll_input_submitted_time_ = base::TimeTicks();
   scroll_input_mode_ = mojom::WebClientMode::kUnknown;
