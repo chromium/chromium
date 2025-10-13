@@ -65,15 +65,18 @@ extern const char kCrashpadHistogramAllocatorName[];
 //
 //   startup
 //      │
-//      ├────────────┐
-//      │            ▼
-//      │         query GMS for consent
-//      ▼            │
-//   Initialize()    │
-//      │            ▼
-//      │         SetHaveMetricsConsent()
-//      │            │
-//      │ ┌──────────┘
+//      ├───────────────┐
+//      │               ▼
+//      │            query GMS for consent
+//      ▼               │
+//   Initialize()       │
+//      │               │
+//      ▼               │
+//   SetUpMetricsDir()  │
+//      │               ▼
+//      │            SetHaveMetricsConsent()
+//      │               │
+//      │ ┌─────────────┘
 //      ▼ ▼
 //   MaybeStartMetrics()
 //      │
@@ -85,11 +88,13 @@ extern const char kCrashpadHistogramAllocatorName[];
 // SetHaveMetricsConsent(). Querying GMS is slow, so SetHaveMetricsConsent()
 // typically happens after Initialize(), but it may happen before.
 //
+// Initialize() is called before Finch is set up, and SetUpMetricsDir() is
+// called afterward to allow it to check base::Feature flags.
+//
 // Each path sets a flag, |init_finished_| or |set_consent_finished_|, to show
-// that path has finished, and then calls MaybeStartMetrics(). When
-// MaybeStartMetrics() is called the first time, it sees only one flag is true,
-// and does nothing. When MaybeStartMetrics() is called the second time, it
-// decides whether to start metrics.
+// that path has finished, and |metrics_dir_| must also have been set. Each of
+// the steps ends by calling MaybeStartMetrics(), which does nothing unless all
+// three steps have happened.
 //
 // If consent was granted, MaybeStartMetrics() determines sampling by hashing
 // the client ID (generating a new ID if there was none). If this client is in
@@ -144,10 +149,6 @@ class AwMetricsServiceClient
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
-
-  // Whether or not consent state has been determined, regardless of whether
-  // it is positive or negative.
-  bool IsConsentDetermined() const;
 
   // EnabledStateProvider:
   bool IsConsentGiven() const override;
@@ -228,6 +229,14 @@ class AwMetricsServiceClient
   // Returns the installer type of the app. Virtual for testing.
   virtual InstallerPackageType GetInstallerPackageType();
 
+  // Path where files related to metrics are stored.
+  base::FilePath GetMetricsDir();
+
+  // Set up the path used to store metrics. Separate from `Initialize` to enable
+  // this to check feature flags, which aren't initialized yet when `Initialize`
+  // runs.
+  void SetUpMetricsDir();
+
   // WebViewAppStateObserver
   void OnAppStateChanged(WebViewAppStateObserver::State state) override;
 
@@ -255,6 +264,7 @@ class AwMetricsServiceClient
   virtual bool CanRecordPackageNameForAppType();
 
  private:
+  bool IsReadyToStart() const;
   void MaybeStartMetrics();
   void RegisterForNotifications();
 
@@ -302,6 +312,7 @@ class AwMetricsServiceClient
   bool app_in_foreground_ = false;
   base::Time time_created_;
   std::unique_ptr<Delegate> delegate_;
+  base::FilePath metrics_dir_;
 
   base::WeakPtrFactory<AwMetricsServiceClient> weak_ptr_factory_{this};
 };

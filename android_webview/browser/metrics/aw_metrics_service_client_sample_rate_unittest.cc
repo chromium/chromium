@@ -87,6 +87,7 @@ TEST_F(AwMetricsServiceClientSampleRateTest, TestShouldSampleByClientUUID) {
         std::make_unique<AwMetricsServiceClientSampleRateTestDelegate>());
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());
+    client->SetUpMetricsDir();
     client->SetUnfilteredSampleRatePerMille(test.sampling_rate_per_mille);
 
     EXPECT_EQ(client->ShouldApplyMetricsFiltering(), test.expected_filtering);

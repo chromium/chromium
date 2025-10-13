@@ -50,6 +50,7 @@ class AwComponentMetricsProviderDelegateTest : public testing::Test {
     AwMetricsServiceClient::RegisterMetricsPrefs(prefs_->registry());
 
     client_->Initialize(prefs_.get());
+    client_->SetUpMetricsDir();
   }
 
   AwMetricsServiceClient* GetClient() { return client_.get(); }

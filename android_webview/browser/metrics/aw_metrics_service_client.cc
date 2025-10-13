@@ -126,6 +126,7 @@ bool IsSamplesCounterEnabled() {
 // ChromeMetricsServiceClient.
 std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
+    base::FilePath metrics_dir,
     bool metrics_reporting_enabled) {
   using metrics::FileMetricsProvider;
 
@@ -136,11 +137,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
       std::make_unique<FileMetricsProvider>(pref_service,
                                             /*is_fre=*/false);
 
-  base::FilePath user_data_dir;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);
-
   FileMetricsProvider::Params browser_metrics_params(
-      user_data_dir.AppendASCII(kBrowserMetricsName),
+      metrics_dir.AppendASCII(kBrowserMetricsName),
       FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
       IsSamplesCounterEnabled()
           ? FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER
@@ -161,7 +159,7 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
   // 1. Data from the previous run if crashpad_handler didn't exit cleanly.
   // base::FilePath crashpad_metrics_file =
   //     base::GlobalHistogramAllocator::ConstructFilePath(
-  //         user_data_dir, kCrashpadHistogramAllocatorName);
+  //         metrics_dir, kCrashpadHistogramAllocatorName);
   // file_metrics_provider->RegisterSource(
   //     FileMetricsProvider::Params(
   //         crashpad_metrics_file,
@@ -174,7 +172,7 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
   // because they update the file itself.
   // base::FilePath crashpad_active_path =
   //     base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
-  //         user_data_dir, kCrashpadHistogramAllocatorName);
+  //         metrics_dir, kCrashpadHistogramAllocatorName);
   // file_metrics_provider->RegisterSource(
   //     FileMetricsProvider::Params(
   //         crashpad_active_path,
@@ -286,15 +284,18 @@ void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
   // Registration of providers has to wait until consent is determined. To
   // do otherwise means the providers would always be configured with reporting
   // disabled (because when this is called in production consent hasn't been
-  // determined). If consent has not been determined, this does nothing.
+  // determined).
+  // We also need the metrics directory to have been set up by calling
+  // SetUpMetricsDir().
+  // If consent has not been determined or the metrics directory not set, this
+  // does nothing.
   MaybeStartMetrics();
 }
 
-// TODO:(crbug.com/1148351) Make the initialization consistent with Chrome.
 void AwMetricsServiceClient::MaybeStartMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsConsentDetermined()) {
+  if (!IsReadyToStart()) {
     return;
   }
 
@@ -327,8 +328,9 @@ void AwMetricsServiceClient::MaybeStartMetrics() {
   } else {
     // Even though reporting is not enabled, CreateFileMetricsProvider() is
     // called. This ensures on disk state is removed.
-    metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
-        pref_service_, /* metrics_reporting_enabled */ false));
+    metrics_service_->RegisterMetricsProvider(
+        CreateFileMetricsProvider(pref_service_, metrics_dir_,
+                                  /* metrics_reporting_enabled */ false));
     pref_service_->ClearPref(metrics::prefs::kMetricsClientID);
     pref_service_->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
     pref_service_->ClearPref(metrics::prefs::kMetricsLogRecordId);
@@ -350,7 +352,8 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::FormFactorMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
-      pref_service_, metrics_state_manager_->IsMetricsReportingEnabled()));
+      pref_service_, metrics_dir_,
+      metrics_state_manager_->IsMetricsReportingEnabled()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CallStackProfileMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
@@ -394,8 +397,8 @@ void AwMetricsServiceClient::SetUploadIntervalForTesting(
   overridden_upload_interval_ = upload_interval;
 }
 
-bool AwMetricsServiceClient::IsConsentDetermined() const {
-  return init_finished_ && set_consent_finished_;
+bool AwMetricsServiceClient::IsReadyToStart() const {
+  return init_finished_ && set_consent_finished_ && !metrics_dir_.empty();
 }
 
 bool AwMetricsServiceClient::IsConsentGiven() const {
@@ -621,6 +624,19 @@ std::string AwMetricsServiceClient::GetAppPackageName() {
     return base::android::ConvertJavaStringToUTF8(env, j_app_name);
   }
   return std::string();
+}
+
+void AwMetricsServiceClient::SetUpMetricsDir() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir_)) {
+    NOTREACHED();
+  }
+
+  MaybeStartMetrics();
+}
+
+base::FilePath AwMetricsServiceClient::GetMetricsDir() {
+  return metrics_dir_;
 }
 
 void AwMetricsServiceClient::OnApplicationNotIdle() {

@@ -117,6 +117,7 @@ std::unique_ptr<TestingPrefServiceSimple> CreateTestPrefs() {
 std::unique_ptr<TestClient> CreateAndInitTestClient(PrefService* prefs) {
   auto client = std::make_unique<TestClient>();
   client->Initialize(prefs);
+  client->SetUpMetricsDir();
   return client;
 }
 
@@ -169,8 +170,7 @@ class AwMetricsServiceClientTest : public testing::Test {
 // MetricsService::OnAppEnterForeground().
 TEST_F(AwMetricsServiceClientTest, DoNotWatchForCrashesBeforeFieldTrialSetUp) {
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
-  client->Initialize(prefs.get());
+  auto client = CreateAndInitTestClient(prefs.get());
   EXPECT_TRUE(client->metrics_state_manager()
                   ->clean_exit_beacon()
                   ->GetUserDataDirForTesting()
@@ -186,6 +186,7 @@ TEST_F(AwMetricsServiceClientTest, TestSetConsentTrueBeforeInit) {
   auto client = std::make_unique<TestClient>();
   client->SetHaveMetricsConsent(true, true);
   client->Initialize(prefs.get());
+  client->SetUpMetricsDir();
   EXPECT_TRUE(client->IsRecordingActive());
   EXPECT_TRUE(prefs->HasPrefPath(metrics::prefs::kMetricsClientID));
   EXPECT_TRUE(
@@ -197,6 +198,7 @@ TEST_F(AwMetricsServiceClientTest, TestSetConsentFalseBeforeInit) {
   auto client = std::make_unique<TestClient>();
   client->SetHaveMetricsConsent(false, false);
   client->Initialize(prefs.get());
+  client->SetUpMetricsDir();
   EXPECT_FALSE(client->IsRecordingActive());
   EXPECT_FALSE(prefs->HasPrefPath(metrics::prefs::kMetricsClientID));
   EXPECT_FALSE(
@@ -283,13 +285,12 @@ TEST_F(AwMetricsServiceClientTest, TestCanForceEnableMetrics) {
   metrics::ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
+  auto client = CreateAndInitTestClient(prefs.get());
 
   // Flag should have higher precedence than sampling or user consent (but not
   // app consent, so we set that to 'true' for this case).
-  client->SetHaveMetricsConsent(false, /* app_consent */ true);
   client->SetInUnfilteredSample(false);
-  client->Initialize(prefs.get());
+  client->SetHaveMetricsConsent(false, /* app_consent */ true);
 
   EXPECT_TRUE(client->IsReportingEnabled());
   EXPECT_TRUE(client->IsRecordingActive());
@@ -300,13 +301,12 @@ TEST_F(AwMetricsServiceClientTest, TestCanForceEnableMetricsIfAlreadyEnabled) {
   metrics::ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
+  auto client = CreateAndInitTestClient(prefs.get());
 
   // This is a sanity check: flip consent and sampling to true, just to make
   // sure the flag continues to work.
-  client->SetHaveMetricsConsent(true, true);
   client->SetInUnfilteredSample(true);
-  client->Initialize(prefs.get());
+  client->SetHaveMetricsConsent(true, true);
 
   EXPECT_TRUE(client->IsReportingEnabled());
   EXPECT_TRUE(client->IsRecordingActive());
@@ -317,11 +317,10 @@ TEST_F(AwMetricsServiceClientTest, TestCannotForceEnableMetricsIfAppOptsOut) {
   metrics::ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
+  auto client = CreateAndInitTestClient(prefs.get());
 
   // Even with the flag, app consent should be respected.
   client->SetHaveMetricsConsent(true, /* app_consent */ false);
-  client->Initialize(prefs.get());
 
   EXPECT_FALSE(client->IsReportingEnabled());
   EXPECT_FALSE(client->IsRecordingActive());
@@ -339,13 +338,12 @@ TEST_F(AwMetricsServiceClientTest, TestBrowserMetricsDirClearedIfNoConsent) {
   ASSERT_TRUE(base::PathExists(upload_dir));
 
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
+  auto client = CreateAndInitTestClient(prefs.get());
 
   // No consent should delete data regardless of sampling.
+  client->SetInUnfilteredSample(true);
   client->SetHaveMetricsConsent(/* user_consent= */ false,
                                 /* app_consent= */ false);
-  client->SetInUnfilteredSample(true);
-  client->Initialize(prefs.get());
   task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(upload_dir));
@@ -364,13 +362,12 @@ TEST_F(AwMetricsServiceClientTest,
   ASSERT_TRUE(base::PathExists(upload_dir));
 
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
+  auto client = CreateAndInitTestClient(prefs.get());
 
   // We should still set up the data even if the client is filtered.
+  client->SetInUnfilteredSample(false);
   client->SetHaveMetricsConsent(/* user_consent= */ true,
                                 /* app_consent= */ true);
-  client->SetInUnfilteredSample(false);
-  client->Initialize(prefs.get());
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(base::PathExists(upload_dir));
@@ -379,16 +376,14 @@ TEST_F(AwMetricsServiceClientTest,
 TEST_F(AwMetricsServiceClientTest,
        MetricsServiceCreatedFromInitializeWithNoConsent) {
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
-  client->Initialize(prefs.get());
+  auto client = CreateAndInitTestClient(prefs.get());
   EXPECT_FALSE(client->IsReportingEnabled());
   EXPECT_TRUE(client->GetMetricsService());
 }
 
 TEST_F(AwMetricsServiceClientTest, GetMetricsServiceIfStarted) {
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
-  client->Initialize(prefs.get());
+  auto client = CreateAndInitTestClient(prefs.get());
   EXPECT_EQ(nullptr, client->GetMetricsServiceIfStarted());
   client->SetHaveMetricsConsent(/* user_consent= */ true,
                                 /* app_consent= */ true);
@@ -413,6 +408,7 @@ TEST_F(AwMetricsServiceClientTest, ShouldComputeCorrectSampleBucketValues) {
     auto client = std::make_unique<SampleBucketValueTestClient>();
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());
+    client->SetUpMetricsDir();
 
     EXPECT_EQ(client->GetSampleBucketValue(),
               test.expected_sample_bucket_value);
@@ -422,12 +418,12 @@ TEST_F(AwMetricsServiceClientTest, ShouldComputeCorrectSampleBucketValues) {
 TEST_F(AwMetricsServiceClientTest,
        TestShouldApplyMetricsFilteringFeatureOn_AllMetrics) {
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
-  // Both metrics consent and app consent true;
-  client->SetHaveMetricsConsent(true, true);
+  auto client = CreateAndInitTestClient(prefs.get());
+
   client->SetUnfilteredSampleRatePerMille(20);
   client->SetSampleBucketValue(19);
-  client->Initialize(prefs.get());
+  // Both metrics consent and app consent true;
+  client->SetHaveMetricsConsent(true, true);
 
   EXPECT_TRUE(client->IsReportingEnabled());
   EXPECT_TRUE(client->IsRecordingActive());
@@ -437,13 +433,12 @@ TEST_F(AwMetricsServiceClientTest,
 TEST_F(AwMetricsServiceClientTest,
        TestShouldApplyMetricsFilteringFeatureOn_OnlyCriticalMetrics) {
   auto prefs = CreateTestPrefs();
-  auto client = std::make_unique<TestClient>();
-  // Both metrics consent and app consent true;
-  client->SetHaveMetricsConsent(true, true);
+  auto client = CreateAndInitTestClient(prefs.get());
+
   client->SetUnfilteredSampleRatePerMille(20);
   client->SetSampleBucketValue(20);
-
-  client->Initialize(prefs.get());
+  // Both metrics consent and app consent true;
+  client->SetHaveMetricsConsent(true, true);
 
   EXPECT_TRUE(client->IsReportingEnabled());
   EXPECT_TRUE(client->IsRecordingActive());

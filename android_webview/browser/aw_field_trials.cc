@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_field_trials.h"
 
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/allocator/partition_alloc_features.h"
@@ -37,12 +38,11 @@
 
 void AwFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
-  base::FilePath metrics_dir;
-  if (base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir)) {
-    InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
-  } else {
-    NOTREACHED();
-  }
+  android_webview::AwMetricsServiceClient* metrics_service_client =
+      android_webview::AwMetricsServiceClient::GetInstance();
+  metrics_service_client->SetUpMetricsDir();
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(
+      metrics_service_client->GetMetricsDir());
 }
 
 // TODO(crbug.com/40271903): Consider to migrate all WebView feature overrides
