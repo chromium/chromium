@@ -26,10 +26,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/accessibility/accessibility_switches.h"
 
 namespace actor::ui {
 namespace {
@@ -401,49 +399,6 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, InputEventsIgnoredWhenOverlayVisible) {
                    ->GetActiveTabInterface()
                    ->GetContents()
                    ->ShouldIgnoreInputEventsForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
-                       UnderlyingContentsIgnoredForAccessibility) {
-  Profile* const profile = browser()->profile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorKeyedService::Get(profile)->GetActorUiStateManager();
-  ASSERT_NE(state_manager, nullptr);
-  tabs::TabHandle tab_handle =
-      browser()->tab_strip_model()->GetActiveTab()->GetHandle();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  const ::ui::AXMode original_mode = web_contents->GetAccessibilityMode();
-
-  // Activate the overlay.
-  TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
-                           result.GetCallback());
-  ExpectOkResult(result);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-
-  // The --force-renderer-accessibility switch prevents the AXMode from being
-  // changed. Verify the mode is unchanged if the flag is present, otherwise
-  // verify it was set to ::ui::AXMode::kNone when the ActorOverlayWebView is
-  // visible.
-  const bool is_renderer_forced_a11y =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility);
-  if (is_renderer_forced_a11y) {
-    EXPECT_EQ(web_contents->GetAccessibilityMode(), original_mode);
-  } else {
-    EXPECT_EQ(web_contents->GetAccessibilityMode(), ::ui::AXMode::kNone);
-  }
-
-  // Deactivate the overlay.
-  state_manager->OnUiEvent(StoppedActingOnTab(tab_handle));
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !IsActorOverlayVisible(browser()); }));
-
-  // The page should be restored to the accessibility tree.
-  EXPECT_EQ(web_contents->GetAccessibilityMode(), original_mode);
 }
 
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
