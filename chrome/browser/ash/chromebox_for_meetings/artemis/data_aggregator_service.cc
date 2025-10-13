@@ -51,12 +51,20 @@ constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
     true,           // Use initial delay.
 };
 
+/*
+ * IMPORTANT: When adding new commands to the below lists, please take care
+ * to choose commands with a relatively small amount of output. The rule of
+ * thumb is to avoid commands that output more than (kPayloadMaxSizeBytes / 2)
+ * bytes of data. We don't want to overwhelm missived with large payloads.
+ *
+ * To check size output, pipe the command to `wc`. The byte count will be the
+ * last number.
+ */
+
 // List of commands that should be polled frequently. Any commands
 // being watched by watchdogs should be here.
 constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
 const char* kLocalCommandSourcesFastPoll[] = {
-    "ip -brief address",
-    "lspci",
     "lsusb -t",
 };
 
@@ -69,8 +77,6 @@ constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(5);
 const char* kLocalCommandSourcesSlowPoll[] = {
     "df -h",
     "free -m",
-    "aplay -l",
-    "audio_diagnostics",
     "nsenter --net=/run/netns/ip_periph ifconfig",
     // Hide kernelspace processes and show limited columns.
     "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
