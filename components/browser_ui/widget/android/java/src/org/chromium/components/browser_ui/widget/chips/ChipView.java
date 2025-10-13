@@ -201,7 +201,7 @@ public class ChipView extends LinearLayout {
 
         mStartIcon = new ChromeImageView(getContext());
         mStartIcon.setId(R.id.chip_view_start_icon);
-        mStartIcon.setLayoutParams(new LayoutParams(iconWidth, iconHeight));
+        mStartIcon.setLayoutParams(new LinearLayout.LayoutParams(iconWidth, iconHeight));
         addView(mStartIcon);
 
         if (mUseRoundedStartIcon) {
@@ -223,7 +223,7 @@ public class ChipView extends LinearLayout {
                 loadingViewHeightPadding,
                 loadingViewWidthPadding,
                 loadingViewHeightPadding);
-        addView(mLoadingView, new LayoutParams(iconWidth, iconHeight));
+        addView(mLoadingView, new LinearLayout.LayoutParams(iconWidth, iconHeight));
 
         // Setting this enforces 16dp padding at the end and 8dp at the start (unless overridden).
         // For text, the start padding needs to be 16dp which is why a ChipTextView contributes the
@@ -236,6 +236,12 @@ public class ChipView extends LinearLayout {
         mPrimaryText.setTextAppearance(primaryTextAppearance);
         // Reduce font padding if the text is aligned vertically.
         mPrimaryText.setIncludeFontPadding(!alignTextVertically);
+        // Default layout parameters used for vertically oriented linear layout are (MATCH_PARENT,
+        // WRAP_CONTENT). Chip view isn't measured correctly with these layout parameters. For more
+        // information, see crbug.com/450830784.
+        mPrimaryText.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         // If false fall back to single line defined in XML styles.
         if (allowMultipleLines) {
@@ -410,7 +416,7 @@ public class ChipView extends LinearLayout {
         mEndIconWrapper.addView(endIcon, layoutParams);
         addView(
                 mEndIconWrapper,
-                new LayoutParams(
+                new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         // Remove the end padding from the chip to make X icon touch target extend till the end of
@@ -458,6 +464,12 @@ public class ChipView extends LinearLayout {
                             new ContextThemeWrapper(getContext(), R.style.ChipTextView));
             mSecondaryText.setId(R.id.chip_view_secondary_text);
             mSecondaryText.setTextAppearance(mSecondaryTextAppearanceId);
+            // Default layout parameters used for vertically oriented linear layout are
+            // (MATCH_PARENT, WRAP_CONTENT). Chip view isn't measured correctly with these layout
+            // parameters. For more information, see crbug.com/450830784.
+            mSecondaryText.setLayoutParams(
+                    new LinearLayout.LayoutParams(
+                            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             // Reduce font padding if the text is aligned vertically.
             mSecondaryText.setIncludeFontPadding(isSingleLineChip());
             // Ensure that basic state changes are aligned with the ChipView. They update
@@ -609,7 +621,8 @@ public class ChipView extends LinearLayout {
         textViewsWrapper.setId(R.id.chip_view_text_wrapper);
         textViewsWrapper.setOrientation(LinearLayout.VERTICAL);
         textViewsWrapper.setLayoutParams(
-                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                new LinearLayout.LayoutParams(
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         return textViewsWrapper;
     }
 

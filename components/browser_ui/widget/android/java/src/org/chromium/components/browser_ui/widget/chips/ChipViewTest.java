@@ -14,6 +14,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -96,6 +97,16 @@ public final class ChipViewTest {
         assertNotNull(textWrapper);
         assertEquals(LinearLayout.VERTICAL, textWrapper.getOrientation());
         assertEquals(2, textWrapper.getChildCount());
+
+        // Default layout parameters used for vertically oriented linear layout are (MATCH_PARENT,
+        // WRAP_CONTENT). Chip view isn't measured correctly with these layout parameters. For more
+        // information, see crbug.com/450830784.
+        assertEquals(
+                LayoutParams.WRAP_CONTENT,
+                twoLineChip.getPrimaryTextView().getLayoutParams().width);
+        assertEquals(
+                LayoutParams.WRAP_CONTENT,
+                twoLineChip.getSecondaryTextView().getLayoutParams().width);
     }
 
     @Test
