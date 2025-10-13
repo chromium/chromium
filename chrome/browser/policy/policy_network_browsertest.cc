@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
 
 IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowKexAlgorithmsPolicy) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_MLKEM1024};
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should fail to load a page from the test server because, by default, we
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowKexAlgorithmsPolicy) {
 IN_PROC_BROWSER_TEST_F(SSLPolicyTest,
                        PostQuantumDisabledOverridesPreferSlowKexAlgorithms) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_MLKEM1024};
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   PolicyMap policies;
