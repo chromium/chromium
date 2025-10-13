@@ -466,6 +466,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     if (side_data_id == 1) {
       buffer->WritableSideData().alpha_data =
           base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+    } else if (side_data_id == 4) {
+      buffer->WritableSideData().itu_t35_data =
+          base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
     }
   }
 

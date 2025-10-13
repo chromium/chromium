@@ -21,6 +21,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -29,7 +30,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_frame_buffer.h"
-
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -330,6 +330,25 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   if (!vpx_image) {
     *video_frame = nullptr;
     return true;
+  }
+
+  static constexpr size_t kItut35HeaderSize = 7;
+  if (buffer->side_data() &&
+      buffer->side_data()->itu_t35_data.size() >= kItut35HeaderSize) {
+    auto side_data = buffer->side_data()->itu_t35_data.as_span();
+    static constexpr uint8_t kItut35CountryCodeExtensionMarker = 0xFF;
+    if (side_data.data()[0] == kItut35CountryCodeExtensionMarker) {
+      side_data = side_data.subspan(1u);
+    }
+    auto [country_code, payload] = side_data.split_at<1u>();
+    const std::optional<gfx::HdrMetadataAgtm> agtm =
+        GetHdrMetadataAgtmFromItutT35(country_code.data()[0], payload);
+    if (agtm.has_value()) {
+      gfx::HDRMetadata hdr_metadata =
+          config_.hdr_metadata().value_or(gfx::HDRMetadata());
+      hdr_metadata.agtm = agtm;
+      config_.set_hdr_metadata(hdr_metadata);
+    }
   }
 
   const vpx_image_t* vpx_image_alpha = nullptr;

@@ -524,6 +524,8 @@
 //media/test/data/vp8-I-frame-640x240
 //media/test/data/vp8-P-frame-320x240
 //media/test/data/vp8-corrupt-I-frame
+//media/test/data/vp9-agtm.webm
+//media/test/data/vp9-agtm-country-code-extension.webm
 //media/test/data/vp9-I-frame-1280x720
 //media/test/data/vp9-I-frame-320x240
 //media/test/data/vp9-duplicate-frame.webm

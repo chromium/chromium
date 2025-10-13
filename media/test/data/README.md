@@ -868,15 +868,6 @@ Same as av1-I-frame-320x240 but using bear-1280x720.webm as input.
 #### av1-monochrome-I-frame-320x240-[8,10,12]bpp
 Same as av1-I-frame-320x240 with --monochrome and -b=[8,10,12] aomenc options.
 
-#### av1-I-frame-320x240-agtm
-Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
-
-#### av1-I-frame-320x240-agtm.ivf
-Created by converting av1-I-frame-320x240-agtm (raw OBU) to IVF:
-```
-ffmpeg -i av1-I-frame-320x240-agtm -c:v copy av1-I-frame-320x240-agtm.ivf
-```
-
 #### bear-av1-cenc.mp4
 Encrypted version of bear-av1.mp4. Encrypted by [Shaka Packager] built locally
 at commit 53aa775ea488c0ffd3a2e1cb78ad000154e414e1 using key ID [1] and key [2].
@@ -930,6 +921,24 @@ It was generated from concatenating the output of:
 shaka/packager/tools/pssh/pssh-box.py --widevine-system-id --key-id 30313233343536373839303132333435 --hex
 shaka/packager/tools/pssh/pssh-box.py --common-system-id --key-id 30313233343536373839303132333435 --hex
 ```
+
+### AGTM
+
+#### av1-I-frame-320x240-agtm
+Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
+
+#### av1-I-frame-320x240-agtm.ivf
+Created by converting av1-I-frame-320x240-agtm (raw OBU) to IVF:
+```
+ffmpeg -i av1-I-frame-320x240-agtm -c:v copy av1-I-frame-320x240-agtm.ivf
+```
+
+#### vp9-agtm.webm
+VP9 video with a single frame that contains agtm metadata.
+
+#### vp9-agtm-country-code-extension.webm
+Same as vp9-agtm.webm but the ITU_T35 message contains a country code extension
+byte.
 
 ### HLS
 

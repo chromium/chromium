@@ -29,6 +29,7 @@ DecoderBufferSideData::DecoderBufferSideData(DecoderBufferSideData&& other) =
 bool DecoderBufferSideData::Matches(const DecoderBufferSideData& other) const {
   return spatial_layers == other.spatial_layers &&
          alpha_data.as_span() == other.alpha_data.as_span() &&
+         itu_t35_data.as_span() == other.itu_t35_data.as_span() &&
          secure_handle == other.secure_handle &&
          discard_padding == other.discard_padding &&
          next_config == other.next_config;
@@ -39,6 +40,9 @@ std::unique_ptr<DecoderBufferSideData> DecoderBufferSideData::Clone() const {
   result->spatial_layers = spatial_layers;
   if (!alpha_data.empty()) {
     result->alpha_data = base::HeapArray<uint8_t>::CopiedFrom(alpha_data);
+  }
+  if (!itu_t35_data.empty()) {
+    result->itu_t35_data = base::HeapArray<uint8_t>::CopiedFrom(itu_t35_data);
   }
   result->secure_handle = secure_handle;
   result->discard_padding = discard_padding;

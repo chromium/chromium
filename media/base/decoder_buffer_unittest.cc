@@ -264,15 +264,20 @@ TEST(DecoderBufferTest, SideData) {
   constexpr uint64_t kSecureHandle = 42;
   const std::vector<uint32_t> kSpatialLayers = {1, 2, 3};
   const std::vector<uint8_t> kAlphaData = {9, 8, 7};
+  const std::vector<uint8_t> kItuT35Data = {5, 6, 7};
 
   buffer->WritableSideData().secure_handle = kSecureHandle;
   buffer->WritableSideData().spatial_layers = kSpatialLayers;
   buffer->WritableSideData().alpha_data =
       base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
+  buffer->WritableSideData().itu_t35_data =
+      base::HeapArray<uint8_t>::CopiedFrom(kItuT35Data);
   EXPECT_TRUE(buffer->side_data());
   EXPECT_EQ(buffer->side_data()->secure_handle, kSecureHandle);
   EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
   EXPECT_EQ(buffer->side_data()->alpha_data.as_span(), base::span(kAlphaData));
+  EXPECT_EQ(buffer->side_data()->itu_t35_data.as_span(),
+            base::span(kItuT35Data));
 
   auto cloned_side_data = buffer->side_data()->Clone();
 
@@ -282,6 +287,8 @@ TEST(DecoderBufferTest, SideData) {
             cloned_side_data->spatial_layers);
   EXPECT_EQ(buffer->side_data()->alpha_data.as_span(),
             cloned_side_data->alpha_data.as_span());
+  EXPECT_EQ(buffer->side_data()->itu_t35_data.as_span(),
+            cloned_side_data->itu_t35_data.as_span());
 
   buffer->set_side_data(nullptr);
   EXPECT_FALSE(buffer->side_data());
