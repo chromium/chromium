@@ -62,9 +62,7 @@ constexpr char kSpeechDurationMetric[] =
     "Accessibility.CrosSelectToSpeak.SpeechDuration";
 }  // namespace
 
-class SelectToSpeakTest
-    : public AccessibilityFeatureBrowserTest,
-      public ::testing::WithParamInterface<ManifestVersion> {
+class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
  public:
   SelectToSpeakTest(const SelectToSpeakTest&) = delete;
   SelectToSpeakTest& operator=(const SelectToSpeakTest&) = delete;
@@ -107,16 +105,8 @@ class SelectToSpeakTest
   ~SelectToSpeakTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam() == ManifestVersion::kTwo) {
-      disabled_features.push_back(
-          ::features::kAccessibilityManifestV3SelectToSpeak);
-    } else if (GetParam() == ManifestVersion::kThree) {
-      enabled_features.push_back(
-          ::features::kAccessibilityManifestV3SelectToSpeak);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3SelectToSpeak, true}});
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -276,23 +266,7 @@ class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(ManifestV2,
-                         SelectToSpeakTest,
-                         ::testing::Values(ManifestVersion::kTwo));
-
-INSTANTIATE_TEST_SUITE_P(ManifestV3,
-                         SelectToSpeakTest,
-                         ::testing::Values(ManifestVersion::kThree));
-
-INSTANTIATE_TEST_SUITE_P(ManifestV2,
-                         SelectToSpeakTestWithVoiceSwitching,
-                         ::testing::Values(ManifestVersion::kTwo));
-
-INSTANTIATE_TEST_SUITE_P(ManifestV3,
-                         SelectToSpeakTestWithVoiceSwitching,
-                         ::testing::Values(ManifestVersion::kThree));
-
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SpeakStatusTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
   sts_test_utils::TurnOnSelectToSpeakForTest(
       AccessibilityManager::Get()->profile());
   gfx::Rect tray_bounds = Shell::Get()
@@ -312,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SpeakStatusTray) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   LoadURLAndSelectToSpeak(
       "data:text/html;charset=utf-8,<p>This is some text</p>");
 
@@ -336,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ActivatesWithTapOnSelectToSpeakTray) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, WorksWithTouchSelection) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithTouchSelection) {
   LoadURLAndSelectToSpeak(
       "data:text/html;charset=utf-8,<p>This is some text</p>");
 
@@ -360,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, WorksWithTouchSelection) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        WorksWithTouchSelectionOnNonPrimaryMonitor) {
   // Don't observe error messages.
   // An error message is observed consistently on MSAN, see crbug.com/1201212,
@@ -410,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
   sts_test_utils::TurnOnSelectToSpeakForTest(
       AccessibilityManager::Get()->profile());
 
@@ -432,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossInlineUrl) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossInlineUrl) {
   // Make sure an inline URL is read smoothly.
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<p>This is some text <a href=\"\">with a"
@@ -444,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossInlineUrl) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SetsWordHighlights) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SetsWordHighlights) {
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   EXPECT_FALSE(controller->highlight_layer_for_testing());
@@ -466,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SetsWordHighlights) {
   EXPECT_EQ(SkColorSetRGB(94, 155, 255), highlight_layer->color_for_test());
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossMultipleLines) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossMultipleLines) {
   // Sentences spanning multiple lines.
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div style=\"width:100px\">This"
@@ -480,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossMultipleLines) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossFormattedText) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossFormattedText) {
   // Bold or formatted text
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<p>This is some text <b>with a node"
@@ -493,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, SmoothlyReadsAcrossFormattedText) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        ReadsStaticTextWithoutInlineTextChildren) {
   // Bold or formatted text
   ActivateSelectToSpeakInWindowBounds(
@@ -503,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, BreaksAtParagraphBounds) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, BreaksAtParagraphBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div><p>First paragraph</p>"
       "<p>Second paragraph</p></div>");
@@ -514,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, BreaksAtParagraphBounds) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, LanguageBoundsIgnoredByDefault) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, LanguageBoundsIgnoredByDefault) {
   // Splitting at language bounds is behind a feature flag, test the default
   // behaviour doesn't introduce a regression.
   ActivateSelectToSpeakInWindowBounds(
@@ -526,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, LanguageBoundsIgnoredByDefault) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTestWithVoiceSwitching,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithVoiceSwitching,
                        BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
@@ -542,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTestWithVoiceSwitching,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, DoesNotCrashWithMousewheelEvent) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DoesNotCrashWithMousewheelEvent) {
   std::string url = "data:text/html;charset=utf-8,<p>This is some text</p>";
   LoadURLAndSelectToSpeak(url);
   gfx::Rect bounds = GetWebContentsBounds(url);
@@ -563,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, DoesNotCrashWithMousewheelEvent) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, FocusRingMovesWithMouse) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   std::string url =
       "data:text/html;charset=utf-8,"
       "<p>This is some text</p>";
@@ -640,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, FocusRingMovesWithMouse) {
   EXPECT_EQ(focus_rings.size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        SelectToSpeakSelectionPansFullscreenMagnifier) {
   FullscreenMagnifierController* fullscreen_magnifier_controller =
       Shell::Get()->fullscreen_magnifier_controller();
@@ -686,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
   EXPECT_GT(final_window_position.y(), initial_window_position.y());
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        FullscreenMagnifierFollowsTextBoundsWhenPrefOn) {
   sm_.send_word_events_and_wait_to_finish(true);
   Profile* profile = AccessibilityManager::Get()->profile();
@@ -716,8 +690,6 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
                                  8.0);
 
   // Wait for Fullscreen magnifier to initialize.
-  extensions::ExtensionHostTestHelper host_helper(
-      profile, extension_misc::kAccessibilityCommonExtensionId);
   extensions::ExtensionRegistryTestHelper observer(
       extension_misc::kAccessibilityCommonExtensionId, profile);
   profile->GetPrefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled,
@@ -728,11 +700,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
   MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
   waiter.Wait();
 
-  if (observer.WaitForManifestVersion() == 3) {
-    observer.WaitForServiceWorkerStart();
-  } else {
-    host_helper.WaitForHostCompletedFirstLoad();
-  }
+  observer.WaitForServiceWorkerStart();
   FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(profile);
 
   gfx::Rect initial_viewport =
@@ -818,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
 // TODO(b/259363112): Add a test that Select to Speak follows focus for nodes
 // with no inline text boxes.
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ContinuesReadingDuringResize) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ContinuesReadingDuringResize) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<p>First paragraph</p>"
       "<div id='resize' style='width:300px; font-size: 1em'>"
@@ -837,7 +805,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ContinuesReadingDuringResize) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, WorksWithStickyKeys) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithStickyKeys) {
   AccessibilityManager::Get()->EnableStickyKeys(true);
 
   std::string url = "data:text/html;charset=utf-8,<p>This is some text</p>";
@@ -864,7 +832,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, WorksWithStickyKeys) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        SelectToSpeakDoesNotDismissTrayBubble) {
   sts_test_utils::TurnOnSelectToSpeakForTest(
       AccessibilityManager::Get()->profile());
@@ -886,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
 }
 
 // TODO(anastasi): Test that metrics record duration here.
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
   std::string text = "This is some selected text";
   LoadURLAndSelectToSpeak(base::StringPrintf(
       "data:text/html;charset=utf-8,<p>Not me!</p><p>%s</p><p>Nor me!</p>",
@@ -906,7 +874,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest, ReadsSelectedTextWithSearchS) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        ReadsSelectedTextFromContextMenuClick) {
   std::string text = "This is some selected text";
   LoadURLAndSelectToSpeak(base::StringPrintf(
@@ -942,7 +910,7 @@ IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SelectToSpeakTest,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
                        ReadsSelectedTextWithContextMenuNotification) {
   std::string text = "Pick me! Read me!";
   LoadURLAndSelectToSpeak(base::StringPrintf(
