@@ -147,6 +147,23 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageModuleTabGroupsOrange] = {
       kColorTabGroupBookmarkBarOrange};
 
+  mixer[kColorNewTabPageModuleTabGroupsDotGrey] = {
+      kColorTabGroupTabStripFrameActiveGrey};
+  mixer[kColorNewTabPageModuleTabGroupsDotBlue] = {
+      kColorTabGroupTabStripFrameActiveBlue};
+  mixer[kColorNewTabPageModuleTabGroupsDotRed] = {
+      kColorTabGroupTabStripFrameActiveRed};
+  mixer[kColorNewTabPageModuleTabGroupsDotYellow] = {
+      kColorTabGroupTabStripFrameActiveYellow};
+  mixer[kColorNewTabPageModuleTabGroupsDotGreen] = {
+      kColorTabGroupTabStripFrameActiveGreen};
+  mixer[kColorNewTabPageModuleTabGroupsDotPink] = {
+      kColorTabGroupTabStripFrameActivePink};
+  mixer[kColorNewTabPageModuleTabGroupsDotPurple] = {
+      kColorTabGroupTabStripFrameActivePurple};
+  mixer[kColorNewTabPageModuleTabGroupsDotOrange] = {
+      kColorTabGroupTabStripFrameActiveOrange};
+
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};

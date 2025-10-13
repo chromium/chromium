@@ -185,7 +185,20 @@ cr-icon {
   min-width: 0;
 }
 
-.tab-group-title,
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tab-group-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-group-title-row,
 .tab-group-description {
   overflow: hidden;
   position: relative;
