@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/account_pref_utils.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -241,7 +242,7 @@ bool HasMachineLevelPolicies() {
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
     signin_metrics::AccessPoint access_point,
-    NSString* gaia_id,
+    const GaiaId& gaia_id,
     PrefService* prefs) {
   if ([hosted_domain length] == 0) {
     // No hosted domain, don't show the dialog as there is no host.

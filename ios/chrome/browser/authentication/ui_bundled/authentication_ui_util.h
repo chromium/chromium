@@ -16,6 +16,7 @@
 @class AlertCoordinator;
 class AuthenticationService;
 class Browser;
+class GaiaId;
 class PrefService;
 class ProfileIOS;
 
@@ -108,7 +109,7 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
 BOOL ShouldShowManagedConfirmationForHostedDomain(
     NSString* hosted_domain,
     signin_metrics::AccessPoint access_point,
-    NSString* gaia_ID,
+    const GaiaId& gaia_ID,
     PrefService* prefs);
 
 // Returns the current sign-in&sync state.

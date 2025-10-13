@@ -119,7 +119,7 @@ enum class IOSIdentityAvailableInProfile : int {
 // * there is already a profile that has been fully initialized for gaia_id, or
 // * a policy forces the browsing data to stay separated.
 bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
-                                     NSString* gaia_id,
+                                     GaiaId gaia_id,
                                      PrefService* pref_service) {
   bool always_separate_browsing_data_per_policy =
       pref_service->GetInteger(
@@ -136,7 +136,7 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
 // disabled by policy and not because of another reason.
 bool IsBrowsingDataMigrationDisabledByPolicy(
     signin_metrics::AccessPoint access_point,
-    NSString* gaia_id,
+    GaiaId gaia_id,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     policy::ProfileSeparationDataMigrationSettings
@@ -157,15 +157,15 @@ bool IsBrowsingDataMigrationDisabledByPolicy(
 // Returns if `identity` is available by AccountProfileMapper and if it is
 // available by IdentityManager.
 IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
-    NSString* gaia_id,
+    GaiaId gaia_id,
     signin::IdentityManager* identity_manager,
     std::string_view profile_name) {
   bool is_identity_available_in_profile_mapper = false;
   AccountProfileMapper::IdentityIteratorCallback callback = base::BindRepeating(
-      [](BOOL* isIdentityAvailableInProfileMapper,
-         NSString* signinIdentityGaiaID, id<SystemIdentity> identity) {
+      [](BOOL* isIdentityAvailableInProfileMapper, GaiaId signinIdentityGaiaID,
+         id<SystemIdentity> identity) {
         *isIdentityAvailableInProfileMapper =
-            [identity.gaiaID isEqualToString:signinIdentityGaiaID];
+            identity.gaiaId == signinIdentityGaiaID;
         return *isIdentityAvailableInProfileMapper
                    ? AccountProfileMapper::IteratorResult::kInterruptIteration
                    : AccountProfileMapper::IteratorResult::kContinueIteration;
@@ -196,7 +196,7 @@ IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
 
 // Records `Signin.IOSIdentityAvailableInProfile` histogram.
 void RecordIOSIdentityAvailableInProfile(
-    NSString* gaia_id,
+    GaiaId gaia_id,
     signin::IdentityManager* identity_manager,
     std::string_view profile_name) {
   IOSIdentityAvailableInProfile identity_available =
@@ -586,7 +586,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // Fetches ManagedAccountsSigninRestriction policy, if needed.
 - (void)fetchProfileSeparationPoliciesIfNeededStep {
   if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaID,
+          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaId,
           [self prefs])) {
     // The managed confirmation dialog can be skipped, therefore, there is no
     // need to fetch the policy.
@@ -594,7 +594,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
   if (!AreSeparateProfilesForManagedAccountsEnabled() ||
-      ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
+      ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaId,
                                       [self prefs])) {
     // The profile-separation policy affects whether browsing-data-migration
     // is offered, so it's only needed if the migration isn't skipped.
@@ -610,7 +610,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // Shows a confirmation dialog for signing in to an account managed.
 - (void)showManagedConfirmationIfNeededStep {
   if (!ShouldShowManagedConfirmationForHostedDomain(
-          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaID,
+          _identityToSignInHostedDomain, _accessPoint, _identityToSignIn.gaiaId,
           [self prefs])) {
     [self continueFlow];
     return;
@@ -627,7 +627,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     PrefService* prefService = [self prefs];
     skipBrowsingDataMigration =
         _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
-        ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaID,
+        ShouldSkipBrowsingDataMigration(_accessPoint, _identityToSignIn.gaiaId,
                                         prefService);
 
     signin::IdentityManager* identityManager =
@@ -635,7 +635,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
     browsingDataMigrationDisabledByPolicy =
         IsBrowsingDataMigrationDisabledByPolicy(
-            _accessPoint, _identityToSignIn.gaiaID, prefService,
+            _accessPoint, _identityToSignIn.gaiaId, prefService,
             identityManager, _profileSeparationDataMigrationSettings);
 
     // Merge browsing data by default if the data migration screen is shown to
@@ -675,7 +675,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   ProfileIOS* profile = [self profile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
-  RecordIOSIdentityAvailableInProfile(_identityToSignIn.gaiaID, identityManager,
+  RecordIOSIdentityAvailableInProfile(_identityToSignIn.gaiaId, identityManager,
                                       profile->GetProfileName());
   std::vector<AccountInfo> accountsOnDevice =
       identityManager->GetAccountsOnDevice();
