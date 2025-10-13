@@ -5499,22 +5499,22 @@ auto GraphBuilderTflite::SerializeSubGraphSliceSqueeze(
                               slice_starts, slice_sizes));
   operators_.emplace_back(operator_offset);
 
-  CHECK_GE(slice_sizes.size(), 2u);
-  CHECK_EQ(slice_sizes[0], 1);
+  base::FixedArray<int32_t> squeeze_output_shape(slice_sizes.size());
+  for (size_t i = 0; i < slice_sizes.size(); ++i) {
+    if (slice_sizes[i] != 1) {
+      squeeze_output_shape[i] = slice_sizes[i];
+    }
+  }
   const TensorIndex output_tensor_index =
-      SerializeTemporaryTensor(slice_sizes.subspan(1u), input_tensor_type);
+      SerializeTemporaryTensor(squeeze_output_shape, input_tensor_type);
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_SQUEEZE);
-  // Squeeze the first dimension.
-  const auto squeeze_options = ::tflite::CreateSqueezeOptions(
-      builder_, builder_.CreateVector<int32_t>({0}));
   const std::array<TensorIndex, 1> op_inputs = {output_tensor_index_of_slice};
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
-  operators_.emplace_back(::tflite::CreateOperator(
-      builder_, operator_code_index,
-      builder_.CreateVector<TensorIndex>(op_inputs),
-      builder_.CreateVector<TensorIndex>(op_outputs),
-      ::tflite::BuiltinOptions_SqueezeOptions, squeeze_options.Union()));
+  operators_.emplace_back(
+      ::tflite::CreateOperator(builder_, operator_code_index,
+                               builder_.CreateVector<TensorIndex>(op_inputs),
+                               builder_.CreateVector<TensorIndex>(op_outputs)));
 
   return output_tensor_index;
 }
