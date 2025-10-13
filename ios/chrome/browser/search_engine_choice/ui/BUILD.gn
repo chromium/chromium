@@ -83,3 +83,13 @@ source_set("ui_util") {
 
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "snippet_search_engine_button_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+  ]
+}
