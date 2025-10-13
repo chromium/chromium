@@ -203,7 +203,7 @@ export class SettingsAutofillAiSectionElement extends
     this.entityDataManager_.addEntityInstancesChangedListener(
         this.entityInstancesChangedListener_);
 
-    this.entityDataManager_.getAllEntityTypes().then(
+    this.entityDataManager_.getWritableEntityTypes().then(
         (entityTypes: EntityType[]) => {
           this.completeEntityTypesList_ =
               entityTypes.sort(this.entityTypesComparator_);

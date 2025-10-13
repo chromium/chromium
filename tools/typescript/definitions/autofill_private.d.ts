@@ -320,7 +320,7 @@ declare global {
           Promise<EntityInstanceWithLabels[]>;
       export function getEntityInstanceByGuid(guid: string):
           Promise<EntityInstance>;
-      export function getAllEntityTypes(): Promise<EntityType[]>;
+      export function getWritableEntityTypes(): Promise<EntityType[]>;
       export function getAllAttributeTypesForEntityTypeName(
           entityTypeName: number): Promise<AttributeType[]>;
       export function getAutofillAiOptInStatus(): Promise<boolean>;

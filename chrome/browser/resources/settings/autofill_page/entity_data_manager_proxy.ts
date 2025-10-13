@@ -37,9 +37,9 @@ export interface EntityDataManagerProxy {
   getEntityInstanceByGuid(guid: string): Promise<EntityInstance>;
 
   /**
-   * Returns a list of all enabled entity types.
+   * Returns a list of all enabled entity types which are not read only.
    */
-  getAllEntityTypes(): Promise<EntityType[]>;
+  getWritableEntityTypes(): Promise<EntityType[]>;
 
   /**
    * Returns a list of all attribute types that can be set on an entity
@@ -90,8 +90,8 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
     return chrome.autofillPrivate.getEntityInstanceByGuid(guid);
   }
 
-  getAllEntityTypes() {
-    return chrome.autofillPrivate.getAllEntityTypes();
+  getWritableEntityTypes() {
+    return chrome.autofillPrivate.getWritableEntityTypes();
   }
 
   getAllAttributeTypesForEntityTypeName(entityTypeName: number) {

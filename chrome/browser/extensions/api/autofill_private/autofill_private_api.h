@@ -514,19 +514,19 @@ class AutofillPrivateGetEntityInstanceByGuidFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateGetAllEntityTypesFunction
+class AutofillPrivateGetWritableEntityTypesFunction
     : public AutofillPrivateExtensionFunction {
  public:
-  AutofillPrivateGetAllEntityTypesFunction() = default;
-  AutofillPrivateGetAllEntityTypesFunction(
-      const AutofillPrivateGetAllEntityTypesFunction&) = delete;
-  AutofillPrivateGetAllEntityTypesFunction& operator=(
-      const AutofillPrivateGetAllEntityTypesFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getAllEntityTypes",
-                             AUTOFILLPRIVATE_GETALLENTITYTYPES)
+  AutofillPrivateGetWritableEntityTypesFunction() = default;
+  AutofillPrivateGetWritableEntityTypesFunction(
+      const AutofillPrivateGetWritableEntityTypesFunction&) = delete;
+  AutofillPrivateGetWritableEntityTypesFunction& operator=(
+      const AutofillPrivateGetWritableEntityTypesFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getWritableEntityTypes",
+                             AUTOFILLPRIVATE_GETWRITABLEENTITYTYPES)
 
  protected:
-  ~AutofillPrivateGetAllEntityTypesFunction() override = default;
+  ~AutofillPrivateGetWritableEntityTypesFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

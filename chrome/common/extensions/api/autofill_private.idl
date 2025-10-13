@@ -459,7 +459,7 @@ namespace autofillPrivate {
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
   callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
-  callback GetAllEntityTypesCallback = void(EntityType[] entityTypes);
+  callback GetWritableEntityTypesCallback = void(EntityType[] entityTypes);
   callback GetAllAttributeTypesForEntityTypeNameCallback =
       void(AttributeType[] attributeTypes);
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
@@ -597,9 +597,9 @@ namespace autofillPrivate {
     static void getEntityInstanceByGuid(
         DOMString guid, GetEntityInstanceByGuid callback);
 
-    // Returns a list of all possible entity types. Used for the user to decide
+    // Returns a list of writable entity types. Used for the user to decide
     // what entity instance to add.
-    static void getAllEntityTypes(GetAllEntityTypesCallback callback);
+    static void getWritableEntityTypes(GetWritableEntityTypesCallback callback);
 
     // Returns a list of all possible attribute types that can be set on an
     // entity instance with the respective entity type name. Used for

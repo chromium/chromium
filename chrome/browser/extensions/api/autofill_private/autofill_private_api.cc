@@ -1073,16 +1073,19 @@ AutofillPrivateGetEntityInstanceByGuidFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetAllEntityTypesFunction
+// AutofillPrivateGetWritableEntityTypesFunction
 
 ExtensionFunction::ResponseAction
-AutofillPrivateGetAllEntityTypesFunction::Run() {
+AutofillPrivateGetWritableEntityTypesFunction::Run() {
   const auto all_types = autofill::DenseSet<EntityType>::all();
   std::vector<autofill_private::EntityType> result;
   result.reserve(all_types.size());
   for (EntityType entity_type : all_types) {
     if (!entity_type.enabled(
             autofill_client()->GetVariationConfigCountryCode())) {
+      continue;
+    }
+    if (entity_type.read_only()) {
       continue;
     }
     autofill_private::EntityType& api_type = result.emplace_back();
@@ -1097,7 +1100,7 @@ AutofillPrivateGetAllEntityTypesFunction::Run() {
         autofill_ai_util::GetDeleteEntityTypeStringForI18n(entity_type);
   }
   return RespondNow(ArgumentList(
-      autofill_private::GetAllEntityTypes::Results::Create(result)));
+      autofill_private::GetWritableEntityTypes::Results::Create(result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

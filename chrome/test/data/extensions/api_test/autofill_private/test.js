@@ -1275,8 +1275,9 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  async function getAllEntityTypes() {
-    const entityTypesList = await chrome.autofillPrivate.getAllEntityTypes();
+  async function getWritableEntityTypes() {
+    const entityTypesList =
+        await chrome.autofillPrivate.getWritableEntityTypes();
     const expectedEntityTypesList = [
       {
         typeName: 0,
@@ -1303,6 +1304,16 @@ var availableTests = [
     for (const index in expectedEntityTypesList) {
       chrome.test.assertEq(
           expectedEntityTypesList[index], entityTypesList[index]);
+    }
+    chrome.test.succeed();
+  },
+
+  async function verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes() {
+    const entityTypesList =
+        await chrome.autofillPrivate.getWritableEntityTypes();
+    for (const index in entityTypesList) {
+      chrome.test.assertFalse(
+          entityTypesList[index].typeName === 6);  // Flight reservation
     }
     chrome.test.succeed();
   },
@@ -1422,7 +1433,9 @@ var TESTS_FOR_CONFIG = {
   'loadFirstEntityInstance': ['loadFirstEntityInstance'],
   'loadUpdatedEntityInstance': ['loadUpdatedEntityInstance'],
   'getEntityInstanceByGuid': ['getEntityInstanceByGuid'],
-  'getAllEntityTypes': ['getAllEntityTypes'],
+  'getWritableEntityTypes': ['getWritableEntityTypes'],
+  'verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes':
+      ['verifyWritableEntityTypesDoesNotIncludeReadOnlyTypes'],
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'testExpectedLabelsAreGenerated': ['testExpectedLabelsAreGenerated'],

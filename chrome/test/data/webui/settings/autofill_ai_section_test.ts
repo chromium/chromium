@@ -239,7 +239,7 @@ suite('AutofillAiSectionUiTest', function() {
       },
     ];
     entityDataManager.setGetOptInStatusResponse(true);
-    entityDataManager.setGetAllEntityTypesResponse(
+    entityDataManager.setGetWritableEntityTypesResponse(
         structuredClone(testEntityTypes));
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
