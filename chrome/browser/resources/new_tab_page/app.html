@@ -5,14 +5,28 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
   ` : ''}
-  ${this.lazyRender_ && this.oneGoogleBarEnabled_ ? html`
-    <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
-        ?fixed="${this.scrolledToTop_}"></div>
-    <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-        ?hidden="${!this.oneGoogleBarLoaded_}"
-        allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
-    </ntp-iframe>
-  ` : ''}
+  ${this.lazyRender_ && this.oneGoogleBarEnabled_ ?
+    (
+      this.ntpRealboxNextEnabled_ ?
+        html`
+        <div id="oneGoogleBarStackingContext">
+          <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+              ?fixed="${this.scrolledToTop_}"></div>
+          <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+              ?hidden="${!this.oneGoogleBarLoaded_}"
+              allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+          </ntp-iframe>
+        </div>
+        ` :
+        html`
+        <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+            ?fixed="${this.scrolledToTop_}"></div>
+        <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+            ?hidden="${!this.oneGoogleBarLoaded_}"
+            allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+        </ntp-iframe>
+        `
+    ) : ''}
   <!-- TODO(crbug.com/40743294): Instead of ?hidden="${!this.logoEnabled_}" it would
        be nicer to use Lit's conditional rendering. However, that breaks
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
@@ -20,6 +34,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
       .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
+  ${this.ntpRealboxNextEnabled_ && this.dropdownIsVisible_ ? html`
+    <div id="scrim"
+        @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
+  ` : ''}
   <div id="searchboxContainer">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
@@ -33,10 +51,12 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?composebox-enabled="${this.composeboxEnabled}"
         realbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-        ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}">
+        ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
+        @dropdown-visible-changed="${this.onDropdownVisibleChanged_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      <ntp-composebox id="composebox" ?is_collapsible="false" @close-composebox="${this.closeComposebox_}">
+      <ntp-composebox id="composebox" ?is_collapsible="false" ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+        @close-composebox="${this.closeComposebox_}" @composebox-dropdown-visible-changed="${this.onDropdownVisibleChanged_}">
       </ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
@@ -135,9 +155,9 @@ ${this.showVoiceSearchOverlay_ ? html`
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose_}">
   </ntp-voice-search-overlay>
 ` : ''}
-${this.showComposebox_ ? html`
-  <div id="composeboxScrim"
-       @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
+${!this.ntpRealboxNextEnabled_ && this.showComposebox_ ? html`
+  <div id="scrim"
+      @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
 ` : ''}
 <svg>
   <defs>

@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
@@ -17,7 +18,8 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
+                               ntp_realbox::kNtpRealboxNext});
   }
 
  private:
@@ -241,6 +243,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Composebox) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ComposeEntryPoint) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest ComposeEntryPoint')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, RealboxNext) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest RealboxNext')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {

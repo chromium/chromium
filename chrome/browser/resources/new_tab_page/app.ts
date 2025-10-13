@@ -300,6 +300,8 @@ export class AppElement extends AppElementBase {
       wasComposeboxOpened_: {type: Boolean},
 
       ntpNextFeaturesEnabled_: {type: Boolean},
+
+      dropdownIsVisible_: {type: Boolean, reflect: true},
     };
   }
 
@@ -373,6 +375,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
   protected accessor ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
+  protected accessor dropdownIsVisible_: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -796,6 +799,9 @@ export class AppElement extends AppElementBase {
     assert(composebox);
     composebox.setText('');
     composebox.resetModes();
+    if (this.ntpRealboxNextEnabled_) {
+      composebox.closeDropdown();
+    }
     this.toggleComposebox_();
     this.logoColor_ = this.computeLogoColor_();
     this.singleColoredLogo_ = this.computeSingleColoredLogo_();
@@ -1223,6 +1229,10 @@ export class AppElement extends AppElementBase {
 
   protected showThemeAttribution_(): boolean {
     return !!this.theme_?.backgroundImage?.attributionUrl;
+  }
+
+  protected onDropdownVisibleChanged_(e: CustomEvent<{value: boolean}>) {
+    this.dropdownIsVisible_ = e.detail.value;
   }
 
   protected onRealboxHadSecondarySideChanged_(

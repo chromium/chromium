@@ -534,6 +534,15 @@ export class SearchboxElement extends SearchboxElementBase {
     if (changedPrivateProperties.has('thumbnailUrl_')) {
       this.showThumbnail = !!this.thumbnailUrl_;
     }
+
+    if (this.ntpRealboxNextEnabled &&
+        changedPrivateProperties.has('dropdownIsVisible')) {
+      this.dispatchEvent(new CustomEvent('dropdown-visible-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {value: this.dropdownIsVisible},
+      }));
+    }
   }
 
   private computeInputAriaLive_(): string {
