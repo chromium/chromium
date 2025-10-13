@@ -361,7 +361,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsPixelRatio,
                             "shared/screen-details-pixel-ratio.js")
 
 // TODO(crbug.com/442920826): Re-enable this test
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenDetailsColorDepth DISABLED_ScreenDetailsColorDepth
 #else
 #define MAYBE_ScreenDetailsColorDepth ScreenDetailsColorDepth
