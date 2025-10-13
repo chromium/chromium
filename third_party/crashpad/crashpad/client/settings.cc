@@ -116,7 +116,7 @@ void ScopedLockedFileHandleTraits::Free(FileHandle handle) {
 
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-struct Settings::Data {
+struct SettingsReader::Data {
   static constexpr uint32_t kSettingsMagic = 'CPds';
 
   // Version number only used for incompatible changes to Data. Do not change
@@ -143,25 +143,17 @@ struct Settings::Data {
   UUID client_id;
 };
 
-Settings::Settings() = default;
+SettingsReader::SettingsReader(const base::FilePath& file_path)
+    : SettingsReader(file_path, InitializationState::kStateValid) {}
 
-Settings::~Settings() = default;
+SettingsReader::SettingsReader(const base::FilePath& file_path,
+                               InitializationState::State state)
+    : file_path_(file_path), initialized_(state) {}
 
-bool Settings::Initialize(const base::FilePath& file_path) {
-  DCHECK(initialized_.is_uninitialized());
-  initialized_.set_invalid();
-  file_path_ = file_path;
+SettingsReader::~SettingsReader() = default;
 
-  Data settings;
-  if (!OpenForWritingAndReadSettings(&settings).is_valid())
-    return false;
-
-  initialized_.set_valid();
-  return true;
-}
-
-bool Settings::GetClientID(UUID* client_id) {
-  DCHECK(initialized_.is_valid());
+bool SettingsReader::GetClientID(UUID* client_id) {
+  DCHECK(initialized().is_valid());
 
   Data settings;
   if (!OpenAndReadSettings(&settings))
@@ -171,8 +163,8 @@ bool Settings::GetClientID(UUID* client_id) {
   return true;
 }
 
-bool Settings::GetUploadsEnabled(bool* enabled) {
-  DCHECK(initialized_.is_valid());
+bool SettingsReader::GetUploadsEnabled(bool* enabled) {
+  DCHECK(initialized().is_valid());
 
   Data settings;
   if (!OpenAndReadSettings(&settings))
@@ -182,8 +174,86 @@ bool Settings::GetUploadsEnabled(bool* enabled) {
   return true;
 }
 
+bool SettingsReader::GetLastUploadAttemptTime(time_t* time) {
+  DCHECK(initialized().is_valid());
+
+  Data settings;
+  if (!OpenAndReadSettings(&settings))
+    return false;
+
+  *time = InRangeCast<time_t>(settings.last_upload_attempt_time,
+                              std::numeric_limits<time_t>::max());
+  return true;
+}
+
+bool SettingsReader::OpenAndReadSettings(Data* out_data) {
+  ScopedFileHandle handle(LoggingOpenFileForRead(file_path_));
+  return handle.is_valid() && ReadSettings(handle.get(), out_data, true);
+}
+
+bool SettingsReader::ReadSettings(FileHandle handle,
+                                  Data* out_data,
+                                  bool log_read_error) {
+  if (LoggingSeekFile(handle, 0, SEEK_SET) != 0) {
+    return false;
+  }
+
+  // This clears `out_data` so that any bytes not read from disk are zero
+  // initialized. This is expected when reading from an older settings file with
+  // fewer fields.
+  memset(out_data, 0, sizeof(*out_data));
+
+  const FileOperationResult read_result =
+      log_read_error ? LoggingReadFileUntil(handle, out_data, sizeof(*out_data))
+                     : ReadFileUntil(handle, out_data, sizeof(*out_data));
+
+  if (read_result <= 0) {
+    return false;
+  }
+
+  // Newer versions of crashpad may add fields to Data, but all versions have
+  // the data members up to `client_id`. Do not attempt to understand a smaller
+  // struct read.
+  const size_t min_size =
+      offsetof(Data, client_id) + sizeof(out_data->client_id);
+  if (static_cast<size_t>(read_result) < min_size) {
+    LOG(ERROR) << "Settings file too small: minimum " << min_size
+               << ", observed " << read_result;
+    return false;
+  }
+
+  if (out_data->magic != Data::kSettingsMagic) {
+    LOG(ERROR) << "Settings magic is not " << Data::kSettingsMagic;
+    return false;
+  }
+
+  if (out_data->version != Data::kSettingsVersion) {
+    LOG(ERROR) << "Settings version is not " << Data::kSettingsVersion;
+    return false;
+  }
+
+  return true;
+}
+
+Settings::Settings(const base::FilePath& path)
+    : SettingsReader(path, InitializationState::kStateUninitialized) {}
+
+Settings::~Settings() = default;
+
+bool Settings::Initialize() {
+  DCHECK(initialized().is_uninitialized());
+  initialized().set_invalid();
+
+  Data settings;
+  if (!OpenForWritingAndReadSettings(&settings).is_valid())
+    return false;
+
+  initialized().set_valid();
+  return true;
+}
+
 bool Settings::SetUploadsEnabled(bool enabled) {
-  DCHECK(initialized_.is_valid());
+  DCHECK(initialized().is_valid());
 
   Data settings;
   ScopedLockedFileHandle handle = OpenForWritingAndReadSettings(&settings);
@@ -198,20 +268,8 @@ bool Settings::SetUploadsEnabled(bool enabled) {
   return WriteSettings(handle.get(), settings);
 }
 
-bool Settings::GetLastUploadAttemptTime(time_t* time) {
-  DCHECK(initialized_.is_valid());
-
-  Data settings;
-  if (!OpenAndReadSettings(&settings))
-    return false;
-
-  *time = InRangeCast<time_t>(settings.last_upload_attempt_time,
-                              std::numeric_limits<time_t>::max());
-  return true;
-}
-
 bool Settings::SetLastUploadAttemptTime(time_t time) {
-  DCHECK(initialized_.is_valid());
+  DCHECK(initialized().is_valid());
 
   Data settings;
   ScopedLockedFileHandle handle = OpenForWritingAndReadSettings(&settings);
@@ -300,7 +358,7 @@ FileHandle Settings::GetHandleFromOptions(
   NOTREACHED();
 }
 
-Settings::ScopedLockedFileHandle Settings::OpenForReading() {
+Settings::ScopedLockedFileHandle Settings::OpenForReading() const {
   internal::MakeScopedLockedFileHandleOptions options;
   options.function_enum = internal::FileOpenFunction::kLoggingOpenFileForRead;
   return MakeScopedLockedFileHandle(options, FileLocking::kShared, file_path());
@@ -326,6 +384,9 @@ Settings::ScopedLockedFileHandle Settings::OpenForReadingAndWriting(
 }
 
 bool Settings::OpenAndReadSettings(Data* out_data) {
+  // Because this implementation distinguishes between a failure to open and a
+  // failure to read the settings file, it cannot simply invoke
+  // SettingsReader::OpenAndReadSettings.
   ScopedLockedFileHandle handle = OpenForReading();
   if (!handle.is_valid())
     return false;
@@ -344,7 +405,7 @@ Settings::ScopedLockedFileHandle Settings::OpenForWritingAndReadSettings(
     Data* out_data) {
   ScopedLockedFileHandle handle;
   bool created = false;
-  if (!initialized_.is_valid()) {
+  if (!initialized().is_valid()) {
     // If this object is initializing, it hasn’t seen a settings file already,
     // so go easy on errors. Creating a new settings file for the first time
     // shouldn’t spew log messages.
@@ -389,50 +450,6 @@ Settings::ScopedLockedFileHandle Settings::OpenForWritingAndReadSettings(
   }
 
   return handle;
-}
-
-bool Settings::ReadSettings(FileHandle handle,
-                            Data* out_data,
-                            bool log_read_error) {
-  if (LoggingSeekFile(handle, 0, SEEK_SET) != 0) {
-    return false;
-  }
-
-  // This clears `out_data` so that any bytes not read from disk are zero
-  // initialized. This is expected when reading from an older settings file with
-  // fewer fields.
-  memset(out_data, 0, sizeof(*out_data));
-
-  const FileOperationResult read_result =
-      log_read_error ? LoggingReadFileUntil(handle, out_data, sizeof(*out_data))
-                     : ReadFileUntil(handle, out_data, sizeof(*out_data));
-
-  if (read_result <= 0) {
-    return false;
-  }
-
-  // Newer versions of crashpad may add fields to Data, but all versions have
-  // the data members up to `client_id`. Do not attempt to understand a smaller
-  // struct read.
-  const size_t min_size =
-      offsetof(Data, client_id) + sizeof(out_data->client_id);
-  if (static_cast<size_t>(read_result) < min_size) {
-    LOG(ERROR) << "Settings file too small: minimum " << min_size
-               << ", observed " << read_result;
-    return false;
-  }
-
-  if (out_data->magic != Data::kSettingsMagic) {
-    LOG(ERROR) << "Settings magic is not " << Data::kSettingsMagic;
-    return false;
-  }
-
-  if (out_data->version != Data::kSettingsVersion) {
-    LOG(ERROR) << "Settings version is not " << Data::kSettingsVersion;
-    return false;
-  }
-
-  return true;
 }
 
 bool Settings::WriteSettings(FileHandle handle, const Data& data) {
