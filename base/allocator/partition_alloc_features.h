@@ -86,8 +86,6 @@ using PartitionAllocWithAdvancedChecksEnabledProcesses =
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
-BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValue();
-BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
 

@@ -17702,45 +17702,6 @@
             ]
         }
     ],
-    "PartitionAllocLargeThreadCacheSizeAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "size_android_512_20230925",
-                    "params": {
-                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid": "512"
-                    },
-                    "enable_features": [
-                        "PartitionAllocLargeThreadCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocLargeThreadCacheSizeDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "size_32768_20230925",
-                    "params": {
-                        "PartitionAllocLargeThreadCacheSizeValue": "32768"
-                    },
-                    "enable_features": [
-                        "PartitionAllocLargeThreadCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocMemoryReclaimer": [
         {
             "platforms": [

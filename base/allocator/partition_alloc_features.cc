@@ -92,17 +92,6 @@ constinit const FeatureParam<DanglingPtrType> kDanglingPtrTypeParam{
 // Use a larger maximum thread cache cacheable bucket size.
 BASE_FEATURE(kPartitionAllocLargeThreadCacheSize, FEATURE_ENABLED_BY_DEFAULT);
 
-MIRACLE_PARAMETER_FOR_INT(GetPartitionAllocLargeThreadCacheSizeValue,
-                          kPartitionAllocLargeThreadCacheSize,
-                          "PartitionAllocLargeThreadCacheSizeValue",
-                          ::partition_alloc::kThreadCacheLargeSizeThreshold)
-
-MIRACLE_PARAMETER_FOR_INT(
-    GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid,
-    kPartitionAllocLargeThreadCacheSize,
-    "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid",
-    ::partition_alloc::kThreadCacheDefaultSizeThreshold)
-
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);
