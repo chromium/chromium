@@ -30,6 +30,7 @@ export function getSyncAllPrefs(): SyncPrefs {
     extensionsManaged: false,
     extensionsRegistered: true,
     extensionsSynced: true,
+    localSyncEnabled: false,
     passphraseRequired: false,
     passwordsManaged: false,
     passwordsRegistered: true,

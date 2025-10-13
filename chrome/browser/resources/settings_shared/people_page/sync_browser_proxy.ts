@@ -91,6 +91,7 @@ export interface SyncPrefs {
   extensionsManaged: boolean;
   extensionsRegistered: boolean;
   extensionsSynced: boolean;
+  localSyncEnabled: boolean;
   passphraseRequired: boolean;
   passwordsManaged: boolean;
   passwordsRegistered: boolean;

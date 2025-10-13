@@ -1271,6 +1271,7 @@ void PeopleHandler::PushSyncPrefs() {
   //                   passphrase was set (in milliseconds since the Unix
   //                   epoch); undefined if the time is unknown or no explicit
   //                   passphrase is set.
+  //   localSyncEnabled: true if the user has local sync enabled.
   //
   base::Value::Dict args;
 
@@ -1312,6 +1313,8 @@ void PeopleHandler::PushSyncPrefs() {
     args.Set("explicitPassphraseTime",
              base::TimeFormatShortDate(passphrase_time));
   }
+
+  args.Set("localSyncEnabled", service->IsLocalSyncEnabled());
 
   FireWebUIListener("sync-prefs-changed", args);
 }

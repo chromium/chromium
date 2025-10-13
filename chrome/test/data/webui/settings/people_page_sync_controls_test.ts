@@ -430,6 +430,22 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertTrue(syncControls.hidden);
   });
 
+  test('SignedInLocalSyncEnabled', async function() {
+    setupPrefs();
+
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    const syncPrefs = getSyncAllPrefs();
+    syncPrefs.localSyncEnabled = true;
+    webUIListenerCallback('sync-prefs-changed', syncPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Controls are hidden when signed in and local sync is enabled.
+    assertTrue(syncControls.hidden);
+  });
+
   test('ChangeDataTypeToggle', async function() {
     setupPrefs();
 
