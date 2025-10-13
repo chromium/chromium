@@ -303,7 +303,22 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
 void CanvasRenderingContext2D::WillDrawImage(
     CanvasImageSource* source,
     bool image_is_texture_backed) const {
-  canvas()->WillDrawImageInCanvas2D(source, image_is_texture_backed);
+  // For images coming from canvases, use the image itself as the source of
+  // truth for whether the canvas is accelerated, as
+  // CanvasRenderingContextHost::IsAccelerated() is canvas2d-specific.
+  bool source_is_accelerated =
+      (source->IsCanvasElement() || source->IsOffscreenCanvas())
+          ? image_is_texture_backed
+          : source->IsAccelerated();
+  // If the source is GPU-accelerated, and the canvas is not, but could be...
+  if (source_is_accelerated && canvas()->ShouldAccelerate2dContext() &&
+      canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU) {
+    // Recreate the CRP in GPU raster mode and signal that it needs a
+    // compositing update if successful.
+    if (canvas()->RecreateCanvasInGPURasterModeForCanvas2D()) {
+      canvas()->SetNeedsCompositingUpdate();
+    }
+  }
 }
 
 bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,

@@ -1788,27 +1788,6 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
   ColorSchemeMayHaveChanged();
 }
 
-void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source,
-                                                bool image_is_texture_backed) {
-  CHECK(IsRenderingContext2D());
-
-  // For images coming from canvases, use the image itself as the source of
-  // truth for whether the canvas is accelerated, as
-  // CanvasRenderingContextHost::IsAccelerated() is canvas2d-specific.
-  bool source_is_accelerated =
-      (source->IsCanvasElement() || source->IsOffscreenCanvas())
-          ? image_is_texture_backed
-          : source->IsAccelerated();
-  // If the source is GPU-accelerated, and the canvas is not, but could be...
-  if (source_is_accelerated && ShouldAccelerate() &&
-      GetRasterModeForCanvas2D() == RasterMode::kCPU) {
-    // Recreate the canvas in GPU raster mode, and update its contents.
-    if (RecreateCanvasInGPURasterModeForCanvas2D()) {
-      SetNeedsCompositingUpdate();
-    }
-  }
-}
-
 bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
   CHECK(IsRenderingContext2D());
   if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
