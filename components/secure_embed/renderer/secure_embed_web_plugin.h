@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_plugin.h"
 
@@ -21,7 +22,8 @@ class RenderFrame;
 
 namespace secure_embed {
 
-class SecureEmbedWebPlugin : public blink::WebPlugin {
+class SecureEmbedWebPlugin : public blink::WebPlugin,
+                             public mojom::SecureEmbed {
  public:
   static SecureEmbedWebPlugin* Create(content::RenderFrame* render_frame,
                                       const blink::WebPluginParams& params);
@@ -51,16 +53,23 @@ class SecureEmbedWebPlugin : public blink::WebPlugin {
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
 
+  // mojom::SecureEmbed:
+  void OnAttached() override;
+
  private:
   explicit SecureEmbedWebPlugin(
       mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
       int contents_id);
 
-  mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
-  raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+  void OnSecureEmbedHostDisconnected();
 
   // The guest contents ID parsed from the `data-content-id` attribute.
   int contents_id_ = -1;
+
+  raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+
+  mojo::AssociatedRemote<mojom::SecureEmbedHost> host_;
+  mojo::AssociatedReceiver<mojom::SecureEmbed> receiver_{this};
 };
 
 }  // namespace secure_embed

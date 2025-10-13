@@ -26,4 +26,4 @@ bool MaybeCreatePlugin(content::RenderFrame* render_frame,
 
 }  // namespace secure_embed
 
-#endif // COMPONENTS_SECURE_EMBED_RENDERER_CREATE_PLUGIN_H_
+#endif  // COMPONENTS_SECURE_EMBED_RENDERER_CREATE_PLUGIN_H_

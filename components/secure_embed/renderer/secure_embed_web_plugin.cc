@@ -5,6 +5,7 @@
 #include "components/secure_embed/renderer/secure_embed_web_plugin.h"
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -45,7 +46,7 @@ SecureEmbedWebPlugin* SecureEmbedWebPlugin::Create(
 SecureEmbedWebPlugin::SecureEmbedWebPlugin(
     mojo::AssociatedRemote<mojom::SecureEmbedHost> host,
     int contents_id)
-    : host_(std::move(host)), contents_id_(contents_id) {}
+    : contents_id_(contents_id), host_(std::move(host)) {}
 
 SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 
@@ -53,14 +54,37 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
   if (host_) {
+    mojo::PendingAssociatedRemote<mojom::SecureEmbed> pending_remote =
+        receiver_.BindNewEndpointAndPassRemote();
+    host_.set_disconnect_handler(
+        base::BindOnce(&SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected,
+                       base::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected,
+                       base::Unretained(this)));
+
+    // Set up the SecureEmbed interface first.
+    host_->SetSecureEmbed(std::move(pending_remote));
+
+    // Then attach with the content ID.
     host_->Attach(contents_id_);
   }
   return true;
 }
 
 void SecureEmbedWebPlugin::Destroy() {
+  receiver_.reset();
   host_.reset();
   delete this;
+}
+
+void SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected() {
+  receiver_.reset();
+  host_.reset();
+
+  // If the browser side of the connection goes down, we're in an unexpected
+  // state and likely need to flag this plugin as broken.
+  NOTREACHED();
 }
 
 blink::WebPluginContainer* SecureEmbedWebPlugin::Container() const {
@@ -113,6 +137,12 @@ void SecureEmbedWebPlugin::DidFinishLoading() {
 
 void SecureEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
   NOTIMPLEMENTED();
+}
+
+void SecureEmbedWebPlugin::OnAttached() {
+  // TODO(secure-embed): Here for testing only. Remove when there's a real
+  // SecureEmbed method to implement.
+  LOG(INFO) << "SecureEmbedWebPlugin::OnAttached() called";
 }
 
 }  // namespace secure_embed

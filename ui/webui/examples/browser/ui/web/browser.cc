@@ -58,7 +58,9 @@ Browser::Browser(content::WebUI* web_ui)
 }
 
 Browser::~Browser() {
-  page_handler_->WebUIControllerDestroyed();
+  if (page_handler_) {
+    page_handler_->WebUIControllerDestroyed();
+  }
 }
 
 void Browser::BindInterface(

@@ -6,10 +6,17 @@ module secure_embed.mojom;
 
 // Implemented in Renderer by SecureEmbedWebPlugin.
 interface SecureEmbed {
-
+  // TODO(secure-embed): Temporary - remove when there's a real SecureEmbed
+  // method to call. This is here to verify that the mojo connection is set up
+  // correctly and that the browser can call back into the renderer.
+  OnAttached();
 };
 
 // Implemented by Browser. Available on RenderFrameHost.
 interface SecureEmbedHost {
+  // Sets the SecureEmbed interface for communication with the renderer. This
+  // must be called before other methods on SecureEmbedHost.
+  SetSecureEmbed(pending_associated_remote<SecureEmbed> secure_embed);
+
   Attach(int64 content_id);
 };

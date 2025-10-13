@@ -86,24 +86,37 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
     tracker_->AddMockHost(this);
   }
 
-  ~MockSecureEmbedHost() override { tracker_->RemoveMockHost(this); }
-
-  // Called by SelfOwnedAssociatedReceiver's connection_error_handler when
-  // the mojo connection is disconnected.
-  void OnDisconnect() {
+  ~MockSecureEmbedHost() override {
+    // Manually calling the disconnect callback in the d'tor. This is
+    // effectively the same as calling it from connection_error_handler since
+    // this object is kept alive via SelfOwnedAssociatedReceiver which detects
+    // disconnection and deletes this object.
     if (disconnect_callback_) {
       std::move(disconnect_callback_).Run();
     }
+    tracker_->RemoveMockHost(this);
   }
 
   // mojom::SecureEmbedHost implementation
+  void SetSecureEmbed(
+      mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) override {
+    secure_embed_.Bind(std::move(secure_embed));
+    secure_embed_.set_disconnect_handler(
+        base::BindOnce(&MockSecureEmbedHost::OnSecureEmbedDisconnected,
+                       base::Unretained(this)));
+  }
+
   void Attach(int64_t content_id) override {
+    CHECK(secure_embed_);
     attach_call_count_++;
     last_content_id_ = content_id;
+
     if (attach_callback_) {
       std::move(attach_callback_).Run(content_id);
     }
   }
+
+  void OnSecureEmbedDisconnected() { secure_embed_.reset(); }
 
   void SetAttachCallback(base::OnceCallback<void(int64_t)> callback) {
     attach_callback_ = std::move(callback);
@@ -122,6 +135,7 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
   int64_t last_content_id_ = -1;
   base::OnceCallback<void(int64_t)> attach_callback_;
   base::OnceClosure disconnect_callback_;
+  mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
 };
 
 class SecureEmbedTestContentBrowserClient
@@ -140,19 +154,9 @@ class SecureEmbedTestContentBrowserClient
                content::RenderFrameHost* render_frame_host,
                mojo::PendingAssociatedReceiver<mojom::SecureEmbedHost>
                    receiver) {
-              auto mock_host = std::make_unique<MockSecureEmbedHost>(tracker);
-              auto* mock_host_ptr = mock_host.get();
-
-              // Let SelfOwnedAssociatedReceiver manage the lifetime.
-              auto receiver_ref = mojo::MakeSelfOwnedAssociatedReceiver(
-                  std::move(mock_host), std::move(receiver));
-
-              // Set up the disconnect handler to call OnDisconnect.
-              if (receiver_ref) {
-                receiver_ref->set_connection_error_handler(
-                    base::BindOnce(&MockSecureEmbedHost::OnDisconnect,
-                                   base::Unretained(mock_host_ptr)));
-              }
+              mojo::MakeSelfOwnedAssociatedReceiver(
+                  std::make_unique<MockSecureEmbedHost>(tracker),
+                  std::move(receiver));
             },
             base::Unretained(tracker_), &render_frame_host));
   }
