@@ -4659,7 +4659,11 @@
     },
     {
       name: "SmartCard",
-      status: {"Android": "", "default": "test"},
+      status: {
+        "Android": "",
+        "ChromeOS": "stable",
+        "default": "test",
+      },
     },
     {
       name: "SmartZoom",
