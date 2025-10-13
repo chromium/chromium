@@ -1505,8 +1505,6 @@ TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
 TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
   ui::AXNodeData node;
   node.id = 4;
-  controller().InitAXPositionWithNode(node.id);
-  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
 
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
@@ -1514,7 +1512,6 @@ TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
 
-  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
   EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
   EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
   EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
@@ -2267,31 +2264,6 @@ TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   controller().OnCollapseSelection();
   Mock::VerifyAndClearExpectations(distiller_);
-}
-
-TEST_F(ReadAnythingAppControllerTest, DrawSelection_ResetsReadAloudState) {
-  ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Not like you- ");
-  ui::AXNodeData node2 =
-      test::TextNode(/* id= */ 3, u" you lost your nerve, you lost the game.");
-  SendUpdateWithNodes({std::move(node1), std::move(node2)});
-
-  // Initialize read aloud state.
-  controller().InitAXPositionWithNode(2);
-  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
-
-  // Create a selection from node 2-3. This will trigger DrawSelection.
-  ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
-  update.has_tree_data = true;
-  update.tree_data.sel_anchor_object_id = 2;
-  update.tree_data.sel_focus_object_id = 3;
-  update.tree_data.sel_anchor_offset = 1;
-  update.tree_data.sel_focus_offset = 3;
-  update.tree_data.sel_is_backward = false;
-  AccessibilityEventReceived({std::move(update)});
-
-  // After a selection, the read aloud state should be reset.
-  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3955,6 +3927,63 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+class ReadAnythingAppControllerV8SegmentationTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  void SetUp() override {
+    ReadAnythingAppControllerTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloudTSTextSegmentation});
+  }
+};
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       DrawSelection_ResetsReadAloudState) {
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Not like you- ");
+  ui::AXNodeData node2 = test::TextNode(
+      /* id= */ 3, u" you lost your nerve, you lost the game.");
+  SendUpdateWithNodes({std::move(node1), std::move(node2)});
+
+  // Initialize read aloud state.
+  controller().InitAXPositionWithNode(2);
+  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
+
+  // Create a selection from node 2-3. This will trigger DrawSelection.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.has_tree_data = true;
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 3;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update)});
+
+  // After a selection, the read aloud state should be reset.
+  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       Draw_RecomputeDisplayNodes) {
+  ui::AXNodeData node;
+  node.id = 4;
+  controller().InitAXPositionWithNode(node.id);
+  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
+
+  // This update changes the structure of the tree. When the controller
+  // receives it in AccessibilityEventReceived, it will re-distill the tree.
+  SendUpdateWithNodes({std::move(node)});
+  model().Reset({3, 4});
+  controller().Draw(/* recompute_display_nodes= */ true);
+
+  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
+  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_TRUE(base::Contains(model().display_node_ids(), 4));
 }
 
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest

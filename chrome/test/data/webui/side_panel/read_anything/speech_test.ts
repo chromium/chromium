@@ -265,6 +265,30 @@ suite('Speech', () => {
       assertEquals(paragraph2[0], getSpokenText());
     });
 
+    test('after two selections, plays from most recent selection', () => {
+      select(axTree, 5, 0, 5, 10);
+      let domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
+      speechController.setHasSpeechBeenTriggered(true);
+      speech.reset();
+
+      playFromSelection();
+
+      assertEquals(1, speech.getCallCount('cancel'));
+      assertEquals(paragraph2[0], getSpokenText());
+
+      select(axTree, 3, 10, 5, 10);
+      domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
+      speechController.setHasSpeechBeenTriggered(true);
+      speech.reset();
+
+      playFromSelection();
+
+      assertEquals(1, speech.getCallCount('cancel'));
+      assertEquals(paragraph1[0], getSpokenText());
+    });
+
     test('play from selection when node split across sentences', () => {
       const fragment1 = ' This is a sentence';
       const fragment2 = ' that ends in the next node. ';
