@@ -760,14 +760,7 @@ bool ShouldDeprecateFeedHeader() {
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
-  version_info::Channel channel = ::GetChannel();
-  // Always off in beta/stable.
-  if (channel == version_info::Channel::BETA ||
-      channel == version_info::Channel::STABLE) {
-    return false;
-  }
-
-  // To test background refresh in conjuntion with the keychain access
+  // To test background refresh in conjunction with the keychain access
   // migration, enable app background refresh if *either* its flag or
   // the keychain access flag is enabled.
   return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh) ||
