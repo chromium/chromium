@@ -267,7 +267,13 @@ export class SearchboxMatchElement extends CrLitElement {
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey);
 
-    this.fire('match-click');
+    // Duplicates the logic in `ui::DispositionFromClick()`.
+    const backgroundTab = (e.metaKey || e.ctrlKey) && e.shiftKey;
+    // 'match-click' event is used to close the dropdown. Don't do so when
+    // opening a background tab so users can open multiple matches.
+    if (!backgroundTab) {
+      this.fire('match-click');
+    }
   }
 
   private onMatchFocusin_() {
