@@ -299,11 +299,6 @@ cr-searchbox-icon {
   display: none;
 }
 
-:host-context([dir='rtl']) .searchbox-icon-button {
-  left: 16px;
-  right: unset;
-}
-
 :host-context([dir='rtl']) .searchbox-icon-button-container {
   left: 16px;
   right: unset;
@@ -369,7 +364,12 @@ cr-searchbox-icon {
 :host([ntp-realbox-next-enabled]) {
   --cr-searchbox-border-radius: 26px;
   --cr-searchbox-dropdown-padding-bottom: 12px;
+  /* Cannot touch this searchbox icon size var;
+    it's used by the rainbow outline AI button class in
+    searchbox_compose_button.css. Should be different
+    from other searchbox icons (composebox, voice, lens). */
   --cr-searchbox-icon-size: 40px;
+  --cr-searchbox-voice-lens-size: 36px;
   --text-input-inline-start-spacing: 16px;
 }
 
@@ -443,14 +443,14 @@ cr-searchbox-icon {
   display: none;
 }
 
-:host([realbox-layout-mode^='Tall']) .searchbox-icon-button {
-  bottom: 12px;
-  height: var(--cr-searchbox-icon-size);
-  padding: 8px 12px;
+:host([realbox-layout-mode^='Tall']) .searchbox-icon-button-container {
+  bottom: 10px;
+  top: unset;
+  height: var(--cr-searchbox-voice-lens-size);
 }
 
-:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) #voiceSearchButton,
-:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) #lensSearchButton {
+:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"]))
+    .searchbox-icon-button-container {
   display: none;
 }
 
@@ -461,13 +461,15 @@ cr-searchbox-icon {
   top: var(--cr-searchbox-input-padding-top_);
 }
 
-:host([realbox-layout-mode^='Tall'][compose-button-enabled]) #lensSearchButton {
+:host([realbox-layout-mode^='Tall'][compose-button-enabled])
+    .searchbox-icon-button-container.lens {
   inset-inline-end: calc(12px + var(--cr-searchbox-icon-spacing));
 }
 
-:host([realbox-layout-mode^='Tall'][searchbox-lens-search-enabled_]) #voiceSearchButton,
-:host([realbox-layout-mode^='Tall'][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-  inset-inline-end: calc(12px + var(--cr-searchbox-icon-size) + var(--cr-searchbox-icon-spacing));
+:host([realbox-layout-mode^='Tall'][searchbox-lens-search-enabled_])
+    .searchbox-icon-button-container.voice {
+  inset-inline-end: calc(12px + var(--cr-searchbox-voice-lens-size)
+      + var(--cr-searchbox-icon-spacing));
 }
 
 :host-context([realbox-layout-mode^='Tall']) #composeButton {
@@ -492,13 +494,19 @@ cr-searchbox-icon {
   display: none;
 }
 
-:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]) #lensSearchButton {
+:host([realbox-layout-mode='Compact']) .searchbox-icon-button-container {
+  top: 10px;
+}
+
+:host([realbox-layout-mode='Compact'][compose-button-enabled]
+    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
   inset-inline-end: calc(var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
 }
 
-:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]) #voiceSearchButton,
-:host([realbox-layout-mode='Compact'][compose-button-enabled][searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-  inset-inline-end: calc(var(--cr-searchbox-icon-size) + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
+:host([realbox-layout-mode='Compact'][compose-button-enabled]
+    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.voice {
+  inset-inline-end: calc(var(--cr-searchbox-voice-lens-size)
+      + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
 }
 
 :host([realbox-layout-mode='Compact']) .dropdownContainer {
