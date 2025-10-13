@@ -52,6 +52,18 @@ static WebFeature AlgorithmIdToFeature(WebCryptoAlgorithmId id) {
       return WebFeature::kCryptoAlgorithmEd25519;
     case kWebCryptoAlgorithmIdX25519:
       return WebFeature::kCryptoAlgorithmX25519;
+    case kWebCryptoAlgorithmIdChaCha20Poly1305:
+      return WebFeature::kCryptoAlgorithmChaCha20Poly1305;
+    case kWebCryptoAlgorithmIdMlDsa44:
+      return WebFeature::kCryptoAlgorithmMlDsa44;
+    case kWebCryptoAlgorithmIdMlDsa65:
+      return WebFeature::kCryptoAlgorithmMlDsa65;
+    case kWebCryptoAlgorithmIdMlDsa87:
+      return WebFeature::kCryptoAlgorithmMlDsa87;
+    case kWebCryptoAlgorithmIdMlKem768:
+      return WebFeature::kCryptoAlgorithmMlKem768;
+    case kWebCryptoAlgorithmIdMlKem1024:
+      return WebFeature::kCryptoAlgorithmMlKem1024;
   }
 
   NOTREACHED();

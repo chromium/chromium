@@ -5587,6 +5587,13 @@
       status: "experimental",
     },
     {
+      // Adding post-quantum algorithms (ML-DSA, ML-KEM) to WebCrypto.
+      // Also adding ChaCha20-Poly1305 while we're at it.
+      //
+      // https://chromestatus.com/feature/5198951632470016
+      name: "WebCryptoPQC",
+    },
+    {
       name: "WebFontResizeLCP",
     },
     {

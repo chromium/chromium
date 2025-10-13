@@ -6287,6 +6287,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5675" label="NavigatorCPUPerformance"/>
   <int value="5676" label="SelectionRemoveRangeNotFoundWouldThrow"/>
   <int value="5677" label="NestedSvgCssSizingProperties"/>
+  <int value="5678" label="CryptoAlgorithmChaCha20Poly1305"/>
+  <int value="5679" label="CryptoAlgorithmMlDsa44"/>
+  <int value="5680" label="CryptoAlgorithmMlDsa65"/>
+  <int value="5681" label="CryptoAlgorithmMlDsa87"/>
+  <int value="5682" label="CryptoAlgorithmMlKem768"/>
+  <int value="5683" label="CryptoAlgorithmMlKem1024"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

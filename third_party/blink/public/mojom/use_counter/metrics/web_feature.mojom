@@ -4990,6 +4990,12 @@ enum WebFeature {
   kNavigatorCPUPerformance = 5675,
   kSelectionRemoveRangeNotFoundWouldThrow = 5676,
   kNestedSvgCssSizingProperties = 5677,
+  kCryptoAlgorithmChaCha20Poly1305 = 5678,
+  kCryptoAlgorithmMlDsa44 = 5679,
+  kCryptoAlgorithmMlDsa65 = 5680,
+  kCryptoAlgorithmMlDsa87 = 5681,
+  kCryptoAlgorithmMlKem768 = 5682,
+  kCryptoAlgorithmMlKem1024 = 5683,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -94,6 +94,12 @@ constexpr AlgorithmNameMappingArray kAlgorithmNameMappings = {{
     {"AES-CTR", 7, kWebCryptoAlgorithmIdAesCtr},
     {"RSA-PSS", 7, kWebCryptoAlgorithmIdRsaPss},
     {"RSA-OAEP", 8, kWebCryptoAlgorithmIdRsaOaep},
+    {"ML-DSA-44", 9, kWebCryptoAlgorithmIdMlDsa44},
+    {"ML-DSA-65", 9, kWebCryptoAlgorithmIdMlDsa65},
+    {"ML-DSA-87", 9, kWebCryptoAlgorithmIdMlDsa87},
+    {"ML-KEM-768", 10, kWebCryptoAlgorithmIdMlKem768},
+    {"ML-KEM-1024", 11, kWebCryptoAlgorithmIdMlKem1024},
+    {"CHACHA20-POLY1305", 17, kWebCryptoAlgorithmIdChaCha20Poly1305},
     {"RSASSA-PKCS1-V1_5", 17, kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5},
 }};
 
@@ -200,6 +206,16 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
     return std::nullopt;
 
   WebCryptoAlgorithmId id = it->algorithm_id;
+
+  if ((id == kWebCryptoAlgorithmIdChaCha20Poly1305 ||
+       id == kWebCryptoAlgorithmIdMlDsa44 ||
+       id == kWebCryptoAlgorithmIdMlDsa65 ||
+       id == kWebCryptoAlgorithmIdMlDsa87 ||
+       id == kWebCryptoAlgorithmIdMlKem768 ||
+       id == kWebCryptoAlgorithmIdMlKem1024) &&
+      !RuntimeEnabledFeatures::WebCryptoPQCEnabled()) {
+    return std::nullopt;
+  }
   return id;
 }
 

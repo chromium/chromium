@@ -196,6 +196,24 @@ bool AlgorithmIdFromWireFormat(uint32_t raw_id, WebCryptoAlgorithmId* id) {
     case kX25519Tag:
       *id = kWebCryptoAlgorithmIdX25519;
       return true;
+    case kChaCha20Poly1305Tag:
+      *id = kWebCryptoAlgorithmIdChaCha20Poly1305;
+      return true;
+    case kMlDsa44Tag:
+      *id = kWebCryptoAlgorithmIdMlDsa44;
+      return true;
+    case kMlDsa65Tag:
+      *id = kWebCryptoAlgorithmIdMlDsa65;
+      return true;
+    case kMlDsa87Tag:
+      *id = kWebCryptoAlgorithmIdMlDsa87;
+      return true;
+    case kMlKem768Tag:
+      *id = kWebCryptoAlgorithmIdMlKem768;
+      return true;
+    case kMlKem1024Tag:
+      *id = kWebCryptoAlgorithmIdMlKem1024;
+      return true;
   }
   return false;
 }
