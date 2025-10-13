@@ -326,7 +326,7 @@ BASE_FEATURE(kNumSrpZpsRelatedSearches,
 // the Settings page.
 BASE_FEATURE(kEnableSearchAggregatorPolicy, ENABLED);
 
-BASE_FEATURE(kUseAgentspace25Logo, DISABLED);
+BASE_FEATURE(kUseAgentspace25Logo, ENABLED);
 
 // If enabled, site search engines, defined by the `SiteSearchSettings` policy,
 // can be marked as user-overridable by administrators using an
