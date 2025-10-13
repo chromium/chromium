@@ -5727,6 +5727,12 @@ const char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 const char kReadAnythingReadAloudDescription[] =
     "Enables the experimental Read Aloud feature in Reading Mode.";
 
+const char kReadAnythingReadAloudTsTextSegmentationName[] =
+    "Reading Mode Read Aloud Experimental Text Segmentation";
+const char kReadAnythingReadAloudTsTextSegmentationDescription[] =
+    "Enables the experimental text segmentation method for reading "
+    "mode.";
+
 const char kReadAnythingReadAloudPhraseHighlightingName[] =
     "Reading Mode Read Aloud Phrase Highlighting";
 const char kReadAnythingReadAloudPhraseHighlightingDescription[] =

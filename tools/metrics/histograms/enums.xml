@@ -12081,6 +12081,8 @@ from previous Chrome versions.
   <int value="-766805224" label="MirroringService:enabled"/>
   <int value="-766199617" label="ReadAloudInOverflowMenuInCCT:enabled"/>
   <int value="-765669184" label="LauncherNudgeShortInterval:disabled"/>
+  <int value="-765531607"
+      label="ReadAnythingReadAloudTSTextSegmentation:disabled"/>
   <int value="-765417607" label="KeyboardLockPrompt:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
@@ -15027,6 +15029,8 @@ from previous Chrome versions.
   <int value="288755982"
       label="AutofillEnableLocalCardMigrationForNonSyncUser:enabled"/>
   <int value="288826415" label="SecurePaymentConfirmationUxRefresh:enabled"/>
+  <int value="289071378"
+      label="ReadAnythingReadAloudTSTextSegmentation:enabled"/>
   <int value="289408715" label="MacImeLiveConversionFix:enabled"/>
   <int value="289465857" label="ClipboardHistorySimpleRender:disabled"/>
   <int value="290559997" label="LinkCapturingUiUpdate:disabled"/>
