@@ -618,16 +618,16 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
       "Autofill.SaveIbanPromptResult.Local.SavedWithNickname", true, 1);
 }
 
-// Tests the local save bubble. Ensures that clicking the [X] button will still
-// see the omnibox icon.
+// Tests the local save bubble. Ensures that clicking the [X] button will remove
+// the omnibox icon.
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_ClickingClosesBubbleStillShowOmnibox) {
+                       Local_ClickingClosesBubbleClearsOmnibox) {
   base::HistogramTester histogram_tester;
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
   ClickOnCloseButton();
-  EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
+  EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
