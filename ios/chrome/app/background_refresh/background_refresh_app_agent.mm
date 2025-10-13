@@ -31,6 +31,59 @@
 @property(nonatomic) NSMutableSet<AppRefreshProvider*>* activeProviders;
 @end
 
+// Debugging notes:
+//
+// Important: BACKGROUND REFRESH REQUIRES A DEVICE. It doesn't work
+// on simulators at all. You will need to be debugging on a device for any of
+// these procedures to work.
+//
+// You will also need to set #app-backgrund-refresh-ios to 'Enabled' in
+// `chrome://flags` in the Chrome install you are debugging.
+//
+// To trigger task execution by iOS's background task scheduler while the
+// debugger is attached, the task needs to be scheduled first, and then a
+// private debugging method needs to be called.
+//
+// To do this with a *warm* start (that is, when Chrome has already launched,
+// and the refresh task executing when it is backgrounded):
+//   (1) Build and launch Chrome as usual.
+//   (2) After Chrome has fully launched, and without halting the debugger,
+//       background Chrome. This will trigger `requestAppRefresh`.
+//   (3) Pause Chrome using the debugger.
+//   (4) Execute this command in the debugger:
+//         e -l objc -- (void)[[BGTaskScheduler sharedScheduler]
+//           _simulateLaunchForTaskWithIdentifier:@"chrome.app.refresh"]
+//   (5) Resume Chrome using the debugger. The background task will execute and
+//       can be debugged.
+//
+// To do this with a *cold* start, where Chrome launches in the background and
+// then executes the refresh task without ever foregrounding:
+//   (1) Build and launch Chrome as usual.
+//   (2) After Chrome has fully launched, background Chrome. This will cause the
+//       refresh task to be scheduled.
+//   (3) Stop Chrome in XCode while it is in the background (don't pause in the
+//       debugger, stop Chrome running).
+//   (4) Launch Chrome again with the "Launch due to a background fetch event"
+//       option checked (under Scheme > Run > Options). This will launch Chrome
+//       without foregrounding it.
+//   (5) After a few seconds, pause Chrome using the debugger.
+//   (6) Execute this command in the debugger:
+//         e -l objc -- (void)[[BGTaskScheduler sharedScheduler]
+//           _simulateLaunchForTaskWithIdentifier:@"chrome.app.refresh"]
+//   (7) Resume Chrome using the debugger. The background task will execute and
+//       can be debugged.
+//
+// To trigger the expiration handler (that is, to forcibly expire the task while
+// it's running):
+//   (1) Set a breakpoint in `-handleExecutionForTask:`, after the for-loop that
+//       calls all of the providers.
+//   (2) Make sure this method is called by triggering the task as described
+//       above.
+//   (3) When the app is paused, run the following command in the debugger:
+//         e -l objc -- (void)[[BGTaskScheduler sharedScheduler]
+//         _simulateExpirationForTaskWithIdentifier:@"chrome.app.refresh"]
+//   (4) Resume execution. The task expiration code path can be debugged.
+
 // General note on threading: the IOS task scheduler invokes the configured
 // blocks on a non-main thread. This class's primary job is to route background
 // refresh work to the specific classes (instances of AppRefreshProvider) which
@@ -39,7 +92,7 @@
 // thread. The methods that handle that work are thus main-sequence affine, and
 // are guarded by a sequence checker. The configured methods that handle task
 // execution and cancellation, which are called directly by the iOS scheduler on
-// a non-main thread, must therefore only consist of dispacthing to a
+// a non-main thread, must therefore only consist of dispatching to a
 // corresponding main-thread method.
 //
 // For clarity, the methods expected to be only called from the task scheduler
@@ -97,38 +150,12 @@
                       launchHandler:handler];
 }
 
-// Debugging note: To induce the scheduler to call this task, you should
-// uncomment the debug code at the end of -requestAppRefresh, or:
-//   (1) Set a breakpoint sometime after `-registerBaskgroundRefreshTask` is
-//       called.
-//   (2) When the app is paused, run the following command in the debugger:
-//         e -l objc -- (void)[[BGTaskScheduler sharedScheduler]
-//         _simulateLaunchForTaskWithIdentifier:@"chrome.app.refresh"]
-//   (3) Resume execution.
-//
-// To trigger the expiration handler (that is, to forcibly expire the task):
-//   (1) Set a breakpoint in -handleExecutionForTask:, after the for-loop that
-//       calls all of the providers.
-//   (2) Make sure this method is called by triggering the task as described
-//       above.
-//   (3) When the app is paused, run the following command in the debugger:
-//         e -l objc -- (void)[[BGTaskScheduler sharedScheduler]
-//         _simulateExpirationForTaskWithIdentifier:@"chrome.app.refresh"]
-//   (4) Resume execution.
-//
-//   Remember also that BACKGROUND REFRESH REQUIRES A DEVICE. It doesn't work
-//   on simulators at all.
-
 // Handle background refresh. This is called by the (OS) background task
 // scheduler and is **not called on the main thread**.
 - (void)systemTriggeredExecutionForTask:(BGTask*)task {
   // TODO(crbug.com/354919106): This is still an incomplete implementation. Some
   // of the things that must be implemented for this to work correctly:
   //  - No processing if this is a safe mode launch.
-  //  - Update the app state for both starting and ending refresh work; this
-  //    must hapopen on the main thread, and further processing should wait on
-  //    it. There are hooks (-refreshStarted and -refreshComplete) for this but
-  //    they are no-ops.
 
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(task) weakTask = task;
@@ -152,7 +179,7 @@
   });
 }
 
-// Main-threrad handler for task execution.
+// Main-thread handler for task execution.
 // Records metrics for backgroud refresh invocation.
 // If the app is ready, triggers provider execution.
 // If not, caches the task for later executuion.
@@ -312,11 +339,6 @@
   }
 
   base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
-
-  // Time-saving debug mode; uncomment this to immediately trigger the refresh
-  // task. Please do not delete the commented code!
-  // [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
-  //                                      kAppBackgroundRefreshTaskIdentifier];
 }
 
 @end
