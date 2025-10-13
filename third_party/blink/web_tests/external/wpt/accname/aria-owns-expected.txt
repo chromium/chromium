@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Ignore aria-owns when on an element that is hidden from all users
+  assert_equals: <h3 class="ex-label" data-testname="Ignore aria-owns when on an element that is hidden from all users" data-expectedlabel="treasure">\n    <span hidden="" aria-owns="treasure">\n      This ninja can’t steal the...\n    </span>\n    <mark id="treasure">treasure</mark>\n  </h3> expected "treasure" but got ""
+[FAIL] Computed name of parent heading persists when aria-owns fails to relocate its contents
+  assert_equals: <h4 class="ex-label" data-testname="Computed name of parent heading persists when aria-owns fails to relocate its contents" data-expectedlabel="a pearl">\n    <!--\n      TODO: This subtest only succeeds in confirming that the h4’s computed\n      name remains "a pearl".\n\n      It does *not* confirm that #pearl remains unmoved in the accessibility\n      tree after aria-owns is processed on the h3.\n\n      This subtle distinction is importance since we’ve discovered at least\n      one case where the h4 is simultaneously correctly named but emptied\n      of its contents:\n\n      https://github.com/web-platform-tests/wpt/pull/44822#issuecomment-3251614062\n\n      A better test would assert that the #pearl text node remains unmoved.\n    -->\n    <mark id="pearl">a pearl</mark>\n  </h4> expected "a pearl" but got ""
+Harness: the test ran to completion.
+

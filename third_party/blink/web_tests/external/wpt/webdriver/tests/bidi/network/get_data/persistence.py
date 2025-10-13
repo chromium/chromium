@@ -52,8 +52,10 @@ async def test_data_persists_after_navigation(bidi_session, top_context,
 
 
 @pytest.mark.asyncio
-async def test_data_persists_after_closing(bidi_session, top_context,
-        setup_network_test, add_data_collector, test_page):
+async def test_data_persists_after_closing(bidi_session, setup_network_test,
+        add_data_collector, test_page):
+    new_context = await bidi_session.browsing_context.create(type_hint="tab")
+
     network_events = await setup_network_test(
         events=["network.responseCompleted"])
     events = network_events["network.responseCompleted"]
@@ -67,7 +69,7 @@ async def test_data_persists_after_closing(bidi_session, top_context,
 
     # Init first navigation.
     await bidi_session.browsing_context.navigate(
-        context=top_context["context"],
+        context=new_context["context"],
         url=test_page,
         wait="complete",
     )
@@ -83,7 +85,7 @@ async def test_data_persists_after_closing(bidi_session, top_context,
     assert "<div>foo</div>" in data["value"]
 
     # Close the page.
-    await bidi_session.browsing_context.close(context=top_context["context"])
+    await bidi_session.browsing_context.close(context=new_context["context"])
 
     # Assert data is still available.
     data = await bidi_session.network.get_data(request=request,

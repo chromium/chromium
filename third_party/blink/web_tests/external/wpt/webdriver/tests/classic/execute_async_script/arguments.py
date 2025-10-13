@@ -23,7 +23,8 @@ def test_null(session):
     ("foo", "string"),
     ("foo\"bar", 'string'),
     ('"); alert(1); //', "string"),
-], ids=["boolean", "number", "string", "string_quote", "string_injection"])
+    ({"foo-bar":"bar-foo"}, "object")
+], ids=["boolean", "number", "string", "string_quote", "string_injection", "special_key_object"])
 def test_primitives(session, value, expected_type):
     result = execute_async_script(session, """
         arguments[1]([typeof arguments[0], arguments[0]])
@@ -205,3 +206,32 @@ def test_element_reference(session, get_test_page, expression, expected_type):
         resolve(arguments[0] == {expression})
         """, [reference])
     assert_success(result, True)
+
+
+@pytest.mark.parametrize("expression, expected_type", [
+    ("window.frames[0]", WebFrame),
+    ("document.querySelector('div')", WebElement),
+    ("document.querySelector('custom-element').shadowRoot", ShadowRoot),
+    ("window", WebWindow)
+], ids=["frame", "node", "shadow-root", "window"])
+def test_object_with_identifier_not_first_key(session, get_test_page, expression, expected_type):
+    session.url = get_test_page(as_frame=False)
+
+    result = execute_async_script(session, f"arguments[0]({expression})")
+    reference = assert_success(result)
+    value = {
+        "foo": "bar",
+        expected_type.identifier: reference.id,
+        "baz": 1314
+    }
+
+    result = execute_async_script(
+        session,
+        """
+        let resolve = arguments[1];
+        resolve(arguments[0]);
+        """,
+        args=[value]
+    )
+    reference = assert_success(result)
+    assert isinstance(reference, expected_type)
