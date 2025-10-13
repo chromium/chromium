@@ -106,8 +106,11 @@ void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
 }
 
 void SidePanelCoordinator::OnPinStateChanged() {
-  if (base::WeakPtr<SidePanelEntry> entry = current_entry()) {
-    UpdateSidePanelHeader(entry.get());
+  if (!current_key()) {
+    return;
+  }
+  if (SidePanelEntry* entry = GetEntryForUniqueKey(*current_key())) {
+    UpdateSidePanelHeader(entry);
   }
 }
 
@@ -409,7 +412,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   content_wrapper->SetVisible(true);
   side_panel->Open(/*animated=*/!suppress_animations);
 
-  SidePanelEntry* previous_entry = current_entry().get();
+  SidePanelEntry* previous_entry =
+      current_key() ? GetEntryForUniqueKey(*current_key()) : nullptr;
 
   if (content_wrapper->children().size()) {
     if (previous_entry) {
@@ -433,7 +437,6 @@ void SidePanelCoordinator::PopulateSidePanel(
         SidePanelEntry::PanelType::kContent);
   }
   set_current_key(unique_key);
-  set_current_entry(entry->GetWeakPtr());
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     side_panel_toolbar_pinning_controller_->UpdateActiveState(
         entry->key(), entry->should_show_ephemerally_in_toolbar());
@@ -581,8 +584,11 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
 }
 
 void SidePanelCoordinator::UpdateNewTabButtonState() {
-  if (base::WeakPtr<SidePanelEntry> entry = current_entry()) {
-    UpdateSidePanelHeader(entry.get());
+  if (!current_key()) {
+    return;
+  }
+  if (SidePanelEntry* entry = GetEntryForUniqueKey(*current_key())) {
+    UpdateSidePanelHeader(entry);
   }
 }
 
@@ -634,9 +640,8 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // from calling multiple times. This could happen in the edge cases when
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
-  SidePanelEntry* previous_entry = current_entry().get();
+  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
   set_current_key(std::nullopt);
-  set_current_entry(nullptr);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }

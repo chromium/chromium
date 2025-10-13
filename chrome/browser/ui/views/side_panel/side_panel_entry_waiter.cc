@@ -48,8 +48,9 @@ void SidePanelEntryWaiter::RunLoadedCallback(
     PopulateSidePanelCallback callback) {
   // content_proxy is owned by content_view which is owned by SidePanelEntry.
   // If this callback runs then loading_entry_ must be valid.
-  CHECK(loading_entry_);
-  SidePanelEntry* entry = loading_entry_.get();
-  loading_entry_.reset();
-  std::move(callback).Run(entry, std::nullopt);
+  if (loading_entry_) {
+    SidePanelEntry* entry = loading_entry_.get();
+    loading_entry_.reset();
+    std::move(callback).Run(entry, std::nullopt);
+  }
 }

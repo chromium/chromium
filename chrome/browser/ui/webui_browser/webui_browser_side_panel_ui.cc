@@ -112,15 +112,17 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
     std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view) {
-  SidePanelEntry* previous_entry = current_entry().get();
-  if (previous_entry) {
-    previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
+  if (current_key()) {
+    SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
+    if (previous_entry) {
+      previous_entry->OnEntryWillHide(SidePanelEntryHideReason::kReplaced);
 
-    // TODO(webium): Call previous_entry->OnEntryHidden() below when the entry
-    // is swapped.
+      // TODO(webium): Call previous_entry->OnEntryHidden() below when the entry
+      // is swapped.
 
-    previous_entry->CacheView(std::move(current_side_panel_view_));
-    current_side_panel_view_.reset();
+      previous_entry->CacheView(std::move(current_side_panel_view_));
+      current_side_panel_view_.reset();
+    }
   }
 
   current_side_panel_view_ =
@@ -132,7 +134,6 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
       views::kDetachedViewFocusManagerKey,
       GetWebUIBrowserWindow()->widget()->GetFocusManager());
   set_current_key(unique_key);
-  set_current_entry(entry->GetWeakPtr());
   GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
 
   if (auto* contextual_registry = GetActiveContextualRegistry()) {

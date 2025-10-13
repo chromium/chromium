@@ -24,6 +24,14 @@ SidePanelRegistry* GetSidePanelRegistryFromWebContents(
   return tab->GetTabFeatures()->side_panel_registry();
 }
 
+SidePanelRegistry* GetSidePanelRegistryFromTabHandle(tabs::TabHandle handle) {
+  tabs::TabInterface* tab = handle.Get();
+  if (!tab || !tab->GetTabFeatures()) {
+    return nullptr;
+  }
+  return tab->GetTabFeatures()->side_panel_registry();
+}
+
 }  // namespace
 
 SidePanelUIBase::SidePanelUIBase(Browser* browser)
@@ -102,7 +110,11 @@ SidePanelEntry* SidePanelUIBase::GetEntryForUniqueKey(
     const UniqueKey& unique_key) const {
   SidePanelEntry* entry = nullptr;
   if (unique_key.tab_handle) {
-    entry = GetActiveContextualEntryForKey(unique_key.key);
+    SidePanelRegistry* tab_registry =
+        GetSidePanelRegistryFromTabHandle(unique_key.tab_handle.value());
+    if (tab_registry) {
+      entry = tab_registry->GetEntryForKey(unique_key.key);
+    }
   } else {
     entry = window_registry_->GetEntryForKey(unique_key.key);
   }

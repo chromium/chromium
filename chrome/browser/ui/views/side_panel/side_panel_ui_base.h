@@ -70,7 +70,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   SidePanelRegistry* GetWindowRegistry() { return window_registry_.get(); }
 
   std::optional<UniqueKey> current_key() const { return current_key_; }
-  base::WeakPtr<SidePanelEntry> current_entry() const { return current_entry_; }
 
  protected:
   friend class SidePanelEntryWaiter;
@@ -104,10 +103,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
 
   void set_current_key(std::optional<UniqueKey> new_key) {
     current_key_ = new_key;
-  }
-
-  void set_current_entry(base::WeakPtr<SidePanelEntry> new_entry) {
-    current_entry_ = new_entry;
   }
 
   std::optional<UniqueKey> GetUniqueKeyForKey(
@@ -152,11 +147,6 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   // must only be set in one place: PopulateSidePanel() and unset in one place:
   // OnViewVisibilityChanged()
   std::optional<UniqueKey> current_key_;
-
-  // TODO(https://crbug.com/363743081): Remove this member.
-  // There are a few cases where the current control flow first modifies the
-  // active registry, then tries to reference the previous entry.
-  base::WeakPtr<SidePanelEntry> current_entry_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_

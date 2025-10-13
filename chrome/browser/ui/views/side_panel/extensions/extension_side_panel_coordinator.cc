@@ -198,6 +198,14 @@ void ExtensionSidePanelCoordinator::OnSidePanelServiceShutdown() {
 }
 
 void ExtensionSidePanelCoordinator::OnViewDestroying() {
+  // Reset the panel state to inactive. The panel state should reflect the
+  // state of the view and not the visibility of the entry so handling this
+  // during view destruction.
+  if (is_panel_active_) {
+    OnClosed();
+    is_panel_active_ = false;
+  }
+
   // When the extension's view inside the side panel is destroyed, reset
   // the ExtensionViewHost so it cannot try to notify a view that no longer
   // exists when its event listeners are triggered. Otherwise, a use after free
@@ -286,12 +294,13 @@ void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
 //   1. The panel is closed on the tab.
 //   2. The panel is replaced by another panel.
 //   3. The tab / window itself is closed.
-// OnEntryWillHide() handles scenarios 1 and 2, whereas the
-// ~ExtensionSidePanelCoordinator() destructor handles scenario 3.
+// OnEntryWillHide() handles scenarios 2, whereas the
+// OnViewDestroying() handles scenario 1 and 3.
 void ExtensionSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  if (entry->key() != GetEntryKey()) {
+  if (entry->key() != GetEntryKey() ||
+      reason != SidePanelEntryHideReason::kReplaced) {
     return;
   }
 
