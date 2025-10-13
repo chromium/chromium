@@ -292,6 +292,11 @@ export class SearchboxElement extends SearchboxElementBase {
       // Private properties
       //========================================================================
 
+      inputFocused_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       isLensSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -407,6 +412,7 @@ export class SearchboxElement extends SearchboxElementBase {
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
   protected accessor inputAriaLive_: string = '';
+  private accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
   protected accessor enableThumbnailSizingTweaks_: boolean =
@@ -675,6 +681,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   protected onInputFocus_() {
+    this.inputFocused_ = true;
     this.pageHandler_.onFocusChanged(true);
     this.placeholderCycler_?.stop();
   }
@@ -806,6 +813,8 @@ export class SearchboxElement extends SearchboxElementBase {
         newlyFocusedEl?.tagName.toLowerCase() === LENS_GHOST_LOADER_TAG_NAME) {
       return;
     }
+
+    this.inputFocused_ = false;
 
     if (this.lastQueriedInput_ === '') {
       // Clear the input as well as the matches if the input was empty when
