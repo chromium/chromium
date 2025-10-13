@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -220,8 +222,9 @@ void ConfigureTabResumptionItemForShopCard(
       decisionWithMetadata.metadata
           .ParsedMetadata<commerce::PriceTrackingData>();
 
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm3) &&
+  if ((base::Contains(commerce::kShopCardVariation.Get(),
+                      commerce::kShopCardArm3) ||
+       commerce::kShopCardVariation.Get() == commerce::kShopCardArm6) &&
       HasPriceDropDataForTabResumption(price_tracking_data)) {
     item.shopCardData = [[ShopCardData alloc] init];
     item.shopCardData.shopCardItemType = ShopCardItemType::kPriceDropOnTab;
@@ -330,7 +333,8 @@ class TabResumptionMediatorProxy {
                                      StartSurfaceRecentTabObserving,
                                      SyncedSessionsObserver,
                                      SyncObserverModelBridge,
-                                     TabResumptionCommands>
+                                     TabResumptionCommands,
+                                     TabResumptionConsumerSource>
 // readwrite override.
 @property(nonatomic, strong, readwrite) TabResumptionItem* itemConfig;
 
@@ -389,6 +393,7 @@ class TabResumptionMediatorProxy {
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
   raw_ptr<PushNotificationService> _pushNotificationService;
   raw_ptr<AuthenticationService> _authenticationService;
+  id<TabResumptionConsumer> _consumer;
 }
 
 - (instancetype)
@@ -763,8 +768,12 @@ class TabResumptionMediatorProxy {
       titleWasUpdated:(NSString*)title {
 }
 
-#pragma mark - Private
+#pragma mark - TabResumptionConsumerSource
+- (void)addConsumer:(id<TabResumptionConsumer>)consumer {
+  _consumer = consumer;
+}
 
+#pragma mark - Private
 // Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
   if (tab_resumption_prefs::IsTabResumptionDisabled(_profilePrefs)) {
@@ -829,6 +838,8 @@ class TabResumptionMediatorProxy {
       return;
     }
   }
+
+  item.consumerSource = self;
 
   if (base::Contains(commerce::kShopCardVariation.Get(),
                      commerce::kShopCardArm3) ||
@@ -896,7 +907,8 @@ class TabResumptionMediatorProxy {
   if (item.shopCardData.productImageURL.has_value()) {
     [self
         salientImageURLReceived:GURL(item.shopCardData.productImageURL.value())
-                        forItem:item];
+                        forItem:item
+                    updateImage:NO];
   } else {
     if (item.itemType == kMostRecentTab) {
       [self fetchSnapshotForItem:item];
@@ -905,6 +917,47 @@ class TabResumptionMediatorProxy {
     }
   }
   [self fetchFaviconForItem:item];
+}
+
+// Arm 6 delays acquiring the price drop (if it exists) and the
+// product image and updates the card when this data is availalbe.
+// This reduces the overall latency of the card.
+- (void)fetchPriceDropIfApplicable:(TabResumptionItem*)item {
+  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm6) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
+      _optimizationGuideService, item.tabURL,
+      optimization_guide::proto::PRICE_TRACKING,
+      optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
+      base::BindRepeating(^(
+          const GURL& url,
+          const base::flat_map<
+              optimization_guide::proto::OptimizationType,
+              optimization_guide::OptimizationGuideDecisionWithMetadata>&
+              decisions) {
+        TabResumptionMediator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        ConfigureTabResumptionItemForShopCard(decisions, item, url);
+        if (![strongSelf isPendingItem:item]) {
+          // The item was already fetched or is being fetched, ignore it.
+          return;
+        }
+
+        if (item.shopCardData.productImageURL.has_value()) {
+          [strongSelf salientImageURLReceived:GURL(item.shopCardData
+                                                       .productImageURL.value())
+                                      forItem:item
+                                  updateImage:YES];
+        } else {
+          [strongSelf.itemConfig reconfigureWithItem:item];
+          [strongSelf->_consumer shopCardDataCompleted:item];
+        }
+      }));
 }
 
 // Fetches the snapshot of the tab showing `item`.
@@ -955,14 +1008,15 @@ class TabResumptionMediatorProxy {
   _pageImageService->FetchImageFor(
       page_image_service::mojom::ClientId::NtpTabResumption, item.tabURL,
       options, base::BindOnce(^(const GURL& URL) {
-        [weakSelf salientImageURLReceived:URL forItem:item];
+        [weakSelf salientImageURLReceived:URL forItem:item updateImage:NO];
       }));
 }
 
 // The URL for the salient image has been received. Download the image if it
 // is valid or fallbacks to favicon.
 - (void)salientImageURLReceived:(const GURL&)URL
-                        forItem:(TabResumptionItem*)item {
+                        forItem:(TabResumptionItem*)item
+                    updateImage:(BOOL)updateImage {
   __weak TabResumptionMediator* weakSelf = self;
   if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
       !base::EndsWith(URL.host(), kGStatic)) {
@@ -972,14 +1026,17 @@ class TabResumptionMediatorProxy {
       URL,
       base::BindOnce(^(const std::string& imageData,
                        const image_fetcher::RequestMetadata& metadata) {
-        [weakSelf salientImageReceived:imageData forItem:item];
+        [weakSelf salientImageReceived:imageData
+                               forItem:item
+                           updateImage:updateImage];
       }),
       NO_TRAFFIC_ANNOTATION_YET);
 }
 
 // Salient image has been received. Display it.
 - (void)salientImageReceived:(const std::string&)imageData
-                     forItem:(TabResumptionItem*)item {
+                     forItem:(TabResumptionItem*)item
+                 updateImage:(BOOL)updateImage {
   UIImage* image =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.c_str()
                                             length:imageData.size()]];
@@ -987,7 +1044,12 @@ class TabResumptionMediatorProxy {
     return;
   }
   item.contentImage = image;
-  [self showItem:item];
+  if (updateImage) {
+    [self.itemConfig reconfigureWithItem:item];
+    [self->_consumer shopCardDataCompleted:item];
+  } else {
+    [self showItem:item];
+  }
 }
 
 // Fetches the favicon for `item`.
@@ -1023,6 +1085,7 @@ class TabResumptionMediatorProxy {
   if (!self.itemConfig) {
     self.itemConfig = item;
     [self.delegate tabResumptionHelperDidReceiveItem];
+    [self fetchPriceDropIfApplicable:item];
     return;
   }
 
@@ -1030,6 +1093,7 @@ class TabResumptionMediatorProxy {
   // Instead the existing config must be updated.
   [self.itemConfig reconfigureWithItem:item];
   [self.delegate tabResumptionHelperDidReconfigureItem];
+  [self fetchPriceDropIfApplicable:item];
 }
 
 // Creates a TabResumptionItem corresponding to the last synced tab.

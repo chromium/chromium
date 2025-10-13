@@ -103,7 +103,8 @@ BOOL PromoteTabResumptionShopCardToFrontOfStack() {
   return (base::Contains(commerce::kShopCardVariation.Get(),
                          commerce::kShopCardArm3) ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
-          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) &&
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm6) &&
          commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
 }
 

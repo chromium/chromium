@@ -91,6 +91,16 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   // Displays the price drop chip if a price drop exists for
   // the tab resumption url.
   PriceNotificationsPriceChipView* _priceNotificationsChip;
+
+  // Image representing the tab.
+  UIView* _imageContainerView;
+
+  // Title of the Tab.
+  UILabel* _tabTitleLabel;
+
+  // Containts Tab title, host name and price
+  // drop chip if applicable.
+  UIStackView* _labelStackView;
 }
 
 - (instancetype)initWithItem:(TabResumptionItem*)item {
@@ -112,32 +122,38 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   }
 }
 
+#pragma mark - TabResumptionConsumer
+- (void)shopCardDataCompleted:(TabResumptionItem*)item {
+  _item = item;
+  [self createSubviews];
+}
+
 #pragma mark - Private methods
 
 // Creates all the subviews.
 - (void)createSubviews {
+  [self clearSubviews];
   self.accessibilityIdentifier = kTabResumptionViewIdentifier;
   self.isAccessibilityElement = YES;
   self.accessibilityTraits = UIAccessibilityTraitButton;
 
   _containerStackView = [self configuredContainerStackView];
 
-  UIView* imageContainerView = [self configuredImageContainer];
-  [_containerStackView addArrangedSubview:imageContainerView];
+  _imageContainerView = [self configuredImageContainer];
+  [_containerStackView addArrangedSubview:_imageContainerView];
 
-  UIStackView* labelStackView = [self configuredLabelStackView];
-  [_containerStackView addArrangedSubview:labelStackView];
+  _labelStackView = [self configuredLabelStackView];
+  [_containerStackView addArrangedSubview:_labelStackView];
 
+  _tabTitleLabel = [self configuredTabTitleLabel];
+  [_labelStackView addArrangedSubview:_tabTitleLabel];
   NSMutableArray* accessibilityLabel = [NSMutableArray array];
-  UILabel* tabTitleLabel = [self configuredTabTitleLabel];
-  [labelStackView addArrangedSubview:tabTitleLabel];
-  [accessibilityLabel addObject:tabTitleLabel.text];
   UILabel* hostnameAndSyncTimeLabel = [self configuredHostNameAndSyncTimeLabel];
-  [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
+  [_labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
   [accessibilityLabel addObject:hostnameAndSyncTimeLabel.text];
 
   if (HasPriceDropOnTab(_item)) {
-    tabTitleLabel.numberOfLines = 1;
+    _tabTitleLabel.numberOfLines = 1;
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsChip.isAccessibilityElement = YES;
@@ -149,7 +165,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     [_priceNotificationsChip
          setPriceDrop:_item.shopCardData.priceDrop->current_price
         previousPrice:_item.shopCardData.priceDrop->previous_price];
-    [labelStackView addArrangedSubview:_priceNotificationsChip];
+    [_labelStackView addArrangedSubview:_priceNotificationsChip];
     self.accessibilityLabel = _item.shopCardData.accessibilityString;
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
         @[ UITraitPreferredContentSizeCategory.self ]);
@@ -163,6 +179,25 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
+}
+
+- (void)clearSubviews {
+  if (_priceNotificationsChip) {
+    [_priceNotificationsChip removeFromSuperview];
+  }
+  if (_imageContainerView) {
+    [_imageContainerView removeFromSuperview];
+  }
+  if (_tabTitleLabel) {
+    [_tabTitleLabel removeFromSuperview];
+  }
+
+  if (_labelStackView) {
+    [_labelStackView removeFromSuperview];
+  }
+  if (_containerStackView) {
+    [_containerStackView removeFromSuperview];
+  }
 }
 
 // Adds a tap gesture recognizer to the view.

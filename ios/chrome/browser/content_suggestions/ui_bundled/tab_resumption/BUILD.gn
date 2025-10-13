@@ -5,6 +5,8 @@
 source_set("tab_resumption") {
   sources = [
     "tab_resumption_commands.h",
+    "tab_resumption_consumer.h",
+    "tab_resumption_consumer_source.h",
     "tab_resumption_helper_delegate.h",
     "tab_resumption_item.h",
     "tab_resumption_item.mm",

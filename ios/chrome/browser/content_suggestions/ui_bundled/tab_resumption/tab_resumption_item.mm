@@ -43,6 +43,7 @@
   _URLKey = item.URLKey;
   _requestID = item.requestID;
   _shopCardData = item.shopCardData;
+  _consumerSource = item.consumerSource;
 }
 
 #pragma mark - properties

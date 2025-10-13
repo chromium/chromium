@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_consumer.h"
+
 @class TabResumptionItem;
 @protocol TabResumptionCommands;
+@protocol TabResumptionConsumer;
 
 // A view that displays a tab resumption item in the Magic Stack.
-@interface TabResumptionView : UIView
+@interface TabResumptionView : UIView <TabResumptionConsumer>
 
 // Initialize a TabResumptionView with the given `item`.
 - (instancetype)initWithItem:(TabResumptionItem*)item;
