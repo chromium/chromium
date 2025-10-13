@@ -203,7 +203,7 @@ try_.presubmit_builder(
     },
     tryjob = try_.job(
         # TODO(crbug.com/41495881): Promote out of experimental.
-        experiment_percentage = 5,
+        experiment_percentage = 100,
     ),
 )
 
