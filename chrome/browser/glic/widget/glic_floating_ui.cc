@@ -81,6 +81,8 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
 
   glic_window_animator_ = std::make_unique<GlicWindowAnimator>(
       glic_widget_->GetWeakPtr(), base::DoNothing());
+  window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
+      glic_widget_->GetWeakPtr(), this);
 }
 
 void GlicFloatingUi::Resize(const gfx::Size& size,
@@ -102,6 +104,14 @@ void GlicFloatingUi::SetDraggableAreas(
   if (auto* glic_view = GetGlicView()) {
     glic_view->SetDraggableAreas(draggable_areas);
   }
+}
+
+GlicWindowAnimator* GlicFloatingUi::window_animator() {
+  return glic_window_animator_.get();
+}
+
+void GlicFloatingUi::OnDragComplete() {
+  NOTIMPLEMENTED();
 }
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
@@ -129,10 +139,12 @@ void GlicFloatingUi::Show() {
   GetGlicWidget()->Show();
   GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
-  // TODO: Setup resize and drag
+  // TODO: Set up manual resize.
+  window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
 }
 
 void GlicFloatingUi::Close() {
+  window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_.reset();
   delegate_->WillCloseFor(FloatingEmbedderKey{});

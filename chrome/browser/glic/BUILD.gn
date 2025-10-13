@@ -198,6 +198,8 @@ source_set("impl") {
     "widget/glic_window_config.h",
     "widget/glic_window_controller_impl.cc",
     "widget/glic_window_controller_impl.h",
+    "widget/glic_window_event_observer.cc",
+    "widget/glic_window_event_observer.h",
     "widget/glic_window_resize_animation.cc",
     "widget/glic_window_resize_animation.h",
     "widget/inactive_view_controller.cc",

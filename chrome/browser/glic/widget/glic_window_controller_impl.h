@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -61,7 +62,8 @@ class GlicWindowControllerImpl
       public Host::EmbedderDelegate,
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost {
+      public web_modal::WebContentsModalDialogHost,
+      public GlicWindowEventObserver::Delegate {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
@@ -98,6 +100,16 @@ class GlicWindowControllerImpl
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override;
+
+  // GlicWindowEventObserver::Delegate:
+  GlicWindowAnimator* window_animator() override;
+
+  // Handles end-of-drag:
+  //  - If glic is within attachment distance of a browser window's glic button,
+  //    attach the glic window to the button's position.
+  //  - If glic is still detached and has moved to a display with a different
+  //    work area size, possibly resize the window.
+  void OnDragComplete() override;
 
   base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() const override;
@@ -170,12 +182,6 @@ class GlicWindowControllerImpl
                                    bool prevent_close,
                                    mojom::InvocationSource source);
 
-  // Returns true if the mouse has been dragged more than a minimum distance
-  // from `initial_press_loc`, so a mouse down followed by a move of less than
-  // the minimum number of pixels doesn't start a window drag.
-  bool ShouldStartDrag(const gfx::Point& initial_press_loc,
-                       const gfx::Point& mouse_location);
-
   // Sets the floating attributes of the glic window.
   //
   // When set to true, the glic window is set to have a `kFloatingWindow`
@@ -234,16 +240,6 @@ class GlicWindowControllerImpl
   void AttachToBrowser(Browser& browser, AttachChangeReason reason);
   // Like `AttachToBrowser` but also explicitly requests to open the side panel.
   void AttachToBrowserAndShow(Browser& browser, AttachChangeReason reason);
-
-  // Keep part of glic window within the visible region.
-  void AdjustPositionIfNeeded();
-
-  // Handles end-of-drag:
-  //  - If glic is within attachment distance of a browser window's glic button,
-  //    attach the glic window to the button's position.
-  //  - If glic is still detached and has moved to a display with a different
-  //    work area size, possibly resize the window.
-  void OnDragComplete();
 
   // Finds a browser within attachment distance of glic to toggle the attachment
   // indicator.
@@ -335,6 +331,7 @@ class GlicWindowControllerImpl
   raw_ptr<GlicView> glic_view_;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
+  std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
 
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;
@@ -346,14 +343,6 @@ class GlicWindowControllerImpl
   // Whether the widget should be user resizable, kept here in case it's
   // specified before the widget is created.
   bool user_resizable_ = true;
-
-  // Used to monitor key and mouse events from native window.
-  class WindowEventObserver;
-  friend class WindowEventObserver;
-  std::unique_ptr<WindowEventObserver> window_event_observer_;
-
-  // True while RunMoveLoop() has been called on a widget.
-  bool in_move_loop_ = false;
 
   // This is the last panel state sent to observers. It should only be updated
   // in `NotifyIfPanelStateChanged`.

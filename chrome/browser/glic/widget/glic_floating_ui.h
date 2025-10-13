@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -21,7 +22,9 @@ class GlicWidget;
 class GlicView;
 
 // A stub implementation of GlicUiEmbedder for floating UIs.
-class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
+class GlicFloatingUi : public GlicUiEmbedder,
+                       public Host::EmbedderDelegate,
+                       public GlicWindowEventObserver::Delegate {
  public:
   GlicFloatingUi(Profile* profile,
                  BrowserWindowInterface* browser,
@@ -59,6 +62,10 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void ClosePanel() override;
 
+  // GlicWindowEventObserver::Delegate:
+  GlicWindowAnimator* window_animator() override;
+  void OnDragComplete() override;
+
  private:
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
@@ -66,6 +73,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;
+  std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
   mojom::PanelState panel_state_;
 
   raw_ptr<Profile> profile_;
