@@ -204,6 +204,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
+                           ShouldShowEnterpriseDialog_AlwaysAsk);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
   FRIEND_TEST_ALL_PREFIXES(ManagedProfileRequiredNavigationThrottleTest,
                            CancelsWithInterstitialWhenForcedInterception);

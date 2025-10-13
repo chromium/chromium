@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
@@ -529,6 +530,36 @@ TEST_F(DiceWebSigninInterceptorTest,
 
   EXPECT_FALSE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
+}
+
+TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseDialog_AlwaysAsk) {
+  // The enterprise dialog should be shown for a managed account when no account
+  // is in the profile, even if the user previously declined.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_EQ(account_info.CanApplyAccountLevelEnterprisePolicies(),
+            signin::Tribool::kTrue);
+
+  // Simulate that the user declined profile creation twice.
+  const int kMaxProfileCreationDeclinedCount = 2;
+  for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
+    interceptor()->IncrementEmailToCountDictionaryPref(
+        prefs::kProfileCreationInterceptionDeclined, account_info.email);
+  }
+  ASSERT_TRUE(interceptor()->HasUserDeclinedProfileCreation(account_info.email));
+
+  // The dialog is not shown by default after being declined.
+  EXPECT_FALSE(interceptor()->ShouldShowEnterpriseDialog(account_info));
+
+  // The dialog is shown if the user choice is `kAlwaysAsk`.
+  SigninPrefs(*profile()->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(account_info.gaia,
+                                             ChromeSigninUserChoice::kAlwaysAsk);
+  EXPECT_TRUE(interceptor()->ShouldShowEnterpriseDialog(account_info));
 }
 
 class DiceWebSigninInterceptorManagedAccountTest
