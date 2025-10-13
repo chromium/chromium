@@ -491,12 +491,14 @@ TeacherScreenPresenter* BocaSessionManager::GetTeacherScreenPresenter() {
 
 std::optional<std::string> BocaSessionManager::GetStudentActiveDeviceId(
     std::string_view student_id) {
-  if (!current_session_ ||
-      !current_session_->student_statuses().contains(student_id)) {
+  if (!current_session_) {
     return std::nullopt;
   }
-  for (const auto& [device_id, device] :
-       current_session_->student_statuses().at(student_id).devices()) {
+  auto it = current_session_->student_statuses().find(student_id);
+  if (it == current_session_->student_statuses().end()) {
+    return std::nullopt;
+  }
+  for (const auto& [device_id, device] : it->second.devices()) {
     if (device.state() == ::boca::StudentDevice::ACTIVE) {
       return device_id;
     }
@@ -720,7 +722,7 @@ void BocaSessionManager::NotifyConsumerActivityUpdate() {
     return;
   }
 
-  auto current_activity = current_session_->student_statuses();
+  auto& current_activity = current_session_->student_statuses();
 
   if (!previous_session_ && current_activity.empty()) {
     return;
@@ -735,12 +737,11 @@ void BocaSessionManager::NotifyConsumerActivityUpdate() {
     return;
   }
 
-  auto previous_activity = previous_session_->student_statuses();
-  for (auto status : current_activity) {
-    auto key = status.first;
-    if (!previous_activity.contains(key) ||
-        (previous_activity.at(key).SerializeAsString() !=
-         status.second.SerializeAsString())) {
+  auto& previous_activity = previous_session_->student_statuses();
+  for (auto& [key, value] : current_activity) {
+    if (auto it = previous_activity.find(key);
+        it == previous_activity.end() ||
+        it->second.SerializeAsString() != value.SerializeAsString()) {
       for (auto& observer : observers_) {
         observer.OnConsumerActivityUpdated(
             std::map<std::string, ::boca::StudentStatus>(
