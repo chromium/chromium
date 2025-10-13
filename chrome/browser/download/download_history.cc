@@ -52,7 +52,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
@@ -143,7 +143,7 @@ const char DownloadHistoryData::kKey[] =
 
 history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   std::string by_ext_id, by_ext_name;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(item);
   if (by_ext) {
@@ -443,7 +443,7 @@ void DownloadHistory::LoadHistoryDownloads(
     // modification, so that observers who care about the extra info may have an
     // updated view of the item.
     bool should_update_observers = false;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (!row.by_ext_id.empty() && !row.by_ext_name.empty()) {
       new extensions::DownloadedByExtension(item, row.by_ext_id,
                                             row.by_ext_name);
@@ -657,7 +657,7 @@ void DownloadHistory::OnDownloadRestoredFromHistory(
 
 bool DownloadHistory::NeedToUpdateDownloadHistory(
     download::DownloadItem* item) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Always populate new extension downloads to history.
   DownloadHistoryData* data = DownloadHistoryData::Get(item);
   extensions::DownloadedByExtension* by_ext =
