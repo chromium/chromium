@@ -120,5 +120,5 @@ https://source.chromium.org/chromium/chromium/src/+/main:components/qr_code_gene
 for examples.
 
 See
-[`//docs/rust-ffi.md`](../../docs/rust-ffi.md)
+[`//docs/rust-ffi.md`](../../docs/rust/ffi.md)
 for information on C++/Rust FFI.

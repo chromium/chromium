@@ -53,7 +53,7 @@ This guidance doesn't apply when depending on Rust standard library
 nor when depending on crates from `//third_party/rust`.
 
 See
-[`//docs/rust-ffi.md`](rust-ffi.md)
+[`//docs/rust-ffi.md`](rust/ffi.md)
 for how to interop with Rust code from C/C++.
 
 Mapping of Chromium APIs to Rust:
