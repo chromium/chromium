@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_ICON_UTIL_H_
-#define UI_GFX_ICON_UTIL_H_
+#ifndef UI_GFX_WIN_ICON_UTIL_H_
+#define UI_GFX_WIN_ICON_UTIL_H_
 
 #include <windows.h>
 
@@ -267,4 +267,4 @@ class COMPONENT_EXPORT(GFX) IconUtil {
                                                 const gfx::Size& s);
 };
 
-#endif  // UI_GFX_ICON_UTIL_H_
+#endif  // UI_GFX_WIN_ICON_UTIL_H_

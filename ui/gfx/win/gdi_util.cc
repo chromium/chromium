@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/gdi_util.h"
+#include "ui/gfx/win/gdi_util.h"
 
 #include <stddef.h>
 

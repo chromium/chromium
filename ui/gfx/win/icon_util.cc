@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 
 #include <windows.h>
 

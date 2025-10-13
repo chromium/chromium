@@ -21,7 +21,7 @@
 #include "base/win/scoped_select_object.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/gdi_util.h"
+#include "ui/gfx/win/gdi_util.h"
 #include "ui/gl/direct_composition_support.h"
 #endif
 

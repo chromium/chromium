@@ -42,8 +42,8 @@
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/views/controls/menu/native_menu_win.h"
 
 class VirtualDesktopHelper

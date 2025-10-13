@@ -70,7 +70,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
-#include "ui/gfx/icon_util.h"  // For Iconutil::kLargeIconSize.
+#include "ui/gfx/win/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -15,8 +15,8 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/controls/menu/menu_runner.h"
 

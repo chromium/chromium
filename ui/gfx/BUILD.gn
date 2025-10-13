@@ -99,12 +99,8 @@ component("gfx") {
     "font_util.cc",
     "font_util.h",
     "frame_data.h",
-    "gdi_util.cc",
-    "gdi_util.h",
     "gpu_extra_info.cc",
     "gpu_extra_info.h",
-    "icon_util.cc",
-    "icon_util.h",
     "image/buffer_w_stream.cc",
     "image/buffer_w_stream.h",
     "image/image.cc",
@@ -227,10 +223,14 @@ component("gfx") {
       "win/d3d_shared_fence.h",
       "win/direct_write.cc",
       "win/direct_write.h",
+      "win/gdi_util.cc",
+      "win/gdi_util.h",
       "win/get_elevation_icon.cc",
       "win/get_elevation_icon.h",
       "win/hwnd_util.cc",
       "win/hwnd_util.h",
+      "win/icon_util.cc",
+      "win/icon_util.h",
       "win/msg_util.h",
       "win/physical_size.cc",
       "win/physical_size.h",
@@ -408,13 +408,6 @@ component("gfx") {
 
     all_dependent_configs = [ ":gfx_win_linker_flags" ]
     public_deps += [ "//components/crash/core/common" ]
-  } else {
-    sources -= [
-      "gdi_util.cc",
-      "gdi_util.h",
-      "icon_util.cc",
-      "icon_util.h",
-    ]
   }
 
   # Linux.
@@ -949,12 +942,12 @@ test("gfx_unittests") {
     sources += [
       "font_render_params_win_unittest.cc",
       "font_util_win.cc",
-      "icon_util_unittest.cc",
-      "icon_util_unittests.rc",
-      "icon_util_unittests_resource.h",
       "path_win_unittest.cc",
       "win/crash_id_helper_unittest.cc",
       "win/direct_write_unittest.cc",
+      "win/icon_util_unittest.cc",
+      "win/icon_util_unittests.rc",
+      "win/icon_util_unittests_resource.h",
       "win/text_analysis_source_unittest.cc",
     ]
 

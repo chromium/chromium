@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 
 #include <stddef.h>
 
@@ -22,11 +22,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/icon_util_unittests_resource.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/win/icon_util_unittests_resource.h"
 
 namespace {
 

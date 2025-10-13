@@ -52,7 +52,7 @@
 #include "ui/gfx/image/image_skia_rep_default.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/gfx/icon_util.h"
+#include "ui/gfx/win/icon_util.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
