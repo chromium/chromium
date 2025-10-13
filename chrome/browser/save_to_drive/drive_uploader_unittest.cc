@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
@@ -79,6 +80,10 @@ class FakeDriveUploader : public DriveUploader {
 
   MOCK_METHOD(void, UploadFile, (), (override));
 
+  void NotifyUploadInProgress(size_t uploaded_bytes, size_t total_bytes) {
+    DriveUploader::NotifyUploadInProgress(uploaded_bytes, total_bytes);
+  }
+
   const std::optional<Item>& parent_folder() const { return parent_folder_; }
 };
 
@@ -98,7 +103,8 @@ class DriveUploaderTest : public testing::Test {
     return adaptor_->identity_test_env();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   base::MockCallback<DriveUploader::ProgressCallback> progress_callback_;
@@ -178,6 +184,43 @@ TEST_F(DriveUploaderTest, OnRefreshTokenRemovedForAccount) {
 
   uploader->Start();
   test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+}
+
+TEST_F(DriveUploaderTest, NotifyUploadInProgressIsRateLimited) {
+  auto account_info = test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  auto uploader = std::make_unique<FakeDriveUploader>(
+      "test_title", account_info, progress_callback_.Get(), profile_.get(),
+      &mock_content_reader_);
+  const size_t kTotalBytes = 1000;
+
+  // First call should trigger a callback.
+  EXPECT_CALL(
+      progress_callback_,
+      Run(AllOf(Field(&SaveToDriveProgress::status,
+                      SaveToDriveStatus::kUploadInProgress),
+                Field(&SaveToDriveProgress::uploaded_bytes, 100u),
+                Field(&SaveToDriveProgress::file_size_bytes, kTotalBytes))))
+      .Times(1);
+  uploader->NotifyUploadInProgress(100, kTotalBytes);
+
+  // Subsequent calls within the interval should be ignored.
+  EXPECT_CALL(progress_callback_, Run(_)).Times(0);
+  uploader->NotifyUploadInProgress(200, kTotalBytes);
+
+  task_environment_.FastForwardBy(base::Milliseconds(499));
+  uploader->NotifyUploadInProgress(300, kTotalBytes);
+
+  // After the interval, the next call should trigger a callback.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_CALL(
+      progress_callback_,
+      Run(AllOf(Field(&SaveToDriveProgress::status,
+                      SaveToDriveStatus::kUploadInProgress),
+                Field(&SaveToDriveProgress::uploaded_bytes, 400u),
+                Field(&SaveToDriveProgress::file_size_bytes, kTotalBytes))))
+      .Times(1);
+  uploader->NotifyUploadInProgress(400, kTotalBytes);
 }
 
 class FetchParentFolderTest : public DriveUploaderTest {

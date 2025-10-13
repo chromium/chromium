@@ -188,12 +188,7 @@ void ResumableDriveUploader::OnContentRead(mojo_base::BigBuffer buffer) {
 void ResumableDriveUploader::NotifyUploadProgress(size_t uploaded_bytes) {
   const size_t file_size = content_reader_->GetSize();
   CHECK_LE(uploaded_bytes, file_size);
-  SaveToDriveProgress progress;
-  progress.status = SaveToDriveStatus::kUploadInProgress;
-  progress.error_type = SaveToDriveErrorType::kNoError;
-  progress.file_size_bytes = file_size;
-  progress.uploaded_bytes = uploaded_bytes;
-  progress_callback_.Run(std::move(progress));
+  NotifyUploadInProgress(uploaded_bytes, file_size);
 }
 
 void ResumableDriveUploader::OnUploadProgress(uint64_t current_chunk_bytes,
