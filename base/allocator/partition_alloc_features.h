@@ -202,10 +202,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kPartialLowEndModeExcludePartitionAllocSupport);
 #endif
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
-BASE_EXPORT double GetThreadCacheMultiplier();
-BASE_EXPORT double GetThreadCacheMultiplierForAndroid();
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCachePurgeInterval);
 extern const partition_alloc::internal::base::TimeDelta
 GetThreadCacheMinPurgeInterval();

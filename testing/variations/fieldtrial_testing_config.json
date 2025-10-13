@@ -9786,29 +9786,6 @@
             ]
         }
     ],
-    "EnableConfigurableThreadCacheMultiplier": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "multiplier_2.0_20230904",
-                    "params": {
-                        "ThreadCacheMultiplier": "2",
-                        "ThreadCacheMultiplierForAndroid": "1"
-                    },
-                    "enable_features": [
-                        "EnableConfigurableThreadCacheMultiplier"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCustomInputStreamBufferSize": [
         {
             "platforms": [

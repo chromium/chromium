@@ -379,19 +379,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 #endif
 
-BASE_FEATURE(kEnableConfigurableThreadCacheMultiplier,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplier,
-                             kEnableConfigurableThreadCacheMultiplier,
-                             "ThreadCacheMultiplier",
-                             2.)
-
-MIRACLE_PARAMETER_FOR_DOUBLE(GetThreadCacheMultiplierForAndroid,
-                             kEnableConfigurableThreadCacheMultiplier,
-                             "ThreadCacheMultiplierForAndroid",
-                             1.)
-
 constexpr partition_alloc::internal::base::TimeDelta ToPartitionAllocTimeDelta(
     TimeDelta time_delta) {
   return partition_alloc::internal::base::Microseconds(
