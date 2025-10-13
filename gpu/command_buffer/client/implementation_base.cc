@@ -403,8 +403,4 @@ void ImplementationBase::RunIfContextNotLost(base::OnceClosure callback) {
   }
 }
 
-bool ImplementationBase::HasGrContextSupport() const {
-  return false;
-}
-
 }  // namespace gpu

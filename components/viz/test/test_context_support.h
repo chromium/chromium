@@ -56,7 +56,6 @@ class TestContextSupport : public gpu::ContextSupport {
   bool IsWebPDecodeAccelerationSupported() const override;
   bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const override;
-  bool HasGrContextSupport() const override;
 
   void CallAllSyncPointCallbacks();
 

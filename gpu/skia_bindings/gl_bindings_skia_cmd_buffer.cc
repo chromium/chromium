@@ -20,14 +20,6 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> gles_bind(
     R (GLES2Interface::*func)(Args...),
     GLES2Interface* gles2_interface,
     ContextSupport* context_support) {
-  if (context_support->HasGrContextSupport()) {
-    return [func, gles2_interface](Args... args) {
-      return (gles2_interface->*func)(args...);
-    };
-  }
-
-  // This fallback binding should only be used by unit tests which do not care
-  // about GrContext::resetContext() getting called automatically.
   return [func, gles2_interface](Args... args) {
     return (gles2_interface->*func)(args...);
   };

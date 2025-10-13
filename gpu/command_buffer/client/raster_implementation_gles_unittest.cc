@@ -173,7 +173,6 @@ class ContextSupportStub : public ContextSupport {
       const cc::ImageHeaderMetadata* image_metadata) const override {
     return false;
   }
-  bool HasGrContextSupport() const override { return false; }
 
  private:
   base::HeapArray<uint8_t> mapped_transfer_cache_entry_;

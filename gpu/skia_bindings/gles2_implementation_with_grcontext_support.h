@@ -23,8 +23,6 @@ class GLES2ImplementationWithGrContextSupport
   ~GLES2ImplementationWithGrContextSupport() override;
 
   typedef gpu::gles2::GLES2Implementation BaseClass;
-
-  bool HasGrContextSupport() const override;
 };
 
 }  // namespace skia_bindings

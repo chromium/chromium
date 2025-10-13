@@ -114,8 +114,4 @@ bool TestContextSupport::CanDecodeWithHardwareAcceleration(
   return false;
 }
 
-bool TestContextSupport::HasGrContextSupport() const {
-  return true;
-}
-
 }  // namespace viz

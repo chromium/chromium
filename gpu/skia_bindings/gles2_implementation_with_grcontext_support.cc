@@ -27,8 +27,4 @@ GLES2ImplementationWithGrContextSupport::
 GLES2ImplementationWithGrContextSupport::
     ~GLES2ImplementationWithGrContextSupport() {}
 
-bool GLES2ImplementationWithGrContextSupport::HasGrContextSupport() const {
-  return true;
-}
-
 }  // namespace skia_bindings

@@ -14,8 +14,6 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
 
-class GrDirectContext;
-
 namespace gfx {
 class GpuFence;
 }
@@ -100,11 +98,6 @@ class ContextSupport {
   // RasterInterface::ScheduleImageDecode() will succeed.
   virtual bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const = 0;
-
-  // Returns true if the context provider automatically manages calls to
-  // GrDirectContext::resetContext under the hood to prevent GL state
-  // synchronization problems between the GLES2 interface and skia.
-  virtual bool HasGrContextSupport() const = 0;
 
  protected:
   ContextSupport() = default;

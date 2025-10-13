@@ -225,10 +225,6 @@ void WebGPUImplementation::ShallowFlushCHROMIUM() {
   FlushCommands();
 }
 
-bool WebGPUImplementation::HasGrContextSupport() const {
-  return true;
-}
-
 // ImplementationBase implementation.
 void WebGPUImplementation::IssueShallowFlush() {
   NOTIMPLEMENTED();
