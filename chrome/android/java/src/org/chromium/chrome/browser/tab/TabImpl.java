@@ -2256,8 +2256,7 @@ class TabImpl implements Tab {
         AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
                 new AutofillSelectionActionMenuDelegate();
         selectionActionMenuDelegate.setAutofillSelectionMenuItemHelper(
-                new AutofillSelectionMenuItemHelper(
-                        ContextUtils.getApplicationContext(), mAutofillProvider));
+                new AutofillSelectionMenuItemHelper(mAutofillProvider));
         controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
     }
 

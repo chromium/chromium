@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill;
 
-import android.content.Context;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -24,17 +22,9 @@ public class AutofillSelectionMenuItemHelper {
     private final AutofillProvider mAutofillProvider;
     private final int mAutofillMenuItemTitle;
 
-    // using getIdentifier to work around not-exposed framework resource ID
-    @SuppressWarnings("DiscouragedApi")
-    public AutofillSelectionMenuItemHelper(Context context, AutofillProvider autofillProvider) {
+    public AutofillSelectionMenuItemHelper(AutofillProvider autofillProvider) {
         mAutofillProvider = autofillProvider;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            mAutofillMenuItemTitle = android.R.string.autofill;
-        } else {
-            // The string resource was not made public until O MR1, so on O we look it up by name.
-            mAutofillMenuItemTitle =
-                    context.getResources().getIdentifier("autofill", "string", "android");
-        }
+        mAutofillMenuItemTitle = android.R.string.autofill;
     }
 
     public List<SelectionMenuItem> getAdditionalItems() {
