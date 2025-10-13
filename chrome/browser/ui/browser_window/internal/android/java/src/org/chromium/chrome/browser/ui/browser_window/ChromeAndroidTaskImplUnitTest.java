@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -38,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -599,7 +599,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onConfigurationChanged(new Configuration());
 
         // Assert.
-        var inOrder = Mockito.inOrder(mockFeature);
+        var inOrder = inOrder(mockFeature);
         inOrder.verify(mockFeature).onTaskBoundsChanged(taskBounds1);
         inOrder.verify(mockFeature).onTaskBoundsChanged(taskBounds2);
     }
@@ -728,7 +728,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
 
         // Assert.
-        InOrder inOrder = Mockito.inOrder(mockFeature);
+        InOrder inOrder = inOrder(mockFeature);
         inOrder.verify(mockFeature).onTaskFocusChanged(true);
         inOrder.verify(mockFeature).onTaskFocusChanged(false);
     }
@@ -958,6 +958,55 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void restore_whenMinimized_activateFirstBeforeSettingBounds() {
+        // Arrange
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        int taskId = mockActivity.getTaskId();
+
+        // Check the default test setup.
+        assertFalse("Task shouldn't be minimized", chromeAndroidTask.isMinimized());
+        assertFalse("Task shouldn't be maximized", chromeAndroidTask.isMaximized());
+        assertFalse("Task shouldn't be fullscreen", chromeAndroidTask.isFullscreen());
+
+        // Minimize the task.
+
+        chromeAndroidTask.minimize();
+        assertEquals(
+                DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
+                chromeAndroidTask.getRestoredBoundsInPxForTesting());
+
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
+        assertTrue("Task should be minimized", chromeAndroidTask.isMinimized());
+
+        // Act.
+        chromeAndroidTask.restore();
+
+        // Assert.
+        // We need to verify the order of calls: moveTaskToFront then moveTaskTo.
+        InOrder inOrder = inOrder(mockActivityManager, apiDelegate);
+
+        // Verify moveTaskToFront is called.
+        inOrder.verify(mockActivityManager).moveTaskToFront(taskId, 0);
+
+        // Verify moveTaskTo is called with the restored bounds.
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        inOrder.verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(
+                "moveTaskTo should be called with the restored bounds",
+                DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
+                boundsCaptor.getValue());
+    }
+
+    @Test
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void minimize_alreadyMinimized_doesNotMinimizeAgain() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1090,6 +1139,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void restore_whenPending_enqueuesPendingAction() {
         // Arrange.
         var mockParams =

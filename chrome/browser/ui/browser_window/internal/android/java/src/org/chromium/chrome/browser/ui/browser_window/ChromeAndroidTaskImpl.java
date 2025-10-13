@@ -572,6 +572,10 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void restore() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            Log.w(TAG, "restore() requires Android R+; does nothing");
+            return;
+        }
         if (mState.get() == State.PENDING) {
             mPendingActionManager.requestAction(PendingAction.RESTORE);
             return;
@@ -984,12 +988,16 @@ final class ChromeAndroidTaskImpl
         getActivity(activityWindowAndroid).moveTaskToBack(/* nonRoot= */ true);
     }
 
+    @RequiresApi(api = VERSION_CODES.R)
     @GuardedBy("mActivityWindowAndroidLock")
     private void restoreInternalLocked() {
         var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
         if (activityWindowAndroid == null) return;
         Activity activity = activityWindowAndroid.getActivity().get();
         if (activity == null || mRestoredBoundsInPx == null) return;
+        if (isMinimizedInternalLocked(activityWindowAndroid)) {
+            activateInternalLocked();
+        }
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), mRestoredBoundsInPx);
     }
 
