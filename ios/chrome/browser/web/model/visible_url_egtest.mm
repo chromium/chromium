@@ -158,7 +158,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the pending URL during
 // pending back and forward navigations.
-- (void)testBackForwardNavigation {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testBackForwardNavigation {
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
@@ -206,7 +207,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the pending URL during
 // navigations initiated from back history popover.
-- (void)testHistoryNavigation {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testHistoryNavigation {
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
@@ -244,7 +246,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that stopping a pending Back navigation and reloading reloads the
 // pending URL.
-- (void)testStoppingPendingBackNavigationAndReload {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testStoppingPendingBackNavigationAndReload {
   // With iPhone, Stop and Reload are in the tool menu. There's no easy way to
   // track some animations (opening a popop) and not others (load progress bar)
   // which makes this test fail.
@@ -282,7 +285,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the same as last pending URL during
 // back forward navigations initiated with JS.
-- (void)testJSBackForwardNavigation {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testJSBackForwardNavigation {
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
@@ -334,7 +338,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the same as last pending URL during go
 // navigations initiated with JS.
-- (void)testJSGoNavigation {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testJSGoNavigation {
   // Purge web view caches and pause the server to make sure that tests can
   // verify omnibox state before server starts responding.
   [ChromeEarlGrey purgeCachedWebViewPages];
@@ -386,7 +391,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the same as last committed URL if user
 // issues 2 go forward commands to WebUI page (crbug.com/711465).
-- (void)testDoubleForwardNavigationToWebUIPage {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testDoubleForwardNavigationToWebUIPage {
   // Create 3rd entry in the history, to be able to go back twice.
   GURL URL(kChromeUIVersionURL);
   [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
@@ -414,7 +420,8 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Tests that visible URL is always the same as last pending URL if page calls
 // window.history.back() twice.
-- (void)testDoubleBackJSNavigation {
+// TODO(crbug.com/451547805): Deflake the test.
+- (void)FLAKY_testDoubleBackJSNavigation {
   // Create 3rd entry in the history, to be able to go back twice.
   [ChromeEarlGrey loadURL:_testURL3];
 
