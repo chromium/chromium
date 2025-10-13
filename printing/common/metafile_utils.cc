@@ -56,6 +56,8 @@
 
 namespace {
 
+// TODO(crbug.com/451536362) Share these constants with PDF.
+
 // Table 364 in PDF 32000-2:2020 spec, section 14.8.4.3
 const char kPDFStructureTypeDocument[] = "Document";
 
@@ -100,6 +102,13 @@ const char kPDFTableCellRowSpanAttribute[] = "RowSpan";
 const char kPDFTableHeaderScopeAttribute[] = "Scope";
 const char kPDFTableHeaderScopeColumn[] = "Column";
 const char kPDFTableHeaderScopeRow[] = "Row";
+
+// Table 333 in PDF 32000-1:2008 spec, section 14.8.4.2
+const char kPDFStructureTypeArticle[] = "Art";
+const char kPDFStructureTypeBlockQuote[] = "BlockQuote";
+
+// Table 338 in PDF 32000-1:2008 spec, section 14.8.4.4.1
+const char kPDFStructureTypeCode[] = "Code";
 
 SkString GetHeadingStructureType(int heading_level) {
   // From Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5,
@@ -151,6 +160,15 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     case ax::mojom::Role::kGenericContainer:
       tag->fTypeString = kPDFStructureTypeDiv;
+      break;
+    case ax::mojom::Role::kArticle:
+      tag->fTypeString = kPDFStructureTypeArticle;
+      break;
+    case ax::mojom::Role::kBlockquote:
+      tag->fTypeString = kPDFStructureTypeBlockQuote;
+      break;
+    case ax::mojom::Role::kCode:
+      tag->fTypeString = kPDFStructureTypeCode;
       break;
     case ax::mojom::Role::kComplementary:
       tag->fTypeString = kPDFStructureTypeAside;

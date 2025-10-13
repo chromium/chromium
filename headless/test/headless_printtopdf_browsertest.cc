@@ -578,8 +578,20 @@ class HeadlessTaggedPDFBrowserTest : public HeadlessPDFBrowserTestBase {
   std::string url_;
 };
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Article) {
+  RunTaggedPDFTest("/structured_doc_article.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Aside) {
   RunTaggedPDFTest("/structured_doc_aside.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Blockquote) {
+  RunTaggedPDFTest("/structured_doc_blockquote.html");
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Code) {
+  RunTaggedPDFTest("/structured_doc_code.html");
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Doc) {
