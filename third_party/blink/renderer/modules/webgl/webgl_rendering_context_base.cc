@@ -1969,10 +1969,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   auto* resource_provider =
       PaintRenderingResultsToResourceProvider(source_buffer);
-  if (resource_provider) {
-    return resource_provider->ProduceCanvasResource(reason);
-  }
-  return nullptr;
+  return resource_provider ? resource_provider->ProduceCanvasResource(reason)
+                           : nullptr;
 }
 
 CanvasResourceProviderSharedImage*
