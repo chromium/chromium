@@ -530,10 +530,10 @@ ParseResult ValidateHeadersForModification(
 
     if (are_request_headers &&
         header_info.operation == dnr_api::HeaderOperation::kAppend) {
-      DCHECK(
-          std::ranges::none_of(header_info.header, base::IsAsciiUpper<char>));
+      // Check against the allowlist in lowercase since header names will be
+      // stored in lowercase in flatbuffers later on.
       if (!base::Contains(kDNRRequestHeaderAppendAllowList,
-                          header_info.header)) {
+                          base::ToLowerASCII(header_info.header))) {
         return ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER;
       }
     }

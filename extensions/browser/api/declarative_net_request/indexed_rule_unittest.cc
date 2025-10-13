@@ -966,7 +966,10 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
       {RawHeaderInfoList(
            {{dnr_api::HeaderOperation::kRemove, "cookie", std::nullopt},
             {dnr_api::HeaderOperation::kSet, "referer", ""},
-            {dnr_api::HeaderOperation::kAppend, "accept-language", "en-US"}}),
+            // Header matching is case-insensitive, so header names with
+            // uppercase
+            // characters are fine.
+            {dnr_api::HeaderOperation::kAppend, "Accept-language", "en-US"}}),
        std::nullopt, ParseResult::SUCCESS},
 
       {RawHeaderInfoList(
