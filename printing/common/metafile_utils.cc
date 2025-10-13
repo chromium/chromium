@@ -86,6 +86,9 @@ const char kPDFStructureTypeTableRow[] = "TR";
 const char kPDFStructureTypeTableHeader[] = "TH";
 const char kPDFStructureTypeTableCell[] = "TD";
 
+// Table 372 in PDF 32000-2:2020 spec, section 14.8.4.8.3
+const char kPDFStructureTypeCaption[] = "Caption";
+
 // Table 373 in PDF 32000-2:2020 spec, section 14.8.4.8.5
 const char kPDFStructureTypeFigure[] = "Figure";
 
@@ -167,6 +170,21 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
     case ax::mojom::Role::kBlockquote:
       tag->fTypeString = kPDFStructureTypeBlockQuote;
       break;
+    case ax::mojom::Role::kCaption: {
+      ui::AXNode* parent = ax_node->GetParent();
+      if (parent->IsTable()) {
+        // PDF 32000-2:2020 Table 371 Caption must be the first or last child
+        // of Table, luckily, the AXTree always reorders caption to be the
+        // first child.
+        DCHECK_EQ(parent->GetUnignoredChildAtIndex(0), ax_node);
+        tag->fTypeString = kPDFStructureTypeCaption;
+      } else {
+        // TODO(crbug.com/448962793) Investigate in which other scenarios a
+        // node with role caption should be mapped to PDF Tag caption.
+        tag->fTypeString = kPDFStructureTypeNonStruct;
+      }
+      break;
+    }
     case ax::mojom::Role::kCode:
       tag->fTypeString = kPDFStructureTypeCode;
       break;

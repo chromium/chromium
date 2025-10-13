@@ -630,6 +630,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Table) {
   RunTaggedPDFTest("/structured_doc_table.html");
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, TableCaption) {
+  RunTaggedPDFTest("/structured_doc_table_caption.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Treegrid) {
   RunTaggedPDFTest("/structured_doc_treegrid.html");
 }
