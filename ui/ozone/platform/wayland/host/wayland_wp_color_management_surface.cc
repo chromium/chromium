@@ -63,15 +63,10 @@ void WaylandWpColorManagementSurface::OnSetColorSpace(
 
   auto* color_manager = connection_->wp_color_manager();
   wp_color_manager_v1_render_intent render_intent;
-  if (color_manager->IsSupportedRenderIntent(
-          WP_COLOR_MANAGER_V1_RENDER_INTENT_RELATIVE)) {
-    render_intent = WP_COLOR_MANAGER_V1_RENDER_INTENT_RELATIVE;
-  } else {
-    // The protocol mandates that perceptual is always supported.
-    CHECK(color_manager->IsSupportedRenderIntent(
-        WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL));
-    render_intent = WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL;
-  }
+  // The protocol mandates that perceptual is always supported.
+  CHECK(color_manager->IsSupportedRenderIntent(
+      WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL));
+  render_intent = WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL;
   wp_color_management_surface_v1_set_image_description(
       management_surface_.get(), image_description->object(), render_intent);
 }
