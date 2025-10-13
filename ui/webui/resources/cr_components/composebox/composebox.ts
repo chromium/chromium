@@ -208,9 +208,7 @@ export class ComposeboxElement extends I18nMixinLit
                   (this.enableImageContextualSuggestions_ ||
                    !file.type.includes('image'))) {
                 // Query autocomplete to get contextual suggestions for files.
-                this.clearAutocompleteMatches_();
-                this.lastQueriedInput_ = this.input_;
-                this.searchboxHandler_.queryAutocomplete(this.input_, false);
+                this.queryAutocomplete(/* clearMatches= */ true);
               }
               if (file.type.includes('image') &&
                   !this.enableImageContextualSuggestions_) {
@@ -235,7 +233,7 @@ export class ComposeboxElement extends I18nMixinLit
         });
     this.$.input.focus();
     if (this.showZps) {
-      this.searchboxHandler_.queryAutocomplete(this.input_, false);
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
 
     this.searchboxHandler_.notifySessionStarted();
@@ -389,9 +387,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected deleteContext_(e: CustomEvent<{uuid: UnguessableToken}>) {
     this.searchboxHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
-    this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.input_;
-    this.searchboxHandler_.queryAutocomplete(this.input_, false);
+    this.queryAutocomplete(/* clearMatches= */ true);
   }
 
   protected async addFileContext_(e: CustomEvent<{
@@ -470,16 +466,13 @@ export class ComposeboxElement extends I18nMixinLit
   protected onCancelClick_() {
     if (this.input_.trim().length > 0 || this.contextFilesSize_ > 0) {
       this.input_ = '';
-      this.lastQueriedInput_ = this.input_;
       this.$.context.resetContextFiles();
       this.contextFilesSize_ = 0;
       this.smartComposeInlineHint_ = '';
       this.submitEnabled_ = false;
       this.searchboxHandler_.clearFiles();
       this.$.input.focus();
-      this.$.matches.unselect();
-      this.clearAutocompleteMatches_();
-      this.searchboxHandler_.queryAutocomplete(this.input_, false);
+      this.queryAutocomplete(/* clearMatches= */ true);
     } else {
       this.closeComposebox_();
     }
@@ -513,9 +506,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setDeepSearchMode_(
       e: CustomEvent<{inDeepSearchMode: boolean}>) {
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
-    this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.input_;
-    this.searchboxHandler_.queryAutocomplete(this.input_, false);
+    this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
@@ -525,9 +516,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setCreateImageMode_(
       e: CustomEvent<{inCreateImageMode: boolean}>) {
     this.pageHandler_.setCreateImageMode(e.detail.inCreateImageMode);
-    this.clearAutocompleteMatches_();
-    this.lastQueriedInput_ = this.input_;
-    this.searchboxHandler_.queryAutocomplete(this.input_, false);
+    this.queryAutocomplete(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
@@ -539,19 +528,15 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
-    this.lastQueriedInput_ = this.input_;
-    // This is done to stop any in progress providers before requerying
-    // for on-focus (zero-suggest) inputs. The searchbox doesn't allow
-    // zero-suggest requests to be made while the ACController is not
-    // done.
-    if (this.lastQueriedInput_ === '') {
-      this.clearAutocompleteMatches_();
-    }
     if (!this.enableImageContextualSuggestions_ &&
         this.$.context.hasImageFiles()) {
       return;
     }
-    this.searchboxHandler_.queryAutocomplete(this.input_, false);
+    // `clearMatches` is true if input is empty stop any in progress providers
+    // before requerying for on-focus (zero-suggest) inputs. The searchbox
+    // doesn't allow zero-suggest requests to be made while the ACController is
+    // not done.
+    this.queryAutocomplete(/* clearMatches= */ this.input_ === '');
   }
 
   protected onKeydown_(e: KeyboardEvent) {
@@ -814,6 +799,17 @@ export class ComposeboxElement extends I18nMixinLit
     if (ghostHeight > maxHeight) {
       smartCompose!.scrollTop = this.$.input.scrollTop;
     }
+  }
+
+  // `queryAutocomplete` updates the `lastQueriedInput_` and makes an
+  // autocomplete call through the handler. It also optionally clears existing
+  // matches.
+  private queryAutocomplete(clearMatches: boolean) {
+    if (clearMatches) {
+      this.clearAutocompleteMatches_();
+    }
+    this.lastQueriedInput_ = this.input_;
+    this.searchboxHandler_.queryAutocomplete(this.input_, false);
   }
 }
 
