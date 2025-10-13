@@ -11,8 +11,7 @@ import("//build/rust/gni_impl/rust_target.gni")
 #
 #   edition (optional)
 #     Edition of the Rust language to be used.
-#     Options are "2015", "2018", "2021", and "2024". Defaults to "2021".
-#     TODO(https://crbug.com/450891119): Change the default to "2024".
+#     Options are "2015", "2018", "2021", and "2024". Defaults to "2024".
 #
 #   test_deps (optional)
 #     List of GN targets on which this crate's tests depend, in addition
