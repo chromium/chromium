@@ -74,11 +74,9 @@ const char* kLocalCommandSourcesFastPoll[] = {
 // NOT be in this list.
 constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(5);
 const char* kLocalCommandSourcesSlowPoll[] = {
-    "df -h",
-    "free -m",
-    "nsenter --net=/run/netns/ip_periph ifconfig",
+    "df -h", "free -m", "nsenter --net=/run/netns/ip_periph ifconfig",
     // Hide kernelspace processes and show limited columns.
-    "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
+    // "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };
 
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
