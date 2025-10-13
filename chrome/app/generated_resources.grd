@@ -8582,13 +8582,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_DEEP_SEARCH" desc="The label for the deep search button in the context menu in the composebox as well as the chip that indicates that the user is in deep search mode.">
         Deep Search
       </message>
-      <message name="IDS_NTP_COMPOSE_CREATE_IMAGES" desc="The label for the create images button in the context menu in the composebox as well as the chip that indicates that the user is in create images mode." translateable="false">
+      <message name="IDS_NTP_COMPOSE_CREATE_IMAGES" desc="The label for the create images button in the context menu in the composebox as well as the chip that indicates that the user is in create images mode.">
         Create images
       </message>
-      <message name="IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER" desc="Placeholder text for the composebox when in deep search mode." translateable="false">
+      <message name="IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER" desc="Placeholder text for the composebox when in deep search mode.">
         Research anything
       </message>
-      <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode." translateable="false">
+      <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode.">
         Describe your image
       </message>
 
