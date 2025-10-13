@@ -24,6 +24,7 @@ from __future__ import print_function
 
 __author__ = 'evanm (Evan Martin)'
 
+import ast
 import copy
 import logging
 import os
@@ -91,7 +92,6 @@ USER_METRICS_ACTION_RE_DEVTOOLS = re.compile(
     re.VERBOSE | re.DOTALL  # Verbose syntax and makes . also match new lines.
 )
 COMPUTED_ACTION_RE = re.compile(r'RecordComputedAction')
-QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
 
 # Files that are known to use content::RecordComputedAction(), which means
 # they require special handling code in this script.
@@ -110,7 +110,22 @@ KNOWN_COMPUTED_USERS = (
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
     'sharing_hub_sub_menu_model.cc',  # share targets
+    'sharing_hub_bubble_controller_desktop_impl.cc',
     'bookmark_metrics.cc',  # see AddBookmarkUsageActions()
+    'accelerator_tracker.cc',
+    'child_thread_impl.cc',
+    'customize_toolbar_handler.cc',
+    'feature_promo_controller.cc',
+    'feature_promo_lifecycle.cc',
+    'metrics_handler.cc',
+    'performance_controls_metrics.cc',
+    'pinned_action_toolbar_button.cc',
+    'pinned_action_toolbar_button_menu_model.cc',
+    'pinned_toolbar_actions_model.cc',
+    'side_panel_util.cc',
+    'stats.cc',
+    'toast_metrics.cc',
+    'whats_new_handler.cc',
 )
 
 # The path to the root of the repository.
@@ -296,26 +311,15 @@ class ActionNameFinder:
     match = self.__action_re.search(self.__contents, pos=self.__pos)
     if not match:
       return None
-    match_start = match.start()
     self.__pos = match.end()
 
-    match = QUOTED_STRING_RE.match(match.group(1))
-    if not match:
-      if self.__action_re == USER_METRICS_ACTION_RE_JS:
-        return None
-      self._RaiseException(match_start, self.__pos)
-
-    # Remove surrounding quotation marks.
-    return match.group(1)[1:-1]
-
-  def _RaiseException(self, match_start, match_end):
-    """Raises an InvalidStatementException for the specified code range."""
-    line_number = self.__contents.count('\n', 0, match_start) + 1
-    # Add 1 to |match_start| since the RE checks the preceding character.
-    statement = self.__contents[match_start + 1:match_end]
-    raise InvalidStatementException(
-        '%s uses UserMetricsAction incorrectly on line %d:\n%s' %
-        (self.__path, line_number, statement))
+    param_string = match.group(1)
+    try:
+      evaluated = ast.literal_eval(param_string)
+      return evaluated if isinstance(evaluated, str) else None
+    except (ValueError, SyntaxError):
+      # The action is not a literal string, so we ignore it.
+      return None
 
 
 def GrepForActions(path, actions):
