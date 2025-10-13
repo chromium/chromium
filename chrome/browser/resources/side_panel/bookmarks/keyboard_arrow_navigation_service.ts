@@ -127,6 +127,14 @@ export class KeyArrowNavigationService {
     return [...this.elements_];
   }
 
+  /**
+   * Returns the amount of focusable elements in the current list.
+   *
+   * @returns Number of tree elements
+   */
+  getElementCount(): number {
+    return this.elements_.length;
+  }
 
   /**
    * Moves the focus on the current tree to either the next or the previous

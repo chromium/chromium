@@ -839,7 +839,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private recordBookmarkCountMetrics_() {
-    const count =
+    const count = this.bookmarksTreeViewEnabled_ ?
+        this.keyArrowNavigationService_.getElementCount() :
         this.displayLists_.reduce((prev, curr) => prev + curr.length, 0);
     const metricName = `PowerBookmarks.SidePanel${
         this.hasSomeActiveFilter_ ? '.SearchOrFilter' : ''}.BookmarksShown`;
@@ -870,6 +871,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     event: MouseEvent,
   }>) {
     this.notifyBookmarksListResize_();
+    afterNextRender(this, () => this.recordBookmarkCountMetrics_());
   }
   /**
    * Invoked when the user clicks a power bookmarks row. This will either

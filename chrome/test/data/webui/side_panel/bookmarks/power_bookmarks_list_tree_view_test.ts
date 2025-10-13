@@ -15,7 +15,11 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createTestBookmarks, getBookmarks, getPowerBookmarksRowElement, initializeUi} from './power_bookmarks_list_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -27,9 +31,12 @@ suite('TreeView', () => {
   const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
       PageImageServiceHandlerRemote;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    metrics = fakeMetricsPrivate();
 
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setAllBookmarks(structuredClone(FOLDERS));
@@ -147,5 +154,26 @@ suite('TreeView', () => {
         folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
             '#bookmark-6');
     assertFalse(!!collapsedNestedBookmarkElement);
+  });
+
+  test('LogsMetricsCountExpanded', async () => {
+    powerBookmarksList = await initializeUi(bookmarksApi);
+
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    assertTrue(!!folderRow);
+
+    const urlListItem = folderRow.shadowRoot.querySelector('cr-url-list-item')!;
+    urlListItem.focus();
+
+    const toggleEvent =
+        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    folderRow.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowRight', bubbles: true, composed: true}));
+    await toggleEvent;
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+
+    assertEquals(
+        1, metrics.count('PowerBookmarks.SidePanel.BookmarksShown', 5));
   });
 });
