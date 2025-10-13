@@ -40,9 +40,15 @@
 
 namespace blink {
 
-static bool IsCSS(const AtomicString& type) {
-  return type.empty() || EqualIgnoringASCIICase(type, "text/css");
+namespace {
+bool IsCSS(const AtomicString& type) {
+  return type.empty() || EqualIgnoringASCIICase(type, keywords::kTextCss);
 }
+
+bool IsCSSModule(const AtomicString& type) {
+  return EqualIgnoringASCIICase(type, keywords::kModule);
+}
+}  // namespace
 
 StyleElement::StyleElement(Document* document, bool created_by_parser)
     : has_finished_parsing_children_(!created_by_parser),
@@ -68,12 +74,34 @@ StyleElement::ProcessingResult StyleElement::ProcessStyleSheet(
   TRACE_EVENT0("blink", "StyleElement::processStyleSheet");
   DCHECK(element.isConnected());
 
-  registered_as_candidate_ = true;
-  document.GetStyleEngine().AddStyleSheetCandidateNode(element);
+  // Module type is static based upon when it's first connected.
+  // TODO(crbug.com/448174611): Confirm this with the WHATWG and update behavior
+  // according to WHATWG resolutions.
+  if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled()) {
+    if ((element_type_ == StyleType::kPending) && element.isConnected()) {
+      // TODO(crbug.com/448174611): For consistency with Import Maps, should we
+      // mimic passing "Already Started" state when cloneNode is called? This
+      // would involve passing `element_type_` to the clone.
+      if (IsCSSModule(this->type())) {
+        element_type_ = StyleType::kModule;
+      } else {
+        element_type_ = StyleType::kClassic;
+      }
+    }
+
+    // Sheet should always be empty for modules.
+    DCHECK(!IsModule() || !sheet_);
+  }
+  // Classic <style> tags may have an associated stylesheet and need to added as
+  // a candidate node.
+  if (!IsModule()) {
+    DCHECK(!sheet_);
+    registered_as_candidate_ = true;
+    document.GetStyleEngine().AddStyleSheetCandidateNode(element);
+  }
   if (!has_finished_parsing_children_) {
     return kProcessingSuccessful;
   }
-
   return Process(element);
 }
 
@@ -114,7 +142,7 @@ StyleElement::ProcessingResult StyleElement::Process(Element& element) {
   if (!element.isConnected()) {
     return kProcessingSuccessful;
   }
-  return CreateSheet(element, element.TextFromChildren());
+  return CreateSheetOrModule(element, element.TextFromChildren());
 }
 
 void StyleElement::ClearSheet(Element& owner_element) {
@@ -137,8 +165,9 @@ static bool IsInUserAgentShadowDOM(const Element& element) {
   return root && root->IsUserAgent();
 }
 
-StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
-                                                         const String& text) {
+StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
+    Element& element,
+    const String& text) {
   DCHECK(element.isConnected());
   DCHECK(IsSameObject(element));
   Document& document = element.GetDocument();
@@ -155,6 +184,13 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
       (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                &element, text, element.nonce(), document.Url(),
                                start_position_.line_));
+  if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled() && IsModule()) {
+    // Return early, since we explicitly *don't* want to create a CSSStyleSheet
+    // for CSS modules.
+    // TODO(crbug.com/448174611): Create Import Map entry using `text`.
+    DCHECK(!sheet_);
+    return kProcessingSuccessful;
+  }
 
   // Use a strong reference to keep the cache entry (which is a weak reference)
   // alive after ClearSheet().
@@ -207,13 +243,22 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
 }
 
 bool StyleElement::IsLoading() const {
+  DCHECK(!IsModule());
   if (loading_) {
     return true;
   }
   return sheet_ && sheet_->IsLoading();
 }
 
+bool StyleElement::IsModule() const {
+  // It's only possible to set the type to module when the flag is enabled.
+  DCHECK(element_type_ != StyleType::kModule ||
+         RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+  return element_type_ == StyleType::kModule;
+}
+
 bool StyleElement::SheetLoaded(Document& document) {
+  DCHECK(!IsModule());
   if (IsLoading()) {
     return false;
   }
@@ -230,6 +275,7 @@ bool StyleElement::SheetLoaded(Document& document) {
 }
 
 void StyleElement::SetToPendingState(Document& document, Element& element) {
+  DCHECK(!IsModule());
   DCHECK(IsSameObject(element));
   DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
   pending_sheet_type_ = PendingSheetType::kBlocking;

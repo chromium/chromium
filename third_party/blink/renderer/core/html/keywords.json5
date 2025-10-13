@@ -248,5 +248,13 @@
     "button",
     "reset",
     "submit",
+
+    // <style> type attribute
+    // Note that "text/css" is obsolete but not going away any time soon and "module"
+    // is still being specified.
+    // https://html.spec.whatwg.org/#obsolete-but-conforming-features:attr-style-type
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ShadowDOM/explainer.md
+    "text/css",
+    "module",
   ],
 }

@@ -41,6 +41,10 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
                             const CreateElementFlags = CreateElementFlags());
   ~HTMLStyleElement() override;
 
+  // TODO(crbug.com/448174611): Remove this and make IsModule private once we
+  // can test Declarative CSS Modules with WPT's.
+  using StyleElement::IsModule;
+
   using StyleElement::sheet;
 
   bool disabled() const;
