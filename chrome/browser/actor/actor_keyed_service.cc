@@ -130,7 +130,12 @@ void ActorKeyedService::ResetForTesting() {
   inactive_tasks_.clear();
 }
 
-TaskId ActorKeyedService::CreateTask(webui::mojom::TaskOptionsPtr options) {
+TaskId ActorKeyedService::CreateTask() {
+  return CreateTaskWithOptions(nullptr);
+}
+
+TaskId ActorKeyedService::CreateTaskWithOptions(
+    webui::mojom::TaskOptionsPtr options) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   base::UmaHistogramBoolean("Actor.Task.Created", true);
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());

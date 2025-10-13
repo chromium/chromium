@@ -16,7 +16,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
-#include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
@@ -76,7 +76,8 @@ class ActorKeyedService : public KeyedService {
   // Starts a new task with an execution engine and returns the new task's id.
   // `options`, when provided, contains information used to initialize the
   // task.
-  TaskId CreateTask(webui::mojom::TaskOptionsPtr options = nullptr);
+  TaskId CreateTask();
+  TaskId CreateTaskWithOptions(webui::mojom::TaskOptionsPtr options);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.

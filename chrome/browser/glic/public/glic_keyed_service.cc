@@ -460,7 +460,8 @@ void GlicKeyedService::CreateTask(
         base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
     return;
   }
-  actor::TaskId task_id = actor_keyed_service_->CreateTask(std::move(options));
+  actor::TaskId task_id =
+      actor_keyed_service_->CreateTaskWithOptions(std::move(options));
   std::move(callback).Run(task_id.value());
 }
 
