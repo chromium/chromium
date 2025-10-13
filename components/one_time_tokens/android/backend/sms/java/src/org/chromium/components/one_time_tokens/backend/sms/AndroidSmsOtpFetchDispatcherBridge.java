@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.one_time_tokens.backend.OneTimeTokensMetricsRecorder;
 
 /**
  * Java-counterpart of the native AndroidSmsOtpFetchDispatcherBridge. It's part of the OTP value
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 class AndroidSmsOtpFetchDispatcherBridge {
+    private static final String HISTOGRAM_SUFFIX = "Sms";
     private final AndroidSmsOtpFetchReceiverBridge mReceiverBridge;
     private final AndroidSmsOtpFetcher mOtpFetcher;
 
@@ -37,8 +39,18 @@ class AndroidSmsOtpFetchDispatcherBridge {
 
     @CalledByNative
     void retrieveSmsOtp() {
+        // Create a new metrics recorder for this retrieval attempt. The recorder
+        // will be used to log the outcome and latency of the operation.
+        final OneTimeTokensMetricsRecorder metricsRecorder =
+                new OneTimeTokensMetricsRecorder(HISTOGRAM_SUFFIX);
         mOtpFetcher.retrieveSmsOtp(
-                otpValue -> mReceiverBridge.onOtpValueRetrieved(otpValue),
-                exception -> mReceiverBridge.onOtpValueRetrievalError(exception));
+                otpValue -> {
+                    metricsRecorder.recordMetrics(null);
+                    mReceiverBridge.onOtpValueRetrieved(otpValue);
+                },
+                exception -> {
+                    metricsRecorder.recordMetrics(exception);
+                    mReceiverBridge.onOtpValueRetrievalError(exception);
+                });
     }
 }

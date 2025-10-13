@@ -12,8 +12,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @NullMarked
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Needs to be kept in sync with OneTimeTokensBackendErrorCode in
+// tools/metrics/histograms/enums.xml.
 @IntDef({OneTimeTokensBackendErrorCode.GMSCORE_VERSION_NOT_SUPPORTED})
 @Retention(RetentionPolicy.SOURCE)
 public @interface OneTimeTokensBackendErrorCode {
     int GMSCORE_VERSION_NOT_SUPPORTED = 0;
+    int MAX_VALUE = GMSCORE_VERSION_NOT_SUPPORTED;
 }

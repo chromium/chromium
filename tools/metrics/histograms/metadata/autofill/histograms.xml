@@ -4925,6 +4925,66 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Sms.APIError"
+    enum="SmsOtpRetrievalApiErrorCode" expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records the error encountered while attempting to retrieve sms one time
+    token from the GMSCore backend. This is recorded after the asynchronous call
+    comes back with an error. This is currently only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.Backend.Sms.ErrorCode"
+    enum="OneTimeTokensBackendErrorCode" expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records the error encountered while attempting to retrieve sms one time
+    token from the GMSCore backend. This is recorded after the asynchronous call
+    comes back with an error. This is currently only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.Backend.Sms.ErrorLatency" units="ms"
+    expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve sms one time
+    token from the GMSCore backend. Recorded when the asynchronous job failed.
+    This is currently only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.Backend.Sms.Success" enum="Boolean"
+    expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records whether the attempt to retrieve sms one time token from the GMSCore
+    backend succeeds. Recorded when the asynchronous job has returned. This is
+    currently only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.Backend.Sms.SuccessLatency" units="ms"
+    expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve sms one time
+    token from the GMSCore backend. Only recorded when the asynchronous job has
+    returned successfully. This is currently only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siyua@chromium.org</owner>

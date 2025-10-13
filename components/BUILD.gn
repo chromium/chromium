@@ -1420,6 +1420,7 @@ if (is_android) {
       "//components/media_router/browser/android:junit",
       "//components/messages/android:junit",
       "//components/messages/android/internal:junit",
+      "//components/one_time_tokens/android/backend/common:junit",
       "//components/optimization_guide/content/browser/android:junit",
       "//components/payments/content/android:junit",
       "//components/payments/content/android/spc:junit",

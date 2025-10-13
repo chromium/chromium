@@ -10,6 +10,12 @@ namespace one_time_tokens {
 // Error codes returned by the Android SMS Retriever API.
 // This list might be extended in the future if there are other commonly
 // returned error codes worth labeling nicely in metrics enums.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Needs to be kept in sync with SmsOtpRetrievalApiErrorCode in
+// tools/metrics/histograms/enums.xml.
 enum class SmsOtpRetrievalApiErrorCode {
   // CommonStatusCodes.ERROR
   kError = 13,
@@ -19,7 +25,7 @@ enum class SmsOtpRetrievalApiErrorCode {
   kPlatformNotSupported = 36500,
   // calling application is not eligible to use SmsCodeAutofillClient
   kApiNotAvailable = 36501,
-  // permission denied by the user
+  // permission denied by the user.
   kUserPermissionRequired = 36502
 };
 

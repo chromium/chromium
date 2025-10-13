@@ -49,6 +49,7 @@ android_library("java") {
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//components/one_time_tokens/android/backend/common:java",
     "//components/one_time_tokens/android/backend/sms:sms_otp_fetching_interface_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -71,7 +72,9 @@ robolectric_binary("one_time_tokens_junit_tests") {
     ":sms_otp_fetching_interface_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/one_time_tokens/android/backend/common:java",
     "//third_party/junit",
   ]
 }

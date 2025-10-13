@@ -4131,6 +4131,14 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Settings link clicked"/>
 </enum>
 
+<!-- LINT.IfChange(OneTimeTokensBackendErrorCode) -->
+
+<enum name="OneTimeTokensBackendErrorCode">
+  <int value="0" label="GMSCore version not supported"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/one_time_tokens/android/backend/common/java/src/org/chromium/components/one_time_tokens/backend/OneTimeTokensBackendErrorCode.java) -->
+
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
   <int value="1" label="The escape key was pressed, closing the dialog"/>
@@ -4271,6 +4279,19 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SelectBnplIssuerDialogResult) -->
+
+<!-- LINT.IfChange(SmsOtpRetrievalApiErrorCode) -->
+
+<enum name="SmsOtpRetrievalApiErrorCode">
+  <int value="13" label="CommonStatusCodes.ERROR"/>
+  <int value="15" label="Timeout"/>
+  <int value="36500" label="Platform does not support SmsCodeAutofillClient"/>
+  <int value="36501"
+      label="Calling app not allowlisted by SmsCodeAutofillClient"/>
+  <int value="36502" label="Permission denied by user"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h:SmsOtpRetrievalApiErrorCode) -->
 
 <!-- LINT.IfChange(SuggestionType) -->
 
