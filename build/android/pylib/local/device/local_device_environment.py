@@ -18,6 +18,7 @@ from devil.android import device_errors
 from devil.android import device_utils
 from devil.android import logcat_monitor
 from devil.android.sdk import adb_wrapper
+from devil.android.sdk import version_codes
 from devil.utils import file_utils
 from devil.utils import parallelizer
 from pylib import constants
@@ -211,6 +212,15 @@ class LocalDeviceEnvironment(environment.Environment):
                                                check_error=False)
         self._logcat_monitors.append(monitor)
         monitor.Start()
+
+      # There is a change in soft keyboard behavior since Android 16.
+      # See https://crbug.com/443782461 for more details.
+      if d.build_version_sdk >= version_codes.BAKLAVA:
+        with d.GboardPreferences() as gboard_prefs:
+          # Disable the stylus.
+          gboard_prefs.SetBoolean('enable_scribe', False)
+          # Always show the soft keyboards.
+          gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
     self.parallel_devices.pMap(prepare_device)
 
