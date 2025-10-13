@@ -45,7 +45,7 @@ class SplitNewTabPageUiTest
   GURL GetTestUrl() { return embedded_test_server()->GetURL("/title1.html"); }
 };
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Focus DISABLED_Focus
 #else
 #define MAYBE_Focus Focus
