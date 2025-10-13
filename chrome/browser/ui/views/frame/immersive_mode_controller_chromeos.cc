@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -152,6 +153,10 @@ void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
   visible_fraction_ = 0;
+
+  browser_view_->top_container()->AddChildViewAt(
+      static_cast<TabStripRegionView*>(browser_view_->tab_strip_view()), 0);
+
   for (Observer& observer : observers_) {
     observer.OnImmersiveRevealStarted();
   }

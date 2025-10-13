@@ -110,7 +110,12 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   // The browser's top chrome is completely offscreen with tapstrip visible.
   EXPECT_TRUE(tabstrip->GetVisible());
   // Tabstrip and top container view should be completely offscreen.
-  EXPECT_EQ(0, GetBoundsInWidget(tabstrip).bottom());
+  // Because of the split of tabstrip from top_container, the tabstrip must be
+  // moved into top_container during immersive. However, this happens after the
+  // animation has started but before anything actually moves, which is why
+  // tabstrip was recording bounds as if it was in browser_view. There is no
+  // visual effect on animation, and since tabstrip will live in top_container,
+  // checking just top_container bounds is sufficient.
   EXPECT_EQ(0, GetBoundsInWidget(browser_view()->top_container()).bottom());
   EXPECT_EQ(
       0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());

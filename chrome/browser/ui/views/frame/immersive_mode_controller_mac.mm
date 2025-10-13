@@ -189,8 +189,6 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     if (separate_tab_strip_) {
       browser_view_->tab_overlay_widget()->Hide();
       browser_view_->tab_strip_view()->SetBorder(nullptr);
-      browser_view_->top_container()->AddChildViewAt(
-          static_cast<views::View*>(browser_view_->tab_strip_view()), 0);
     }
     top_container_observation_.Reset();
     overlay_widget_observation_.Reset();

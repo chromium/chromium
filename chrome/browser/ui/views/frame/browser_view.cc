@@ -687,7 +687,7 @@ BrowserView::BrowserView(Browser* browser)
       main_container_->AddChildView(std::make_unique<TopContainerView>(this));
 
   tab_strip_region_view_ =
-      top_container_->AddChildView(std::make_unique<TabStripRegionView>(this));
+      AddChildView(std::make_unique<TabStripRegionView>(this));
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     auto vertical_tab_strip_container =
@@ -3952,7 +3952,8 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
 }
 
 void BrowserView::ReparentTopContainerForEndOfImmersive() {
-  if (top_container()->parent() == main_container_) {
+  if (top_container()->parent() == main_container_ &&
+      tab_strip_view()->parent() == this) {
     return;
   }
   // TODO(crbug.com/442255944): In the case top_container() is not a child of
@@ -3967,6 +3968,8 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
 
   overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
+
+  AddChildView(tab_strip_region_view_);
   main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
 }

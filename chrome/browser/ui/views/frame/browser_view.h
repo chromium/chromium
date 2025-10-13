@@ -1058,8 +1058,7 @@ class BrowserView : public BrowserWindow,
       version_info::Channel,
       Profile* profile) const;
 
-  // Reparents |top_container_| to be a child of |this| instead of
-  // |overlay_view_|.
+  // Reparents |top_container_| to |main_container_| instead of |overlay_view_|.
   void ReparentTopContainerForEndOfImmersive();
 
   // Ensures that the correct focus order is set for child views, regardless of
@@ -1136,7 +1135,9 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription chip_visibility_subscription_;
 
   // BrowserView layout (LTR one is pictured here).
-  // ----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
+  // | Tabs (tab_strip_region_view_) |
+  // |---------------------------------------------------------------------|
   // | MainRegion (main_region_)                                           |
   // |  ----------------------------------------------------------------   |
   // |  | MainContainer (main_container_)                               |  |
@@ -1144,8 +1145,6 @@ class BrowserView : public BrowserWindow,
   // |  |  | TopContainerView (top_container)                           |  |
   // |  |  |  --------------------------------------------------------- |  |
   // |  |  |  | Web App toolbar and title (web_app_frame_toolbar_)      |  |
-  // |  |  |  |-------------------------------------------------------- |  |
-  // |  |  |  | Tabs (tabstrip_)                                        |  |
   // |  |  |  |-------------------------------------------------------- |  |
   // |  |  |  | Navigation buttons, address bar, menu (toolbar_)        |  |
   // |  |  |  |-------------------------------------------------------- |  |
