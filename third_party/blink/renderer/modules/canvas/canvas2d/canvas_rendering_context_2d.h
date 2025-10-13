@@ -238,8 +238,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsPaintable() const final;
   bool IsHibernating() const final;
 
-  void WillDrawImage(CanvasImageSource*,
-                     bool image_is_texture_backed) const final;
+  void WillDrawImage(CanvasImageSource*, bool image_is_texture_backed) final;
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 

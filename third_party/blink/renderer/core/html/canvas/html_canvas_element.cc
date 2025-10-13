@@ -1788,16 +1788,6 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
   ColorSchemeMayHaveChanged();
 }
 
-bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
-  CHECK(IsRenderingContext2D());
-  if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
-    return false;
-  }
-  SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  RenderingContext()->DropAndRecreateExistingCanvas2DResourceProvider();
-  return true;
-}
-
 void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (hasChildren()) {

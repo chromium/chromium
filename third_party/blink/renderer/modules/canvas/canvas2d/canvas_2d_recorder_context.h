@@ -519,8 +519,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   virtual bool IsDesynchronized() const { NOTREACHED(); }
 
-  virtual void WillDrawImage(CanvasImageSource*,
-                             bool image_is_texture_backed) const {}
+  virtual void WillDrawImage(CanvasImageSource*, bool image_is_texture_backed) {
+  }
 
   // TODO(crbug.com/383575391): Move context lost logic to
   // BaseRenderingContext2D.

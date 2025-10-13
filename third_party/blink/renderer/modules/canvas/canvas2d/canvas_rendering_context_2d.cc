@@ -300,9 +300,8 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   SVGResourceClient::Trace(visitor);
 }
 
-void CanvasRenderingContext2D::WillDrawImage(
-    CanvasImageSource* source,
-    bool image_is_texture_backed) const {
+void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source,
+                                             bool image_is_texture_backed) {
   // For images coming from canvases, use the image itself as the source of
   // truth for whether the canvas is accelerated, as
   // CanvasRenderingContextHost::IsAccelerated() is canvas2d-specific.
@@ -312,12 +311,13 @@ void CanvasRenderingContext2D::WillDrawImage(
           : source->IsAccelerated();
   // If the source is GPU-accelerated, and the canvas is not, but could be...
   if (source_is_accelerated && canvas()->ShouldAccelerate2dContext() &&
-      canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU) {
+      canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
+      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
     // Recreate the CRP in GPU raster mode and signal that it needs a
-    // compositing update if successful.
-    if (canvas()->RecreateCanvasInGPURasterModeForCanvas2D()) {
-      canvas()->SetNeedsCompositingUpdate();
-    }
+    // compositing update.
+    canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+    DropAndRecreateExistingCanvas2DResourceProvider();
+    canvas()->SetNeedsCompositingUpdate();
   }
 }
 
@@ -808,8 +808,10 @@ void CanvasRenderingContext2D::setHitTestRegions(
 }
 
 void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
-  if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU) {
-    canvas()->RecreateCanvasInGPURasterModeForCanvas2D();
+  if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
+      SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
+    canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+    DropAndRecreateExistingCanvas2DResourceProvider();
   }
 }
 

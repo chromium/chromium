@@ -249,7 +249,6 @@ class CORE_EXPORT HTMLCanvasElement final
   UkmParameters GetUkmParameters() override;
   void SetNeedsCompositingUpdate() override;
 
-  bool RecreateCanvasInGPURasterModeForCanvas2D();
   void DisableAccelerationForCanvas2D();
 
   // ImageBitmapSource implementation
