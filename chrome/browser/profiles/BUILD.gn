@@ -243,6 +243,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/bluetooth",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/btm",
+    "//chrome/browser/client_hints",
     "//chrome/browser/commerce",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/contextual_tasks",

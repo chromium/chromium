@@ -1,0 +1,81 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client_hints") {
+  sources = [
+    "client_hints_factory.cc",
+    "client_hints_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//components/client_hints/browser",
+    "//components/embedder_support:user_agent",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "client_hints_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//base:base_static",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/client_hints/common",
+      "//components/content_settings/browser",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/browser:cookie_settings",
+      "//components/content_settings/core/common",
+      "//components/embedder_support",
+      "//components/embedder_support:user_agent",
+      "//components/metrics:content",
+      "//components/network_session_configurator/common",
+      "//components/page_load_metrics/browser:test_support",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net",
+      "//net:net_features",
+      "//net:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/network/public/cpp",
+      "//services/network/public/cpp:flags_and_switches",
+      "//services/network/public/cpp:web_platform",
+      "//services/network/public/mojom:url_loader_base_shared",
+      "//services/network/public/mojom:url_loader_base_shared_cpp_sources",
+      "//testing/gmock",
+      "//third_party/blink/public/common:headers",
+      "//third_party/re2",
+      "//url",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}
