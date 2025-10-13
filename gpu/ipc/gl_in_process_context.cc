@@ -18,13 +18,13 @@
 
 #include "base/logging.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
+#include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -86,10 +86,9 @@ ContextResult GLInProcessContext::Initialize(
   transfer_buffer_ = std::make_unique<TransferBuffer>(gles2_helper_.get());
 
   // Create the object exposing the OpenGL API.
-  gles2_implementation_ =
-      std::make_unique<skia_bindings::GLES2ImplementationWithGrContextSupport>(
-          gles2_helper_.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
-          /*lose_context_when_out_of_memory=*/false, command_buffer_.get());
+  gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
+      gles2_helper_.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
+      /*lose_context_when_out_of_memory=*/false, command_buffer_.get());
 
   result = gles2_implementation_->Initialize(mem_limits);
   return result;
