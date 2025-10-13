@@ -92,6 +92,43 @@ class DebugHeaderBuilder {
   structured_headers::List skipped_sessions_;
 };
 
+bool IsProactiveRefreshCandidate(
+    Session& existing_session,
+    const Session& new_session,
+    const CookieAndLineAccessResultList& maybe_stored_cookies) {
+  // Get the shortest lifetime of a bound cookie set by the current
+  // refresh request. This assumes:
+  // 1. The current refresh sets all bound cookies
+  // 2. The proactive refresh would have set the same lifetimes
+  // These assumptions are good enough for histogram logging, but likely
+  // not true for all sites.
+  base::Time current_time = base::Time::Now();
+  base::TimeDelta minimum_lifetime = base::TimeDelta::Max();
+  for (const CookieCraving& cookie_craving : new_session.cookies()) {
+    for (const CookieAndLineWithAccessResult& cookie_and_line :
+         maybe_stored_cookies) {
+      if (cookie_and_line.cookie.has_value() &&
+          cookie_craving.IsSatisfiedBy(cookie_and_line.cookie.value())) {
+        minimum_lifetime =
+            std::min(minimum_lifetime,
+                     cookie_and_line.cookie->ExpiryDate() - current_time);
+      }
+    }
+  }
+
+  base::UmaHistogramLongTimes100(
+      "Net.DeviceBoundSessions.MinimumBoundCookieLifetime", minimum_lifetime);
+
+  std::optional<base::Time> last_proactive_refresh_opportunity =
+      existing_session.TakeLastProactiveRefreshOpportunity();
+
+  if (!last_proactive_refresh_opportunity.has_value()) {
+    return false;
+  }
+
+  return minimum_lifetime >= current_time - *last_proactive_refresh_opportunity;
+}
+
 }  // namespace
 
 DeferredURLRequest::DeferredURLRequest(
@@ -439,8 +476,11 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
 
 // Continue or restart all deferred requests for the session and remove the
 // session_id key in the map.
-void SessionServiceImpl::UnblockDeferredRequests(const SessionKey& session_key,
-                                                 RefreshResult result) {
+void SessionServiceImpl::UnblockDeferredRequests(
+    const SessionKey& session_key,
+    RefreshResult result,
+    std::optional<bool> is_proactive_refresh_candidate,
+    std::optional<base::TimeDelta> minimum_proactive_refresh_threshold) {
   auto it = deferred_requests_.find(session_key.id);
   if (it == deferred_requests_.end()) {
     return;
@@ -451,6 +491,63 @@ void SessionServiceImpl::UnblockDeferredRequests(const SessionKey& session_key,
 
   base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferredCount",
                               requests.size());
+
+  if (is_proactive_refresh_candidate.has_value() &&
+      minimum_proactive_refresh_threshold.has_value()) {
+    base::UmaHistogramLongTimes100(
+        "Net.DeviceBoundSessions.MinimumProactiveRefreshThreshold",
+        *minimum_proactive_refresh_threshold);
+    if (*is_proactive_refresh_candidate) {
+      base::UmaHistogramLongTimes100(
+          "Net.DeviceBoundSessions.MinimumProactiveRefreshThreshold.Success",
+          *minimum_proactive_refresh_threshold);
+    } else {
+      base::UmaHistogramLongTimes100(
+          "Net.DeviceBoundSessions.MinimumProactiveRefreshThreshold.Failure",
+          *minimum_proactive_refresh_threshold);
+    }
+
+    if (*is_proactive_refresh_candidate) {
+      if (*minimum_proactive_refresh_threshold <= base::Seconds(30)) {
+        base::UmaHistogramCounts100(
+            "Net.DeviceBoundSessions.ProactiveRefreshCandidateDeferredCount."
+            "ThirtySeconds",
+            requests.size());
+        for (auto& request : requests) {
+          base::UmaHistogramTimes(
+              "Net.DeviceBoundSessions."
+              "ProactiveRefreshCandidateRequestDeferredDuration.ThirtySeconds",
+              request.timer.Elapsed());
+        }
+      }
+
+      if (*minimum_proactive_refresh_threshold <= base::Minutes(1)) {
+        base::UmaHistogramCounts100(
+            "Net.DeviceBoundSessions.ProactiveRefreshCandidateDeferredCount."
+            "OneMinute",
+            requests.size());
+        for (auto& request : requests) {
+          base::UmaHistogramTimes(
+              "Net.DeviceBoundSessions."
+              "ProactiveRefreshCandidateRequestDeferredDuration.OneMinute",
+              request.timer.Elapsed());
+        }
+      }
+
+      if (*minimum_proactive_refresh_threshold <= base::Minutes(2)) {
+        base::UmaHistogramCounts100(
+            "Net.DeviceBoundSessions.ProactiveRefreshCandidateDeferredCount."
+            "TwoMinutes",
+            requests.size());
+        for (auto& request : requests) {
+          base::UmaHistogramTimes(
+              "Net.DeviceBoundSessions."
+              "ProactiveRefreshCandidateRequestDeferredDuration.TwoMinutes",
+              request.timer.Elapsed());
+        }
+      }
+    }
+  }
 
   for (auto& request : requests) {
     base::UmaHistogramTimes("Net.DeviceBoundSessions.RequestDeferredDuration",
@@ -686,12 +783,30 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     CHECK(new_session);
     CHECK_EQ(new_session->id(), session_key.id);
 
+    Session* existing_session = GetSession(session_key);
+    CHECK(existing_session);
+    bool is_proactive_refresh_candidate =
+        IsProactiveRefreshCandidate(*existing_session, *new_session,
+                                    registration_result.maybe_stored_cookies());
+
     SchemefulSite new_site(new_session->origin());
     AddSession(new_site, std::move(new_session));
     // The session has been refreshed, restart the request.
-    UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
+    UnblockDeferredRequests(
+        session_key, RefreshResult::kRefreshed, is_proactive_refresh_candidate,
+        existing_session
+            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
   } else if (registration_result.is_no_session_config_change()) {
-    UnblockDeferredRequests(session_key, RefreshResult::kRefreshed);
+    Session* existing_session = GetSession(session_key);
+    CHECK(existing_session);
+    bool is_proactive_refresh_candidate =
+        IsProactiveRefreshCandidate(*existing_session, *existing_session,
+                                    registration_result.maybe_stored_cookies());
+
+    UnblockDeferredRequests(
+        session_key, RefreshResult::kRefreshed, is_proactive_refresh_candidate,
+        existing_session
+            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
   } else if (std::optional<DeletionReason> deletion_reason =
                  registration_result.error().GetDeletionReason();
              deletion_reason.has_value()) {

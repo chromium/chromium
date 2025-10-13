@@ -1369,7 +1369,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
 
   ScopedTestRegistrationFetcher scoped_test_fetcher(
       base::BindRepeating([]() -> RegistrationResult {
-        return RegistrationResult(RegistrationResult::NoSessionConfigChange());
+        return RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                                  CookieAndLineAccessResultList());
       }));
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -1431,7 +1432,8 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
   // Set up the fetcher to return no response body.
   ScopedTestRegistrationFetcher scoped_test_fetcher(
       base::BindRepeating([]() -> RegistrationResult {
-        return RegistrationResult(RegistrationResult::NoSessionConfigChange());
+        return RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                                  CookieAndLineAccessResultList());
       }));
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),

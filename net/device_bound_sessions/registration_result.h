@@ -10,6 +10,7 @@
 
 #include "base/types/expected.h"
 #include "net/base/net_export.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/device_bound_sessions/session_error.h"
 
 namespace net::device_bound_sessions {
@@ -24,8 +25,10 @@ class NET_EXPORT RegistrationResult {
   // session.
   class NoSessionConfigChange {};
 
-  explicit RegistrationResult(std::unique_ptr<Session> session);
-  explicit RegistrationResult(NoSessionConfigChange no_change);
+  RegistrationResult(std::unique_ptr<Session> session,
+                     CookieAndLineAccessResultList maybe_stored_cookies);
+  RegistrationResult(NoSessionConfigChange no_change,
+                     CookieAndLineAccessResultList maybe_stored_cookies);
   explicit RegistrationResult(SessionError session_error);
   explicit RegistrationResult(
       base::expected<std::unique_ptr<Session>, SessionError> session_or_error);
@@ -48,9 +51,14 @@ class NET_EXPORT RegistrationResult {
   std::unique_ptr<Session> TakeSession();
   SessionError TakeError();
 
+  const CookieAndLineAccessResultList& maybe_stored_cookies() {
+    return maybe_stored_cookies_;
+  }
+
  private:
   std::variant<std::unique_ptr<Session>, NoSessionConfigChange, SessionError>
       storage_;
+  CookieAndLineAccessResultList maybe_stored_cookies_;
 };
 
 }  // namespace net::device_bound_sessions

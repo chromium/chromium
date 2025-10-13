@@ -265,7 +265,7 @@ proto::Session Session::ToProto() const {
 
 bool Session::ShouldDeferRequest(
     URLRequest* request,
-    const net::FirstPartySetMetadata& first_party_set_metadata) const {
+    const net::FirstPartySetMetadata& first_party_set_metadata) {
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
@@ -343,6 +343,8 @@ bool Session::ShouldDeferRequest(
 
   // The main logic. This checks every CookieCraving against every (real)
   // CanonicalCookie.
+  base::Time current_timestamp = base::Time::Now();
+  base::TimeDelta minimum_remaining_lifetime = base::TimeDelta::Max();
   for (const CookieCraving& cookie_craving : cookie_cravings_) {
     if (!cookie_craving.ShouldIncludeForRequest(
             request, first_party_set_metadata, options, params)) {
@@ -366,6 +368,9 @@ bool Session::ShouldDeferRequest(
       // but there might be similar cases.
       if (cookie_craving.IsSatisfiedBy(request_cookie.cookie)) {
         satisfied = true;
+        minimum_remaining_lifetime =
+            std::min(minimum_remaining_lifetime,
+                     request_cookie.cookie.ExpiryDate() - current_timestamp);
         break;
       }
     }
@@ -389,6 +394,10 @@ bool Session::ShouldDeferRequest(
       return true;
     }
   }
+
+  last_proactive_refresh_opportunity_ = current_timestamp;
+  last_proactive_refresh_opportunity_minimum_cookie_lifetime_ =
+      minimum_remaining_lifetime;
 
   request->net_log().AddEvent(net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
                               [&](NetLogCaptureMode capture_mode) {
@@ -550,6 +559,19 @@ bool Session::CanSetBoundCookie(
   }
 
   return false;
+}
+
+std::optional<base::Time> Session::TakeLastProactiveRefreshOpportunity() {
+  std::optional<base::Time> time = last_proactive_refresh_opportunity_;
+  last_proactive_refresh_opportunity_.reset();
+  return time;
+}
+std::optional<base::TimeDelta>
+Session::TakeLastProactiveRefreshOpportunityMinimumCookieLifetime() {
+  std::optional<base::TimeDelta> time_delta =
+      last_proactive_refresh_opportunity_minimum_cookie_lifetime_;
+  last_proactive_refresh_opportunity_minimum_cookie_lifetime_.reset();
+  return time_delta;
 }
 
 }  // namespace net::device_bound_sessions

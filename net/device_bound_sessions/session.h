@@ -63,7 +63,7 @@ class NET_EXPORT Session {
 
   bool ShouldDeferRequest(
       URLRequest* request,
-      const FirstPartySetMetadata& first_party_set_metadata) const;
+      const FirstPartySetMetadata& first_party_set_metadata);
 
   const Id& id() const { return id_; }
 
@@ -128,6 +128,11 @@ class NET_EXPORT Session {
     allowed_refresh_initiators_ = std::move(allowed_refresh_initiators);
   }
 
+  std::optional<base::Time> TakeLastProactiveRefreshOpportunity();
+
+  std::optional<base::TimeDelta>
+  TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
+
  private:
   Session(Id id, SessionInclusionRules inclusion_rules, GURL refresh);
   Session(Id id,
@@ -180,6 +185,12 @@ class NET_EXPORT Session {
   net::BackoffEntry backoff_;
   // Host patterns for initiators allowed to trigger a refresh.
   std::vector<std::string> allowed_refresh_initiators_;
+
+  // Used for histogram logging related to the value of proactive
+  // refresh.
+  std::optional<base::Time> last_proactive_refresh_opportunity_;
+  std::optional<base::TimeDelta>
+      last_proactive_refresh_opportunity_minimum_cookie_lifetime_;
 };
 
 }  // namespace net::device_bound_sessions

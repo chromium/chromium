@@ -594,7 +594,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     if (url_fetcher_->data_received().empty()) {
       RunCallback(
-          RegistrationResult(RegistrationResult::NoSessionConfigChange()));
+          RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                             url_fetcher_->maybe_stored_cookies()));
       // `this` may be deleted.
       return;
     }

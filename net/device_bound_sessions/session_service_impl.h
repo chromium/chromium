@@ -145,8 +145,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                                   RegistrationResult result);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
-  void UnblockDeferredRequests(const SessionKey& session_key,
-                               RefreshResult result);
+  void UnblockDeferredRequests(
+      const SessionKey& session_key,
+      RefreshResult result,
+      std::optional<bool> is_proactive_refresh_candidate = std::nullopt,
+      std::optional<base::TimeDelta> minimum_proactive_refresh_threshold =
+          std::nullopt);
 
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
