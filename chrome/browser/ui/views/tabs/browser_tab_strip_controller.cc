@@ -789,11 +789,16 @@ bool BrowserTabStripController::HasVisibleBackgroundTabShapes() const {
 }
 
 bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
-  return GetFrameView()->EverHasVisibleBackgroundTabShapes();
+  return GetFrameView()->HasVisibleBackgroundTabShapes(
+             BrowserFrameActiveState::kActive) ||
+         GetFrameView()->HasVisibleBackgroundTabShapes(
+             BrowserFrameActiveState::kInactive);
 }
 
 bool BrowserTabStripController::CanDrawStrokes() const {
-  return GetFrameView()->CanDrawStrokes();
+  // Web apps should not draw strokes if they don't have a tab strip.
+  return !browser_view_->browser()->app_controller() ||
+         browser_view_->browser()->app_controller()->has_tab_strip();
 }
 
 SkColor BrowserTabStripController::GetFrameColor(

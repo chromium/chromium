@@ -374,10 +374,6 @@ void BrowserFrameViewChromeOS::UpdateThrobber(bool running) {
   }
 }
 
-bool BrowserFrameViewChromeOS::CanUserExitFullscreen() const {
-  return !platform_util::IsBrowserLockedFullscreen(browser_view()->browser());
-}
-
 SkColor BrowserFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   // Web apps apply a theme color if specified by the extension/manifest.

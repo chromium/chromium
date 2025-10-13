@@ -140,6 +140,10 @@ class BrowserView : public BrowserWindow,
   // The width of the vertical tab strip.
   static constexpr int kVerticalTabStripWidth = 240;
 
+  // The name of a key to store on the window handle so that other code can
+  // locate this object using just the handle.
+  static constexpr char kBrowserViewKey[] = "__BROWSER_VIEW__";
+
   explicit BrowserView(Browser* browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;

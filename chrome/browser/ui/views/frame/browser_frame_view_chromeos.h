@@ -63,7 +63,6 @@ class BrowserFrameViewChromeOS
   bool ShouldShowWebAppFrameToolbar() const override;
   int GetTopInset(bool restored) const override;
   void UpdateThrobber(bool running) override;
-  bool CanUserExitFullscreen() const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   void UpdateMinimumSize() override;

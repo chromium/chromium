@@ -185,10 +185,6 @@ bool BrowserFrameView::ShouldShowWebAppFrameToolbar() const {
   return true;
 }
 
-bool BrowserFrameView::CanUserExitFullscreen() const {
-  return true;
-}
-
 bool BrowserFrameView::IsFrameCondensed() const {
   return browser_widget_->IsMaximized() || browser_widget_->IsFullscreen();
 }
@@ -233,17 +229,6 @@ bool BrowserFrameView::HasVisibleBackgroundTabShapes(
              TabStyle::TabSelectionState::kInactive,
              /*hovered=*/false, ShouldPaintAsActiveForState(active_state),
              *GetColorProvider()) != GetFrameColor(active_state);
-}
-
-bool BrowserFrameView::EverHasVisibleBackgroundTabShapes() const {
-  return HasVisibleBackgroundTabShapes(BrowserFrameActiveState::kActive) ||
-         HasVisibleBackgroundTabShapes(BrowserFrameActiveState::kInactive);
-}
-
-bool BrowserFrameView::CanDrawStrokes() const {
-  // Web apps should not draw strokes if they don't have a tab strip.
-  return !browser_view_->browser()->app_controller() ||
-         browser_view_->browser()->app_controller()->has_tab_strip();
 }
 
 SkColor BrowserFrameView::GetCaptionColor(

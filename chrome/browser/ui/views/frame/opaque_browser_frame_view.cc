@@ -581,10 +581,6 @@ bool OpaqueBrowserFrameView::IsFrameCondensed() const {
   return BrowserFrameView::IsFrameCondensed() || !ShouldShowCaptionButtons();
 }
 
-bool OpaqueBrowserFrameView::EverHasVisibleBackgroundTabShapes() const {
-  return BrowserFrameView::EverHasVisibleBackgroundTabShapes();
-}
-
 OpaqueBrowserFrameView::FrameButtonStyle
 OpaqueBrowserFrameView::GetFrameButtonStyle() const {
 #if BUILDFLAG(IS_LINUX)

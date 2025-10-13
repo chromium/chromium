@@ -75,7 +75,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void OnAppRegistrarDestroyed() override;
 
   // Used by TabContainerOverlayView to paint the tab strip background.
-  void PaintThemedFrame(gfx::Canvas* canvas) override;
+  void PaintThemedFrame(gfx::Canvas* canvas);
 
  protected:
   // views::View:
