@@ -72,7 +72,7 @@ void GlicLegacySidePanelCoordinator::CreateAndRegisterEntry(
 void GlicLegacySidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   SidePanelEntry::Key glic_key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
   if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
-    glic_service_->window_controller().SidePanelShown(browser_);
+    glic_service_->GetSingleInstanceWindowController().SidePanelShown(browser_);
   }
 }
 
@@ -107,8 +107,9 @@ std::unique_ptr<views::View> GlicLegacySidePanelCoordinator::CreateGlicWebView(
   if (!tab) {
     return nullptr;
   }
-  return glic_service_->window_controller().CreateViewForSidePanel(
-      *scope.GetBrowserWindowInterface().GetActiveTabInterface());
+  return glic_service_->GetSingleInstanceWindowController()
+      .CreateViewForSidePanel(
+          *scope.GetBrowserWindowInterface().GetActiveTabInterface());
 }
 
 }  // namespace glic

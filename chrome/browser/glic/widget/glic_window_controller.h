@@ -160,10 +160,6 @@ class GlicWindowController : public Host::InstanceInterfaceForMigration {
 
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
-  virtual std::unique_ptr<views::View> CreateViewForSidePanel(
-      tabs::TabInterface& tab) = 0;
-
-  virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
 
   // TODO: Move to GlicInstanceCoordinator.
   using LastActiveInstanceChangedCallback =
@@ -195,6 +191,10 @@ class GlicWindowControllerInterface : public GlicWindowController,
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
   virtual bool IsWarmed() const = 0;
+
+  virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
+  virtual std::unique_ptr<views::View> CreateViewForSidePanel(
+      tabs::TabInterface& tab) = 0;
 };
 
 }  // namespace glic

@@ -304,22 +304,6 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
   NOTIMPLEMENTED();
 }
 
-std::unique_ptr<views::View>
-GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
-  // This method is only used by single instance (when the GlicMultiTab feature
-  // is disabled). This implementation is never called.
-  NOTIMPLEMENTED();
-  return std::make_unique<views::View>();
-}
-
-void GlicInstanceCoordinatorImpl::SidePanelShown(
-    BrowserWindowInterface* browser) {
-  // This is a related to the legacy side panel behavior that
-  // GlicWindowController implements, and will not be called when
-  // kGlicMultiInstance is enabled.
-  NOTREACHED();
-}
-
 base::CallbackListSubscription
 GlicInstanceCoordinatorImpl::RegisterLastActiveInstanceChangedCallback(
     LastActiveInstanceChangedCallback callback) {
