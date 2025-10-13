@@ -10,6 +10,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // static
@@ -34,6 +35,8 @@ AuxiliarySearchDonationServiceFactory::AuxiliarySearchDonationServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
+  DependsOn(
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance());
 }
 
 AuxiliarySearchDonationServiceFactory::
@@ -47,9 +50,11 @@ AuxiliarySearchDonationServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  auto* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AuxiliarySearchDonationService>(
-      PageContentAnnotationsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+      PageContentAnnotationsServiceFactory::GetForProfile(profile),
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile));
 }
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsCreatedWithBrowserContext()

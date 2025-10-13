@@ -29,6 +29,7 @@ source_set("auxiliary_search") {
 
 source_set("impl") {
   sources = [
+    "auxiliary_search_donation_service.cc",
     "auxiliary_search_donation_service_factory.cc",
     "auxiliary_search_provider.cc",
     "auxiliary_search_top_site_provider_bridge.cc",
@@ -51,10 +52,16 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "auxiliary_search_top_site_provider_bridge_unittest.cc" ]
+  sources = [
+    "auxiliary_search_donation_service_unittest.cc",
+    "auxiliary_search_top_site_provider_bridge_unittest.cc",
+  ]
   deps = [
     ":auxiliary_search",
+    "//base/test:test_support",
+    "//components/history/core/test",
     "//components/ntp_tiles",
+    "//components/page_content_annotations/core:test_support",
     "//components/prefs:test_support",
     "//components/visited_url_ranking/public:test_support",
     "//testing/gmock",

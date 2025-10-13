@@ -4,16 +4,29 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
 
+namespace {
+
+// The delay between a new content annotation and when a history donation is
+// triggered, in order to batch together multiple annotations.
+constexpr base::TimeDelta kDonationDelay = base::Minutes(5);
+
+}  // namespace
+
 AuxiliarySearchDonationService::AuxiliarySearchDonationService(
     page_content_annotations::PageContentAnnotationsService*
-        page_content_annotations_service)
-    : page_content_annotations_service_(page_content_annotations_service) {
+        page_content_annotations_service,
+    visited_url_ranking::VisitedURLRankingService* ranking_service)
+    : page_content_annotations_service_(page_content_annotations_service),
+      ranking_service_(ranking_service) {
   CHECK(page_content_annotations_service_);
+  CHECK(ranking_service_);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
 }
@@ -33,6 +46,34 @@ void AuxiliarySearchDonationService::OnPageContentAnnotated(
     return;
   }
 
-  // TODO: b/432359106 - Implement this using FetchAndRankHelper and
-  // AuxiliarySearchDonor
+  if (!donation_timer_.IsRunning()) {
+    donation_timer_.Start(
+        FROM_HERE, kDonationDelay, this,
+        &AuxiliarySearchDonationService::FetchHistoryAndDonate);
+  }
+}
+
+base::TimeDelta AuxiliarySearchDonationService::GetDonationDelayForTesting()
+    const {
+  return kDonationDelay;
+}
+
+void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
+  // TODO: https://crbug.com/432359106 - Set `begin_time` to the time of the
+  // most recent visit that was donated.
+  scoped_refptr<FetchAndRankHelper> helper =
+      base::MakeRefCounted<FetchAndRankHelper>(
+          ranking_service_,
+          base::BindOnce(&AuxiliarySearchDonationService::DonateHistoryEntries,
+                         weak_factory_.GetWeakPtr()),
+          /*custom_tab_url=*/std::nullopt,
+          /*begin_time=*/std::nullopt);
+
+  helper->StartFetching();
+}
+
+void AuxiliarySearchDonationService::DonateHistoryEntries(
+    std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries) {
+  // TODO: https://crbug.com/432359106 - Use AuxiliarySearchDonor to donate the
+  // entries.
 }
