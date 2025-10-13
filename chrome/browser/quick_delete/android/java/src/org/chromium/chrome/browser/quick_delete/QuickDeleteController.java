@@ -52,7 +52,6 @@ public class QuickDeleteController {
     private final LayoutManager mLayoutManager;
     private final Profile mProfile;
     private final TabModel mTabModel;
-    private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -100,7 +99,6 @@ public class QuickDeleteController {
             mDeleteArchivedTabsFilter = null;
         }
         mProfile = assumeNonNull(tabModelSelector.getCurrentModel().getProfile());
-        mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
 
         // MVC setup.
         View quickDeleteView =
@@ -119,7 +117,6 @@ public class QuickDeleteController {
                 new QuickDeleteMediator(
                         mPropertyModel,
                         mProfile,
-                        mQuickDeleteBridge,
                         mDeleteRegularTabsFilter,
                         mDeleteArchivedTabsFilter);
 
@@ -135,7 +132,7 @@ public class QuickDeleteController {
 
     void destroy() {
         mPropertyModelChangeProcessor.destroy();
-        mQuickDeleteBridge.destroy();
+        mQuickDeleteMediator.destroy();
     }
 
     /**

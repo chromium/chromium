@@ -51,6 +51,7 @@ public class QuickDeleteBridgeTest {
 
     private WebPageStation mPage;
     private QuickDeleteBridge mQuickDeleteBridge;
+    private DomainVisitsCallback mDomainVisitsCallback;
 
     private static class DomainVisitsCallback implements QuickDeleteBridge.DomainVisitsCallback {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -69,11 +70,12 @@ public class QuickDeleteBridgeTest {
     @Before
     public void setUp() throws ExecutionException {
         mPage = mActivityTestRule.startOnBlankPage();
+        mDomainVisitsCallback = new DomainVisitsCallback();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
                             mActivityTestRule.getActivity().getCurrentTabModel().getProfile();
-                    mQuickDeleteBridge = new QuickDeleteBridge(profile);
+                    mQuickDeleteBridge = new QuickDeleteBridge(profile, mDomainVisitsCallback);
                 });
     }
 
@@ -100,35 +102,28 @@ public class QuickDeleteBridgeTest {
 
     @Test
     @MediumTest
-    public void testLastVisitedDomainAndUniqueDomains_WhenNoVisits() throws TimeoutException {
-        DomainVisitsCallback callback = new DomainVisitsCallback();
+    public void testRestartCounterForTimePeriod_WhenNoVisits() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
-                                TimePeriod.LAST_15_MINUTES, callback));
+                () -> mQuickDeleteBridge.restartCounterForTimePeriod(TimePeriod.LAST_15_MINUTES));
 
-        callback.mCallbackHelper.waitForCallback(0);
+        mDomainVisitsCallback.mCallbackHelper.waitForCallback(0);
 
-        assertEquals("", callback.mLastVisitedDomain);
-        assertEquals(0, callback.mDomainCount);
+        assertEquals("", mDomainVisitsCallback.mLastVisitedDomain);
+        assertEquals(0, mDomainVisitsCallback.mDomainCount);
     }
 
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    public void testLastVisitedDomainAndUniqueDomains_WhenVisitsExistInRange()
-            throws TimeoutException {
+    public void testRestartCounterForTimePeriod_WhenVisitsExistInRange() throws TimeoutException {
         visitUrls();
 
-        DomainVisitsCallback callback = new DomainVisitsCallback();
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(
-                                TimePeriod.LAST_15_MINUTES, callback));
+                () -> mQuickDeleteBridge.restartCounterForTimePeriod(TimePeriod.LAST_15_MINUTES));
 
-        callback.mCallbackHelper.waitForCallback(0);
+        mDomainVisitsCallback.mCallbackHelper.waitForCallback(0);
 
-        assertEquals("google.com", callback.mLastVisitedDomain);
-        assertEquals(2, callback.mDomainCount);
+        assertEquals("google.com", mDomainVisitsCallback.mLastVisitedDomain);
+        assertEquals(2, mDomainVisitsCallback.mDomainCount);
     }
 }

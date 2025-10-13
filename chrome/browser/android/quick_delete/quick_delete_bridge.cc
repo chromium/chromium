@@ -5,13 +5,16 @@
 #include "chrome/browser/android/quick_delete/quick_delete_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/counters/history_counter.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -22,7 +25,7 @@
 #include "chrome/browser/quick_delete/jni_headers/QuickDeleteBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
+using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -30,26 +33,49 @@ using base::android::ScopedJavaGlobalRef;
 namespace {
 
 struct QuickDeleteDomainResult {
-  std::string last_visited_domain;
-  size_t domain_count;
+  std::u16string last_visited_domain;
+  int domain_count;
 };
 
 QuickDeleteDomainResult GetLastVisitedDomainAndUniqueDomainCountFromResult(
-    const history::DomainsVisitedResult& result) {
-  if (result.all_visited_domains.empty()) {
-    return {"", 0};
+    const browsing_data::HistoryCounter::HistoryResult* result) {
+  browsing_data::BrowsingDataCounter::ResultInt unique_domains_count =
+      result->unique_domains_result();
+  std::u16string last_visited_domain =
+      base::UTF8ToUTF16(result->last_visited_domain());
+
+  // Subtract one from the unique_domains_count since one of the domains will be
+  // shown as the last_visited_domain.
+  if (unique_domains_count > 0) {
+    CHECK(!last_visited_domain.empty());
+    unique_domains_count--;
   }
 
-  return {result.all_visited_domains.front(),
-          result.all_visited_domains.size()};
+  return {last_visited_domain, static_cast<int>(unique_domains_count)};
 }
 }  // namespace
 
-QuickDeleteBridge::QuickDeleteBridge(Profile* profile) {
+QuickDeleteBridge::QuickDeleteBridge(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    Profile* profile)
+    : jobject_(obj) {
   profile_ = profile;
 
-  history_service_ = HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_counter_ = std::make_unique<browsing_data::HistoryCounter>(
+      HistoryServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
+      SyncServiceFactory::GetForProfile(profile_));
+
+  base::Time begin_time =
+      CalculateBeginDeleteTime(browsing_data::TimePeriod::LAST_15_MINUTES);
+
+  history_counter_->InitWithoutPeriodPref(
+      profile_->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+      begin_time,
+      base::BindRepeating(&QuickDeleteBridge::OnHistoryCounterResult,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 QuickDeleteBridge::~QuickDeleteBridge() = default;
@@ -58,42 +84,37 @@ void QuickDeleteBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void QuickDeleteBridge::GetLastVisitedDomainAndUniqueDomainCount(
-    JNIEnv* env,
-    const jint time_period,
-    const JavaParamRef<jobject>& j_callback) {
+void QuickDeleteBridge::RestartCounterForTimePeriod(JNIEnv* env,
+                                                    const jint time_period) {
   browsing_data::TimePeriod period =
       static_cast<browsing_data::TimePeriod>(time_period);
-
   base::Time begin_time = CalculateBeginDeleteTime(period);
-  base::Time end_time = CalculateEndDeleteTime(period);
 
-  history_service_->GetUniqueDomainsVisited(
-      begin_time, end_time, history::VisitQuery404sPolicy::kInclude404s,
-      base::BindOnce(&QuickDeleteBridge::
-                         OnGetLastVisitedDomainAndUniqueDomainCountComplete,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_callback)),
-      &task_tracker_);
+  history_counter_->SetBeginTime(begin_time);
 }
 
-// TODO(crbug.com/40255099) use rvalue reference to pass the result and define
-// copy ctor and copy assignment in history::DomainsVisitedResult.
-void QuickDeleteBridge::OnGetLastVisitedDomainAndUniqueDomainCountComplete(
-    const JavaRef<jobject>& j_callback,
-    history::DomainsVisitedResult result) {
+void QuickDeleteBridge::OnHistoryCounterResult(
+    std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
   JNIEnv* env = AttachCurrentThread();
+  if (!result->Finished()) {
+    return;
+  }
+
   QuickDeleteDomainResult quickDeleteResult =
-      GetLastVisitedDomainAndUniqueDomainCountFromResult(std::move(result));
+      GetLastVisitedDomainAndUniqueDomainCountFromResult(
+          static_cast<const browsing_data::HistoryCounter::HistoryResult*>(
+              result.get()));
 
   Java_QuickDeleteBridge_onLastVisitedDomainAndUniqueDomainCountReady(
-      env, j_callback,
-      ConvertUTF8ToJavaString(env, quickDeleteResult.last_visited_domain),
+      env, jobject_,
+      ConvertUTF16ToJavaString(env, quickDeleteResult.last_visited_domain),
       quickDeleteResult.domain_count);
 }
 
-static jlong JNI_QuickDeleteBridge_Init(JNIEnv* env,
-                                        Profile* profile) {
-  QuickDeleteBridge* bridge = new QuickDeleteBridge(profile);
+static jlong JNI_QuickDeleteBridge_Init(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    Profile* profile) {
+  QuickDeleteBridge* bridge = new QuickDeleteBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
 }
