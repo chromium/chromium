@@ -2922,6 +2922,24 @@ Google Chrome is unable to recover your settings.
           Sign in faster to sites using saved passwords for Chrome on iOS
         </message>
       </if>
+
+      <!--Default Search Engine Reset Notification-->
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_TITLE"
+         desc="Title of the notification shown when Chrome resets the default search engine (DSE) due to preference tampering.">
+        Your settings were changed by an unknown app
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_BODY"
+         desc="Body text of the notification shown when Chrome resets the default search engine, explaining that a change from outside Chrome was detected.">
+        Your default search engine was changed from outside of Chrome. To protect you, Chrome reset it.
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_GOT_IT_BUTTON"
+         desc="Label for the 'Got it' button in the default search engine reset notification, which dismisses the UI.">
+        Got it
+      </message>
+      <message name="IDS_DEFAULT_SEARCH_ENGINE_RESET_NOTIFICATION_LEARN_MORE_BUTTON"
+         desc="Label for the 'Learn more' button in the default search engine reset notification, which opens a help center article.">
+        Learn more
+      </message>
     </messages>
   </release>
 </grit>

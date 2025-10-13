@@ -1102,6 +1102,8 @@ static_library("ui") {
       "views/frame/contents_rounded_corner.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
+      "views/search_engines/dse_reset_dialog.cc",
+      "views/search_engines/dse_reset_dialog.h",
       "webui/bookmarks/bookmark_prefs.cc",
       "webui/bookmarks/bookmark_prefs.h",
       "webui/bookmarks/bookmarks_message_handler.cc",
