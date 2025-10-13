@@ -35,6 +35,7 @@ namespace {
 const char url1[] = "https://example1.com";
 const char url2[] = "https://example2.com";
 const char url3[] = "https://example3.com";
+const char url4[] = "https://example4.com";
 
 const ContentSettingsType notifications_type =
     ContentSettingsType::NOTIFICATIONS;
@@ -70,17 +71,26 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
         GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   }
 
-  void AddRevokedAbusiveNotification(std::string url,
-                                     ContentSetting cs,
-                                     bool is_ignored) {
+  void AddRevokedAbusiveNotification(
+      std::string url,
+      ContentSetting cs,
+      bool is_ignored,
+      safe_browsing::NotificationRevocationSource source =
+          safe_browsing::NotificationRevocationSource::kUnknown) {
     AddAbusiveNotification(url, cs);
     content_settings::ContentSettingConstraints constraint;
+    base::Value::Dict value;
+    value.Set(safety_hub::kRevokedStatusDictKeyStr,
+              is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr);
+    std::optional<std::string> source_str =
+        AbusiveNotificationPermissionsManager::GetRevocationSourceString(
+            source);
+    if (source_str) {
+      value.Set(kAbusiveRevocationSourceKeyStr, source_str.value());
+    }
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), revoked_notifications_type,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr,
-            is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)),
-        constraint);
+        base::Value(std::move(value)), constraint);
   }
 
   void AddSafeNotification(std::string url, ContentSetting cs) {
@@ -753,6 +763,77 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       /* expected_count */ 1);
   histogram_tester.ExpectBucketCount(
       safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 1,
+      /* expected_count */ 1);
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false);
+  AddRevokedAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false,
+                                safe_browsing::NotificationRevocationSource::
+                                    kManualSafeBrowsingRevocation);
+  AddRevokedAbusiveNotification(
+      url3, ContentSetting::CONTENT_SETTING_ALLOW,
+      /*is_ignored=*/false,
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist);
+  AddRevokedAbusiveNotification(
+      url4, ContentSetting::CONTENT_SETTING_ALLOW,
+      /*is_ignored=*/true,
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist);
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      3u);
+  EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+      hcsm(), GURL(url4)));
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
+  base::HistogramTester histogram_tester;
+
+  // Simulate permission changed by the user.
+  manager.OnPermissionChanged(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url1)),
+      ContentSettingsPattern::Wildcard());
+  manager.OnPermissionChanged(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url2)),
+      ContentSettingsPattern::Wildcard());
+  manager.OnPermissionChanged(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url3)),
+      ContentSettingsPattern::Wildcard());
+  manager.OnPermissionChanged(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url4)),
+      ContentSettingsPattern::Wildcard());
+
+  // Verify that entries are deleted from revoked abusive notification content
+  // setting.
+  ASSERT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      0u);
+  ASSERT_FALSE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+      hcsm(), GURL(url4)));
+  // Verify that appropriate metrics are logged.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Unknown."
+      "Revoked.PermissionChanged",
+      /* sample */ ContentSetting::CONTENT_SETTING_ASK,
+      /* expected_count */ 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+      "ManualSafeBrowsingRevocation."
+      "Revoked.PermissionChanged",
+      /* sample */ ContentSetting::CONTENT_SETTING_ASK,
+      /* expected_count */ 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+      "SocialEngineeringBlocklist."
+      "Revoked.PermissionChanged",
+      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
+      /* expected_count */ 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+      "SocialEngineeringBlocklist."
+      "Ignored.PermissionChanged",
+      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
       /* expected_count */ 1);
 }
 

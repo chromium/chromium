@@ -816,6 +816,29 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.{NotificationRevocationSource}.{RevokedStatus}.PermissionChanged"
+    enum="ContentSetting" expires_after="2026-02-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded when the user changes notification permission outside of Safety Hub
+    for sites previously {RevokedStatus} due to abusive notification with reason
+    {NotificationRevocationSource}.
+
+    This detects occurrence of false positive abusive auto-revocations.
+  </summary>
+  <token key="RevokedStatus">
+    <variant name="Ignored"/>
+    <variant name="Revoked"/>
+  </token>
+  <token key="NotificationRevocationSource">
+    <variant name="ManualSafeBrowsingRevocation"/>
+    <variant name="SocialEngineeringBlocklist"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed"
     enum="BooleanEnabled" expires_after="2026-02-22">
   <owner>zalmashni@google.com</owner>

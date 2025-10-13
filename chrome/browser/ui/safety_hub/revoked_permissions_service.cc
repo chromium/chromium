@@ -252,9 +252,8 @@ void RevokedPermissionsService::OnContentSettingChanged(
     // There should be at most one active revocation per site: either abusive or
     // disruptive.
     if (IsAbusiveNotificationAutoRevocationEnabled()) {
-      abusive_notification_manager_
-          ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
-                                                            secondary_pattern);
+      abusive_notification_manager_->OnPermissionChanged(primary_pattern,
+                                                         secondary_pattern);
     }
     if (disruptive_notification_manager_) {
       disruptive_notification_manager_->OnPermissionChanged(primary_pattern,

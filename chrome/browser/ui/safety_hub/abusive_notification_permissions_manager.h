@@ -132,6 +132,12 @@ class AbusiveNotificationPermissionsManager {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // Log metric for permission changed and remove
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting for the given pattern
+  // pairs.
+  void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern);
+
   // Restores REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS entry for the
   // primary_pattern after it was deleted after user
   // has accepted the revocation (via `ClearRevokedPermissionsList()`).
@@ -277,6 +283,12 @@ class AbusiveNotificationPermissionsManager {
   // storing in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`.
   static std::optional<std::string> GetRevocationSourceString(
       safe_browsing::NotificationRevocationSource source);
+
+  // Convert string representation for storing in
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` into
+  // `NotificationRevocationSource`.
+  static safe_browsing::NotificationRevocationSource
+  GetNotificationRevocationSource(std::string source_str);
 
   // Used for interactions with the local database, when checking the blocklist.
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
