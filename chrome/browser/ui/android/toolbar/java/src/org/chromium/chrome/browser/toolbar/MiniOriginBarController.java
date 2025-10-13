@@ -187,6 +187,7 @@ public class MiniOriginBarController implements Observer {
 
         mIsFormFieldFocusedObserver =
                 (focused) -> {
+                    if (mIsOmniboxFocusedSupplier.getAsBoolean()) return;
                     updateMiniOriginBarState(
                             focused
                                     ? MiniOriginEvent.FORM_FIELD_GAINED_FOCUS
