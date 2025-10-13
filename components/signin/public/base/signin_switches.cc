@@ -266,6 +266,9 @@ BASE_FEATURE(kForceStartupSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFullscreenSignInPromoUseDate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kHandleMdmErrorsForDasherAccounts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables a history sync educational tip in the magic stack on NTP.
 BASE_FEATURE(kHistoryOptInEducationalTip, base::FEATURE_ENABLED_BY_DEFAULT);
