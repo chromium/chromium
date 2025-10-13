@@ -43,11 +43,12 @@ class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     this.streamUrl_ = streamUrl;
   }
 
-  sendQuotaExceededError(): void {
+  sendQuotaExceededError(accountIsManaged: boolean): void {
     this.sendSaveToDriveProgress({
       status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
       errorType: SaveToDriveErrorType.QUOTA_EXCEEDED,
       accountEmail: 'test@gmail.com',
+      accountIsManaged: accountIsManaged,
     });
   }
 

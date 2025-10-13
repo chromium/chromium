@@ -68,7 +68,8 @@ import {Ink2Manager} from './ink2_manager.js';
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
 import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convertLoadProgressMessage} from './message_converter.js';
 import {record, recordEnumeration, UserAction} from './metrics.js';
-import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
+import {NavigatorDelegateImpl, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
+import type {PdfNavigator} from './navigator.js';
 import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
 import {getCss} from './pdf_viewer.css.js';
 import {getHtml} from './pdf_viewer.html.js';
@@ -494,7 +495,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.originalUrl, this.sidenavCollapsed_);
     this.sidenavCollapsed_ = !showSidenav;
 
-    this.navigator_ = new PdfNavigator(
+    this.navigator_ = new PdfNavigatorImpl(
         this.originalUrl, this.viewport, this.paramsParser,
         new NavigatorDelegateImpl(browserApi));
 
@@ -1321,6 +1322,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   setOnSaveToDriveProgressListenerForTesting() {
     PdfViewerPrivateProxyImpl.getInstance().onSaveToDriveProgress.addListener(
         this.handleSaveToDriveProgress_.bind(this));
+  }
+
+  setPdfNavigatorForTesting(navigator: PdfNavigator) {
+    this.navigator_ = navigator;
   }
 
   // Calculates the save to Drive progress in percentage. Returns 0 if the PDF
