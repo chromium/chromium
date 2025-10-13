@@ -1809,13 +1809,6 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source,
   }
 }
 
-void HTMLCanvasElement::EnableAccelerationForCanvas2D() {
-  CHECK(IsRenderingContext2D());
-  if (GetRasterModeForCanvas2D() == RasterMode::kCPU) {
-    RecreateCanvasInGPURasterModeForCanvas2D();
-  }
-}
-
 bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
   CHECK(IsRenderingContext2D());
   if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {

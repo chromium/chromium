@@ -793,7 +793,9 @@ void CanvasRenderingContext2D::setHitTestRegions(
 }
 
 void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
-  canvas()->EnableAccelerationForCanvas2D();
+  if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU) {
+    canvas()->RecreateCanvasInGPURasterModeForCanvas2D();
+  }
 }
 
 void CanvasRenderingContext2D::DrawElementInternal(
