@@ -1435,7 +1435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithDuplicates3" units="units"
-    expires_after="2025-11-15">
+    expires_after="2026-05-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
