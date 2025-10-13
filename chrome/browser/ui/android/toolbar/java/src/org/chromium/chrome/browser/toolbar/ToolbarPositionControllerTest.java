@@ -277,6 +277,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier =
             new ObservableSupplierImpl<>(TOOLBAR_HEIGHT);
+    private final ObservableSupplierImpl<Integer> mKeyboardHeightSupplier =
+            new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
@@ -352,7 +354,8 @@ public class ToolbarPositionControllerTest {
                         mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
                         mContext,
-                        mToolbarPosition);
+                        mToolbarPosition,
+                        mKeyboardHeightSupplier);
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
@@ -1057,6 +1060,9 @@ public class ToolbarPositionControllerTest {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsOmniboxFocused.set(true);
         assertControlsAtBottom();
+
+        mKeyboardHeightSupplier.set(400);
+        verify(mControlContainerView).setTranslationY(-400f);
     }
 
     @Test

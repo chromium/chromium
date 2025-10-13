@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.content.ComponentCallbacks;
@@ -1820,7 +1821,9 @@ public class ToolbarManager
                         mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
                         mActivity,
-                        mToolbarPositionSupplier);
+                        mToolbarPositionSupplier,
+                        assertNonNull(mWindowAndroid.getInsetObserver())
+                                .getSupplierForKeyboardInset());
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =
                     new MiniOriginBarController(

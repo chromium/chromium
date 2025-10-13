@@ -126,8 +126,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Callback<Boolean> mIsFormFieldFocusedObserver;
     private final Callback<Boolean> mIsFindInPageShowingObserver;
     private final KeyboardVisibilityListener mKeyboardVisibilityListener;
-    private final Callback<Integer> mKeyboardAccessoryToolbarCallback;
-    private final Callback<Integer> mKeyboardAccessoryProgressBarCallback;
+    private final Callback<Integer> mKeyboardHeightToolbarCallback;
+    private final Callback<Integer> mKeyboardHeightProgressBarCallback;
     private final KeyboardVisibilityListener mKeyboardVisibilityViewOffsetCallback;
     private final Callback<Boolean> mFormFieldViewOffsetCallback;
     private final Callback<Integer> mControlContainerTranslationCallback;
@@ -138,6 +138,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private int mTopInset;
 
     ObservableSupplierImpl<@ControlsPosition Integer> mCurrentPosition;
+    private final ObservableSupplier<Integer> mKeyboardHeightSupplier;
     private final int mHairlineHeight;
 
     /**
@@ -186,7 +187,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             Handler handler,
             Context context,
-            ObservableSupplierImpl<@ControlsPosition Integer> controlsPosition) {
+            ObservableSupplierImpl<@ControlsPosition Integer> controlsPosition,
+            ObservableSupplier<Integer> keyboardHeightSupplier) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpWithFakeboxShowingSupplier = isNtpWithFakeboxShowingSupplier;
         mIsTabSwitcherFinishedShowingSupplier = isTabSwitcherFinishedShowingSupplier;
@@ -204,6 +206,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mCurrentPosition = controlsPosition;
+        mKeyboardHeightSupplier = keyboardHeightSupplier;
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
 
         mHairlineHeight =
@@ -308,9 +311,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mBottomControlsStacker.addLayer(mBottomToolbarLayer);
         mBottomControlsStacker.addLayer(mProgressBarLayer);
 
-        mKeyboardAccessoryToolbarCallback =
+        mKeyboardHeightToolbarCallback =
                 (height) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
-        mKeyboardAccessoryProgressBarCallback =
+        mKeyboardHeightProgressBarCallback =
                 (height) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
         mKeyboardVisibilityViewOffsetCallback =
                 (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
@@ -322,12 +325,14 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerHeightSupplier.addSyncObserverAndCallIfNonNull(
                 mControlContainerHeightCallback);
 
-        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardAccessoryToolbarCallback);
-        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardAccessoryProgressBarCallback);
+        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardHeightToolbarCallback);
+        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardHeightProgressBarCallback);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
                 mKeyboardVisibilityViewOffsetCallback);
         mIsFormFieldFocusedSupplier.addObserver(mFormFieldViewOffsetCallback);
         mControlContainerTranslationSupplier.addObserver(mControlContainerTranslationCallback);
+        mKeyboardHeightSupplier.addObserver(mKeyboardHeightToolbarCallback);
+        mKeyboardHeightSupplier.addObserver(mKeyboardHeightProgressBarCallback);
 
         var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
         if (topInsetCoordinator != null) {
@@ -349,8 +354,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsFindInPageShowingSupplier.removeObserver(mIsFindInPageShowingObserver);
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryToolbarCallback);
-        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryProgressBarCallback);
+        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardHeightToolbarCallback);
+        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardHeightProgressBarCallback);
+        mKeyboardHeightSupplier.removeObserver(mKeyboardHeightToolbarCallback);
+        mKeyboardHeightSupplier.removeObserver(mKeyboardHeightProgressBarCallback);
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(
                 mKeyboardVisibilityViewOffsetCallback);
         mIsFormFieldFocusedSupplier.removeObserver(mFormFieldViewOffsetCallback);
