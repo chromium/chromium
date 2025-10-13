@@ -101,7 +101,8 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphsNG bloberizer(
       GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result,
       draw_type == Font::DrawType::kGlyphsOnly

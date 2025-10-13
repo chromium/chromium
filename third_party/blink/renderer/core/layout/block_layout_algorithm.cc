@@ -710,7 +710,9 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     DCHECK(ShouldWrapLineGreedy(wrap));
   }
 
-  SimpleInlineChildLayoutContext context(node, &container_builder_);
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED SimpleInlineChildLayoutContext context(
+      node, &container_builder_);
   context.EnableMeasuringModeIfNecessary(paragraph_scale);
   return Layout(&context);
 }
