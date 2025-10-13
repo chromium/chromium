@@ -314,7 +314,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // redirected to. There may be more than one redirect in a row, so this
   // function will fill the given array with the entire chain. If there are
   // no redirects for the most recent visit of the URL, or the URL is not
-  // in history, the array will be empty.
+  // in history, the array will be empty. Excludes redirects that result in a
+  // 404 status code.
   RedirectList QueryRedirectsFrom(const GURL& url);
 
   // Similar to above function except computes a chain of redirects to the
