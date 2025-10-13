@@ -2179,17 +2179,17 @@ inline CSSIdentifierValue::CSSIdentifierValue(PositionAreaRegion region)
     case PositionAreaRegion::kYEnd:
       value_id_ = CSSValueID::kYEnd;
       break;
-    case PositionAreaRegion::kXSelfStart:
-      value_id_ = CSSValueID::kXSelfStart;
+    case PositionAreaRegion::kSelfXStart:
+      value_id_ = CSSValueID::kSelfXStart;
       break;
-    case PositionAreaRegion::kXSelfEnd:
-      value_id_ = CSSValueID::kXSelfEnd;
+    case PositionAreaRegion::kSelfXEnd:
+      value_id_ = CSSValueID::kSelfXEnd;
       break;
-    case PositionAreaRegion::kYSelfStart:
-      value_id_ = CSSValueID::kYSelfStart;
+    case PositionAreaRegion::kSelfYStart:
+      value_id_ = CSSValueID::kSelfYStart;
       break;
-    case PositionAreaRegion::kYSelfEnd:
-      value_id_ = CSSValueID::kYSelfEnd;
+    case PositionAreaRegion::kSelfYEnd:
+      value_id_ = CSSValueID::kSelfYEnd;
       break;
     case PositionAreaRegion::kAny:
       value_id_ = CSSValueID::kAny;
@@ -2246,14 +2246,14 @@ inline PositionAreaRegion CSSIdentifierValue::ConvertTo() const {
       return PositionAreaRegion::kYStart;
     case CSSValueID::kYEnd:
       return PositionAreaRegion::kYEnd;
-    case CSSValueID::kXSelfStart:
-      return PositionAreaRegion::kXSelfStart;
-    case CSSValueID::kXSelfEnd:
-      return PositionAreaRegion::kXSelfEnd;
-    case CSSValueID::kYSelfStart:
-      return PositionAreaRegion::kYSelfStart;
-    case CSSValueID::kYSelfEnd:
-      return PositionAreaRegion::kYSelfEnd;
+    case CSSValueID::kSelfXStart:
+      return PositionAreaRegion::kSelfXStart;
+    case CSSValueID::kSelfXEnd:
+      return PositionAreaRegion::kSelfXEnd;
+    case CSSValueID::kSelfYStart:
+      return PositionAreaRegion::kSelfYStart;
+    case CSSValueID::kSelfYEnd:
+      return PositionAreaRegion::kSelfYEnd;
     case CSSValueID::kAny:
       return PositionAreaRegion::kAny;
     default:

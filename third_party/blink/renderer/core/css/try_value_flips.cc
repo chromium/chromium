@@ -185,10 +185,10 @@ std::optional<LogicalAxis> DetermineValueAxis(
     case CSSValueID::kXEnd:
     case CSSValueID::kSpanXStart:
     case CSSValueID::kSpanXEnd:
-    case CSSValueID::kXSelfStart:
-    case CSSValueID::kXSelfEnd:
-    case CSSValueID::kSpanXSelfStart:
-    case CSSValueID::kSpanXSelfEnd:
+    case CSSValueID::kSelfXStart:
+    case CSSValueID::kSelfXEnd:
+    case CSSValueID::kSpanSelfXStart:
+    case CSSValueID::kSpanSelfXEnd:
       return writing_direction.IsHorizontal() ? LogicalAxis::kInline
                                               : LogicalAxis::kBlock;
     case CSSValueID::kTop:
@@ -199,10 +199,10 @@ std::optional<LogicalAxis> DetermineValueAxis(
     case CSSValueID::kYEnd:
     case CSSValueID::kSpanYStart:
     case CSSValueID::kSpanYEnd:
-    case CSSValueID::kYSelfStart:
-    case CSSValueID::kYSelfEnd:
-    case CSSValueID::kSpanYSelfStart:
-    case CSSValueID::kSpanYSelfEnd:
+    case CSSValueID::kSelfYStart:
+    case CSSValueID::kSelfYEnd:
+    case CSSValueID::kSpanSelfYStart:
+    case CSSValueID::kSpanSelfYEnd:
       return writing_direction.IsHorizontal() ? LogicalAxis::kBlock
                                               : LogicalAxis::kInline;
     case CSSValueID::kBlockStart:
@@ -420,14 +420,14 @@ CSSValueID TransformPositionAreaKeyword(
   };
 
   auto transform_xy_self = [&transform, &writing_direction] {
-    return TransformXY(CSSValueID::kXSelfStart, CSSValueID::kXSelfEnd,
-                       CSSValueID::kYSelfStart, CSSValueID::kYSelfEnd,
+    return TransformXY(CSSValueID::kSelfXStart, CSSValueID::kSelfXEnd,
+                       CSSValueID::kSelfYStart, CSSValueID::kSelfYEnd,
                        transform, writing_direction);
   };
 
   auto transform_xy_span_self = [&transform, &writing_direction] {
-    return TransformXY(CSSValueID::kSpanXSelfStart, CSSValueID::kSpanXSelfEnd,
-                       CSSValueID::kSpanYSelfStart, CSSValueID::kSpanYSelfEnd,
+    return TransformXY(CSSValueID::kSpanSelfXStart, CSSValueID::kSpanSelfXEnd,
+                       CSSValueID::kSpanSelfYStart, CSSValueID::kSpanSelfYEnd,
                        transform, writing_direction);
   };
 
@@ -472,22 +472,22 @@ CSSValueID TransformPositionAreaKeyword(
     case CSSValueID::kSpanYEnd:
       return transform_xy_span().Bottom();
 
-    case CSSValueID::kXSelfStart:
+    case CSSValueID::kSelfXStart:
       return transform_xy_self().Left();
-    case CSSValueID::kXSelfEnd:
+    case CSSValueID::kSelfXEnd:
       return transform_xy_self().Right();
-    case CSSValueID::kYSelfStart:
+    case CSSValueID::kSelfYStart:
       return transform_xy_self().Top();
-    case CSSValueID::kYSelfEnd:
+    case CSSValueID::kSelfYEnd:
       return transform_xy_self().Bottom();
 
-    case CSSValueID::kSpanXSelfStart:
+    case CSSValueID::kSpanSelfXStart:
       return transform_xy_span_self().Left();
-    case CSSValueID::kSpanXSelfEnd:
+    case CSSValueID::kSpanSelfXEnd:
       return transform_xy_span_self().Right();
-    case CSSValueID::kSpanYSelfStart:
+    case CSSValueID::kSpanSelfYStart:
       return transform_xy_span_self().Top();
-    case CSSValueID::kSpanYSelfEnd:
+    case CSSValueID::kSpanSelfYEnd:
       return transform_xy_span_self().Bottom();
 
       // Logical:

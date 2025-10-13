@@ -46,10 +46,10 @@ enum class PositionAreaRegion : uint8_t {
   kXEnd,
   kYStart,
   kYEnd,
-  kXSelfStart,
-  kXSelfEnd,
-  kYSelfStart,
-  kYSelfEnd,
+  kSelfXStart,
+  kSelfXEnd,
+  kSelfYStart,
+  kSelfYEnd,
   kAny,  // Used in anchored(fallback: <position-area>) only.
 };
 

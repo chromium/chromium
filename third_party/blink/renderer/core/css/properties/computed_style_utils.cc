@@ -4678,10 +4678,10 @@ CSSValueID PositionAreaSpanToCSSValueID(PositionAreaRegion span_start,
       return CSSValueID::kSpanXStart;
     case PositionAreaRegion::kXEnd:
       return CSSValueID::kSpanXEnd;
-    case PositionAreaRegion::kXSelfStart:
-      return CSSValueID::kSpanXSelfStart;
-    case PositionAreaRegion::kXSelfEnd:
-      return CSSValueID::kSpanXSelfEnd;
+    case PositionAreaRegion::kSelfXStart:
+      return CSSValueID::kSpanSelfXStart;
+    case PositionAreaRegion::kSelfXEnd:
+      return CSSValueID::kSpanSelfXEnd;
     case PositionAreaRegion::kTop:
       return CSSValueID::kSpanTop;
     case PositionAreaRegion::kBottom:
@@ -4690,10 +4690,10 @@ CSSValueID PositionAreaSpanToCSSValueID(PositionAreaRegion span_start,
       return CSSValueID::kSpanYStart;
     case PositionAreaRegion::kYEnd:
       return CSSValueID::kSpanYEnd;
-    case PositionAreaRegion::kYSelfStart:
-      return CSSValueID::kSpanYSelfStart;
-    case PositionAreaRegion::kYSelfEnd:
-      return CSSValueID::kSpanYSelfEnd;
+    case PositionAreaRegion::kSelfYStart:
+      return CSSValueID::kSpanSelfYStart;
+    case PositionAreaRegion::kSelfYEnd:
+      return CSSValueID::kSpanSelfYEnd;
     case PositionAreaRegion::kBlockStart:
       return CSSValueID::kSpanBlockStart;
     case PositionAreaRegion::kBlockEnd:

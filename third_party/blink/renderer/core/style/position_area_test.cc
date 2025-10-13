@@ -44,8 +44,8 @@ ToPhysicalTestCase to_physical_test_cases[] = {
         horizontal_tb_ltr,
     },
     {
-        {PositionAreaRegion::kXSelfEnd, PositionAreaRegion::kXSelfEnd,
-         PositionAreaRegion::kYSelfEnd, PositionAreaRegion::kYSelfEnd},
+        {PositionAreaRegion::kSelfXEnd, PositionAreaRegion::kSelfXEnd,
+         PositionAreaRegion::kSelfYEnd, PositionAreaRegion::kSelfYEnd},
         {PositionAreaRegion::kBottom, PositionAreaRegion::kBottom,
          PositionAreaRegion::kLeft, PositionAreaRegion::kLeft},
         horizontal_tb_ltr,

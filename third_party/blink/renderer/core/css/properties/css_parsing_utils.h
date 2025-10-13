@@ -686,8 +686,8 @@ bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,
                                             const CSSParserContext&);
 
 // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-area
-CSSValue* ConsumePositionArea(CSSParserTokenStream&,
-                              bool allow_any_keyword = false);
+CORE_EXPORT CSSValue* ConsumePositionArea(CSSParserTokenStream&,
+                                          bool allow_any_keyword = false);
 
 // https://drafts.csswg.org/css-anchor-position-2/#anchored
 CSSValue* ConsumeAnchoredFallbackQueryValue(CSSParserTokenStream&,

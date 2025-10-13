@@ -24,15 +24,15 @@ inline PhysicalAxes PhysicalAxisFromRegion(
     case PositionAreaRegion::kBottom:
     case PositionAreaRegion::kYStart:
     case PositionAreaRegion::kYEnd:
-    case PositionAreaRegion::kYSelfStart:
-    case PositionAreaRegion::kYSelfEnd:
+    case PositionAreaRegion::kSelfYStart:
+    case PositionAreaRegion::kSelfYEnd:
       return kPhysicalAxesVertical;
     case PositionAreaRegion::kLeft:
     case PositionAreaRegion::kRight:
     case PositionAreaRegion::kXStart:
     case PositionAreaRegion::kXEnd:
-    case PositionAreaRegion::kXSelfStart:
-    case PositionAreaRegion::kXSelfEnd:
+    case PositionAreaRegion::kSelfXStart:
+    case PositionAreaRegion::kSelfXEnd:
       return kPhysicalAxesHorizontal;
     case PositionAreaRegion::kInlineStart:
     case PositionAreaRegion::kInlineEnd:
@@ -110,14 +110,14 @@ PositionAreaRegion ToPhysicalRegion(
     case PositionAreaRegion::kSelfStart:
     case PositionAreaRegion::kSelfInlineStart:
     case PositionAreaRegion::kSelfBlockStart:
-      axis_region = is_horizontal ? PositionAreaRegion::kXSelfStart
-                                  : PositionAreaRegion::kYSelfStart;
+      axis_region = is_horizontal ? PositionAreaRegion::kSelfXStart
+                                  : PositionAreaRegion::kSelfYStart;
       break;
     case PositionAreaRegion::kSelfEnd:
     case PositionAreaRegion::kSelfInlineEnd:
     case PositionAreaRegion::kSelfBlockEnd:
-      axis_region = is_horizontal ? PositionAreaRegion::kXSelfEnd
-                                  : PositionAreaRegion::kYSelfEnd;
+      axis_region = is_horizontal ? PositionAreaRegion::kSelfXEnd
+                                  : PositionAreaRegion::kSelfYEnd;
       break;
     default:
       break;
@@ -128,9 +128,9 @@ PositionAreaRegion ToPhysicalRegion(
          container_writing_direction.IsFlippedX()) ||
         (axis_region == PositionAreaRegion::kXEnd &&
          !container_writing_direction.IsFlippedX()) ||
-        (axis_region == PositionAreaRegion::kXSelfStart &&
+        (axis_region == PositionAreaRegion::kSelfXStart &&
          self_writing_direction.IsFlippedX()) ||
-        (axis_region == PositionAreaRegion::kXSelfEnd &&
+        (axis_region == PositionAreaRegion::kSelfXEnd &&
          !self_writing_direction.IsFlippedX())) {
       return PositionAreaRegion::kRight;
     }
@@ -141,9 +141,9 @@ PositionAreaRegion ToPhysicalRegion(
        container_writing_direction.IsFlippedY()) ||
       (axis_region == PositionAreaRegion::kYEnd &&
        !container_writing_direction.IsFlippedY()) ||
-      (axis_region == PositionAreaRegion::kYSelfStart &&
+      (axis_region == PositionAreaRegion::kSelfYStart &&
        self_writing_direction.IsFlippedY()) ||
-      (axis_region == PositionAreaRegion::kYSelfEnd &&
+      (axis_region == PositionAreaRegion::kSelfYEnd &&
        !self_writing_direction.IsFlippedY())) {
     return PositionAreaRegion::kBottom;
   }

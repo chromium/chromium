@@ -3914,19 +3914,19 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
         start = PositionAreaRegion::kCenter;
         end = PositionAreaRegion::kXEnd;
         break;
-      case CSSValueID::kXSelfStart:
-        start = end = PositionAreaRegion::kXSelfStart;
+      case CSSValueID::kSelfXStart:
+        start = end = PositionAreaRegion::kSelfXStart;
         break;
-      case CSSValueID::kXSelfEnd:
-        start = end = PositionAreaRegion::kXSelfEnd;
+      case CSSValueID::kSelfXEnd:
+        start = end = PositionAreaRegion::kSelfXEnd;
         break;
-      case CSSValueID::kSpanXSelfStart:
-        start = PositionAreaRegion::kXSelfStart;
+      case CSSValueID::kSpanSelfXStart:
+        start = PositionAreaRegion::kSelfXStart;
         end = PositionAreaRegion::kCenter;
         break;
-      case CSSValueID::kSpanXSelfEnd:
+      case CSSValueID::kSpanSelfXEnd:
         start = PositionAreaRegion::kCenter;
-        end = PositionAreaRegion::kXSelfEnd;
+        end = PositionAreaRegion::kSelfXEnd;
         break;
       case CSSValueID::kTop:
         start = end = PositionAreaRegion::kTop;
@@ -3956,19 +3956,19 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
         start = PositionAreaRegion::kCenter;
         end = PositionAreaRegion::kYEnd;
         break;
-      case CSSValueID::kYSelfStart:
-        start = end = PositionAreaRegion::kYSelfStart;
+      case CSSValueID::kSelfYStart:
+        start = end = PositionAreaRegion::kSelfYStart;
         break;
-      case CSSValueID::kYSelfEnd:
-        start = end = PositionAreaRegion::kYSelfEnd;
+      case CSSValueID::kSelfYEnd:
+        start = end = PositionAreaRegion::kSelfYEnd;
         break;
-      case CSSValueID::kSpanYSelfStart:
-        start = PositionAreaRegion::kYSelfStart;
+      case CSSValueID::kSpanSelfYStart:
+        start = PositionAreaRegion::kSelfYStart;
         end = PositionAreaRegion::kCenter;
         break;
-      case CSSValueID::kSpanYSelfEnd:
+      case CSSValueID::kSpanSelfYEnd:
         start = PositionAreaRegion::kCenter;
-        end = PositionAreaRegion::kYSelfEnd;
+        end = PositionAreaRegion::kSelfYEnd;
         break;
       case CSSValueID::kBlockStart:
         start = end = PositionAreaRegion::kBlockStart;
