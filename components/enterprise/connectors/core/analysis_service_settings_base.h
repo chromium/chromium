@@ -76,19 +76,10 @@ class AnalysisServiceSettingsBase {
   // Service provider data must be provided and valid
   bool TryParseServiceProviderData(const base::Value::Dict& settings_dict,
                                    const ServiceProviderConfig&);
-  void ParsePatternSettings(const base::Value::List* pattern_settings_list,
-                            bool is_enabled_pattern,
-                            base::MatcherStringPattern::ID& id);
   void ParseBlockSettings(const base::Value::Dict& settings_dict);
   void ParseMinimumDataSize(const base::Value::Dict& settings_dict);
   void ParseCustomMessages(const base::Value::Dict& settings_dict);
   void ParseJustificationTags(const base::Value::Dict& settings_dict);
-
-  // Updates the states of `matcher_`, `enabled_patterns_settings_` and/or
-  // `disabled_patterns_settings_` from a policy value.
-  void AddUrlPatternSettings(const base::Value::Dict& url_settings_dict,
-                             bool enabled,
-                             base::MatcherStringPattern::ID* id);
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return std::nullopt.
@@ -98,6 +89,13 @@ class AnalysisServiceSettingsBase {
   // matches while excluding the ones in |disable_patterns_settings|.
   std::map<std::string, TagSettings> GetTags(
       const std::set<base::MatcherStringPattern::ID>& matches) const;
+
+  // The next available ID for a settings pattern (e.g. URL,
+  // source/destination). This is used to generate unique IDs for patterns as
+  // they are added to the appropriate matcher (e.g. URLMatcher). These IDs are
+  // then used as keys in the `enabled_patterns_settings_` and
+  // `disabled_patterns_settings_` maps.
+  base::MatcherStringPattern::ID id_{0};
 
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
@@ -142,15 +140,13 @@ class AnalysisServiceSettingsBase {
       const PatternSettings& patterns,
       base::MatcherStringPattern::ID match);
 
-  // Parses the "source_destination_list" from the analysis settings. This is
-  // intended to be called only during the construction of the base class.
-  // This field is only supported on the ChromeOS platform, so this method does
-  // nothing by default. This avoids forcing child classes for other platforms
-  // from having to provide an empty implementation.
-  virtual void AddSourceDestinationSettings(
-      const base::Value::Dict& source_destination_settings_value,
-      bool enabled,
-      base::MatcherStringPattern::ID* id) {}
+  void ParseUrlPatternSettings(const base::Value::List* pattern_settings_list,
+                               bool is_enabled_pattern);
+
+  // Updates the states of `matcher_`, `enabled_patterns_settings_` and/or
+  // `disabled_patterns_settings_` from a policy value.
+  void AddUrlPatternSettings(const base::Value::Dict& url_settings_dict,
+                             bool enabled);
 };
 
 }  // namespace enterprise_connectors

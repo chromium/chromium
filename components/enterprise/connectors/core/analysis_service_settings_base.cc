@@ -24,6 +24,19 @@ AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
     return;
   }
 
+  // Add the url patterns to the settings, which configures settings.matcher and
+  // settings.*_pattern_settings. No enable patterns implies the settings are
+  // invalid.
+  const auto* enabled_pattern_settings_list =
+      settings_dict.FindList(kKeyEnable);
+  if (!enabled_pattern_settings_list ||
+      enabled_pattern_settings_list->empty()) {
+    return;
+  }
+
+  ParseUrlPatternSettings(enabled_pattern_settings_list, true);
+  ParseUrlPatternSettings(settings_dict.FindList(kKeyDisable), false);
+
   ParseBlockSettings(settings_dict);
   ParseMinimumDataSize(settings_dict);
   ParseCustomMessages(settings_dict);
@@ -54,10 +67,9 @@ bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
   return true;
 }
 
-void AnalysisServiceSettingsBase::ParsePatternSettings(
+void AnalysisServiceSettingsBase::ParseUrlPatternSettings(
     const base::Value::List* pattern_settings_list,
-    bool is_enabled_pattern,
-    base::MatcherStringPattern::ID& id) {
+    bool is_enabled_pattern) {
   if (!pattern_settings_list || pattern_settings_list->empty()) {
     return;
   }
@@ -76,9 +88,7 @@ void AnalysisServiceSettingsBase::ParsePatternSettings(
       DLOG(ERROR) << kKeyUrlList << " and " << kKeySourceDestinationList
                   << " specified together. Ignoring it.";
     } else if (url_list) {
-      AddUrlPatternSettings(*pattern_dict, is_enabled_pattern, &id);
-    } else if (source_destination_list) {
-      AddSourceDestinationSettings(*pattern_dict, is_enabled_pattern, &id);
+      AddUrlPatternSettings(*pattern_dict, is_enabled_pattern);
     }
   }
 }
@@ -163,9 +173,7 @@ void AnalysisServiceSettingsBase::ParseJustificationTags(
 
 void AnalysisServiceSettingsBase::AddUrlPatternSettings(
     const base::Value::Dict& url_settings_dict,
-    bool enabled,
-    base::MatcherStringPattern::ID* id) {
-  DCHECK(id);
+    bool enabled) {
   DCHECK(analysis_config_);
   if (enabled) {
     DCHECK(disabled_patterns_settings_.empty());
@@ -196,20 +204,20 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
     return;
   }
 
-  base::MatcherStringPattern::ID previous_id = *id;
-  url_matcher::util::AddFiltersWithLimit(matcher_.get(), enabled, id,
+  base::MatcherStringPattern::ID previous_id = id_;
+  url_matcher::util::AddFiltersWithLimit(matcher_.get(), enabled, &id_,
                                          *url_list);
 
-  if (previous_id == *id) {
+  if (previous_id == id_) {
     // No rules were added, so don't save settings, as they would override other
     // valid settings.
     return;
   }
 
   if (enabled) {
-    enabled_patterns_settings_[*id] = std::move(setting);
+    enabled_patterns_settings_[id_] = std::move(setting);
   } else {
-    disabled_patterns_settings_[*id] = std::move(setting);
+    disabled_patterns_settings_[id_] = std::move(setting);
   }
 }
 

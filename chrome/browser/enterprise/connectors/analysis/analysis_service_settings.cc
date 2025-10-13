@@ -25,23 +25,26 @@ AnalysisServiceSettings::AnalysisServiceSettings(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   const auto& settings_dict = settings_value.GetDict();
 
-  // Add the patterns to the settings, which configures settings.matcher and
-  // settings.*_pattern_settings. No enable patterns implies the settings are
-  // invalid.
+  // Add the source/destination patterns to the settings, which configures
+  // settings.matcher and settings.*_pattern_settings. No enable patterns
+  // implies the settings are invalid.
   const auto* enabled_pattern_settings_list =
       settings_dict.FindList(kKeyEnable);
   if (!enabled_pattern_settings_list ||
       enabled_pattern_settings_list->empty()) {
     return;
   }
-  base::MatcherStringPattern::ID id(0);
-  ParsePatternSettings(enabled_pattern_settings_list, true, id);
-  ParsePatternSettings(settings_dict.FindList(kKeyDisable), false, id);
+
+  ParseSourceDestinationPatternSettings(enabled_pattern_settings_list, true);
+  ParseSourceDestinationPatternSettings(settings_dict.FindList(kKeyDisable),
+                                        false);
+#endif
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-  ParseVerificationSignatures(settings_dict);
+  ParseVerificationSignatures(settings_value.GetDict());
 #endif
 }
 
@@ -156,14 +159,36 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
 
   return GetAnalysisSettingsWithTags(std::move(tags), data_region);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
+void AnalysisServiceSettings::ParseSourceDestinationPatternSettings(
+    const base::Value::List* pattern_settings_list,
+    bool is_enabled_pattern) {
+  if (!pattern_settings_list || pattern_settings_list->empty()) {
+    return;
+  }
+
+  for (const base::Value& pattern_setting : *pattern_settings_list) {
+    const base::Value::Dict* pattern_dict = pattern_setting.GetIfDict();
+    if (!pattern_dict) {
+      continue;
+    }
+
+    auto* url_list = pattern_dict->FindList(kKeyUrlList);
+    auto* source_destination_list =
+        pattern_dict->FindList(kKeySourceDestinationList);
+
+    if (url_list && source_destination_list) {
+      DLOG(ERROR) << kKeyUrlList << " and " << kKeySourceDestinationList
+                  << " specified together. Ignoring it.";
+    } else if (source_destination_list) {
+      AddSourceDestinationSettings(*pattern_dict, is_enabled_pattern);
+    }
+  }
+}
+
 void AnalysisServiceSettings::AddSourceDestinationSettings(
     const base::Value::Dict& source_destination_settings_value,
-    bool enabled,
-    base::MatcherStringPattern::ID* id) {
-  DCHECK(id);
+    bool enabled) {
   DCHECK(analysis_config_);
   DCHECK(source_destination_matcher_);
   if (enabled) {
@@ -198,18 +223,18 @@ void AnalysisServiceSettings::AddSourceDestinationSettings(
     return;
   }
 
-  base::MatcherStringPattern::ID previous_id = *id;
-  source_destination_matcher_->AddFilters(id, source_destination_list);
-  if (previous_id == *id) {
+  base::MatcherStringPattern::ID previous_id = id_;
+  source_destination_matcher_->AddFilters(&id_, source_destination_list);
+  if (previous_id == id_) {
     // No rules were added, so don't save settings, as they would override other
     // valid settings.
     return;
   }
 
   if (enabled) {
-    enabled_patterns_settings_[*id] = std::move(setting);
+    enabled_patterns_settings_[id_] = std::move(setting);
   } else {
-    disabled_patterns_settings_[*id] = std::move(setting);
+    disabled_patterns_settings_[id_] = std::move(setting);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

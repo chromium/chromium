@@ -69,16 +69,17 @@ class AnalysisServiceSettings : public AnalysisServiceSettingsBase {
       DataRegion data_region) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  void ParseSourceDestinationPatternSettings(
+      const base::Value::List* pattern_settings_list,
+      bool is_enabled_pattern);
+
   // Updates the states of `source_destination_matcher_`,
   // `enabled_patterns_settings_` and/or `disabled_patterns_settings_` from a
   // policy value.
   void AddSourceDestinationSettings(
       const base::Value::Dict& source_destination_settings_value,
-      bool enabled,
-      base::MatcherStringPattern::ID* id) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+      bool enabled);
 
-#if BUILDFLAG(IS_CHROMEOS)
   // A matcher to identify matching pairs of sources and destinations.
   // Set for ChromeOS' OnFileTransferEnterpriseConnector.
   std::unique_ptr<SourceDestinationMatcherAsh> source_destination_matcher_ =
