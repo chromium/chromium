@@ -87,9 +87,28 @@ Credential PasswordFormToCredential(
   credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
   credential.request_origin = request_origin;
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
-  // TODO(crbug.com/443238776): Implement populating this field properly.
-  credential.has_persistent_permission = false;
+  credential.has_persistent_permission = form.actor_login_approved;
   return credential;
+}
+
+// Goes through all matches and either picks the first non-weak match with
+// permission or returns all matches as `Credential`.
+std::vector<Credential> ConstructCredentialsList(
+    base::span<const password_manager::PasswordForm> best_matches,
+    const url::Origin& request_origin,
+    bool immediately_available_to_login) {
+  std::vector<Credential> result;
+  for (const auto& form : best_matches) {
+    if (form.actor_login_approved &&
+        !password_manager_util::IsCredentialWeakMatch(form)) {
+      return {PasswordFormToCredential(request_origin,
+                                       immediately_available_to_login, form)};
+    }
+    result.push_back(PasswordFormToCredential(
+        request_origin, immediately_available_to_login, form));
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -143,13 +162,9 @@ void ActorLoginGetCredentialsHelper::OnFetchCompleted() {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
       GetLogger(password_manager_->GetClient());
 
-  std::vector<Credential> result;
-  std::ranges::transform(
-      form_fetcher_->GetBestMatches(), std::back_inserter(result),
-      [&](const password_manager::PasswordForm& form) -> Credential {
-        return PasswordFormToCredential(request_origin_,
-                                        immediately_available_to_login_, form);
-      });
+  std::vector<Credential> result =
+      ConstructCredentialsList(form_fetcher_->GetBestMatches(), request_origin_,
+                               immediately_available_to_login_);
 
   CHECK(form_fetcher_);
   // Removing consumer here, as here we are sure `form_fetcher_` still exists.
