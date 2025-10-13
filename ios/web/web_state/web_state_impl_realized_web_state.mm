@@ -77,7 +77,7 @@ class WebStateImpl::RealizedWebState::PendingSession {
   // The WebStateStorage is only needed to implement SerializeToProto() while
   // the navigation history restoration is in progress for the legacy session
   // serialization logic.
-  // TODO(crbug.com/40245950): Remove it once the feature has launched.
+  // TODO(crbug.com/40945317): Remove it once the feature has launched.
   const proto::WebStateStorage storage_;
   const std::u16string page_title_;
   const GURL page_visible_url_;

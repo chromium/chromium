@@ -448,8 +448,10 @@ const CGFloat kSeparatorHeight = 0.5;
       return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
 
     default:
-      // TODO(crbug.com/40946679): the code should use constants for
-      // accessibility identifiers, and not localized strings.
+      // Ideally the accessibility identifier should not depend on localized
+      // strings (as the test module only has access to the "en-US" locale,
+      // thus this forces the test to run the application in the same locale
+      // and prevents testing it in another configuration, i.e. LTR-language).
       return [self titleStringForModule:type config:config];
   }
 }

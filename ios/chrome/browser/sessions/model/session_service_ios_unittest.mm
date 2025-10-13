@@ -277,7 +277,7 @@ TEST_F(SessionServiceTest, LoadCorruptedSession) {
   EXPECT_TRUE(session == nil);
 }
 
-// TODO(crbug.com/41284267): remove this once M67 has shipped (i.e. once more
+// TODO(crbug.com/40945317): remove this once M67 has shipped (i.e. once more
 // than a year has passed since the introduction of the compatibility code).
 TEST_F(SessionServiceTest, LoadM57Session) {
   NSString* session_path =
@@ -288,7 +288,7 @@ TEST_F(SessionServiceTest, LoadM57Session) {
   EXPECT_NSNE(nil, session_window);
 }
 
-// TODO(crbug.com/41284267): remove this once M68 has shipped (i.e. once more
+// TODO(crbug.com/40945317): remove this once M68 has shipped (i.e. once more
 // than a year has passed since the introduction of the compatibility code).
 TEST_F(SessionServiceTest, LoadM58Session) {
   NSString* session_path =
