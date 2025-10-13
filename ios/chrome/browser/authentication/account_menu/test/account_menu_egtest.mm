@@ -442,8 +442,7 @@ id<GREYMatcher> identityDiscMatcher() {
   [self assertAccountMenuIsNotShown];
 }
 
-// TODO(crbug.com/449158371): Test is flaky.
-- (void)FLAKY_testSwitchFromManagedAccountToManagedAccount {
+- (void)testSwitchFromManagedAccountToManagedAccount {
   // TODO(crbug.com/433726717): Test disabled on iPhones.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
