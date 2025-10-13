@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -703,11 +704,14 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeZeroStateTabGroups) {
       ntp_features::kNtpTabGroupsModule,
       {{ntp_features::kNtpTabGroupsModuleDataParam, "Fake Zero State"}});
 
-  auto tab_groups_mojom = RunGetTabGroups();
-  ASSERT_TRUE(tab_groups_mojom.has_value());
+  // Call GetTabGroups() with the future's callback.
+  base::test::TestFuture<TabGroupsOptional, bool> future;
+  handler()->GetTabGroups(future.GetCallback());
 
-  const auto& tab_groups = tab_groups_mojom.value();
-  EXPECT_TRUE(tab_groups.empty());
+  const auto& [tab_groups_mojom, should_show_zero_state] = future.Get();
+  ASSERT_TRUE(tab_groups_mojom.has_value());
+  EXPECT_TRUE(tab_groups_mojom->empty());
+  EXPECT_TRUE(should_show_zero_state);
 }
 
 TEST_F(TabGroupsPageHandlerTest, DismissAndRestoreModule) {

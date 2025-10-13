@@ -267,6 +267,10 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
       ntp_features::kNtpTabGroupsModule,
       ntp_features::kNtpTabGroupsModuleDataParam);
   std::vector<ntp::tab_groups::mojom::TabGroupPtr> tab_groups_mojom;
+  bool should_show_zero_state =
+      data_type_param.empty()
+          ? ShouldShowZeroState()
+          : (data_type_param.find("Fake Zero State") != std::string::npos);
 
   if (data_type_param.empty()) {
     // Fetch real Tab Groups data.
@@ -306,7 +310,7 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
     }
   }
 
-  std::move(callback).Run(std::move(tab_groups_mojom), ShouldShowZeroState());
+  std::move(callback).Run(std::move(tab_groups_mojom), should_show_zero_state);
 }
 
 void TabGroupsPageHandler::DismissModule() {
