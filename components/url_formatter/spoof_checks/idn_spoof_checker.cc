@@ -19,6 +19,7 @@
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
+#include "components/url_formatter/spoof_checks/top_domains/domains-trie.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/extras/preload_data/decoder.h"
@@ -150,14 +151,12 @@ bool IsSubdomainOf(std::u16string_view hostname,
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 
-#include "components/url_formatter/spoof_checks/top_domains/domains-trie-inc.cc"
-
 // All the domains in the above file have 4 or fewer labels.
 const size_t kNumberOfLabelsToCheck = 4;
 
 IDNSpoofChecker::HuffmanTrieParams g_trie_params{
-    kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-    kTopDomainsTrieBits, kTopDomainsRootPosition};
+    kTopDomainsHuffmanTree.data(), kTopDomainsHuffmanTree.size(),
+    kTopDomainsTrie.data(), kTopDomainsTrieBits, kTopDomainsRootPosition};
 
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
@@ -834,8 +833,8 @@ void IDNSpoofChecker::SetTrieParamsForTesting(
 // static
 void IDNSpoofChecker::RestoreTrieParamsForTesting() {
   g_trie_params = HuffmanTrieParams{
-      kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-      kTopDomainsTrieBits, kTopDomainsRootPosition};
+      kTopDomainsHuffmanTree.data(), kTopDomainsHuffmanTree.size(),
+      kTopDomainsTrie.data(), kTopDomainsTrieBits, kTopDomainsRootPosition};
 }
 
 }  // namespace url_formatter
