@@ -399,21 +399,6 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AddDataToProfileByGaiaID<BookmarkAdder>(
       gaiaID, net::GURLWithNSURL(URL), base::SysNSStringToUTF8(bookmarkTitle));
-  //  std::optional<std::string> profileName =
-  //      GetApplicationContext()
-  //          ->GetAccountProfileMapper()
-  //          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
-  //
-  //  if (profileName.has_value()) {
-  //    std::string title = base::SysNSStringToUTF8(bookmarkTitle);
-  //    ProfileManagerIOS* profileManager =
-  //        GetApplicationContext()->GetProfileManager();
-  //    std::unique_ptr<BookmarkAdder> adder = std::make_unique<BookmarkAdder>(
-  //        net::GURLWithNSURL(URL), std::move(title));
-  //    profileManager->LoadProfileAsync(
-  //        *profileName,
-  //        base::BindOnce(&OnProfileLoaded<BookmarkAdder>, std::move(adder)));
-  //  }
 }
 
 - (void)addReadingListToProfileByGaiaID:(NSString*)gaiaID
@@ -423,23 +408,6 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
   AddDataToProfileByGaiaID<ReadingListAdder>(
       gaiaID, net::GURLWithNSURL(URL),
       base::SysNSStringToUTF8(readingListTitle));
-  //  std::optional<std::string> profileName =
-  //      GetApplicationContext()
-  //          ->GetAccountProfileMapper()
-  //          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
-  //
-  //  if (profileName.has_value()) {
-  //    std::string title = base::SysNSStringToUTF8(readingListTitle);
-  //    ProfileManagerIOS* profileManager =
-  //        GetApplicationContext()->GetProfileManager();
-  //    std::unique_ptr<ReadingListAdder> adder =
-  //        std::make_unique<ReadingListAdder>(net::GURLWithNSURL(URL), title,
-  //                                           profileManager);
-  //    profileManager->LoadProfileAsync(
-  //        *profileName,
-  //        base::BindOnce(&OnProfileLoaded<ReadingListAdder>,
-  //        std::move(adder)));
-  //  }
 }
 
 @end
