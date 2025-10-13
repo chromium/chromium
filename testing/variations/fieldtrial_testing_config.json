@@ -13994,6 +13994,42 @@
             ]
         }
     ],
+    "IOSTabResumptionShopCard": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20251013",
+                    "params": {
+                        "ShopCardVariant": "arm_3"
+                    },
+                    "enable_features": [
+                        "TabResumptionShopCard"
+                    ]
+                },
+                {
+                    "name": "Enabled_20251013",
+                    "params": {
+                        "ShopCardVariant": "arm_4"
+                    },
+                    "enable_features": [
+                        "TabResumptionShopCard"
+                    ]
+                },
+                {
+                    "name": "Enabled_20251013",
+                    "params": {
+                        "ShopCardVariant": "arm_6"
+                    },
+                    "enable_features": [
+                        "TabResumptionShopCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabResumptionThumbnails": [
         {
             "platforms": [
