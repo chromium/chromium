@@ -2,10 +2,10 @@ xml-rs, an XML library for Rust
 ===============================
 
 [![CI](https://github.com/kornelski/xml-rs/actions/workflows/main.yml/badge.svg)](https://github.com/kornelski/xml-rs/actions/workflows/main.yml)
-[![crates.io][crates-io-img]](https://lib.rs/crates/xml-rs)
-[![docs][docs-img]](https://docs.rs/xml-rs/)
+[![crates.io][crates-io-img]](https://lib.rs/crates/xml)
+[![docs][docs-img]](https://docs.rs/xml/)
 
-[Documentation](https://docs.rs/xml-rs/)
+[Documentation](https://docs.rs/xml/)
 
   [crates-io-img]: https://img.shields.io/crates/v/xml-rs.svg
   [docs-img]: https://img.shields.io/badge/docs-latest%20release-6495ed.svg
@@ -63,7 +63,7 @@ Reading XML documents
 
 [`xml::reader::EventReader`](EventReader) requires a [`Read`](stdread) instance to read from. It can be a `File` wrapped in `BufReader`, or a `Vec<u8>`, or a `&[u8]` slice.
 
-[EventReader]: https://docs.rs/xml-rs/latest/xml/reader/struct.EventReader.html
+[EventReader]: https://docs.rs/xml/latest/xml/reader/struct.EventReader.html
 [stdread]: https://doc.rust-lang.org/stable/std/io/trait.Read.html
 
 `EventReader` implements `IntoIterator` trait, so you can use it in a `for` loop directly:
@@ -94,7 +94,7 @@ fn main() -> std::io::Result<()> {
                 eprintln!("Error: {e}");
                 break;
             }
-            // There's more: https://docs.rs/xml-rs/latest/xml/reader/enum.XmlEvent.html
+            // There's more: https://docs.rs/xml/latest/xml/reader/enum.XmlEvent.html
             _ => {}
         }
     }
@@ -122,7 +122,7 @@ error or end-of-document event once and will produce `None` afterwards.
 It is also possible to tweak parsing process a little using [`xml::reader::ParserConfig`][ParserConfig] structure.
 See its documentation for more information and examples.
 
-[ParserConfig]: https://docs.rs/xml-rs/latest/xml/reader/struct.ParserConfig.html
+[ParserConfig]: https://docs.rs/xml/latest/xml/reader/struct.ParserConfig.html
 
 You can find a more extensive example of using `EventReader` in `src/analyze.rs`, which is a
 small program (BTW, it is built with `cargo build` and can be run after that) which shows various
@@ -202,12 +202,12 @@ XmlEvent::cdata("some unescaped text")
 Of course, one can create `XmlEvent` enum variants directly instead of using the builder DSL.
 There are more examples in [`xml::writer::XmlEvent`][XmlEvent] documentation.
 
-[XmlEvent]: https://docs.rs/xml-rs/latest/xml/reader/enum.XmlEvent.html
+[XmlEvent]: https://docs.rs/xml/latest/xml/reader/enum.XmlEvent.html
 
 The writer has multiple configuration options; see `EmitterConfig` documentation for more
 information.
 
-[EmitterConfig]: https://docs.rs/xml-rs/latest/xml/writer/struct.EmitterConfig.html
+[EmitterConfig]: https://docs.rs/xml/latest/xml/writer/struct.EmitterConfig.html
 
 Bug reports
 ------------

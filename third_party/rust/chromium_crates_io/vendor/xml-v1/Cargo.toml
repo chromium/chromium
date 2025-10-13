@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.70"
 name = "xml"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
     "Vladimir Matveev <vmatveev@citrine.cc>",
     "Kornel (https://github.com/kornelski)",
@@ -30,8 +30,8 @@ autoexamples = false
 autotests = false
 autobenches = false
 description = "An XML library in pure Rust"
-homepage = "https://lib.rs/crates/xml-rs"
-documentation = "https://docs.rs/xml-rs/"
+homepage = "https://lib.rs/crates/xml"
+documentation = "https://docs.rs/xml/"
 readme = "README.md"
 keywords = [
     "xml",

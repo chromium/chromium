@@ -470,7 +470,6 @@ impl Lexer {
             '?'                        => self.move_to(State::ProcessingInstructionClosing),
             '<'                        => Some(Token::OpeningTagStart),
             '>'                        => Some(Token::TagEnd),
-            '/'                        => Some(Token::ClosingTagStart),
             '='                        => Some(Token::EqualsSign),
             '"'                        => Some(Token::DoubleQuote),
             '\''                       => Some(Token::SingleQuote),
