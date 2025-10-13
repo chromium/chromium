@@ -98,13 +98,6 @@ void GlicActorTaskIconController::OnStateUpdate(
 
   // Determines highlight + tooltip styling.
   if (is_showing) {
-    if (current_view == CurrentView::kConversation) {
-      tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
-      tab_strip_action_container_->HighlightGlicButton();
-    } else if (current_view == CurrentView::kActuation) {
-      tab_strip_action_container_->UnhighlightGlicButton();
-      tab_strip_action_container_->HighlightGlicActorTaskIcon();
-    }
     tab_strip_action_container_->glic_actor_task_icon()
         ->SetFloatyOpenTooltipText();
   } else {

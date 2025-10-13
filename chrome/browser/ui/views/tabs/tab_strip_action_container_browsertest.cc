@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Your task needs attention");
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Check your task");
 
   ResetAnimation(1);
 
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
   EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
   // TODO(crbug.com/431015299): Replace with finalized strings when ready.
-  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Your task needs attention");
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Check your task");
 
   ResetAnimation(1);
 
