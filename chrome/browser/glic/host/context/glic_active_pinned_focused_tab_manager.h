@@ -7,6 +7,7 @@
 
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 
 namespace glic {
 
@@ -55,11 +56,18 @@ class GlicActivePinnedFocusedTabManager
   // Callback for tab pinning status changes.
   void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool status);
 
+  // Callback for tab data changes to active tab.
+  void OnActiveTabDataChanged(TabDataChange change);
+
   // Updates the currently focused tab and notifies subscribers when changed.
   void UpdateFocusedTab();
 
   // Notifies subscribers of a change to the focused tab.
   void NotifyFocusedTabChanged(const FocusedTabData& focused_tab);
+
+  // Notifies subscribers of a change to the focused tab data.
+  void NotifyFocusedTabDataChanged(
+      const glic::mojom::TabData* focused_tab_data);
 
   // Source of truth for pinned tabs.
   raw_ptr<GlicSharingManager> sharing_manager_;
@@ -80,6 +88,9 @@ class GlicActivePinnedFocusedTabManager
   // List of callbacks to fire when the focused tab data changes.
   base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
       focused_tab_data_changed_callback_list_;
+
+  // `TabDataObserver` for the active tab (if one exists).
+  std::unique_ptr<TabDataObserver> active_tab_data_observer_;
 
   raw_ptr<Profile> profile_;
 };

@@ -43,7 +43,6 @@ GlicActivePinnedFocusedTabManager::AddFocusedTabChangedCallback(
 base::CallbackListSubscription
 GlicActivePinnedFocusedTabManager::AddFocusedTabDataChangedCallback(
     FocusedTabDataChangedCallback callback) {
-  // TODO(b:444463509): Implement focused tab data changed tracking.
   return focused_tab_data_changed_callback_list_.Add(std::move(callback));
 }
 
@@ -76,6 +75,18 @@ FocusedTabData GlicActivePinnedFocusedTabManager::GetFocusedTabData() {
 
 void GlicActivePinnedFocusedTabManager::OnActiveTabChanged(
     tabs::TabInterface* active_tab) {
+  // TODO(b:444463509): consider handling TabChangedAt() events.
+  active_tab_data_observer_ = std::make_unique<TabDataObserver>(
+      active_tab ? active_tab->GetContents() : nullptr,
+      base::BindRepeating(
+          &GlicActivePinnedFocusedTabManager::OnActiveTabDataChanged,
+          base::Unretained(this)));
+
+  UpdateFocusedTab();
+}
+
+void GlicActivePinnedFocusedTabManager::OnActiveTabDataChanged(
+    TabDataChange change) {
   UpdateFocusedTab();
 }
 
@@ -90,12 +101,23 @@ void GlicActivePinnedFocusedTabManager::OnTabPinningStatusChanged(
 }
 
 void GlicActivePinnedFocusedTabManager::UpdateFocusedTab() {
-  NotifyFocusedTabChanged(GetFocusedTabData());
+  FocusedTabData focused_tab_data = GetFocusedTabData();
+  NotifyFocusedTabChanged(focused_tab_data);
+  NotifyFocusedTabDataChanged(
+      CreateTabData(focused_tab_data.focus()
+                        ? focused_tab_data.focus()->GetContents()
+                        : nullptr)
+          .get());
 }
 
 void GlicActivePinnedFocusedTabManager::NotifyFocusedTabChanged(
     const FocusedTabData& focused_tab) {
   focused_tab_changed_callback_list_.Notify(focused_tab);
+}
+
+void GlicActivePinnedFocusedTabManager::NotifyFocusedTabDataChanged(
+    const glic::mojom::TabData* focused_tab_data) {
+  focused_tab_data_changed_callback_list_.Notify(focused_tab_data);
 }
 
 }  // namespace glic
