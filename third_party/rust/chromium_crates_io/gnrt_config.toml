@@ -95,9 +95,6 @@ readme_file_template = "README.chromium.hbs"
 removed_cargo_template = "removed_Cargo.toml.hbs"
 removed_librs_template = "removed_lib.rs.hbs"
 
-[vet]
-config_template = "vet_config.toml.hbs"
-
 [resolve]
 root = "chromium"
 remove_crates = []

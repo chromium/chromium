@@ -12,7 +12,7 @@ mod util;
 mod vendor;
 
 use anyhow::{Context, Result};
-use clap::{arg, command, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use gnrt_lib::*;
 
 #[derive(Debug, Parser)]

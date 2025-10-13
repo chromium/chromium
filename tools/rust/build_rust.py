@@ -733,10 +733,6 @@ def main():
         action='store_true',
         help='After building rust, also build bindgen using build_bindgen.py')
     parser.add_argument(
-        '--build-vet',
-        action='store_true',
-        help='After building rust, also build cargo-vet using build_vet.py')
-    parser.add_argument(
         '--build-crubit',
         action='store_true',
         help='After building rust, also build crubit using build_crubit.py')
@@ -745,19 +741,17 @@ def main():
         action='store_true',
         help='After building rust, also generate stdlib GN rules using '
         'gnrt_stdlib.py')
-    parser.add_argument(
-        '--entire-toolchain',
-        action='store_true',
-        help='Build rust and the rest of the rust toolchain. '
-        'Equivalent to --build-bindgen --build-vet --build-crubit '
-        '--gnrt-stdlib')
+    parser.add_argument('--entire-toolchain',
+                        action='store_true',
+                        help='Build rust and the rest of the rust toolchain. '
+                        'Equivalent to --build-bindgen --build-crubit '
+                        '--gnrt-stdlib')
     if sys.platform == 'win32':
         parser.add_argument('--sh', help='path to the sh.exe to use')
     args, rest = parser.parse_known_args()
 
     if args.entire_toolchain:
         args.build_bindgen = True
-        args.build_vet = True
         args.build_crubit = True
         args.gnrt_stdlib = True
 
@@ -952,14 +946,6 @@ def main():
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_bindgen.py')
-            ]
-            TeeCmd(build_cmd, log)
-
-        if args.build_vet:
-            print('Building vet...')
-            build_cmd = [
-                sys.executable,
-                os.path.join(THIS_DIR, 'build_vet.py')
             ]
             TeeCmd(build_cmd, log)
 

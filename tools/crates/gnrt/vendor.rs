@@ -16,7 +16,6 @@ use crate::util::{
     init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
     render_handlebars_named_template, run_command, without_cargo_config_toml,
 };
-use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
 
 use anyhow::{format_err, Context, Result};
@@ -152,10 +151,8 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     // no parent.
     let third_party_dir = paths.third_party_config_file.parent().unwrap();
     let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
-    let handlebars =
-        init_handlebars_with_template_paths(&[&readme_template_path, &vet_template_path])
-            .context("init_handlebars for `supply-chain/config.toml`")?;
+    let handlebars = init_handlebars_with_template_paths(&[&readme_template_path])
+        .context("init_handlebars for `README.chromium.hbs")?;
 
     // Fetch the package graph again based on the locally vendored crates, to ensure
     // that locally applied patches which impact the package graph are considered.
@@ -182,11 +179,6 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
             .iter()
             .map(|p| p.into())
             .collect();
-    let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
-        let p = graph.metadata(guppy_package_id).unwrap();
-        config.resolve.remove_crates.contains(p.name())
-            || !guppy_resolved_package_ids.contains(&(&p).into())
-    };
 
     let filter_removed = |meta: &PackageMetadata| {
         !config.resolve.remove_crates.contains(meta.name())
@@ -231,23 +223,11 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         }
     }
 
-    let vet_config_toml =
-        create_vet_config(graph.packages(), is_removed, find_group, find_shipped)?;
-
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
     }
 
     if args.dump_template_input {
-        serde_json::to_writer_pretty(
-            std::fs::File::create(
-                paths.vet_config_file.parent().unwrap().join("vet-template-input.json"),
-            )
-            .context("opening dump file")?,
-            &vet_config_toml,
-        )
-        .context("dumping vet config information")?;
-
         for (dir, readme_file) in &all_readme_files {
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))
@@ -258,8 +238,6 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         }
         return Ok(());
     }
-
-    render_handlebars(&handlebars, &vet_template_path, &vet_config_toml, paths.vet_config_file)?;
 
     for (dir, readme_file) in &all_readme_files {
         render_handlebars(

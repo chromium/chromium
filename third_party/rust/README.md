@@ -64,8 +64,9 @@ There are also other, non-crate-specific files such as:
     - `README.chromium.hbs` - template for `README.chromium` files
     - `PRESUBMIT.py`
     - `.py` helper scripts used by `PRESUBMIT.py` and by `//tools/crates`.
-    - Somewhat obsolete `cargo vet`-support items like
-      `vet_config.toml.hbs` and `supply-chain/`.
+    - Somewhat obsolete `cargo vet`-support items - we keep
+      `supply-chain/audits.toml` to preserve Chromium audits that are imported
+      into https://github.com/google/rust-crate-audits/blob/main/sources.list)
 
 # Importing new third-party crates
 

@@ -723,7 +723,7 @@ def ManualUpdate(args):
         print(f"  Running `git cl upload --commit-description=...` ...")
         description = CreateCommitDescription(title, diff)
         GitClUpload(f"--commit-description={description}", "-t",
-                    "Edit CL description to include vet policy")
+                    "Edit CL description to include more info")
 
 
 def main():

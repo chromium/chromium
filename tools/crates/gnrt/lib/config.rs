@@ -22,8 +22,6 @@ pub struct BuildConfig {
     pub resolve: ResolveConfig,
     #[serde(rename = "gn")]
     pub gn_config: GnConfig,
-    #[serde(rename = "vet")]
-    pub vet_config: VetConfig,
     /// Configuration that applies to all crates
     #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,

@@ -76,8 +76,8 @@ def RunCargo(cargo_args):
     wouldn't work on the toolchain bots.
 
     Note that some environment variables populated below are not necessary for
-    all users of this function (e.g. `build_vet.py` doesn't need clang/llvm
-    parts).  That's a bit icky, but ultimately okay.
+    all potential users of this function (e.g. `build_vet.py` didn't need
+    clang/llvm parts).  That's a bit icky, but ultimately okay.
     """
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
