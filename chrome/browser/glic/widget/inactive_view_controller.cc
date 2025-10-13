@@ -81,7 +81,7 @@ std::unique_ptr<views::View> InactiveViewController::CreateView() {
   auto scrim = std::make_unique<views::View>();
   scrim->SetPaintToLayer();
   scrim->layer()->SetFillsBoundsOpaquely(false);
-  scrim->layer()->SetOpacity(1.0f);
+  scrim->layer()->SetOpacity(0.0f);
   scrim_view_tracker_.SetView(scrim.get());
   image_view_container->AddChildView(std::move(scrim));
 
