@@ -792,7 +792,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Bookmarks -----------------------------------------------------------------
 
   // Notification that a URL is no longer bookmarked. If there are no visits
-  // for the specified url, it is deleted.
+  // for the specified url, it is deleted. Includes visits that result in a 404
+  // status code.
   void URLsNoLongerBookmarked(const std::set<GURL>& urls);
 
   // Callbacks To Kill Database When It Gets Corrupted -------------------------
