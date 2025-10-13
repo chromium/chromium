@@ -139,6 +139,7 @@ class RateCalculator {
     if (!previousStats || !currentStats) {
       return undefined;
     }
+    // Timestamp is in milliseconds.
     const deltaTime = currentStats.timestamp - previousStats.timestamp;
     if (deltaTime <= 0) {
       return undefined;
@@ -159,6 +160,10 @@ class RateCalculator {
     }
     const deltaValue = currentValue - previousValue;
     const deltaSamples = currentSamples - previousSamples;
+    if (samplesMetric === 'timestamp') {
+      // Timestamp is in milliseconds but we expect seconds as output.
+      return 1000 * deltaValue / deltaSamples;
+    }
     return deltaValue / deltaSamples;
   }
 }
@@ -305,6 +310,7 @@ class PsnrRateCalculator {
     if (!previousStats || !currentStats) {
       return undefined;
     }
+    // Timestamp is in milliseconds.
     const deltaTime = currentStats.timestamp - previousStats.timestamp;
     if (deltaTime <= 0) {
       return undefined;
@@ -522,10 +528,12 @@ export class StatsRatesCalculator {
               }
               metricCalculators.forEach(metricCalculator => {
                 const name = metricCalculator.getCalculatedMetricName();
-                this.currentReport.get(stats.id)[name] =
-                    metricCalculator.calculate(stats.id,
+                const result = metricCalculator.calculate(stats.id,
                                                this.previousReport,
                                                this.currentReport);
+                if (!isNaN(result)) {
+                  this.currentReport.get(stats.id)[name] = result;
+                }
               });
             });
       });
