@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -19,9 +18,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/rect.h"
-
-class LensOverlayController;
-class GURL;
 
 namespace lens {
 class LensSessionMetricsLogger;
@@ -46,8 +42,11 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+class GURL;
+class LensOverlayController;
 class PrefService;
 class ThemeService;
+enum class SidePanelEntryHideReason;
 
 // Controller for all Lens Search features in Chrome. All external entry points
 // should go through this controller.

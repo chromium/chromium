@@ -98,6 +98,8 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"

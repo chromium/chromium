@@ -278,6 +278,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "ui/base/resource/resource_bundle.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF)
