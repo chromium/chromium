@@ -531,7 +531,8 @@ export class StatsRatesCalculator {
                 const result = metricCalculator.calculate(stats.id,
                                                this.previousReport,
                                                this.currentReport);
-                if (!isNaN(result)) {
+                if (result !== undefined &&
+                    (typeof(result) !== 'number' || !isNaN(result))) {
                   this.currentReport.get(stats.id)[name] = result;
                 }
               });
