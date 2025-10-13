@@ -43,9 +43,7 @@ const char* kShowButtonOnClickUrl =
 }  // namespace
 
 // Tests that Automatic clicks works with elements in the browser.
-class AutoclickBrowserTest
-    : public AccessibilityFeatureBrowserTest,
-      public ::testing::WithParamInterface<ManifestVersion> {
+class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
  public:
   AutoclickBrowserTest(const AutoclickBrowserTest&) = delete;
   AutoclickBrowserTest& operator=(const AutoclickBrowserTest&) = delete;
@@ -55,16 +53,8 @@ class AutoclickBrowserTest
   ~AutoclickBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam() == ManifestVersion::kTwo) {
-      disabled_features.push_back(
-          ::features::kAccessibilityManifestV3AccessibilityCommon);
-    } else if (GetParam() == ManifestVersion::kThree) {
-      enabled_features.push_back(
-          ::features::kAccessibilityManifestV3AccessibilityCommon);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
     AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -97,14 +87,7 @@ class AutoclickBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(ManifestV2,
-                         AutoclickBrowserTest,
-                         ::testing::Values(ManifestVersion::kTwo));
-INSTANTIATE_TEST_SUITE_P(ManifestV3,
-                         AutoclickBrowserTest,
-                         ::testing::Values(ManifestVersion::kThree));
-
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LeftClickButtonOnHover) {
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {
   LoadURLAndAutoclick(kShowButtonOnClickUrl);
   // No need to change click type: Default should be right-click.
   utils()->HoverOverHtmlElement(generator(), "click me", "button");
@@ -113,7 +96,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LeftClickButtonOnHover) {
   utils()->GetNodeBoundsInRoot("show me", "button");
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, DoubleClickHover) {
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DoubleClickHover) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
       "<input type='text' id='text_field'"
@@ -129,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, DoubleClickHover) {
   utils()->WaitForTextSelectionChangedEvent();
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, ClickAndDrag) {
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, ClickAndDrag) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
       "<input type='text' id='text_field'"
@@ -150,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, ClickAndDrag) {
   utils()->WaitForTextSelectionChangedEvent();
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
                        RightClickOnHoverOpensContextMenu) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
@@ -167,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
   utils()->GetNodeBoundsInRoot("Paste Ctrl+V", "menuItem");
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
                        ScrollHoverHighlightsScrollableArea) {
   utils()->ObserveFocusRings();
 
@@ -222,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LongDelay) {
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
   utils()->SetAutoclickDelayMs(500);
   LoadURLAndAutoclick(kShowButtonOnClickUrl);
 
@@ -232,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LongDelay) {
   EXPECT_GT(timer.Elapsed().InMilliseconds(), 500);
 }
 
-IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, PauseAutoclick) {
+IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, PauseAutoclick) {
   utils()->SetAutoclickDelayMs(5);
   LoadURLAndAutoclick(
       "data:text/html,"
@@ -253,7 +236,5 @@ IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, PauseAutoclick) {
               }));
   runner.Run();
 }
-
-
 
 }  // namespace ash
