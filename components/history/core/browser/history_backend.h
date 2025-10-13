@@ -321,6 +321,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // given URL. Stores the most recent list of redirects ending at `url` in the
   // given RedirectList. For example, if we have the redirect list A -> B -> C,
   // then calling this function with url=C would fill redirects with {B, A}.
+  // Includes redirects that result in a 404 response.
   RedirectList QueryRedirectsTo(const GURL& url);
 
   VisibleVisitCountToHostResult GetVisibleVisitCountToHost(const GURL& url);

@@ -2871,7 +2871,6 @@ RedirectList HistoryBackend::QueryRedirectsTo(const GURL& to_url) {
     return {};
 
   URLID to_url_id = db_->GetRowForURL(to_url, nullptr);
-  // TODO: crbug.com/448407141 Take in a 404 policy param and pass in here
   VisitID cur_visit = db_->GetMostRecentVisitForURL(
       to_url_id, nullptr, VisitQuery404sPolicy::kInclude404s);
   if (!cur_visit)
