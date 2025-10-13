@@ -10,10 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
-
-class FormFieldData;
 
 // A helper class for parsing a stream of |FormFieldData|'s with lookahead.
 class AutofillScanner {
