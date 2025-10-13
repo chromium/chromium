@@ -98,9 +98,15 @@ void ComposeboxHandler::SubmitQuery(
   base::Time query_start_time = base::Time::Now();
   composebox_metrics_recorder_->NotifySessionStateChanged(
       SessionState::kQuerySubmitted);
-  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time,
-                                          additional_params),
-          disposition);
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = query_text;
+  search_url_request_info->query_start_time = query_start_time;
+  search_url_request_info->additional_params = additional_params;
+  OpenUrl(
+      query_controller_->CreateSearchUrl(std::move(search_url_request_info)),
+      disposition);
   composebox_metrics_recorder_->NotifySessionStateChanged(
       SessionState::kNavigationOccurred);
   composebox_metrics_recorder_->RecordQueryMetrics(

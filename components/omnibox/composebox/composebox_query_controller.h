@@ -184,6 +184,22 @@ class ComposeboxQueryController {
     size_t num_outstanding_network_requests_ = 0;
   };
 
+  // Struct containing information needed to construct a search url.
+  struct CreateSearchUrlRequestInfo {
+   public:
+    CreateSearchUrlRequestInfo();
+    ~CreateSearchUrlRequestInfo();
+
+    // The text of the query.
+    std::string query_text;
+
+    // The client-side time the query was started.
+    base::Time query_start_time;
+
+    // Additional params to attach to the search url.
+    std::map<std::string, std::string> additional_params;
+  };
+
   ComposeboxQueryController(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -206,9 +222,8 @@ class ComposeboxQueryController {
 
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
-  GURL CreateAimUrl(const std::string& query_text,
-                    base::Time query_start_time,
-                    std::map<std::string, std::string> additional_params = {});
+  GURL CreateSearchUrl(
+      std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info);
 
   // Observer management.
   void AddObserver(FileUploadStatusObserver* obs);

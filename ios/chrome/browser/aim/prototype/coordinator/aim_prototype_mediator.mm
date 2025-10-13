@@ -257,8 +257,13 @@ size_t WhitespaceCount(const std::u16string& string) {
 }
 
 - (void)sendText:(NSString*)text {
-  GURL URL = _composeboxQueryController->CreateAimUrl(
-      base::SysNSStringToUTF8(text), base::Time::Now());
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = base::SysNSStringToUTF8(text);
+  search_url_request_info->query_start_time = base::Time::Now();
+  GURL URL = _composeboxQueryController->CreateSearchUrl(
+      std::move(search_url_request_info));
   // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
   if (!_AIModeEnabled) {
     URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");

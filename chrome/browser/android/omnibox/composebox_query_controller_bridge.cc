@@ -100,7 +100,14 @@ ComposeboxQueryControllerBridge::AddFile(
 
 GURL ComposeboxQueryControllerBridge::GetAimUrl(JNIEnv* env,
                                                 std::string& query_text) {
-  return query_controller_->CreateAimUrl(query_text, base::Time::Now());
+  // TODO(crbug.com/448149357): Update the bridge interface to take in
+  // additional params for the create search url request info.
+  std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
+      search_url_request_info = std::make_unique<
+          ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = query_text;
+  search_url_request_info->query_start_time = base::Time::Now();
+  return query_controller_->CreateSearchUrl(std::move(search_url_request_info));
 }
 
 void ComposeboxQueryControllerBridge::RemoveAttachment(
