@@ -25045,52 +25045,6 @@
             ]
         }
     ],
-    "ThreadCacheMinCachedMemoryForPurging": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "size_500kb_20230909",
-                    "params": {
-                        "ThreadCacheMinCachedMemoryForPurgingBytes": "512000"
-                    },
-                    "enable_features": [
-                        "EnableConfigurableThreadCacheMinCachedMemoryForPurging"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ThreadCachePurgeInterval": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "interval_1_2_60_20230909",
-                    "params": {
-                        "ThreadCacheDefaultPurgeInterval": "2s",
-                        "ThreadCacheMaxPurgeInterval": "60s",
-                        "ThreadCacheMinPurgeInterval": "1s"
-                    },
-                    "enable_features": [
-                        "EnableConfigurableThreadCachePurgeInterval"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreeButtonPasswordSaveDialog": [
         {
             "platforms": [

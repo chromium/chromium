@@ -248,27 +248,11 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
   }
 }
 
-void ThreadCacheRegistry::SetPurgingConfiguration(
-    const internal::base::TimeDelta min_purge_interval,
-    const internal::base::TimeDelta max_purge_interval,
-    const internal::base::TimeDelta default_purge_interval,
-    size_t min_cached_memory_for_purging_bytes) {
-  PA_CHECK(min_purge_interval <= default_purge_interval);
-  PA_CHECK(default_purge_interval <= max_purge_interval);
-  min_purge_interval_ = min_purge_interval;
-  max_purge_interval_ = max_purge_interval;
-  default_purge_interval_ = default_purge_interval;
-  min_cached_memory_for_purging_bytes_ = min_cached_memory_for_purging_bytes;
-  is_purging_configured_ = true;
-}
-
 void ThreadCacheRegistry::RunPeriodicPurge() {
   if (!periodic_purge_is_initialized_) {
     ThreadCache::EnsureThreadSpecificDataInitialized();
     periodic_purge_is_initialized_ = true;
   }
-
-  PA_CHECK(is_purging_configured_);
 
   // Summing across all threads can be slow, but is necessary. Otherwise we rely
   // on the assumption that the current thread is a good proxy for overall
@@ -304,15 +288,15 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // scheduled purge with a small enough interval. This is the case for instance
   // of a renderer moving to foreground. To mitigate that, if cached memory
   // jumps is very large, make a greater leap to faster purging.
-  if (cached_memory_approx > 10 * min_cached_memory_for_purging_bytes_) {
+  if (cached_memory_approx > 10 * kMinCachedMemoryForPurgingBytes) {
     periodic_purge_next_interval_ =
-        std::min(default_purge_interval_, periodic_purge_next_interval_ / 2);
-  } else if (cached_memory_approx > 2 * min_cached_memory_for_purging_bytes_) {
+        std::min(kDefaultPurgeInterval, periodic_purge_next_interval_ / 2);
+  } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurgingBytes) {
     periodic_purge_next_interval_ =
-        std::max(min_purge_interval_, periodic_purge_next_interval_ / 2);
-  } else if (cached_memory_approx < min_cached_memory_for_purging_bytes_) {
+        std::max(kMinPurgeInterval, periodic_purge_next_interval_ / 2);
+  } else if (cached_memory_approx < kMinCachedMemoryForPurgingBytes) {
     periodic_purge_next_interval_ =
-        std::min(max_purge_interval_, periodic_purge_next_interval_ * 2);
+        std::min(kMaxPurgeInterval, periodic_purge_next_interval_ * 2);
   }
 
   // Make sure that the next interval is in the right bounds. Even though the
@@ -324,7 +308,7 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // background threads, but only ask them to purge their own cache at the next
   // allocation).
   periodic_purge_next_interval_ = std::clamp(
-      periodic_purge_next_interval_, min_purge_interval_, max_purge_interval_);
+      periodic_purge_next_interval_, kMinPurgeInterval, kMaxPurgeInterval);
 
   PurgeAll();
 }
@@ -335,7 +319,7 @@ int64_t ThreadCacheRegistry::GetPeriodicPurgeNextIntervalInMicroseconds()
 }
 
 void ThreadCacheRegistry::ResetForTesting() {
-  periodic_purge_next_interval_ = default_purge_interval_;
+  periodic_purge_next_interval_ = kDefaultPurgeInterval;
 }
 
 // static

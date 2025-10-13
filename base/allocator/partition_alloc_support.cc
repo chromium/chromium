@@ -1284,12 +1284,6 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   // initialized later.
   DCHECK(process_type != switches::kZygoteProcess);
 
-  partition_alloc::ThreadCacheRegistry::Instance().SetPurgingConfiguration(
-      base::features::GetThreadCacheMinPurgeInterval(),
-      base::features::GetThreadCacheMaxPurgeInterval(),
-      base::features::GetThreadCacheDefaultPurgeInterval(),
-      size_t(base::features::GetThreadCacheMinCachedMemoryForPurgingBytes()));
-
   base::allocator::StartThreadCachePeriodicPurge();
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
