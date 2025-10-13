@@ -5504,6 +5504,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabletDeterminationMismatch" enum="Boolean"
+    expires_after="2026-05-01">
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the tablet determination logic via resource loading and
+    display properties is different. This is recorded once per activity lifespan
+    during startup (attachBaseContext).
+  </summary>
+</histogram>
+
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
     expires_after="2026-03-01">
   <owner>ckitagawa@chromium.org</owner>

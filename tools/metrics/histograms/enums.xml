@@ -10835,7 +10835,6 @@ from previous Chrome versions.
   <int value="-1221040370" label="OsSettingsAppBadgingToggle:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
-  <int value="-1219199728" label="FormFactorUseMaxWindowMetrics:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
   <int value="-1218110631"
       label="NtpMostRelevantTabResumptionModuleFallbackToHost:enabled"/>
@@ -13235,6 +13234,7 @@ from previous Chrome versions.
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
   <int value="-349380607" label="AndroidNightMode:disabled"/>
   <int value="-349057743" label="extensions-on-chrome-urls"/>
+  <int value="-348995574" label="RefactorMinWidthContextOverride:disabled"/>
   <int value="-348720922" label="FedCmIdpSigninStatusEnabled:enabled"/>
   <int value="-348408686" label="CryptographyComplianceCnsa:enabled"/>
   <int value="-348141551" label="IgnoreUiGains:enabled"/>
@@ -13875,6 +13875,7 @@ from previous Chrome versions.
   <int value="-124291249" label="HistoryOptInEducationalTip:disabled"/>
   <int value="-124235074" label="IOSPromoPaymentBubble:enabled"/>
   <int value="-123599761" label="IncludeIpcOverheadInNavigationStart:disabled"/>
+  <int value="-123103820" label="RefactorMinWidthContextOverride:enabled"/>
   <int value="-122886597" label="TopControlsRefactorV2:disabled"/>
   <int value="-122557051" label="SafetyHubUnifiedPasswordsModule:disabled"/>
   <int value="-122492389" label="enable-browser-task-scheduler"/>
@@ -19266,7 +19267,6 @@ from previous Chrome versions.
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"
       label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>
-  <int value="1785343459" label="FormFactorUseMaxWindowMetrics:enabled"/>
   <int value="1785884719" label="TabGroupHome:enabled"/>
   <int value="1785914867"
       label="DeprecateOldKeyboardShortcutsAccelerator:disabled"/>

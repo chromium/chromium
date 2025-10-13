@@ -24,7 +24,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kCheckIntentCallerPermission,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
-    &ui::kFormFactorUseMaxWindowMetrics,
+    &ui::kRefactorMinWidthContextOverride,
     &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,

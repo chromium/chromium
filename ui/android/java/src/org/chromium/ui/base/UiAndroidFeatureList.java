@@ -47,9 +47,9 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
 
-    public static final CachedFlag sFormFactorUseMaxWindowMetrics =
+    public static final CachedFlag sRefactorMinWidthContextOverride =
             newCachedFlag(
-                    UiAndroidFeatures.FORM_FACTOR_USE_MAX_WINDOW_METRICS,
+                    UiAndroidFeatures.REFACTOR_MIN_WIDTH_CONTEXT_OVERRIDE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
 
@@ -64,5 +64,5 @@ public class UiAndroidFeatureList {
                     sAndroidUseCorrectWindowBounds,
                     sAndroidUseDisplayTopology,
                     sAndroidWindowOcclusion,
-                    sFormFactorUseMaxWindowMetrics);
+                    sRefactorMinWidthContextOverride);
 }

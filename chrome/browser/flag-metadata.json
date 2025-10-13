@@ -5389,11 +5389,6 @@
     "expiry_milestone": 145
   },
   {
-    "name" : "form-factor-use-window-metrics",
-    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone" : 145
-  },
-  {
     "name": "fractional-scroll-offsets",
     "owners": [ "bokan@chromium.org" ],
     "expiry_milestone": 81
@@ -8723,6 +8718,11 @@
     "name": "reengagement-notification",
     "owners": [ "dtrainor@chromium.org", "xingliu@chromium.org" ],
     "expiry_milestone": 90
+  },
+  {
+    "name" : "refactor-min-width-context-override",
+    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone" : 145
   },
   {
     "name": "refactor-toolbars-size",

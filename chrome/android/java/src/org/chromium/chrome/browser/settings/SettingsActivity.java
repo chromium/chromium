@@ -318,7 +318,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         super.applyOverrides(baseContext, overrideConfig);
-        if (!UiAndroidFeatureList.sFormFactorUseMaxWindowMetrics.isEnabled()) {
+        if (!UiAndroidFeatureList.sRefactorMinWidthContextOverride.isEnabled()) {
 
             // We override the smallestScreenWidthDp here to ensure mIsTablet which relies on
             // smallestScreenWidthDp is set based on display size instead of window size.

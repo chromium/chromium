@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.SimpleEdgeToEdgeController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplaySwitches;
@@ -138,6 +139,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     private NtpThemeStateProvider.@Nullable Observer mNtpThemeStateObserver;
 
+    private static boolean sIsTabletDeterminationMismatchRecord;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
@@ -173,7 +176,17 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         config.fontScale = 0;
         // NightMode and other applyOverrides must be done before onCreate in attachBaseContext.
         // https://crbug.com/1139760
-        if (applyOverrides(newBase, config)) applyOverrideConfiguration(config);
+        if (applyOverrides(newBase, config)) {
+            applyOverrideConfiguration(config);
+            if (!sIsTabletDeterminationMismatchRecord) {
+                sIsTabletDeterminationMismatchRecord = true;
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.TabletDeterminationMismatch",
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(newBase)
+                                != (DisplayUtil.getCurrentSmallestScreenWidth(newBase)
+                                        >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP));
+            }
+        }
     }
 
     @Override
@@ -456,7 +469,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         boolean isSmallestScreenWidthDpOverridden = false;
-        if (UiAndroidFeatureList.sFormFactorUseMaxWindowMetrics.isEnabled()) {
+        if (UiAndroidFeatureList.sRefactorMinWidthContextOverride.isEnabled()) {
             // We override the smallestScreenWidthDp here for two reasons:
             // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
             // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the
