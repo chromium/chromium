@@ -62,8 +62,8 @@ namespace gpu {
 namespace {
 
 size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
-  auto si_format = viz::GetSharedImageFormat(pixmap.GetBufferFormat());
-  return si_format.EstimatedSizeInBytes(pixmap.GetBufferSize());
+  return pixmap.GetSharedImageFormat().EstimatedSizeInBytes(
+      pixmap.GetBufferSize());
 }
 
 bool IsExoTexture(std::string_view label) {
