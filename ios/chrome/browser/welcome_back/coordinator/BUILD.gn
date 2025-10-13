@@ -10,8 +10,8 @@ source_set("coordinator") {
     "welcome_back_mediator.mm",
   ]
   public_deps = [
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/welcome_back/ui",
   ]
   deps = [
     "//base",
@@ -20,10 +20,8 @@ source_set("coordinator") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -33,6 +31,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/browser/welcome_back/model:features",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -47,9 +47,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/first_run/ui_bundled:features",
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
@@ -58,6 +56,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

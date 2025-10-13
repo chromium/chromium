@@ -25,7 +25,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/price_insights/coordinator:delegates",
     "//ios/chrome/browser/price_insights/ui:price_insights_ui",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells",
@@ -44,6 +43,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/web/public",
     "//url",
   ]

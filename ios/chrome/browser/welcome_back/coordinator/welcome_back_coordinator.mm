@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
+#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_detail_coordinator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_mediator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_action_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -21,6 +17,10 @@
 #import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_mediator.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
+#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/browser/welcome_back/ui/welcome_back_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface WelcomeBackCoordinator () <ConfirmationAlertActionHandler,

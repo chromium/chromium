@@ -13,7 +13,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -23,6 +22,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
+#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 
 @implementation WelcomeBackScreenProfileAgent
 
@@ -37,16 +38,15 @@
 
   DCHECK(profileState.profile);
 
-  switch (first_run::GetWelcomeBackScreenVariationType()) {
-    case first_run::WelcomeBackScreenVariationType::kDisabled:
+  switch (GetWelcomeBackScreenVariationType()) {
+    case WelcomeBackScreenVariationType::kDisabled:
       break;
-    case first_run::WelcomeBackScreenVariationType::
-        kBasicsWithLockedIncognitoTabs:
-    case first_run::WelcomeBackScreenVariationType::kBasicsWithPasswords:
-    case first_run::WelcomeBackScreenVariationType::kProductivityAndShopping:
+    case WelcomeBackScreenVariationType::kBasicsWithLockedIncognitoTabs:
+    case WelcomeBackScreenVariationType::kBasicsWithPasswords:
+    case WelcomeBackScreenVariationType::kProductivityAndShopping:
       [self maybeRegisterPromo];
       break;
-    case first_run::WelcomeBackScreenVariationType::kSignInBenefits:
+    case WelcomeBackScreenVariationType::kSignInBenefits:
       signin::IdentityManager* identityManager =
           IdentityManagerFactory::GetForProfile(profileState.profile);
       if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -74,8 +74,7 @@
   // `kWelcomeBackInFirstRun` is enabled, `kBestFeaturesScreenInFirstRun` is
   // disabled, and there are at least two features eligible for display.
   size_t number_of_items = GetWelcomeBackEligibleItems().size();
-  if (timeSinceActive > base::Days(28) &&
-      first_run::IsWelcomeBackInFirstRunEnabled() &&
+  if (timeSinceActive > base::Days(28) && IsWelcomeBackInFirstRunEnabled() &&
       !base::FeatureList::IsEnabled(first_run::kBestFeaturesScreenInFirstRun) &&
       number_of_items >= 2) {
     PromosManagerFactory::GetForProfile(self.profileState.profile)

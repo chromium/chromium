@@ -33,7 +33,7 @@ include_rules = [
   "+ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h",
-  "+ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h",
+  "+ios/chrome/browser/welcome_back/model/welcome_back_prefs.h",
   "+ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h",
 ]
 

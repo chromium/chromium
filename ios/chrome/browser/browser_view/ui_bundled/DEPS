@@ -135,4 +135,5 @@ include_rules = [
   "+ios/chrome/browser/webui",
   "+ios/chrome/browser/whats_new/coordinator",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+  "+ios/chrome/browser/welcome_back/coordinator",
 ]

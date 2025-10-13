@@ -127,6 +127,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/web/model/features.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/enterprise/data_controls/features.h"
@@ -1195,13 +1196,13 @@ const FeatureEntry::FeatureVariation
 // LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
 
 const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm1[] = {
-    {first_run::kWelcomeBackInFirstRunParam, "1"}};
+    {kWelcomeBackInFirstRunParam, "1"}};
 const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm2[] = {
-    {first_run::kWelcomeBackInFirstRunParam, "2"}};
+    {kWelcomeBackInFirstRunParam, "2"}};
 const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm3[] = {
-    {first_run::kWelcomeBackInFirstRunParam, "3"}};
+    {kWelcomeBackInFirstRunParam, "3"}};
 const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm4[] = {
-    {first_run::kWelcomeBackInFirstRunParam, "4"}};
+    {kWelcomeBackInFirstRunParam, "4"}};
 
 const FeatureEntry::FeatureVariation kWelcomeBackInFirstRunVariations[] = {
     {" - Variant A: Basics with Locked Incognito", kWelcomeBackInFirstRunArm1,
@@ -2454,7 +2455,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          "AutofillVcnEnrollStrikeExpiryTime")},
     {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackInFirstRunName,
      flag_descriptions::kWelcomeBackInFirstRunDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kWelcomeBackInFirstRun,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kWelcomeBackInFirstRun,
                                     kWelcomeBackInFirstRunVariations,
                                     "WelcomeBackInFirstRun")},
     {"autofill-enable-flat-rate-card-benefits-from-curinos",

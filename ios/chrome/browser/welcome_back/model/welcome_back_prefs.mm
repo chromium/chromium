@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/scoped_user_pref_update.h"

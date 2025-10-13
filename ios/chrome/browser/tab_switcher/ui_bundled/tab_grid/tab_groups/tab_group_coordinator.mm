@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_configuration.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -51,6 +50,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
 

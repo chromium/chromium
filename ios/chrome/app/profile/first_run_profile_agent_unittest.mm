@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -47,7 +48,7 @@ class FirstRunProfileAgentTest : public PlatformTest {
 // promo.
 TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
   enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{first_run::kWelcomeBackInFirstRunParam, "4"}});
+      kBestOfAppFRE, {{kWelcomeBackInFirstRunParam, "4"}});
   base::HistogramTester tester;
   [profile_agent_ dismissGuidedTourPromo];
   tester.ExpectTotalCount("IOS.GuidedTour.Promo.DidAccept", 1);
@@ -57,7 +58,7 @@ TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
 // finishes.
 TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
   enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{first_run::kWelcomeBackInFirstRunParam, "4"}});
+      kBestOfAppFRE, {{kWelcomeBackInFirstRunParam, "4"}});
   base::HistogramTester tester;
   [profile_agent_ nextTappedForStep:GuidedTourStep::kTabGridIncognito];
   tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 1, 1);

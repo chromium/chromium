@@ -25,8 +25,6 @@ BASE_FEATURE(kSkipDefaultBrowserPromoInFirstRun,
 
 BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWelcomeBackInFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";
 
@@ -34,8 +32,6 @@ const char kBestFeaturesScreenInFirstRunParam[] =
     "BestFeaturesScreenInFirstRunParam";
 
 const char kUpdatedFirstRunSequenceParam[] = "updated-first-run-sequence-param";
-
-const char kWelcomeBackInFirstRunParam[] = "WelcomeBackInFirstRunParam";
 
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   if (!base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun)) {
@@ -58,20 +54,6 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
   return static_cast<UpdatedFRESequenceVariationType>(
       base::GetFieldTrialParamByFeatureAsInt(kUpdatedFirstRunSequence,
                                              kUpdatedFirstRunSequenceParam, 1));
-}
-
-WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType() {
-  if (!base::FeatureList::IsEnabled(kWelcomeBackInFirstRun)) {
-    return WelcomeBackScreenVariationType::kDisabled;
-  }
-  return static_cast<WelcomeBackScreenVariationType>(
-      base::GetFieldTrialParamByFeatureAsInt(kWelcomeBackInFirstRun,
-                                             kWelcomeBackInFirstRunParam, 1));
-}
-
-bool IsWelcomeBackInFirstRunEnabled() {
-  return base::FeatureList::IsEnabled(kWelcomeBackInFirstRun) &&
-         !base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun);
 }
 
 bool IsAnimatedDefaultBrowserPromoInFREEnabled() {

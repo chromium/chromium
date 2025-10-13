@@ -111,6 +111,7 @@ source_set("flags") {
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/text_selection/model:model_utils",
     "//ios/chrome/browser/web/model:feature_flags",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/components/enterprise/data_controls:features",
     "//ios/components/security_interstitials/https_only_mode:feature",

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_mediator.h"
+#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_mediator.h"
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_screen_consumer.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
+#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/browser/welcome_back/ui/welcome_back_screen_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -111,10 +112,10 @@
 
 // Returns the default items for each Welcome Back variation.
 - (std::vector<BestFeaturesItemType>)preferredItems {
-  using enum first_run::WelcomeBackScreenVariationType;
+  using enum WelcomeBackScreenVariationType;
   using enum BestFeaturesItemType;
 
-  switch (first_run::GetWelcomeBackScreenVariationType()) {
+  switch (GetWelcomeBackScreenVariationType()) {
     case kBasicsWithLockedIncognitoTabs:
       return {kLensSearch, kEnhancedSafeBrowsing, kLockedIncognitoTabs};
     case kBasicsWithPasswords:

@@ -20,7 +20,7 @@ enum class BestFeaturesItemType {
   kAutofillPasswordsInOtherApps = 6,
   kSharePasswordsWithFamily = 7
 };
-// LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType)
+// LINT.ThenChange(/ios/chrome/browser/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType)
 
 // Holds properties and values needed to configure the items in the Best
 // Features Screen.

@@ -2,21 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = [
-    ":best_features_item",
-    "//components/prefs",
-    "//ios/chrome/browser/first_run/ui_bundled:features",
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
-    "//ios/chrome/browser/shared/model/application_context",
-  ]
-}
-
 source_set("best_features_item") {
   sources = [
     "best_features_item.h",

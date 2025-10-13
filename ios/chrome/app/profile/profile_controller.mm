@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -683,7 +684,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackInFirstRunEnabled()) {
     [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
   }
 }

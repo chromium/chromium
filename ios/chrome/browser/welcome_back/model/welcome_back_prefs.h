@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
+#ifndef IOS_CHROME_BROWSER_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
+#define IOS_CHROME_BROWSER_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -22,4 +22,4 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry);
 // current eligible items.
 std::vector<BestFeaturesItemType> GetWelcomeBackEligibleItems();
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
+#endif  // IOS_CHROME_BROWSER_WELCOME_BACK_MODEL_WELCOME_BACK_PREFS_H_
