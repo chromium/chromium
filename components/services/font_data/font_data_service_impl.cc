@@ -4,11 +4,16 @@
 
 #include "components/services/font_data/font_data_service_impl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 #include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
@@ -84,6 +89,10 @@ base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
   SkString font_path;
   typeface.getResourceName(&font_path);
   if (font_path.isEmpty()) {
+#if BUILDFLAG(IS_WIN)
+    base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
+                             ::GetLastError());
+#endif  // BUILDFLAG(IS_WIN)
     return {};
   }
 

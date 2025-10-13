@@ -77,6 +77,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.WinLastError" enum="WinGetLastError"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The Windows last error obtained from a call to GetLastError after a failed
+    attempt to obtain the resource name of a typeface, in the process of getting
+    a file handle.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
     expires_after="2023-12-31">
   <owner>kvitekp@google.com</owner>
