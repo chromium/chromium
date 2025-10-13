@@ -10,8 +10,10 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_send_packet_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_ice_candidate_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -28,8 +30,18 @@ namespace blink {
 class AsyncDatagramConnection {
  public:
   virtual ~AsyncDatagramConnection() = default;
+  virtual void AddRemoteCandidate(const webrtc::Candidate& candidate) = 0;
 
   virtual void Writable(ScriptPromiseResolver<IDLBoolean>* resolver) = 0;
+
+  virtual void SetRemoteDtlsParameters(
+      String digestAlgorithm,
+      Vector<uint8_t> fingerprint,
+      webrtc::DatagramConnection::SSLRole ssl_role) = 0;
+
+  virtual void SendPackets(
+      std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) = 0;
+
   virtual void Terminate() = 0;
 };
 
@@ -48,7 +60,10 @@ class MODULES_EXPORT RtcTransport final
       ExecutionContext* context,
       const RtcTransportConfig* config,
       ExceptionState& exception_state,
-      std::unique_ptr<AsyncDatagramConnection> async_datagram_connection);
+      std::unique_ptr<AsyncDatagramConnection> async_datagram_connection =
+          nullptr,
+      webrtc::scoped_refptr<webrtc::DatagramConnection> datagram_connection =
+          nullptr);
 
   RtcTransport(PassKey, ExecutionContext* context);
   ~RtcTransport() override;
@@ -65,13 +80,22 @@ class MODULES_EXPORT RtcTransport final
     return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
+  // IDL implementation
+  void addRemoteCandidate(RtcTransportICECandidateInit* init,
+                          ExceptionState& exception_state);
+
   HeapVector<Member<RtcReceivedPacket>> getReceivedPackets();
+
   void sendPackets(HeapVector<Member<RtcSendPacketParameters>> packets);
 
   ScriptPromise<IDLBoolean> writable(ScriptState* script_state);
 
-  // TODO(crbug.com/443019066): Hook up ICE candidate gathering and fire this
-  // event.
+  void setRemoteDtlsParameters(RtcDtlsParameters* parameters);
+
+  String fingerprintDigestAlgorithm() { return fingerprintDigestAlgorithm_; }
+
+  DOMArrayBuffer* fingerprint() { return DOMArrayBuffer::Create(digest_); }
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidate, kIcecandidate)
 
   void OnPacketReceivedOnMainThread(Vector<uint8_t> data);
@@ -83,6 +107,8 @@ class MODULES_EXPORT RtcTransport final
  private:
   void ContinueInitialization(bool ice_controlling,
                               webrtc::ServerAddresses stun_servers,
+                              webrtc::scoped_refptr<webrtc::DatagramConnection>
+                                  injected_datagram_connection,
                               RtcTransportDependencies* dependencies);
   void OnInitialized(std::unique_ptr<AsyncDatagramConnection>);
 
@@ -94,8 +120,13 @@ class MODULES_EXPORT RtcTransport final
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapVector<Member<RtcReceivedPacket>> received_packets_;
-
   webrtc::scoped_refptr<webrtc::RTCCertificate> certificate_;
+  String fingerprintDigestAlgorithm_;
+  webrtc::Buffer digest_;
+
+  // State related to calls which happen before initialization is complete.
+  HeapVector<Member<RtcSendPacketParameters>> pending_send_packets_calls_;
+  Member<RtcDtlsParameters> pending_dtls_parameters_;
 };
 
 }  // namespace blink

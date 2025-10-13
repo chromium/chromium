@@ -11,19 +11,91 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_candidate.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 
 namespace blink {
+using testing::_;
+
+RtcTransportConfig* CreateRtcTransportConfig() {
+  auto* ice_server = RTCIceServer::Create();
+  ice_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
+      "stun:stun1.example.net:19302"));
+  HeapVector<Member<RTCIceServer>> ice_servers;
+  ice_servers.push_back(ice_server);
+
+  auto* config = RtcTransportConfig::Create();
+  config->setIceServers(ice_servers);
+  config->setIceControlling(true);
+  return config;
+}
+
+RtcDtlsParameters* CreateRtcDtlsParameters() {
+  auto* params = RtcDtlsParameters::Create();
+  params->setFingerprintDigestAlgorithm("sha-256");
+  params->setSslRole(
+      V8RtcTransportSslRole(V8RtcTransportSslRole::Enum::kServer));
+  Vector<uint8_t> fingerprint_data;
+  fingerprint_data.Append("fingerprint", 11);
+  params->setFingerprint(DOMArrayBuffer::Create(fingerprint_data));
+  return params;
+}
 
 class MockAsyncDatagramConnection : public AsyncDatagramConnection {
  public:
   MOCK_METHOD(void,
+              AddRemoteCandidate,
+              (const webrtc::Candidate& candidate),
+              (override));
+  MOCK_METHOD(void,
               Writable,
               (ScriptPromiseResolver<IDLBoolean> * resolver),
               (override));
+  MOCK_METHOD(void,
+              SetRemoteDtlsParameters,
+              (String digestAlgorithm,
+               Vector<uint8_t> fingerprint,
+               webrtc::DatagramConnection::SSLRole ssl_role),
+              (override));
+  MOCK_METHOD(void,
+              SendPackets,
+              (std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads),
+              (override));
   MOCK_METHOD(void, Terminate, (), (override));
+};
+
+class MockDatagramConnection : public webrtc::DatagramConnection {
+ public:
+  MOCK_METHOD(void,
+              SetRemoteIceParameters,
+              (const webrtc::IceParameters& ice_parameters),
+              (override));
+  MOCK_METHOD(void,
+              AddRemoteCandidate,
+              (const webrtc::Candidate& candidate),
+              (override));
+  MOCK_METHOD(bool, Writable, (), (override));
+  MOCK_METHOD(void,
+              SetRemoteDtlsParameters,
+              (absl::string_view digestAlgorithm,
+               const uint8_t* digest,
+               size_t digest_len,
+               webrtc::DatagramConnection::SSLRole ssl_role),
+              (override));
+  MOCK_METHOD(bool,
+              SendPacket,
+              (webrtc::ArrayView<const uint8_t> data),
+              (override));
+  MOCK_METHOD(void,
+              Terminate,
+              (absl::AnyInvocable<void()> terminate_complete_callback),
+              (override));
 };
 
 class RtcTransportTest : public PageTestBase {
@@ -43,18 +115,6 @@ class RtcTransportTest : public PageTestBase {
     ASSERT_FALSE(exception_state.HadException());
   }
 
-  RtcTransportConfig* CreateRtcTransportConfig() {
-    auto* ice_server = RTCIceServer::Create();
-    ice_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
-        "stun:stun1.example.net:19302"));
-    HeapVector<Member<RTCIceServer>> ice_servers;
-    ice_servers.push_back(ice_server);
-
-    auto* config = RtcTransportConfig::Create();
-    config->setIceServers(ice_servers);
-    return config;
-  }
-
  protected:
   raw_ptr<MockAsyncDatagramConnection> mock_connection_;
   Persistent<RtcTransport> transport_;
@@ -63,6 +123,53 @@ class RtcTransportTest : public PageTestBase {
 TEST_F(RtcTransportTest, TerminateOnDestruction) {
   CreateInitializedTransport();
   EXPECT_CALL(*mock_connection_, Terminate()).Times(1);
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidate) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  EXPECT_CALL(*mock_connection_, AddRemoteCandidate(testing::_))
+      .WillOnce(testing::Invoke([](const webrtc::Candidate& candidate) {
+        EXPECT_EQ(candidate.protocol(), "udp");
+        EXPECT_EQ(candidate.address().ToString(), "1.2.3.4:1234");
+        EXPECT_EQ(candidate.username(), "username");
+        EXPECT_EQ(candidate.password(), "password");
+        EXPECT_EQ(candidate.type(), webrtc::IceCandidateType::kHost);
+      }));
+
+  transport_->addRemoteCandidate(init, ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(RtcTransportTest, SendPackets) {
+  CreateInitializedTransport();
+  auto* params1 = RtcSendPacketParameters::Create();
+  Vector<uint8_t> data1;
+  data1.Append("packet1", 7);
+  params1->setData(DOMArrayBuffer::Create(data1));
+  auto* params2 = RtcSendPacketParameters::Create();
+  Vector<uint8_t> data2;
+  data2.Append("packet2", 7);
+  params2->setData(DOMArrayBuffer::Create(data2));
+
+  HeapVector<Member<RtcSendPacketParameters>> packets;
+  packets.push_back(params1);
+  packets.push_back(params2);
+
+  EXPECT_CALL(*mock_connection_, SendPackets(testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) {
+            EXPECT_EQ(packet_payloads->size(), 2u);
+            EXPECT_EQ(packet_payloads->at(0), String("packet1").RawByteSpan());
+            EXPECT_EQ(packet_payloads->at(1), String("packet2").RawByteSpan());
+          }));
+
+  transport_->sendPackets(packets);
 }
 
 TEST_F(RtcTransportTest, GetReceivedPackets) {
@@ -101,7 +208,7 @@ TEST_F(RtcTransportTest, WritableUninitialized) {
   DummyExceptionStateForTesting exception_state;
 
   auto* unitialized_transport = RtcTransport::CreateForTests(
-      context, CreateRtcTransportConfig(), exception_state, nullptr);
+      context, CreateRtcTransportConfig(), exception_state);
 
   ScriptPromiseTester tester(script_state,
                              unitialized_transport->writable(script_state));
@@ -109,10 +216,6 @@ TEST_F(RtcTransportTest, WritableUninitialized) {
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_FALSE(tester.Value().V8Value()->IsTrue());
 }
-
-}  // namespace blink
-
-namespace blink {
 
 class RtcTransportParseStunServersTest : public PageTestBase {
  public:
@@ -190,6 +293,212 @@ TEST_F(RtcTransportParseStunServersTest, FailureInvalidUrl) {
   EXPECT_EQ(exception_state.Code(),
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
   EXPECT_EQ(transport, nullptr);
+}
+
+TEST_F(RtcTransportTest, SetRemoteDtlsParameters) {
+  CreateInitializedTransport();
+  auto* params = CreateRtcDtlsParameters();
+
+  EXPECT_CALL(
+      *mock_connection_,
+      SetRemoteDtlsParameters(testing::Eq(String("sha-256")), testing::_,
+                              webrtc::DatagramConnection::SSLRole::kServer))
+      .WillOnce(testing::Invoke(
+          [](String digestAlgorithm, Vector<uint8_t> fingerprint,
+             webrtc::DatagramConnection::SSLRole ssl_role) {
+            EXPECT_EQ(fingerprint, String("fingerprint").RawByteSpan());
+          }));
+
+  transport_->setRemoteDtlsParameters(params);
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateMissingType) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Missing type", exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateMissingAddress) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Missing Address", exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateMissingUsernameFragment) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setPassword("password");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Missing usernameFragment", exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateMissingPassword) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Missing Password", exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateInvalidAddress) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+  init->setAddress("invalid");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Invalid address", exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, AddRemoteCandidateUnsupportedType) {
+  CreateInitializedTransport();
+  auto* init = RtcTransportICECandidateInit::Create();
+  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kRelay));
+  init->setAddress("1.2.3.4");
+  init->setPort(1234);
+  init->setUsernameFragment("username");
+  init->setPassword("password");
+
+  DummyExceptionStateForTesting exception_state;
+  transport_->addRemoteCandidate(init, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kSyntaxError));
+  EXPECT_EQ("Only Host and Srflx candidates currently supported",
+            exception_state.Message());
+}
+
+TEST_F(RtcTransportTest, OnIceCandidate) {
+  CreateInitializedTransport();
+
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  base::RunLoop run_loop;
+  wait->AddEventListener(transport_, event_type_names::kIcecandidate);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+
+  webrtc::Candidate candidate;
+  candidate.set_username("username");
+  candidate.set_password("password");
+  candidate.set_address(webrtc::SocketAddress("1.2.3.4", 1234));
+  candidate.set_type(webrtc::IceCandidateType::kHost);
+  transport_->OnCandidateGatheredOnMainThread(candidate);
+
+  // Wait for event to be fired.
+  run_loop.Run();
+
+  auto* event = static_cast<RtcTransportIceEvent*>(wait->GetLastEvent());
+  ASSERT_NE(event, nullptr);
+  auto* ice_candidate = event->candidate();
+  EXPECT_EQ(ice_candidate->usernameFragment(), "username");
+  EXPECT_EQ(ice_candidate->password(), "password");
+  EXPECT_EQ(ice_candidate->address(), "1.2.3.4");
+  EXPECT_EQ(ice_candidate->port(), 1234);
+  EXPECT_EQ(ice_candidate->type(),
+            V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+}
+
+class RtcTransportMultithreadedTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp(gfx::Size());
+    mock_sync_connection_ =
+        webrtc::make_ref_counted<testing::NiceMock<MockDatagramConnection>>();
+  }
+
+  RtcTransport* CreateTransport(ExceptionState& exception_state) {
+    return RtcTransport::CreateForTests(
+        GetDocument().GetExecutionContext(), CreateRtcTransportConfig(),
+        exception_state,
+        /*async_datagram_connection=*/nullptr, mock_sync_connection_);
+  }
+
+ protected:
+  webrtc::scoped_refptr<MockDatagramConnection> mock_sync_connection_;
+};
+
+TEST_F(RtcTransportMultithreadedTest, SetRemoteDtlsParameters) {
+  DummyExceptionStateForTesting exception_state;
+  RtcTransport* transport = CreateTransport(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_sync_connection_, SetRemoteDtlsParameters(_, _, _, _))
+      .WillOnce(testing::InvokeWithoutArgs([&] { run_loop.Quit(); }));
+
+  transport->setRemoteDtlsParameters(CreateRtcDtlsParameters());
+  run_loop.Run();
+}
+
+TEST_F(RtcTransportMultithreadedTest, SendPackets) {
+  DummyExceptionStateForTesting exception_state;
+  RtcTransport* transport = CreateTransport(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  const size_t kPacketCount = 3;
+
+  size_t packets_sent = 0;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_sync_connection_, SendPacket(_))
+      .WillRepeatedly(testing::InvokeWithoutArgs([&]() {
+        if (++packets_sent == kPacketCount) {
+          run_loop.Quit();
+        }
+        return true;
+      }));
+
+  HeapVector<Member<RtcSendPacketParameters>> packets;
+  for (size_t i = 0; i < kPacketCount; i++) {
+    auto* params = RtcSendPacketParameters::Create();
+    Vector<uint8_t> data;
+    data.Append("packet", 6);
+    params->setData(DOMArrayBuffer::Create(data));
+    packets.push_back(params);
+  }
+  transport->sendPackets(packets);
+  run_loop.Run();
 }
 
 }  // namespace blink

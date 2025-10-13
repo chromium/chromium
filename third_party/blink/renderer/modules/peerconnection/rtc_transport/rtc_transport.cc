@@ -8,16 +8,21 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/webrtc/net_address_utils.h"
+#include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
@@ -27,9 +32,14 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/datagram_connection_factory.h"
 #include "third_party/webrtc/pc/ice_server_parsing.h"
+#include "third_party/webrtc/rtc_base/rtc_certificate_generator.h"
 
 namespace blink {
 namespace {
+// Maximum known size (SHA-512). See
+// third_party/webrtc/rtc_base/message_digest.h
+const size_t kMaxDigestSize = 64;
+
 webrtc::ServerAddresses ParseStunServers(const RtcTransportConfig* config,
                                          ExceptionState& exception_state) {
   webrtc::ServerAddresses stun_servers;
@@ -113,6 +123,19 @@ class DatagramConnectionObserver : public webrtc::DatagramConnection::Observer {
   CrossThreadWeakHandle<RtcTransport> transport_;
 };
 
+V8RTCIceCandidateType IceCandidateTypeFrom(webrtc::IceCandidateType type) {
+  switch (type) {
+    case webrtc::IceCandidateType::kHost:
+      return V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost);
+    case webrtc::IceCandidateType::kSrflx:
+      return V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kSrflx);
+    case webrtc::IceCandidateType::kPrflx:
+      return V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kPrflx);
+    case webrtc::IceCandidateType::kRelay:
+      return V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kRelay);
+  }
+}
+
 class AsyncDatagramConnectionImpl : public AsyncDatagramConnection {
  public:
   AsyncDatagramConnectionImpl(
@@ -122,6 +145,23 @@ class AsyncDatagramConnectionImpl : public AsyncDatagramConnection {
         js_thread_task_runner_(js_thread_task_runner) {}
 
   ~AsyncDatagramConnectionImpl() override = default;
+
+  void AddRemoteCandidate(const webrtc::Candidate& candidate) override {
+    PostCrossThreadTask(
+        *RtcTransportDependencies::NetworkTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](webrtc::scoped_refptr<webrtc::DatagramConnection>
+                   datagram_connection,
+               const webrtc::Candidate& candidate) {
+              // Set IceParameters to add passwords to any peer reflexive
+              // candidates we have already received.
+              datagram_connection->SetRemoteIceParameters(webrtc::IceParameters(
+                  candidate.username(), candidate.password(),
+                  /*ice_renomination=*/true));
+              datagram_connection->AddRemoteCandidate(candidate);
+            },
+            datagram_connection_, candidate));
+  }
 
   void Writable(ScriptPromiseResolver<IDLBoolean>* resolver) override {
     CHECK(js_thread_task_runner_->RunsTasksInCurrentSequence());
@@ -143,6 +183,40 @@ class AsyncDatagramConnectionImpl : public AsyncDatagramConnection {
             },
             datagram_connection_, MakeCrossThreadHandle(resolver),
             js_thread_task_runner_));
+  }
+
+  void SetRemoteDtlsParameters(
+      String digestAlgorithm,
+      Vector<uint8_t> fingerprint,
+      webrtc::DatagramConnection::SSLRole ssl_role) override {
+    PostCrossThreadTask(
+        *RtcTransportDependencies::NetworkTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](webrtc::scoped_refptr<webrtc::DatagramConnection>
+                   datagram_connection,
+               std::string digestAlgorithm, Vector<uint8_t> fingerprint,
+               webrtc::DatagramConnection::SSLRole ssl_role) {
+              datagram_connection->SetRemoteDtlsParameters(
+                  digestAlgorithm, fingerprint.data(), fingerprint.size(),
+                  ssl_role);
+            },
+            datagram_connection_, digestAlgorithm.Utf8(),
+            std::move(fingerprint), ssl_role));
+  }
+
+  void SendPackets(
+      std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) override {
+    PostCrossThreadTask(
+        *RtcTransportDependencies::NetworkTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](webrtc::scoped_refptr<webrtc::DatagramConnection>
+                   datagram_connection,
+               std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) {
+              for (const Vector<uint8_t>& payload : *packet_payloads) {
+                datagram_connection->SendPacket(payload);
+              }
+            },
+            datagram_connection_, std::move(packet_payloads)));
   }
 
   void Terminate() override {
@@ -178,7 +252,8 @@ RtcTransport* RtcTransport::Create(ExecutionContext* context,
   RtcTransportDependencies::GetInitialized(
       *context,
       BindOnce(&RtcTransport::ContinueInitialization, WrapPersistent(transport),
-               config->iceControlling(), stun_servers));
+               config->iceControlling(), stun_servers,
+               /*injected_datagram_connection=*/nullptr));
   return transport;
 }
 
@@ -187,7 +262,8 @@ RtcTransport* RtcTransport::CreateForTests(
     ExecutionContext* context,
     const RtcTransportConfig* config,
     ExceptionState& exception_state,
-    std::unique_ptr<AsyncDatagramConnection> async_datagram_connection) {
+    std::unique_ptr<AsyncDatagramConnection> async_datagram_connection,
+    webrtc::scoped_refptr<webrtc::DatagramConnection> datagram_connection) {
   auto* transport = MakeGarbageCollected<RtcTransport>(PassKey(), context);
 
   webrtc::ServerAddresses stun_servers =
@@ -199,21 +275,36 @@ RtcTransport* RtcTransport::CreateForTests(
   if (async_datagram_connection) {
     transport->OnInitialized(std::move(async_datagram_connection));
   }
+  if (datagram_connection) {
+    RtcTransportDependencies::GetInitialized(
+        *context, BindOnce(&RtcTransport::ContinueInitialization,
+                           WrapPersistent(transport), config->iceControlling(),
+                           stun_servers, datagram_connection));
+  }
   return transport;
 }
 
 RtcTransport::RtcTransport(PassKey, ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
-      task_runner_(context->GetTaskRunner(TaskType::kNetworking)) {
+      task_runner_(context->GetTaskRunner(TaskType::kNetworking)),
+      digest_(0, kMaxDigestSize) {
   // Should this be done async? cf
   // RTCCertificateGenerator::GenerateCertificateAsync.
   certificate_ = webrtc::RTCCertificateGenerator::GenerateCertificate(
       webrtc::KeyParams::ECDSA(), /*expires_ms=*/std::nullopt);
+
+  std::string digestAlgorithm;
+  certificate_->GetSSLCertificate().GetSignatureDigestAlgorithm(
+      &digestAlgorithm);
+  fingerprintDigestAlgorithm_ = String(digestAlgorithm);
+  certificate_->GetSSLCertificate().ComputeDigest(digestAlgorithm, digest_);
 }
 
 void RtcTransport::ContinueInitialization(
     bool ice_controlling,
     webrtc::ServerAddresses stun_servers,
+    webrtc::scoped_refptr<webrtc::DatagramConnection>
+        injected_datagram_connection,
     RtcTransportDependencies* dependencies) {
   std::unique_ptr<P2PPortAllocator> port_allocator =
       dependencies->CreatePortAllocator();
@@ -232,14 +323,19 @@ void RtcTransport::ContinueInitialization(
              const webrtc::ServerAddresses stun_servers, bool ice_controlling,
              const webrtc::Environment& env,
              webrtc::scoped_refptr<webrtc::RTCCertificate> certificate,
-             std::unique_ptr<webrtc::DatagramConnection::Observer> observer) {
+             std::unique_ptr<webrtc::DatagramConnection::Observer> observer,
+             webrtc::scoped_refptr<webrtc::DatagramConnection>
+                 injected_datagram_connection) {
             port_allocator->Initialize();
 
             webrtc::scoped_refptr<webrtc::DatagramConnection>
-                datagram_connection = webrtc::CreateDatagramConnection(
-                    env, std::move(port_allocator), /*name=*/"RtcTransport",
-                    ice_controlling, std::move(certificate),
-                    std::move(observer));
+                datagram_connection =
+                    injected_datagram_connection
+                        ? injected_datagram_connection
+                        : webrtc::CreateDatagramConnection(
+                              env, std::move(port_allocator),
+                              /*name=*/"RtcTransport", ice_controlling,
+                              std::move(certificate), std::move(observer));
 
             auto async_datagram_connection =
                 std::make_unique<AsyncDatagramConnectionImpl>(
@@ -252,7 +348,8 @@ void RtcTransport::ContinueInitialization(
           },
           MakeCrossThreadHandle(this), task_runner_, std::move(port_allocator),
           stun_servers, ice_controlling, dependencies->Environment(),
-          certificate_, std::move(observer)));
+          certificate_, std::move(observer),
+          std::move(injected_datagram_connection)));
 }
 
 void RtcTransport::OnInitialized(
@@ -260,18 +357,89 @@ void RtcTransport::OnInitialized(
   DCHECK(!initialized_);
   initialized_ = true;
   async_datagram_connection_ = std::move(async_datagram_connection);
+
+  if (pending_dtls_parameters_) {
+    // Apply pending DTLS parameters
+    setRemoteDtlsParameters(pending_dtls_parameters_.Release());
+  }
+
+  if (!pending_send_packets_calls_.empty()) {
+    sendPackets(pending_send_packets_calls_);
+    pending_send_packets_calls_.clear();
+  }
 }
 
 RtcTransport::~RtcTransport() = default;
 
 void RtcTransport::OnCandidateGatheredOnMainThread(
     webrtc::Candidate candidate) {
-  // TODO(crbug.com/443019066): Fire an appropriate JS event against this.
+  DispatchEvent(*MakeGarbageCollected<RtcTransportIceEvent>(
+      MakeGarbageCollected<RtcTransportIceCandidate>(
+          String::FromUTF8(candidate.username()),
+          String::FromUTF8(candidate.password()),
+          String::FromUTF8(candidate.address().ipaddr().ToString()),
+          candidate.address().port(), IceCandidateTypeFrom(candidate.type()))));
 }
 
 void RtcTransport::OnPacketReceivedOnMainThread(Vector<uint8_t> data) {
   received_packets_.push_back(
       MakeGarbageCollected<RtcReceivedPacket>(DOMArrayBuffer::Create(data)));
+}
+
+void RtcTransport::addRemoteCandidate(RtcTransportICECandidateInit* init,
+                                      ExceptionState& exception_state) {
+  DCHECK(initialized_);
+  if (!init->hasType()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Missing type");
+    return;
+  }
+  if (!init->hasAddress()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Missing Address");
+    return;
+  }
+  if (!init->hasUsernameFragment()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Missing usernameFragment");
+    return;
+  }
+  if (!init->hasPassword()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Missing Password");
+    return;
+  }
+
+  webrtc::Candidate candidate;
+  // Only UDP candidates supported.
+  candidate.set_protocol("udp");
+
+  webrtc::SocketAddress address =
+      webrtc::SocketAddress(init->address().Utf8(), init->port());
+  if (address.ipaddr().IsNil()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Invalid address");
+    return;
+  }
+
+  candidate.set_address(address);
+  candidate.set_username(init->usernameFragment().Utf8());
+  candidate.set_password(init->password().Utf8());
+
+  if (init->type() ==
+      V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost)) {
+    candidate.set_type(webrtc::IceCandidateType::kHost);
+  } else if (init->type() ==
+             V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kSrflx)) {
+    candidate.set_type(webrtc::IceCandidateType::kSrflx);
+  } else {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Only Host and Srflx candidates currently supported");
+    return;
+  }
+
+  async_datagram_connection_->AddRemoteCandidate(candidate);
 }
 
 HeapVector<Member<RtcReceivedPacket>> RtcTransport::getReceivedPackets() {
@@ -282,8 +450,31 @@ HeapVector<Member<RtcReceivedPacket>> RtcTransport::getReceivedPackets() {
 
 void RtcTransport::sendPackets(
     HeapVector<Member<RtcSendPacketParameters>> packets) {
-  // TODO(crbug.com/443019066): Hook up to an actual transport.
-  NOTIMPLEMENTED();
+  if (!initialized_) {
+    pending_send_packets_calls_.AppendVector(packets);
+    return;
+  }
+  auto packet_payloads = std::make_unique<Vector<Vector<uint8_t>>>();
+  for (const auto& packet : packets) {
+    packet_payloads->emplace_back(packet->data()->ByteSpan());
+  }
+
+  async_datagram_connection_->SendPackets(std::move(packet_payloads));
+}
+
+void RtcTransport::setRemoteDtlsParameters(RtcDtlsParameters* parameters) {
+  if (!initialized_) {
+    // Store parameters for later application.
+    pending_dtls_parameters_ = parameters;
+    return;
+  }
+
+  async_datagram_connection_->SetRemoteDtlsParameters(
+      parameters->fingerprintDigestAlgorithm(),
+      Vector<uint8_t>(parameters->fingerprint()->ByteSpan()),
+      parameters->sslRole() == V8RtcTransportSslRole::Enum::kServer
+          ? webrtc::DatagramConnection::SSLRole::kServer
+          : webrtc::DatagramConnection::SSLRole::kClient);
 }
 
 ScriptPromise<IDLBoolean> RtcTransport::writable(ScriptState* script_state) {
@@ -304,6 +495,8 @@ void RtcTransport::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(received_packets_);
+  visitor->Trace(pending_send_packets_calls_);
+  visitor->Trace(pending_dtls_parameters_);
 }
 
 void RtcTransport::Dispose() {

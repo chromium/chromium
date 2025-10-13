@@ -21,6 +21,7 @@ include_rules = [
     "+base/values.h",
     "+crypto/hash.h",
     "+crypto/openssl_util.h",
+    "+components/webrtc/net_address_utils.h",
     "+components/webrtc/thread_wrapper.h",
     "+media/base",
     "+media/media_buildflags.h",

@@ -148,6 +148,10 @@ blink_modules_sources("peerconnection") {
     "rtc_transport/rtc_transport.h",
     "rtc_transport/rtc_transport_dependencies.cc",
     "rtc_transport/rtc_transport_dependencies.h",
+    "rtc_transport/rtc_transport_ice_candidate.cc",
+    "rtc_transport/rtc_transport_ice_candidate.h",
+    "rtc_transport/rtc_transport_ice_event.cc",
+    "rtc_transport/rtc_transport_ice_event.h",
     "rtc_void_request_impl.cc",
     "rtc_void_request_impl.h",
     "rtc_void_request_promise_impl.cc",
@@ -173,6 +177,7 @@ blink_modules_sources("peerconnection") {
   public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
   deps = [
     "//build:chromecast_buildflags",
+    "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",
     "//crypto",
     "//media/mojo/clients",

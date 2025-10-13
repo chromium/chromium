@@ -10,6 +10,14 @@ dictionary RtcTransportConfig {
   boolean iceControlling;
 };
 
+dictionary RtcTransportICECandidateInit {
+  DOMString address;
+  unsigned short port;
+  DOMString usernameFragment;
+  DOMString password;
+  RTCIceCandidateType type;
+};
+
 dictionary RtcSendPacketParameters {
   // The `id` is used by the app to map packets sent with `sendPackets` to
   // information received in `RtcPacketSentInfo` and `RtcPacketFeedbackInfo`.
@@ -19,6 +27,14 @@ dictionary RtcSendPacketParameters {
   ArrayBuffer data;
 
   DOMHighResTimeStamp desiredSendTime;
+};
+
+enum RtcTransportSslRole {"server", "client"};
+
+dictionary RtcDtlsParameters {
+  RtcTransportSslRole sslRole;
+  DOMString fingerprintDigestAlgorithm;
+  ArrayBuffer fingerprint;
 };
 
 [
@@ -32,10 +48,12 @@ dictionary RtcSendPacketParameters {
   sequence<RtcReceivedPacket> getReceivedPackets();
 
   attribute EventHandler onicecandidate;
+  [RaisesException] void addRemoteCandidate(RtcTransportICECandidateInit candidate);
 
-  // TODO(crbug.com/443019066): Add connection state events once they're discussed in the
-  //                            W3C WebRTC packet-level API design group.
+  // Transport encryption negotiation
+  void setRemoteDtlsParameters(RtcDtlsParameters params);
+  readonly attribute DOMString fingerprintDigestAlgorithm;
+  readonly attribute ArrayBuffer fingerprint;
 
-  // TODO(crbug.com/443019066): Add methods for providing remote ICE config and candidates
-  //                            that the app has received via app-level signalling.
+  [CallWith=ScriptState] Promise<boolean> writable();
 };
