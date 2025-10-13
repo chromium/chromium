@@ -577,8 +577,7 @@ class CupsPrintersManagerImpl
     // UNREACHABLE if the printer is disconnected.
     if (printer->IsUsbProtocol()) {
       CupsPrinterStatus printer_status(printer_id);
-      // TODO(b/443704245): Also make status work for enterprise USB printers.
-      if (FindDetectedPrinter(printer_id)) {
+      if (UsbPrinterIsConnected(printer_id)) {
         printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kNoError,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::
@@ -825,6 +824,19 @@ class CupsPrintersManagerImpl
     return result;
   }
 
+  const PrinterDetector::DetectedPrinter* FindUsbDetectedPrinter(
+      std::optional<Printer::UsbDeviceId> usb_device_id) const {
+    if (!usb_device_id.has_value()) {
+      return nullptr;
+    }
+    for (const auto& detected : usb_detections_) {
+      if (detected.printer.usb_device_id() == usb_device_id) {
+        return &detected;
+      }
+    }
+    return nullptr;
+  }
+
   bool AnyEnterprisePrinterMatches(
       std::optional<Printer::UsbDeviceId> usb_device_id) const {
     return FindUsbEnterprisePrinters(usb_device_id).size() > 0;
@@ -870,19 +882,41 @@ class CupsPrintersManagerImpl
     }
   }
 
-  // Look through all sources for the detected printer with the given id.
-  // Return a pointer to the printer on found, null if no entry is found.
-  const PrinterDetector::DetectedPrinter* FindDetectedPrinter(
+  struct UsbPrinterPpdInfo {
+    chromeos::Printer::PpdReference ppd_reference;
+    chromeos::PrinterSearchData ppd_search_data;
+  };
+  // Get PPD information for the given USB printer (detected or enterprise).
+  // Returns `std::nullopt` if there's no such connected USB printer.
+  std::optional<UsbPrinterPpdInfo> GetUsbPrinterPpdInfo(
       const std::string& id) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-    for (const auto* printer_list : {&usb_detections_, &zeroconf_detections_}) {
-      for (const auto& detected : *printer_list) {
-        if (detected.printer.id() == id) {
-          return &detected;
-        }
+    // First look through regular usb detected printers.
+    for (const auto& detected : usb_detections_) {
+      if (detected.printer.id() == id) {
+        return UsbPrinterPpdInfo(detected.printer.ppd_reference(),
+                                 detected.ppd_search_data);
       }
     }
-    return nullptr;
+    // Now look through enterprise usb printers.
+    if (!base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
+      return std::nullopt;
+    }
+    if (std::optional<Printer> enterprise =
+            printers_.Get(chromeos::PrinterClass::kEnterprise, id)) {
+      // Need to find the corresponding detected usb printer and get the
+      // `ppd_search_data` from it.
+      if (const PrinterDetector::DetectedPrinter* detected =
+              FindUsbDetectedPrinter(enterprise->usb_device_id())) {
+        return UsbPrinterPpdInfo(enterprise->ppd_reference(),
+                                 detected->ppd_search_data);
+      }
+    }
+    return std::nullopt;
+  }
+
+  bool UsbPrinterIsConnected(const std::string& id) {
+    return GetUsbPrinterPpdInfo(id).has_value();
   }
 
   void MaybeRecordInstallation(
@@ -895,38 +929,32 @@ class CupsPrintersManagerImpl
       return;
     }
 
+    // For recording purposes, this is an automatic install if the ppd reference
+    // generated at detection time is the one we actually used -- i.e. the user
+    // didn't have to change anything to obtain a ppd that worked.
+    PrinterEventTracker::SetupMode mode;
+    if (is_automatic_installation) {
+      mode = PrinterEventTracker::kAutomatic;
+    } else {
+      mode = PrinterEventTracker::kUser;
+    }
+
     // For compatibility with the previous implementation, record USB printers
     // separately from other IPP printers.  Eventually we may want to shift
     // this to be split by autodetected/not autodetected instead of USB/other
     // IPP.
     if (printer.IsUsbProtocol()) {
       // Get the associated detection record if one exists.
-      const auto* detected = FindDetectedPrinter(printer.id());
-      // We should have the full DetectedPrinter.  We can't log the printer if
-      // we don't have it.
-      if (!detected) {
+      std::optional<UsbPrinterPpdInfo> ppd_info =
+          GetUsbPrinterPpdInfo(printer.id());
+      if (!ppd_info.has_value()) {
         LOG(WARNING) << "Failed to find USB printer " << printer.id()
                      << " for installation event logging";
         return;
       }
-      // For recording purposes, this is an automatic install if the ppd
-      // reference generated at detection time is the is the one we actually
-      // used -- i.e. the user didn't have to change anything to obtain a ppd
-      // that worked.
-      PrinterEventTracker::SetupMode mode;
-      if (is_automatic_installation) {
-        mode = PrinterEventTracker::kAutomatic;
-      } else {
-        mode = PrinterEventTracker::kUser;
-      }
-      event_tracker_->RecordUsbPrinterInstalled(*detected, mode);
+      event_tracker_->RecordUsbPrinterInstalled(
+          ppd_info->ppd_reference, ppd_info->ppd_search_data, mode);
     } else {
-      PrinterEventTracker::SetupMode mode;
-      if (is_automatic_installation) {
-        mode = PrinterEventTracker::kAutomatic;
-      } else {
-        mode = PrinterEventTracker::kUser;
-      }
       event_tracker_->RecordIppPrinterInstalled(printer, mode,
                                                 ipp_printer_info);
     }
@@ -1074,13 +1102,14 @@ class CupsPrintersManagerImpl
   void RecordSetupAbandoned(const Printer& printer) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (printer.IsUsbProtocol()) {
-      const auto* detected = FindDetectedPrinter(printer.id());
-      if (!detected) {
+      std::optional<UsbPrinterPpdInfo> ppd_info =
+          GetUsbPrinterPpdInfo(printer.id());
+      if (!ppd_info.has_value()) {
         LOG(WARNING) << "Failed to find USB printer " << printer.id()
                      << " for abandoned event logging";
         return;
       }
-      event_tracker_->RecordUsbSetupAbandoned(*detected);
+      event_tracker_->RecordUsbSetupAbandoned(ppd_info->ppd_search_data);
     } else {
       event_tracker_->RecordSetupAbandoned(printer);
     }
