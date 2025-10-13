@@ -19,6 +19,23 @@ source_set("model") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/bookmarks/common",
+    "//components/history/core/common",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "ios_safari_data_import_client_unittest.mm" ]

@@ -52,7 +52,7 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_view_provider.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_reminder_promo_display_handler.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -645,7 +645,7 @@
   }
 
   // Safari Import remind me later handler.
-  if (ShouldShowSafariDataImportEntryPoint(self.profile)) {
+  if (ShouldShowSafariDataImportEntryPoint(self.profile->GetPrefs())) {
     _displayHandlerPromos[promos_manager::Promo::SafariImportRemindMeLater] =
         [[SafariDataImportReminderPromoDisplayHandler alloc]
             initWithApplicationCommandsHandler:_applicationCommandHandler

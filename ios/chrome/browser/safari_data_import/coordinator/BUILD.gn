@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",

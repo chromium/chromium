@@ -247,8 +247,10 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 // finished presenting.
 - (void)performNextPostFirstRunAction {
   if (!_postActionsProvider) {
-    _postActionsProvider = [[FirstRunPostActionProvider alloc]
-        initWithProfile:[self originalProfile]];
+    ProfileIOS* profile = [self originalProfile];
+    PrefService* prefService = profile ? profile->GetPrefs() : nullptr;
+    _postActionsProvider =
+        [[FirstRunPostActionProvider alloc] initWithPrefService:prefService];
   }
   switch ([_postActionsProvider nextScreenType]) {
     case kGuidedTour:

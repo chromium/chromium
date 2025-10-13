@@ -1080,6 +1080,9 @@ bool ShouldShowEditMenuItemsSynchronously();
 BASE_DECLARE_FEATURE(kIOSTipsNotificationsAlternativeStrings);
 bool IsTipsNotificationsAlternativeStringsEnabled();
 
+// Feature flag to allow users to import passwords from Safari.
+BASE_DECLARE_FEATURE(kImportPasswordsFromSafari);
+
 // Name of the parameter that controls tips notifications alternative string
 // version.
 extern const char kTipsNotificationsAlternativeStringVersion[];

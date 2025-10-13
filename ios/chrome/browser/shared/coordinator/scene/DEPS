@@ -41,6 +41,7 @@ include_rules = [
   "+ios/chrome/browser/safari_data_import/public",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/screenshot/model",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/share_extension/model/share_extension_scene_agent.h",

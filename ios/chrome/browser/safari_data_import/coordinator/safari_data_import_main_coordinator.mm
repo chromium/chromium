@@ -15,12 +15,14 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_entry_point_mediator.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface SafariDataImportMainCoordinator () <
@@ -56,7 +58,7 @@
   if (!self.profile) {
     return;
   }
-  CHECK(ShouldShowSafariDataImportEntryPoint(self.profile));
+  CHECK(ShouldShowSafariDataImportEntryPoint(self.profile->GetPrefs()));
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
   _viewController.showReminderButton =
       _entryPoint != SafariDataImportEntryPoint::kSetting;

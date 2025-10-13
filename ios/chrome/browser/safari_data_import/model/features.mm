@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
 
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 
@@ -30,9 +30,8 @@ bool IsImportBlockedByEnablingPolicy(const PrefService* pref_service,
 
 }  // namespace
 
-// TODO(crbug.com/443963765): Refactor to use PrefService instead of ProfileIOS.
-bool ShouldShowSafariDataImportEntryPoint(ProfileIOS* profile) {
-  if (!profile) {
+bool ShouldShowSafariDataImportEntryPoint(PrefService* pref_service) {
+  if (!pref_service) {
     return false;
   }
 
@@ -44,8 +43,6 @@ bool ShouldShowSafariDataImportEntryPoint(ProfileIOS* profile) {
   } else {
     return false;
   }
-
-  PrefService* pref_service = profile->GetPrefs();
 
   bool passwords_blocked = IsImportBlockedByEnablingPolicy(
       pref_service, password_manager::prefs::kCredentialsEnableService);

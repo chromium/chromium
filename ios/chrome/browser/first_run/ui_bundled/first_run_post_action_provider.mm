@@ -4,19 +4,18 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_post_action_provider.h"
 
-#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation FirstRunPostActionProvider
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile {
+- (instancetype)initWithPrefService:(PrefService*)prefService {
   NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
   if (IsBestOfAppGuidedTourEnabled()) {
     [screens addObject:@(kGuidedTour)];
   }
-  if (ShouldShowSafariDataImportEntryPoint(profile)) {
+  if (ShouldShowSafariDataImportEntryPoint(prefService)) {
     [screens addObject:@(kSafariImport)];
   }
   [screens addObject:@(kStepsCompleted)];

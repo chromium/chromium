@@ -105,7 +105,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/post_restore_signin/ui_bundled",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/safari_data_import/coordinator:promo",
-    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

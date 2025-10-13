@@ -8,23 +8,15 @@ source_set("public") {
     "password_import_item.mm",
     "password_import_item_favicon_data_source.h",
     "safari_data_import_entry_point.h",
-    "safari_data_import_entry_point.mm",
     "safari_data_import_stage.h",
     "safari_data_import_ui_handler.h",
     "safari_data_item.h",
     "safari_data_item.mm",
     "safari_data_item_consumer.h",
+    "utils.h",
+    "utils.mm",
   ]
-  deps = [
-    "//base",
-    "//components/autofill/core/common",
-    "//components/bookmarks/common",
-    "//components/history/core/common",
-    "//components/password_manager/core/common",
-    "//components/prefs",
-    "//ios/chrome/browser/passwords/model:features",
-    "//ios/chrome/browser/shared/model/profile",
-  ]
+  deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -36,14 +28,6 @@ source_set("metrics") {
   deps = [
     ":public",
     "//base",
-  ]
-  frameworks = [ "Foundation.framework" ]
-}
-
-source_set("utils") {
-  sources = [
-    "utils.h",
-    "utils.mm",
   ]
   frameworks = [ "Foundation.framework" ]
 }

@@ -6,7 +6,5 @@
 
 #import "base/feature_list.h"
 
-BASE_FEATURE(kImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads,
              base::FEATURE_DISABLED_BY_DEFAULT);

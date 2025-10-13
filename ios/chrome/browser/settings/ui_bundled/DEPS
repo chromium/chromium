@@ -38,6 +38,7 @@ include_rules = [
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
   "+ios/chrome/browser/regional_capabilities/model",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/safari_data_import/public",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/search_engine_choice/coordinator",

@@ -8,8 +8,8 @@ source_set("eg2_tests") {
   sources = [ "safari_data_import_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -31,7 +31,7 @@ source_set("eg_test_support+eg2") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/safari_data_import/public:utils",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

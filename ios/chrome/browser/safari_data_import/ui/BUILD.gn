@@ -34,7 +34,6 @@ source_set("ui") {
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/public:ui_utils",
-    "//ios/chrome/browser/safari_data_import/public:utils",
     "//ios/chrome/browser/safari_data_import/ui/resources",
     "//ios/chrome/browser/safari_data_import/ui/resources:animation_files",
     "//ios/chrome/browser/shared/ui/elements",

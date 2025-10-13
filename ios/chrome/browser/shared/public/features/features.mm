@@ -1163,3 +1163,5 @@ GetTipsNotificationsAlternativeStringVersion() {
           static_cast<int>(
               TipsNotificationsAlternativeStringVersion::kDefault)));
 }
+
+BASE_FEATURE(kImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
