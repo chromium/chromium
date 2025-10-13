@@ -3231,6 +3231,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3239,6 +3240,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3247,6 +3249,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3255,6 +3258,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3263,6 +3267,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3274,6 +3279,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         "--use-worker=service",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3285,6 +3291,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         "--use-worker=dedicated",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3296,6 +3303,7 @@ targets.tests.gpu_telemetry_test(
     args = [
         "--use-worker=shared",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3304,6 +3312,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.isolated_script_test(
@@ -3328,6 +3337,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.gpu_telemetry_test(
@@ -3336,6 +3346,7 @@ targets.tests.gpu_telemetry_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    module_scheme = "webgpucts",
 )
 
 targets.tests.script_test(

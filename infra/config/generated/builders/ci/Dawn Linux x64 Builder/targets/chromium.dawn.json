@@ -389,7 +389,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_min_es31_tests",
         "resultdb": {
           "enable": true,
@@ -428,7 +428,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_tests",
         "resultdb": {
           "enable": true,
@@ -468,7 +468,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
@@ -507,7 +507,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_service_worker_tests",
         "resultdb": {
           "enable": true,
@@ -546,7 +546,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_shared_worker_tests",
         "resultdb": {
           "enable": true,
@@ -584,7 +584,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -624,7 +624,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -732,7 +732,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_tests",
         "resultdb": {
           "enable": true,
@@ -774,7 +774,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1140,7 +1140,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_tests",
         "resultdb": {
           "enable": true,
@@ -1178,7 +1178,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -1218,7 +1218,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1323,7 +1323,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_tests",
         "resultdb": {
           "enable": true,
@@ -1365,7 +1365,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -1740,7 +1740,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_tests",
         "resultdb": {
           "enable": true,
@@ -1780,7 +1780,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
@@ -1819,7 +1819,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_service_worker_tests",
         "resultdb": {
           "enable": true,
@@ -1858,7 +1858,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_shared_worker_tests",
         "resultdb": {
           "enable": true,
@@ -1896,7 +1896,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -1936,7 +1936,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2044,7 +2044,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_tests",
         "resultdb": {
           "enable": true,
@@ -2086,7 +2086,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2450,7 +2450,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_min_es31_tests",
         "resultdb": {
           "enable": true,
@@ -2488,7 +2488,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_compat_tests",
         "resultdb": {
           "enable": true,
@@ -2527,7 +2527,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
@@ -2565,7 +2565,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_service_worker_tests",
         "resultdb": {
           "enable": true,
@@ -2603,7 +2603,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_shared_worker_tests",
         "resultdb": {
           "enable": true,
@@ -2640,7 +2640,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -2679,7 +2679,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
@@ -2784,7 +2784,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_tests",
         "resultdb": {
           "enable": true,
@@ -2825,7 +2825,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
-        "module_scheme": "flat",
+        "module_scheme": "webgpucts",
         "name": "webgpu_swiftshader_web_platform_cts_with_validation_tests",
         "resultdb": {
           "enable": true,
