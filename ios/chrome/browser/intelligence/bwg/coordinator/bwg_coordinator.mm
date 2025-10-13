@@ -182,7 +182,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 // Handles the dismissal of the UI.
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // TODO(crbug.com/419064727): Add metric for dismissing coordinator.
   [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
 }
 

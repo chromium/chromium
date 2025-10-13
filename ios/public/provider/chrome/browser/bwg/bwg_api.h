@@ -38,28 +38,6 @@ enum class BWGLocationPermissionState {
   kEnterpriseDisabled,
 };
 
-// TODO(crbug.com/434662294): Remove when migration is complete.
-// Enum representing the PageContext state of the BWG experience.
-// This needs to stay in sync with GCRGeminiPageState (and its SDK counterpart).
-enum class BWGPageContextState {
-  // Default state.
-  kUnknown,
-  // PageContext was successfully attached.
-  kSuccessfullyAttached,
-  // PageContext should be detached.
-  kShouldDetach,
-  // PageContext is protected.
-  kProtected,
-  // PageContext is present but likely to be blocked.
-  kBlocked,
-  // There was an error extracting the PageContext.
-  kError,
-  // PageContext should be detached due to an enterprise policy.
-  kEnterpriseDisabled,
-  // PageContext should be detached due to the user disabling it.
-  kUserDisabled,
-};
-
 // Enum representing the page context computation state of the BWG experience.
 // This needs to stay in sync with GCRGeminiPageContextComputationState (and its
 // SDK counterpart).

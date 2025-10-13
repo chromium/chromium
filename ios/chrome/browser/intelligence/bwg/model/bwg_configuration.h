@@ -43,11 +43,6 @@ class PageContext;
 @property(nonatomic, assign)
     ios::provider::BWGLocationPermissionState BWGLocationPermissionState;
 
-// TODO(crbug.com/434662294): Remove when migration is complete.
-// The state of the BWG PageContext.
-@property(nonatomic, assign)
-    ios::provider::BWGPageContextState BWGPageContextState;
-
 // The state of the BWG PageContext computation.
 @property(nonatomic, assign) ios::provider::BWGPageContextComputationState
     BWGPageContextComputationState;
