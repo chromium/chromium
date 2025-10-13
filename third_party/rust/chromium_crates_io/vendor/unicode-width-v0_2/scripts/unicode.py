@@ -43,7 +43,7 @@ from collections import defaultdict
 from itertools import batched
 from typing import Callable, Iterable
 
-UNICODE_VERSION = "16.0.0"
+UNICODE_VERSION = "17.0.0"
 """The version of the Unicode data files to download."""
 
 NUM_CODEPOINTS = 0x110000
@@ -84,11 +84,11 @@ def fetch_open(filename: str, local_prefix: str = "", emoji: bool = False):
     localname = os.path.join(local_prefix, basename)
     if not os.path.exists(localname):
         if emoji:
-            prefix = f"emoji/{UNICODE_VERSION[:-2]}"
+            prefix = "emoji"
         else:
-            prefix = f"{UNICODE_VERSION}/ucd"
+            prefix = "ucd"
         urllib.request.urlretrieve(
-            f"https://www.unicode.org/Public/{prefix}/{filename}",
+            f"https://www.unicode.org/Public/{UNICODE_VERSION}/{prefix}/{filename}",
             localname,
         )
     try:
@@ -178,7 +178,9 @@ class WidthState(enum.IntEnum):
       (if set, should also set 3rd and 4th)
     - 6th bit: if 4th is set but this one is not, then this is a ZWJ ligature state
       where no ZWJ has been encountered yet; encountering one flips this on
-    - Seventh bit: is VS1 (if CJK) or is VS2 (not CJK)
+    - Seventh bit:
+      - CJK mode: is VS1 or VS3
+      - Not CJK: is VS2
     """
 
     # BASIC WIDTHS
@@ -275,8 +277,8 @@ class WidthState(enum.IntEnum):
 
     # VARIATION SELECTORS
 
-    VARIATION_SELECTOR_1_OR_2 = 0b0000_0010_0000_0000
-    "\\uFE00 if CJK, or \\uFE01 otherwise"
+    VARIATION_SELECTOR_1_2_OR_3 = 0b0000_0010_0000_0000
+    "\\uFE00 or \\uFE02 if CJK, or \\uFE01 otherwise"
 
     # Text presentation sequences (not CJK)
     VARIATION_SELECTOR_15 = 0b0100_0000_0000_0000
@@ -373,7 +375,7 @@ class WidthState(enum.IntEnum):
                 | WidthState.COMBINING_LONG_SOLIDUS_OVERLAY
                 | WidthState.VARIATION_SELECTOR_15
                 | WidthState.VARIATION_SELECTOR_16
-                | WidthState.VARIATION_SELECTOR_1_OR_2
+                | WidthState.VARIATION_SELECTOR_1_2_OR_3
             ):
                 return 0
             case (
@@ -657,11 +659,12 @@ def load_width_maps() -> tuple[list[WidthState], list[WidthState]]:
             ea[cp] = width
 
     # East-Asian only
-    ea[0xFE00] = WidthState.VARIATION_SELECTOR_1_OR_2
     ea[0x0338] = WidthState.COMBINING_LONG_SOLIDUS_OVERLAY
+    ea[0xFE00] = WidthState.VARIATION_SELECTOR_1_2_OR_3
+    ea[0xFE02] = WidthState.VARIATION_SELECTOR_1_2_OR_3
 
     # Not East Asian only
-    not_ea[0xFE01] = WidthState.VARIATION_SELECTOR_1_OR_2
+    not_ea[0xFE01] = WidthState.VARIATION_SELECTOR_1_2_OR_3
     not_ea[0xFE0E] = WidthState.VARIATION_SELECTOR_15
 
     return (not_ea, ea)
@@ -759,7 +762,7 @@ def load_solidus_transparent(
             num_chars = len(ccc_above_1)
 
     for cp in ccc_above_1:
-        if cp not in [0xFE00, 0xFE0F]:
+        if cp not in [0xFE00, 0xFE02, 0xFE0F]:
             assert (
                 cjk_width_map[cp].table_width() != CharWidthInTable.SPECIAL
             ), f"U+{cp:X}"
@@ -1317,14 +1320,14 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
 
     if is_cjk:
         s += """
-            if c == '\\u{FE00}' {
-                return (0, next_info.set_vs1_2());
+            if matches!(c, '\\u{FE00}' | '\\u{FE02}') {
+                return (0, next_info.set_vs1_2_3());
             }
             """
     else:
         s += """
             if c == '\\u{FE01}' {
-                return (0, next_info.set_vs1_2());
+                return (0, next_info.set_vs1_2_3());
             }
             if c == '\\u{FE0E}' {
                 return (0, next_info.set_text_presentation());
@@ -1337,7 +1340,7 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
                 }
             } else """
 
-    s += """if next_info.is_vs1_2() {
+    s += """if next_info.is_vs1_2_3() {
                 if matches!(c, '\\u{2018}' | '\\u{2019}' | '\\u{201C}' | '\\u{201D}') {
                     return ("""
 
@@ -1345,7 +1348,7 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
 
     s += """, WidthInfo::DEFAULT);
                 } else {
-                    next_info = next_info.unset_vs1_2();
+                    next_info = next_info.unset_vs1_2_3();
                 }
             }
             if next_info.is_ligature_transparent() {
@@ -1655,7 +1658,7 @@ impl WidthInfo {
                 self.0
                     | WidthInfo::VARIATION_SELECTOR_16.0
                         & !WidthInfo::VARIATION_SELECTOR_15.0
-                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+                        & !WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0,
             )
         }} else {{
             Self::VARIATION_SELECTOR_16
@@ -1683,7 +1686,7 @@ impl WidthInfo {
                 self.0
                     | WidthInfo::VARIATION_SELECTOR_15.0
                         & !WidthInfo::VARIATION_SELECTOR_16.0
-                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+                        & !WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0,
             )
         }} else {{
             Self(WidthInfo::VARIATION_SELECTOR_15.0)
@@ -1696,27 +1699,28 @@ impl WidthInfo {
     }}
 
     /// Has 7th bit set
-    fn is_vs1_2(self) -> bool {{
-        (self.0 & WidthInfo::VARIATION_SELECTOR_1_OR_2.0) == WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+    fn is_vs1_2_3(self) -> bool {{
+        (self.0 & WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0)
+            == WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0
     }}
 
     /// Set 7th bit
-    fn set_vs1_2(self) -> Self {{
+    fn set_vs1_2_3(self) -> Self {{
         if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {{
             Self(
                 self.0
-                    | WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+                    | WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0
                         & !WidthInfo::VARIATION_SELECTOR_15.0
                         & !WidthInfo::VARIATION_SELECTOR_16.0,
             )
         }} else {{
-            Self(WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
+            Self(WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0)
         }}
     }}
 
     /// Clear 7th bit
-    fn unset_vs1_2(self) -> Self {{
-        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
+    fn unset_vs1_2_3(self) -> Self {{
+        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_1_2_OR_3.0)
     }}
 }}
 

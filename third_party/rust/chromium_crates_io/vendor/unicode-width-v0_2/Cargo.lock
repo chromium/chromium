@@ -16,7 +16,7 @@ checksum = "aba676a20abe46e5b0f1b0deae474aaaf31407e6c71147159890574599da04ef"
 
 [[package]]
 name = "unicode-width"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "rustc-std-workspace-core",
  "rustc-std-workspace-std",
