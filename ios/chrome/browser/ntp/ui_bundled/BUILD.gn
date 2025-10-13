@@ -246,6 +246,7 @@ source_set("ntp_internal") {
     "//base",
     "//components/feature_engagement/public",
     "//components/image_fetcher/core",
+    "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/regional_capabilities",

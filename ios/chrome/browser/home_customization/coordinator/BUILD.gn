@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/image_fetcher/core:test_support",
+    "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences",

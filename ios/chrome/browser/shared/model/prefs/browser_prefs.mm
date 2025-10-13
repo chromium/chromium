@@ -951,7 +951,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Registers the Home customization visibility prefs.
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMostVisitedEnabled,
                                 true);
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackEnabled,
+  registry->RegisterBooleanPref(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                                 true);
 
   // Registers the Magic Stack module visibility prefs.
@@ -1120,6 +1120,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 10/2025. Use
   // `ntp_tiles::prefs::kTipsHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
+                                true);
+
+  // Deprecated 10/2025. Use `ntp_tiles::prefs::kMagicStackHomeModuleEnabled`
+  // instead.
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackEnabled,
                                 true);
 }
 
@@ -1307,6 +1312,8 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
                     prefs);
   RenameBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackTipsEnabled, prefs);
+  RenameBooleanPref(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+                    prefs::kHomeCustomizationMagicStackEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

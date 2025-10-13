@@ -85,6 +85,9 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // the new name.
   pref_service_.SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled,
                            false);
+  // Set the old Magic Stack module pref value to test its migration to
+  // the new name.
+  pref_service_.SetBoolean(prefs::kHomeCustomizationMagicStackEnabled, false);
 
   // Bottom omnibox position
   local_state()->SetBoolean(prefs::kBottomOmnibox, true);
@@ -164,6 +167,13 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       pref_service_.GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled));
   EXPECT_TRUE(
       pref_service_.FindPreference(ntp_tiles::prefs::kTipsHomeModuleEnabled)
+          ->IsDefaultValue());
+
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(prefs::kHomeCustomizationMagicStackEnabled));
+  EXPECT_TRUE(
+      pref_service_
+          .FindPreference(ntp_tiles::prefs::kMagicStackHomeModuleEnabled)
           ->IsDefaultValue());
 
   // Check bottom omnibox position.
@@ -259,6 +269,14 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // now be false (the migrated value).
   EXPECT_FALSE(
       pref_service_.GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled));
+
+  EXPECT_TRUE(
+      pref_service_.FindPreference(prefs::kHomeCustomizationMagicStackEnabled)
+          ->IsDefaultValue());
+  // The new pref `ntp_tiles::prefs::kMagicStackHomeModuleEnabled` should
+  // now be false (the migrated value).
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled));
 
   // Check bottom omnibox position.
   EXPECT_TRUE(

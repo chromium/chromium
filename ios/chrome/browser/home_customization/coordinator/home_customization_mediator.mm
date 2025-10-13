@@ -107,7 +107,7 @@
           prefs::kHomeCustomizationMostVisitedEnabled);
     case CustomizationToggleType::kMagicStack:
       return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackEnabled);
+          ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
     case CustomizationToggleType::kDiscover:
       return _discoverFeedVisibilityBrowserAgent->IsEnabled();
     default:
@@ -148,7 +148,7 @@
                                enabled);
       break;
     case CustomizationToggleType::kMagicStack:
-      _prefService->SetBoolean(prefs::kHomeCustomizationMagicStackEnabled,
+      _prefService->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
                                enabled);
       break;
     case CustomizationToggleType::kDiscover:

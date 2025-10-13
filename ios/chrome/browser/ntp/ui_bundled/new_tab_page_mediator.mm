@@ -21,6 +21,7 @@
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -532,7 +533,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   // Handle customization prefs
   if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
-      preferenceName == prefs::kHomeCustomizationMagicStackEnabled) {
+      preferenceName == ntp_tiles::prefs::kMagicStackHomeModuleEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
   }
@@ -588,7 +589,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   self.consumer.mostVisitedVisible =
       _prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
   self.consumer.magicStackVisible =
-      _prefService->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled);
+      _prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
 }
 
 // Starts observing some prefs.
@@ -601,7 +602,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kHomeCustomizationMostVisitedEnabled, _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kHomeCustomizationMagicStackEnabled, _prefChangeRegistrar.get());
+      ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+      _prefChangeRegistrar.get());
 }
 
 - (void)updateAccountErrorBadge {

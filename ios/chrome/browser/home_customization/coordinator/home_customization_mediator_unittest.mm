@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
@@ -79,7 +80,8 @@ TEST_F(HomeCustomizationMediatorUnitTest, TestMainPageData) {
 
   // Set the values.
   pref_service_->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, NO);
-  pref_service_->SetBoolean(prefs::kHomeCustomizationMagicStackEnabled, YES);
+  pref_service_->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+                            YES);
   discover_feed_visibility_browser_agent_->SetEnabled(NO);
 
   [mediator_ configureMainPageData];
