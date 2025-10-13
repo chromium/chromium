@@ -49,6 +49,7 @@ class ActorLoginDelegateImpl
   // `ActorLoginDelegate` implementation:
   void GetCredentials(CredentialsOrErrorReply callback) override;
   void AttemptLogin(const Credential& credential,
+                    bool should_store_permission,
                     LoginStatusResultOrErrorReply callback) override;
 
  private:

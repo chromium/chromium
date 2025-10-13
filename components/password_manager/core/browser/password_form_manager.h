@@ -311,6 +311,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void AddObserver(PasswordFormManagerObserver* observer);
   void RemoveObserver(PasswordFormManagerObserver* observer);
 
+  // Informs `password_save_manager_` that it should store actor login
+  // permission when building pending credentials.
+  void SetShouldStoreActorLoginPermission();
+
  protected:
   // Constructor for Credentials API.
   PasswordFormManager(

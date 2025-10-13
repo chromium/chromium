@@ -102,7 +102,7 @@ void AttemptLoginTool::Invoke(InvokeCallback callback) {
       tool_delegate().GetUserSelectedCredential(current_origin);
   if (user_selected_credential.has_value()) {
     GetActorLoginService().AttemptLogin(
-        tab, *user_selected_credential,
+        tab, *user_selected_credential, /*should_store_permission=*/false,
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -272,6 +272,8 @@ void AttemptLoginTool::OnCredentialSelected(
 
   GetActorLoginService().AttemptLogin(
       tab, *selected_credential,
+      response->permission_duration ==
+          webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr()));
 }

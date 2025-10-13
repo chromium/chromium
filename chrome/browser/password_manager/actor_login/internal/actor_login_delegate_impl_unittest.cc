@@ -196,7 +196,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
   Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   // When the ActorLogin features is disabled, the delegate returns
@@ -213,7 +213,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  delegate_->AttemptLogin(credential, future.GetCallback());
+  delegate_->AttemptLogin(credential, false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), LoginStatusResult::kErrorNoSigninForm);
@@ -229,10 +229,10 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
 
   // Start the first request (`AttemptLogin`).
   base::test::TestFuture<LoginStatusResultOrError> first_future;
-  delegate_->AttemptLogin(credential, first_future.GetCallback());
+  delegate_->AttemptLogin(credential, false, first_future.GetCallback());
   // Immediately try to start a second request of the same type.
   base::test::TestFuture<LoginStatusResultOrError> second_future;
-  delegate_->AttemptLogin(credential, second_future.GetCallback());
+  delegate_->AttemptLogin(credential, false, second_future.GetCallback());
 
   // Immediately try to start a `GetCredentials` request (different type).
   base::test::TestFuture<CredentialsOrError> third_future;
@@ -271,12 +271,12 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
 
   // First `AttemptLogin` call.
   base::test::TestFuture<LoginStatusResultOrError> future3;
-  delegate_->AttemptLogin(credential, future3.GetCallback());
+  delegate_->AttemptLogin(credential, false, future3.GetCallback());
   ASSERT_TRUE(future3.Get().has_value());
 
   // Second `AttemptLogin` call should now be possible.
   base::test::TestFuture<LoginStatusResultOrError> future4;
-  delegate_->AttemptLogin(credential, future4.GetCallback());
+  delegate_->AttemptLogin(credential, false, future4.GetCallback());
   ASSERT_TRUE(future4.Get().has_value());
 }
 
@@ -291,7 +291,7 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentialsAndAttemptLogin) {
   auto get_credentials_callback =
       base::BindLambdaForTesting([&](CredentialsOrError result) {
         ASSERT_TRUE(result.has_value());
-        delegate_->AttemptLogin(credential, future.GetCallback());
+        delegate_->AttemptLogin(credential, false, future.GetCallback());
       });
 
   delegate_->GetCredentials(get_credentials_callback);
@@ -310,7 +310,7 @@ TEST_F(ActorLoginDelegateImplTest,
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->AttemptLogin(
-      credential,
+      credential, false,
       base::BindLambdaForTesting([&](LoginStatusResultOrError result) {
         ASSERT_TRUE(result.has_value());
         delegate_->GetCredentials(future.GetCallback());

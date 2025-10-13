@@ -61,6 +61,7 @@ void MockActorLoginService::GetCredentials(
 void MockActorLoginService::AttemptLogin(
     tabs::TabInterface* tab,
     const actor_login::Credential& credential,
+    bool should_store_permission,
     actor_login::LoginStatusResultOrErrorReply callback) {
   last_credential_used_ = credential;
   std::move(callback).Run(login_status_);

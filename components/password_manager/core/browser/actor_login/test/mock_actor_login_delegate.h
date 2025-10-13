@@ -26,6 +26,7 @@ class MockActorLoginDelegate : public ActorLoginDelegate {
   MOCK_METHOD(void,
               AttemptLogin,
               (const Credential& credential,
+               bool should_store_permission,
                LoginStatusResultOrErrorReply callback),
               (override));
 };

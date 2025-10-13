@@ -1903,4 +1903,8 @@ void PasswordFormManager::RemoveObserver(
   form_parsed_observers_.RemoveObserver(observer);
 }
 
+void PasswordFormManager::SetShouldStoreActorLoginPermission() {
+  password_save_manager_->SetShouldStoreActorLoginPermission();
+}
+
 }  // namespace password_manager

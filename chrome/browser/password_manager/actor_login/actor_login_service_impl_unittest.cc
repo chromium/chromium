@@ -145,7 +145,7 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginInvalidTabInterface) {
   Credential credential = CreateTestCredential();
   base::test::TestFuture<LoginStatusResultOrError> future;
   EXPECT_CALL(mock_delegate_, AttemptLogin).Times(0);
-  service_->AttemptLogin(&mock_tab, credential, future.GetCallback());
+  service_->AttemptLogin(&mock_tab, credential, false, future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kInvalidTabInterface);
@@ -162,8 +162,8 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginDelegatesToActorLoginDelegate) {
   EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
   Credential credential = CreateTestCredential();
 
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _));
-  service_->AttemptLogin(&mock_tab, credential, base::DoNothing());
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _));
+  service_->AttemptLogin(&mock_tab, credential, false, base::DoNothing());
 }
 
 TEST_F(ActorLoginServiceImplTest, AttemptLogin_ServiceBusy) {
@@ -175,10 +175,10 @@ TEST_F(ActorLoginServiceImplTest, AttemptLogin_ServiceBusy) {
   Credential credential = CreateTestCredential();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _))
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _))
       .WillOnce(
-          RunOnceCallback<1>(base::unexpected(ActorLoginError::kServiceBusy)));
-  service_->AttemptLogin(&mock_tab, credential, future.GetCallback());
+          RunOnceCallback<2>(base::unexpected(ActorLoginError::kServiceBusy)));
+  service_->AttemptLogin(&mock_tab, credential, false, future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kServiceBusy);
@@ -202,9 +202,9 @@ TEST_P(ActorLoginServiceImplAttemptLoginTest, AttemptLoginResults) {
   Credential credential = CreateTestCredential();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _))
-      .WillOnce(RunOnceCallback<1>(test_case.result));
-  service_->AttemptLogin(&mock_tab, credential, future.GetCallback());
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _))
+      .WillOnce(RunOnceCallback<2>(test_case.result));
+  service_->AttemptLogin(&mock_tab, credential, false, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), test_case.result);

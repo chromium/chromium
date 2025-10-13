@@ -26,6 +26,7 @@ class ActorLoginServiceImpl : public ActorLoginService {
                       CredentialsOrErrorReply callback) override;
   void AttemptLogin(tabs::TabInterface* tab,
                     const Credential& credential,
+                    bool should_store_permission,
                     LoginStatusResultOrErrorReply callback) override;
 
   void SetActorLoginDelegateFactoryForTesting(

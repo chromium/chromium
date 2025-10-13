@@ -68,6 +68,7 @@ void ActorLoginServiceImpl::GetCredentials(tabs::TabInterface* tab,
 void ActorLoginServiceImpl::AttemptLogin(
     tabs::TabInterface* tab,
     const Credential& credential,
+    bool should_store_permission,
     LoginStatusResultOrErrorReply callback) {
   CHECK(tab);
 
@@ -86,7 +87,8 @@ void ActorLoginServiceImpl::AttemptLogin(
 
   // Delegate the call to the `WebContents`-scoped delegate.
   delegate->AttemptLogin(
-      credential, base::BindOnce(&OnAttemptLoginResult, std::move(callback)));
+      credential, should_store_permission,
+      base::BindOnce(&OnAttemptLoginResult, std::move(callback)));
 }
 
 void ActorLoginServiceImpl::SetActorLoginDelegateFactoryForTesting(

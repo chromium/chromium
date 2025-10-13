@@ -26,8 +26,11 @@ class ActorLoginService {
   // Attempts to log in using the provided `credential` for the given `tab`.
   // The `callback` will be invoked with a `base::expected` containing either
   // a `LoginStatusResult` or an `ActorLoginError`.
+  // If `should_store_permission` is true, `credential` will be updated to store
+  // the permission to use it in actor login.
   virtual void AttemptLogin(tabs::TabInterface* tab,
                             const Credential& credential,
+                            bool should_store_permission,
                             LoginStatusResultOrErrorReply callback) = 0;
 };
 

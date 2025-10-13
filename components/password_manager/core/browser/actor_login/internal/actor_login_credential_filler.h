@@ -25,6 +25,7 @@ class ActorLoginCredentialFiller {
  public:
   ActorLoginCredentialFiller(const url::Origin& main_frame_origin,
                              const Credential& credential,
+                             bool should_store_permission,
                              password_manager::PasswordManagerClient* client,
                              LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
@@ -90,6 +91,9 @@ class ActorLoginCredentialFiller {
   // The credential to fill in either the primary main frame or the frame
   // matching the `origin_`.
   const Credential credential_;
+
+  // Whether user chose to always allow actor login to use `credential_`
+  const bool should_store_permission_ = false;
 
   // Populated with the aggregated results of the calls to fill.
   bool username_filled_ = false;

@@ -21,7 +21,10 @@ class ActorLoginDelegate {
   virtual void GetCredentials(CredentialsOrErrorReply callback) = 0;
 
   // Attempts to log in using the provided `credential`.
+  // If `should_store_permission` is true, will persist the permission to use
+  // `credential` in user's profile.
   virtual void AttemptLogin(const Credential& credential,
+                            bool should_store_permission,
                             LoginStatusResultOrErrorReply callback) = 0;
 };
 

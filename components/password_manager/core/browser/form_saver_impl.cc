@@ -91,6 +91,7 @@ void PostProcessMatches(
           // password, the backup password is now obsolete.
           form_to_update.DeletePasswordBackupNote();
         }
+        form_to_update.actor_login_approved |= pending.actor_login_approved;
         SanitizeFormData(&form_to_update.form_data);
         store->UpdateLogin(std::move(form_to_update));
       }

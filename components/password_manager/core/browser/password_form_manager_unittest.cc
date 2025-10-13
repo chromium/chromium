@@ -4865,6 +4865,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
               UpdateDateLastFilled,
               (const PasswordForm& password_form),
               (override));
+  MOCK_METHOD(void, SetShouldStoreActorLoginPermission, (), (override));
 };
 
 class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {

@@ -110,6 +110,7 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
 
 void ActorLoginDelegateImpl::AttemptLogin(
     const Credential& credential,
+    bool should_store_permission,
     LoginStatusResultOrErrorReply callback) {
   CHECK(callback);
 
@@ -142,7 +143,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
-      origin, credential, client_,
+      origin, credential, should_store_permission, client_,
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));

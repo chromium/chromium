@@ -316,6 +316,49 @@ TEST_P(FormSaverImplSaveTest, Write_UpdateDeletesAllAffectedBackups) {
   SaveCredential(pending, {&match_1, &match_2}, kOldPassword);
 }
 
+// Stores a credential and makes sure that the actor login permission is
+// propagated.
+TEST_P(FormSaverImplSaveTest, Write_UpdatePropagatesActorPermission) {
+  constexpr char16_t kOldPassword[] = u"old_password";
+  constexpr char16_t kNewPassword[] = u"new_password";
+  PasswordForm pending = CreatePending(u"nameofuser", kNewPassword);
+  pending.actor_login_approved = true;
+  pending.date_password_modified = base::Time::Now() - base::Seconds(1);
+
+  PasswordForm duplicate =
+      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+  duplicate.url = GURL("https://www.example.in");
+  duplicate.signon_realm = duplicate.url.spec();
+
+  PasswordForm expected_update = duplicate;
+  expected_update.password_value = kNewPassword;
+  expected_update.actor_login_approved = true;
+  expected_update.date_password_modified = base::Time::Now();
+  EXPECT_CALL(*mock_store_, UpdateLogin(expected_update, _));
+  SaveCredential(pending, {&duplicate}, kOldPassword);
+}
+
+// Stores a credential and makes sure that the actor login permission is not
+// deleted.
+TEST_P(FormSaverImplSaveTest, Write_UpdateDoesNotDeletePermission) {
+  constexpr char16_t kOldPassword[] = u"old_password";
+  constexpr char16_t kNewPassword[] = u"new_password";
+  PasswordForm pending = CreatePending(u"nameofuser", kNewPassword);
+  pending.date_password_modified = base::Time::Now() - base::Seconds(1);
+
+  PasswordForm duplicate =
+      CreatePending(u"nameofuser", kOldPassword, PasswordForm::MatchType::kPSL);
+  duplicate.url = GURL("https://www.example.in");
+  duplicate.signon_realm = duplicate.url.spec();
+  duplicate.actor_login_approved = true;
+
+  PasswordForm expected_update = duplicate;
+  expected_update.password_value = kNewPassword;
+  expected_update.date_password_modified = base::Time::Now();
+  EXPECT_CALL(*mock_store_, UpdateLogin(expected_update, _));
+  SaveCredential(pending, {&duplicate}, kOldPassword);
+}
+
 // Stores a credential and makes sure that not exact matches are not updated.
 TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
   constexpr char16_t kOldPassword[] = u"old_password";

@@ -90,10 +90,12 @@ LoginStatusResult GetEndFillingResult(bool username_filled,
 ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     const url::Origin& main_frame_origin,
     const Credential& credential,
+    bool should_store_permission,
     PasswordManagerClient* client,
     LoginStatusResultOrErrorReply callback)
     : origin_(main_frame_origin),
       credential_(credential),
+      should_store_permission_(should_store_permission),
       client_(client),
       callback_(std::move(callback)) {}
 
@@ -156,6 +158,9 @@ void ActorLoginCredentialFiller::AttemptLogin(
                              stored_credential->username_value,
                              stored_credential->password_value);
   } else {
+    if (should_store_permission_) {
+      signin_form_manager->SetShouldStoreActorLoginPermission();
+    }
     fill_cb = base::BindOnce(
         &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
         driver, form_renderer_id, stored_credential->username_value,
@@ -274,6 +279,10 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
     if (!parsed_form || !IsLoginForm(*parsed_form)) {
       continue;
     }
+    if (should_store_permission_) {
+      manager->SetShouldStoreActorLoginPermission();
+    }
+
     FillField(manager->GetDriver().get(),
               parsed_form->username_element_renderer_id, username,
               FieldType::kUsername, concurrent_filling.CreateClosure());

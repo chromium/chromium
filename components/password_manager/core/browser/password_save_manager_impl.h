@@ -110,6 +110,8 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   std::unique_ptr<PasswordSaveManager> Clone() override;
 
+  void SetShouldStoreActorLoginPermission() override;
+
  private:
   PasswordForm BuildPendingCredentials(
       const PasswordForm& parsed_submitted_form,
@@ -195,6 +197,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // True if the user edited the username field during the save prompt.
   bool username_updated_in_bubble_ = false;
+
+  // Indicates that the |pending_credentials_| should have
+  // |actor_login_approved| set to true. This is set during the actor login
+  // flow.
+  bool should_store_actor_login_permission_ = false;
 };
 
 }  // namespace password_manager

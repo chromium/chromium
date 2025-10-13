@@ -625,6 +625,10 @@ std::unique_ptr<PasswordSaveManager> PasswordSaveManagerImpl::Clone() {
   return result;
 }
 
+void PasswordSaveManagerImpl::SetShouldStoreActorLoginPermission() {
+  should_store_actor_login_permission_ = true;
+}
+
 PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     const PasswordForm& parsed_submitted_form,
     const FormData* observed_form,
@@ -676,6 +680,8 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
   pending_credentials.password_value =
       HasGeneratedPassword() ? generation_manager_->generated_password()
                              : password_to_save.value;
+  pending_credentials.actor_login_approved |=
+      should_store_actor_login_permission_;
   pending_credentials.date_last_used = base::Time::Now();
   // `parsed_submitted_form` will contain backup password only during a password
   // change flow and it's guaranteed to have one as well.

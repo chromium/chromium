@@ -100,6 +100,7 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.all_alternative_usernames,
             actual.all_alternative_usernames);
   EXPECT_EQ(expected.notes, actual.notes);
+  EXPECT_EQ(expected.actor_login_approved, actual.actor_login_approved);
   EXPECT_TRUE(
       autofill::FormData::DeepEqual(expected.form_data, actual.form_data));
 }
@@ -462,6 +463,29 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsEmptyStore) {
   EXPECT_GE(pending_credentials.date_last_used, kNow);
 }
 
+// Tests creating pending credentials with actor permission when the password
+// store is empty.
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsWithActorPermissionEmptyStore) {
+  fetcher()->NotifyFetchCompleted();
+
+  const base::Time kNow = base::Time::Now();
+  password_save_manager_impl()->SetShouldStoreActorLoginPermission();
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  const PasswordForm& pending_credentials =
+      password_save_manager_impl()->GetPendingCredentials();
+  PasswordForm expected = parsed_submitted_form_;
+  expected.notes[0].date_created =
+      pending_credentials.GetPasswordBackupDateCreated().value();
+  expected.actor_login_approved = true;
+  CheckPendingCredentials(expected, pending_credentials);
+  EXPECT_GE(pending_credentials.date_last_used, kNow);
+}
+
 // Tests creating pending credentials when new credentials are submitted and the
 // store has another credentials saved.
 TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsNewCredentials) {
@@ -478,6 +502,28 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsNewCredentials) {
       password_save_manager_impl()->GetPendingCredentials();
   expected_credentials.notes[0].date_created =
       pending_credentials.GetPasswordBackupDateCreated().value();
+  CheckPendingCredentials(expected_credentials, pending_credentials);
+}
+
+// Tests creating pending credentials with actor permission when new credentials
+// are submitted and the store has another credentials saved.
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsWithActorPermissionNewCredentials) {
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  password_save_manager_impl()->SetShouldStoreActorLoginPermission();
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_submitted_form_, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  PasswordForm expected_credentials = parsed_submitted_form_;
+  expected_credentials.all_alternative_usernames.emplace_back(
+      AlternativeElement::Value(saved_match_.username_value));
+  const PasswordForm& pending_credentials =
+      password_save_manager_impl()->GetPendingCredentials();
+  expected_credentials.notes[0].date_created =
+      pending_credentials.GetPasswordBackupDateCreated().value();
+  expected_credentials.actor_login_approved = true;
   CheckPendingCredentials(expected_credentials, pending_credentials);
 }
 
@@ -502,6 +548,30 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsAlreadySaved) {
       saved_match_, password_save_manager_impl()->GetPendingCredentials());
 }
 
+// Tests that adding permission for an exact match only updates the permission.
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsWithActorPermissionAlreadySaved) {
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  PasswordForm expected = saved_match_;
+  expected.actor_login_approved = true;
+
+  test_api(submitted_form_)
+      .field(kUsernameFieldIndex)
+      .set_value(saved_match_.username_value);
+  test_api(submitted_form_)
+      .field(kPasswordFieldIndex)
+      .set_value(saved_match_.password_value);
+
+  password_save_manager_impl()->SetShouldStoreActorLoginPermission();
+  password_save_manager_impl()->CreatePendingCredentials(
+      Parse(submitted_form_), &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  CheckPendingCredentials(
+      expected, password_save_manager_impl()->GetPendingCredentials());
+}
+
 // Tests that when submitted credentials are equal to already saved PSL
 // credentials.
 TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsPSLMatchSaved) {
@@ -520,6 +590,35 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsPSLMatchSaved) {
       .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
+  password_save_manager_impl()->CreatePendingCredentials(
+      Parse(submitted_form_), &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  CheckPendingCredentials(
+      expected, password_save_manager_impl()->GetPendingCredentials());
+}
+
+// Tests that when submitted credentials are equal to already saved PSL
+// credentials.
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsWithActorPermissionPSLMatchSaved) {
+  PasswordForm expected = saved_match_;
+  expected.actor_login_approved = true;
+
+  saved_match_.url = GURL("https://m.accounts.google.com/auth");
+  saved_match_.signon_realm = "https://m.accounts.google.com/";
+  saved_match_.match_type = PasswordForm::MatchType::kPSL;
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  test_api(submitted_form_)
+      .field(kUsernameFieldIndex)
+      .set_value(saved_match_.username_value);
+  test_api(submitted_form_)
+      .field(kPasswordFieldIndex)
+      .set_value(saved_match_.password_value);
+  password_save_manager_impl()->SetShouldStoreActorLoginPermission();
   password_save_manager_impl()->CreatePendingCredentials(
       Parse(submitted_form_), &observed_form_, submitted_form_,
       /*is_http_auth=*/false,
@@ -556,6 +655,28 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsPasswordOverriden) {
 // Tests that when submitted credentials are equal to already saved one then
 // pending credentials equal to saved match.
 TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsUpdate) {
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  FormData submitted_form = observed_form_only_password_fields_;
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
+  test_api(submitted_form).field(1).set_value(u"verystrongpassword");
+
+  PasswordForm expected = saved_match_;
+  expected.password_value = u"verystrongpassword";
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      Parse(submitted_form), &observed_form_, submitted_form,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  CheckPendingCredentials(
+      expected, password_save_manager_impl()->GetPendingCredentials());
+}
+
+// Tests that update does not overwrite existing permission
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsUpdateWithActorPermission) {
+  saved_match_.actor_login_approved = true;
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   FormData submitted_form = observed_form_only_password_fields_;

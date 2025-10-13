@@ -47,6 +47,7 @@ class MockActorLoginService : public actor_login::ActorLoginService {
   void AttemptLogin(
       tabs::TabInterface* tab,
       const actor_login::Credential& credential,
+      bool should_store_permission,
       actor_login::LoginStatusResultOrErrorReply callback) override;
 
   void SetCredentials(const actor_login::CredentialsOrError& credentials);

@@ -122,6 +122,8 @@ class PasswordSaveManager {
   virtual void UpdateDateLastFilled(const PasswordForm& parsed_form) = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
+
+  virtual void SetShouldStoreActorLoginPermission() = 0;
 };
 }  // namespace password_manager
 
