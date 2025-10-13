@@ -5512,8 +5512,11 @@ shown properly on the user-facing crash UI.
   <int value="-2147174366" label="MSPR_E_NEEDS_INDIVIDUALIZATION"/>
   <int value="-2147174354" label="MSPR_E_UNABLE_TO_OPEN_DATA_STORE"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
+  <int value="-2147174206" label="MSPR_E_INVALID_H264_CONTENT (0x8004B8C2)"/>
   <int value="-2147174205"
       label="MSPR_E_CDM_PERSISTENT_LICENSE_NOT_ALLOWED (0x8004B8C3)"/>
+  <int value="-2147174190"
+      label="MSPR_E_AES_SIXTEEN_BYTE_IVS_NOT_SUPPORTED (0x8004B8D2)"/>
   <int value="-2147174189"
       label="MSPR_E_SAMPLE_ENCRYPTION_TYPE_DOES_NOT_MATCH_LICENSE
              (0x8004B8D3)"/>
@@ -5526,6 +5529,8 @@ shown properly on the user-facing crash UI.
   <int value="-2147169008" label="DRM_E_TEE_INVALID_KEY_DATA"/>
   <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
   <int value="-2147169004" label="DRM_E_TEE_CLOCK_NOT_SET"/>
+  <int value="-2147168998"
+      label="DRM_E_TEE_PROXY_INVALID_SERIALIZATION_MESSAGE (0x8004CD1A)"/>
   <int value="-2147168990"
       label="DRM_E_TEE_OUTPUT_PROTECTION_REQUIREMENTS_NOT_MET"/>
   <int value="-2147168256" label="DRM_E_NONCE_STORE_TOKEN_NOT_FOUND"/>
@@ -6031,6 +6036,8 @@ shown properly on the user-facing crash UI.
   <int value="-1072843853"
       label="MF_E_MEDIA_EXTENSION_PACKAGE_LICENSE_INVALID"/>
   <int value="-1071241984" label="ERROR_GRAPHICS_OPM_NOT_SUPPORTED"/>
+  <int value="-1071241965"
+      label="ERROR_GRAPHICS_OPM_OUTPUT_DOES_NOT_SUPPORT_HDCP (0xC0262513)"/>
   <int value="-805306212" label="STATUS_DEVICE_DATA_ERROR"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="0" label="S_OK"/>
