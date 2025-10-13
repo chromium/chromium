@@ -581,6 +581,7 @@ group("gn_all") {
 
     if (is_linux) {
       deps += [
+        "//components/safe_browsing/content/resources/real_time_url_checks_allowlist:make_real_time_url_allowlist_protobuf_for_gcs",
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",
         "//ui/snapshot:snapshot_unittests",
