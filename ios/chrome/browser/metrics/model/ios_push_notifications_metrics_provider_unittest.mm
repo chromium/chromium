@@ -9,6 +9,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

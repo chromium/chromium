@@ -185,7 +185,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   // Memorize the account that was picked and whether to ask which account to
   // use every time.
   _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                          base::SysNSStringToUTF8(identity.gaiaID));
+                          identity.gaiaId.ToString());
   _prefService->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
                            !askEveryTime);
 
@@ -542,7 +542,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
   // Otherwise, open the Photos app and hide Save to Photos.
   NSString* recentlyAddedURLString = [kGooglePhotosRecentlyAddedURLString
-      stringByAppendingString:_identity.gaiaID];
+      stringByAppendingString:_identity.gaiaId.ToNSString()];
   NSURL* photosURL = [NSURL URLWithString:recentlyAddedURLString];
   [UIApplication.sharedApplication
                 openURL:photosURL
