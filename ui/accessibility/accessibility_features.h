@@ -359,6 +359,10 @@ AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsLoadMoreButton);
 AX_BASE_EXPORT bool IsReadAnythingDocsLoadMoreButtonEnabled();
 
+// Enable ReadabilityJS as the distillation source for Reading Mode.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithReadability);
+AX_BASE_EXPORT bool IsReadAnythingWithReadabilityEnabled();
+
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
