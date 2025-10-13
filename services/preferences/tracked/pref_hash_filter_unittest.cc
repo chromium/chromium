@@ -297,17 +297,22 @@ class MockPrefHashStore : public PrefHashStore {
 
 void MockPrefHashStore::SetCheckResult(const std::string& path,
                                        ValueState result) {
-  check_results_.insert(std::make_pair(path, result));
+  // Allow overwriting existing values. This is necessary for tests that need
+  // to set the check result for the same preference multiple times
+  // (e.g., once for the synchronous pass and once for the asynchronous pass).
+  check_results_[path] = result;
 }
 
 void MockPrefHashStore::SetInvalidKeysResult(
     const std::string& path,
     const std::vector<std::string>& invalid_keys_result) {
-  // Ensure |check_results_| has a CHANGED entry for |path|.
   std::map<std::string, ValueState>::const_iterator result =
       check_results_.find(path);
   ASSERT_TRUE(result != check_results_.end());
-  ASSERT_EQ(ValueState::CHANGED, result->second);
+  ValueState value_state = result->second;
+  ASSERT_TRUE(value_state == ValueState::CHANGED ||
+              value_state == ValueState::CHANGED_ENCRYPTED ||
+              value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK);
 
   invalid_keys_results_.insert(std::make_pair(path, invalid_keys_result));
 }
@@ -374,13 +379,11 @@ base::Value::Dict MockPrefHashStore::ComputeSplitEncryptedHashes(
 ValueState MockPrefHashStore::RecordCheckValue(const std::string& path,
                                                const void* value,
                                                PrefTrackingStrategy strategy) {
-  // Record that |path| was checked and validate that it wasn't previously
-  // checked.
-  EXPECT_TRUE(checked_values_
-                  .insert(std::make_pair(path, std::make_pair(value, strategy)))
-                  .second);
-  std::map<std::string, ValueState>::const_iterator result =
-      check_results_.find(path);
+  // Record that |path| was checked. Allow it to be checked multiple times.
+  // This is required for tests that simulate both a synchronous and an
+  // asynchronous validation pass.
+  checked_values_[path] = std::make_pair(value, strategy);
+  auto result = check_results_.find(path);
   if (result != check_results_.end())
     return result->second;
   return ValueState::UNCHANGED;
@@ -1885,6 +1888,72 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
 
   // This means ClearPref should NOT be called a second time.
   EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       DeferredRevalidationResetsSplitPrefPartially) {
+  // This test is only relevant when enforcement is on.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterDictionaryPref(kSplitPref);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  // 1. Set up the initial state with a good and a bad key.
+  base::Value::Dict initial_dict;
+  initial_dict.Set("good_key", "good_value");
+  initial_dict.Set("bad_key", "bad_value");
+  pref_store_contents_.Set(kSplitPref, initial_dict.Clone());
+  // Also set this initial state in the live PrefService.
+  mock_pref_service_->Set(kSplitPref, base::Value(initial_dict.Clone()));
+
+  // 2. Configure the mock for the SYNCHRONOUS pass.
+  // The HMACs are all valid, so the initial check is UNCHANGED.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::UNCHANGED);
+
+  // 3. Run the synchronous load. This should schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  // At this point, nothing should have been cleared.
+  ASSERT_FALSE(mock_pref_service_->WasCleared(kSplitPref));
+
+  // 4. Re-configure the mock for the ASYNCHRONOUS pass.
+  // Now, the encrypted hash for "bad_key" is found to be invalid.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref,
+                                        ValueState::CHANGED_ENCRYPTED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"bad_key"});
+
+  // 5. Wait for the deferred task to complete.
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+  revalidation_run_loop.Run();
+  ASSERT_TRUE(callback_ran);
+
+  // 6. VERIFY the results.
+  // The whole pref should NOT have been cleared. This is the bug fix check.
+  EXPECT_FALSE(mock_pref_service_->WasCleared(kSplitPref));
+
+  // The live pref value should now be the corrected dictionary.
+  const base::Value::Dict& final_dict = mock_pref_service_->GetDict(kSplitPref);
+  EXPECT_TRUE(final_dict.Find("good_key"));
+  EXPECT_FALSE(final_dict.Find("bad_key"));
+  EXPECT_EQ(1u, final_dict.size());
 }
 
 TEST_P(PrefHashFilterTest, MetricLoggedOnceOnSyncPathFeatureDisabled) {
