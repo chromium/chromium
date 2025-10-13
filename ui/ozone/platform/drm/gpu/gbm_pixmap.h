@@ -38,6 +38,7 @@ class GbmPixmap : public gfx::NativePixmap {
   bool SupportsZeroCopyWebGPUImport() const override;
   uint64_t GetBufferFormatModifier() const override;
   gfx::BufferFormat GetBufferFormat() const override;
+  viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,

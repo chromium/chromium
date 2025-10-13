@@ -170,6 +170,10 @@ gfx::BufferFormat GbmPixmapWayland::GetBufferFormat() const {
   return gbm_bo_->GetBufferFormat();
 }
 
+viz::SharedImageFormat GbmPixmapWayland::GetSharedImageFormat() const {
+  return gbm_bo_->GetSharedImageFormat();
+}
+
 gfx::Size GbmPixmapWayland::GetBufferSize() const {
   return gbm_bo_->GetSize();
 }

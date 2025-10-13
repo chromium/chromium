@@ -64,6 +64,10 @@ gfx::BufferFormat GbmPixmap::GetBufferFormat() const {
   return buffer_->GetBufferFormat();
 }
 
+viz::SharedImageFormat GbmPixmap::GetSharedImageFormat() const {
+  return buffer_->GetSharedImageFormat();
+}
+
 gfx::Size GbmPixmap::GetBufferSize() const {
   return buffer_->GetSize();
 }

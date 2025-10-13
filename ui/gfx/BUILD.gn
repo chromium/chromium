@@ -612,6 +612,7 @@ source_set("memory_buffer_sources") {
     "gpu_fence.h",
     "gpu_fence_handle.cc",
     "gpu_fence_handle.h",
+    "native_pixmap.cc",
     "native_pixmap.h",
     "overlay_priority_hint.h",
     "overlay_transform.h",
