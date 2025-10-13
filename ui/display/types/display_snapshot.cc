@@ -156,12 +156,6 @@ std::string DisplaySnapshot::ToString() const {
 }
 
 // static
-gfx::BufferFormat DisplaySnapshot::PrimaryFormat() {
-  return viz::SinglePlaneSharedImageFormatToBufferFormat(
-      PrimarySharedImageFormat());
-}
-
-// static
 viz::SharedImageFormat DisplaySnapshot::PrimarySharedImageFormat() {
   return viz::SinglePlaneFormat::kBGRA_8888;
 }

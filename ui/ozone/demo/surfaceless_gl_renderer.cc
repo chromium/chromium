@@ -94,7 +94,8 @@ bool SurfacelessGlRenderer::BufferWrapper::Initialize(
   glGenFramebuffersEXT(1, &gl_fb_);
   glGenTextures(1, &gl_tex_);
 
-  gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
+  gfx::BufferFormat format = viz::SinglePlaneSharedImageFormatToBufferFormat(
+      display::DisplaySnapshot::PrimarySharedImageFormat());
   pixmap_ = OzonePlatform::GetInstance()
                 ->GetSurfaceFactoryOzone()
                 ->CreateNativePixmap(widget, nullptr, size, format,

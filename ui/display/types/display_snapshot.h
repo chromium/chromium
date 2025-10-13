@@ -152,9 +152,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Used when no |product_code_| known.
   static const int64_t kInvalidProductCode = -1;
 
-  // Returns the buffer format to be used for the primary plane buffer.
-  static gfx::BufferFormat PrimaryFormat();
-
   // Returns the SharedImageFormat to be used for the primary plane buffer.
   static viz::SharedImageFormat PrimarySharedImageFormat();
 

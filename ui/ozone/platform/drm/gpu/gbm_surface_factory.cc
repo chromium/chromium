@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/khronos/EGL/egl.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/extension_set.h"
@@ -339,7 +340,8 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   DCHECK(vk_image_fd.is_valid());
 
   // TODO(spang): Fix this for formats other than gfx::BufferFormat::BGRA_8888
-  DCHECK_EQ(format, display::DisplaySnapshot::PrimaryFormat());
+  DCHECK_EQ(viz::GetSharedImageFormat(format),
+            display::DisplaySnapshot::PrimarySharedImageFormat());
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;
 
   VkDmaBufImageCreateInfo dma_buf_image_create_info = {

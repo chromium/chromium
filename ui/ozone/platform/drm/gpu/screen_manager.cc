@@ -434,7 +434,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 
     if (params.mode) {
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-          display::DisplaySnapshot::PrimaryFormat());
+          display::DisplaySnapshot::PrimarySharedImageFormat());
       std::vector<uint64_t> modifiers =
           controller->GetFormatModifiersForTestModeset(fourcc_format);
       // Test with no overlays to go for a lower bandwidth usage.
@@ -485,7 +485,7 @@ bool ScreenManager::TestAndSetLinearModifier(
     HardwareDisplayController* controller = it->get();
 
     uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-        display::DisplaySnapshot::PrimaryFormat());
+        display::DisplaySnapshot::PrimarySharedImageFormat());
     std::vector<uint64_t> modifiers =
         controller->GetFormatModifiersForTestModeset(fourcc_format);
     // Test with an empty list if no preferred modifiers are advertised.
@@ -540,7 +540,9 @@ void ScreenManager::SetPreferredModifiers(
         auto it = FindDisplayController(params.drm, params.crtc);
         DCHECK(*it);
         it->get()->UpdatePreferredModifierForFormat(
-            display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
+            viz::SinglePlaneSharedImageFormatToBufferFormat(
+                display::DisplaySnapshot::PrimarySharedImageFormat()),
+            picked_modifier);
       }
     }
   }
@@ -563,7 +565,7 @@ bool ScreenManager::TestModesetWithOverlays(
 
     if (params.mode) {
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-          display::DisplaySnapshot::PrimaryFormat());
+          display::DisplaySnapshot::PrimarySharedImageFormat());
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format);
 
@@ -609,7 +611,7 @@ bool ScreenManager::Modeset(
       HardwareDisplayController* controller = it->get();
 
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-          display::DisplaySnapshot::PrimaryFormat());
+          display::DisplaySnapshot::PrimarySharedImageFormat());
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format, /*is_modeset=*/true);
 
@@ -871,7 +873,7 @@ void ScreenManager::UpdateControllerToWindowMapping() {
     // tries to schedule another buffer.
     if (should_enable) {
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-          display::DisplaySnapshot::PrimaryFormat());
+          display::DisplaySnapshot::PrimarySharedImageFormat());
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format);
       DrmOverlayPlaneList modeset_planes = GetModesetPlanes(
@@ -916,7 +918,7 @@ DrmOverlayPlaneList ScreenManager::GetModesetPlanes(
     bool is_testing) {
   scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
   uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
-      display::DisplaySnapshot::PrimaryFormat());
+      display::DisplaySnapshot::PrimarySharedImageFormat());
   // Get the buffer that best reflects what the next Page Flip will look like,
   // which is using the preferred modifiers from the controllers.
   std::unique_ptr<GbmBuffer> buffer =
