@@ -82,8 +82,7 @@ class ExtensionTabUtil {
       "Browser windows not allowed.";
 #endif  // !BUILDFLAG(IS_ANDROID)
   static constexpr char kCannotNavigateToDevtools[] =
-      "Cannot navigate to a devtools:// page without either the devtools or "
-      "debugger permission.";
+      "Cannot navigate to a devtools:// page.";
 #if !BUILDFLAG(IS_ANDROID)
   static constexpr char kLockedFullscreenModeNewTabError[] =
       "You cannot create new tabs while in locked fullscreen mode.";

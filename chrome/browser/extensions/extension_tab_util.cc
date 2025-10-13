@@ -1341,17 +1341,9 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
     return base::unexpected(kNoCrashBrowserError);
   }
 
-  // Don't let the extension navigate directly to devtools scheme pages, unless
-  // they have applicable permissions.
+  // Don't let the extension navigate directly to devtools scheme pages.
   if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-    bool has_permission =
-        extension && (extension->permissions_data()->HasAPIPermission(
-                          APIPermissionID::kDevtools) ||
-                      extension->permissions_data()->HasAPIPermission(
-                          APIPermissionID::kDebugger));
-    if (!has_permission) {
-      return base::unexpected(kCannotNavigateToDevtools);
-    }
+    return base::unexpected(kCannotNavigateToDevtools);
   }
 
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
