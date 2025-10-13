@@ -43,6 +43,17 @@ _log = logging.getLogger(__name__)
 
 class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
+    DEFAULT_BUILDERS: list[str] = [
+        # TODO(crbug.com/433830466): Rebaseline with macOS and Windows on ARM.
+        # Architecture can sometimes affect results: crbug.com/450592015
+        'mac-rel',
+        'win-rel',
+        # Use these `*-blink-rel` builders instead of `android-*-rel` and
+        # `linux-rel`, respectively, to update `*webdriver_wpt_tests`
+        # expectations.
+        'android-15-chrome-blink-rel',
+        'linux-blink-rel',
+    ]
 
     def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
@@ -59,15 +70,7 @@ class WPTExpectationsUpdater:
         parser = argparse.ArgumentParser(description=__doc__)
         self.add_arguments(parser)
         self.options = parser.parse_args(args or [])
-        self.options.builders = self.options.builders or [
-            'mac-rel',
-            'win-rel',
-            # Use these `*-blink-rel` builders instead of `android-*-rel` and
-            # `linux-rel`, respectively, to update `*webdriver_wpt_tests`
-            # expectations.
-            'android-15-chrome-blink-rel',
-            'linux-blink-rel',
-        ]
+        self.options.builders = self.options.builders or self.DEFAULT_BUILDERS
         if not (self.options.clean_up_test_expectations or
                 self.options.clean_up_test_expectations_only):
             assert not self.options.clean_up_affected_tests_only, (

@@ -100,7 +100,8 @@ class TestImporterTest(LoggingTestCase):
         return TestImporter(host,
                             github=github,
                             wpt_manifests=[manifest],
-                            buganizer_client=self.buganizer_client)
+                            buganizer_client=self.buganizer_client,
+                            builders=host.builders.all_try_builder_names())
 
     def test_update_expectations_for_cl_no_results(self):
         host = self.mock_host()

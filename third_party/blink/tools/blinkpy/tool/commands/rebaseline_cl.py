@@ -248,7 +248,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def selected_try_bots(self):
         if self._builders:
             return set(self._builders)
-        return self._tool.builders.builders_for_rebaselining()
+        return set(self._tool.builders.all_try_builder_names())
 
     def _fetch_results(self, build_statuses: BuildStatuses) -> ResultsBySuite:
         """Fetches results for all of the given builds.

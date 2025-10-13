@@ -103,13 +103,6 @@ class BuilderList:
     def all_flag_specific_try_builder_names(self, flag_specific):
         return self.filter_builders(is_try=True, flag_specific=flag_specific)
 
-    def builders_for_rebaselining(self) -> Set[str]:
-        try_builders = {
-            builder
-            for builder in self.filter_builders(is_try=True)
-        }
-        return try_builders
-
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 
