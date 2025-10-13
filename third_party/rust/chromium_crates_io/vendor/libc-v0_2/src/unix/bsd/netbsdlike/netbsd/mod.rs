@@ -1613,6 +1613,8 @@ pub const _PC_2_SYMLINKS: c_int = 13;
 pub const _PC_ACL_EXTENDED: c_int = 14;
 pub const _PC_MIN_HOLE_SIZE: c_int = 15;
 
+pub const _CS_PATH: c_int = 1;
+
 pub const _SC_SYNCHRONIZED_IO: c_int = 31;
 pub const _SC_IOV_MAX: c_int = 32;
 pub const _SC_MAPPED_FILES: c_int = 33;

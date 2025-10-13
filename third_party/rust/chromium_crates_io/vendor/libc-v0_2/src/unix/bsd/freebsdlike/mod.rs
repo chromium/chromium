@@ -1197,6 +1197,8 @@ pub const _SC_RAW_SOCKETS: c_int = 119;
 pub const _SC_SYMLOOP_MAX: c_int = 120;
 pub const _SC_PHYS_PAGES: c_int = 121;
 
+pub const _CS_PATH: c_int = 1;
+
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = ptr::null_mut();
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = ptr::null_mut();
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = ptr::null_mut();

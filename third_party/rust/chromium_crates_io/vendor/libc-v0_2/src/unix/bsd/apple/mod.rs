@@ -3341,6 +3341,10 @@ pub const TIOCDSIMICROCODE: c_uint = 0x20007455;
 pub const TIOCPTYGRANT: c_uint = 0x20007454;
 pub const TIOCPTYGNAME: c_uint = 0x40807453;
 pub const TIOCPTYUNLK: c_uint = 0x20007452;
+pub const TIOCGETA: c_ulong = 0x40487413;
+pub const TIOCSETA: c_ulong = 0x80487414;
+pub const TIOCSETAW: c_ulong = 0x80487415;
+pub const TIOCSETAF: c_ulong = 0x80487416;
 
 pub const BIOCGRSIG: c_ulong = 0x40044272;
 pub const BIOCSRSIG: c_ulong = 0x80044273;
@@ -5380,6 +5384,11 @@ extern "C" {
     pub fn mach_host_self() -> mach_port_t;
     #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn mach_thread_self() -> mach_port_t;
+    pub fn pthread_cond_timedwait_relative_np(
+        cond: *mut pthread_cond_t,
+        lock: *mut pthread_mutex_t,
+        timeout: *const crate::timespec,
+    ) -> c_int;
     pub fn pthread_once(
         once_control: *mut crate::pthread_once_t,
         init_routine: Option<unsafe extern "C" fn()>,

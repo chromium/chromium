@@ -1,6 +1,6 @@
 [package]
 name = "libc"
-version = "0.2.176"
+version = "0.2.177"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
 exclude = ["/ci/*", "/.github/*", "/.cirrus.yml", "/triagebot.toml"]

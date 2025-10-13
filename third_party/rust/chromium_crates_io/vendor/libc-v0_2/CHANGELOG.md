@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.177](https://github.com/rust-lang/libc/compare/0.2.176...0.2.177) - 2025-10-09
+
+### Added
+
+- Apple: Add `TIOCGETA`, `TIOCSETA`, `TIOCSETAW`, `TIOCSETAF` constants ([#4736](https://github.com/rust-lang/libc/pull/4736))
+- Apple: Add `pthread_cond_timedwait_relative_np` ([#4719](https://github.com/rust-lang/libc/pull/4719))
+- BSDs: Add `_CS_PATH` constant ([#4738](https://github.com/rust-lang/libc/pull/4738))
+- Linux-like: Add `SIGEMT` for mips* and sparc* architectures ([#4730](https://github.com/rust-lang/libc/pull/4730))
+- OpenBSD: Add `elf_aux_info` ([#4729](https://github.com/rust-lang/libc/pull/4729))
+- Redox: Add more sysconf constants ([#4728](https://github.com/rust-lang/libc/pull/4728))
+- Windows: Add `wcsnlen` ([#4721](https://github.com/rust-lang/libc/pull/4721))
+
+### Changed
+
+- WASIP2: Invert conditional to include p2 APIs ([#4733](https://github.com/rust-lang/libc/pull/4733))
+
 ## [0.2.176](https://github.com/rust-lang/libc/compare/0.2.175...0.2.176) - 2025-09-23
 
 ### Support

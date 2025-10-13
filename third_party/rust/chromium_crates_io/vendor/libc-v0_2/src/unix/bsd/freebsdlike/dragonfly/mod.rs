@@ -1359,6 +1359,8 @@ pub const VCHECKPT: usize = 19;
 pub const _PC_2_SYMLINKS: c_int = 22;
 pub const _PC_TIMESTAMP_RESOLUTION: c_int = 23;
 
+pub const _CS_PATH: c_int = 1;
+
 pub const _SC_V7_ILP32_OFF32: c_int = 122;
 pub const _SC_V7_ILP32_OFFBIG: c_int = 123;
 pub const _SC_V7_LP64_OFF64: c_int = 124;

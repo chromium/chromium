@@ -846,7 +846,7 @@ extern "C" {
 }
 
 cfg_if! {
-    if #[cfg(target_env = "p2")] {
+    if #[cfg(not(target_env = "p1"))] {
         mod p2;
         pub use self::p2::*;
     }

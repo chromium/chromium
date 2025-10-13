@@ -768,6 +768,7 @@ pub const SOCK_DGRAM: c_int = 1;
 pub const SA_SIGINFO: c_int = 0x00000008;
 pub const SA_NOCLDWAIT: c_int = 0x00010000;
 
+pub const SIGEMT: c_int = 7;
 pub const SIGCHLD: c_int = 18;
 pub const SIGBUS: c_int = 10;
 pub const SIGTTIN: c_int = 26;

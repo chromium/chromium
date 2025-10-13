@@ -345,6 +345,7 @@ pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 8;
 pub const SA_NOCLDWAIT: c_int = 0x10000;
 
+pub const SIGEMT: c_int = 7;
 pub const SIGCHLD: c_int = 18;
 pub const SIGBUS: c_int = 10;
 pub const SIGTTIN: c_int = 26;
