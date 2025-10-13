@@ -561,16 +561,19 @@ void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
     // TODO: Figure out what else should go into host_.PanelWasClosed() and
     // maybe call it here.
     DeactivateCurrentEmbedder();
-    // Post a task to maybe activate another embedder. This is to avoid a race
-    // condition where the deactivation of an old embedder (e.g. during a tab
-    // switch) tries to show the new embedder before the browser's own tab
-    // activation logic has had a chance to run. By posting, we allow the
-    // synchronous activation logic to complete, and then this task will run
+    // Post a delayed task to maybe activate another embedder. This is to avoid
+    // a race condition where the deactivation of an old embedder (e.g. during a
+    // tab/window switch) tries to show the new embedder before the browser's
+    // own tab activation logic has had a chance to run. By posting, we allow
+    // the synchronous activation logic to complete, and then this task will run
     // and activate a foreground embedder only if one isn't already active.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    // TODO(crbug.com/451667367): Find another way to do this that doesn't
+    // require a delayed task. Spoiler alert, it might not be possible.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&GlicInstanceImpl::MaybeActivateForegroundEmbedder,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Milliseconds(30));
   }
 }
 
