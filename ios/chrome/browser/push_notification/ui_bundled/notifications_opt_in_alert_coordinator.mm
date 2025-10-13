@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -49,14 +50,14 @@ const char kErrorPermissionsHistogram[] =
     "IOS.PushNotification.EnabledPermisisons.Error";
 
 // Returns the gaia id used for `profile`.
-NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
+GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
   const ProfileAttributesIOS attributes =
       GetApplicationContext()
           ->GetProfileManager()
           ->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName());
 
-  return attributes.GetGaiaId().ToNSString();
+  return attributes.GetGaiaId();
 }
 
 }  // namespace
@@ -210,7 +211,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  NSString* gaiaID = GetGaiaIdForProfile(self.profile);
+  GaiaId gaiaID = GetGaiaIdForProfile(self.profile);
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(

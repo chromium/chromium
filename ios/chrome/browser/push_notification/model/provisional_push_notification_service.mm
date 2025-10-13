@@ -100,8 +100,7 @@ void ProvisionalPushNotificationService::OnProvisionalPushNotificationEnrolled(
 
   for (PushNotificationClientId client_id : client_ids) {
     push_notification_service_->SetPreference(
-        account.gaia.ToNSString(), client_id,
-        client_id_state == ClientIdState::kEnabled);
+        account.gaia, client_id, client_id_state == ClientIdState::kEnabled);
     if (client_id == PushNotificationClientId::kSendTab) {
       device_info_sync_service_->RefreshLocalDeviceInfo();
     }

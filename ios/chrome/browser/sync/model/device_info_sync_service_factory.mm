@@ -93,7 +93,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     std::string representative_target_id =
         GetApplicationContext()
             ->GetPushNotificationService()
-            ->GetRepresentativeTargetIdForGaiaId(gaia_id.ToNSString());
+            ->GetRepresentativeTargetIdForGaiaId(gaia_id);
     // Sharing info is not implemented on iOS, so empty structs are passed in.
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(

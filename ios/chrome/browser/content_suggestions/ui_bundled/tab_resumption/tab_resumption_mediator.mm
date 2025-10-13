@@ -548,7 +548,7 @@ class TabResumptionMediatorProxy {
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _pushNotificationService->SetPreference(
-      identity.gaiaID, PushNotificationClientId::kCommerce, true);
+      identity.gaiaId, PushNotificationClientId::kCommerce, true);
 
   const bookmarks::BookmarkNode* bookmark =
       _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.tabURL);

@@ -22,7 +22,7 @@ void OnPrimaryAccountCleared(CoreAccountInfo primary_account) {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
 
-  NSString* gaia = primary_account.gaia.ToNSString();
+  GaiaId gaia = primary_account.gaia;
   service->UnregisterAccount(gaia, nullptr);
 }
 
@@ -35,7 +35,7 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
   }
 
-  NSString* gaia = primary_account.gaia.ToNSString();
+  GaiaId gaia = primary_account.gaia;
   service->RegisterAccount(gaia, nullptr);
 }
 

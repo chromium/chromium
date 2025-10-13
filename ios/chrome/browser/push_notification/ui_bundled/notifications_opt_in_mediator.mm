@@ -136,7 +136,7 @@
 
 // Disables notifications in prefs for the clients in `clientIds`.
 - (void)disableNotifications:(std::vector<PushNotificationClientId>)clientIds {
-  NSString* gaiaID = [self primaryIdentity].gaiaID;
+  GaiaId gaiaID = [self primaryIdentity].gaiaId;
   for (PushNotificationClientId clientId : clientIds) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientId, false);

@@ -164,13 +164,12 @@ void TipsNotificationClient::OptInIfAuthorized(
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
   permitted_ = true;
-  service->SetPreference(base::SysUTF8ToNSString(gaiaID),
-                         PushNotificationClientId::kTips, true);
+  service->SetPreference(identity.gaiaId, PushNotificationClientId::kTips,
+                         true);
 }
 
 std::optional<UIBackgroundFetchResult>

@@ -206,14 +206,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(_identity.gaiaID, clientID, enabled);
+  service->SetPreference(_identity.gaiaId, clientID, enabled);
 }
 
 - (void)mobileNotificationSwitchToggled:(UISwitch*)sender {
   [self setPreferenceFor:PushNotificationClientId::kCommerce to:sender.on];
   self.mobileNotificationItem.on = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
+          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaId));
   if (!sender.on) {
     return;
   }

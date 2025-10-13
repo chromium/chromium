@@ -343,7 +343,7 @@ using password_manager::WarningType;
   CHECK(IsSafetyCheckNotificationsEnabled());
 
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      nil, PushNotificationClientId::kSafetyCheck, false);
+      GaiaId(), PushNotificationClientId::kSafetyCheck, false);
 
   // Show confirmation snackbar.
   NSString* buttonText =

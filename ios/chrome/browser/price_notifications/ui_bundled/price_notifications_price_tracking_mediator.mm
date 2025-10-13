@@ -17,6 +17,7 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"

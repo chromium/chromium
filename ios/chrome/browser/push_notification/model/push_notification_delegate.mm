@@ -1032,8 +1032,8 @@ void ProcessIncomingNotification(
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  NSString* gaiaID =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID;
+  GaiaId gaiaID =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaId;
 
   // Early return if 1) the user has previously disabled Send Tab push
   // notifications, because in that case we don't want to automatically enable
@@ -1042,7 +1042,7 @@ void ProcessIncomingNotification(
           prefs::kSendTabNotificationsPreviouslyDisabled) ||
       push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kSendTab, GaiaId(gaiaID))) {
+              PushNotificationClientId::kSendTab, gaiaID)) {
     return;
   }
 

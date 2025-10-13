@@ -224,7 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)disablePreferenceFor:(PushNotificationClientId)clientID {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(_gaiaID.ToNSString(), clientID, false);
+  service->SetPreference(_gaiaID, clientID, false);
 }
 
 // Sends an NAU when any of the settings preferences have been updated.

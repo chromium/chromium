@@ -606,7 +606,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
                 PushNotificationClientId::kSafetyCheck, identity.gaiaId)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(identity.gaiaID,
+      service->SetPreference(identity.gaiaId,
                              PushNotificationClientId::kSafetyCheck, true);
     }
   }

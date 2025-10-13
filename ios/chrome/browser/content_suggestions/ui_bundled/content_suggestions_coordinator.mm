@@ -1072,7 +1072,7 @@ using segmentation_platform::TipIdentifier;
       [self pushNotificationClientId:type];
 
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      identity.gaiaID, clientId, false);
+      identity.gaiaId, clientId, false);
 
   // Show confirmation snackbar.
   NSString* buttonText =

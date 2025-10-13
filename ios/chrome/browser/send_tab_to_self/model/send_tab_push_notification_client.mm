@@ -134,7 +134,7 @@ void SendTabPushNotificationClient::OnURLLoadedInNewTab(std::string guid,
                 PushNotificationClientId::kSendTab, identity.gaiaId)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(identity.gaiaID,
+      service->SetPreference(identity.gaiaId,
                              PushNotificationClientId::kSendTab, true);
     }
   }
