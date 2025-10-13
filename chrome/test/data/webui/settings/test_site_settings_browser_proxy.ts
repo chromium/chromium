@@ -5,22 +5,24 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {StorageAccessSiteException, AppProtocolEntry, ChooserType, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import type {StorageAccessSiteException, AppProtocolEntry, ChooserType, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import type {SiteSettingsPref} from './test_util.js';
+
 import {loadTimeData} from 'chrome://settings/settings.js';
+
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType} from './test_util.js';
 // clang-format on
 
 /**
- * A test version of SiteSettingsPrefsBrowserProxy. Provides helper methods
+ * A test version of SiteSettingsBrowserProxy. Provides helper methods
  * for allowing tests to know when a method was called, as well as
  * specifying mock responses.
  */
-export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
-    implements SiteSettingsPrefsBrowserProxy {
+export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
+    SiteSettingsBrowserProxy {
   private hasIncognito_: boolean = false;
   private categoryList_: ContentSettingsTypes[];
   private prefs_: SiteSettingsPref;
@@ -642,8 +644,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(this.fileSystemGrantsList_);
   }
 
-  setStorageAccessExceptionList(storageAccessExceptionList:
-                                    StorageAccessSiteException[]) {
+  setStorageAccessExceptionList(
+      storageAccessExceptionList: StorageAccessSiteException[]) {
     this.storageAccessExceptionList_ = storageAccessExceptionList;
   }
 

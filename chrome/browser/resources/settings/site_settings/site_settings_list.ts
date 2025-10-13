@@ -21,8 +21,8 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
-import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import type {SiteSettingsBrowserProxy} from '../site_settings/site_settings_browser_proxy.js';
+import {SiteSettingsBrowserProxyImpl} from '../site_settings/site_settings_browser_proxy.js';
 
 import {getTemplate} from './site_settings_list.html.js';
 
@@ -89,8 +89,8 @@ class SettingsSiteSettingsListElement extends
 
   declare categoryList: CategoryListItem[];
   declare private categoryMap_: Map<ContentSettingsTypes, number>;
-  private browserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private browserProxy_: SiteSettingsBrowserProxy =
+      SiteSettingsBrowserProxyImpl.getInstance();
 
   getFocusConfig(): FocusConfig {
     const focusConfig: FocusConfig = new Map();

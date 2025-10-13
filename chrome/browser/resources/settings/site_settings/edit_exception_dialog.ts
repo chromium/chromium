@@ -16,8 +16,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './edit_exception_dialog.html.js';
-import type {SiteException, SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
+import type {SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
+import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 
 export interface SettingsEditExceptionDialogElement {
   $: {
@@ -63,8 +63,8 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
   declare private origin_: string;
   declare private errorMessage_: string;
   declare private invalid_: boolean;
-  private browserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private browserProxy_: SiteSettingsBrowserProxy =
+      SiteSettingsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

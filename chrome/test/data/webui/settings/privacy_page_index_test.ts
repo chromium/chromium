@@ -5,13 +5,13 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
-import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {Route, SettingsPrivacyPageIndexElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
 interface RouteInfo {
   route: Route;
@@ -58,8 +58,8 @@ suite('PrivacyPageIndex', function() {
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(
-        new TestSiteSettingsPrefsBrowserProxy());
+    SiteSettingsBrowserProxyImpl.setInstance(
+        new TestSiteSettingsBrowserProxy());
 
     index = document.createElement('settings-privacy-page-index');
     index.prefs = settingsPrefs.prefs!;

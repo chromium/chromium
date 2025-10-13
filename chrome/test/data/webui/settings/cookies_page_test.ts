@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,13 +13,13 @@ import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
 
 suite('CookiesPageTest', function() {
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -75,8 +75,8 @@ suite('CookiesPageTest', function() {
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     createPage();
   });
@@ -246,7 +246,7 @@ suite('CookiesPageTest', function() {
 });
 
 suite('ExceptionsList', function() {
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -258,8 +258,8 @@ suite('ExceptionsList', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;

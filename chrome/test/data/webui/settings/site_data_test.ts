@@ -5,14 +5,14 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSiteDataElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
@@ -23,7 +23,7 @@ const PREF_NAME = 'generated.cookie_default_content_setting';
 suite('SiteDataTest', function() {
   let page: SettingsSiteDataElement;
   let settingsPrefs: SettingsPrefsElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -31,8 +31,8 @@ suite('SiteDataTest', function() {
   });
 
   setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-data');

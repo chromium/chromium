@@ -40,8 +40,8 @@ import type {Route} from '../../router.js';
 import {RouteObserverMixin, Router} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../../site_settings/constants.js';
-import type {SiteSettingsPrefsBrowserProxy} from '../../site_settings/site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from '../../site_settings/site_settings_prefs_browser_proxy.js';
+import type {SiteSettingsBrowserProxy} from '../../site_settings/site_settings_browser_proxy.js';
+import {SiteSettingsBrowserProxyImpl} from '../../site_settings/site_settings_browser_proxy.js';
 import {isSettingEnabled} from '../../site_settings/site_settings_util.js';
 
 import {getTemplate} from './security_page.html.js';
@@ -238,8 +238,8 @@ export class SettingsSecurityPageElement extends
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private siteBrowserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private siteBrowserProxy_: SiteSettingsBrowserProxy =
+      SiteSettingsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();

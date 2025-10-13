@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
@@ -20,7 +20,7 @@ import {createContentSettingTypeToValuePair, createDefaultContentSetting, create
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
 // clang-format on
 
@@ -1091,12 +1091,12 @@ suite('SafeBrowsing', function() {
 
 suite('JavascriptOptimizer', function() {
   let page: SettingsSecurityPageElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
   });
 
   teardown(function() {

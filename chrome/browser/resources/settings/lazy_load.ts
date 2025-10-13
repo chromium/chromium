@@ -291,9 +291,9 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
+export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsBrowserProxy, SiteSettingsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_browser_proxy.js';
 export {defaultSettingLabel} from './site_settings/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
-export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 // <if expr="is_chromeos">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 // </if>

@@ -23,8 +23,8 @@ import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import type {ContentSettingsTypes} from '../site_settings/constants.js';
 import {AllSitesAction2, ContentSetting, SiteSettingSource} from '../site_settings/constants.js';
+import type {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
-import type {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 import {getLocalizationStringForContentType} from '../site_settings/site_settings_util.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 

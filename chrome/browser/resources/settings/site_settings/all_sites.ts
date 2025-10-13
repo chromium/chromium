@@ -41,8 +41,8 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
+import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 interface ActionMenuModel {
   actionScope: string;

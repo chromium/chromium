@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {NotificationsPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +13,7 @@ import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 
@@ -35,7 +35,7 @@ function createPref(
 suite(`NotificationsPage`, function() {
   let page: NotificationsPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -50,8 +50,8 @@ suite(`NotificationsPage`, function() {
   }
 
   setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     return createPage();
@@ -113,7 +113,7 @@ suite(`NotificationsPage`, function() {
 suite(`NotificationsPageWithNestedRadioButton`, function() {
   let page: NotificationsPageElement;
   let settingsPrefs: SettingsPrefsElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -131,8 +131,8 @@ suite(`NotificationsPageWithNestedRadioButton`, function() {
   }
 
   setup(function() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     return createPage();

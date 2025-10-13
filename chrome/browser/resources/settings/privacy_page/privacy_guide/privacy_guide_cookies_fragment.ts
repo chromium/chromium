@@ -21,7 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {CookieControlsMode} from '../../site_settings/constants.js';
-import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
+import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
 

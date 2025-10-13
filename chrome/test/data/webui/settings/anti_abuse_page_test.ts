@@ -6,11 +6,11 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsAntiAbusePageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createSiteSettingsPrefs} from './test_util.js';
 // clang-format on
@@ -25,12 +25,12 @@ suite('SettingsAntiAbusePage', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a settings-anti-abuse-page before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-anti-abuse-page');
     document.body.appendChild(testElement);
@@ -55,7 +55,7 @@ suite('SettingsAntiAbusePage', function() {
    */
   async function testCategoryEnabled(
       element: SettingsAntiAbusePageElement,
-      proxy: TestSiteSettingsPrefsBrowserProxy, prefs: SiteSettingsPref,
+      proxy: TestSiteSettingsBrowserProxy, prefs: SiteSettingsPref,
       expectedEnabled: boolean) {
     proxy.reset();
     proxy.setPrefs(prefs);

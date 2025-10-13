@@ -27,8 +27,8 @@ import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list_entry.html.js';
+import type {SiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {SiteException} from './site_settings_prefs_browser_proxy.js';
 
 const SiteListEntryElementBase =
     FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));

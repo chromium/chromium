@@ -4,11 +4,11 @@
 
 // clang-format off
 import type {ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for zoom-levels. */
@@ -21,7 +21,7 @@ suite('ZoomLevels', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   /**
    * An example zoom list.
@@ -44,8 +44,8 @@ suite('ZoomLevels', function() {
   ];
 
   setup(async function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     return initPage();
   });
 

@@ -5,17 +5,17 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SoundPageElement} from 'chrome://settings/lazy_load.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 // clang-format on
 
 suite('SoundPage', function() {
-  let testSiteSettingsPrefsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let testSiteSettingsPrefsBrowserProxy: TestSiteSettingsBrowserProxy;
   let page: SoundPageElement;
 
   function getToggleElement(): SettingsToggleButtonElement {
@@ -31,9 +31,8 @@ suite('SoundPage', function() {
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: true});
     resetRouterForTesting();
 
-    testSiteSettingsPrefsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(
-        testSiteSettingsPrefsBrowserProxy);
+    testSiteSettingsPrefsBrowserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(testSiteSettingsPrefsBrowserProxy);
 
     page = document.createElement('settings-sound-page');
     document.body.appendChild(page);

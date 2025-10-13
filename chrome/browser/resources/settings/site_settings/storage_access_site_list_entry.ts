@@ -21,8 +21,8 @@ import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundle
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
+import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list_entry.html.js';
 import type {StorageAccessStaticSiteListEntry} from './storage_access_static_site_list_entry.js';
 

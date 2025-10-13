@@ -16,8 +16,8 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './category_setting_exceptions.html.js';
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {DefaultSettingSource} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 
 const CategorySettingExceptionsElementBase =
     SiteSettingsMixin(WebUiListenerMixin(PolymerElement));

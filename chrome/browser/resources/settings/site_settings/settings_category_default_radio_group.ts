@@ -21,9 +21,9 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './settings_category_default_radio_group.html.js';
+import type {DefaultContentSetting} from './site_settings_browser_proxy.js';
+import {DefaultSettingSource} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
-import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 import {isSettingEnabled} from './site_settings_util.js';
 
 /**

@@ -7,16 +7,16 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FileSystemSiteListElement, FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
 // clang-format on
 suite('FileSystemSettings_EnablePersistentPermissions', function() {
   let testElement: FileSystemSiteListElement;
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   const origin1: string = 'https://a.com/';
   const origin2: string = 'https://b.com/';
@@ -61,8 +61,8 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
   // Initialize the file-system-site-list element.
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     testElement = document.createElement('file-system-site-list');
     document.body.appendChild(testElement);
   });

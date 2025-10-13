@@ -7,11 +7,11 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsPermissionElement} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createRawChooserException, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 // clang-format on
@@ -26,7 +26,7 @@ suite('SiteDetailsPermission', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   /**
    * An example pref with only camera allowed.
@@ -44,8 +44,8 @@ suite('SiteDetailsPermission', function() {
             ContentSettingsTypes.CAMERA,
             [createRawSiteException('https://www.example.com')])]);
 
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('site-details-permission');
     document.body.appendChild(testElement);

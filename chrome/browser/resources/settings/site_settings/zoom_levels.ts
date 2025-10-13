@@ -24,8 +24,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
+import type {ZoomLevelEntry} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './zoom_levels.html.js';
 
 export interface ZoomLevelsElement {

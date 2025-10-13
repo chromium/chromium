@@ -31,8 +31,8 @@ import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {getTemplate} from './site_entry.html.js';
+import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 
 export interface SiteEntryElement {

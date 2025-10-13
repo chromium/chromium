@@ -207,7 +207,7 @@ export enum ThirdPartyCookieBlockingSetting {
 }
 // LINT.ThenChange(/chrome/browser/content_settings/generated_cookie_prefs.h:ThirdPartyCookieBlockingSetting)
 
-export interface SiteSettingsPrefsBrowserProxy {
+export interface SiteSettingsBrowserProxy {
   /**
    * Sets the default value for a site settings category.
    * @param contentType The name of the category to change.
@@ -520,8 +520,7 @@ export interface SiteSettingsPrefsBrowserProxy {
   openSystemPermissionSettings(contentType: string): void;
 }
 
-export class SiteSettingsPrefsBrowserProxyImpl implements
-    SiteSettingsPrefsBrowserProxy {
+export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
   setDefaultValueForContentType(contentType: string, defaultValue: string) {
     chrome.send('setDefaultValueForContentType', [contentType, defaultValue]);
   }
@@ -702,13 +701,13 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('openSystemPermissionSettings', [contentType]);
   }
 
-  static getInstance(): SiteSettingsPrefsBrowserProxy {
-    return instance || (instance = new SiteSettingsPrefsBrowserProxyImpl());
+  static getInstance(): SiteSettingsBrowserProxy {
+    return instance || (instance = new SiteSettingsBrowserProxyImpl());
   }
 
-  static setInstance(obj: SiteSettingsPrefsBrowserProxy) {
+  static setInstance(obj: SiteSettingsBrowserProxy) {
     instance = obj;
   }
 }
 
-let instance: SiteSettingsPrefsBrowserProxy|null = null;
+let instance: SiteSettingsBrowserProxy|null = null;

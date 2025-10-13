@@ -39,7 +39,7 @@ import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
-import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_browser_proxy.js';
 
 import {getTemplate} from './cookies_page.html.js';
 
