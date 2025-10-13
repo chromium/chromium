@@ -839,6 +839,9 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
   } else if (schema.contains(schema::kEnum)) {
     RETURN_IF_ERROR(ParseEnum(schema, type, schema_node));
   } else if (schema.contains(schema::kPattern)) {
+    if (type != base::Value::Type::STRING) {
+      return base::unexpected("Only strings can have a pattern");
+    }
     RETURN_IF_ERROR(ParseStringPattern(schema, schema_node));
   } else if (schema.contains(schema::kMinimum) ||
              schema.contains(schema::kMaximum)) {
@@ -943,6 +946,10 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
       schema.FindList(schema::kRequired);
   if (required_properties) {
     for (const base::Value& val : *required_properties) {
+      if (!val.is_string()) {
+        return base::unexpected(
+            "Items in the 'required' property must be strings.");
+      }
       strings_.push_back(val.GetString());
       required_properties_.push_back(strings_.back().c_str());
     }
