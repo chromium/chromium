@@ -24,7 +24,7 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -147,9 +147,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       this.shouldShowDbdDeletionConfirmationToast_ = false;
     }
 
-    setTimeout(() => {
-      // Focus after a timeout to ensure any a11y messages get read before
-      // screen readers read out the newly focused element.
+    afterNextRender(this, () => {
+      // Focus after next render has completed to ensure any a11y messages get
+      // read and the UI has updated before screen readers read out the newly
+      // focused element.
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#clearBrowsingData');
       assert(toFocus);
