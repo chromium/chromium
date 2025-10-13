@@ -1322,11 +1322,11 @@ suite('NewTabPageAppTest', () => {
           }));
       await microtasksFinished();
       const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
-      ntpComposebox!.shadowRoot.querySelector<HTMLInputElement>(
-                                   '#input')!.value = 'hello';
+      ntpComposebox!.setText('hello');
       const composeboxScrim =
           app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
       assertTrue(!!composeboxScrim);
+      assertEquals(ntpComposebox!.getText(), 'hello');
       composeboxScrim.click();
       await microtasksFinished();
 
