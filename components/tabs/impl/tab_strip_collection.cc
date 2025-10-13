@@ -383,10 +383,10 @@ std::unique_ptr<TabCollection> TabStripCollection::RemoveGroup(
 
 TabGroupTabCollection* TabStripCollection::GetTabGroupCollection(
     tab_groups::TabGroupId group_id) {
-  if (!group_mapping_.contains(group_id)) {
-    return nullptr;
+  if (auto it = group_mapping_.find(group_id); it != group_mapping_.end()) {
+    return it->second;
   }
-  return group_mapping_.at(group_id);
+  return nullptr;
 }
 
 std::vector<tab_groups::TabGroupId> TabStripCollection::GetAllTabGroupIds()
@@ -430,10 +430,10 @@ TabGroupTabCollection* TabStripCollection::GetDetachedTabGroup(
 
 SplitTabCollection* TabStripCollection::GetSplitTabCollection(
     split_tabs::SplitTabId split_id) {
-  if (!split_mapping_.contains(split_id)) {
-    return nullptr;
+  if (auto it = split_mapping_.find(split_id); it != split_mapping_.end()) {
+    return it->second;
   }
-  return split_mapping_.at(split_id);
+  return nullptr;
 }
 
 void TabStripCollection::CreateSplit(
