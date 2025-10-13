@@ -2373,6 +2373,17 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ManagedUserProfileCreationConflict" enum="BooleanHit"
+    expires_after="2026-02-22">
+  <owner>anthie@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Recorded when during a flow that requires the creation of a managed profile
+    via the managed disclaimer service, we detect that another managed profile
+    creation for a different user is in progress. Applies to Desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="Signin.MoveAccount.CanMoveToService"
     enum="AccountMoveDecision" expires_after="2026-02-22">
   <owner>alexilin@chromium.org</owner>

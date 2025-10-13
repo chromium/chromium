@@ -42,6 +42,8 @@ constexpr char kHistorySyncOptIntAccessPointHistogramPrefix[] =
     "Signin.HistorySyncOptIn.";
 constexpr char kHistorySyncOptIntAccessPointActionPrefix[] =
     "Signin_HistorySync_";
+constexpr char kOtherManagedProfileCreationHistogramName[] =
+    "Signin.ManagedUserProfileCreationConflict";
 
 void CheckValidAccessPointForHistoryOptin(
     signin_metrics::AccessPoint access_point) {
@@ -144,6 +146,10 @@ std::string_view GetHistorySyncSkipReasonMetricName(
     case HistorySyncOptinHelper::HistorySyncSkipReason::kSyncForbidden:
     case HistorySyncOptinHelper::HistorySyncSkipReason::kManagementRejected:
       return "Skipped";
+    case HistorySyncOptinHelper::HistorySyncSkipReason::
+        kManagementProfileCreationConflict:
+      // In this situation the entire flow is aborted.
+      return "Aborted";
   }
   NOTREACHED();
 }
@@ -389,11 +395,27 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
     signin::Tribool maybe_managed_account) {
   if (maybe_managed_account == signin::Tribool::kTrue) {
     maybe_managed_account_ = maybe_managed_account;
-    if (DetermineManagementStatusAndShowManagementScreens()) {
-      return;
+
+    DetermineManagementStatusAndShowManagementScreens();
+    switch (management_status_state_) {
+      case ManagementStatusState::kManagementDisclaimerInProgress:
+        // The management flow is responsible for progressing the flow.
+        return;
+      case ManagementStatusState::kFlowAborted:
+        NotifyFlowFinishedWithHistorySyncScreenSkipped(
+            HistorySyncSkipReason::kManagementProfileCreationConflict);
+        return;
+      case ManagementStatusState::kManagementDisclaimerNotStarted:
+        // `DetermineManagementStatusAndShowManagementScreens` has updated the
+        // managed disclaimer's state.
+        NOTREACHED();
+      case ManagementStatusState::kManagementDisclaimerComplete:
+        // We expect that this method is called for a second time for a managed
+        // user only when the management handling (accepting management, profile
+        // creation) is complete.
+        break;
     }
   }
-
   // For managed users the polices are fetched when the user accepts
   // management, which is done as part of
   // `DetermineManagementStatusAndShowManagementScreens`. We are ready to get
@@ -409,7 +431,6 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
       return;
     }
   }
-
   ShowHistorySyncOptinScreen();
 }
 
@@ -483,25 +504,43 @@ HistorySyncOptinHelperInBrowser::HistorySyncOptinHelperInBrowser(
 
 HistorySyncOptinHelperInBrowser::~HistorySyncOptinHelperInBrowser() = default;
 
-bool HistorySyncOptinHelperInBrowser::
+void HistorySyncOptinHelperInBrowser::
     DetermineManagementStatusAndShowManagementScreens() {
-  if (!profile_management_disclaimer_service_) {
-    profile_management_disclaimer_service_ =
-        ProfileManagementDisclaimerServiceFactory::GetForProfile(profile());
-    CHECK(profile_management_disclaimer_service_);
-    base::OnceCallback<void(Profile*, bool)>
-        profile_management_accepted_callback = base::BindOnce(
-            &HistorySyncOptinHelperInBrowser::OnManagementAccepted,
-            weak_ptr_factory_.GetWeakPtr());
-    // TODO(crbug.com/434964019): The caller must ensure that we are not already
-    // creating a managed profile for another account using
-    // `GetAccountBeingConsideredForManagementIfAny()`.
-    profile_management_disclaimer_service_->EnsureManagedProfileForAccount(
-        account_info().account_id, access_point(),
-        std::move(profile_management_accepted_callback));
-    return true;
+  if (profile_management_disclaimer_service_) {
+    return;
   }
-  return false;
+  CHECK(management_status_state_ ==
+        HistorySyncOptinHelper::ManagementStatusState::
+            kManagementDisclaimerNotStarted);
+  management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
+      kManagementDisclaimerInProgress;
+
+  profile_management_disclaimer_service_ =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile());
+  CHECK(profile_management_disclaimer_service_);
+  base::OnceCallback<void(Profile*, bool)>
+      profile_management_accepted_callback =
+          base::BindOnce(&HistorySyncOptinHelperInBrowser::OnManagementAccepted,
+                         weak_ptr_factory_.GetWeakPtr());
+
+  const CoreAccountId account_id_of_ongoing_management_flow =
+      profile_management_disclaimer_service_
+          ->GetAccountBeingConsideredForManagementIfAny();
+  // Abort the flow is we are in the process of creating a managed profile
+  // for another user.
+  bool has_managed_profile_created_conflict =
+      !account_id_of_ongoing_management_flow.empty() &&
+      account_id_of_ongoing_management_flow != account_info().account_id;
+  base::UmaHistogramBoolean(kOtherManagedProfileCreationHistogramName,
+                            has_managed_profile_created_conflict);
+  if (has_managed_profile_created_conflict) {
+    management_status_state_ =
+        HistorySyncOptinHelper::ManagementStatusState::kFlowAborted;
+    return;
+  }
+  profile_management_disclaimer_service_->EnsureManagedProfileForAccount(
+      account_info().account_id, access_point(),
+      std::move(profile_management_accepted_callback));
 }
 
 void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
@@ -514,12 +553,15 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
   // HistorySyncOptinHelperInBrowser since we only reach this method
   // if the user is managed.
   CHECK_EQ(maybe_managed_account(), signin::Tribool::kTrue);
+  management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
+      kManagementDisclaimerComplete;
 
   if (chosen_profile) {
     SetProfile(chosen_profile);
     ResumeShowHistorySyncOptinScreenFlow(signin::Tribool::kTrue);
     return;
   }
+
   // Note, if we need the exact reason we need to modify the disclaimer service
   // to provide this. However both valid reasons are treated the same so using
   // the management rejection is sufficient.
@@ -542,26 +584,32 @@ HistorySyncOptinHelperInProfilePicker::HistorySyncOptinHelperInProfilePicker(
 HistorySyncOptinHelperInProfilePicker::
     ~HistorySyncOptinHelperInProfilePicker() = default;
 
-bool HistorySyncOptinHelperInProfilePicker::
+void HistorySyncOptinHelperInProfilePicker::
     DetermineManagementStatusAndShowManagementScreens() {
-  if (!policy_helper_) {
-    // Register for policies to determine if the user is managed.
-    // Show the management screen for managed user, before proceeding with the
-    // flow.
-    policy_helper_ = std::make_unique<HistorySyncOptinPolicyHelper>(
-        profile(), account_info(),
-        /*on_register_for_policies_callback=*/
-        base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
-                           MaybeShowAccountManagementScreen,
-                       weak_ptr_factory_.GetWeakPtr()),
-        /*on_policies_fetched_callback=*/
-        base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
-                           ResumeShowHistorySyncOptinScreenFlow,
-                       weak_ptr_factory_.GetWeakPtr(), signin::Tribool::kTrue));
-    policy_helper_->RegisterForPolicies();
-    return true;
+  if (policy_helper_) {
+    return;
   }
-  return false;
+  CHECK(management_status_state_ ==
+        HistorySyncOptinHelper::ManagementStatusState::
+            kManagementDisclaimerNotStarted);
+  management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
+      kManagementDisclaimerInProgress;
+
+  // Register for policies to determine if the user is managed.
+  // Show the management screen for managed user, before proceeding with the
+  // flow.
+  policy_helper_ = std::make_unique<HistorySyncOptinPolicyHelper>(
+      profile(), account_info(),
+      /*on_register_for_policies_callback=*/
+      base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
+                         MaybeShowAccountManagementScreen,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*on_policies_fetched_callback=*/
+      base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
+                         ResumeShowHistorySyncOptinScreenFlow,
+                     weak_ptr_factory_.GetWeakPtr(), signin::Tribool::kTrue));
+  policy_helper_->RegisterForPolicies();
+  return;
 }
 
 void HistorySyncOptinHelperInProfilePicker::MaybeShowAccountManagementScreen(
@@ -577,8 +625,7 @@ void HistorySyncOptinHelperInProfilePicker::MaybeShowAccountManagementScreen(
     ShowAccountManagementScreen();
     return;
   }
-  CHECK(policy_helper_);
-  policy_helper_->FetchPolicies();
+  FetchPoliciesAndUpdateManagedDisclaimerState();
 }
 
 void HistorySyncOptinHelperInProfilePicker::ShowAccountManagementScreen() {
@@ -603,8 +650,15 @@ void HistorySyncOptinHelperInProfilePicker::OnAccountManagementScreenClosed(
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       // Mark the user having accepted the management.
       enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
-      CHECK(policy_helper_);
-      policy_helper_->FetchPolicies();
+      FetchPoliciesAndUpdateManagedDisclaimerState();
       return;
   }
+}
+
+void HistorySyncOptinHelperInProfilePicker::
+    FetchPoliciesAndUpdateManagedDisclaimerState() {
+  management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
+      kManagementDisclaimerComplete;
+  CHECK(policy_helper_);
+  policy_helper_->FetchPolicies();
 }
