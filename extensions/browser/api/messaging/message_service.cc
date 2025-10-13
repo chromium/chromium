@@ -1367,8 +1367,10 @@ void MessageService::PendingLazyContextOpenChannel(
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (context_info == nullptr)
-    return;  // TODO(mpcomplete): notify source of disconnect?
+  if (context_info == nullptr) {
+    // TODO(crbug.com/371011217): notify disconnect.
+    return;
+  }
 
   // Finish tracking SW context wake up.
   if (!open_channel_wakeup_context_tracking_id.is_empty()) {
