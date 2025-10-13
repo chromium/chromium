@@ -43,6 +43,7 @@ source_set("impl") {
   deps = [
     ":sync",
     "//base",
+    "//chrome/browser/complex_tasks",
     "//chrome/browser/profiles:profile",
     "//components/sessions",
     "//components/sync/base:features",
