@@ -225,22 +225,41 @@ SyncService::TransportState TestSyncService::GetTransportState() const {
 
 SyncService::UserActionableError TestSyncService::GetUserActionableError()
     const {
-  if (GetTransportState() == TransportState::PAUSED) {
+#if !BUILDFLAG(IS_IOS)
+  if (HasSyncConsent()) {
+    if (!user_settings_.IsInitialSyncFeatureSetupComplete()) {
+      return UserActionableError::kNeedsSettingsConfirmation;
+    }
+    // RequiresClientUpgrade() is unrecoverable, but is treated separately
+    // below.
+    if (HasUnrecoverableError() && !RequiresClientUpgrade()) {
+      return UserActionableError::kUnrecoverableError;
+    }
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return UserActionableError::kSignInNeedsUpdate;
+  }
+  if (RequiresClientUpgrade()) {
+    return UserActionableError::kNeedsClientUpgrade;
   }
   if (user_settings_.IsPassphraseRequiredForPreferredDataTypes()) {
     return UserActionableError::kNeedsPassphrase;
   }
-  if (user_settings_.IsTrustedVaultKeyRequired()) {
-    return UserActionableError::kNeedsTrustedVaultKeyForEverything;
-  }
   if (user_settings_.IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
-    return UserActionableError::kNeedsTrustedVaultKeyForPasswords;
+    return user_settings_.IsEncryptEverythingEnabled()
+               ? UserActionableError::kNeedsTrustedVaultKeyForEverything
+               : UserActionableError::kNeedsTrustedVaultKeyForPasswords;
   }
   if (user_settings_.IsTrustedVaultRecoverabilityDegraded()) {
-    return UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything;
+    return user_settings_.IsEncryptEverythingEnabled()
+               ? UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForEverything
+               : UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForPasswords;
   }
+
   return UserActionableError::kNone;
 }
 

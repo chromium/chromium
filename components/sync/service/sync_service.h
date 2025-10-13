@@ -190,8 +190,6 @@ class SyncService : public KeyedService {
 
   // Error states that prevent Sync from working well or working at all, usually
   // displayed to the user.
-  // TODO(crbug.com/40890809): Add new cases that are missing, ideally unify
-  // with other enums like AvatarSyncErrorType.
   //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

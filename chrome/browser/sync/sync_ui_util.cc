@@ -194,25 +194,6 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-AvatarSyncErrorType GetTrustedVaultError(
-    const syncer::SyncService* sync_service) {
-  if (sync_service->GetUserSettings()
-          ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
-    return sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-               ? AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError
-               : AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError;
-  }
-
-  if (sync_service->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded()) {
-    return sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-               ? AvatarSyncErrorType::
-                     kTrustedVaultRecoverabilityDegradedForEverythingError
-               : AvatarSyncErrorType::
-                     kTrustedVaultRecoverabilityDegradedForPasswordsError;
-  }
-
-  return AvatarSyncErrorType::kNone;
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -297,31 +278,32 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
 
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
     Profile* profile,
-    AvatarSyncErrorType error) {
+    syncer::SyncService::UserActionableError error) {
   switch (error) {
-    case AvatarSyncErrorType::kNone:
+    case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
-    case AvatarSyncErrorType::kSyncPaused:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
               IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kReauthenticate};
 
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
               IDS_SETTINGS_ERROR_PASSWORDS_USER_ERROR_DESCRIPTION,
               IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
       return {
           SyncStatusMessageType::kPasswordsOnlySyncError,
           IDS_SETTINGS_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_ERROR_DESCRIPTION,
           IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
           SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
-    case AvatarSyncErrorType::kPassphraseError:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
               IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON,
@@ -331,29 +313,30 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
                   : IDS_SETTINGS_SIGN_OUT,
               SyncStatusActionType::kEnterPassphrase};
 
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForEverythingError:
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_TRUSTED_VAULT_USER_ERROR_DESCRIPTION,
               IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
-    case AvatarSyncErrorType::kUpgradeClientError:
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_UPGRADE_CLIENT_USER_ERROR_DESCRIPTION,
               IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SETTINGS_SIGN_OUT,
               SyncStatusActionType::kUpgradeClient};
 
-    case AvatarSyncErrorType::kSettingsUnconfirmedError:
+    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_SETTINGS_NOT_CONFIRMED,
               IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kConfirmSyncSettings};
 
-    case AvatarSyncErrorType::kUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kUnrecoverableError:
       // Managed users get different labels.
       if (!ChromeSigninClientFactory::GetForProfile(profile)
                ->IsClearPrimaryAccountAllowed()) {
@@ -369,76 +352,44 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
   }
 }
 
-AvatarSyncErrorType GetAvatarSyncErrorType(Profile* profile) {
-  const syncer::SyncService* service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return AvatarSyncErrorType::kNone;
-  }
-
-  if (service->HasSyncConsent()) {
-    if (ShouldRequestSyncConfirmation(service)) {
-      return AvatarSyncErrorType::kSettingsUnconfirmedError;
-    }
-
-    // RequiresClientUpgrade() is unrecoverable, but is treated separately
-    // below.
-    if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
-      return AvatarSyncErrorType::kUnrecoverableError;
-    }
-  }
-
-  if (service->GetTransportState() ==
-      syncer::SyncService::TransportState::PAUSED) {
-    return AvatarSyncErrorType::kSyncPaused;
-  }
-
-  if (service->RequiresClientUpgrade()) {
-    return AvatarSyncErrorType::kUpgradeClientError;
-  }
-
-  if (ShouldShowSyncPassphraseError(service)) {
-    return AvatarSyncErrorType::kPassphraseError;
-  }
-
-  return GetTrustedVaultError(service);
-}
-
-std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
-                                             const std::string& user_email) {
+std::u16string GetAvatarSyncErrorDescription(
+    syncer::SyncService::UserActionableError error,
+    const std::string& user_email) {
   switch (error) {
-    case AvatarSyncErrorType::kNone:
+    case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
-    case AvatarSyncErrorType::kSyncPaused:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForEverythingError:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::kPassphraseError:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::kUpgradeClientError:
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
       return l10n_util::GetStringFUTF16(
           IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
-    case AvatarSyncErrorType::kSettingsUnconfirmedError:
-    case AvatarSyncErrorType::kUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
+    case syncer::SyncService::UserActionableError::kUnrecoverableError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }
 }

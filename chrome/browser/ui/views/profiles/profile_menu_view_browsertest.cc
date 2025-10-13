@@ -773,7 +773,8 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
     // but this is tested in ProfileMenuClickTest.
     base::HistogramTester histogram_tester;
     static_cast<ProfileMenuView*>(profile_menu_view())
-        ->OnSyncErrorButtonClicked(AvatarSyncErrorType::kSyncPaused);
+        ->OnSyncErrorButtonClicked(
+            syncer::SyncService::UserActionableError::kSignInNeedsUpdate);
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSyncErrorButton,

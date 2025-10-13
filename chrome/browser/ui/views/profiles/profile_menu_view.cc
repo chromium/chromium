@@ -118,10 +118,11 @@
 
 namespace {
 
-std::u16string GetSyncErrorButtonText(Profile* profile,
-                                      AvatarSyncErrorType error) {
+std::u16string GetSyncErrorButtonText(
+    Profile* profile,
+    syncer::SyncService::UserActionableError error) {
   switch (error) {
-    case AvatarSyncErrorType::kUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kUnrecoverableError:
       if (!ChromeSigninClientFactory::GetForProfile(profile)
                ->IsClearPrimaryAccountAllowed()) {
         // As opposed to the corresponding error in an unmanaged account,
@@ -131,26 +132,28 @@ std::u16string GetSyncErrorButtonText(Profile* profile,
             IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
       }
       [[fallthrough]];
-    case AvatarSyncErrorType::kSyncPaused:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       // The user was signed out. Offer them to sign in again.
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
-    case AvatarSyncErrorType::kUpgradeClientError:
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
-    case AvatarSyncErrorType::kPassphraseError:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForEverythingError:
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON);
-    case AvatarSyncErrorType::kSettingsUnconfirmedError:
+    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
-    case AvatarSyncErrorType::kNone:
+    case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
   }
 }
@@ -327,7 +330,8 @@ void ProfileMenuView::OnAccountSettingsButtonClicked() {
   chrome::ShowSettingsSubPage(&browser(), chrome::kPeopleSubPage);
 }
 
-void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
+void ProfileMenuView::OnSyncErrorButtonClicked(
+    syncer::SyncService::UserActionableError error) {
   OnActionableItemClicked(ActionableItem::kSyncErrorButton);
   if (!perform_menu_actions()) {
     return;
@@ -335,7 +339,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
 
   // The logic below must be consistent with GetSyncInfoForAvatarErrorType().
   switch (error) {
-    case AvatarSyncErrorType::kUnrecoverableError: {
+    case syncer::SyncService::UserActionableError::kUnrecoverableError: {
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(&profile());
       // Managed users get directed to the sign-out confirmation dialog in
@@ -358,39 +362,41 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
           signin_metrics::AccessPoint::kAvatarBubbleSignIn);
       break;
     }
-    case AvatarSyncErrorType::kSyncPaused:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           &profile(), signin_metrics::AccessPoint::kAvatarBubbleSignIn);
       break;
-    case AvatarSyncErrorType::kUpgradeClientError:
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       chrome::OpenUpdateChromeDialog(&browser());
       break;
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
       OpenTabForSyncKeyRetrieval(
           &browser(),
           syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForEverythingError:
-    case AvatarSyncErrorType::
-        kTrustedVaultRecoverabilityDegradedForPasswordsError:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
       OpenTabForSyncKeyRecoverabilityDegraded(
           &browser(),
           syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
-    case AvatarSyncErrorType::kPassphraseError:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       ShowSyncPassphraseDialog(
           browser(),
           base::BindRepeating(
               &SyncPassphraseDialogDecryptData,
               base::Unretained(SyncServiceFactory::GetForProfile(&profile()))));
       break;
-    case AvatarSyncErrorType::kSettingsUnconfirmedError:
+    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
       chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
       break;
-    case AvatarSyncErrorType::kNone:
+    case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
   }
 }
@@ -614,7 +620,6 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 ProfileMenuViewBase::IdentitySectionParams
 ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
-  const AvatarSyncErrorType error = GetAvatarSyncErrorType(&profile());
   const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile());
   const CoreAccountInfo primary_account_info =
@@ -672,19 +677,26 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     return params;
   }
 
-  // Avoid reacting to AvatarSyncErrorType::kSyncPaused in case of no sync
-  // consent, as kSignInPending is handled differently below.
-  if (error != AvatarSyncErrorType::kNone &&
-      (error != AvatarSyncErrorType::kSyncPaused ||
-       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
-    params.subtitle =
-        GetAvatarSyncErrorDescription(error, primary_account_info.email);
-    params.button_text = GetSyncErrorButtonText(&profile(), error);
-    params.button_action =
-        base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
-                            base::Unretained(this), error);
-    params.has_dotted_ring = true;
-    return params;
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(&profile());
+  if (service) {
+    const syncer::SyncService::UserActionableError error =
+        service->GetUserActionableError();
+    // Avoid reacting to
+    // syncer::SyncService::UserActionableError::kSignInNeedsUpdate in case of
+    // no sync consent, as kSignInPending is handled differently below.
+    if (error != syncer::SyncService::UserActionableError::kNone &&
+        (error !=
+             syncer::SyncService::UserActionableError::kSignInNeedsUpdate ||
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+      params.subtitle =
+          GetAvatarSyncErrorDescription(error, primary_account_info.email);
+      params.button_text = GetSyncErrorButtonText(&profile(), error);
+      params.button_action =
+          base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
+                              base::Unretained(this), error);
+      params.has_dotted_ring = true;
+      return params;
+    }
   }
 
   ActionableItem button_type = ActionableItem::kSigninAccountButton;

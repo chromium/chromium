@@ -117,6 +117,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -622,27 +623,33 @@ bool ProfileSubMenuModel::BuildSyncSection() {
 
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const AvatarSyncErrorType error = GetAvatarSyncErrorType(profile_);
-  if (error != AvatarSyncErrorType::kNone) {
-    if (error == AvatarSyncErrorType::kSyncPaused) {
-      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-        // If sync is paused the menu item will be specific to the paused error.
-        AddItemWithStringIdAndVectorIcon(
-            this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILE_ROW_SIGN_IN_AGAIN,
-            vector_icons::kSyncOffChromeRefreshIcon);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
+  if (service) {
+    const syncer::SyncService::UserActionableError error =
+        service->GetUserActionableError();
+    if (error != syncer::SyncService::UserActionableError::kNone) {
+      if (error ==
+          syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
+        if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+          // If sync is paused the menu item will be specific to the paused
+          // error.
+          AddItemWithStringIdAndVectorIcon(
+              this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILE_ROW_SIGN_IN_AGAIN,
+              vector_icons::kSyncOffChromeRefreshIcon);
+        } else {
+          AddItemWithStringIdAndVectorIcon(
+              this, IDC_SHOW_SIGNIN_WHEN_PAUSED,
+              IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
+              vector_icons::kAccountCircleOffChromeRefreshIcon);
+        }
       } else {
+        // All remaining errors will have the same menu item.
         AddItemWithStringIdAndVectorIcon(
-            this, IDC_SHOW_SIGNIN_WHEN_PAUSED,
-            IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
-            vector_icons::kAccountCircleOffChromeRefreshIcon);
+            this, IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE,
+            vector_icons::kSyncProblemChromeRefreshIcon);
       }
-    } else {
-      // All remaining errors will have the same menu item.
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE,
-          vector_icons::kSyncProblemChromeRefreshIcon);
+      return true;
     }
-    return true;
   }
 
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {

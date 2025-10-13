@@ -153,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(GetAvatarSyncErrorType(browser()->profile()),
-            AvatarSyncErrorType::kSyncPaused);
+  EXPECT_EQ(sync_service()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kSignInNeedsUpdate);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -69,6 +69,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_metrics.h"
@@ -1181,18 +1182,21 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
           !service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  SyncStatusLabels status_labels;
+  SyncStatusLabels status_labels = GetSyncStatusLabelsForSettings(
+      SyncServiceFactory::GetForProfile(profile_));
 
-  const AvatarSyncErrorType error = GetAvatarSyncErrorType(profile_);
-  // Avoid reacting to AvatarSyncErrorType::kSyncPaused in case of no sync
-  // consent, as the signin-pending state is not considered to be an error here.
-  if (error != AvatarSyncErrorType::kNone &&
-      (error != AvatarSyncErrorType::kSyncPaused ||
-       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
-    status_labels = GetAvatarSyncErrorLabelsForSettings(profile_, error);
-  } else {
-    status_labels = GetSyncStatusLabelsForSettings(
-        SyncServiceFactory::GetForProfile(profile_));
+  if (service) {
+    const syncer::SyncService::UserActionableError error =
+        service->GetUserActionableError();
+    // Avoid reacting to UserActionableError::kSignInNeedsUpdate in case of no
+    // sync consent, as the signin-pending state is not considered to be an
+    // error here.
+    if (error != syncer::SyncService::UserActionableError::kNone &&
+        (error !=
+             syncer::SyncService::UserActionableError::kSignInNeedsUpdate ||
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+      status_labels = GetAvatarSyncErrorLabelsForSettings(profile_, error);
+    }
   }
 
   // TODO(crbug.com/40660240): Consider unifying some of the fields below to
