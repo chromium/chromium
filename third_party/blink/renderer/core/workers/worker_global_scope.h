@@ -238,8 +238,9 @@ class CORE_EXPORT WorkerGlobalScope
 
   FontFaceSet* fonts();
 
+  // TODO(crbug.com/451479061): Consider moving the following function
+  // under trustedTypes/
   TrustedTypePolicyFactory* GetTrustedTypes() const override;
-  TrustedTypePolicyFactory* trustedTypes() const { return GetTrustedTypes(); }
 
   // TODO(https://crbug.com/835717): Remove this function after dedicated
   // workers support off-the-main-thread script fetch by default.

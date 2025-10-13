@@ -206,9 +206,6 @@
     // Event handler attributes
     attribute EventHandler onsearch;
 
-    // TrustedTypes API: http://github.com/w3c/trusted-types
-    [CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
-
     // Anonymous iframe:
     // https://github.com/WICG/anonymous-iframe
     [RuntimeEnabled=AnonymousIframe] readonly attribute boolean credentialless;

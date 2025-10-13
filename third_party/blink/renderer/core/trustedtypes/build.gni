@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_trustedtypes = [
+  "global_trusted_types.cc",
+  "global_trusted_types.h",
   "trusted_html.cc",
   "trusted_html.h",
   "trusted_script.cc",
