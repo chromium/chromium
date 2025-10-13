@@ -446,24 +446,4 @@ TEST_F(WebContentsModalDialogManagerTest,
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
 }
 
-// Tests that a call is made to activate the web contents when a dialog is
-// shown.
-TEST_F(WebContentsModalDialogManagerTest, ActivatesWebContentsOnShow) {
-  // Dialog should be shown while WebContents is visible.
-  const gfx::NativeWindow dialog = MakeFakeDialog();
-
-  NativeManagerTracker tracker;
-  TestNativeWebContentsModalDialogManager* native_manager =
-      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
-  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
-
-  EXPECT_EQ(NativeManagerTracker::SHOWN, tracker.state_);
-  EXPECT_TRUE(manager->IsDialogActive());
-  EXPECT_TRUE(delegate->web_contents_activated());
-  EXPECT_TRUE(delegate->web_contents_blocked());
-  EXPECT_TRUE(tracker.was_shown());
-
-  native_manager->StopTracking();
-}
-
 }  // namespace web_modal

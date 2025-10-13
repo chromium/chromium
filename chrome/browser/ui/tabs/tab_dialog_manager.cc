@@ -576,9 +576,8 @@ void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
 
 bool TabDialogManager::GetDialogWidgetVisibility() {
   // The dialog widget should be visible if and only if the tab is in the
-  // foreground and activated, and the host window is not minimized. For split
-  // view, a tab must just be in the foreground because if both tabs have
-  // modals, one won't be activated.
+  // foreground and the host window is not minimized. The inactive tab in a
+  // split view can show a modal dialog.
   return GetWidgetVisibility(
       tab_interface_->IsVisible(),
       tab_interface_->GetBrowserWindowInterface()->GetWindow()->IsMinimized(),

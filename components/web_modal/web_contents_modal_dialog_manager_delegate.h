@@ -32,11 +32,6 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManagerDelegate {
   // Returns whether the WebContents is currently visible or not.
   virtual bool IsWebContentsVisible(content::WebContents* web_contents);
 
-  // Used to handle any logic that should be run when a modal dialog is first
-  // shown.
-  virtual void OnWebContentsModalDialogFirstShown(
-      content::WebContents* web_contents) {}
-
  protected:
   virtual ~WebContentsModalDialogManagerDelegate();
 };

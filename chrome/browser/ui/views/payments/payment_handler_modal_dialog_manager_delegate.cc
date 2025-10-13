@@ -5,11 +5,8 @@
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -59,27 +56,6 @@ bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(
     content::WebContents* web_contents) {
   DCHECK_EQ(web_contents_, web_contents);
   return platform_util::IsVisible(web_contents->GetNativeView());
-}
-
-void PaymentHandlerModalDialogManagerDelegate::
-    OnWebContentsModalDialogFirstShown(content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
-    return;
-  }
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
-    return;
-  }
-
-  TabStripModel* tab_strip_model =
-      tab->GetBrowserWindowInterface()->GetTabStripModel();
-  const int tab_index = tab_strip_model->GetIndexOfWebContents(web_contents);
-  if (tab_strip_model->GetActiveWebContents() != web_contents &&
-      tab_strip_model->IsTabInForeground(tab_index)) {
-    tab_strip_model->ActivateTabAt(
-        tab_strip_model->GetIndexOfWebContents(web_contents));
-  }
 }
 
 void PaymentHandlerModalDialogManagerDelegate::SetWebContents(

@@ -497,7 +497,7 @@ class JavaScriptDialogForSplitViewTest : public JavaScriptDialogTest {
 };
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogForSplitViewTest,
-                       ActivatesTabWithDialogWhenSwappingIntoSplit) {
+                       HandlesSwappingTabWithDialogIntoSplitView) {
   // Create three tabs with the first two in a split view.
   chrome::NewTab(browser());
   tab_strip_model()->ActivateTabAt(0);
@@ -529,14 +529,15 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogForSplitViewTest,
                   ->GetShowingAttentionIndicator());
 
   // Swapping the third tab with the inactive tab in the split should cause that
-  // tab to become active. The dialog will still be showing.
+  // tab to join the split view as an inactive tab. The dialog will still be
+  // showing.
   tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetTabAtIndex(1), 2,
                                       TabStripModel::SplitUpdateType::kSwap);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
-  ASSERT_EQ(1, tab_strip_model()->active_index());
+  ASSERT_EQ(0, tab_strip_model()->active_index());
 
-  // Triggering the tab without the dialog shouldn't work.
-  tab_strip_model()->ActivateTabAt(0);
+  // Triggering the tab with the dialog will activate that tab.
+  tab_strip_model()->ActivateTabAt(1);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   ASSERT_EQ(1, tab_strip_model()->active_index());
 }

@@ -2100,7 +2100,7 @@ TEST_P(TabStripModelTest, AddToSplitBlocked) {
                             split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip()));
-  EXPECT_EQ(tabstrip()->active_index(), 1);
+  EXPECT_EQ(tabstrip()->active_index(), 0);
   EXPECT_TRUE(tabstrip()->selection_model().IsSelected(0));
   EXPECT_TRUE(tabstrip()->selection_model().IsSelected(1));
 

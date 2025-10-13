@@ -44,7 +44,6 @@ void WebContentsModalDialogManager::ShowDialogWithManager(
   if (child_dialogs_.size() == 1) {
     BlockWebContentsInteraction(true);
     if (delegate_ && delegate_->IsWebContentsVisible(web_contents())) {
-      delegate_->OnWebContentsModalDialogFirstShown(web_contents());
       ShowNextDialog();
     }
   }
@@ -94,7 +93,6 @@ void WebContentsModalDialogManager::WillClose(gfx::NativeWindow dialog) {
   if (!closing_all_dialogs_ &&
       (!child_dialogs_.empty() && removed_topmost_dialog) &&
       (delegate_ && delegate_->IsWebContentsVisible(web_contents()))) {
-    delegate_->OnWebContentsModalDialogFirstShown(web_contents());
     ShowNextDialog();
   }
 
