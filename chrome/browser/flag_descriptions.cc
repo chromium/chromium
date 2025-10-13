@@ -3722,11 +3722,6 @@ const char kSafetyHubWeakAndReusedPasswordsName[] =
 const char kSafetyHubWeakAndReusedPasswordsDescription[] =
     "Enables showing weak and reused passwords in the password module of "
     "Safety Hub.";
-#else
-const char kSafetyHubHaTSOneOffSurveyName[] =
-    "HaTS for Safety Check v2 on Desktop";
-const char kSafetyHubHaTSOneOffSurveyDescription[] =
-    "Enables one-off HaTS surveys for Safety Check v2 on Desktop.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";

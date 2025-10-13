@@ -10115,11 +10115,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubUnifiedPasswordsModuleName,
      flag_descriptions::kSafetyHubUnifiedPasswordsModuleDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kSafetyHubUnifiedPasswordsModuleChoices)},
-#else
-    {"safety-hub-one-off-survey",
-     flag_descriptions::kSafetyHubHaTSOneOffSurveyName,
-     flag_descriptions::kSafetyHubHaTSOneOffSurveyDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSafetyHubHaTSOneOffSurvey)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

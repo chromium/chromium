@@ -2127,9 +2127,6 @@ extern const char kSafetyHubAndroidSurveyV2Description[];
 
 extern const char kSafetyHubWeakAndReusedPasswordsName[];
 extern const char kSafetyHubWeakAndReusedPasswordsDescription[];
-#else
-extern const char kSafetyHubHaTSOneOffSurveyName[];
-extern const char kSafetyHubHaTSOneOffSurveyDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSameAppWindowCycleName[];

@@ -2162,7 +2162,6 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   if (!safety_hub_menu_notification_service) {
     return false;
   }
-  safety_hub_menu_notification_service->MaybeTriggerControlSurvey();
 
   std::optional<MenuNotificationEntry> notification =
       safety_hub_menu_notification_service->GetNotificationToShow();

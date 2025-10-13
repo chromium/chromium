@@ -69,13 +69,9 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
     PasswordStatusCheckService* password_check_service,
-    SafetyHubHatsService* safety_hub_hats_service,
 #endif  // !BUILDFLAG(IS_ANDROID)
     Profile* profile) {
   pref_service_ = std::move(pref_service);
-#if !BUILDFLAG(IS_ANDROID)
-  safety_hub_hats_service_ = safety_hub_hats_service;
-#endif  // !BUILDFLAG(IS_ANDROID)
   const base::Value::Dict& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
 
@@ -169,19 +165,6 @@ void SafetyHubMenuNotificationService::UpdateResultGetterForTesting(
 SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() {
   registrar_.RemoveAll();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void SafetyHubMenuNotificationService::MaybeTriggerControlSurvey() const {
-  // If any notification is not shown yet, trigger Hats survey control group.
-  if (base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) &&
-      !HasAnyNotificationBeenShown()) {
-    if (!safety_hub_hats_service_) {
-      return;
-    }
-    safety_hub_hats_service_->TriggerControlSurvey();
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::optional<MenuNotificationEntry>
 SafetyHubMenuNotificationService::GetNotificationToShow() {

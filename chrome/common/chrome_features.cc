@@ -1373,20 +1373,6 @@ BASE_FEATURE(kSafetyHubUnifiedPasswordsModule,
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the A/B Experiment Survey for Safety Hub.
-BASE_FEATURE(kSafetyHubHaTSOneOffSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentControlTriggerId{
-        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-control-trigger-id", ""};
-const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentNotificationTriggerId{
-        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-notification-trigger-id",
-        ""};
-const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId{
-        &kSafetyHubHaTSOneOffSurvey, "safety-hub-ab-interaction-trigger-id",
-        ""};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Controls whether SCT audit reports are queued and the rate at which they

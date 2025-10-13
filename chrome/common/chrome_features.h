@@ -1052,18 +1052,6 @@ BASE_DECLARE_FEATURE(kSafetyHubUnifiedPasswordsModule);
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubTrustSafetySentimentSurvey);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kSafetyHubHaTSOneOffSurvey);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentControlTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentNotificationTriggerId;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string>
-    kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSCTAuditing);

@@ -36,20 +36,10 @@ SafetyHubHatsService::SafetyHubHatsService(
       tss_service_(tss_service),
       hats_service_(hats_service) {}
 
-void SafetyHubHatsService::TriggerControlSurvey() {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) ||
-      !hats_service_) {
-    return;
-  }
-  hats_service_->LaunchSurvey(
-      kHatsSurveyTriggerSafetyHubOneOffExperimentControl);
-}
-
 void SafetyHubHatsService::SafetyHubModuleInteracted() {
   has_interacted_with_module_ = true;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
-  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubNotificationClicked(
@@ -58,20 +48,17 @@ void SafetyHubHatsService::SafetyHubNotificationClicked(
   last_module_clicked_ = sh_module;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
-  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubVisited() {
   has_visited_ = true;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
-  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
 void SafetyHubHatsService::SafetyHubNotificationSeen() {
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubNotification);
-  TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentNotification);
 }
 
 void SafetyHubHatsService::TriggerTrustSafetySentimentSurvey(
@@ -80,17 +67,6 @@ void SafetyHubHatsService::TriggerTrustSafetySentimentSurvey(
     tss_service_->TriggerSafetyHubSurvey(area,
                                          GetSafetyHubProductSpecificData());
   }
-}
-
-void SafetyHubHatsService::TriggerOneOffSurvey(const std::string& trigger) {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) ||
-      !hats_service_) {
-    return;
-  }
-  hats_service_->LaunchSurvey(trigger,
-                              /*success_callback=*/base::DoNothing(),
-                              /*failure_callback=*/base::DoNothing(),
-                              GetSafetyHubProductSpecificData());
 }
 
 std::map<std::string, bool>
