@@ -135,7 +135,7 @@ void GlicFloatingUi::Show() {
 void GlicFloatingUi::Close() {
   glic_window_animator_.reset();
   glic_widget_.reset();
-  delegate_->WillCloseFor(/*tab=*/nullptr);
+  delegate_->WillCloseFor(FloatingEmbedderKey{});
 }
 
 void GlicFloatingUi::ClosePanel() {

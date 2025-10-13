@@ -141,7 +141,7 @@ class GlicInstanceImpl : public GlicInstance,
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
-  void WillCloseFor(tabs::TabInterface* tab) override;
+  void WillCloseFor(EmbedderKey key) override;
   void Attach(tabs::TabInterface* tab) override;
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance

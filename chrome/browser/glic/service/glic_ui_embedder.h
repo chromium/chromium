@@ -27,7 +27,7 @@ class GlicUiEmbedder {
         const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
-    virtual void WillCloseFor(tabs::TabInterface* tab) = 0;
+    virtual void WillCloseFor(EmbedderKey key) = 0;
     virtual Host& host() = 0;
     virtual void Attach(tabs::TabInterface* tab) = 0;
     virtual void Detach(tabs::TabInterface* tab) = 0;

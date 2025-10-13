@@ -601,8 +601,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   return new_entry;
 }
 
-void GlicInstanceImpl::WillCloseFor(tabs::TabInterface* tab) {
-  auto key = tab ? CreateSidePanelEmbedderKey(tab) : FloatingEmbedderKey{};
+void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
