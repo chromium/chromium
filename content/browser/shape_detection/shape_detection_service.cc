@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/shape_detection/shape_detection_service_host.h"
+#include "content/public/browser/shape_detection_service.h"
 
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
