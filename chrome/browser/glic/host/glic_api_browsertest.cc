@@ -974,11 +974,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
-  if (GetParam().multi_instance) {
-    // TODO(b/450624587):
-    GTEST_SKIP() << "multi-instance will close the floating panel too early. "
-                    "Re-enable this test after the bug is fixed.";
-  }
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
