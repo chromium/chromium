@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -39,6 +40,7 @@
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
+#include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "content/browser/indexed_db/instance/mock_factory_client.h"
 #include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
 #include "content/browser/indexed_db/instance/transaction.h"
@@ -283,9 +285,14 @@ blink::mojom::IDBReturnValuePtr CreateIDBReturnValuePtr(
 
 }  // namespace
 
-class DatabaseTest : public ::testing::Test {
+class DatabaseTest : public ::testing::Test,
+                     public testing::WithParamInterface<bool> {
  public:
-  DatabaseTest() = default;
+  DatabaseTest()
+      : sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
+            IsSqliteBackingStoreEnabled())) {}
+
+  bool IsSqliteBackingStoreEnabled() { return GetParam(); }
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -303,6 +310,10 @@ class DatabaseTest : public ::testing::Test {
         base::BindOnce(&DatabaseTest::OnBucketContextReadyForDestruction,
                        weak_factory_.GetWeakPtr());
 
+    mojo::PendingRemote<storage::mojom::BlobStorageContext>
+        blob_storage_context;
+    blob_storage_context_.Clone(
+        blob_storage_context.InitWithNewPipeAndPassReceiver());
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
     file_system_access_context_ =
         std::make_unique<test::MockFileSystemAccessContext>();
@@ -312,7 +323,7 @@ class DatabaseTest : public ::testing::Test {
     bucket_context_ = std::make_unique<BucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
         quota_manager_proxy_,
-        /*blob_storage_context=*/mojo::NullRemote(),
+        /*blob_storage_context=*/std::move(blob_storage_context),
         /*file_system_access_context=*/std::move(fsa_context));
 
     bucket_context_->InitBackingStoreIfNeeded(true);
@@ -331,14 +342,16 @@ class DatabaseTest : public ::testing::Test {
   }
 
  protected:
+  base::AutoReset<std::optional<bool>> sqlite_override_;
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<BucketContext> bucket_context_;
+  MockBlobStorageContext blob_storage_context_;
   std::unique_ptr<test::MockFileSystemAccessContext>
       file_system_access_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
+  std::unique_ptr<BucketContext> bucket_context_;
 
   // As this is owned by `bucket_context_`, tests that cause the database to
   // be destroyed must manually reset this to null to avoid triggering dangling
@@ -348,7 +361,15 @@ class DatabaseTest : public ::testing::Test {
   base::WeakPtrFactory<DatabaseTest> weak_factory_{this};
 };
 
-TEST_F(DatabaseTest, ConnectionLifecycle) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    DatabaseTest,
+    /*use SQLite backing store*/ testing::Bool(),
+    [](const testing::TestParamInfo<DatabaseTest::ParamType>& info) {
+      return info.param ? "SQLite" : "LevelDB";
+    });
+
+TEST_P(DatabaseTest, ConnectionLifecycle) {
   MockMojoDatabaseCallbacks database_callbacks;
   MockFactoryClient request1;
   const int64_t transaction_id1 = 1;
@@ -382,12 +403,11 @@ TEST_F(DatabaseTest, ConnectionLifecycle) {
   request2.connection()->CloseAndReportForceClose(kTestForceCloseMessage);
   EXPECT_FALSE(request2.connection()->IsConnected());
 
-  RunPostedTasks();
-
-  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
 }
 
-TEST_F(DatabaseTest, ForcedClose) {
+TEST_P(DatabaseTest, ForcedClose) {
   MockMojoDatabaseCallbacks database_callbacks;
   MockFactoryClient request;
   const int64_t upgrade_transaction_id = 3;
@@ -441,7 +461,7 @@ class FakeFactoryClient : public FactoryClient {
 
 }  // namespace
 
-TEST_F(DatabaseTest, PendingDelete) {
+TEST_P(DatabaseTest, PendingDelete) {
   MockFactoryClient request1;
   const int64_t transaction_id1 = 1;
   MockMojoDatabaseCallbacks database_callbacks1;
@@ -483,7 +503,7 @@ TEST_F(DatabaseTest, PendingDelete) {
   EXPECT_TRUE(request2.success_called());
 }
 
-TEST_F(DatabaseTest, OpenDeleteClear) {
+TEST_P(DatabaseTest, OpenDeleteClear) {
   const int64_t kDatabaseVersion = 1;
 
   MockFactoryClient request1(
@@ -549,7 +569,7 @@ TEST_F(DatabaseTest, OpenDeleteClear) {
   EXPECT_TRUE(request3.error_called());
 }
 
-TEST_F(DatabaseTest, ForceDelete) {
+TEST_P(DatabaseTest, ForceDelete) {
   MockFactoryClient request1;
   MockMojoDatabaseCallbacks database_callbacks;
   const int64_t transaction_id1 = 1;
@@ -580,7 +600,7 @@ TEST_F(DatabaseTest, ForceDelete) {
   EXPECT_TRUE(request2.success_called());
 }
 
-TEST_F(DatabaseTest, ForceCloseWhileOpenPending) {
+TEST_P(DatabaseTest, ForceCloseWhileOpenPending) {
   // Verify that pending connection requests are handled correctly during a
   // ForceClose.
   MockFactoryClient request1;
@@ -621,7 +641,7 @@ TEST_F(DatabaseTest, ForceCloseWhileOpenPending) {
   EXPECT_FALSE(db_);
 }
 
-TEST_F(DatabaseTest, ForceCloseWhileOpenAndDeletePending) {
+TEST_P(DatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   // Verify that pending connection requests are handled correctly during a
   // ForceClose.
   MockFactoryClient request1;
@@ -835,7 +855,15 @@ class DatabaseOperationTest : public DatabaseTest {
   Status commit_success_;
 };
 
-TEST_F(DatabaseOperationTest, CreateObjectStore) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    DatabaseOperationTest,
+    /*use SQLite backing store*/ testing::Bool(),
+    [](const testing::TestParamInfo<DatabaseOperationTest::ParamType>& info) {
+      return info.param ? "SQLite" : "LevelDB";
+    });
+
+TEST_P(DatabaseOperationTest, CreateObjectStore) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
   Status s = transaction_->BackingStoreTransaction()->CreateObjectStore(
@@ -849,7 +877,7 @@ TEST_F(DatabaseOperationTest, CreateObjectStore) {
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
 }
 
-TEST_F(DatabaseOperationTest, CreateIndex) {
+TEST_P(DatabaseOperationTest, CreateIndex) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
   Status s = transaction_->BackingStoreTransaction()->CreateObjectStore(
@@ -887,7 +915,14 @@ class DatabaseOperationAbortTest : public DatabaseOperationTest {
       delete;
 };
 
-TEST_F(DatabaseOperationAbortTest, CreateObjectStore) {
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    DatabaseOperationAbortTest,
+    /*use SQLite backing store*/ testing::Bool(),
+    [](const testing::TestParamInfo<DatabaseOperationAbortTest::ParamType>&
+           info) { return info.param ? "SQLite" : "LevelDB"; });
+
+TEST_P(DatabaseOperationAbortTest, CreateObjectStore) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
   Status s = transaction_->BackingStoreTransaction()->CreateObjectStore(
@@ -897,12 +932,12 @@ TEST_F(DatabaseOperationAbortTest, CreateObjectStore) {
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
   db_ = nullptr;
   transaction_->SetCommitFlag();
-  RunPostedTasks();
   // A transaction error results in a deleted db.
-  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
 }
 
-TEST_F(DatabaseOperationAbortTest, CreateIndex) {
+TEST_P(DatabaseOperationAbortTest, CreateIndex) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
   Status s = transaction_->BackingStoreTransaction()->CreateObjectStore(
@@ -921,12 +956,12 @@ TEST_F(DatabaseOperationAbortTest, CreateIndex) {
       db_->metadata().object_stores.find(store_id)->second.indexes.size());
   db_ = nullptr;
   transaction_->SetCommitFlag();
-  RunPostedTasks();
   // A transaction error results in a deleted db.
-  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return bucket_context_->GetDatabasesForTesting().empty(); }));
 }
 
-TEST_F(DatabaseOperationTest, CreatePutDelete) {
+TEST_P(DatabaseOperationTest, CreatePutDelete) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
 
@@ -961,7 +996,7 @@ TEST_F(DatabaseOperationTest, CreatePutDelete) {
   EXPECT_TRUE(s.ok());
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWhenEmpty) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeysWhenEmpty) {
   ASSERT_NO_FATAL_FAILURE(TestGetAll(
       /*database_parameters=*/
       {
@@ -979,7 +1014,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWhenEmpty) {
       /*expected_results=*/{}));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllValuesWhenEmpty) {
+TEST_P(DatabaseOperationTest, IndexGetAllValuesWhenEmpty) {
   ASSERT_NO_FATAL_FAILURE(TestGetAll(
       /*database_parameters=*/
       {
@@ -1000,7 +1035,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllValuesWhenEmpty) {
       /*expected_results=*/{}));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeys) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeys) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
                                    /*value=*/nullptr,
@@ -1047,7 +1082,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeys) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllValues) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllValues) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(
           /*primary_key=*/std::nullopt,
@@ -1097,7 +1132,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllValues) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecords) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllRecords) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
                                    /*value=*/CreateIDBReturnValuePtr("value1"),
@@ -1144,7 +1179,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecords) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllKeys) {
+TEST_P(DatabaseOperationTest, IndexGetAllKeys) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
                                    /*value=*/nullptr,
@@ -1194,7 +1229,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllKeys) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllValues) {
+TEST_P(DatabaseOperationTest, IndexGetAllValues) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(
           /*primary_key=*/std::nullopt,
@@ -1247,7 +1282,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllValues) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllRecords) {
+TEST_P(DatabaseOperationTest, IndexGetAllRecords) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
                                    /*value=*/CreateIDBReturnValuePtr("value3"),
@@ -1297,7 +1332,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllRecords) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRange) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeysWithRange) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
                                    /*value=*/nullptr,
@@ -1348,7 +1383,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRange) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRangeThatDoesNotExist) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeysWithRangeThatDoesNotExist) {
   ASSERT_NO_FATAL_FAILURE(TestGetAll(
       /*database_parameters=*/
       {
@@ -1390,7 +1425,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRangeThatDoesNotExist) {
       /*expected_results=*/{}));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidRange) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidRange) {
   ASSERT_NO_FATAL_FAILURE(TestGetAll(
       /*database_parameters=*/
       {
@@ -1432,7 +1467,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidRange) {
       /*expected_results=*/{}));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithMaxCount) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllKeysWithMaxCount) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
                                    /*value=*/nullptr,
@@ -1477,7 +1512,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithMaxCount) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecordsWithPrevDirection) {
+TEST_P(DatabaseOperationTest, ObjectStoreGetAllRecordsWithPrevDirection) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
                                    /*value=*/CreateIDBReturnValuePtr("value3"),
@@ -1525,7 +1560,7 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecordsWithPrevDirection) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithNextNoDuplicateDirection) {
+TEST_P(DatabaseOperationTest, IndexGetAllRecordsWithNextNoDuplicateDirection) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
                                    /*value=*/CreateIDBReturnValuePtr("value1"),
@@ -1591,7 +1626,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithNextNoDuplicateDirection) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithPrevNoDuplicateDirection) {
+TEST_P(DatabaseOperationTest, IndexGetAllRecordsWithPrevNoDuplicateDirection) {
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(IndexedDBKey{"key4"},
                                    /*value=*/CreateIDBReturnValuePtr("value4"),
@@ -1659,7 +1694,7 @@ TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithPrevNoDuplicateDirection) {
 
 // Verifies that a bad index id passed in a mojo call will cause an error to be
 // reported.
-TEST_F(DatabaseOperationTest, GetWithInvalidId) {
+TEST_P(DatabaseOperationTest, GetWithInvalidId) {
   ASSERT_EQ(0u, db_->metadata().object_stores.size());
 
   mojo::FakeMessageDispatchContext fake_dispatch_context;
@@ -1689,7 +1724,7 @@ TEST_F(DatabaseOperationTest, GetWithInvalidId) {
   EXPECT_TRUE(bad_message_observer.got_bad_message());
 }
 
-TEST_F(DatabaseOperationTest,
+TEST_P(DatabaseOperationTest,
        ObjectStoreGetAllRecordsWithMultipleResultChunks) {
   // Generate 2.5 chunks of results.
   const size_t record_count = (blink::mojom::kIDBGetAllChunkSize * 2) +
@@ -1736,7 +1771,7 @@ TEST_F(DatabaseOperationTest,
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithAutoIncrementingKeys) {
+TEST_P(DatabaseOperationTest, IndexGetAllRecordsWithAutoIncrementingKeys) {
   const IndexedDBKeyPath object_store_key_path{u"id"};
 
   const auto expected_generated_keys = std::to_array<IndexedDBKey>({
