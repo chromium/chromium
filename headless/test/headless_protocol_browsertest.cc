@@ -632,7 +632,13 @@ HEADLESS_PROTOCOL_TEST(ScreenRotationSecondaryScreen,
 HEADLESS_PROTOCOL_TEST(MoveWindowBetweenScreens,
                        "shared/move-window-between-screens.js")
 
-HEADLESS_PROTOCOL_TEST(CreateTargetSecondaryScreen,
+// This fails on Mac with RenderDocument enabled, http://crbug.com/446689489.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
+#else
+#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_CreateTargetSecondaryScreen,
                        "shared/create-target-secondary-screen.js")
 
 HEADLESS_PROTOCOL_TEST(CreateTargetWindowState,
