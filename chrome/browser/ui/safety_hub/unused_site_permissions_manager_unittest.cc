@@ -22,6 +22,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/safety_check/safety_check.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -136,9 +137,7 @@ class UnusedSitePermissionsManagerTest
   void SetupRevokedUnusedPermissionSite(
       std::string url,
       base::TimeDelta lifetime =
-          content_settings::features::
-              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                  .Get()) {
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(lifetime);
 

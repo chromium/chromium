@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/safety_check/safety_check.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/values.h"
@@ -26,8 +27,7 @@ base::TimeDelta GetCleanUpThreshold() {
           .Get()) {
     return safety_hub::kRevocationCleanUpThresholdWithDelayForTesting;
   }
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  return safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
 }
 
 // TODO(crbug/342210522): Refactor this to be cleaner.

@@ -14,6 +14,7 @@ include_rules = [
   "+components/prefs",
   "+components/privacy_sandbox",
   "+components/resources/android",
+  "+components/safety_check/safety_check.h",
   "+components/strings",
   "+components/sync_preferences",
   "+components/tabs",

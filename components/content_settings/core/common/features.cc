@@ -32,11 +32,6 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
 
 BASE_FEATURE(kActiveContentSettingExpiry, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval{
-        &kSafetyCheckUnusedSitePermissions,
-        "unused-site-repeated-update-interval", base::Days(1)};
-
 const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{
     &kSafetyCheckUnusedSitePermissions,
     "unused-site-permissions-no-delay-for-testing", false};
@@ -44,16 +39,6 @@ const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{
 const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsWithDelay{
     &kSafetyCheckUnusedSitePermissions,
     "unused-site-permissions-with-delay-for-testing", false};
-
-const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRevocationThreshold{
-        &kSafetyCheckUnusedSitePermissions,
-        "unused-site-permissions-revocation-threshold", base::Days(60)};
-
-const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold{
-        &kSafetyCheckUnusedSitePermissions,
-        "unused-site-permissions-revocation-cleanup-threshold", base::Days(30)};
 
 BASE_FEATURE(kApproximateGeolocationPermission,
              base::FEATURE_DISABLED_BY_DEFAULT);

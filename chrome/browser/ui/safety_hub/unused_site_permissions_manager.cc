@@ -38,6 +38,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/safety_check/safety_check.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -61,6 +62,11 @@ size_t kAllowAgainMetricsExclusiveMaxCount = 31;
 // `kAllowAgainMetricsExclusiveMaxCount`.
 size_t kAllowAgainMetricsBuckets = 31;
 
+// Determines the time interval after which sites are considered to be unused
+// and their permissions will be revoked.
+const base::TimeDelta kUnusedSitePermissionsRevocationThreshold =
+    base::Days(60);
+
 base::TimeDelta GetRevocationThreshold() {
   // TODO(crbug.com/40250875): Clean up no delay revocation after the feature is
   // ready. Today, no delay revocation is necessary to enable manual testing.
@@ -71,8 +77,7 @@ base::TimeDelta GetRevocationThreshold() {
                  kSafetyCheckUnusedSitePermissionsWithDelay.Get()) {
     return kRevocationThresholdWithDelayForTesting;
   }
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationThreshold.Get();
+  return kUnusedSitePermissionsRevocationThreshold;
 }
 
 bool IsContentSetting(ContentSettingsType type) {
@@ -464,8 +469,7 @@ void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
   // Record the days elapsed from auto-revocation to regrant.
   base::Time revoked_time =
       info.metadata.expiration() -
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   base::UmaHistogramCustomCounts(
       "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays",
       (clock_->Now() - revoked_time).InDays(), 0,

@@ -43,6 +43,8 @@ source_set("safety_hub") {
     "//url",
   ]
 
+  deps = [ "//components/safety_check" ]
+
   if (is_android) {
     sources += [
       "notification_wrapper_android.h",
@@ -111,6 +113,7 @@ source_set("impl") {
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check",
     "//components/site_engagement/content",
     "//services/metrics/public/cpp:ukm_builders",
   ]
@@ -262,6 +265,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",

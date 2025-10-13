@@ -33,6 +33,7 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
+#include "components/safety_check/safety_check.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"
@@ -2050,8 +2051,7 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
   }
   base::Time revoked_time =
       info.metadata.expiration() -
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   uint32_t days_since_revoked = (current_time - revoked_time).InDays();
 
   for (auto& permission_type : *permission_type_list) {

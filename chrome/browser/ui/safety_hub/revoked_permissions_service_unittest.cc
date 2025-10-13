@@ -51,6 +51,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safety_check/safety_check.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -295,9 +296,7 @@ class RevokedPermissionsServiceTest
   void SetupRevokedUnusedPermissionSite(
       std::string url,
       base::TimeDelta lifetime =
-          content_settings::features::
-              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                  .Get()) {
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(lifetime);
 
@@ -333,9 +332,7 @@ class RevokedPermissionsServiceTest
   void SetupRevokedAbusiveNotificationSite(
       std::string url,
       base::TimeDelta lifetime =
-          content_settings::features::
-              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                  .Get()) {
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(lifetime);
     hcsm()->SetWebsiteSettingDefaultScope(
@@ -1326,8 +1323,7 @@ TEST_P(RevokedPermissionsServiceTest,
 
 TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
   const auto default_lifetime =
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   const auto shorter_lifetime = default_lifetime - base::Days(1);
   const auto longer_lifetime = default_lifetime + base::Days(1);
   const auto disruptive_revocations_lifetime = default_lifetime;

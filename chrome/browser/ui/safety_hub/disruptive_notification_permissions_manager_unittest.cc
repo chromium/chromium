@@ -23,6 +23,7 @@
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safety_check/safety_check.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -54,11 +55,6 @@ constexpr char kRevokedWebsitesCountHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount";
 constexpr char kSafeBrowsingNotificationRevocationSourceHistogram[] =
     "SafeBrowsing.NotificationRevocationSource";
-
-base::TimeDelta GetRevocationsLifetime() {
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
-}
 
 class SafetyHubNotificationWrapperForTesting
     : public DisruptiveNotificationPermissionsManager::
@@ -251,22 +247,16 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
        ContentSettingHelperCorrectLifetime) {
   GURL url("https://example.com");
 
+  base::TimeDelta lifetime =
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
+
   for (const auto& [revocation_state, expected_lifetime] :
        std::initializer_list<std::pair<RevocationState, base::TimeDelta>>{
-           {RevocationState::kProposed,
-            content_settings::features::
-                kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                    .Get()},
-           {RevocationState::kRevoked,
-            content_settings::features::
-                kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                    .Get()},
+           {RevocationState::kProposed, lifetime},
+           {RevocationState::kRevoked, lifetime},
            {RevocationState::kIgnoreInsideSH, base::Days(365)},
            {RevocationState::kIgnoreOutsideSH, base::Days(90)},
-           {RevocationState::kAcknowledged,
-            content_settings::features::
-                kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                    .Get()},
+           {RevocationState::kAcknowledged, lifetime},
        }) {
     ContentSettingHelper(*hcsm()).PersistRevocationEntry(
         url, RevocationEntry(
@@ -307,12 +297,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
       /*revocation_state=*/RevocationState::kProposed,
       /*site_engagement=*/0.0,
       /*daily_notification_count=*/4);
-  proposed_entry.lifetime = GetRevocationsLifetime();
+  proposed_entry.lifetime =
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   RevocationEntry revoked_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kRevoked,
       /*site_engagement=*/0.0,
       /*daily_notification_count=*/4);
-  revoked_entry.lifetime = GetRevocationsLifetime();
+  revoked_entry.lifetime =
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   RevocationEntry ignore_inside_sh_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kIgnoreInsideSH,
       /*site_engagement=*/0.0,
@@ -1039,7 +1031,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       /*revocation_state=*/RevocationState::kRevoked,
       /*site_engagement=*/0.0,
       /*daily_notification_count=*/4);
-  revoked_entry.lifetime = GetRevocationsLifetime();
+  revoked_entry.lifetime =
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(revoked_url,
                                                        revoked_entry);
 
@@ -1049,7 +1042,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       /*revocation_state=*/RevocationState::kProposed,
       /*site_engagement=*/0.0,
       /*daily_notification_count=*/4);
-  proposed_entry.lifetime = GetRevocationsLifetime();
+  proposed_entry.lifetime =
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(proposed_url,
                                                        proposed_entry);
 

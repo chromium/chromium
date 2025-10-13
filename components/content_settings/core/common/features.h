@@ -38,12 +38,6 @@ BASE_DECLARE_FEATURE(
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kActiveContentSettingExpiry);
 
-// Determines the frequency at which permissions of sites are checked whether
-// they are unused.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval;
-
 // When enabled, site permissions will be considered as unused immediately in
 // order to facilitate testing.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
@@ -54,19 +48,6 @@ extern const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay;
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool>
     kSafetyCheckUnusedSitePermissionsWithDelay;
-
-// Determines the time interval after which sites are considered to be unused
-// and its permissions will be revoked.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRevocationThreshold;
-
-// Determines the time interval after which the revoked permissions of unused
-// sites are cleaned up and no longer shown to users, starting from the point
-// in time that permissions for a site were revoked.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold;
 
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);

@@ -35,6 +35,7 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "components/safety_check/safety_check.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
@@ -601,8 +602,7 @@ TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
   base::Time past(now - base::Days(5));
   content_settings::ContentSettingConstraints constraint(past);
   constraint.set_lifetime(
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get());
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold());
   hcsm->SetWebsiteSettingDefaultScope(
       origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(dict.Clone()), constraint);

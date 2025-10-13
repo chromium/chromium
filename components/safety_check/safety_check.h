@@ -13,6 +13,11 @@
 // implemented in handlers.
 namespace safety_check {
 
+// Returns the time interval after which the revoked permissions of unused
+// sites are cleaned up and no longer shown to users, starting from the point
+// in time that permissions for a site were revoked.
+base::TimeDelta GetUnusedSitePermissionsRevocationCleanUpThreshold();
+
 // The following enums represent the state of each component (common among
 // desktop, Android, and iOS) of the safety check and should be kept in sync
 // with the JS frontend (safety_check_browser_proxy.ts) and |SafetyCheck*|
