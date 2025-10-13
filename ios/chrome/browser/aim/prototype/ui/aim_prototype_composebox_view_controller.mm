@@ -491,7 +491,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 - (void)micButtonTapped {
-  [self.delegate aimPrototypeViewControllerDidTapMicButton:self];
+  [self.delegate aimPrototypeViewController:self didTapMicButton:_micButton];
 }
 
 - (void)stopGlowEffect {

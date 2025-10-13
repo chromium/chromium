@@ -24,11 +24,14 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -194,8 +197,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 #pragma mark - AIMPrototypeComposeboxViewControllerDelegate
 
-- (void)aimPrototypeViewControllerDidTapMicButton:
-    (AIMPrototypeComposeboxViewController*)composeboxViewController {
+- (void)aimPrototypeViewController:
+            (AIMPrototypeComposeboxViewController*)composeboxViewController
+                   didTapMicButton:(UIButton*)micButton {
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList) {
     return;
@@ -204,6 +208,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (!webState) {
     return;
   }
+
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  [layoutGuideCenter referenceView:micButton underName:kVoiceSearchButtonGuide];
+
   [_voiceSearchController startRecognitionOnViewController:_viewController
                                                   webState:webState];
 }

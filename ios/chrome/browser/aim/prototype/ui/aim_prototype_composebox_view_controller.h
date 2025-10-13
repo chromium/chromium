@@ -19,8 +19,9 @@
 @protocol AIMPrototypeComposeboxViewControllerDelegate
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
-- (void)aimPrototypeViewControllerDidTapMicButton:
-    (AIMPrototypeComposeboxViewController*)composeboxViewController;
+- (void)aimPrototypeViewController:
+            (AIMPrototypeComposeboxViewController*)composeboxViewController
+                   didTapMicButton:(UIButton*)button;
 - (void)aimPrototypeViewControllerDidTapCameraButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
 - (void)aimPrototypeViewControllerMayShowGalleryPicker:
