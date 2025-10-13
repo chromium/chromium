@@ -3187,7 +3187,7 @@ public class TabCollectionTabModelImplTest {
         assertEquals(4, getCount());
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
-        assertEquals(tab0, getCurrentTab());
+        assertEquals(tab2, getCurrentTab());
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
     }
 

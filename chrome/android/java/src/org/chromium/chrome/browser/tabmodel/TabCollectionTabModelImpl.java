@@ -872,7 +872,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
         if (params.tabCloseType == TabCloseType.MULTIPLE) {
             for (TabModelObserver obs : mTabModelObservers) {
-                obs.willCloseMultipleTabs(false, tabsToClose);
+                obs.willCloseMultipleTabs(allowUndo, tabsToClose);
             }
         } else if (params.tabCloseType == TabCloseType.ALL) {
             for (TabModelObserver obs : mTabModelObservers) {
