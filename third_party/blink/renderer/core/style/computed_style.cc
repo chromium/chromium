@@ -181,34 +181,6 @@ const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
   return persistent.Get();
 }
 
-namespace {
-
-const ComputedStyle* BuildInitialStyleForImg(
-    const ComputedStyle& initial_style) {
-  // This matches the img {} declarations in html.css to avoid copy-on-write
-  // when only UA styles apply for these properties. See crbug.com/1369454
-  // for details.
-  ComputedStyleBuilder builder(initial_style);
-  builder.SetOverflowX(EOverflow::kClip);
-  builder.SetOverflowY(EOverflow::kClip);
-  builder.SetOverflowClipMargin(StyleOverflowClipMargin::CreateContent());
-  return builder.TakeStyle();
-}
-
-}  // namespace
-
-const ComputedStyle* ComputedStyle::GetInitialStyleForImgSingleton() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const ComputedStyle>>,
-      thread_specific_initial_style, ());
-  Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
-  if (!persistent) [[unlikely]] {
-    persistent = BuildInitialStyleForImg(*GetInitialStyleSingleton());
-    LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
-  }
-  return persistent.Get();
-}
-
 Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {
   if (cached_data_) {
     return cached_data_->variable_names_.get();

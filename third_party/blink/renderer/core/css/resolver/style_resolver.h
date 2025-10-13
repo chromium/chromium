@@ -398,9 +398,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   MatchedPropertiesCache matched_properties_cache_;
 
-  // Both these members are on a hot-path for creating ComputedStyle objects.
+  // This member is on a hot-path for creating ComputedStyle objects.
   const subtle::UncompressedMember<const ComputedStyle> initial_style_;
-  const subtle::UncompressedMember<const ComputedStyle> initial_style_for_img_;
   SelectorFilter selector_filter_;
 
   // Micro 1-element cache.

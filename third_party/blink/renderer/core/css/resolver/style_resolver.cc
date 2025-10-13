@@ -633,7 +633,6 @@ static void CollectScopedResolversForHostedShadowTrees(
 
 StyleResolver::StyleResolver(Document& document)
     : initial_style_(ComputedStyle::GetInitialStyleSingleton()),
-      initial_style_for_img_(ComputedStyle::GetInitialStyleForImgSingleton()),
       document_(document) {
   UpdateMediaType();
 }
@@ -2735,9 +2734,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // when these properties are set only via UA styles. The overhead shows up
     // on MotionMark, which stress-tests this code. See crbug.com/1369454 for
     // details.
-    const ComputedStyle& initial_style = IsA<HTMLImageElement>(element)
-                                             ? *initial_style_for_img_
-                                             : *initial_style_;
+    const ComputedStyle& initial_style = *initial_style_;
     InitStyle(element, style_request, initial_style, state.ParentStyle(),
               state);
 
@@ -3140,7 +3137,6 @@ void StyleResolver::UpdateMediaType() {
 void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(matched_properties_cache_);
   visitor->Trace(initial_style_);
-  visitor->Trace(initial_style_for_img_);
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
   visitor->Trace(tracker_);
