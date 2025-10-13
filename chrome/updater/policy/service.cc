@@ -745,7 +745,7 @@ PolicyServiceProxyConfiguration::Get(
     }
   } else if (proxy_mode.policy().compare(kProxyModeAutoDetect) == 0) {
     policy_service_proxy_configuration.proxy_auto_detect = true;
-  } else {
+  } else if (proxy_mode.policy().compare(kProxyModeDirect) != 0) {
     is_policy_config_valid = false;
   }
 

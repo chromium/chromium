@@ -91,7 +91,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
             policy_service_proxy_configuration->proxy_url.value_or("")),
         L""});
   }
-  VLOG(1) << "Using the system configuration for proxy.";
+  VLOG(1) << "Using the auto proxy configuration.";
   return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();
 }
 
