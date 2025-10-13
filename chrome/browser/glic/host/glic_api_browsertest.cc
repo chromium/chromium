@@ -202,6 +202,11 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
     NonInteractiveGlicApiTest::SetUpCommandLine(command_line);
   }
 
+  GURL page_url() {
+    return InProcessBrowserTest::embedded_test_server()->GetURL(
+        "/glic/browser_tests/test.html");
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
   logging::ScopedVmoduleSwitches vmodule_switches_;
@@ -227,11 +232,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
                     NavigateWebContents(kFirstTab, page_url()),
                     OpenGlicWindow(GlicWindowMode::kDetached,
                                    GlicInstrumentMode::kHostAndContents));
-  }
-
-  GURL page_url() {
-    return InProcessBrowserTest::embedded_test_server()->GetURL(
-        "/glic/browser_tests/test.html");
   }
 
   std::string GetDocumentIdForTab(ui::ElementIdentifier tab_id) {
@@ -821,6 +821,60 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttached) {
     GTEST_SKIP() << "Attached only supported with multi-instance.";
   }
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPanelStateAttachedHidden) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+  ExecuteJsTest();
+
+  // Open and select a second tab. This should result in panel state hidden.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  ContinueJsTest();
+
+  // Open the first tab again, it should send the attached state.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDetachPanel) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Attached only supported with multi-instance.";
+  }
+  // Open two tabs, select the first, open glic.
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()));
+
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  // Execute test on the first tab instance.
+  ExecuteJsTest({.params = base::Value("first")});
+
+  // Select the second tab, open glic, and execute the test on the second
+  // instance.
+  SetGlicInstanceTabIndex(1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  RunTestSequence(InstrumentTab(kSecondTab),
+                  OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest({.params = base::Value("second")});
+
+  // Continue on the first tab.
+  SetGlicInstanceTabIndex(0);
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosePanel) {

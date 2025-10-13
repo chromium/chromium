@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -176,7 +177,7 @@ class GlicApiTestBase : public T {
   }
 
   void TearDownOnMainThread() override {
-    if (next_step_required_) {
+    if (!next_step_required_.empty()) {
       FAIL() << "Test not finished: call ContinueJsTest()";
     }
     NonInteractiveGlicTest::TearDownOnMainThread();
@@ -204,7 +205,7 @@ class GlicApiTestBase : public T {
     ASSERT_TRUE(glic_guest_frame);
     std::string param_json = base::WriteJson(options.params).value_or("");
     ProcessTestResult(
-        options,
+        glic_guest_frame->GetGlobalId(), options,
         content::EvalJs(
             glic_guest_frame,
             base::StrCat(
@@ -217,13 +218,13 @@ class GlicApiTestBase : public T {
   // Continues test execution if `advanceToNextStep()` was used to return
   // control to C++.
   void ContinueJsTest(ExecuteTestOptions options = {}) {
-    ASSERT_TRUE(next_step_required_);
     content::RenderFrameHost* glic_guest_frame = T::FindGlicGuestMainFrame();
-    next_step_required_ = false;
     ASSERT_TRUE(glic_guest_frame);
+    ASSERT_TRUE(next_step_required_.contains(glic_guest_frame->GetGlobalId()));
+    next_step_required_.erase(glic_guest_frame->GetGlobalId());
     std::string param_json = base::WriteJson(options.params).value_or("");
     ProcessTestResult(
-        options,
+        glic_guest_frame->GetGlobalId(), options,
         content::EvalJs(glic_guest_frame,
                         base::StrCat({"continueApiTest(", param_json, ")"})));
   }
@@ -288,7 +289,8 @@ class GlicApiTestBase : public T {
     return result;
   }
 
-  void ProcessTestResult(const ExecuteTestOptions& options,
+  void ProcessTestResult(content::GlobalRenderFrameHostId frame_id,
+                         const ExecuteTestOptions& options,
                          const content::EvalJsResult& result) {
     if (options.expect_guest_frame_destroyed) {
       ASSERT_THAT(result, content::EvalJsResult::ErrorIs(
@@ -303,7 +305,7 @@ class GlicApiTestBase : public T {
       if (id && id->is_string() && id->GetString() == "next-step") {
         step_data_ = dict.Find("payload")->Clone();
       }
-      next_step_required_ = true;
+      next_step_required_.insert(frame_id);
       return;
     }
     if (!options.should_fail) {
@@ -370,7 +372,7 @@ class GlicApiTestBase : public T {
   }
 
   std::vector<net::test_server::HttpRequest> embedded_test_server_requests_;
-  bool next_step_required_ = false;
+  std::set<content::GlobalRenderFrameHostId> next_step_required_;
   std::optional<base::Value> step_data_;
   base::test::ScopedFeatureList features_;
 };

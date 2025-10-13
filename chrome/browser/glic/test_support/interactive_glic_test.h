@@ -596,7 +596,8 @@ class InteractiveGlicTestT : public T {
       // make this behavior more obvious somehow.
 
       return glic_service()->GetInstanceForTab(
-          browser()->tab_strip_model()->GetTabAtIndex(0));
+          browser()->tab_strip_model()->GetTabAtIndex(
+              glic_instance_tab_index_));
     }
     return glic_service()->GetInstanceForActiveTab(browser());
   }
@@ -717,6 +718,11 @@ class InteractiveGlicTestT : public T {
   // instead of always operating on the instance in tab 0.
   void TrackGlicInstanceById(InstanceId id) { tracked_instance_id_ = id; }
 
+  // Sets the tab index to use when fetching the glic instance. Tests can use
+  // this to swap between interacting with multiple instances. This affects
+  // many functions in this fixture.
+  void SetGlicInstanceTabIndex(int index) { glic_instance_tab_index_ = index; }
+
  private:
   // Because of limitations in the template system, calls to base class methods
   // that are guaranteed by the `requires` clause must still be scoped. These
@@ -725,6 +731,9 @@ class InteractiveGlicTestT : public T {
   using Test = InProcessBrowserTest;
 
   std::optional<InstanceId> tracked_instance_id_;
+  // Which tab index to use when getting the glic instance. This affects many
+  // functions in this fixture.
+  int glic_instance_tab_index_ = 0;
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;

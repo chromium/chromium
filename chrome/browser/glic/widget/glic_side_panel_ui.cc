@@ -87,8 +87,7 @@ void GlicSidePanelUi::EnableDragResize(bool enabled) {
 }
 
 void GlicSidePanelUi::Attach() {
-  // The Side Panel Ui is already attached.
-  NOTREACHED();
+  // The Side Panel Ui is already attached, do nothing.
 }
 
 void GlicSidePanelUi::Detach() {
