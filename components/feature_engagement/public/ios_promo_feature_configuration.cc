@@ -263,29 +263,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  if (kIPHIOSPageActionMenu.name == feature->name) {
-    // Show the promo only once when the conditions are met.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-
-    // This IPH showing does not affect the session count for other IPHs.
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config.blocked_by.type = BlockedBy::Type::NONE;
-    config.blocking.type = Blocking::Type::NONE;
-
-    config.trigger =
-        EventConfig(feature_engagement::events::kIOSPageActionMenuIPHTrigger,
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config.used =
-        EventConfig(feature_engagement::events::kIOSPageActionMenuIPHUsed,
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    return config;
-  }
-
   return std::nullopt;
 }
 
