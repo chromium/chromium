@@ -619,15 +619,9 @@ void EmptyBinderForFrame(RenderFrameHost* host,
            << " for the frame/document scope";
 }
 
-BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
-  static base::NoDestructor<BatteryMonitorBinder> binder;
-  return *binder;
-}
-
 void BindBatteryMonitor(
-    RenderFrameHostImpl* host,
+    RenderFrameHost* host,
     mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
-  const auto& binder = GetBatteryMonitorBinderOverride();
   // TODO(crbug.com/1007264, crbug.com/1290231): remove fenced frame specific
   // code when permission policy implements the battery status API support.
   if (host->IsNestedWithinFencedFrame()) {
@@ -636,10 +630,7 @@ void BindBatteryMonitor(
                                 BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME);
     return;
   }
-  if (binder)
-    binder.Run(std::move(receiver));
-  else
-    GetDeviceService().BindBatteryMonitor(std::move(receiver));
+  GetDeviceService().BindBatteryMonitor(std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
@@ -720,9 +711,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::AudioContextManager>(base::BindRepeating(
       &RenderFrameHostImpl::GetAudioContextManager, base::Unretained(host)));
-
-  map->Add<device::mojom::BatteryMonitor>(
-      base::BindRepeating(&BindBatteryMonitor, base::Unretained(host)));
 
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &RenderFrameHostImpl::BindCacheStorage, base::Unretained(host)));
@@ -1158,6 +1146,7 @@ void PopulateBinderMapWithContext(
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);
+  map->Add<device::mojom::BatteryMonitor>(&BindBatteryMonitor);
   map->Add<blink::mojom::ColorChooserFactory>(&BindColorChooserFactoryForFrame);
   map->Add<blink::mojom::EyeDropperChooser>(&EyeDropperChooserImpl::Create);
   map->Add<blink::mojom::CookieStore>(
@@ -1804,9 +1793,4 @@ void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {
 }
 
 }  // namespace internal
-
-void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
-  internal::GetBatteryMonitorBinderOverride() = std::move(binder);
-}
-
 }  // namespace content

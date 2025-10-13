@@ -5,17 +5,15 @@
 #ifndef CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 #define CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
 
-#include "base/functional/callback.h"
-#include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "services/device/public/mojom/battery_monitor.mojom-forward.h"
-#include "url/origin.h"
-
 namespace mojo {
 class BinderMap;
 template <typename>
 class BinderMapWithContext;
 }  // namespace mojo
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -75,13 +73,6 @@ void PopulateBinderMapWithContext(
 ServiceWorkerVersionInfo GetContextForHost(ServiceWorkerHost* host);
 
 }  // namespace internal
-
-// Allows tests to override how frame hosts bind BatteryMonitor receivers.
-using BatteryMonitorBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::BatteryMonitor>)>;
-CONTENT_EXPORT void OverrideBatteryMonitorBinderForTesting(
-    BatteryMonitorBinder binder);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BROWSER_INTERFACE_BINDERS_H_
