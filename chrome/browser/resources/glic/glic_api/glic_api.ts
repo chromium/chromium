@@ -5,16 +5,16 @@
 // API between the Chrome browser and the Glic web client.
 //
 // Overall notes:
-// - There will only ever be one single instance of the web client running at
-//   a time. It may be destroyed and restarted, and each time the initialization
-//   process will be repeated.
+// - There may be multiple instances of the web client running at a time, all
+//   sharing the same web storage space. Whenever one is started or restarted,
+//   the initialization steps will be repeated.
 // - As in TypeScript all `number`s are 64 bit floating points, we decided to
 //   make all identifier values be of the `string` type (e.g. for a window or a
 //   tab).
 // - The defined functions and interfaces can be "evolved" to provide more
-//   functionality and data, as needed.
+//   functionality and data, as needed, but must be kept backwards compatible.
 // - Functions are documented with their known behavior. Exceptions and promise
-//   failures should will be documented only if they are expected.
+//   failures should be documented only if they are expected.
 // - The browser provided tab and window IDs are based on the browser's
 //   SessionID values, which are not stable between Chrome restarts, and should
 //   not be saved to persisted storage for later reuse. See:
@@ -219,14 +219,18 @@ export declare interface GlicBrowserHost {
       (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
-   * Similar to `getContextFromFocusedTab`, but returns context from the given
-   * tab. Can fail if the tab is not pinned or focused.
+   * Similar to `getContextFromFocusedTab`, but returns context from the tab
+   * identified by `tabId`. Will fail if the tab is not pinned or focused.
+   *
+   * @throws {Error} on failure.
    */
   getContextFromTab?
       (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
 
   /**
    * Similar to `getContextFromTab`, but for actors. Skips the focus check.
+   *
+   * @throws {Error} on failure.
    */
   getContextForActorFromTab?
       (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
@@ -709,7 +713,6 @@ export declare interface GlicBrowserHost {
    * requested for the same tabId, the first observable will be returned, and
    * therefore the names parameter is ignored in this case.
    *
-   *
    * When the tab is destroyed, the observable will complete.
    */
   getPageMetadata?
@@ -1000,12 +1003,8 @@ export declare interface OpenPanelInfo {
 export enum PanelStateKind {
   /** Not shown. This is the initial state. */
   HIDDEN = 0,
-  /** @deprecated Use DETACHED instead. */
-  FLOATING = 1,
   /** A floating window detached from any Chrome window. */
   DETACHED = 1,
-  /** @deprecated Use ATTACHED instead.*/
-  DOCKED = 2,
   /** Attached to a Chrome window. */
   ATTACHED = 2,
 }
@@ -1260,7 +1259,6 @@ export declare interface TabData {
    * temporary solution. b/433995475
    */
   isMediaActive?: boolean;
-
 
   /**
    * Whether the tab content is being captured by another functionality (e.g.,
@@ -1526,7 +1524,6 @@ export declare interface ScrollToNodeSelector {
 
 /** Error type used for scrollTo(). */
 export type ScrollToError = ErrorWithReason<'scrollTo'>;
-
 
 /**
  * A rectangular area based in the glic window's coordinate system. All
