@@ -1,5 +1,11 @@
 # `bytemuck` changelog
 
+## 1.24
+
+* [use new stable avx512 types from rust 1.89](https://github.com/Lokathor/bytemuck/pull/322)
+* [impl AnyBitPattern for [MaybeUninit<T: AnyBitPattern>; N]](https://github.com/Lokathor/bytemuck/pull/317)
+* bump `derive` minimum version.
+
 ## 1.23.2
 
 * bump `derive` minimum version.

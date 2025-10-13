@@ -62,3 +62,16 @@ unsafe impl<T: Pod> AnyBitPattern for T {}
 )]
 unsafe impl<T> AnyBitPattern for core::mem::MaybeUninit<T> where T: AnyBitPattern
 {}
+
+#[cfg(all(feature = "zeroable_maybe_uninit", feature = "min_const_generics"))]
+#[cfg_attr(
+  feature = "nightly_docs",
+  doc(cfg(all(
+    feature = "zeroable_maybe_uninit",
+    feature = "min_const_generics"
+  )))
+)]
+unsafe impl<T, const N: usize> AnyBitPattern for [core::mem::MaybeUninit<T>; N] where
+  T: AnyBitPattern
+{
+}

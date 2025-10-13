@@ -3,7 +3,7 @@
 
 # Stable
 edition = "2018"
-fn_args_layout = "Compressed"
+fn_params_layout = "Compressed"
 max_width = 80
 tab_spaces = 2
 use_field_init_shorthand = true
