@@ -1074,7 +1074,6 @@ bool PasswordFormManager::ProvisionallySave(
   is_submitted_ = true;
   CalculateSubmittedFormFrameMetric();
   CalculateSubmittedFormTypeMetric();
-  metrics_recorder_->set_possible_username_used(false);
   if (votes_uploader_.has_value()) {
     votes_uploader_->clear_single_username_votes_data();
     votes_uploader_->set_should_send_username_first_flow_votes(false);
@@ -1744,7 +1743,6 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     SetUsernameValueFromOutsideOfForm(picked_username.data.value,
                                       *parsed_submitted_form_.get());
   }
-  metrics_recorder_->set_possible_username_used(true);
 }
 
 void PasswordFormManager::HandleForgotPasswordFormData() {

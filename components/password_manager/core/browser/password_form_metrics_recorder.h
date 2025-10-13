@@ -506,10 +506,6 @@ class PasswordFormMetricsRecorder
   // `SingleUsernameFillingAssistance`), returns an empty string.
   std::string FillingAssinstanceToHatsInProductDataString();
 
-  void set_possible_username_used(bool value) {
-    possible_username_used_ = value;
-  }
-
   void set_username_updated_in_bubble(bool value) {
     username_updated_in_bubble_ = value;
   }
@@ -650,9 +646,6 @@ class PasswordFormMetricsRecorder
   std::optional<features_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
   std::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
-
-  // Whether a single username candidate was populated in prompt.
-  bool possible_username_used_ = false;
 
   bool username_updated_in_bubble_ = false;
 

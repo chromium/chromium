@@ -3923,17 +3923,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
-<histogram name="PasswordManager.SavingOnUsernameFirstFlow"
-    enum="SavingOnUsernameFirstFlow" expires_after="2025-11-16">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records user actions when Chrome offers to save a username on a page which
-    is considered to be a username first flow. Recorded on a successful
-    submission.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ServerPredictionsWaitDuration" units="ms"
     expires_after="2026-03-01">
   <owner>kenrb@chromium.org</owner>

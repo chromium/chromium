@@ -1821,12 +1821,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Save prompt shown"/>
 </enum>
 
-<enum name="SavingOnUsernameFirstFlow">
-  <int value="0" label="Saved"/>
-  <int value="1" label="Saved with edited username"/>
-  <int value="2" label="Not saved"/>
-</enum>
-
 <enum name="SharedPrefCredentialsAccessOutcome">
   <int value="0" label="No credentials"/>
   <int value="1" label="Parse error"/>
