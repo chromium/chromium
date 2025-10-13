@@ -68,9 +68,16 @@ SyncReader::SyncReader(
   shared_memory_mapping_ = shared_memory_region_.Map();
   if (shared_memory_region_.IsValid() && shared_memory_mapping_.IsValid() &&
       base::CancelableSyncSocket::CreatePair(&socket_, foreign_socket)) {
+    auto buffer_span = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
+    auto audio_data =
+        buffer_span.subspan<sizeof(media::AudioInputBufferParameters)>();
+    CHECK_EQ(audio_data.size(), output_bus_buffer_size_);
+
     auto* const buffer =
         shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
-    output_bus_ = media::AudioBus::WrapMemory(params, buffer->audio);
+    CHECK_EQ(audio_data.data(), buffer->audio);
+
+    output_bus_ = media::AudioBus::WrapMemory(params, audio_data);
     output_bus_->Zero();
     output_bus_->set_is_bitstream_format(params.IsBitstreamFormat());
   }

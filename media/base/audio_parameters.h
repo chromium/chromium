@@ -61,11 +61,11 @@ struct MEDIA_EXPORT alignas(kParametersAlignment) AudioOutputBufferParameters {
 
 struct MEDIA_EXPORT AudioInputBuffer {
   AudioInputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
 struct MEDIA_EXPORT AudioOutputBuffer {
   AudioOutputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
 
 struct MEDIA_EXPORT AudioRendererAlgorithmParameters {

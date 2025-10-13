@@ -44,10 +44,15 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   shared_memory_mapping_ = shared_memory_region_.MapAt(0, memory_length_);
   CHECK(shared_memory_mapping_.IsValid());
 
-  media::AudioOutputBuffer* buffer =
-      reinterpret_cast<media::AudioOutputBuffer*>(
-          shared_memory_mapping_.memory());
-  output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, buffer->audio);
+  base::span<uint8_t> data = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
+  base::span<uint8_t> audio_data_span =
+      data.subspan<sizeof(media::AudioOutputBufferParameters)>();
+
+  const media::AudioOutputBuffer* buffer =
+      shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
+  CHECK_EQ(audio_data_span.data(), buffer->audio);
+
+  output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, audio_data_span);
   output_bus_->set_is_bitstream_format(audio_parameters_.IsBitstreamFormat());
 }
 

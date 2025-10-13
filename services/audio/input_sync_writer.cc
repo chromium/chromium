@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -96,16 +97,21 @@ InputSyncWriter::InputSyncWriter(
   audio_buses_.resize(shared_memory_segment_count);
 
   // Create vector of audio buses by wrapping existing blocks of memory.
-  uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
-  CHECK(ptr);
+  base::span<uint8_t> data = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
+  CHECK(!data.empty());
+  auto reader = base::SpanReader<uint8_t>(data);
+
   for (auto& bus : audio_buses_) {
-    CHECK_EQ(0U, reinterpret_cast<uintptr_t>(ptr) &
-                     (media::AudioBus::kChannelAlignment - 1));
-    media::AudioInputBuffer* buffer =
-        reinterpret_cast<media::AudioInputBuffer*>(ptr);
-    bus = media::AudioBus::WrapMemory(params, buffer->audio);
-    UNSAFE_TODO(ptr += shared_memory_segment_size_);
+    auto input_buffer = *reader.Read(shared_memory_segment_size_);
+    auto audio_data =
+        input_buffer.subspan<sizeof(media::AudioInputBufferParameters)>();
+    CHECK_EQ(audio_data.size(), audio_bus_memory_size_);
+    CHECK(
+        base::IsAligned(audio_data.data(), media::AudioBus::kChannelAlignment));
+    bus = media::AudioBus::WrapMemory(params, audio_data);
   }
+
+  CHECK(reader.remaining_span().empty());
 }
 
 InputSyncWriter::~InputSyncWriter() = default;
