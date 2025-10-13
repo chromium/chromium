@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property shape-outside value 'radial-gradient(circle at calc(10px + 5%), red, blue)'
-  assert_equals: expected "radial-gradient(circle at calc(5% + 10px) 50%, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(circle at calc(5% + 10px) center, rgb(255, 0, 0), rgb(0, 0, 255))"
-Harness: the test ran to completion.
-

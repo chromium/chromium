@@ -975,6 +975,65 @@ static const CSSPrimitiveValue* ResolveAngle(
   return value;
 }
 
+static const CSSValue* ComputedPositionOrigin(const CSSValue* value) {
+  if (IsA<CSSIdentifierValue>(value)) {
+    auto* identifier_value = To<CSSIdentifierValue>(value);
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kCenter:
+        return CSSNumericLiteralValue::Create(
+            50, CSSNumericLiteralValue::UnitType::kPercentage);
+      case CSSValueID::kLeft:
+      case CSSValueID::kTop:
+        return CSSNumericLiteralValue::Create(
+            0, CSSNumericLiteralValue::UnitType::kPercentage);
+      case CSSValueID::kRight:
+      case CSSValueID::kBottom:
+        return CSSNumericLiteralValue::Create(
+            100, CSSNumericLiteralValue::UnitType::kPercentage);
+      default:
+        break;
+    }
+  }
+  return value;
+}
+
+// This method resolve the 'at <position>' component of a gradient.
+// https://www.w3.org/TR/css-values-5/#typedef-position
+static const CSSValue* ResolvePosition(
+    const CSSValue* value,
+    const CSSToLengthConversionData& conversion_data) {
+  if (IsA<CSSIdentifierValue>(value)) {
+    return ComputedPositionOrigin(value);
+  }
+  const CSSValue* result = value;
+  if (IsA<CSSValuePair>(value)) {
+    auto* pair = To<CSSValuePair>(value);
+    auto* origin = DynamicTo<CSSIdentifierValue>(pair->First());
+    auto* offset = DynamicTo<CSSPrimitiveValue>(pair->Second());
+    if (origin && offset) {
+      switch (origin->GetValueID()) {
+        case CSSValueID::kTop:
+        case CSSValueID::kLeft:
+          result = offset;
+          break;
+        case CSSValueID::kBottom:
+        case CSSValueID::kRight: {
+          Length length = offset->ConvertToLength(conversion_data)
+                              .SubtractFromOneHundredPercent();
+          result = CSSPrimitiveValue::CreateFromLength(length,
+                                                       conversion_data.Zoom());
+          break;
+        }
+        case CSSValueID::kCenter:
+          NOTREACHED();
+        default:
+          break;
+      }
+    }
+  }
+  return ResolveLength(result, conversion_data);
+}
+
 const CSSGradientValue* CSSGradientValue::ResolveValuesIfNeeded(
     const CSSToLengthConversionData& conversion_data) const {
   switch (GetClassType()) {
@@ -1913,10 +1972,10 @@ bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
 
 const CSSRadialGradientValue* CSSRadialGradientValue::ResolveValuesIfNeeded(
     const CSSToLengthConversionData& conversion_data) const {
-  const CSSValue* first_x = ResolveLength(first_x_, conversion_data);
-  const CSSValue* first_y = ResolveLength(first_y_, conversion_data);
-  const CSSValue* second_x = ResolveLength(second_x_, conversion_data);
-  const CSSValue* second_y = ResolveLength(second_y_, conversion_data);
+  const CSSValue* first_x = ResolvePosition(first_x_, conversion_data);
+  const CSSValue* first_y = ResolvePosition(first_y_, conversion_data);
+  const CSSValue* second_x = ResolvePosition(second_x_, conversion_data);
+  const CSSValue* second_y = ResolvePosition(second_y_, conversion_data);
   const CSSPrimitiveValue* first_radius = DynamicTo<CSSPrimitiveValue>(
       ResolveLength(first_radius_, conversion_data));
   const CSSPrimitiveValue* second_radius = DynamicTo<CSSPrimitiveValue>(
@@ -2088,8 +2147,8 @@ bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
 
 const CSSConicGradientValue* CSSConicGradientValue::ResolveValuesIfNeeded(
     const CSSToLengthConversionData& conversion_data) const {
-  const CSSValue* x = ResolveLength(x_, conversion_data);
-  const CSSValue* y = ResolveLength(y_, conversion_data);
+  const CSSValue* x = ResolvePosition(x_, conversion_data);
+  const CSSValue* y = ResolvePosition(y_, conversion_data);
   // TODO(crbug.com/40620723): We may need a new Length category for degrees,
   // so it's better to skip the resolution for now.
   const CSSPrimitiveValue* from_angle =
