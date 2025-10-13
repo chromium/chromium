@@ -329,6 +329,8 @@ NSString* const kBuilding2Symbol = @"building.2";
 NSString* const kBookSymbol = @"book";
 NSString* const kKeySymbol = @"key";
 NSString* const kTextDocument = @"text.document";
+NSString* const kPhotoOnRectangleSymbol = @"photo.on.rectangle";
+NSString* const kSystemCameraSymbol = @"camera";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

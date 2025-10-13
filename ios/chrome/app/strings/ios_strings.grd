@@ -2598,6 +2598,15 @@
       <message name="IDS_IOS_FEED_SWIPE_IPH" desc="Text for the in-product help bubble highlighting scrolling on the Feed.">
         You can swipe up to see more content tailored to you.
       </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL" desc="Title for a single file chooser button used in HTML forms. [iOS only]">
+        Choose File
+      </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL" desc="Title for a button for choosing an existing media item from the Photo Library, used in HTML forms. [iOS only]">
+        Photo Library
+      </message>
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL" desc="Title for a button for taking a photo or video, used in HTML forms. [iOS only]">
+        Take Photo or Video
+      </message>
       <message name="IDS_IOS_FIRSTRUN_TERMS_TITLE" desc="Title for the Terms of Service page shown to user on First Run. [Length: 20em] [iOS only]">
         Terms of service
       </message>

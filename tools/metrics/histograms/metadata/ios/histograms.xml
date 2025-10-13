@@ -1905,6 +1905,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FileUploadPanel.ContextMenuVariant"
+    enum="IOSFileUploadPanelContextMenuVariant" expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Report the variant of the context menu that was shown when the file upload
+    panel is presented.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FingerprintingProtection.RuleList.ApplyTrigger.Incognito"
     enum="FingerprintingProtectionRuleListApplyTrigger"
     expires_after="2026-08-12">

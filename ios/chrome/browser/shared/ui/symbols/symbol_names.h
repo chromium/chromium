@@ -317,6 +317,8 @@ extern NSString* const kTextSparkSymbol;
 extern NSString* const kBookSymbol;
 extern NSString* const kKeySymbol;
 extern NSString* const kTextDocument;
+extern NSString* const kPhotoOnRectangleSymbol;
+extern NSString* const kSystemCameraSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

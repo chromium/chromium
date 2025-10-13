@@ -7,5 +7,14 @@ source_set("coordinator") {
     "file_upload_panel_coordinator.h",
     "file_upload_panel_coordinator.mm",
   ]
-  deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/file_upload_panel/ui:constants",
+    "//ios/chrome/browser/file_upload_panel/ui:context_menu_presenter",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
 }

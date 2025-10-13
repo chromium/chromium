@@ -684,6 +684,7 @@ const char kChromeAppStoreUrl[] =
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
+  API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
@@ -2906,7 +2907,7 @@ const char kChromeAppStoreUrl[] =
     return;
   }
   _fileUploadPanelCoordinator = [[FileUploadPanelCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
+      initWithBaseViewController:self.viewController
                          browser:self.browser];
   [_fileUploadPanelCoordinator start];
 }

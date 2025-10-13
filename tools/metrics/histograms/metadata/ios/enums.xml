@@ -608,6 +608,15 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Drive"/>
 </enum>
 
+<!-- LINT.IfChange(IOSFileUploadPanelContextMenuVariant) -->
+
+<enum name="IOSFileUploadPanelContextMenuVariant">
+  <int value="0" label="PhotoPickerAndCameraAndFilePicker"/>
+  <int value="1" label="PhotoPickerAndFilePicker"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelContextMenuVariant) -->
+
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">

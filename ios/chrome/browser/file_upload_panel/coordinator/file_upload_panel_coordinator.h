@@ -9,7 +9,7 @@
 
 // Coordinator for the file upload panel UI, which lets the user select files or
 // directories from different sources to be submitted to a web page file input.
-// TODO(crbug.com/441659098): Implement the class start/stop methods.
+API_AVAILABLE(ios(18.4))
 @interface FileUploadPanelCoordinator : ChromeCoordinator
 
 @end
