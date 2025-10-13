@@ -1143,6 +1143,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isTsTextSegmentationEnabled",
                    &ReadAnythingAppController::IsTsTextSegmentationEnabled)
+      .SetProperty("isReadabilityEnabled",
+                   &ReadAnythingAppController::IsReadabilityEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
@@ -1614,6 +1616,12 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
 
 bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {
   return features::IsReadAnythingReadAloudTSTextSegmentationEnabled();
+}
+
+// Returns true if the experimental flag allowing testing with alternative
+// distillation methods such as Readability.js is enabled.
+bool ReadAnythingAppController::IsReadabilityEnabled() const {
+  return features::IsReadAnythingWithReadabilityEnabled();
 }
 
 bool ReadAnythingAppController::IsChromeOsAsh() const {
