@@ -99,7 +99,7 @@ public class WebAppHeaderLayoutCoordinator
     private final boolean mIsTWA;
     private final ObservableSupplierImpl<MenuButtonState> mMenuButtonStateSupplier =
             new ObservableSupplierImpl<>();
-    private @Nullable View mMenuButtonView;
+    private @Nullable View mMenuButtonContainer;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -252,9 +252,8 @@ public class WebAppHeaderLayoutCoordinator
                         /* isWebApp= */ true);
 
         if (mIsTWA && ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
-            View webAppMenuButton = mView.findViewById(R.id.web_app_menu_button_wrapper);
-            webAppMenuButton.setVisibility(View.VISIBLE);
-            mMenuButtonView = mView.findViewById(R.id.web_app_menu_button);
+            mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
+            mMenuButtonContainer.setVisibility(View.VISIBLE);
 
             mMenuButtonCoordinator =
                     new MenuButtonCoordinator(
@@ -293,8 +292,8 @@ public class WebAppHeaderLayoutCoordinator
         }
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.setVisibility(mShowButtons);
-            if (mMenuButtonView != null) {
-                mMenuButtonView.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
+            if (mMenuButtonContainer != null) {
+                mMenuButtonContainer.setVisibility(mShowButtons ? View.VISIBLE : View.GONE);
             }
         }
         logControlsVisibilityChange(wasShowingButtons);
@@ -332,7 +331,11 @@ public class WebAppHeaderLayoutCoordinator
         }
 
         if (mMenuButtonCoordinator != null && mMenuButtonCoordinator.isVisible()) {
-            areas.add(mMenuButtonCoordinator.getHitRect());
+            assert mView != null;
+            Rect rect = mMenuButtonCoordinator.getHitRect();
+            View menuDescendent = mView.findViewById(R.id.menu_button_wrapper);
+            mView.offsetDescendantRectToMyCoords(menuDescendent, rect);
+            areas.add(rect);
         }
 
         return areas;

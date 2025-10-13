@@ -44,7 +44,6 @@ found in the LICENSE file.
         android:layout_gravity="end|center_vertical"
         android:visibility="gone">
         <include
-            android:id="@+id/web_app_menu_button"
             layout="@layout/menu_button" />
     </FrameLayout>
 </org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>
