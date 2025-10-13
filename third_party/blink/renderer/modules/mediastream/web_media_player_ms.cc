@@ -552,7 +552,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_audio_track = true;
       for (auto component : audio_components) {
-        client_->AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+        client_->AddTrack(media::MediaTrack::CreateAudioTrack(
             component->Id().Utf8(), media::MediaTrack::AudioKind::kMain,
             component->GetSourceName().Utf8(), /*language=*/"",
             is_first_audio_track));
@@ -576,7 +576,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       // is enabled by default to match blink logic.
       bool is_first_video_track = true;
       for (auto component : video_components) {
-        client_->AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+        client_->AddTrack(media::MediaTrack::CreateVideoTrack(
             component->Id().Utf8(), media::MediaTrack::VideoKind::kMain,
             component->GetSourceName().Utf8(), /*language=*/"",
             is_first_video_track));

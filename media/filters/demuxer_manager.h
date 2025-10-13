@@ -63,8 +63,8 @@ class MEDIA_EXPORT DemuxerManager {
     virtual void RestartForHls() = 0;
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-    virtual void AddMediaTrack(const MediaTrack&) = 0;
-    virtual void RemoveMediaTrack(const MediaTrack&) = 0;
+    virtual void AddTrack(const MediaTrack&) = 0;
+    virtual void RemoveTrack(const MediaTrack&) = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -164,8 +164,8 @@ class MEDIA_EXPORT DemuxerManager {
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  void AddMediaTrack(const MediaTrack&);
-  void RemoveMediaTrack(const MediaTrack&);
+  void AddTrack(const MediaTrack&);
+  void RemoveTrack(const MediaTrack&);
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);

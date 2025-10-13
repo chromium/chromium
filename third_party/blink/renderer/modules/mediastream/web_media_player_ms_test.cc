@@ -563,8 +563,8 @@ class WebMediaPlayerMSTest
   void SetCcLayer(cc::Layer* layer) override;
   void OnFirstFrame(base::TimeTicks, size_t) override {}
 
-  void RemoveMediaTrack(const media::MediaTrack&) override {}
-  void AddMediaTrack(const media::MediaTrack& track) override {}
+  void RemoveTrack(const media::MediaTrack&) override {}
+  void AddTrack(const media::MediaTrack& track) override {}
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
   void RemotePlaybackCompatibilityChanged(const KURL& url,

@@ -1660,12 +1660,12 @@ void WebMediaPlayerImpl::OnEncryptedMediaInitData(
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-void WebMediaPlayerImpl::AddMediaTrack(const media::MediaTrack& track) {
-  client_->AddMediaTrack(track);
+void WebMediaPlayerImpl::AddTrack(const media::MediaTrack& track) {
+  client_->AddTrack(track);
 }
 
-void WebMediaPlayerImpl::RemoveMediaTrack(const media::MediaTrack& track) {
-  client_->RemoveMediaTrack(track);
+void WebMediaPlayerImpl::RemoveTrack(const media::MediaTrack& track) {
+  client_->RemoveTrack(track);
 }
 
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)

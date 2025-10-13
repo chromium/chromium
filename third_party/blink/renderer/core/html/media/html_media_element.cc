@@ -3392,7 +3392,7 @@ void HTMLMediaElement::SelectedVideoTrackChanged(
   }
 }
 
-void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
+void HTMLMediaElement::AddTrack(const media::MediaTrack& track) {
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {
       bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
@@ -3415,7 +3415,7 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
   }
 }
 
-void HTMLMediaElement::RemoveMediaTrack(const media::MediaTrack& track) {
+void HTMLMediaElement::RemoveTrack(const media::MediaTrack& track) {
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {
       videoTracks().Remove(String::FromUTF8(track.track_id().value()));
@@ -4577,14 +4577,14 @@ void HTMLMediaElement::CreatePlaceholderTracksIfNecessary() {
   // Create a placeholder audio track if the player says it has audio but it
   // didn't explicitly announce the tracks.
   if (HasAudio() && !audioTracks().length()) {
-    AddMediaTrack(media::MediaTrack::CreateAudioTrack(
+    AddTrack(media::MediaTrack::CreateAudioTrack(
         "audio", media::MediaTrack::AudioKind::kMain, "Audio Track", "", true));
   }
 
   // Create a placeholder video track if the player says it has video but it
   // didn't explicitly announce the tracks.
   if (HasVideo() && !videoTracks().length()) {
-    AddMediaTrack(media::MediaTrack::CreateVideoTrack(
+    AddTrack(media::MediaTrack::CreateVideoTrack(
         "video", media::MediaTrack::VideoKind::kMain, "Video Track", "", true));
   }
 }

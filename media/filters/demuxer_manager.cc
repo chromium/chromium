@@ -484,9 +484,9 @@ DemuxerManager::CreateHlsDemuxer() {
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_,
       BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::AddMediaTrack, weak_factory_.GetWeakPtr())),
+          &DemuxerManager::AddTrack, weak_factory_.GetWeakPtr())),
       BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::RemoveMediaTrack, weak_factory_.GetWeakPtr())),
+          &DemuxerManager::RemoveTrack, weak_factory_.GetWeakPtr())),
       would_taint_origin, loaded_url_, media_log_.get());
 
   raw_ptr<DataSourceInfo> datasource_info = engine.get();
@@ -554,7 +554,7 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
     switch (track->type()) {
       case MediaTrack::Type::kAudio:
       case MediaTrack::Type::kVideo:
-        client_->AddMediaTrack(*track);
+        client_->AddTrack(*track);
         break;
       default:
         // Text tracks are not supported through this code path.
@@ -565,11 +565,11 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-void DemuxerManager::AddMediaTrack(const MediaTrack& track) {
-  client_->AddMediaTrack(track);
+void DemuxerManager::AddTrack(const MediaTrack& track) {
+  client_->AddTrack(track);
 }
-void DemuxerManager::RemoveMediaTrack(const MediaTrack& track) {
-  client_->RemoveMediaTrack(track);
+void DemuxerManager::RemoveTrack(const MediaTrack& track) {
+  client_->RemoveTrack(track);
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 

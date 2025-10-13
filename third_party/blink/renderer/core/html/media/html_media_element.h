@@ -385,7 +385,7 @@ class CORE_EXPORT HTMLMediaElement
   void DidAudioOutputSinkChanged(const String& hashed_device_id);
 
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
-  void AddMediaTrackForTesting(const media::MediaTrack& t) { AddMediaTrack(t); }
+  void AddTrackForTesting(const media::MediaTrack& t) { AddTrack(t); }
 
   // This should be called directly after creation.
   void SetMediaPlayerHostForTesting(
@@ -567,8 +567,8 @@ class CORE_EXPORT HTMLMediaElement
 
   void SetCcLayer(cc::Layer*) override;
 
-  void AddMediaTrack(const media::MediaTrack&) final;
-  void RemoveMediaTrack(const media::MediaTrack&) final;
+  void AddTrack(const media::MediaTrack&) final;
+  void RemoveTrack(const media::MediaTrack&) final;
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) final;
   void RemotePlaybackCompatibilityChanged(const KURL&,
