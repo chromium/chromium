@@ -249,20 +249,29 @@ class ShortcutSubManagerExecuteTest
     std::optional<SkColor> application_menu_icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->application_menu(), app_id, app_name);
-    EXPECT_TRUE(application_menu_icon_color.has_value());
+    if (!application_menu_icon_color) {
+      ADD_FAILURE() << "Could not get shortcut icon color";
+      return SK_ColorTRANSPARENT;
+    }
     return application_menu_icon_color.value();
 #elif BUILDFLAG(IS_MAC)
     std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->chrome_apps_folder(), app_id, app_name);
-    EXPECT_TRUE(icon_color.has_value());
+    if (!icon_color) {
+      ADD_FAILURE() << "Could not get shortcut icon color";
+      return SK_ColorTRANSPARENT;
+    }
     return icon_color.value();
 #elif BUILDFLAG(IS_LINUX)
     std::optional<SkColor> icon_color =
         test_override->GetShortcutIconTopLeftColor(
             profile(), test_override->desktop(), app_id, app_name,
             kLauncherIconSize);
-    EXPECT_TRUE(icon_color.has_value());
+    if (!icon_color) {
+      ADD_FAILURE() << "Could not get shortcut icon color";
+      return SK_ColorTRANSPARENT;
+    }
     return icon_color.value();
 #else
     NOTREACHED() << "Shortcuts not supported for other OS";
@@ -388,9 +397,6 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
 
   if (HasShortcutsOsIntegration()) {
     // Verify shortcut changes for both name and color.
-// TODO(crbug.com/40261124): Enable once PList parsing code is added to
-// OsIntegrationTestOverride for Mac shortcut checking.
-#if !BUILDFLAG(IS_MAC)
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         fake_provider().registrar_unsafe().GetAppShortName(app_id)));
@@ -398,7 +404,6 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
         GetShortcutColor(
             app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
         testing::Eq(SK_ColorBLUE));
-#endif  // !BUILDFLAG(IS_MAC)
   }
 }
 
@@ -424,12 +429,8 @@ TEST_P(ShortcutSubManagerExecuteTest,
   EXPECT_FALSE(os_integration_state->has_shortcut());
 
   if (HasShortcutsOsIntegration()) {
-// TODO(crbug.com/40261124): Enable once PList parsing code is added to
-// OsIntegrationTestOverride for Mac shortcut checking.
-#if !BUILDFLAG(IS_MAC)
     EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id, app_name));
-#endif
   }
 
   // This should trigger the application to become fully installed.
@@ -445,16 +446,12 @@ TEST_P(ShortcutSubManagerExecuteTest,
   EXPECT_TRUE(os_integration_state->has_shortcut());
 
   if (HasShortcutsOsIntegration()) {
-// TODO(crbug.com/40261124): Enable once PList parsing code is added to
-// OsIntegrationTestOverride for Mac shortcut checking.
-#if !BUILDFLAG(IS_MAC)
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id, app_name));
     EXPECT_THAT(
         GetShortcutColor(
             app_id, fake_provider().registrar_unsafe().GetAppShortName(app_id)),
         testing::Eq(SK_ColorRED));
-#endif
   }
 
   // Mimic a 2nd installation with updated icons so that the update flow gets
@@ -474,11 +471,9 @@ TEST_P(ShortcutSubManagerExecuteTest,
   // Shortcuts should be created now.
   if (HasShortcutsOsIntegration()) {
     EXPECT_TRUE(os_integration_state->has_shortcut());
-// TODO(crbug.com/40261124): Enable once PList parsing code is added to
-// OsIntegrationTestOverride for Mac shortcut checking.
 // TODO(crbug.com/339024222): The color doesn't correctly update to yellow on
 // windows.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), expected_app_id,
         fake_provider().registrar_unsafe().GetAppShortName(expected_app_id)));

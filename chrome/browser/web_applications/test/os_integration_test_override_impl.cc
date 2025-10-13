@@ -57,6 +57,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "net/base/filename_util.h"
 #import "skia/ext/skia_utils_mac.h"
 #endif
@@ -531,21 +533,22 @@ base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  std::string shortcut_filename = app_name + ".app";
-  base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
-  // Exits early if the app id is empty because the verification won't work.
-  // TODO(crbug.com/40212146): Figure a way to find the profile that has the app
-  //                          installed without using app ID.
-  if (app_id.empty()) {
-    return shortcut_path;
-  }
-
   AppShimRegistry* registry = AppShimRegistry::Get();
   std::set<base::FilePath> app_installed_profiles =
       registry->GetInstalledProfilesForApp(app_id);
-  if (app_installed_profiles.find(profile->GetPath()) !=
+  if (app_installed_profiles.find(profile->GetPath()) ==
       app_installed_profiles.end()) {
-    return shortcut_path;
+    return base::FilePath();
+  }
+
+  std::string bundle_id = GetBundleIdentifierForShim(app_id);
+  auto bundles = BundleInfoPlist::SearchForBundlesById(bundle_id, shortcut_dir);
+  // `SearchForBundlesById` can find bundles in multiple locations. For this
+  // test, only the bundle in the given `shortcut_dir` is desired.
+  for (const auto& bundle : bundles) {
+    if (bundle.bundle_path().DirName() == shortcut_dir) {
+      return bundle.bundle_path();
+    }
   }
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =

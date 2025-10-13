@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MAC_BUNDLE_INFO_PLIST_H_
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 
-@class NSDictionary;
+#ifdef __OBJC__
 @class NSURL;
+#endif
 
 namespace base {
 class Version;
@@ -36,8 +38,8 @@ class BundleInfoPlist {
 
   // Retrieve info from the specified app shim in `bundle_path`.
   explicit BundleInfoPlist(const base::FilePath& bundle_path);
-  BundleInfoPlist(const BundleInfoPlist& other);
-  BundleInfoPlist& operator=(const BundleInfoPlist& other);
+  BundleInfoPlist(BundleInfoPlist&& other);
+  BundleInfoPlist& operator=(BundleInfoPlist&& other);
   ~BundleInfoPlist();
 
   const base::FilePath& bundle_path() const { return bundle_path_; }
@@ -63,14 +65,16 @@ class BundleInfoPlist {
   std::string GetBundleId() const;
 
   // Given the path to an app bundle, return the URL of the Info.plist file.
+#ifdef __OBJC__
   static NSURL* GetPlistURL(const base::FilePath& bundle_path);
+#endif
 
  private:
   // The path of the app bundle from this this info was read.
   base::FilePath bundle_path_;
 
-  // Data read from the Info.plist.
-  NSDictionary* __strong plist_;
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 }  // namespace web_app
