@@ -106,11 +106,7 @@ class CORE_EXPORT SelectionModifier {
   PositionInFlatTree NextWordPositionForPlatform(const PositionInFlatTree&);
 
   void UpdateAllLifecyclePhasesExceptPaint();
-  static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
-      const VisiblePositionInFlatTree&);
-  static bool ShouldUseUpstreamPositionForLineNavigation(
-      const PositionInFlatTree&,
-      LayoutUnit line_direction_point);
+
   static PositionInFlatTreeWithAffinity PreviousLinePosition(
       const PositionInFlatTreeWithAffinity&,
       LayoutUnit line_direction_point);

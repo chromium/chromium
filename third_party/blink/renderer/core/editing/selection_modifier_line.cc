@@ -32,7 +32,6 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
-#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
@@ -42,10 +41,6 @@
 namespace blink {
 
 namespace {
-
-static LayoutUnit AbsoluteDifference(LayoutUnit a, LayoutUnit b) {
-  return (a - b).Abs();
-}
 
 // TODO(1229581): Get rid of this.
 class AbstractLineBox {
@@ -383,27 +378,6 @@ PositionInFlatTree NextRootInlineBoxCandidatePosition(
 }  // namespace
 
 // static
-bool SelectionModifier::ShouldUseUpstreamPositionForLineNavigation(
-    const PositionInFlatTree& p,
-    LayoutUnit line_direction_point) {
-  const PositionInFlatTreeWithAffinity upstream_position_with_affinity(
-      p, TextAffinity::kUpstream);
-  const VisiblePositionInFlatTree& visible_upstream_position =
-      CreateVisiblePosition(upstream_position_with_affinity);
-  const LayoutUnit x_upstream = LineDirectionPointForBlockDirectionNavigationOf(
-      visible_upstream_position);
-
-  const VisiblePositionInFlatTree& visible_downstream_position =
-      CreateVisiblePosition(p, TextAffinity::kDownstream);
-  const LayoutUnit x_downstream =
-      LineDirectionPointForBlockDirectionNavigationOf(
-          visible_downstream_position);
-
-  return AbsoluteDifference(line_direction_point, x_upstream) <
-         AbsoluteDifference(line_direction_point, x_downstream);
-}
-
-// static
 PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
     const PositionInFlatTreeWithAffinity& position,
     LayoutUnit line_direction_point) {
@@ -421,19 +395,6 @@ PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
 
   AbstractLineBox line = AbstractLineBox::CreateFor(position);
   if (line) {
-    if (RuntimeEnabledFeatures::
-            ConsiderUpstreamPositionForFindingPreviousLineEnabled()) {
-      if (ShouldUseUpstreamPositionForLineNavigation(p, line_direction_point)) {
-        const PositionInFlatTreeWithAffinity upstream_position(
-            p, TextAffinity::kUpstream);
-        if (upstream_position.IsNotNull()) {
-          if (auto upstream_line =
-                  AbstractLineBox::CreateFor(upstream_position)) {
-            line = upstream_line;
-          }
-        }
-      }
-    }
     line = line.PreviousLine();
     if (!line || !line.CanBeCaretContainer()) {
       line = AbstractLineBox();

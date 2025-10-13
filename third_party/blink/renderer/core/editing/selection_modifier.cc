@@ -989,7 +989,7 @@ bool SelectionModifier::ModifyWithPageGranularity(
 
 // Abs x/y position of the caret ignoring transforms.
 // TODO(yosin) navigation with transforms should be smarter.
-LayoutUnit SelectionModifier::LineDirectionPointForBlockDirectionNavigationOf(
+static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
     const VisiblePositionInFlatTree& visible_position) {
   if (visible_position.IsNull())
     return LayoutUnit();

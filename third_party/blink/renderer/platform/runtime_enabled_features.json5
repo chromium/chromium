@@ -1089,11 +1089,6 @@
       status: "stable"
     },
     {
-      // See https://crbug.com/40679713 for details.
-      name: "ConsiderUpstreamPositionForFindingPreviousLine",
-      status: "stable",
-    },
-    {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
     },
