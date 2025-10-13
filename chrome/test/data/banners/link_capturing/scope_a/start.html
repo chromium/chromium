@@ -49,7 +49,17 @@
     let aDestinationUrl = new URL("destination.html", window.location.href).href;
     let bDestinationUrl = new URL("../scope_b/destination.html", window.location.href).href;
     let b2DestinationUrl = new URL("../scope_b/destination2.html", window.location.href).href;
+    let bExtendedDestinationUrl = new URL("../scope_b_extended/destination.html", window.location.href).href;
     let xDestinationUrl = new URL("../scope_x/destination.html", window.location.href).href;
+
+    function updateDestinationBExtendedOrigin(origin) {
+      const path = new URL(bExtendedDestinationUrl).pathname;
+      bExtendedDestinationUrl = new URL(path, origin).href;
+      let links = document.querySelectorAll('a.destinationBExtended');
+      for (let link of links) {
+        link.setAttribute('href', getDestinationForElementClass(link));
+      }
+    }
 
     function triggerNotificationForUrlOpen(url) {
       console.assert(serviceWorkerRegistration);
@@ -124,6 +134,9 @@
     if (element.classList.contains('destinationB')) {
       return bDestinationUrl;
     }
+    if (element.classList.contains('destinationBExtended')) {
+      return bExtendedDestinationUrl;
+    }
     console.assert(element.classList.contains('destinationX'));
     return xDestinationUrl;
   }
@@ -137,7 +150,7 @@
     // listeners for the buttons.
 
     var links = document.querySelectorAll(
-          'a.destinationA, a.destinationB, a.destinationX, a.destinationB2');
+          'a.destinationA, a.destinationB, a.destinationX, a.destinationB2, a.destinationBExtended');
     for (let link of links) {
       link.setAttribute('href', getDestinationForElementClass(link));
       link.addEventListener("click", addModifierToTargetElementHref.bind(this, link));
@@ -167,7 +180,8 @@
         console.log('button ' + button.id + ' clicked, dest ' + url);
         if (rel) {
           window.open(url, target, rel);
-        } else {
+        }
+        else {
           window.open(url, target);
         }
       });
@@ -224,6 +238,7 @@
 <a target="_blank"  rel="noopener" id="id-LINK-A_TO_B-BLANK-NO_OPENER" class="destinationB">target="_blank" rel=noopener</a><br>
 <a target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="destinationB">target="noframe" rel=opener</a><br>
 <a target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="destinationB">target="noframe" rel=noopener</a><br>
+<a target="_blank"  rel="noopener" id="id-LINK-A_TO_B_EXTENDED-BLANK-NO_OPENER" class="destinationBExtended">target="_blank" rel=noopener</a><br>
 
 <!-- Form POST submissions. `action` is populated programmatically. -->
 <form method="post" class="destinationB" target="_blank" rel="opener"><input type="text" id="test" name="test_key"
