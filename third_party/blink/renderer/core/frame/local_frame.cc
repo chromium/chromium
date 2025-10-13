@@ -3465,13 +3465,12 @@ void LocalFrame::SetInitialFocus(bool reverse) {
 }
 
 #if BUILDFLAG(IS_MAC)
-void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
+uint32_t LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
   HitTestLocation location(View()->ViewportToFrame(gfx::Point(point)));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  uint32_t index =
-      Selection().CharacterIndexForPoint(result.RoundedPointInInnerNodeFrame());
-  mojo_handler_->TextInputHost().GotCharacterIndexAtPoint(index);
+  return Selection().CharacterIndexForPoint(
+      result.RoundedPointInInnerNodeFrame());
 }
 #endif
 
@@ -3926,16 +3925,6 @@ bool LocalFrame::ShouldThrottleDownload() {
   num_burst_download_requests_++;
   return false;
 }
-
-#if BUILDFLAG(IS_MAC)
-void LocalFrame::ResetTextInputHostForTesting() {
-  mojo_handler_->ResetTextInputHostForTesting();
-}
-
-void LocalFrame::RebindTextInputHostForTesting() {
-  mojo_handler_->RebindTextInputHostForTesting();
-}
-#endif
 
 Frame* LocalFrame::GetProvisionalOwnerFrame() {
   DCHECK(IsProvisional());

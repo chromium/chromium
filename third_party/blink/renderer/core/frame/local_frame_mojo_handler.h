@@ -75,12 +75,6 @@ class LocalFrameMojoHandler
   mojom::blink::BackForwardCacheControllerHost&
   BackForwardCacheControllerHostRemote();
 
-#if BUILDFLAG(IS_MAC)
-  mojom::blink::TextInputHost& TextInputHost();
-  void ResetTextInputHostForTesting();
-  void RebindTextInputHostForTesting();
-#endif
-
   mojom::blink::DevicePostureType GetDevicePosture();
   void OverrideDevicePostureForEmulation(
       mojom::blink::DevicePostureType device_posture_param);

@@ -326,8 +326,8 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
       back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
 #if BUILDFLAG(IS_MAC)
-  // It should be bound before accessing TextInputHost which is the interface to
-  // respond to GetCharacterIndexAtPoint.
+  // It should be bound before accessing text_input_host_ which is the interface
+  // to respond to GetCharacterIndexAtPoint and GetFirstRectForRange.
   frame.GetBrowserInterfaceBroker().GetInterface(
       text_input_host_.BindNewPipeAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
@@ -388,23 +388,6 @@ mojom::blink::BackForwardCacheControllerHost&
 LocalFrameMojoHandler::BackForwardCacheControllerHostRemote() {
   return *back_forward_cache_controller_host_remote_.get();
 }
-
-#if BUILDFLAG(IS_MAC)
-mojom::blink::TextInputHost& LocalFrameMojoHandler::TextInputHost() {
-  DCHECK(text_input_host_.is_bound());
-  return *text_input_host_.get();
-}
-
-void LocalFrameMojoHandler::ResetTextInputHostForTesting() {
-  text_input_host_.reset();
-}
-
-void LocalFrameMojoHandler::RebindTextInputHostForTesting() {
-  frame_->GetBrowserInterfaceBroker().GetInterface(
-      text_input_host_.BindNewPipeAndPassReceiver(
-          frame_->GetTaskRunner(TaskType::kInternalDefault)));
-}
-#endif
 
 mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
   if (!reporting_service_.is_bound()) {
@@ -1007,7 +990,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 
 #if BUILDFLAG(IS_MAC)
 void LocalFrameMojoHandler::GetCharacterIndexAtPoint(const gfx::Point& point) {
-  frame_->GetCharacterIndexAtPoint(point);
+  text_input_host_->GotCharacterIndexAtPoint(
+      frame_->GetCharacterIndexAtPoint(point));
 }
 
 void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
@@ -1031,7 +1015,7 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
         base::checked_cast<uint32_t>(range.length()), rect);
   }
 
-  TextInputHost().GotFirstRectForRange(rect);
+  text_input_host_->GotFirstRectForRange(rect);
 }
 
 void LocalFrameMojoHandler::GetStringForRange(

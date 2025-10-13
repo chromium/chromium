@@ -28,42 +28,6 @@ void RegisterMockedHttpURLLoad(const std::string& base_url,
       WebString::FromUTF8(base_url), test::CoreTestDataPath(),
       WebString::FromUTF8(file_name));
 }
-
-class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
- public:
-  TestTextInputHostWaiter() = default;
-  ~TestTextInputHostWaiter() override = default;
-
-  void Init(base::OnceClosure callback,
-            const blink::BrowserInterfaceBrokerProxy& provider) {
-    callback_ = std::move(callback);
-    provider.SetBinderForTesting(
-        mojom::blink::TextInputHost::Name_,
-        BindRepeating(&TestTextInputHostWaiter::BindTextInputHostReceiver,
-                      Unretained(this)));
-  }
-
-  void GotCharacterIndexAtPoint(uint32_t index) override {
-    index_ = index;
-    if (callback_)
-      std::move(callback_).Run();
-  }
-
-  void GotFirstRectForRange(const gfx::Rect& rect) override {}
-
-  void BindTextInputHostReceiver(
-      mojo::ScopedMessagePipeHandle message_pipe_handle) {
-    receiver_.Bind(mojo::PendingReceiver<mojom::blink::TextInputHost>(
-        std::move(message_pipe_handle)));
-  }
-
-  uint32_t index() { return index_; }
-
- private:
-  mojo::Receiver<mojom::blink::TextInputHost> receiver_{this};
-  uint32_t index_;
-  base::OnceClosure callback_;
-};
 #endif
 
 }  // namespace
@@ -167,17 +131,11 @@ TEST_F(LocalFrameTest, CharacterIndexAtPointWithPinchZoom) {
 
   Page* page = web_view_helper.GetWebView()->GetPage();
   LocalFrame* main_frame = DynamicTo<LocalFrame>(page->MainFrame());
-  main_frame->ResetTextInputHostForTesting();
 
-  base::RunLoop run_loop;
-  TestTextInputHostWaiter waiter;
-  waiter.Init(run_loop.QuitClosure(), main_frame->GetBrowserInterfaceBroker());
-  main_frame->RebindTextInputHostForTesting();
   // Since we're zoomed in to 2X, each char of Ahem is 20px wide/tall in
   // viewport space. We expect to hit the fifth char on the first line.
-  main_frame->GetCharacterIndexAtPoint(gfx::Point(100, 15));
-  run_loop.Run();
-  EXPECT_EQ(waiter.index(), 5ul);
+  uint32_t index = main_frame->GetCharacterIndexAtPoint(gfx::Point(100, 15));
+  EXPECT_EQ(index, 5ul);
 }
 #endif
 }  // namespace blink
