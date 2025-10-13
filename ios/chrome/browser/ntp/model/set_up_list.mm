@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -131,7 +132,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                identityManager:(signin::IdentityManager*)identityManager
                     localState:(PrefService*)localState {
-  if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled)) {
+  if (!prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     return nil;
   }
 

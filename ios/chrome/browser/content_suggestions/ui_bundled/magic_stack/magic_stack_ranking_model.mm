@@ -17,6 +17,7 @@
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -612,7 +613,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   MagicStackModule* card;
 
   BOOL areTipsCardsEnabled =
-      _prefService->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
+      _prefService->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
 
   for (const std::string& label : result.ordered_labels) {
     if (label == segmentation_platform::kPriceTrackingNotificationPromo) {

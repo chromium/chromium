@@ -7,6 +7,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_test_utils.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -58,13 +58,13 @@ using set_up_list_prefs::SetUpListItemState;
 
 + (void)disableTipsCards {
   chrome_test_util::GetOriginalProfile()->GetPrefs()->SetBoolean(
-      prefs::kHomeCustomizationMagicStackTipsEnabled, false);
+      ntp_tiles::prefs::kTipsHomeModuleEnabled, false);
 }
 
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
   PrefService* prefService = chrome_test_util::GetOriginalProfile()->GetPrefs();
-  prefService->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, true);
+  prefService->SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
   set_up_list_prefs::SetItemState(localState,
                                   SetUpListItemType::kDefaultBrowser, unknown);

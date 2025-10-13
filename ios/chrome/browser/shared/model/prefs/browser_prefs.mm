@@ -955,8 +955,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
 
   // Registers the Magic Stack module visibility prefs.
-  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
-                                true);
+  registry->RegisterBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
   registry->RegisterBooleanPref(
       ntp_tiles::prefs::kTabResumptionHomeModuleEnabled, true);
 
@@ -1117,6 +1116,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // `ntp_tiles::prefs::kTabResumptionHomeModuleEnabled` instead.
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
+
+  // Deprecated 10/2025. Use
+  // `ntp_tiles::prefs::kTipsHomeModuleEnabled` instead.
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackTipsEnabled,
+                                true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1298,11 +1302,11 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
                     prefs);
-
-  // Added 10/2025.
   RenameBooleanPref(ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
                     prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
                     prefs);
+  RenameBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled,
+                    prefs::kHomeCustomizationMagicStackTipsEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

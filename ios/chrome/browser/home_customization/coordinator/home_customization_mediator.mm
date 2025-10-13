@@ -126,8 +126,7 @@
       return _prefService->GetBoolean(
           ntp_tiles::prefs::kTabResumptionHomeModuleEnabled);
     case CustomizationToggleType::kTips: {
-      return _prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackTipsEnabled);
+      return _prefService->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
     }
     case CustomizationToggleType::kShopCard:
       return _prefService->GetBoolean(
@@ -166,7 +165,7 @@
           ntp_tiles::prefs::kTabResumptionHomeModuleEnabled, enabled);
       break;
     case CustomizationToggleType::kTips: {
-      _prefService->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled,
+      _prefService->SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled,
                                enabled);
       break;
     }

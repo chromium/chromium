@@ -70,6 +70,7 @@ source_set("set_up_list") {
     ":set_up_list_metrics",
     ":set_up_list_prefs",
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/prefs/ios",
@@ -109,8 +110,8 @@ source_set("set_up_list_prefs") {
     ":set_up_list_item_type",
     ":set_up_list_metrics",
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
@@ -129,6 +130,7 @@ source_set("unit_tests") {
     ":set_up_list_prefs",
     ":util",
     "//base/test:test_support",
+    "//components/ntp_tiles:pref_names",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/strings",

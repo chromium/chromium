@@ -26,6 +26,7 @@ source_set("set_up_list") {
     ":constants",
     ":utils",
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs/ios",
@@ -109,6 +110,7 @@ source_set("utils") {
   ]
   deps = [
     "//base",
+    "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
 
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/providers/app_store_bundle/test_app_store_bundle_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -23,7 +23,7 @@ class AppBundlePromoMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     profile_pref_service_.registry()->RegisterBooleanPref(
-        prefs::kHomeCustomizationMagicStackTipsEnabled, true);
+        ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
     TestAppStoreBundleService* app_store_bundle_service =
         new TestAppStoreBundleService();
     mediator_to_test_ = [[AppBundlePromoMediator alloc]
@@ -57,8 +57,8 @@ class AppBundlePromoMediatorTest : public PlatformTest {
 TEST_F(AppBundlePromoMediatorTest, TestDisableModule) {
   OCMExpect(
       [delegate_mock_ removeAppBundlePromoModuleWithCompletion:[OCMArg any]]);
-  profile_pref_service_.SetBoolean(
-      prefs::kHomeCustomizationMagicStackTipsEnabled, false);
+  profile_pref_service_.SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled,
+                                   false);
   EXPECT_OCMOCK_VERIFY(delegate_mock_);
 }
 

@@ -66,6 +66,9 @@ inline constexpr char kCustomLinksForPreinstalledAppsRemoved[] =
 inline constexpr char kTabResumptionHomeModuleEnabled[] =
     "home.module.tab_resumption.enabled";
 
+// The pref that stores if the Tips Home Module is enabled.
+inline constexpr char kTipsHomeModuleEnabled[] = "home.module.tips.enabled";
+
 }  // namespace ntp_tiles::prefs
 
 #endif  // COMPONENTS_NTP_TILES_PREF_NAMES_H_

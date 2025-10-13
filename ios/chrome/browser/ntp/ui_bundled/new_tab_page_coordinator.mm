@@ -1625,8 +1625,8 @@
           safety_check::prefs::kSafetyCheckHomeModuleEnabled);
       BOOL tabResumptionEnabled = prefService->GetBoolean(
           ntp_tiles::prefs::kTabResumptionHomeModuleEnabled);
-      BOOL tipsEnabled = prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackTipsEnabled);
+      BOOL tipsEnabled =
+          prefService->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
       [self.NTPMetricsRecorder
           recordMagicStackCustomizationStateWithSafetyCheck:safetyCheckEnabled
                                               tabResumption:tabResumptionEnabled

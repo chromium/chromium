@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 
 #import "base/time/time.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
@@ -17,7 +18,7 @@ namespace set_up_list_utils {
 bool IsSetUpListActive(PrefService* local_prefs,
                        PrefService* user_prefs,
                        bool include_disable_pref) {
-  if (!user_prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled)) {
+  if (!user_prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     return false;
   }
   // Check if we are within the duration of the Set Up List, relevant to the

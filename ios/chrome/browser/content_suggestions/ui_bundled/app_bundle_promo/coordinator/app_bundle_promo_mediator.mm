@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @interface AppBundlePromoMediator () <AppBundlePromoAudience,
                                       PrefObserverDelegate>
@@ -52,7 +52,7 @@
       _profilePrefChangeRegistrar.Init(profilePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kHomeCustomizationMagicStackTipsEnabled,
+          ntp_tiles::prefs::kTipsHomeModuleEnabled,
           &_profilePrefChangeRegistrar);
     }
   }
@@ -87,9 +87,9 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   CHECK(_profilePrefService);
-  CHECK_EQ(preferenceName, prefs::kHomeCustomizationMagicStackTipsEnabled);
+  CHECK_EQ(preferenceName, ntp_tiles::prefs::kTipsHomeModuleEnabled);
   if (!_profilePrefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackTipsEnabled)) {
+          ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     [self.delegate removeAppBundlePromoModuleWithCompletion:nil];
   }
 }

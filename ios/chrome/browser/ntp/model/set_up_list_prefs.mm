@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 
+#import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace set_up_list_prefs {
@@ -86,7 +86,7 @@ bool AllItemsComplete(PrefService* prefs) {
 }
 
 bool IsSetUpListDisabled(PrefService* prefs) {
-  return !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
+  return !prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
 }
 
 void RecordInteraction(PrefService* prefs) {

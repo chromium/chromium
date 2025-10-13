@@ -23,6 +23,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
@@ -460,7 +461,7 @@ using segmentation_platform::TipIdentifier;
   }
 
   BOOL areTipsCardsEnabled =
-      prefs->GetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled);
+      prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
 
   if (IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
@@ -1440,7 +1441,7 @@ using segmentation_platform::TipIdentifier;
 // Disables Magic Stack cards with the "Chrome Tips" header.
 - (void)disableTipsModules {
   PrefService* prefs = self.profile->GetPrefs();
-  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled, false);
+  prefs->SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled, false);
 }
 
 @end

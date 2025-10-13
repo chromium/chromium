@@ -14,6 +14,7 @@
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
 #import "url/gurl.h"
@@ -90,7 +90,7 @@ using segmentation_platform::TipIdentifier;
       _profilePrefChangeRegistrar.Init(profilePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          prefs::kHomeCustomizationMagicStackTipsEnabled,
+          ntp_tiles::prefs::kTipsHomeModuleEnabled,
           &_profilePrefChangeRegistrar);
     }
   }
@@ -129,9 +129,9 @@ using segmentation_platform::TipIdentifier;
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   CHECK(_profilePrefService);
-  CHECK_EQ(preferenceName, prefs::kHomeCustomizationMagicStackTipsEnabled);
+  CHECK_EQ(preferenceName, ntp_tiles::prefs::kTipsHomeModuleEnabled);
   if (!_profilePrefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackTipsEnabled)) {
+          ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     [self.delegate removeTipsModuleWithCompletion:nil];
   }
 }
