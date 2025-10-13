@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -461,40 +462,45 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
 
   // Create a new BrowserWindow if possible.
-  if (Browser::GetCreationStatusForProfile(window_profile) !=
-      Browser::CreationStatus::kOk) {
+  if (GetBrowserWindowCreationStatusForProfile(*window_profile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
     return RespondNow(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
   }
-  Browser::CreateParams create_params(window_type, window_profile,
-                                      user_gesture());
+  BrowserWindowCreateParams create_params(window_type, *window_profile,
+                                          user_gesture());
+
   if (isolated_web_app_url_info.has_value()) {
+    create_params.type = BrowserWindowInterface::TYPE_APP;
+    create_params.app_name = web_app::GenerateApplicationNameFromAppId(
+        isolated_web_app_url_info->app_id());
     // For Isolated Web Apps, the actual navigating-to URL will be the app's
     // start_url to prevent deep-linking attacks, while the original URL will be
     // accessible via window.launchQueue; for this reason the browser is marked
     // trusted.
-    create_params = Browser::CreateParams::CreateForApp(
-        web_app::GenerateApplicationNameFromAppId(
-            isolated_web_app_url_info->app_id()),
-        /*trusted_source=*/true, window_bounds, window_profile, user_gesture());
-  } else if (extension_id.empty()) {
-    create_params.initial_bounds = window_bounds;
-  } else {
+    create_params.is_trusted_source = true;
+  } else if (!extension_id.empty()) {
     // extension_id is only set for CREATE_TYPE_POPUP.
-    create_params = Browser::CreateParams::CreateForAppPopup(
-        web_app::GenerateApplicationNameFromAppId(extension_id),
-        /*trusted_source=*/false, window_bounds, window_profile,
-        user_gesture());
+    create_params.type = BrowserWindowInterface::TYPE_APP_POPUP;
+    create_params.app_name =
+        web_app::GenerateApplicationNameFromAppId(extension_id);
+    create_params.is_trusted_source = false;
   }
+  create_params.initial_bounds = window_bounds;
   create_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
+
   if (create_data && create_data->state != windows::WindowState::kNone) {
     create_params.initial_show_state =
         tabs_internal::ConvertToWindowShowState(create_data->state);
   }
 
-  Browser* new_window = Browser::Create(create_params);
+  BrowserWindowInterface* new_window =
+      CreateBrowserWindow(std::move(create_params));
   if (!new_window) {
     return RespondNow(Error(ExtensionTabUtil::kBrowserWindowNotAllowed));
   }
+  // NOTE: Even though `new_window` was returned, it may not be fully
+  // initialized on non-desktop platforms. See documentation on
+  // CreateBrowserWindow().
 
   auto create_nav_params =
       [&](const GURL& url) -> base::expected<NavigateParams, std::string> {
@@ -582,7 +588,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           source_tab_strip->DetachTabAtForInsertion(tab_index);
       tab = detached_tab.get();
       TabStripModel* target_tab_strip =
-          ExtensionTabUtil::GetEditableTabStripModel(new_window);
+          ExtensionTabUtil::GetEditableTabStripModel(
+              new_window->GetBrowserForMigrationOnly());
       if (!target_tab_strip) {
         return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
       }
@@ -593,15 +600,15 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
   if (!tab && urls.empty() && window_type == Browser::TYPE_NORMAL) {
-    chrome::NewTab(new_window);
+    chrome::NewTab(new_window->GetBrowserForMigrationOnly());
   }
   chrome::SelectNumberedTab(
-      new_window, 0,
+      new_window->GetBrowserForMigrationOnly(), 0,
       TabStripUserGestureDetails(
           TabStripUserGestureDetails::GestureType::kNone));
 
   if (focused) {
-    new_window->window()->Show();
+    new_window->GetWindow()->Show();
   } else {
     // Show an unfocused new window.
     BrowserWindowInterface* const last_active_bwi =
@@ -612,9 +619,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // the old active browser.
     if (last_active_bwi && last_active_bwi->IsActive()) {
       ScopedPinBrowserAtFront scoper(last_active_bwi);
-      new_window->window()->ShowInactive();
+      new_window->GetWindow()->ShowInactive();
     } else {
-      new_window->window()->ShowInactive();
+      new_window->GetWindow()->ShowInactive();
     }
   }
 
@@ -624,9 +631,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 // TODO(crbug.com/40254339): Remove this workaround when linux is fixed.
 // TODO(crbug.com/40254339): Find a fix for wayland as well.
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
-  if (new_window->initial_show_state() ==
+  if (new_window->GetBrowserForMigrationOnly()->initial_show_state() ==
       ui::mojom::WindowShowState::kMinimized) {
-    new_window->window()->Minimize();
+    new_window->GetWindow()->Minimize();
   }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
@@ -639,11 +646,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS)
     ash::boca::LockedQuizSessionManagerFactory::GetInstance()
         ->GetForBrowserContext(calling_profile)
-        ->SetLockedFullscreenState(new_window, /*pinned=*/true);
+        ->SetLockedFullscreenState(new_window->GetBrowserForMigrationOnly(),
+                                   /*pinned=*/true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  if (new_window->profile()->IsOffTheRecord() &&
+  if (new_window->GetProfile()->IsOffTheRecord() &&
       !browser_context()->IsOffTheRecord() &&
       !include_incognito_information()) {
     // Don't expose incognito windows if extension itself works in non-incognito
