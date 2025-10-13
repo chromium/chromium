@@ -41,11 +41,6 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- leaf_from_known_root.pem : A certificate issued by a public trust anchor,
-     used for CertVerifyProcInternalTest.TestKnownRoot. Using for other
-     purposes is not recommended. This needs to be updated periodically so the
-     server name the cert is valid for may change.
-
 - lets-encrypt-dst-x3-root.pem: A chain that ends in the Lets encrypt DST X3
   root (https://crt.sh/?id=8395). Has the same leaf as
   lets-encrypt-isrg-x1-root.pem.

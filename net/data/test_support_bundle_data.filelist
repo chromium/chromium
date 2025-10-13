@@ -114,7 +114,6 @@ data/ssl/certificates/key_usage_rsa_both.pem
 data/ssl/certificates/key_usage_rsa_digitalsignature.pem
 data/ssl/certificates/key_usage_rsa_keyencipherment.pem
 data/ssl/certificates/key_usage_rsa_no_extension.pem
-data/ssl/certificates/leaf_from_known_root.pem
 data/ssl/certificates/lets-encrypt-dst-x3-root.pem
 data/ssl/certificates/lets-encrypt-isrg-x1-root.pem
 data/ssl/certificates/localhost_cert.pem
