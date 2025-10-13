@@ -10,8 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -141,13 +139,6 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
             return transformed;
           }(),
           ", ");
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-type", match_type);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-group-id", match_group_id);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "match-relevance",
-                                match_relevance);
-      SCOPED_CRASH_KEY_STRING32("ZpsSection", "group-description",
-                                group_description);
-      base::debug::DumpWithoutCrashing();
 #if DCHECK_IS_ON()
       NOTREACHED() << "Match with type " << match_type << " and group id "
                    << match_group_id << " and relevance " << match_relevance
