@@ -34,7 +34,7 @@ class SyncServiceObserver {
 
   // Called when the sync service is being shutdown permanently, so that
   // longer-lived observers can drop references to it.
-  virtual void OnSyncShutdown(SyncService* sync) {}
+  virtual void OnSyncShutdown(SyncService* sync) = 0;
 
  protected:
   SyncServiceObserver() = default;
