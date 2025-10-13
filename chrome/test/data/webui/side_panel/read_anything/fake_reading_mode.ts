@@ -60,9 +60,6 @@ export class FakeReadingMode {
   contentFinishedStopSource: number = 34;
   unexpectedUpdateContentStopSource: number = 35;
 
-  // Whether the WebUI toolbar feature flag is enabled.
-  isWebUIToolbarVisible: boolean = true;
-
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;
