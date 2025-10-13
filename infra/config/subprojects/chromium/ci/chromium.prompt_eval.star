@@ -23,7 +23,7 @@ ci.defaults.set(
     health_spec = health_spec.default(),
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_project = siso.project.DEFAULT_TRUSTED,
 )
 
 consoles.console_view(
