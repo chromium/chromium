@@ -1896,6 +1896,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsEnableOriginBoundCookies",
                     std::move(origin_bound_cookies_dict));
 
+  if (base::FeatureList::IsEnabled(features::kDevToolsGreenDevUi)) {
+    response_dict.Set("devToolsGreenDevUi",
+                      base::Value::Dict().Set("enabled", true));
+  }
+
   if (base::FeatureList::IsEnabled(
           ::features::kDevToolsAnimationStylesInStylesTab)) {
     base::Value::Dict devtools_animation_styles_in_styles_tab_dict;

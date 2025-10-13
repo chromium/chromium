@@ -2341,6 +2341,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "devtools-greendev-ui",
+    "owners": [ "alinavarkki@chromium.org", "finnur@chromium.org", "jacktfranklin@chromium.org" ],
+    "expiry_milestone": 250
+  },
+  {
     "name": "devtools-individual-request-throttling",
     "owners": [ "pfaffe@chromium.org" ],
     "expiry_milestone": 145

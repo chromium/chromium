@@ -511,6 +511,10 @@ const char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 const char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";
 
+const char kDevToolsGreenDevUiName[] = "DevTools GreenDev UI";
+const char kDevToolsGreenDevUiDescription[] =
+    "Enables the experimental GreenDev UI in DevTools.";
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kDevToolsProjectSettingsName[] = "DevTools Project Settings";
 const char kDevToolsProjectSettingsDescription[] =

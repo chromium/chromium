@@ -331,6 +331,9 @@ extern const char kDesktopUAOnConnectedDisplayDescription[];
 extern const char kDevToolsPrivacyUIName[];
 extern const char kDevToolsPrivacyUIDescription[];
 
+extern const char kDevToolsGreenDevUiName[];
+extern const char kDevToolsGreenDevUiDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kDevToolsProjectSettingsName[];
 extern const char kDevToolsProjectSettingsDescription[];

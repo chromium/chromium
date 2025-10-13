@@ -11406,6 +11406,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPrivacyUI)},
 
+    {"devtools-greendev-ui", flag_descriptions::kDevToolsGreenDevUiName,
+     flag_descriptions::kDevToolsGreenDevUiDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsGreenDevUi)},
+
     {"devtools-individual-request-throttling",
      flag_descriptions::kDevToolsIndividualRequestThrottlingName,
      flag_descriptions::kDevToolsIndividualRequestThrottlingDescription, kOsAll,

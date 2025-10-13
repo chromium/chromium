@@ -13741,6 +13741,7 @@ from previous Chrome versions.
   <int value="-172544594" label="LacrosNonSyncingProfiles:enabled"/>
   <int value="-172480221" label="UseDMSAAForTiles:enabled"/>
   <int value="-171798137" label="HdrAgtm:enabled"/>
+  <int value="-171725593" label="DevToolsGreenDevUi:enabled"/>
   <int value="-171232290" label="ListAllDisplayModes:disabled"/>
   <int value="-171173736" label="VrBrowsingExperimentalFeatures:disabled"/>
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
@@ -19786,6 +19787,7 @@ from previous Chrome versions.
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>
   <int value="1956055092" label="signature-based-sri:enabled"/>
+  <int value="1956493171" label="DevToolsGreenDevUi:disabled"/>
   <int value="1957192097" label="WebViewLogFirstPartyPageTimeSpent:disabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
