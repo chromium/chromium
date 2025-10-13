@@ -56,26 +56,22 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
   }
 
   const size_t num_planes = VideoFrame::NumPlanes(format_);
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
-  for (size_t i = 0; i < num_planes; i++)
-    plane_addrs[i] = scoped_mapping->Memory(i);
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
+
+  for (size_t i = 0; i < num_planes; i++) {
+    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
+  }
 
   scoped_refptr<VideoFrame> mapped_frame;
   if (IsYuvPlanar(format_)) {
     mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
         video_frame->layout(), video_frame->visible_rect(),
-        video_frame->natural_size(), plane_addrs[0], plane_addrs[1],
-        plane_addrs[2], video_frame->timestamp());
+        video_frame->natural_size(), planes[0], planes[1], planes[2],
+        video_frame->timestamp());
   } else if (num_planes == 1) {
-    size_t buffer_size = VideoFrame::AllocationSize(
-        format_,
-        gfx::Size(scoped_mapping->Stride(0), scoped_mapping->Size().height()));
     mapped_frame = VideoFrame::WrapExternalDataWithLayout(
         video_frame->layout(), video_frame->visible_rect(),
-        video_frame->natural_size(),
-        // TODO(crbug.com/40285824): spanify this usage.
-        UNSAFE_TODO(base::span(plane_addrs[0], buffer_size)),
-        video_frame->timestamp());
+        video_frame->natural_size(), planes[0], video_frame->timestamp());
   }
 
   if (!mapped_frame) {
