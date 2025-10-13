@@ -28200,27 +28200,6 @@
             ]
         }
     ],
-    "WebrtcAcceleratedScaling": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebrtcAcceleratedScaling"
-                    ],
-                    "disable_features": [
-                        "BreakoutBoxConversionWithoutSinkSignal"
-                    ]
-                }
-            ]
-        }
-    ],
     "WhatsNewHats": [
         {
             "platforms": [
