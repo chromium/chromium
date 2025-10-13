@@ -33,7 +33,7 @@ const CGFloat kMultilineTextTopMargin = 12.0;
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
-const CGFloat kTrailingButtonTrailingMargin = 7.0;
+const CGFloat kTrailingButtonTrailingMargin = 14;
 /// Trailing button trailing margin with popout omnibox.
 const CGFloat kTrailingButtonTrailingMarginPopout = 26.0;
 const CGFloat kTextSpacing = 2.0f;
@@ -398,8 +398,7 @@ const CGFloat kTopGradientColorOpacity = 0.85;
 
 /// Handles tap on trailing button.
 - (void)trailingButtonTapped {
-  if (_configuration.trailingIconType == TrailingIconType::kSearchWithAim ||
-      _configuration.trailingIconType == TrailingIconType::kOpenExistingTab) {
+  if (_configuration.trailingIconType == TrailingIconType::kOpenExistingTab) {
     TriggerHapticFeedbackForSelectionChange();
   }
 

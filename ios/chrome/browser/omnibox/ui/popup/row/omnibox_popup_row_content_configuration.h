@@ -17,7 +17,6 @@
 @protocol OmniboxPopupActionsRowDelegate;
 
 extern NSString* const OmniboxPopupRowCellReuseIdentifier;
-extern NSString* const OmniboxPopupAIModeRowCellReuseIdentifier;
 
 /// This minimum height causes most of the rows to be the same height. Some have
 /// multiline answers, so those heights may be taller than this minimum.

@@ -42,8 +42,6 @@
   base::WeakPtr<OmniboxClient> _omniboxClient;
   /// The autocomplete client.
   base::WeakPtr<AutocompleteProviderClient> _autocompleteProviderClient;
-  /// Whether aim shortcut is available.
-  BOOL _aimShortcutAvailable;
 }
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
@@ -120,11 +118,6 @@
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
-  _aimShortcutAvailable =
-      self.presentationContext != OmniboxPresentationContext::kLensOverlay &&
-      _autocompleteProviderClient &&
-      OmniboxFieldTrial::IsDeterministicAimActionInTypedStateEnabled(
-          _autocompleteProviderClient.get());
 }
 
 #pragma mark - Private
@@ -139,7 +132,6 @@
   formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
   formatter.isMultimodal = self.hasThumbnail;
-  formatter.hasAimShortcut = NO;
 
   if (formatter.suggestionGroupId) {
     omnibox::GroupId groupId =
@@ -161,9 +153,6 @@
     }
 
     switch (suggestAction.type) {
-      case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
-        formatter.hasAimShortcut = _aimShortcutAvailable;
-        break;
       case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL: {
         BOOL hasDialApp = [[UIApplication sharedApplication]
             canOpenURL:net::NSURLWithGURL(suggestAction.actionURI)];

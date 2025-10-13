@@ -64,7 +64,6 @@ UIColor* DimColorIncognito() {
 }
 @synthesize suggestionSectionId;
 @synthesize actionsInSuggest;
-@synthesize hasAimShortcut;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
   self = [super init];

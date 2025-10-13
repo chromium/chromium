@@ -10,7 +10,6 @@
 @implementation PedalSuggestionWrapper
 
 @synthesize pedal = _pedal;
-@synthesize hasAimShortcut;
 
 - (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal {
   self = [super init];
