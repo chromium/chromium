@@ -38,6 +38,8 @@
 @synthesize collectionView = _collectionView;
 @synthesize diffableDataSource = _diffableDataSource;
 @synthesize page = _page;
+@synthesize additionalViewWillTransitionToSizeHandler =
+    _additionalViewWillTransitionToSizeHandler;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -58,6 +60,14 @@
   self.view = _collectionView;
 
   [_collectionConfigurator configureNavigationBar];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  if (_additionalViewWillTransitionToSizeHandler) {
+    _additionalViewWillTransitionToSizeHandler(size, coordinator);
+  }
 }
 
 #pragma mark - Private

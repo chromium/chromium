@@ -91,6 +91,8 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 @synthesize collectionView = _collectionView;
 @synthesize diffableDataSource = _diffableDataSource;
 @synthesize page = _page;
+@synthesize additionalViewWillTransitionToSizeHandler =
+    _additionalViewWillTransitionToSizeHandler;
 
 @dynamic navigationItem;
 
@@ -151,6 +153,17 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   [self.view addSubview:_collectionView];
 
   AddSameConstraints(_collectionView, self.view);
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  // Some of the layout sections care about rotation/size changes, so invalidate
+  // the layout so those sections can be updated.
+  [_collectionView.collectionViewLayout invalidateLayout];
+  if (_additionalViewWillTransitionToSizeHandler) {
+    _additionalViewWillTransitionToSizeHandler(size, coordinator);
+  }
 }
 
 - (NSInteger)selectedIndex {
@@ -300,8 +313,10 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 - (NSCollectionLayoutSection*)
       sectionForIndex:(NSInteger)sectionIndex
     layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  CGSize windowSize = self.view.window.bounds.size;
   return [_collectionConfigurator
-      backgroundCellSectionForLayoutEnvironment:layoutEnvironment];
+      backgroundCellSectionForLayoutEnvironment:layoutEnvironment
+                                     windowSize:windowSize];
 }
 
 #pragma mark - Private
@@ -390,8 +405,10 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 // Creates and configures the section layout using the given layout environment.
 - (NSCollectionLayoutSection*)createSectionLayoutWithEnvironment:
     (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  CGSize windowSize = self.view.window.bounds.size;
   NSCollectionLayoutSection* section = [_collectionConfigurator
-      backgroundCellSectionForLayoutEnvironment:layoutEnvironment];
+      backgroundCellSectionForLayoutEnvironment:layoutEnvironment
+                                     windowSize:windowSize];
 
   // Header.
   NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize

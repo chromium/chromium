@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 
+#import <algorithm>
+
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -13,21 +15,19 @@ namespace {
 // The height of a cell in a vertical collection view section.
 const CGFloat kVerticalListCellHeight = 74;
 
-// The height of a compact background cell in a horizontal collection view
-// section.
-const CGFloat kCompactBackgroundCellHeight = 108;
+// Height for a background cell when the app is in portrait orientation.
+const CGFloat kPortraitBackgroundCellHeight = 201;
 
-// The height of a regular background cell in an horizontal collection view
-// section.
-const CGFloat kRegularBackgroundCellHeight = 201;
+// Minimum width for a background cell when the app is in portrait rotation.
+// Depending on the aspect ratio of the window, the actual width may be larger.
+const CGFloat kPortraitBackgroundCellMinimumWidth = 100;
 
-// The width of a compact background cell in an horizontal collection view
-// section.
-const CGFloat kCompactBackgroundCellWidth = 100;
+// Width for a background cell when the app is in landscape orientation.
+const CGFloat kLandscapeBackgroundCellWidth = 190;
 
-// The width of a regular background cell in an horizontal collection view
-// section.
-const CGFloat kRegularBackgroundCellWidth = 190;
+// Minimum height for a background cell when the app is in landscape rotation.
+// Depending on the aspect ratio of the window, the actual height may be larger.
+const CGFloat kLandscapeBackgroundCellMinimumHeight = 108;
 
 // The horizontal spacing between the cell and each side of the vertical
 // collection view.
@@ -83,6 +83,14 @@ const CGFloat kSpacingBelowHeader = 10;
   collectionView.delegate = _viewController;
   collectionView.accessibilityIdentifier = [HomeCustomizationHelper
       accessibilityIdentifierForPageCollection:_viewController.page];
+
+  __weak __typeof(self) weakSelf = self;
+  _viewController.additionalViewWillTransitionToSizeHandler =
+      ^(CGSize size, id<UIViewControllerTransitionCoordinator> coordinator) {
+        [weakSelf collectionViewWillTransitionToSize:size
+                           withTransitionCoordinator:coordinator];
+      };
+
   _viewController.collectionView = collectionView;
 
   UICollectionViewDiffableDataSource* diffableDataSource =
@@ -105,20 +113,30 @@ const CGFloat kSpacingBelowHeader = 10;
   [_viewController.navigationItem setHidesBackButton:YES];
 }
 
-- (NSCollectionLayoutSection*)backgroundCellSectionForLayoutEnvironment:
-    (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  BOOL isCompactHeight = IsCompactHeight(layoutEnvironment.traitCollection);
+- (NSCollectionLayoutSection*)
+    backgroundCellSectionForLayoutEnvironment:
+        (id<NSCollectionLayoutEnvironment>)layoutEnvironment
+                                   windowSize:(CGSize)windowSize {
+  CGSize cellSize;
+  if (windowSize.height > windowSize.width) {
+    CGFloat cellHeight = kPortraitBackgroundCellHeight;
+    CGFloat cellWidth = cellHeight / windowSize.height * windowSize.width;
+    cellSize = CGSizeMake(
+        std::max<CGFloat>(cellWidth, kPortraitBackgroundCellMinimumWidth),
+        cellHeight);
+  } else {
+    CGFloat cellWidth = kLandscapeBackgroundCellWidth;
+    CGFloat cellHeight = cellWidth / windowSize.width * windowSize.height;
+    cellSize = CGSizeMake(
+        cellWidth,
+        std::max<CGFloat>(cellHeight, kLandscapeBackgroundCellMinimumHeight));
+  }
 
   NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
-      sizeWithWidthDimension:
-          [NSCollectionLayoutDimension
-              absoluteDimension:isCompactHeight ? kRegularBackgroundCellWidth
-                                                : kCompactBackgroundCellWidth]
-             heightDimension:
-                 [NSCollectionLayoutDimension
-                     absoluteDimension:isCompactHeight
-                                           ? kCompactBackgroundCellHeight
-                                           : kRegularBackgroundCellHeight]];
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 absoluteDimension:cellSize.width]
+             heightDimension:[NSCollectionLayoutDimension
+                                 absoluteDimension:cellSize.height]];
 
   NSCollectionLayoutItem* item =
       [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
@@ -236,6 +254,14 @@ const CGFloat kSpacingBelowHeader = 10;
 - (BOOL)doesPageHaveHeader {
   return _viewController.page == CustomizationMenuPage::kDiscover ||
          _viewController.page == CustomizationMenuPage::kMagicStack;
+}
+
+- (void)collectionViewWillTransitionToSize:(CGSize)size
+                 withTransitionCoordinator:
+                     (id<UIViewControllerTransitionCoordinator>)coordinator {
+  // Some of the layout sections care about rotation/size changes, so invalidate
+  // the layout so those sections can be updated.
+  [_viewController.collectionView.collectionViewLayout invalidateLayout];
 }
 
 @end

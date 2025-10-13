@@ -22,6 +22,9 @@
 
 @property(nonatomic, assign) CustomizationMenuPage page;
 
+@property(nonatomic, copy) void (^additionalViewWillTransitionToSizeHandler)
+    (CGSize, id<UIViewControllerTransitionCoordinator>);
+
 // Dismisses the presenting view controller.
 - (void)dismissCustomizationMenuPage;
 
