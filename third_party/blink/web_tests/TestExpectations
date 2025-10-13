@@ -2959,8 +2959,8 @@ external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_
 crbug.com/450876665 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Failure ]
-external/wpt/webdriver/tests/bidi/network/set_extra_headers/invalid.py [ Failure ]
+crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/get_data/persistence.py [ Failure ]
+crbug.com/451655444 external/wpt/webdriver/tests/bidi/network/set_extra_headers/invalid.py [ Failure ]
 crbug.com/450776558 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-003.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html [ Pass Timeout ]
 crbug.com/450513405 external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
