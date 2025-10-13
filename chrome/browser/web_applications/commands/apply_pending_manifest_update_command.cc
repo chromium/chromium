@@ -282,6 +282,9 @@ void ApplyPendingManifestUpdateCommand::DeletePendingUpdateInfoThenComplete(
     app_to_update->SetPendingUpdateInfo(std::nullopt);
   }
 
+  lock_->registrar().NotifyPendingUpdateInfoChanged(
+      app_id_, /*pending_update_available=*/false,
+      WebAppRegistrar::PendingUpdateInfoChangePassKey());
   CompleteCommandAndSelfDestruct(expected_result);
 }
 

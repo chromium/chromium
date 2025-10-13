@@ -435,10 +435,42 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Accept) {
   views::NamedWidgetShownWaiter update_dialog_waiter(
       views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
-  InstallAppAndTriggerAppUpdateDialog();
+  const webapps::AppId& app_id = InstallAppAndTriggerAppUpdateDialog();
   views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, dialog_widget);
-  views::test::AcceptDialog(dialog_widget);
+  EXPECT_EQ("Web app for updating",
+            provider().registrar_unsafe().GetAppShortName(app_id));
+
+  BrowserWindowInterface* app_browser =
+      AppBrowserController::FindForWebApp(*profile(), app_id);
+  ASSERT_NE(app_browser, nullptr);
+  BrowserView* app_browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ASSERT_NE(app_browser_view, nullptr);
+  // Verify that the dialog is showing in the browser, and that the menu button
+  // is present and expanded.
+  EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+  EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
+
+  // Accept the dialog, and verify name was updated as part of updating from
+  // `index.html` to `new_icon_page_masking.html`. Icons are also updated,
+  // however that verification is skipped here for brevity. Tests for that are
+  // part of the pending update application command unit-tests.
+  {
+    base::test::TestFuture<void> menu_update_future;
+    base::CallbackListSubscription subscription =
+        menu_button->AwaitLabelTextUpdated(
+            menu_update_future.GetRepeatingCallback());
+    views::test::AcceptDialog(dialog_widget);
+    EXPECT_TRUE(menu_update_future.Wait());
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+
+  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
+  EXPECT_EQ("Web app update with masking",
+            provider().registrar_unsafe().GetAppShortName(app_id));
   EXPECT_THAT(tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
               BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kAccept, 1)));
 }

@@ -67,6 +67,8 @@ class WebAppProvider;
 class WebAppRegistrarObserver;
 class WebAppScope;
 class AppLock;
+class ManifestSilentUpdateCommand;
+class ApplyPendingManifestUpdateCommand;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -592,6 +594,7 @@ class WebAppRegistrar {
     friend void SetWebAppPendingUpdateAsIgnored(const webapps::AppId&,
                                                 AppLock& lock,
                                                 base::Value::Dict& debug_value);
+    friend class ApplyPendingManifestUpdateCommand;
     PendingUpdateInfoChangePassKey() = default;
   };
 
