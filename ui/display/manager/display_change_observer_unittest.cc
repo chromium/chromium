@@ -495,7 +495,7 @@ TEST_P(DisplayChangeObserverTest, InvalidDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+  EXPECT_EQ(DisplaySnapshot::PrimaryFormat(),
             display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
@@ -527,7 +527,7 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+  EXPECT_EQ(DisplaySnapshot::PrimaryFormat(),
             display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 
@@ -559,7 +559,7 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
   const auto display_color_spaces = display_info.display_color_spaces();
   EXPECT_FALSE(display_color_spaces.SupportsHDR());
 
-  EXPECT_EQ(DisplaySnapshot::PrimarySharedImageFormat(),
+  EXPECT_EQ(DisplaySnapshot::PrimaryFormat(),
             display_color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
                                                  /*needs_alpha=*/true));
 

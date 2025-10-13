@@ -153,7 +153,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   static const int64_t kInvalidProductCode = -1;
 
   // Returns the SharedImageFormat to be used for the primary plane buffer.
-  static viz::SharedImageFormat PrimarySharedImageFormat();
+  static viz::SharedImageFormat PrimaryFormat();
 
   // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
   // is not plumbed via mojom to limit and control usage across processes.

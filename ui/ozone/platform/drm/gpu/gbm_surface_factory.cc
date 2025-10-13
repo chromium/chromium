@@ -341,7 +341,7 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
 
   // TODO(spang): Fix this for formats other than gfx::BufferFormat::BGRA_8888
   DCHECK_EQ(viz::GetSharedImageFormat(format),
-            display::DisplaySnapshot::PrimarySharedImageFormat());
+            display::DisplaySnapshot::PrimaryFormat());
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;
 
   VkDmaBufImageCreateInfo dma_buf_image_create_info = {

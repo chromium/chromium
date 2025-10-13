@@ -1486,8 +1486,7 @@ const Display& DisplayManager::GetFakePrimaryDisplay() {
     // propagate to allocation code and cause errors.
     // https://crbug.com/1057501
     gfx::DisplayColorSpaces display_color_spaces(
-        gfx::ColorSpace::CreateSRGB(),
-        DisplaySnapshot::PrimarySharedImageFormat());
+        gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
     fake_display->SetColorSpaces(display_color_spaces);
   }
   return *fake_display;

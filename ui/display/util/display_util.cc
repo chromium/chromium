@@ -315,14 +315,14 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata) {
   if (HasForceDisplayColorProfile()) {
     return gfx::DisplayColorSpaces(GetForcedDisplayColorProfile(),
-                                   DisplaySnapshot::PrimarySharedImageFormat());
+                                   DisplaySnapshot::PrimaryFormat());
   }
 
   // ChromeOS VMs (e.g. amd64-generic or betty) have INVALID Primaries; just
   // pass the color space along.
   if (!snapshot_color_space.IsValid()) {
     return gfx::DisplayColorSpaces(snapshot_color_space,
-                                   DisplaySnapshot::PrimarySharedImageFormat());
+                                   DisplaySnapshot::PrimaryFormat());
   }
 
   // Make all displays report that they have sRGB primaries. Hardware color
@@ -336,7 +336,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
 
   // Use that color space for all content.
   gfx::DisplayColorSpaces display_color_spaces = gfx::DisplayColorSpaces(
-      sdr_color_space, DisplaySnapshot::PrimarySharedImageFormat());
+      sdr_color_space, DisplaySnapshot::PrimaryFormat());
 
   // Claim 10% HDR headroom if HDR is available.
   if (allow_high_bit_depth && snapshot_color_space.IsHDR()) {

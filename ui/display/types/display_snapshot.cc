@@ -156,7 +156,7 @@ std::string DisplaySnapshot::ToString() const {
 }
 
 // static
-viz::SharedImageFormat DisplaySnapshot::PrimarySharedImageFormat() {
+viz::SharedImageFormat DisplaySnapshot::PrimaryFormat() {
   return viz::SinglePlaneFormat::kBGRA_8888;
 }
 

@@ -54,8 +54,7 @@ OverlaySurfaceCandidate MakeOverlayCandidate(int z_order,
 
   // Use default display format since this should be compatible with most
   // devices.
-  overlay_candidate.format =
-      display::DisplaySnapshot::PrimarySharedImageFormat();
+  overlay_candidate.format = display::DisplaySnapshot::PrimaryFormat();
 
   // The bounds rectangle of the candidate overlay buffer.
   overlay_candidate.buffer_size = bounds_rect.size();
@@ -95,7 +94,7 @@ bool SurfacelessGlRenderer::BufferWrapper::Initialize(
   glGenTextures(1, &gl_tex_);
 
   gfx::BufferFormat format = viz::SinglePlaneSharedImageFormatToBufferFormat(
-      display::DisplaySnapshot::PrimarySharedImageFormat());
+      display::DisplaySnapshot::PrimaryFormat());
   pixmap_ = OzonePlatform::GetInstance()
                 ->GetSurfaceFactoryOzone()
                 ->CreateNativePixmap(widget, nullptr, size, format,
