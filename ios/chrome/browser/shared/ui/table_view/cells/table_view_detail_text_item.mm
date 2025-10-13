@@ -11,6 +11,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #pragma mark - TableViewDetailTextItem
 
@@ -40,7 +42,18 @@
   configuration.subtitleNumberOfLines = self.allowMultilineDetailText ? 0 : 1;
 
   cell.contentConfiguration = configuration;
-  cell.accessibilityLabel = configuration.accessibilityLabel;
+
+  NSString* accessibilityLabel = configuration.accessibilityLabel;
+  // If the cell indicates an external link, append an accessibility hint for
+  // screen readers.
+  if (self.accessorySymbol ==
+      TableViewDetailTextCellAccessorySymbolExternalLink) {
+    NSString* hint = l10n_util::GetNSString(IDS_IOS_OPENS_IN_NEW_TAB);
+    accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", accessibilityLabel, hint];
+  }
+
+  cell.accessibilityLabel = accessibilityLabel;
 
   // Accessory symbol.
   switch (self.accessorySymbol) {

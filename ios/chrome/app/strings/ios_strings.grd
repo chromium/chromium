@@ -4047,6 +4047,9 @@
       <message name="IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL" desc="The accessibility label for the button that will remove the image from the search box. [iOS only].">
        Thumbnail
       </message>
+      <message name="IDS_IOS_OPENS_IN_NEW_TAB" desc="ARIA (accessibility) label describing a link which opens in a new tab.">
+       Opens in new tab
+      </message>
       <message name="IDS_IOS_OPEN_ANOTHER_APP_ALLOW" desc="Text on the button, when tapped will allow opening an external application. [iOS only]">
        Allow
       </message>
