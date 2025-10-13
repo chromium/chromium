@@ -568,6 +568,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "searchboxShowComposeEntrypoint",
       (ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(profile) ||
        ntp_composebox::IsNtpComposeboxEnabled(profile)));
+  source->AddLocalizedString(
+      "searchBoxPlaceholder",
+      ntp_realbox::IsNtpRealboxNextEnabled(profile)
+          ? IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE
+          : IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
