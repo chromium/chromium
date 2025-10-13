@@ -638,6 +638,7 @@ static_library("common") {
   if (is_chromeos) {
     sources += [
       "audio_capturer_chromeos.cc",
+      "audio_capturer_chromeos.h",
       "continue_window_chromeos.cc",
       "curtain_mode_chromeos.cc",
       "curtain_mode_chromeos.h",
@@ -650,6 +651,7 @@ static_library("common") {
     ]
     deps += [
       "//ash",
+      "//media/mojo/common",
       "//remoting/host/chromeos",
       "//remoting/host/chromeos:features",
       "//ui/base/ime/ash",
@@ -940,6 +942,7 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     sources += [
+      "audio_capturer_chromeos_unittest.cc",
       "desktop_display_info_loader_chromeos_unittest.cc",
       "input_injector_chromeos_unittest.cc",
       "it2me/it2me_confirmation_dialog_chromeos_unittest.cc",
@@ -948,6 +951,7 @@ source_set("unit_tests") {
       "//ash:test_support",
       "//chromeos/ash/components:test_support",
       "//components/user_manager:test_support",
+      "//media:test_support",
       "//remoting/host/chromeos",
       "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:reporter_unit_tests",
