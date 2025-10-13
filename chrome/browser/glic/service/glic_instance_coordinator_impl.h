@@ -83,10 +83,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   void Close() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
-  void AddStateObserver(StateObserver* observer) override;
-  void RemoveStateObserver(StateObserver* observer) override;
-
-  mojom::PanelState GetPanelState() override;
+  void AddGlobalStateObserver(StateObserver* observer) override;
+  void RemoveGlobalStateObserver(StateObserver* observer) override;
+  mojom::PanelState GetGlobalPanelState() override;
 
   bool IsActive() override;
   bool IsDetached() const override;

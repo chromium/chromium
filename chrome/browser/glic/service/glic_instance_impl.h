@@ -43,7 +43,6 @@ class GlicInstanceImpl : public GlicInstance,
                          public BrowserListObserver,
                          public Host::InstanceDelegate,
                          public Host::Observer,
-                         public Host::InstanceInterfaceForMigration,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate {
  public:

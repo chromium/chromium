@@ -89,6 +89,9 @@ class GlicWindowControllerImpl
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
+  void AddGlobalStateObserver(PanelStateObserver* observer) override;
+  void RemoveGlobalStateObserver(PanelStateObserver* observer) override;
+  mojom::PanelState GetGlobalPanelState() override;
 
   bool IsActive() override;
   bool IsAttached() override;

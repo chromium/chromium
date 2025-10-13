@@ -158,7 +158,7 @@ class GlicAnnotationManager {
     // Used to record the match duration of `ScrollTo()`.
     const base::TimeTicks start_time_;
 
-    const raw_ptr<Host> host_;
+    const base::WeakPtr<Host> host_;
   };
 
   // See documentation for `annotation_agent_container_` below.

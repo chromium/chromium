@@ -313,7 +313,7 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
       scroll_to_callback_(std::move(callback)),
       document_(render_frame_host.GetWeakDocumentPtr()),
       start_time_(base::TimeTicks::Now()),
-      host_(host) {
+      host_(host->GetWeakPtr()) {
   GlicKeyedService* service = annotation_manager_->service_;
   CHECK(service);
   CHECK(host_);
@@ -331,7 +331,7 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     host_->AddPanelStateObserver(this);
   } else {
-    service->window_controller().AddStateObserver(this);
+    service->GetSingleInstanceWindowController().AddStateObserver(this);
   }
 
   pref_change_registrar_.Init(service->profile()->GetPrefs());
@@ -349,10 +349,12 @@ GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    host_->RemovePanelStateObserver(this);
+    if (host_) {
+      host_->RemovePanelStateObserver(this);
+    }
   } else {
-    annotation_manager_->service_->window_controller().RemoveStateObserver(
-        this);
+    annotation_manager_->service_->GetSingleInstanceWindowController()
+        .RemoveStateObserver(this);
   }
 }
 
@@ -438,7 +440,15 @@ void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   annotation_agent_host_receiver_.reset();
   tab_change_subscription_ = base::CallbackListSubscription();
   content::WebContentsObserver::Observe(nullptr);
-  annotation_manager_->service_->window_controller().RemoveStateObserver(this);
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (host_) {
+      host_->RemovePanelStateObserver(this);
+    }
+  } else {
+    annotation_manager_->service_->GetSingleInstanceWindowController()
+        .RemoveStateObserver(this);
+  }
+
   pref_change_registrar_.Reset();
 }
 

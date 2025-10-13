@@ -54,7 +54,7 @@ enum class AttachChangeReason;
 //
 // GlicWindowController exists as a temporary compatibility interface
 // implemented by GlicWindowControllerImpl and GlicInstanceCoordinatorImpl.
-class GlicWindowController : public Host::InstanceInterfaceForMigration {
+class GlicWindowController {
  public:
   using StateObserver = PanelStateObserver;
   using PanelStateContext = ::glic::PanelStateContext;
@@ -173,6 +173,14 @@ class GlicWindowController : public Host::InstanceInterfaceForMigration {
     return base::FeatureList::IsEnabled(features::kGlicDetached) &&
            !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
   }
+
+  // Same as GlicInstance::AddStateObserver, but applies globally, provides
+  // the aggregate panel state or the last active panel state.
+  // TODO(cuianthony): Implement for multi-instance and update this
+  // documentation.
+  virtual void AddGlobalStateObserver(PanelStateObserver* observer) = 0;
+  virtual void RemoveGlobalStateObserver(PanelStateObserver* observer) = 0;
+  virtual mojom::PanelState GetGlobalPanelState() = 0;
 };
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -203,15 +211,14 @@ namespace base {
 
 template <>
 struct ScopedObservationTraits<glic::GlicWindowController,
-                               glic::GlicWindowController::StateObserver> {
+                               glic::PanelStateObserver> {
   static void AddObserver(glic::GlicWindowController* source,
-                          glic::GlicWindowController::StateObserver* observer) {
-    source->AddStateObserver(observer);
+                          glic::PanelStateObserver* observer) {
+    source->AddGlobalStateObserver(observer);
   }
-  static void RemoveObserver(
-      glic::GlicWindowController* source,
-      glic::GlicWindowController::StateObserver* observer) {
-    source->RemoveStateObserver(observer);
+  static void RemoveObserver(glic::GlicWindowController* source,
+                             glic::PanelStateObserver* observer) {
+    source->RemoveGlobalStateObserver(observer);
   }
 };
 

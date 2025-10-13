@@ -325,6 +325,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
+  // Null in multi-instance mode.
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;

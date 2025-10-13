@@ -196,20 +196,22 @@ void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
   NOTIMPLEMENTED();
 }
 
-mojom::PanelState GlicInstanceCoordinatorImpl::GetPanelState() {
+mojom::PanelState GlicInstanceCoordinatorImpl::GetGlobalPanelState() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return panel_state_;
 }
 
-void GlicInstanceCoordinatorImpl::AddStateObserver(StateObserver* observer) {
+void GlicInstanceCoordinatorImpl::AddGlobalStateObserver(
+    StateObserver* observer) {
   // TODO(b:448604727): The StateObserver needs to be split into two: one for if
   // the floating window is showing and one for the state of an individual
   // panel.
   NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::RemoveStateObserver(StateObserver* observer) {
+void GlicInstanceCoordinatorImpl::RemoveGlobalStateObserver(
+    StateObserver* observer) {
   // TODO(b:448604727): The StateObserver needs to be split into two: one for if
   // the floating window is showing and one for the state of an individual
   // panel.

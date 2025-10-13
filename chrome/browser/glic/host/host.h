@@ -31,20 +31,6 @@ class GlicPageHandler;
 class GlicWindowController;
 class WebUIContentsContainer;
 
-struct PanelStateContext {
-  // Provided only when kGlicMultiInstance is off.
-  raw_ptr<Browser> attached_browser = nullptr;
-  // Provided only when kGlicMultiInstance is off.
-  raw_ptr<views::Widget> glic_widget = nullptr;
-};
-
-// Observes the state of the glic panel.
-class PanelStateObserver : public base::CheckedObserver {
- public:
-  virtual void PanelStateChanged(const mojom::PanelState& panel_state,
-                                 const PanelStateContext& context) = 0;
-};
-
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
 class Host : public GlicSharingManagerProvider {
@@ -82,19 +68,6 @@ class Host : public GlicSharingManagerProvider {
     virtual void SwitchConversation(
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
-  };
-
-  // Functions that are on either GlicInstance or WindowController.
-  // TODO(refactor): This interface should eventually be combined with
-  // InstanceDelegate.
-  // TODO(harringtond): Clarify names of InstanceInterfaceForMigration and
-  // InstanceDelegate.
-  class InstanceInterfaceForMigration {
-   public:
-    virtual void AddStateObserver(PanelStateObserver* observer) = 0;
-    virtual void RemoveStateObserver(PanelStateObserver* observer) = 0;
-    // Returns the current panel state.
-    virtual mojom::PanelState GetPanelState() = 0;
   };
 
   // Functions that are on either GlicInstance or GlidKeyedService.
@@ -170,7 +143,7 @@ class Host : public GlicSharingManagerProvider {
   // When no sharing manager provider is supplied, GlicKeyedService is used.
   explicit Host(Profile* profile,
                 GlicSharingManagerProvider* sharing_manager_provider,
-                InstanceInterfaceForMigration* instance_interface,
+                GlicInstance* glic_instance,
                 InstanceDelegate* instance_delegate);
   Host(const Host&) = delete;
   ~Host() override;
@@ -371,7 +344,8 @@ class Host : public GlicSharingManagerProvider {
 
   // The instance that owns this host.
   raw_ptr<InstanceDelegate> instance_delegate_;
-  raw_ptr<InstanceInterfaceForMigration> instance_interface_;
+  // May be null for hosts which are bound to chrome://glic tabs.
+  raw_ptr<GlicInstance> glic_instance_;
 
   // Null before `Initialize()` and after `Shutdown()`.
   raw_ptr<EmbedderDelegate> delegate_;

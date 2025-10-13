@@ -149,8 +149,10 @@ GlicKeyedService::GlicKeyedService(
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-      occlusion_notifier_(
-          std::make_unique<GlicOcclusionNotifier>(window_controller())),
+      occlusion_notifier_(UseDefaultWindowController()
+                              ? std::make_unique<GlicOcclusionNotifier>(
+                                    GetSingleInstanceWindowController())
+                              : nullptr),
       contextual_cueing_service_(contextual_cueing_service),
       actor_keyed_service_(actor_keyed_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));

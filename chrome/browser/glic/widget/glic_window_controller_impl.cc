@@ -1086,6 +1086,10 @@ mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
   return panel_state_;
 }
 
+mojom::PanelState GlicWindowControllerImpl::GetGlobalPanelState() {
+  return panel_state_;
+}
+
 void GlicWindowControllerImpl::OnDragComplete() {
   BrowserWindowInterface* browser = FindBrowserForAttachment();
   // No browser within attachment range.
@@ -1187,6 +1191,16 @@ void GlicWindowControllerImpl::AddStateObserver(StateObserver* observer) {
 
 void GlicWindowControllerImpl::RemoveStateObserver(StateObserver* observer) {
   state_observers_.RemoveObserver(observer);
+}
+
+void GlicWindowControllerImpl::AddGlobalStateObserver(
+    PanelStateObserver* observer) {
+  AddStateObserver(observer);
+}
+
+void GlicWindowControllerImpl::RemoveGlobalStateObserver(
+    PanelStateObserver* observer) {
+  RemoveStateObserver(observer);
 }
 
 void GlicWindowControllerImpl::NotifyIfPanelStateChanged() {

@@ -91,6 +91,12 @@ class MockGlicWindowController
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
   MOCK_METHOD(Host&, host, (), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));
+  MOCK_METHOD(void, AddGlobalStateObserver, (PanelStateObserver*), (override));
+  MOCK_METHOD(void,
+              RemoveGlobalStateObserver,
+              (PanelStateObserver*),
+              (override));
+  MOCK_METHOD(mojom::PanelState, GetGlobalPanelState, (), (override));
 
   base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

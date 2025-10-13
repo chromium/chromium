@@ -28,18 +28,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace glic {
-namespace {
-
-class NullInstanceInterfaceForMigration
-    : public Host::InstanceInterfaceForMigration {
- public:
-  void AddStateObserver(PanelStateObserver* observer) override {}
-  void RemoveStateObserver(PanelStateObserver* observer) override {}
-  mojom::PanelState GetPanelState() override { return {}; }
-};
-
-NullInstanceInterfaceForMigration g_null_instance_interface;
-}  // namespace
 
 bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
@@ -65,13 +53,11 @@ Host::PageHandlerInfo& Host::PageHandlerInfo::operator=(PageHandlerInfo&&) =
 
 Host::Host(Profile* profile,
            GlicSharingManagerProvider* sharing_manager_provider,
-           InstanceInterfaceForMigration* instance_interface,
+           GlicInstance* glic_instance,
            InstanceDelegate* instance_delegate)
     : profile_(profile),
       instance_delegate_(instance_delegate),
-      // Some tests pass null here, so swap in a benign implementation.
-      instance_interface_(instance_interface ? instance_interface
-                                             : &g_null_instance_interface),
+      glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider) {}
 Host::~Host() = default;
 
@@ -134,9 +120,11 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
   invocation_source_ = invocation_source;
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->PanelWillOpen(
-        mojom::PanelOpeningData::New(
-            instance_interface_->GetPanelState().Clone(), invocation_source,
-            std::move(options.conversation_id)),
+        glic_instance_
+            ? mojom::PanelOpeningData::New(
+                  glic_instance_->GetPanelState().Clone(), invocation_source,
+                  std::move(options.conversation_id))
+            : mojom::PanelOpeningData::New(),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.
@@ -174,11 +162,15 @@ void Host::RemoveObserver(Observer* observer) {
 }
 
 void Host::AddPanelStateObserver(PanelStateObserver* observer) {
-  instance_interface_->AddStateObserver(observer);
+  if (glic_instance_) {
+    glic_instance_->AddStateObserver(observer);
+  }
 }
 
 void Host::RemovePanelStateObserver(PanelStateObserver* observer) {
-  instance_interface_->RemoveStateObserver(observer);
+  if (glic_instance_) {
+    glic_instance_->RemoveStateObserver(observer);
+  }
 }
 
 void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
@@ -296,8 +288,9 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
     }
     web_client->PanelWillOpen(
         mojom::PanelOpeningData::New(
-            instance_interface_->GetPanelState().Clone(), *invocation_source_,
-            std::move(conversation_id)),
+            glic_instance_ ? glic_instance_->GetPanelState().Clone()
+                           : mojom::PanelState::New(),
+            *invocation_source_, std::move(conversation_id)),
         base::BindOnce(
             &Host::PanelWillOpenComplete,
             // Unretained is safe because web client is owned by `contents_`.
@@ -486,7 +479,7 @@ bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {
 }
 
 mojom::PanelState Host::GetPanelState(GlicWebClientAccess* client) const {
-  return instance_interface_->GetPanelState();
+  return glic_instance_ ? glic_instance_->GetPanelState() : mojom::PanelState();
 }
 
 HostManager::HostManager(Profile* profile,
@@ -559,7 +552,15 @@ Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
     return host;
   }
 
-  tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, nullptr,
+  // For backwards compatibility, tab hosts are tied to the window controller.
+  // In multi-instance mode, no instance is used for now. We should consider
+  // just creating new instances for these hosts.
+  GlicInstance* glic_instance = nullptr;
+  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    glic_instance =
+        static_cast<GlicWindowControllerInterface*>(window_controller_.get());
+  }
+  tab_hosts_.push_back(std::make_unique<Host>(profile_, nullptr, glic_instance,
                                               GlicKeyedService::Get(profile_)));
   Host& new_host = *tab_hosts_.back();
   new_host.SetDelegate(empty_embedder_delegate_.get());

@@ -13,14 +13,13 @@
 
 namespace glic {
 
-GlicOcclusionNotifier::GlicOcclusionNotifier(
-    GlicWindowController& window_controller)
-    : window_controller_(window_controller) {
-  window_controller_->AddStateObserver(this);
+GlicOcclusionNotifier::GlicOcclusionNotifier(GlicInstance& instance)
+    : glic_instance_(instance) {
+  glic_instance_->AddStateObserver(this);
 }
 
 GlicOcclusionNotifier::~GlicOcclusionNotifier() {
-  window_controller_->RemoveStateObserver(this);
+  glic_instance_->RemoveStateObserver(this);
 }
 
 void GlicOcclusionNotifier::PanelStateChanged(
@@ -34,7 +33,8 @@ void GlicOcclusionNotifier::PanelStateChanged(
 
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
-  if (!window_controller_->IsDetached() || !tracker) {
+  if (!glic_instance_->IsShowing() || glic_instance_->IsAttached() ||
+      !tracker) {
     return;
   }
 

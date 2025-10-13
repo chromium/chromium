@@ -584,12 +584,13 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
     base::test::TestFuture<void> wait_for_panel;
     PanelStateObserver panel_state_observer(mojom::PanelState::Kind::kDetached,
                                             wait_for_panel.GetCallback());
-    service->window_controller().AddStateObserver(&panel_state_observer);
+    service->window_controller().AddGlobalStateObserver(&panel_state_observer);
     service->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
                       /*source=*/mojom::InvocationSource::kOsButton);
 
     EXPECT_TRUE(wait_for_panel.Wait());
-    service->window_controller().RemoveStateObserver(&panel_state_observer);
+    service->window_controller().RemoveGlobalStateObserver(
+        &panel_state_observer);
   }
 
   ASSERT_TRUE(service->IsWindowShowing());
