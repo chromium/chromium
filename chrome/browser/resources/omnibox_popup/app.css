@@ -16,6 +16,7 @@
   --cr-searchbox-min-width: 75%;
   --cr-searchbox-results-margin-bottom: 0;
   --cr-searchbox-width: 100%;
+  --cr-searchbox-match-font-weight: 700;
   font-size: 14.6px; /* closely resembles the omnibox input font size. */
   /* Colors used in the cr-searchbox results dropdown */
   --color-searchbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
