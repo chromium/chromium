@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -183,14 +184,20 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
 
   WaitForSetChannelPersistentCacheFile();
 
-  // The cache directory should exist and not be empty.
-  EXPECT_TRUE(base::PathExists(temp_dir_.GetPath()));
-  EXPECT_FALSE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+  // Get the cache directory. It should be the only child folder in the temp
+  // dir.
+  base::FileEnumerator enumerator(temp_dir_.GetPath(), false,
+                                  base::FileEnumerator::DIRECTORIES);
+  base::FilePath cache_dir = enumerator.Next();
+  EXPECT_FALSE(cache_dir.empty());
+  EXPECT_TRUE(enumerator.Next().empty());
+  // Verify that the cache dir is not empty.
+  EXPECT_FALSE(base::IsDirectoryEmpty(cache_dir));
 
   base::RunLoop run_loop;
   // Watch for cache directory changes
   base::FilePathWatcher watcher;
-  watcher.Watch(temp_dir_.GetPath(), base::FilePathWatcher::Type::kNonRecursive,
+  watcher.Watch(cache_dir, base::FilePathWatcher::Type::kRecursive,
                 base::BindRepeating(
                     [](base::RunLoop* run_loop, const base::FilePath& cache_dir,
                        const base::FilePath& path, bool error) {
@@ -198,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
                         run_loop->Quit();
                       }
                     },
-                    &run_loop, temp_dir_.GetPath()));
+                    &run_loop, cache_dir));
 
   // Simulate a crash.
   viz::GpuHostImpl* gpu_host_impl = GpuProcessHost::Get()->gpu_host();
@@ -211,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
   // The cache directory should be empty after the crash.
   run_loop.Run();
 
-  EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+  EXPECT_TRUE(base::IsDirectoryEmpty(cache_dir));
 }
 
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
