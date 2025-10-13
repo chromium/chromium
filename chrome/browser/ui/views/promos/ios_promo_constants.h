@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 
+#include <string>
+
 namespace IOSPromoConstants {
 
 // iOS promo QR code URLs.
@@ -21,15 +23,22 @@ inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
 
 // Size of the QR code image view including the quiet zone margin added by the
 // QR code generator.
-inline constexpr int kQrCodeImageSize = 90;
+inline constexpr int kQrCodeImageSize = 80;
 
 struct IOSPromoTypeConfigs {
+  IOSPromoTypeConfigs();
+  ~IOSPromoTypeConfigs();
+  IOSPromoTypeConfigs(const IOSPromoTypeConfigs&);
+  IOSPromoTypeConfigs& operator=(const IOSPromoTypeConfigs&);
+
   int bubble_title_id = -1;
   int bubble_subtitle_id = -1;
   int promo_title_id = -1;
   int promo_description_id = -1;
   int decline_button_text_id = -1;
+  int accept_button_text_id = -1;
   std::string promo_qr_code_url;
+  bool with_header;
 };
 
 }  // namespace IOSPromoConstants

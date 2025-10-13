@@ -25,6 +25,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/toolbar",
       "//components/feature_engagement/public",
       "//components/segmentation_platform/embedder/default_model",
       "//components/segmentation_platform/public",

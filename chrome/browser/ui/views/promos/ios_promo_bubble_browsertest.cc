@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/test/browser_test.h"
@@ -90,6 +92,48 @@ class IOSPaymentPromoBubbleTest : public DialogBrowserTest {
   }
 };
 
+class IOSEnhancedBrowsingPromoBubbleTest : public DialogBrowserTest {
+ public:
+  IOSEnhancedBrowsingPromoBubbleTest() = default;
+
+  IOSEnhancedBrowsingPromoBubbleTest(
+      const IOSEnhancedBrowsingPromoBubbleTest&) = delete;
+
+  IOSEnhancedBrowsingPromoBubbleTest& operator=(
+      const IOSEnhancedBrowsingPromoBubbleTest&) = delete;
+
+  // DialogBrowserTest
+  void ShowUi(const std::string& name) override {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    // Test for iOS Promo Bubble for Enhanced Browsing promo.
+    IOSPromoBubble::ShowPromoBubble(
+        browser_view->toolbar()->app_menu_button(),
+        /*highlighted_button=*/nullptr, browser()->profile(),
+        IOSPromoType::kEnhancedBrowsing, IOSPromoBubbleType::kReminder);
+  }
+};
+
+class IOSLensPromoBubbleTest : public DialogBrowserTest {
+ public:
+  IOSLensPromoBubbleTest() = default;
+
+  IOSLensPromoBubbleTest(const IOSLensPromoBubbleTest&) = delete;
+
+  IOSLensPromoBubbleTest& operator=(const IOSLensPromoBubbleTest&) = delete;
+
+  // DialogBrowserTest
+  void ShowUi(const std::string& name) override {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    // Test for iOS Promo Bubble for Lens promo.
+    IOSPromoBubble::ShowPromoBubble(browser_view->toolbar()->app_menu_button(),
+                                    /*highlighted_button=*/nullptr,
+                                    browser()->profile(), IOSPromoType::kLens,
+                                    IOSPromoBubbleType::kReminder);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(IOSPasswordPromoBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
@@ -116,5 +160,13 @@ IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPaymentPromoBubbleTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(IOSEnhancedBrowsingPromoBubbleTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(IOSLensPromoBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
