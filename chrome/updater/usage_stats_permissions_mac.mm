@@ -31,17 +31,11 @@ namespace {
 // Returns true if the directory contains a crashpad database with uploads
 // enabled.
 bool AppAllowsUsageStats(const base::FilePath& app_directory) {
-  base::FilePath crashpad = app_directory.Append("Crashpad");
-  if (!base::PathExists(crashpad)) {
-    return false;
-  }
-  std::unique_ptr<crashpad::CrashReportDatabase> app_database =
-      crashpad::CrashReportDatabase::Initialize(crashpad);
-  if (!app_database) {
-    return false;
-  }
   bool enabled = false;
-  return app_database->GetSettings()->GetUploadsEnabled(&enabled) && enabled;
+  return crashpad::CrashReportDatabase::GetSettingsReaderForDatabasePath(
+             app_directory.Append("Crashpad"))
+             ->GetUploadsEnabled(&enabled) &&
+         enabled;
 }
 
 std::vector<base::FilePath> GetAppDirectories(
