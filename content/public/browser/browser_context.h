@@ -499,7 +499,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 #if BUILDFLAG(IS_ANDROID)
   // Returns extra request headers to be set when navigation happens for `url`.
   // This function is designed for the headers provided by WebView.loadUrl().
-  virtual net::HttpRequestHeaders GetExtraHeadersForUrl(const GURL& url);
+  virtual std::string GetExtraHeadersForUrl(const GURL& url);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
