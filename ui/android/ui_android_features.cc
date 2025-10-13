@@ -27,7 +27,7 @@ BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRefactorMinWidthContextOverride,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReportBottomOverscrolls, base::FEATURE_ENABLED_BY_DEFAULT);
 

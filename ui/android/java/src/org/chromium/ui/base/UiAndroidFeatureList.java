@@ -50,8 +50,8 @@ public class UiAndroidFeatureList {
     public static final CachedFlag sRefactorMinWidthContextOverride =
             newCachedFlag(
                     UiAndroidFeatures.REFACTOR_MIN_WIDTH_CONTEXT_OVERRIDE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
 
     public static final CachedFlag sReportBottomOverscrolls =
             newCachedFlag(
