@@ -17,7 +17,6 @@
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
@@ -519,8 +518,7 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
 
   if (is_primary &&
       (candidate->buffer_size != native_pixmap->GetBufferSize() ||
-       candidate->format !=
-           GetSharedImageFormat(native_pixmap->GetBufferFormat()))) {
+       candidate->format != native_pixmap->GetSharedImageFormat())) {
     // If |mailbox| corresponds to the last submitted primary plane, its
     // parameters may not match those of the current candidate due to a
     // reshape. If the size and format don't match, skip this candidate for
