@@ -1471,8 +1471,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_LT(*item0_name, *item1_name);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Test specifying an empty |orderBy| parameter for search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
     DownloadExtensionTest_SearchOrderByEmpty) {
@@ -1525,7 +1523,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result->GetList().size());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test the |state| option for search().
+// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchState) {
   DownloadManager::DownloadVector items;
@@ -1543,6 +1543,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Test the |limit| option for search().
+// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchLimit) {
   DownloadManager::DownloadVector items;
@@ -1555,6 +1556,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test invalid search parameters.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
@@ -1606,10 +1608,15 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(items[2]->GetTargetFilePath().AsUTF8Unsafe(), *item_name);
 }
 
+// TODO(crbug.com/405219117): Support more tests on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Test that incognito downloads are only visible in incognito contexts, and
 // test that on-record downloads are visible in both incognito and on-record
 // contexts, for DownloadsSearchFunction, DownloadsPauseFunction,
 // DownloadsResumeFunction, and DownloadsCancelFunction.
+// TODO(crbug.com/405219117): Support incognito on desktop Android. This is
+// blocked on Android support for CreateBrowserWindow().
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito) {
@@ -1873,6 +1880,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that we can start a download from an incognito context, and that the
 // download knows that it's incognito.
+// TODO(crbug.com/405219117): Support incognito on desktop Android. This is
+// blocked on Android support for CreateBrowserWindow().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Incognito) {
   LoadExtension("downloads_split");
