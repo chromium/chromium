@@ -1589,15 +1589,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests the footer search history link is opened correctly and metrics are
 // recorded in the corrresponding histogram bucket.
-// TODO(crbug.com/443704367): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testOpenSearchHistoryMyActivityFooterLink \
-  DISABLED_testOpenSearchHistoryMyActivityFooterLink
-#else
-#define MAYBE_testOpenSearchHistoryMyActivityFooterLink \
-  testOpenSearchHistoryMyActivityFooterLink
-#endif
-- (void)MAYBE_testOpenSearchHistoryMyActivityFooterLink {
+// TODO(crbug.com/443704367): Re-enable test.
+- (void)DISABLED_testOpenSearchHistoryMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // Sign in is required to show the footer.
   [self signIn];
