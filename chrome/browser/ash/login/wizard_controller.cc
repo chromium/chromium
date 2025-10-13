@@ -609,7 +609,7 @@ ErrorScreen* WizardController::GetErrorScreen() {
   return GetOobeUI()->GetErrorScreen();
 }
 
-bool WizardController::HasScreen(OobeScreenId screen_id) {
+bool WizardController::HasScreen(OobeScreenId screen_id) const {
   return screen_manager_->HasScreen(screen_id);
 }
 

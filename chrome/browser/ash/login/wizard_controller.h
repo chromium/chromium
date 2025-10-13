@@ -224,7 +224,7 @@ class WizardController : public OobeUI::Observer {
   BaseScreen* current_screen() const { return current_screen_; }
 
   // Returns true if a given screen exists.
-  bool HasScreen(OobeScreenId screen_id);
+  bool HasScreen(OobeScreenId screen_id) const;
 
   // Returns a given screen. Creates it lazily.
   BaseScreen* GetScreen(OobeScreenId screen_id);

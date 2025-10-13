@@ -128,7 +128,7 @@ namespace ash {
 namespace {
 
 // Maximum delay for startup sound after 'loginPromptVisible' signal.
-const int kStartupSoundMaxDelayMs = 4000;
+const int kStartupSoundMaxDelayMs = 10000;
 
 // URL which corresponds to the OOBE WebUI.
 const char kOobeURL[] = "chrome://oobe/oobe";
@@ -462,6 +462,15 @@ PrefService* GetLocalState() {
   return nullptr;
 }
 
+bool IsWizardOnWelcomeScreen(const WizardController* wizard_controller) {
+  if (wizard_controller == nullptr) {
+    return false;
+  }
+  return wizard_controller->HasScreen(WelcomeView::kScreenId) &&
+         wizard_controller->current_screen() ==
+             wizard_controller->GetScreen<WelcomeScreen>();
+}
+
 }  // namespace
 
 // static
@@ -634,11 +643,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   if (ash::features::IsBootAnimationEnabled()) {
-    const bool should_show =
-        wizard_controller_->HasScreen(WelcomeView::kScreenId) &&
-        wizard_controller_->current_screen() ==
-            GetWizardController()->GetScreen<WelcomeScreen>();
-    if (should_show) {
+    const bool should_show_boot_animation =
+        IsWizardOnWelcomeScreen(GetWizardController());
+    if (should_show_boot_animation) {
       ash::Shell::Get()
           ->booting_animation_controller()
           ->ShowAnimationWithEndCallback(base::BindOnce(
@@ -1182,9 +1189,11 @@ void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
                           time_since_login_prompt_visible);
 
   // Don't try to play startup sound if login prompt has been already visible
-  // for a long time.
+  // for a long time or user has already advanced from the welcome screen to the
+  // next step in the flow.
   if (time_since_login_prompt_visible >
-      base::Milliseconds(kStartupSoundMaxDelayMs)) {
+          base::Milliseconds(kStartupSoundMaxDelayMs) ||
+      !IsWizardOnWelcomeScreen(GetWizardController())) {
     return;
   }
   AccessibilityManager::Get()->PlayEarcon(Sound::kStartup,
