@@ -1290,7 +1290,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
+  // In multi-instance mode, we only fetch context from pinned tabs.
+  SKIP_TEST_FOR_MULTI_INSTANCE();
   ExecuteJsTest();
 
   // Should record the respective error to the text mode histogram.
@@ -1306,7 +1307,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromPinnedTabWithoutPermission) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   ExecuteJsTest();
 
   // No context error should have been recorded.

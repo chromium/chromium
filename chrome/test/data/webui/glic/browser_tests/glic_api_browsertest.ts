@@ -15,7 +15,7 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async detachIfInMultiInstance() {
-    if (this.host.getHostCapabilities?.().has(HostCapability.MULTI_INSTANCE)) {
+    if (this.isMultiInstanceEnabled()) {
       assertDefined(this.host.detachPanel);
       this.host.detachPanel();
 
@@ -24,6 +24,11 @@ class ApiTests extends ApiTestFixtureBase {
       await panelStates.waitFor(
           state => state.kind === PanelStateKind.DETACHED);
     }
+  }
+
+  isMultiInstanceEnabled(): boolean {
+    return !!this.host.getHostCapabilities?.()?.has(
+        HostCapability.MULTI_INSTANCE);
   }
 
   // WARNING: Remember to update
@@ -523,7 +528,12 @@ class ApiTests extends ApiTestFixtureBase {
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await focusSequence.next();
     const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
-    assertTrue(await this.host.pinTabs([tabId]));
+
+    // Tab is already pinned in multi-instance mode.
+    if (!this.isMultiInstanceEnabled()) {
+      assertTrue(await this.host.pinTabs([tabId]));
+    }
+
     const result = await this.host.getContextFromTab(tabId, {});
     assertDefined(result);
     assertEquals(
