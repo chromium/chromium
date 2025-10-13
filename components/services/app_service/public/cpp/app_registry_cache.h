@@ -216,9 +216,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   friend class AppRegistryCacheTest;
   friend class AppRegistryCacheWrapperTest;
   friend class PublisherTest;
-  friend class AppStorage;
-  friend class FakeAppStorage;
-  friend class AppStorageTest;
   friend class AppServiceProxyAsh;
   friend class AppServiceProxyBase;
 
