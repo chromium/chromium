@@ -489,13 +489,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomOnSecondaryScreen,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowZoomSizeMatchesWorkArea,
                             "shared/window-zoom-size-matches-work-area.js")
 
-// TODO(crbug.com/444137277): Tests are flaky. Fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowScreenScaleFactor DISABLED_WindowScreenScaleFactor
-#else
-#define MAYBE_WindowScreenScaleFactor WindowScreenScaleFactor
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowScreenScaleFactor,
+HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
                             "shared/window-screen-scale-factor.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
