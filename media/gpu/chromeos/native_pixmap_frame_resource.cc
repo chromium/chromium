@@ -16,7 +16,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -158,7 +157,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  auto si_format = viz::GetSharedImageFormat(pixmap->GetBufferFormat());
+  auto si_format = pixmap->GetSharedImageFormat();
   auto pixel_format = SharedImageFormatToVideoPixelFormat(si_format);
   if (!pixel_format) {
     DLOGF(ERROR) << " Unable to convert shared image format "
