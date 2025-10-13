@@ -278,8 +278,9 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
   if (completed) {
     pending_completed_tasks_[task_list_id].insert(task_id);
   } else {
-    if (pending_completed_tasks_.contains(task_list_id)) {
-      pending_completed_tasks_[task_list_id].erase(task_id);
+    if (auto it = pending_completed_tasks_.find(task_list_id);
+        it != pending_completed_tasks_.end()) {
+      it->second.erase(task_id);
     }
   }
 }
