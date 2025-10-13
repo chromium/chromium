@@ -264,7 +264,7 @@ TEST_P(ProfileReportGeneratorIOSTest, SignedInProfile) {
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(base::SysNSStringToUTF8(fake_identity.userEmail),
             report->chrome_signed_in_user().email());
-  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity.gaiaID),
+  EXPECT_EQ(fake_identity.gaiaId.ToString(),
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
