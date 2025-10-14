@@ -15,6 +15,7 @@
 
 namespace internal {
 
+const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 const char kIncognito[] = ".Incognito";
 
 }  // namespace internal
@@ -36,7 +37,15 @@ ChromeGWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
       suffixes.push_back(suffix + internal::kIncognito);
     }
   }
-  return suffixes;
+  std::vector<std::string> suffixes_from_cache;
+  for (std::string& base_suffix : suffixes) {
+    suffixes_from_cache.push_back(base_suffix);
+    if (IsResponseFromCache()) {
+      suffixes_from_cache.push_back(base_suffix +
+                                    internal::kSuffixResponseFromCache);
+    }
+  }
+  return suffixes_from_cache;
 }
 
 void ChromeGWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(

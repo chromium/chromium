@@ -324,14 +324,18 @@ std::vector<std::pair<std::string, int>>
 GWSAbandonedPageLoadMetricsObserverBrowserTest::ExpandHistograms(
     std::vector<std::string> histogram_names,
     bool is_incognito) {
-  std::vector<std::pair<std::string, int>> with_incognito;
+  std::vector<std::string> with_incognito;
   for (std::string& histogram_name : histogram_names) {
-    with_incognito.emplace_back(histogram_name, 1);
+    with_incognito.push_back(histogram_name);
     if (is_incognito) {
-      with_incognito.emplace_back(histogram_name + ".Incognito", 1);
+      with_incognito.push_back(histogram_name + ".Incognito");
     }
   }
-  return with_incognito;
+  std::vector<std::pair<std::string, int>> histogram_names_expanded;
+  for (std::string& histogram_name : with_incognito) {
+    histogram_names_expanded.emplace_back(histogram_name, 1);
+  }
+  return histogram_names_expanded;
 }
 
 void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
@@ -830,6 +834,11 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
+  // Since we made a backward navigation, we will have metrics with
+  // `ResponseFromCache`.
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false, 1,
+      std::string(internal::kSuffixResponseFromCache));
   ExpectEmptyNavigationAbandonmentUntilCommit();
 
   // SRP Navigation #3: Go back to SRP, potentially restoring from BFCache.
@@ -849,6 +858,10 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(
       /*include_redirect=*/false,
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2 : 3);
+  ExpectTotalCountForAllNavigationMilestones(
+      /*include_redirect=*/false,
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 1 : 2,
+      std::string(internal::kSuffixResponseFromCache));
 
   ExpectEmptyNavigationAbandonmentUntilCommit();
 }
