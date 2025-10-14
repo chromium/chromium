@@ -490,9 +490,10 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
-    return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
-               ? kGoogleAgentspaceMonochromeLogo25Icon
-               : kGoogleAgentspaceMonochromeLogoIcon;
+    return kGoogleAgentspaceMonochromeLogoIcon;
+  } else if (icon.name ==
+             vector_icons::kGoogleAgentspaceMonochromeLogo25Icon.name) {
+    return kGoogleAgentspaceMonochromeLogo25Icon;
   } else if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
     return kGoogleCalendarIconResourceName;
   } else if (icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
