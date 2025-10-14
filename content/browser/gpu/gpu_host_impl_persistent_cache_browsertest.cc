@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
   base::RunLoop run_loop;
   // Watch for cache directory changes
   base::FilePathWatcher watcher;
-  watcher.Watch(cache_dir, base::FilePathWatcher::Type::kRecursive,
+  watcher.Watch(cache_dir, base::FilePathWatcher::Type::kNonRecursive,
                 base::BindRepeating(
                     [](base::RunLoop* run_loop, const base::FilePath& cache_dir,
                        const base::FilePath& path, bool error) {
