@@ -1,12 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/temporal_scalability_id_extractor.h"
 
 #include <bitset>
@@ -212,8 +206,8 @@ bool TemporalScalabilityIdExtractor::ParseAV1(base::span<const uint8_t> chunk,
     md.refresh_frame_flags = frame_header.refresh_frame_flags;
     md.reference_idx_flags = 0;
     if (!libgav1::IsIntraFrame(frame_header.frame_type)) {
-      for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
-        md.reference_idx_flags |= 1 << frame_header.reference_frame_index[i];
+      for (int8_t index : base::span(frame_header.reference_frame_index)) {
+        md.reference_idx_flags |= 1 << index;
       }
     }
 
