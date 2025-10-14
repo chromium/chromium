@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.IpProtection.TokenBatchGenerationTime.{BlindSignAuthPhase}"
-    units="ms" expires_after="2026-01-07">
+    units="ms" expires_after="2026-04-12">
   <owner>jtoohill@google.com</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>

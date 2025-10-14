@@ -3337,7 +3337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -3347,7 +3347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -3915,7 +3915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Setup.NumRetries" units="units"
-    expires_after="2026-01-21">
+    expires_after="2026-04-12">
   <owner>llin@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
@@ -9516,7 +9516,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.FinalizationDisallowedReason"
-    enum="TracingFinalizationDisallowedReason" expires_after="2026-02-10">
+    enum="TracingFinalizationDisallowedReason" expires_after="2026-04-12">
   <owner>ssid@chromium.org</owner>
   <summary>
     Reason why background tracing finalization was not allowed. Also see
@@ -9526,7 +9526,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.Perfetto.Trigger"
-    enum="BackgroundTracingTriggerNameHash" expires_after="2026-02-10">
+    enum="BackgroundTracingTriggerNameHash" expires_after="2026-04-12">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9538,7 +9538,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.ReadTraceDuration" units="ms"
-    expires_after="2026-02-10">
+    expires_after="2026-04-12">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9548,7 +9548,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.Scenario.Trigger.{Type}"
-    enum="BackgroundTracingTriggerNameHash" expires_after="2026-02-10">
+    enum="BackgroundTracingTriggerNameHash" expires_after="2026-04-12">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9565,7 +9565,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.Scenario.{Event}"
-    enum="BackgroundTracingScenarioNameHash" expires_after="2026-02-10">
+    enum="BackgroundTracingScenarioNameHash" expires_after="2026-04-12">
   <owner>etiennep@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -9584,7 +9584,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Background.ScenarioState"
-    enum="BackgroundTracingState" expires_after="2026-02-10">
+    enum="BackgroundTracingState" expires_after="2026-04-12">
   <owner>oysteine@chromium.org</owner>
   <summary>
     Records state of the Background Tracing system, from when scenarios are

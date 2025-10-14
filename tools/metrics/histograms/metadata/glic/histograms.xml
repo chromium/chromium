@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic"
-    units="ms" expires_after="2026-01-15">
+    units="ms" expires_after="2026-04-12">
   <owner>cfredric@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>

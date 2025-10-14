@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.FallbackValidationCategory.Result"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-02-09">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-04-12">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.ValidationCategory.Result"
-    enum="MacErrno" expires_after="2026-02-09">
+    enum="MacErrno" expires_after="2026-04-12">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.ValidationResult"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-02-09">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-04-12">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>

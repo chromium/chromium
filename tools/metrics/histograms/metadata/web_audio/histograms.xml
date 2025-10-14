@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.{ModeTag}.FIFODelay{LatencyTag}"
-    units="ms" expires_after="2026-02-09">
+    units="ms" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.FIFOUnderrunCount{Duration}{LatencyTag}"
-    units="underruns" expires_after="2026-02-09">
+    units="underruns" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -356,7 +356,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RenderTimeRatio{LatencyTag}"
-    units="%" expires_after="2026-02-09">
+    units="%" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RequestRenderGapTimeRatio{LatencyTag}"
-    units="%" expires_after="2026-02-09">
+    units="%" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RequestRenderTimeRatio{LatencyTag}"
-    units="%" expires_after="2026-02-09">
+    units="%" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.TotalPlayoutDelay{LatencyTag}"
-    units="ms" expires_after="2026-02-09">
+    units="ms" expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowGlitches" enum="Boolean"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowPercentage" units="%"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>

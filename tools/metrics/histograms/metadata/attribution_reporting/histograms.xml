@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceRegistrationTimeConfig"
-    enum="SourceRegistrationTimeConfig" expires_after="2026-02-09">
+    enum="SourceRegistrationTimeConfig" expires_after="2026-04-12">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1287,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TriggerDataMatchingRegistration"
-    enum="ConversionTriggerDataMatching" expires_after="2026-02-09">
+    enum="ConversionTriggerDataMatching" expires_after="2026-04-12">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

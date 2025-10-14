@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//chrome/browser/on_device_translation/language_pack_util.h:SupportedLanguage) -->
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
-    enum="LocaleCodeBCP47" expires_after="2025-12-07">
+    enum="LocaleCodeBCP47" expires_after="2026-04-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -538,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.Ranker.Version" units="version"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.SourceLanguage"
-    enum="LocaleCodeBCP47" expires_after="2026-02-09">
+    enum="LocaleCodeBCP47" expires_after="2026-04-12">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

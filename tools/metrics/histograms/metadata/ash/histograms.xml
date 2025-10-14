@@ -3393,7 +3393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DozeMode.{PowerStatus}.Duration" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-04-12">
   <owner>xiyuan@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>

@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2026-02-10">
+    expires_after="2026-04-12">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

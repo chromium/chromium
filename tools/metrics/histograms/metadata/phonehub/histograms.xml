@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.BubbleOpened.Connectable.Page" enum="PhoneHubScreen"
-    expires_after="2026-02-11">
+    expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
-    expires_after="2026-02-11">
+    expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.InitialPhoneStatusSnapshot.Latency" units="ms"
-    expires_after="2026-02-11">
+    expires_after="2026-04-12">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationInteraction"
-    enum="PhoneHubNotificationInteraction" expires_after="2026-02-11">
+    enum="PhoneHubNotificationInteraction" expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
-    expires_after="2026-02-11">
+    expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
@@ -556,7 +556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.TetherConnection.Result"
-    enum="PhoneHubTetherConnectionResult" expires_after="2026-02-11">
+    enum="PhoneHubTetherConnectionResult" expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.{MessageType}.Result"
-    enum="PhoneHubMessageResult" expires_after="2026-02-11">
+    enum="PhoneHubMessageResult" expires_after="2026-04-12">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.UiReady.Latency" units="ms"
-    expires_after="2026-02-11">
+    expires_after="2026-04-12">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

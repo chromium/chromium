@@ -2072,7 +2072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.MemoryDumpSuccess" enum="Boolean"
-    expires_after="2025-12-31">
+    expires_after="2026-04-12">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2813,7 +2813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason"
-    enum="SelfCompactionCancellationReason" expires_after="2026-02-09">
+    enum="SelfCompactionCancellationReason" expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3352,7 +3352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.AreAllPagesFrozen"
-    enum="BooleanAreAllPagesFrozen" expires_after="2026-02-09">
+    enum="BooleanAreAllPagesFrozen" expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3363,7 +3363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.ReadProcMaps"
-    enum="PreFreezeReadProcMapsType" expires_after="2026-02-09">
+    enum="PreFreezeReadProcMapsType" expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3375,7 +3375,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.SelfCompactionTime" units="ms"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3385,7 +3385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.TimeSinceLastCancel" units="ms"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3396,7 +3396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.{Metric}.Diff.{Timing}.{Direction}"
-    units="MiB" expires_after="2026-02-09">
+    units="MiB" expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -3413,7 +3413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.{Type}.Renderer.{Metric}.{Timing}" units="MiB"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>

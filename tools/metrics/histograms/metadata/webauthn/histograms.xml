@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.EnclaveLoadDuration" units="ms"
-    expires_after="2026-02-09">
+    expires_after="2026-04-12">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.GetCredentials.Immediate.CombinedSelectorActions"
-    enum="CombinedSelectorAction" expires_after="2026-01-30">
+    enum="CombinedSelectorAction" expires_after="2026-04-12">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
