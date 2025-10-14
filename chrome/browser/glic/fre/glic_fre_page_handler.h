@@ -41,7 +41,6 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler {
   void WebUiStateChanged(mojom::FreWebUiState new_state) override;
   void ExceededTimeoutError() override;
   void LogWebUiLoadComplete() override;
-  void LogWebClientLoaded() override;
 
  private:
   content::BrowserContext* browser_context() const;

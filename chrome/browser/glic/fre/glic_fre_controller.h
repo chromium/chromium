@@ -157,8 +157,6 @@ class GlicFreController {
 
   void LogWebUiLoadComplete();
 
-  void LogWebClientLoaded();
-
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   Profile* profile() { return profile_; }
@@ -227,13 +225,6 @@ class GlicFreController {
   // Tracks elapsed time between the start of the web client loading and the
   // moment it's fully loaded.
   std::optional<base::ElapsedTimer> web_client_load_timer_;
-
-  // Tracks the time spent in the kHoldLoading state.
-  std::optional<base::ElapsedTimer> hold_loading_timer_;
-
-  // Stores the final web client load time once measured, so it can be logged
-  // when the UI is ready.
-  std::optional<base::TimeDelta> final_web_client_load_time_;
 
   // True if the user has accepted the FRE.
   bool accepted_ = false;
