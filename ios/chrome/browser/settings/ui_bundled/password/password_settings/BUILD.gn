@@ -25,6 +25,7 @@ source_set("password_settings") {
     "//components/prefs/ios",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/credential_provider/model:features",

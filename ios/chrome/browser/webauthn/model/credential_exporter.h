@@ -12,16 +12,22 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 // Handles exporting credentials using the Credential Exchange format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
 @interface CredentialExporter : NSObject
 
 // `window` is a presentantion anchor that will be used by the OS views.
 // `savedPasswordsPresenter` must not be null and must outlive this object.
+// `passkeyModel` must not be null and must outlive this object.
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
            (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
          securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

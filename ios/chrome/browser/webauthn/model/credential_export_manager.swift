@@ -31,10 +31,29 @@ import UIKit
     }
   }
 
-  /// Converts an array of `ExportablePassword` structs into the `ASExportedCredentialData` format.
-  /// This function performs all the data processing and is designed to run on a background thread.
+  private struct ExportablePasskey {
+    let credentialId: Data
+    let rpId: String
+    let userName: String
+    let userDisplayName: String?
+    let userId: Data
+    let privateKey: Data
+
+    init?(_ key: CredentialExchangePasskey) {
+      self.credentialId = key.credentialId
+      self.rpId = key.rpId
+      self.userName = key.userName
+      self.userDisplayName = key.userDisplayName
+      self.userId = key.userId
+      self.privateKey = key.privateKey
+    }
+  }
+
+  /// Converts credential data into the `ASExportedCredentialData` format.
   @available(iOS 26, *)
-  private static func buildExportData(from passwords: [ExportablePassword]) async
+  private static func buildExportData(
+    from passwords: [ExportablePassword], and passkeys: [ExportablePasskey]
+  ) async
     -> ASExportedCredentialData
   {
     var importableItems: [ASImportableItem] = []
@@ -64,7 +83,7 @@ import UIKit
         created: Date(),
         lastModified: Date(),
         title: password.host,
-        subtitle: password.username,
+        subtitle: nil,
         favorite: false,
         scope: scope,
         credentials: credentialsToExport,
@@ -72,6 +91,31 @@ import UIKit
       )
       importableItems.append(item)
     }
+
+    for passkey in passkeys {
+      let passkeyCredential = ASImportableCredential.Passkey(
+        credentialID: passkey.credentialId,
+        relyingPartyIdentifier: passkey.rpId,
+        userName: passkey.userName,
+        userDisplayName: passkey.userDisplayName ?? "",
+        userHandle: passkey.userId,
+        key: passkey.privateKey
+      )
+
+      let item = ASImportableItem(
+        id: UUID().uuidString.data(using: .utf8)!,
+        created: Date(),
+        lastModified: Date(),
+        title: passkey.rpId,
+        subtitle: nil,
+        favorite: false,
+        scope: nil,
+        credentials: [.passkey(passkeyCredential)],
+        tags: []
+      )
+      importableItems.append(item)
+    }
+
     let account = ASImportableAccount(
       // TODO(crbug.com/447142330): Replace placeholder data: id, username and email.
       id: UUID().uuidString.data(using: .utf8)!,
@@ -95,14 +139,22 @@ import UIKit
   /// Begins the credential exchange process by requesting the export options, which triggers the
   /// system UI allowing the user to pick the import credential manager.
   @available(iOS 26, *)
-  @objc(startExportWithCredentials:window:)
-  public func startExport(credentials: [CredentialExchangePassword], window: UIWindow) {
+  @objc(startExportWithPasswords:passkeys:window:)
+  public func startExport(
+    passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey],
+    window: UIWindow
+  ) {
     let exportManager = ASCredentialExportManager(presentationAnchor: window)
-    let exportablePasswords = credentials.compactMap(ExportablePassword.init)
+    let exportablePasswords = passwords.compactMap(ExportablePassword.init)
+    let exportablePasskeys = passkeys.compactMap(ExportablePasskey.init)
+
     Task { @MainActor in
       do {
         let _ = try await exportManager.requestExport(for: nil)
-        let exportedData = await CredentialExportManager.buildExportData(from: exportablePasswords)
+
+        let exportedData = await CredentialExportManager.buildExportData(
+          from: exportablePasswords, and: exportablePasskeys)
+
         try await exportManager.exportCredentials(exportedData)
       } catch {
         // TODO(crbug.com/444149683): Handle errors.

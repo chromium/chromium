@@ -25,6 +25,7 @@ source_set("export_coordinator") {
   deps = [
     "//components/password_manager/core/browser/ui",
     "//components/signin/public/identity_manager",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/signin/model",

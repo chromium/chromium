@@ -60,6 +60,11 @@ TestPasskeyModel::GetAllPasskeys() const {
   return credentials_;
 }
 
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+TestPasskeyModel::GetUnShadowedPasskeys() const {
+  return passkey_model_utils::FilterShadowedCredentials(credentials_);
+}
+
 std::optional<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetPasskeyByCredentialId(
     const std::string& rp_id,

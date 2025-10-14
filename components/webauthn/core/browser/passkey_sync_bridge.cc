@@ -265,6 +265,12 @@ PasskeySyncBridge::GetAllPasskeys() const {
   return passkeys;
 }
 
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetUnShadowedPasskeys() const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys = GetAllPasskeys();
+  return passkey_model_utils::FilterShadowedCredentials(passkeys);
+}
+
 std::optional<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetPasskeyByCredentialId(
     const std::string& rp_id,

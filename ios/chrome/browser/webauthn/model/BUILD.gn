@@ -24,6 +24,7 @@ source_set("model") {
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/sync/model",
     "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

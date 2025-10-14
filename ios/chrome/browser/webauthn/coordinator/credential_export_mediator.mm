@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/webauthn/model/credential_exporter.h"
 
 @implementation CredentialExportMediator {
@@ -17,15 +18,20 @@
 
   // Responsible for interaction with the credential export OS libraries.
   CredentialExporter* _credentialExporter;
+
+  // Provides access to stored WebAuthn credentials.
+  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
-           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter {
+           (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
   self = [super init];
   if (self) {
     _window = window;
     _savedPasswordsPresenter = savedPasswordsPresenter;
+    _passkeyModel = passkeyModel;
   }
   return self;
 }
@@ -38,7 +44,8 @@
   _credentialExporter = [[CredentialExporter alloc]
                initWithWindow:_window
       savedPasswordsPresenter:_savedPasswordsPresenter
-        securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets];
+        securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+                 passkeyModel:_passkeyModel];
   [_credentialExporter startExport];
 }
 

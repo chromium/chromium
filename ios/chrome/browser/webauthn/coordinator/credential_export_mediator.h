@@ -12,12 +12,17 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 // Mediator for the credential exchange export flow.
 @interface CredentialExportMediator : NSObject
 
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
            (password_manager::SavedPasswordsPresenter*)savedPasswordsPresenter
+                  passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

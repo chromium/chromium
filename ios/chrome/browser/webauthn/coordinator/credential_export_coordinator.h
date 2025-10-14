@@ -11,6 +11,10 @@ namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 // Coordinator for the credential exchange export flow.
 @interface CredentialExportCoordinator : ChromeCoordinator
 
@@ -26,6 +30,8 @@ class SavedPasswordsPresenter;
                          savedPasswordsPresenter:
                              (password_manager::SavedPasswordsPresenter*)
                                  savedPasswordsPresenter
+                                    passkeyModel:
+                                        (webauthn::PasskeyModel*)passkeyModel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -35,6 +35,9 @@
 
   // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
   PasskeyKeychainProviderBridge* _passkeyKeychainProviderBridge;
+
+  // Provides access to stored WebAuthn credentials.
+  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -44,12 +47,15 @@
                                          browser:(Browser*)browser
                          savedPasswordsPresenter:
                              (password_manager::SavedPasswordsPresenter*)
-                                 savedPasswordsPresenter {
+                                 savedPasswordsPresenter
+                                    passkeyModel:
+                                        (webauthn::PasskeyModel*)passkeyModel {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
     _savedPasswordsPresenter = savedPasswordsPresenter;
+    _passkeyModel = passkeyModel;
   }
   return self;
 }
@@ -60,7 +66,8 @@
 
   _mediator = [[CredentialExportMediator alloc]
                initWithWindow:_baseNavigationController.view.window
-      savedPasswordsPresenter:_savedPasswordsPresenter];
+      savedPasswordsPresenter:_savedPasswordsPresenter
+                 passkeyModel:_passkeyModel];
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
