@@ -298,8 +298,16 @@ class TabStripRegionViewTestWithScrollingDisabled
 // so tabs that do not fit in the tabstrip will become invisible. This is the
 // opposite behavior from
 // TabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
+// TODO(crbug.com/451682395): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_TabStripCannotBeLargerThanContainer \
+  DISABLED_TabStripCannotBeLargerThanContainer
+#else
+#define MAYBE_TabStripCannotBeLargerThanContainer \
+  TabStripCannotBeLargerThanContainer
+#endif
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingDisabled,
-                       TabStripCannotBeLargerThanContainer) {
+                       MAYBE_TabStripCannotBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   {
