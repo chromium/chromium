@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_ORIGIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_ORIGIN_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -27,7 +28,8 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   static DOMOrigin* Create(const String& value,
                            ExceptionState& exception_state);
 
-  explicit DOMOrigin(scoped_refptr<const SecurityOrigin> origin);
+  DOMOrigin(base::PassKey<DOMOrigin>,
+            scoped_refptr<const SecurityOrigin> origin);
   ~DOMOrigin() override;
 
   // Parses |value|, returning `null` if it isn't a validly serialized origin:
@@ -52,6 +54,8 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  static DOMOrigin* Create(scoped_refptr<const SecurityOrigin>);
+
   const scoped_refptr<const SecurityOrigin> origin_;
 };
 
