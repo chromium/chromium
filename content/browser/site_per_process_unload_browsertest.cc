@@ -187,9 +187,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "b.com", "/render_frame_host/beforeunload.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, b_url));
   CrossProcessFrameConnector* frame_connector_delegate =
-      static_cast<RenderWidgetHostViewChildFrame*>(
-          child_node->current_frame_host()->GetView())
-          ->FrameConnectorForTesting();
+      static_cast<CrossProcessFrameConnector*>(
+          static_cast<RenderWidgetHostViewChildFrame*>(
+              child_node->current_frame_host()->GetView())
+              ->FrameConnectorForTesting());
 
   // Need user gesture for 'beforeunload' to fire.
   PrepContentsForBeforeUnloadTest(web_contents());
@@ -207,8 +208,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(
       ExecJs(web_contents(),
              "document.querySelector('iframe').style.visibility = 'hidden';"));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return frame_connector_delegate->IsHidden(); }));
+  EXPECT_TRUE(base::test::RunUntil(base::FunctionRef<bool()>(
+      [&]() { return frame_connector_delegate->IsHidden(); })));
 
   // Now we navigate the child to about:blank, but since we do not proceed with
   // the navigation, the OOPIF should stay alive and RemoteFrameView intact.
@@ -228,8 +229,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(
       ExecJs(web_contents(),
              "document.querySelector('iframe').style.visibility = 'visible';"));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !frame_connector_delegate->IsHidden(); }));
+  EXPECT_TRUE(base::test::RunUntil(base::FunctionRef<bool()>(
+      [&]() { return !frame_connector_delegate->IsHidden(); })));
 }
 
 // Ensure that after a main frame with an OOPIF is navigated cross-site, the
