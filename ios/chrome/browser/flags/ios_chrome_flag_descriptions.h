@@ -1002,6 +1002,9 @@ extern const char kWelcomeBackInFirstRunDescription[];
 extern const char kYoutubeIncognitoName[];
 extern const char kYoutubeIncognitoDescription[];
 
+extern const char kZeroStateSuggestionsName[];
+extern const char kZeroStateSuggestionsDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

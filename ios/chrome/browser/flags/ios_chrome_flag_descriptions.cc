@@ -1704,6 +1704,11 @@ const char kYoutubeIncognitoDescription[] =
     "When enabled, the links from Youtube incognito will be opened in Chrome "
     "incognito.";
 
+const char kZeroStateSuggestionsName[] = "Enable Zero-State Suggestions";
+const char kZeroStateSuggestionsDescription[] =
+    "Enables fetching zero-state suggestions for the 'Ask Gemini' feature,"
+    "based on the current page context.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

@@ -2842,7 +2842,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          kIOSTipsNotificationsAlternativeStrings,
          kTipsNotificationsAlternativeStringVariation,
-         "IOSTipsNotificationsAlternativeStrings")}};
+         "IOSTipsNotificationsAlternativeStrings")},
+    {"zero-state-suggestions", flag_descriptions::kZeroStateSuggestionsName,
+     flag_descriptions::kZeroStateSuggestionsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kZeroStateSuggestions)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

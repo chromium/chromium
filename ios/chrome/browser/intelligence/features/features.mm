@@ -190,3 +190,9 @@ bool IsGeminiNavigationPromoEnabled() {
   }
   return base::FeatureList::IsEnabled(kGeminiNavigationPromo);
 }
+
+BASE_FEATURE(kZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsZeroStateSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kZeroStateSuggestions);
+}

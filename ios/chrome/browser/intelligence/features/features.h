@@ -149,4 +149,10 @@ BASE_DECLARE_FEATURE(kGeminiNavigationPromo);
 // Returns true if the Gemini navigation promo is enabled.
 bool IsGeminiNavigationPromoEnabled();
 
+// Feature flag to enable zero-state suggestions.
+BASE_DECLARE_FEATURE(kZeroStateSuggestions);
+
+// Returns true if zero-state suggestions are enabled.
+bool IsZeroStateSuggestionsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
