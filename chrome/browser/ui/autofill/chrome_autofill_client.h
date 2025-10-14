@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -192,9 +193,15 @@ class ChromeAutofillClient : public ContentAutofillClient,
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data) final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
-  void TriggerAutofillAiFillingJourneySurvey(bool suggestion_accepted,
-                                             EntityType entity_type) final;
-  void TriggerAutofillAiSavePromptSurvey(bool prompt_accepted) final;
+  void TriggerAutofillAiFillingJourneySurvey(
+      bool suggestion_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities,
+      const FieldTypeSet& triggering_field_types) final;
+  void TriggerAutofillAiSavePromptSurvey(
+      bool prompt_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;

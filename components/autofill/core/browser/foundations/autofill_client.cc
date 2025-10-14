@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -229,11 +230,16 @@ void AutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 
 void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
     bool suggestion_accepted,
-    EntityType entity_type) {
+    EntityType entity_type,
+    const base::flat_set<EntityTypeName>& saved_entities,
+    const FieldTypeSet& triggering_field_types) {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::TriggerAutofillAiSavePromptSurvey(bool prompt_accepted) {
+void AutofillClient::TriggerAutofillAiSavePromptSurvey(
+    bool prompt_accepted,
+    EntityType entity_type,
+    const base::flat_set<EntityTypeName>& saved_entities) {
   NOTIMPLEMENTED();
 }
 

@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
@@ -86,8 +87,9 @@ class AutofillAiManager {
     // generate the suggestions shown.
     DenseSet<EntityType> suggested_entity_types;
     std::optional<EntityType> entity_type_accepted;
+    // The types of the field where the suggestion was shown or accepted.
+    FieldTypeSet autofill_ai_field_types;
   };
-
   const size_t kSuggestionInteractionCacheMaxSize = 5;
 
   // Strike database related methods:

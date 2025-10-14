@@ -470,12 +470,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &::autofill::features::kAutofillAiFillingSurvey,
       kHatsSurveyTriggerAutofillAiFilling,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"User accepted suggestion"});
+      std::vector<std::string>{"User accepted suggestion"},
+      std::vector<std::string>{"Entity type", "Triggering field types",
+                               "Saved entities"});
 
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAiSavePromptSurvey,
       kHatsSurveyTriggerAutofillAiSavePrompt,
-      /*presupplied_trigger_id=*/std::nullopt);
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{"Entity type", "Saved entities"});
 
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAddressUserDeclinedSuggestionSurvey,

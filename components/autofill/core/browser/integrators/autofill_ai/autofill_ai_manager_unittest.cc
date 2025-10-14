@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 
+#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/gmock_callback_support.h"
@@ -15,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -127,11 +129,16 @@ class MockAutofillClient : public TestAutofillClient {
       (override));
   MOCK_METHOD(void,
               TriggerAutofillAiSavePromptSurvey,
-              (bool prompt_accepted),
+              (bool prompt_accepted,
+               EntityType entity_type,
+               const base::flat_set<EntityTypeName>& saved_entities),
               (override));
   MOCK_METHOD(void,
               TriggerAutofillAiFillingJourneySurvey,
-              (bool suggestion_accepted, EntityType type),
+              (bool suggestion_accepted,
+               EntityType type,
+               const base::flat_set<EntityTypeName>& saved_entities,
+               const FieldTypeSet& triggering_field_types),
               (override));
 };
 class AutofillAiManagerTest : public testing::Test {
@@ -377,16 +384,20 @@ TEST_F(AutofillAiManagerTest,
       passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
   form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
       passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
-
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
                                {EntityType(EntityTypeName::kPassport)}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
                                 *form_structure.field(0),
                                 /*filled_fiekds*/ {}, {});
 
-  EXPECT_CALL(autofill_client(),
-              TriggerAutofillAiFillingJourneySurvey(
-                  /*suggestion_accepted=*/true, passport_entity.type()));
+  EXPECT_CALL(
+      autofill_client(),
+      TriggerAutofillAiFillingJourneySurvey(
+          /*suggestion_accepted=*/true, passport_entity.type(),
+          /*saved_entities=*/
+          base::flat_set<EntityTypeName>({EntityTypeName::kPassport}),
+          /*triggering_field_types=*/
+          FieldTypeSet({AutofillType(NAME_FULL).GetAutofillAiTypes()})));
   ASSERT_FALSE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
 }
 
@@ -404,13 +415,17 @@ TEST_F(AutofillAiManagerTest,
       passport_entity, AttributeTypeName::kPassportName, /*app_locale=*/""));
   form_structure.field(1)->set_value(GetValueFromEntityForAttributeTypeName(
       passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
-
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
                                {EntityType(EntityTypeName::kPassport)}, {});
 
-  EXPECT_CALL(autofill_client(),
-              TriggerAutofillAiFillingJourneySurvey(
-                  /*suggestion_accepted=*/false, passport_entity.type()));
+  EXPECT_CALL(
+      autofill_client(),
+      TriggerAutofillAiFillingJourneySurvey(
+          /*suggestion_accepted=*/false, passport_entity.type(),
+          /*saved_entities=*/
+          base::flat_set<EntityTypeName>({EntityTypeName::kPassport}),
+          /*triggering_field_types=*/
+          FieldTypeSet({AutofillType(NAME_FULL).GetAutofillAiTypes()})));
   ASSERT_FALSE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
 }
 
@@ -431,7 +446,6 @@ TEST_F(
   // Fill the passport number with a different value to trigger a save prompt
   // survey.
   form_structure.field(1)->set_value(u"12345");
-
   manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
                                {EntityType(EntityTypeName::kPassport)}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
@@ -1093,7 +1107,11 @@ TEST_F(AutofillAiManagerImportFormTest,
                       MoveArg<2>(&save_callback)));
   // Save prompts lead to a hats survey being triggered.
   EXPECT_CALL(autofill_client(),
-              TriggerAutofillAiSavePromptSurvey(/*prompt_accepted=*/true));
+              TriggerAutofillAiSavePromptSurvey(
+                  /*prompt_accepted=*/true,
+                  /*entity_type*/
+                  EntityType(EntityTypeName::kPassport),
+                  /*saved_entities=*/base::flat_set<EntityTypeName>({})));
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is a save bubble, `old_entity` should not exist.
   EXPECT_FALSE(old_entity.has_value());
@@ -1131,8 +1149,11 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
       .WillOnce(MoveArg<2>(&save_callback));
   // Save prompts lead to a hats survey being triggered.
-  EXPECT_CALL(autofill_client(),
-              TriggerAutofillAiSavePromptSurvey(/*prompt_accepted=*/false));
+  EXPECT_CALL(
+      autofill_client(),
+      TriggerAutofillAiSavePromptSurvey(
+          /*prompt_accepted=*/false, EntityType(EntityTypeName::kPassport),
+          /*saved_entities=*/base::flat_set<EntityTypeName>({})));
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Decline the bubble.

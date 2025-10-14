@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -233,6 +235,19 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   }
   NOTREACHED();
 }
+
+// Returns a string representation of `saved_entities` (comma separated). Used
+// to include in product data to hats surveys.
+std::string GetStringRepresentatioOfSavedEntitiesTypes(
+    const base::flat_set<EntityTypeName>& saved_entities) {
+  return base::JoinString(
+      base::ToVector(saved_entities,
+                     [](EntityTypeName name) {
+                       return std::string(EntityType(name).name_as_string());
+                     }),
+      ",");
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void LaunchPlusAddressUserPerceptionSurvey(
@@ -978,7 +993,9 @@ void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 
 void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
     bool suggestion_accepted,
-    EntityType entity_type) {
+    EntityType entity_type,
+    const base::flat_set<EntityTypeName>& saved_entities,
+    const FieldTypeSet& triggering_field_types) {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -986,40 +1003,20 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   CHECK(hats_service);
 
-  const std::string trigger_id = [&]() {
-    switch (entity_type.name()) {
-      case EntityTypeName::kPassport:
-        return features::kAutofillAiFillingSurveyPassportTriggerId.Get();
-      case EntityTypeName::kDriversLicense:
-        return features::kAutofillAiFillingSurveyDriversLicenseTriggerId.Get();
-      case EntityTypeName::kFlightReservation:
-        return features::kAutofillAiFillingSurveyFlightReservationTriggerId
-            .Get();
-      case EntityTypeName::kKnownTravelerNumber:
-        return features::kAutofillAiFillingSurveyKTNTriggerId.Get();
-      case EntityTypeName::kVehicle:
-        return features::kAutofillAiFillingSurveyVehicleInfoTriggerId.Get();
-      case EntityTypeName::kNationalIdCard:
-        return features::kAutofillAiFillingSurveyNationalIDTriggerId.Get();
-      case EntityTypeName::kRedressNumber:
-        return features::kAutofillAiFillingSurveyRedressNumberTriggerId.Get();
-    }
-    return std::string();
-  }();
-  if (!trigger_id.empty()) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerAutofillAiFilling, web_contents(),
-        /*timeout_ms=*/5000,
-        {{"User accepted suggestion", suggestion_accepted}},
-        /*product_specific_string_data=*/{},
-        HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
-        base::DoNothing(), trigger_id);
-  }
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillAiFilling, web_contents(),
+      /*timeout_ms=*/5000, {{"User accepted suggestion", suggestion_accepted}},
+      {{"Entity type", std::string(entity_type.name_as_string())},
+       {"Triggering field types", FieldTypeSetToString(triggering_field_types)},
+       {"Saved entities",
+        GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}});
 #endif
 }
 
 void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
-    bool prompt_accepted) {
+    bool prompt_accepted,
+    EntityType entity_type,
+    const base::flat_set<EntityTypeName>& saved_entities) {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -1034,8 +1031,11 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
   if (!trigger_id.empty()) {
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerAutofillAiSavePrompt, web_contents(),
-        /*timeout_ms=*/5000,
-        /*product_specific_bits_data=*/{}, /*product_specific_string_data=*/{},
+        /*timeout_ms=*/10000,
+        /*product_specific_bits_data=*/{},
+        {{"Entity type", std::string(entity_type.name_as_string())},
+         {"Saved entities",
+          GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}},
         HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
         base::DoNothing(), trigger_id);
   }

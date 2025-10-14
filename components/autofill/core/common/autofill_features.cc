@@ -106,31 +106,6 @@ BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,
 // displayed and the form submitted. The survey does not require the suggestion
 // to be accepted.
 BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kAutofillAiFillingSurveyVehicleInfoTriggerId{
-        &kAutofillAiFillingSurvey,
-        "autofill_ai_filling_survey_vehicle_info_trigger_id", ""};
-const base::FeatureParam<std::string>
-    kAutofillAiFillingSurveyFlightReservationTriggerId{
-        &kAutofillAiFillingSurvey,
-        "autofill_ai_filling_survey_flight_reservation_trigger_id", ""};
-const base::FeatureParam<std::string>
-    kAutofillAiFillingSurveyDriversLicenseTriggerId{
-        &kAutofillAiFillingSurvey,
-        "autofill_ai_filling_survey_drivers_license_trigger_id", ""};
-const base::FeatureParam<std::string> kAutofillAiFillingSurveyPassportTriggerId{
-    &kAutofillAiFillingSurvey, "autofill_ai_filling_survey_passport_trigger_id",
-    ""};
-const base::FeatureParam<std::string>
-    kAutofillAiFillingSurveyNationalIDTriggerId{
-        &kAutofillAiFillingSurvey,
-        "autofill_ai_filling_survey_national_id_trigger_id", ""};
-const base::FeatureParam<std::string>
-    kAutofillAiFillingSurveyRedressNumberTriggerId{
-        &kAutofillAiFillingSurvey,
-        "autofill_ai_filling_survey_redress_number_trigger_id", ""};
-const base::FeatureParam<std::string> kAutofillAiFillingSurveyKTNTriggerId{
-    &kAutofillAiFillingSurvey, "autofill_ai_filling_survey_ktn_trigger_id", ""};
 
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.

@@ -595,11 +595,17 @@ class AutofillClient {
   // `suggestion_accepted` defines whether the suggestion seen by the user was
   // accepted. `entity_type` defines the type of entity used to generate the
   // suggestion.
-  virtual void TriggerAutofillAiFillingJourneySurvey(bool suggestion_accepted,
-                                                     EntityType entity_type);
+  virtual void TriggerAutofillAiFillingJourneySurvey(
+      bool suggestion_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities,
+      const FieldTypeSet& triggering_field_types);
 
   // Triggers a survey after the user sees an Autofill AI save prompt.
-  virtual void TriggerAutofillAiSavePromptSurvey(bool prompt_accepted);
+  virtual void TriggerAutofillAiSavePromptSurvey(
+      bool prompt_accepted,
+      EntityType entity_type,
+      const base::flat_set<EntityTypeName>& saved_entities);
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;
