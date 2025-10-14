@@ -81,28 +81,34 @@ The line "This key can only be used with a password" indicates a **U2F**
 security key. If the line is missing, the key is a **FIDO2** security key.
 Please include this info when reporting issues.
 
+*** promo
 **Important Note**: Passkeys won't be supported by ReAuth. A physical security
 key is required.
+***
 
-**If you use Firefox**: You need to allow the website to collect extended
-information about your security key in this dialog. Otherwise the key won't be
-able to ReAuth (you'll see BAD_REQUEST error in the log). If you've already
-registered the key, remove it from the security key list, then re-adding it.
+**If you use Firefox**: You need to **allow** the website to request "extended
+information about your security key" when registering your security key (refer
+to the screenshot below).
+Otherwise the key won't be able to ReAuth (you'll see BAD_REQUEST error in the
+log). If you've already registered the key, remove it from the security key
+list, then add it again.
 
-If you’re using a Google Workspace account, make sure
+![Firefox security key popup](./images/gerrit_reauth_firefox_sk.png)
+
+**If you’re using a Google Workspace account**, make sure
 "[2-Step Verification](https://myaccount.google.com/signinoptions/twosv)" is
 turned on.
 
 ![Two-step verification](./images/gerrit_reauth_2sv.png)
 
-""" note
+*** note
 **Known Issue:** If you sign in to your Google account via an external identity provider
 such as **Active Directory, Entra ID, or Okta**, you may see `NO_AVAILABLE_CHALLENGES` error
 when you ReAuth immediately after registering your security key.
 
 You may need to **wait for a few hours** before your first ReAuth can proceed. We're still
 investigating the cause.
-"""
+***
 
 ### Accurate Timezone / Time
 
