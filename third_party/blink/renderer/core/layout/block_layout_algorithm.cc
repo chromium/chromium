@@ -3979,6 +3979,18 @@ bool BlockLineClampData::UpdateAfterLayout(
     if (!fragment.IsFormattingContextRoot() && !ignore_further_lines) {
       data.lines_until_clamp = layout_result->LinesUntilClamp();
     }
+
+    // If data.lines_until_clamp is 0 (rather than negative) after clamping at
+    // the end of the line-clamp container, we relayout without clamping.
+    // However, if we have only lineless boxes and IFCs, we shouldn't relayout
+    // (since there *is* content after clamp), but data.lines_until_clamp would
+    // still be zero. Therefore, if there's a lineless block immediately after
+    // the clamp point, we explicitly decrease data.lines_until_clamp.
+    if (data.IsClampByLines() && !ignore_further_lines &&
+        old_lines_until_clamp == 0 && data.lines_until_clamp == 0) {
+      DCHECK(previous_inflow_position_when_clamped.has_value());
+      data.lines_until_clamp = -1;
+    }
   }
 
   if (data.IsMeasureUntilBfcOffset() &&
