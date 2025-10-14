@@ -4978,11 +4978,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40098316
-      name: "TextDecorationShortSerialization",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },

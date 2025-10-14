@@ -3975,29 +3975,26 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
           continue;
         }
       }
-    } else if (RuntimeEnabledFeatures::
-                   TextDecorationShortSerializationEnabled()) {
-      if (property_id == CSSPropertyID::kTextDecorationLine) {
-        if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-          // Skip the initial value.
-          if (identifier_value->GetValueID() == CSSValueID::kNone) {
-            continue;
-          }
-        }
-      } else if (property_id == CSSPropertyID::kTextDecorationStyle) {
-        if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-          // Skip the initial value.
-          if (identifier_value->GetValueID() == CSSValueID::kSolid) {
-            continue;
-          }
-        }
-      } else if (RuntimeEnabledFeatures::
-                     TextDecorationOmitCurrentColorEnabled() &&
-                 property_id == CSSPropertyID::kTextDecorationColor) {
-        // Skip currentColor, which is the initial value.
-        if (style.TextDecorationColor().IsCurrentColor()) {
+    } else if (property_id == CSSPropertyID::kTextDecorationLine) {
+      if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+        // Skip the initial value.
+        if (identifier_value->GetValueID() == CSSValueID::kNone) {
           continue;
         }
+      }
+    } else if (property_id == CSSPropertyID::kTextDecorationStyle) {
+      if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+        // Skip the initial value.
+        if (identifier_value->GetValueID() == CSSValueID::kSolid) {
+          continue;
+        }
+      }
+    } else if (RuntimeEnabledFeatures::
+                   TextDecorationOmitCurrentColorEnabled() &&
+               property_id == CSSPropertyID::kTextDecorationColor) {
+      // Skip currentColor, which is the initial value.
+      if (style.TextDecorationColor().IsCurrentColor()) {
+        continue;
       }
     }
     DCHECK(value);
