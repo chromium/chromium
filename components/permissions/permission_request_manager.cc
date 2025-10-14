@@ -218,7 +218,9 @@ void PermissionRequestManager::AddRequest(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
+  if (!base::FeatureList::IsEnabled(
+          features::kReturnDeniedForNotificationsWhenNoAppLevelSettings) &&
+      request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
     bool app_level_settings_allow_site_notifications =
         enabled_app_level_notification_permission_for_testing_.has_value()
             ? enabled_app_level_notification_permission_for_testing_.value()
@@ -228,8 +230,8 @@ void PermissionRequestManager::AddRequest(
         app_level_settings_allow_site_notifications);
 
     if (!app_level_settings_allow_site_notifications) {
-      // Automatically cancel site Notification requests when Chrome is not able
-      // to send notifications in an app level.
+      // Automatically cancel site Notification requests when Chrome is not
+      // able to send notifications in an app level.
       request->Cancelled();
       return;
     }

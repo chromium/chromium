@@ -110,8 +110,16 @@ BASE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces,
 // Javascript-Optimizers.
 BASE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Chrome returns "DENIED" (instead of "ASK") as permission state
+// for notifications if Chrome does not have and cannot acquire app-level
+// permissions on Android.
+BASE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
 }  // namespace features
+
 namespace feature_params {
 
 const base::FeatureParam<PermissionElementPromptPosition>::Option

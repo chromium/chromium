@@ -261,6 +261,11 @@ class PermissionContextBase : public content_settings::Observer {
   // and removing themselves as observers to the HostContentSettingsMap.
   bool content_setting_observer_registered_by_subclass_ = false;
 
+#if BUILDFLAG(IS_ANDROID)
+  std::optional<bool> enabled_app_level_notification_permission_for_testing_ =
+      std::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   friend class PermissionContextBaseTests;
 

@@ -62,13 +62,25 @@ constexpr int kDefaultDismissalsBeforeBlock = 3;
 
 class TestPermissionContext : public ContentSettingPermissionContextBase {
  public:
-  TestPermissionContext(content::BrowserContext* browser_context,
-                        const ContentSettingsType content_settings_type)
+  TestPermissionContext(
+      content::BrowserContext* browser_context,
+      const ContentSettingsType content_settings_type
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      bool enabled_app_level_notification_permission_for_testing = true
+#endif  // BUILDFLAG(IS_ANDROID)
+      )
       : ContentSettingPermissionContextBase(
             browser_context,
             content_settings_type,
-            network::mojom::PermissionsPolicyFeature::kNotFound),
-        tab_context_updated_(false) {}
+            network::mojom::PermissionsPolicyFeature::kNotFound) {
+#if BUILDFLAG(IS_ANDROID)
+    if (content_settings_type == ContentSettingsType::NOTIFICATIONS) {
+      enabled_app_level_notification_permission_for_testing_ =
+          enabled_app_level_notification_permission_for_testing;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   TestPermissionContext(const TestPermissionContext&) = delete;
   TestPermissionContext& operator=(const TestPermissionContext&) = delete;
@@ -1010,6 +1022,52 @@ TEST_F(PermissionContextBaseTests, TestVirtualURLSameOrigin) {
                  GURL("http://www.google.com/foo"), CONTENT_SETTING_ASK,
                  content::PermissionStatusSource::UNSPECIFIED);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionContextBaseTests,
+       NotificationPermissionDeniedIfNoAppLevelSettings) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kReturnDeniedForNotificationsWhenNoAppLevelSettings);
+  base::HistogramTester histograms;
+  TestPermissionContext permission_context(
+      browser_context(), ContentSettingsType::NOTIFICATIONS,
+      /*enabled_app_level_notification_permission_for_testing_=*/false);
+  GURL url("https://example.test");
+  controller().LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
+
+  const PermissionRequestID id(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
+      PermissionRequestID::RequestLocalId());
+
+  auto request_data = std::make_unique<PermissionRequestData>(
+      std::make_unique<ContentSettingPermissionResolver>(
+          ContentSettingsType::NOTIFICATIONS),
+      id,
+      /*user_gesture=*/
+      true, url);
+  EXPECT_EQ(permission_context.GetPermissionStatus(
+                *request_data, web_contents()->GetPrimaryMainFrame()),
+            content::PermissionResult(
+                content::PermissionStatus::DENIED,
+                content::PermissionStatusSource::APP_LEVEL_SETTINGS));
+
+  permission_context.RequestPermission(
+      std::move(request_data),
+      base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
+                     base::Unretained(&permission_context)));
+
+  ASSERT_EQ(permission_context.permission_statuses().size(), 1u);
+  EXPECT_EQ(permission_context.permission_statuses()[0],
+            content::PermissionStatus::DENIED);
+  EXPECT_TRUE(permission_context.tab_context_updated());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            permission_context.GetContentSettingFromMap(url, url));
+  histograms.ExpectUniqueSample(
+      "Permissions.Status.Notifications.EnabledAppLevel", false, 2);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PermissionContextBaseTests, ExpirationAllow) {

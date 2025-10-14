@@ -693,6 +693,7 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
     case content::PermissionStatusSource::MULTIPLE_IGNORES:
     case content::PermissionStatusSource::RECENT_DISPLAY:
     case content::PermissionStatusSource::UNSPECIFIED:
+    case content::PermissionStatusSource::APP_LEVEL_SETTINGS:
       return true;
   }
 

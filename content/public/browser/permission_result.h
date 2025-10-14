@@ -57,6 +57,10 @@ enum class PermissionStatusSource {
   // The status is the result of a permission being granted based on a
   // heuristic.
   HEURISTIC_GRANT,
+
+  // The status is the result of app level settings (Chrome does not have
+  // permission at the app level and cannot acquire it).
+  APP_LEVEL_SETTINGS,
 };
 
 struct CONTENT_EXPORT PermissionResult {

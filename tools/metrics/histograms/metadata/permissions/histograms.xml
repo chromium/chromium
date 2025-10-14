@@ -1915,6 +1915,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Status.Notifications.EnabledAppLevel"
+    enum="Boolean" expires_after="2026-10-31">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether chrome has notifications already enabled at the app level or
+    at least is allowed to request for app level permission. When none of these
+    conditions are true, site level notification permissions are blocked.
+    Recorded whenever notification permission is queried. Android only.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.Usage.ElapsedTimeSinceGrant.{PermissionType}.{Source}"
     units="seconds" expires_after="2025-10-31">
