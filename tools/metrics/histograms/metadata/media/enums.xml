@@ -1472,6 +1472,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="VP9_hw"/>
   <int value="5" label="H264_sw"/>
   <int value="6" label="H264_hw"/>
+  <int value="7" label="AV1_sw"/>
+  <int value="8" label="AV1_hw"/>
+  <int value="9" label="H265_hw"/>
 </enum>
 
 <enum name="MediaRouteProviderResult">
