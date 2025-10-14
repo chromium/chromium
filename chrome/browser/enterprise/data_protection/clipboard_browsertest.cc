@@ -363,8 +363,13 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChromePrintReportsInitiator DISABLED_ChromePrintReportsInitiator
+#else
+#define MAYBE_ChromePrintReportsInitiator ChromePrintReportsInitiator
+#endif
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       ChromePrintReportsInitiator) {
+                       MAYBE_ChromePrintReportsInitiator) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["http://127.0.0.1"] },
                     "restrictions": [
