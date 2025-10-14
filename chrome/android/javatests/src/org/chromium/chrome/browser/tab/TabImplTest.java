@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
@@ -32,6 +34,8 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.TestViewStructure;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.common.ContentFeatures;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -152,5 +156,67 @@ public class TabImplTest {
         TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> tab.setIsPinned(true));
         assertFalse("Tab should not be pinned when the feature is disabled.", tab.getIsPinned());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @EnableFeatures({
+        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
+        ContentFeatures.WEB_CONTENTS_DISCARD
+    })
+    public void testFreeze_withDiscard() {
+        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        // Open a new tab to hide the initial tab. The new tab becomes active.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .openNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    tab,
+                                    tab.isIncognito());
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
+
+        ThreadUtils.runOnUiThreadBlocking(tab::freeze);
+
+        assertFalse("Tab should not be frozen", tab.isFrozen());
+        assertNotNull("WebContents should not be null after discard", tab.getWebContents());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @DisableFeatures({
+        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
+        ContentFeatures.WEB_CONTENTS_DISCARD
+    })
+    public void testFreeze_withoutDiscard() {
+        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        // Open a new tab to hide the initial tab. The new tab becomes active.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .openNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    tab,
+                                    tab.isIncognito());
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
+
+        ThreadUtils.runOnUiThreadBlocking(tab::freeze);
+
+        assertTrue("Tab should be frozen", tab.isFrozen());
+        assertNull("WebContents should be null after freezeInternal", tab.getWebContents());
     }
 }

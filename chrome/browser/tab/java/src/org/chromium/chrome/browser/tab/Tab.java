@@ -300,7 +300,15 @@ public interface Tab extends TabLifecycle {
      */
     LoadUrlResult loadUrl(LoadUrlParams params);
 
-    /** Freezes the tab. If the tab is already frozen this is a no-op. */
+    /**
+     * Freezes the tab by saving its {@link WebContents} to an {@link WebContentsState} and
+     * destroying the {@link WebContents}. If the tab is already frozen this is a no-op. The tab
+     * must be closing or inactive to be frozen.
+     *
+     * <p>An experiment is in progress to change the implementation of this method to invoke {@link
+     * WebContents#discard()} instead. See https://crbug.com/448420873. If the experiment is
+     * launched this method will be renamed to {@code discard()}.
+     */
     void freeze();
 
     /**
