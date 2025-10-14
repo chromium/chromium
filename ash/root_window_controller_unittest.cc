@@ -1012,9 +1012,9 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ZOrderTest) {
   // Normal window is partially occluded by the virtual keyboard.
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> normal(
-      CreateTestWindowInShellWithDelegateAndType(
-          &delegate, aura::client::WINDOW_TYPE_NORMAL, 0,
-          gfx::Rect(0, 0, window_width, window_height)));
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = {window_width, window_height},
+                               .window_id = 0}));
   normal->set_owned_by_parent(false);
   normal->Show();
   TargetHitTestEventHandler normal_handler;
@@ -1031,9 +1031,11 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ZOrderTest) {
 
   // Menu overlaps virtual keyboard.
   aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> menu(CreateTestWindowInShellWithDelegateAndType(
-      &delegate2, aura::client::WINDOW_TYPE_MENU, 0,
-      gfx::Rect(window_width, 0, window_width, window_height)));
+  std::unique_ptr<aura::Window> menu(CreateTestWindowInShell(
+      {.delegate = &delegate2,
+       .bounds = {window_width, 0, window_width, window_height},
+       .window_type = aura::client::WINDOW_TYPE_MENU,
+       .window_id = 0}));
   menu->set_owned_by_parent(false);
   menu->Show();
   TargetHitTestEventHandler menu_handler;

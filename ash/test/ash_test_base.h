@@ -41,7 +41,6 @@
 
 namespace aura {
 class Window;
-class WindowDelegate;
 }  // namespace aura
 
 namespace base {
@@ -187,12 +186,6 @@ class AshTestBase : public testing::Test {
   // Versions of the functions in aura::test:: that go through our shell
   // StackingController instead of taking a parent.
   aura::Window* CreateTestWindowInShell(aura::test::WindowBuilderParams params);
-
-  aura::Window* CreateTestWindowInShellWithDelegateAndType(
-      aura::WindowDelegate* delegate,
-      aura::client::WindowType type,
-      int window_id,
-      const gfx::Rect& bounds);
 
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);

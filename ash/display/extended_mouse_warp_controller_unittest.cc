@@ -407,9 +407,9 @@ TEST_F(ExtendedMouseWarpControllerTest,
   test_window_delegate->set_window_component(HTCAPTION);
   const gfx::Size initial_window_size(100, 100);
   std::unique_ptr<aura::Window> test_window(
-      CreateTestWindowInShellWithDelegateAndType(
-          test_window_delegate.get(), aura::client::WINDOW_TYPE_NORMAL, 0,
-          gfx::Rect(initial_window_size)));
+      CreateTestWindowInShell({.delegate = test_window_delegate.get(),
+                               .bounds = gfx::Rect(initial_window_size),
+                               .window_id = 0}));
   ASSERT_EQ(root_windows[0], test_window->GetRootWindow());
   ASSERT_FALSE(test_window->HasCapture());
 

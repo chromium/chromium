@@ -306,9 +306,9 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChangeWithNullWidget) {
       std::make_unique<aura::test::TestWindowDelegate>();
   test_window_delegate->set_window_component(HTCAPTION);
   std::unique_ptr<aura::Window> window_no_widget(
-      CreateTestWindowInShellWithDelegateAndType(
-          test_window_delegate.get(), aura::client::WINDOW_TYPE_NORMAL, 0,
-          gfx::Rect(100, 100)));
+      CreateTestWindowInShell({.delegate = test_window_delegate.get(),
+                               .bounds = {100, 100},
+                               .window_id = 0}));
   EXPECT_FALSE(views::Widget::GetWidgetForNativeWindow(window_no_widget.get()));
 
   // Focus on the window without widget.

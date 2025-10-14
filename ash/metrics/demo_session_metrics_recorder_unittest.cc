@@ -156,10 +156,12 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
 
   // Creates a popup type window.
   std::unique_ptr<aura::Window> CreatePopupWindow() {
-    std::unique_ptr<aura::Window> window(
-        CreateTestWindowInShellWithDelegateAndType(
-            aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-            aura::client::WINDOW_TYPE_POPUP, 0, gfx::Rect(0, 0, 10, 10)));
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {10, 10},
+         .window_type = aura::client::WINDOW_TYPE_POPUP,
+         .window_id = 0}));
     return window;
   }
 
