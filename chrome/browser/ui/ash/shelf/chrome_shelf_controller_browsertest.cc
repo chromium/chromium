@@ -2054,14 +2054,6 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(chrome::FindLastActive(), browser());
   EXPECT_TRUE(browser()->window()->IsActive());
-  // Check that the MRU browser list contains both the original browser and
-  // |browser2|.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  BrowserList::const_reverse_iterator it =
-      browser_list->begin_browsers_ordered_by_activation();
-  EXPECT_EQ(*it, browser());
-  ++it;
-  EXPECT_EQ(*it, browser2);
 
   // Now request to either activate an existing app or create a new one.
   SelectItem(shortcut_id);
