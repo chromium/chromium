@@ -45,6 +45,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -387,6 +388,10 @@ public class StripLayoutHelper
                         mTabDelegate.setIsTabMultiSelected(
                                 stripTab, mModel.isTabMultiSelected(stripTab.getTabId()));
                         setAccessibilityDescription(stripTab, getTabById(stripTab.getTabId()));
+                        if (stripTab.isKeyboardFocused()) {
+                            ViewCompat.setAccessibilityPaneTitle(
+                                    mToolbarContainerView, stripTab.getAccessibilityDescription());
+                        }
                     }
                     mUpdateHost.requestUpdate();
                 }
