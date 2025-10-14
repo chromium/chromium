@@ -214,11 +214,6 @@ Description of the patches:
 
   Replaces usage of absl internal string routines with std::string::resize().
 
-- 0047-perfetto-backcompat.patch
-
-  Undoes protobuf breaking change to support Perfetto's use of
-  MultiFileErrorCollector. See https://github.com/google/perfetto/issues/992
-
 - 0048-csharp-names-redirect.patch
 
   A header file moved and this is added to redirect code that hasn't been
