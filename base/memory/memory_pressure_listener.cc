@@ -33,18 +33,17 @@ std::variant<SyncMemoryPressureListenerRegistration,
 CreateMemoryPressureListenerRegistrationImpl(
     const Location& creation_location,
     MemoryPressureListenerTag tag,
-    MemoryPressureListenerRegistration::MemoryPressureCallback
-        memory_pressure_callback) {
+    MemoryPressureListener* memory_pressure_listener) {
   using ListenerVariant = std::variant<SyncMemoryPressureListenerRegistration,
                                        AsyncMemoryPressureListenerRegistration>;
   if (FeatureList::IsEnabled(kMakeMemoryPressureListenerSync)) {
     return ListenerVariant(
         std::in_place_type<SyncMemoryPressureListenerRegistration>, tag,
-        std::move(memory_pressure_callback));
+        memory_pressure_listener);
   } else {
     return ListenerVariant(
         std::in_place_type<AsyncMemoryPressureListenerRegistration>,
-        creation_location, tag, std::move(memory_pressure_callback));
+        creation_location, tag, memory_pressure_listener);
   }
 }
 
@@ -86,19 +85,10 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
 
 SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
-    MemoryPressureCallback memory_pressure_callback)
-    : tag_(tag),
-      memory_pressure_callback_(std::move(memory_pressure_callback)) {
+    MemoryPressureListener* memory_pressure_listener)
+    : tag_(tag), memory_pressure_listener_(memory_pressure_listener) {
   MemoryPressureListenerRegistry::Get().AddObserver(this);
 }
-
-SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
-    MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener)
-    : SyncMemoryPressureListenerRegistration(
-          tag,
-          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
-                              base::Unretained(memory_pressure_listener))) {}
 
 SyncMemoryPressureListenerRegistration::
     ~SyncMemoryPressureListenerRegistration() {
@@ -108,12 +98,13 @@ SyncMemoryPressureListenerRegistration::
 void SyncMemoryPressureListenerRegistration::Notify(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  memory_pressure_callback_.Run(memory_pressure_level);
+  memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
 }
 
 // AsyncMainThread -------------------------
 
-class AsyncMemoryPressureListenerRegistration::MainThread {
+class AsyncMemoryPressureListenerRegistration::MainThread
+    : public MemoryPressureListener {
  public:
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
@@ -123,12 +114,11 @@ class AsyncMemoryPressureListenerRegistration::MainThread {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_ = std::move(listener_task_runner);
     parent_ = std::move(parent);
-    listener_.emplace(
-        tag, BindRepeating(&MainThread::OnMemoryPressure, Unretained(this)));
+    listener_.emplace(tag, this);
   }
 
  private:
-  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) {
+  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_->PostTask(
         FROM_HERE,
@@ -157,8 +147,8 @@ AsyncMemoryPressureListenerRegistration::
     AsyncMemoryPressureListenerRegistration(
         const base::Location& creation_location,
         MemoryPressureListenerTag tag,
-        MemoryPressureCallback memory_pressure_callback)
-    : memory_pressure_callback_(std::move(memory_pressure_callback)),
+        MemoryPressureListener* memory_pressure_listener)
+    : memory_pressure_listener_(memory_pressure_listener),
       creation_location_(creation_location) {
   // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
   // MemoryPressureListenerRegistration is created in a non-sequenced context.
@@ -173,17 +163,6 @@ AsyncMemoryPressureListenerRegistration::
                             SequencedTaskRunner::GetCurrentDefault(), tag));
   }
 }
-
-AsyncMemoryPressureListenerRegistration::
-    AsyncMemoryPressureListenerRegistration(
-        const base::Location& creation_location,
-        MemoryPressureListenerTag tag,
-        MemoryPressureListener* memory_pressure_listener)
-    : AsyncMemoryPressureListenerRegistration(
-          creation_location,
-          tag,
-          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
-                              base::Unretained(memory_pressure_listener))) {}
 
 AsyncMemoryPressureListenerRegistration::
     ~AsyncMemoryPressureListenerRegistration() {
@@ -212,7 +191,7 @@ void AsyncMemoryPressureListenerRegistration::Notify(
             base::trace_event::InternedSourceLocation::Get(&ctx,
                                                            creation_location_));
       });
-  memory_pressure_callback_.Run(memory_pressure_level);
+  memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
 }
 
 // MemoryPressureListenerRegistration ------------------------------------------
@@ -220,21 +199,11 @@ void AsyncMemoryPressureListenerRegistration::Notify(
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     const Location& creation_location,
     MemoryPressureListenerTag tag,
-    MemoryPressureCallback memory_pressure_callback)
+    MemoryPressureListener* memory_pressure_listener)
     : listener_(CreateMemoryPressureListenerRegistrationImpl(
           creation_location,
           tag,
-          std::move(memory_pressure_callback))) {}
-
-MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
-    const Location& creation_location,
-    MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener)
-    : MemoryPressureListenerRegistration(
-          creation_location,
-          tag,
-          base::BindRepeating(&MemoryPressureListener::OnMemoryPressure,
-                              base::Unretained(memory_pressure_listener))) {}
+          memory_pressure_listener)) {}
 
 MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() =
     default;
