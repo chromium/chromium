@@ -9699,7 +9699,8 @@ crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
 # Gardener 2025-09-05
 crbug.com/443161677 [ Win11-arm64 ] http/tests/inspector-protocol/network/get-durable-response-gzip-body.js [ Failure Timeout ]
 crbug.com/443203688 external/wpt/accname/name/comp_name_from_content.html [ Failure Pass ]
-crbug.com/443229243 inspector-protocol/page/reload-with-script.js [ Failure Pass ]
+crbug.com/443229243 [ Release ] inspector-protocol/page/reload-with-script.js [ Failure Pass ]
+crbug.com/443229243 [ Debug ] inspector-protocol/page/reload-with-script.js [ Failure Pass Timeout ]
 
 # Gardener 2025-09-08
 crbug.com/443533494 [ Linux ] http/tests/worklet/paint-worklet-csp-eval.html [ Failure Pass ]
