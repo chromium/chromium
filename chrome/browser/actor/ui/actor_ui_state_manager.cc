@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -236,6 +237,10 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
 
 void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
   if (!features::kGlicActorUiToast.Get()) {
+    return;
+  }
+
+  if (!bwi || bwi->capabilities()->IsAttemptingToCloseBrowser()) {
     return;
   }
 
