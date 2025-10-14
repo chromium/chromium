@@ -877,7 +877,7 @@
 <translation id="2429716554270894715">پارچه (ضدآب)</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2436976580469434549">هنر نساجی و بافت</translation>
-<translation id="243815215670139125">‏این کارت در «حساب Google» شما ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد.</translation>
+<translation id="243815215670139125">‏این کارت را نمی‌توان در «حساب Google» شما ذخیره کرد. درعوض، در Chrome در این دستگاه ذخیره شد.</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
 <translation id="2441854154602066476">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود. صفحه‌کلید پنهان است.</translation>
 <translation id="2442865686365739754">‏Chrome <ph name="BEGIN_EMPHASIS" />این‌ها را ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
@@ -2001,7 +2001,7 @@
 <translation id="4277529130885813215">استفاده از دستگاهی دیگر</translation>
 <translation id="4277937682389409325">نشانی محلی</translation>
 <translation id="4278090321534187713">کارت‌هایی که این فروشنده نمی‌پذیرد غیرفعال هستند</translation>
-<translation id="4278390842282768270">مجاز است</translation>
+<translation id="4278390842282768270">اجازه داشتن</translation>
 <translation id="4281245629646759298">زرد روشن</translation>
 <translation id="4281998142035485137">{0,plural, =1{فایل محرمانه باز شود؟}one{فایل محرمانه باز شود؟}other{فایل‌های محرمانه باز شود؟}}</translation>
 <translation id="4282280603030594840">خرید خودرو</translation>
