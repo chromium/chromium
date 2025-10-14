@@ -937,6 +937,22 @@ chromium-metrics-reviews@google.com.
       label="Icons, Addresses, Names, Emails, and Telephone numbers"/>
 </enum>
 
+<enum name="CookieManagerThreadingCondition">
+  <int value="0" label="Not called before UI thread is set"/>
+  <int value="1" label="Called on a non-looper thread"/>
+  <int value="2"
+      label="Called from background looper and UI thread is main looper"/>
+  <int value="3"
+      label="Called from background looper and UI thread is the same
+             background looper"/>
+  <int value="4"
+      label="Called from background looper and UI thread is a different
+             background looper"/>
+  <int value="5" label="Called from main looper and UI thread is main looper"/>
+  <int value="6"
+      label="Called from main looper and UI thread is a background looper"/>
+</enum>
+
 <enum name="CpuAbiBitnessSupport">
   <int value="0" label="Neither"/>
   <int value="1" label="32-bit only"/>

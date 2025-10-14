@@ -67,7 +67,9 @@ import java.util.ArrayDeque;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class controlling the Chromium initialization for WebView. We hold on to most static objects used
@@ -223,6 +225,12 @@ public class WebViewChromiumAwInit {
     private static final int INIT_FINISHED = 2;
 
     private final AtomicInteger mInitState = new AtomicInteger(INIT_NOT_STARTED);
+
+    // Looper on which `getDefaultCookieManager` is called for the first time.
+    private final AtomicReference<Looper> mFirstGetDefaultCookieManagerLooper =
+            new AtomicReference<Looper>();
+    // Set to true if/when `getDefaultCookieManager` is called.
+    private final AtomicBoolean mGetDefaultCookieManagerCalled = new AtomicBoolean(false);
 
     private final WebViewChromiumFactoryProvider mFactory;
     private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
@@ -477,6 +485,38 @@ public class WebViewChromiumAwInit {
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        CookieManagerThreadingCondition.NOT_CALLED_BEFORE_UI_THREAD_SET,
+        CookieManagerThreadingCondition.CALLED_ON_NON_LOOPER_THREAD,
+        CookieManagerThreadingCondition.CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER,
+        CookieManagerThreadingCondition
+                .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER,
+        CookieManagerThreadingCondition
+                .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER,
+        CookieManagerThreadingCondition.CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER,
+        CookieManagerThreadingCondition.CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER,
+    })
+    private @interface CookieManagerThreadingCondition {
+        int NOT_CALLED_BEFORE_UI_THREAD_SET = 0;
+        int CALLED_ON_NON_LOOPER_THREAD = 1;
+        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER = 2;
+        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER = 3;
+        int CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER = 4;
+        int CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER = 5;
+        int CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER = 6;
+        int COUNT = 7;
+    };
+
+    private static void logCookieManagerThreadingCondition(
+            @CookieManagerThreadingCondition int condition) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.Startup.CookieManagerThreadingCondition",
+                condition,
+                CookieManagerThreadingCondition.COUNT);
+    }
 
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
@@ -990,7 +1030,8 @@ public class WebViewChromiumAwInit {
             if (mThreadIsSet) {
                 return;
             }
-            boolean isUiThreadMainLooper = Looper.getMainLooper().equals(looper);
+            Looper mainLooper = Looper.getMainLooper();
+            boolean isUiThreadMainLooper = mainLooper.equals(looper);
             Log.v(
                     TAG,
                     "Binding Chromium to "
@@ -999,6 +1040,45 @@ public class WebViewChromiumAwInit {
                             + looper);
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.Startup.IsUiThreadMainLooper", isUiThreadMainLooper);
+
+            // Temporary metric collection for different threading conditions related to
+            // CookieManager.
+            boolean cookieManagerCalled = mGetDefaultCookieManagerCalled.get();
+            if (cookieManagerCalled) {
+                Looper cookieManagerLooper = mFirstGetDefaultCookieManagerLooper.get();
+                if (cookieManagerLooper == null) {
+                    logCookieManagerThreadingCondition(
+                            CookieManagerThreadingCondition.CALLED_ON_NON_LOOPER_THREAD);
+                } else if (!mainLooper.equals(cookieManagerLooper)) {
+                    if (isUiThreadMainLooper) {
+                        logCookieManagerThreadingCondition(
+                                CookieManagerThreadingCondition
+                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER);
+                    } else if (looper.equals(cookieManagerLooper)) {
+                        logCookieManagerThreadingCondition(
+                                CookieManagerThreadingCondition
+                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_SAME_BACKGROUND_LOOPER);
+                    } else {
+                        logCookieManagerThreadingCondition(
+                                CookieManagerThreadingCondition
+                                        .CALLED_FROM_BACKGROUND_LOOPER_AND_UI_THREAD_IS_DIFFERENT_BACKGROUND_LOOPER);
+                    }
+                } else if (mainLooper.equals(cookieManagerLooper)) {
+                    if (isUiThreadMainLooper) {
+                        logCookieManagerThreadingCondition(
+                                CookieManagerThreadingCondition
+                                        .CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_MAIN_LOOPER);
+                    } else {
+                        logCookieManagerThreadingCondition(
+                                CookieManagerThreadingCondition
+                                        .CALLED_FROM_MAIN_LOOPER_AND_UI_THREAD_IS_BACKGROUND_LOOPER);
+                    }
+                }
+            } else {
+                logCookieManagerThreadingCondition(
+                        CookieManagerThreadingCondition.NOT_CALLED_BEFORE_UI_THREAD_SET);
+            }
+
             ThreadUtils.setUiThread(looper);
             mThreadIsSet = true;
         }
@@ -1027,6 +1107,10 @@ public class WebViewChromiumAwInit {
     }
 
     public CookieManager getDefaultCookieManager() {
+        if (!mGetDefaultCookieManagerCalled.get()) {
+            mFirstGetDefaultCookieManagerLooper.compareAndSet(null, Looper.myLooper());
+            mGetDefaultCookieManagerCalled.set(true);
+        }
         if (WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
             return getDefaultProfile(CallSite.GET_DEFAULT_COOKIE_MANAGER).getCookieManager();

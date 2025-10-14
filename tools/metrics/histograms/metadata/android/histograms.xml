@@ -8570,6 +8570,23 @@ chromium-metrics-reviews@google.com.
   <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CookieManagerThreadingCondition"
+    enum="CookieManagerThreadingCondition" expires_after="2026-06-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Describes whether the default profile's cookie manager was accessed (gotten)
+    before the Chromium UI thread looper has been set and, if so, describes the
+    combination of the looper associated with the first cookie manager access
+    and the looper set for the UI thread.
+
+    This is recorded once during WebView process global startup when the UI
+    thread is set.
+
+    Only recorded on Android WebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.AssetsAddTime" units="ms"
     expires_after="2025-12-31">
   <owner>abhijithnair@chromium.org</owner>
