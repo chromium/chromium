@@ -12,12 +12,14 @@
 
 #import "base/check.h"
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/i18n/string_search.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer_bridge.h"
@@ -192,8 +194,30 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 }
 
 - (void)deleteDownloadItem:(DownloadListItem*)item {
-  // TODO(crbug.com/444335357): Implement direct delete functionality.
-  // This will be completed in a subsequent CL.
+  NSString* downloadID = item.downloadID;
+  std::string downloadIdString = base::SysNSStringToUTF8(downloadID);
+  base::FilePath filePath = item.filePath;
+
+  // Delete file from disk first, then remove the record if deletion succeeds.
+  __weak __typeof__(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&base::DeleteFile, filePath),
+      base::BindOnce(^(bool success) {
+        [weakSelf handleFileDeletionResult:success
+                             forDownloadID:downloadIdString];
+      }));
+}
+
+- (void)handleFileDeletionResult:(bool)success
+                   forDownloadID:(const std::string&)downloadIdString {
+  if (!_downloadRecordService) {
+    return;
+  }
+
+  if (success) {
+    _downloadRecordService->RemoveDownloadByIdAsync(downloadIdString);
+  }
 }
 
 #pragma mark - DownloadRecordObserver Methods

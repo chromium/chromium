@@ -13,6 +13,8 @@
 #import <vector>
 
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,6 +22,7 @@
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/test/ios/test_utils.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer.h"
@@ -30,10 +33,13 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using testing::_;
 
 namespace {
 
@@ -133,9 +139,6 @@ class MockDownloadRecordService : public DownloadRecordService {
   void GetDownloadByIdAsync(const std::string& download_id,
                             DownloadRecordCallback callback) override {}
 
-  void RemoveDownloadByIdAsync(const std::string& download_id,
-                               CompletionCallback callback) override {}
-
   void UpdateDownloadFilePathAsync(const std::string& download_id,
                                    const base::FilePath& file_path,
                                    CompletionCallback callback) override {}
@@ -155,6 +158,12 @@ class MockDownloadRecordService : public DownloadRecordService {
   }
 
   size_t GetRecordCount() const { return stored_records_.size(); }
+
+  // Mock methods for testing.
+  MOCK_METHOD(void,
+              RemoveDownloadByIdAsync,
+              (const std::string& download_id, CompletionCallback callback),
+              (override));
 
   // Public methods for testing access to internal state.
   void AddRecordForTesting(const DownloadRecord& record) {
@@ -214,6 +223,12 @@ class DownloadListMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    // Set up test downloads directory.
+    ASSERT_TRUE(test_downloads_dir_.CreateUniqueTempDir());
+    downloads_path_ = test_downloads_dir_.GetPath().AppendASCII("downloads");
+    ASSERT_TRUE(base::CreateDirectory(downloads_path_));
+    test::SetDownloadsDirectoryForTesting(&downloads_path_);
+
     feature_list_.InitAndEnableFeature(kDownloadList);
 
     mock_service_ = std::make_unique<MockDownloadRecordService>();
@@ -224,6 +239,9 @@ class DownloadListMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    // Reset downloads directory override.
+    test::SetDownloadsDirectoryForTesting(nullptr);
+
     [mediator_ disconnect];
     mediator_ = nil;
     mock_service_.reset();
@@ -268,6 +286,8 @@ class DownloadListMediatorTest : public PlatformTest {
   id mock_consumer_;
   std::unique_ptr<MockDownloadRecordService> mock_service_;
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir test_downloads_dir_;
+  base::FilePath downloads_path_;
 };
 
 // Test filtering records by different types with content validation.
@@ -647,6 +667,47 @@ TEST_F(DownloadListMediatorTest, TestApplicationDidBecomeActive) {
                     object:nil];
 
   [mock_consumer_ verify];
+}
+
+// Test deleteDownloadItem functionality.
+TEST_F(DownloadListMediatorTest, TestDeleteDownloadItem) {
+  const std::string downloadId = "1";
+  const std::string fileName = "test.pdf";
+
+  // Create test file in downloads directory.
+  base::FilePath testFile = downloads_path_.Append(fileName);
+  ASSERT_TRUE(base::WriteFile(testFile, "content"));
+
+  // Create a download record for testing.
+  DownloadRecord record;
+  record.download_id = downloadId;
+  record.file_path = base::FilePath(fileName);
+
+  DownloadListItem* item =
+      [[DownloadListItem alloc] initWithDownloadRecord:record];
+
+  // Set up RunLoop to wait for async file deletion completion.
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
+  // Mock the service call and trigger quit_closure when it's called.
+  EXPECT_CALL(*mock_service_, RemoveDownloadByIdAsync(downloadId, _))
+      .Times(1)
+      .WillOnce([quit_closure](const std::string& id, auto callback) {
+        if (callback) {
+          std::move(callback).Run(true);
+        }
+        quit_closure.Run();
+      });
+
+  [mediator_ deleteDownloadItem:item];
+
+  // Wait for the async operation to complete.
+  run_loop.Run();
+
+  // Verify mock state and file deletion.
+  [mock_consumer_ verify];
+  EXPECT_FALSE(base::PathExists(testFile));
 }
 
 // Test class specifically for incognito mediator testing - equivalent to
