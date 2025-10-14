@@ -126,6 +126,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // site-per-process or stricter. For UMA logging.
   static SiteIsolationDisabledReason GetSiteIsolationDisabledReason();
 
+  // Returns a string representation of the SiteIsolationDisabledReason enum.
+  static std::string_view SiteIsolationDisabledReasonToStringView(
+      SiteIsolationDisabledReason reason);
+
  private:
   SiteIsolationPolicy();  // Not instantiable.
 

@@ -16,6 +16,8 @@
 #include "base/base_switches.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -850,12 +852,26 @@ int BrowserMainLoop::PreCreateThreads() {
                             SiteIsolationPolicy::IsSitePerProcessOrStricter());
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_DESKTOP_ANDROID)
+  const bool is_site_per_process_or_stricter =
+      SiteIsolationPolicy::IsSitePerProcessOrStricter();
   base::UmaHistogramBoolean(
       "SiteIsolation.IsSitePerProcessOrStricter.AndroidDesktop",
-      SiteIsolationPolicy::IsSitePerProcessOrStricter());
-  base::UmaHistogramEnumeration(
-      "SiteIsolation.DisabledReason.AndroidDesktop",
-      SiteIsolationPolicy::GetSiteIsolationDisabledReason());
+      is_site_per_process_or_stricter);
+
+  auto disabled_reason = SiteIsolationPolicy::GetSiteIsolationDisabledReason();
+  base::UmaHistogramEnumeration("SiteIsolation.DisabledReason.AndroidDesktop",
+                                disabled_reason);
+  if (!is_site_per_process_or_stricter) {
+    // Send a non-fatal crash report to diagnose why Site Isolation was not
+    // fully enabled.
+    // TODO(crbug.com/433313577): Revert this as soon as reports are received,
+    // to avoid further impact on startup time.
+    SCOPED_CRASH_KEY_STRING256(
+        "content", "site_isolation_disabled_reason",
+        SiteIsolationPolicy::SiteIsolationDisabledReasonToStringView(
+            disabled_reason));
+    base::debug::DumpWithoutCrashing();
+  }
 #endif
 
   // Generate the browser process salt. This is then accessible by calls to

@@ -149,6 +149,26 @@ SiteIsolationPolicy::GetSiteIsolationDisabledReason() {
 }
 
 // static
+// Add this function to convert SiteIsolationDisabledReason to std::string_view.
+std::string_view SiteIsolationPolicy::SiteIsolationDisabledReasonToStringView(
+    SiteIsolationDisabledReason reason) {
+  switch (reason) {
+    case SiteIsolationDisabledReason::kNotDisabled:
+      return "NotDisabled";
+    case SiteIsolationDisabledReason::kDisabledBySwitch:
+      return "DisabledBySwitch";
+    case SiteIsolationDisabledReason::kDisabledByPolicy:
+      return "DisabledByPolicy";
+    case SiteIsolationDisabledReason::kDisabledByEmbedder:
+      return "DisabledByEmbedder";
+    case SiteIsolationDisabledReason::kNotEnabledByDefault:
+      return "NotEnabledByDefault";
+    case SiteIsolationDisabledReason::kUnknownReason:
+      return "UnknownReason";
+  }
+}
+
+// static
 bool SiteIsolationPolicy::AreIsolatedOriginsEnabled() {
   // NOTE: Because it is possible for --isolate-origins to be isolating origins
   // at a finer-than-site granularity, we do not suppress --isolate-origins when
