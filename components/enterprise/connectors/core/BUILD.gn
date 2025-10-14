@@ -110,6 +110,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "analysis_test_utils.cc",
+    "analysis_test_utils.h",
     "realtime_reporting_test_environment.cc",
     "realtime_reporting_test_environment.h",
     "realtime_reporting_test_server.cc",
