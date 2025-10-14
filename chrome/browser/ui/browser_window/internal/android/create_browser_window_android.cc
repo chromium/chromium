@@ -4,15 +4,28 @@
 
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
+#include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindowCreateParamsImpl_jni.h"
+#include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowCreatorBridge_jni.h"
 
 BrowserWindowInterface* CreateBrowserWindow(
     BrowserWindowCreateParams create_params) {
-  // TODO(http://crbug.com/424860292): Implement this on Android.
-  NOTIMPLEMENTED();
-  return nullptr;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const gfx::Rect& bounds = create_params.initial_bounds;
+
+  base::android::ScopedJavaLocalRef<jobject> j_create_params =
+      Java_AndroidBrowserWindowCreateParamsImpl_create(
+          env, static_cast<int>(create_params.type),
+          create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
+          bounds.width(), bounds.height(),
+          static_cast<int>(create_params.initial_show_state));
+
+  return reinterpret_cast<BrowserWindowInterface*>(
+      Java_BrowserWindowCreatorBridge_createBrowserWindow(env,
+                                                          j_create_params));
 }
 
 void CreateBrowserWindow(

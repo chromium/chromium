@@ -42,6 +42,19 @@
             </intent-filter>
         </activity>
 
+        <!-- Used by CreateBrowserWindowAndroidBrowserTest. Android browser tests start a
+             ChromeBrowserTestsActivity, which is a subclass of ChromeTabbedActivity.
+             CreateBrowserWindowAndroidBrowserTest verifies code that creates new instances of
+             ChromeTabbedActivity, so the test manifest needs to explicitly declare
+             ChromeTabbedActivity. -->
+        <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
+                  android:theme="@style/Theme.Chromium.TabbedMode"
+                  android:exported="true"
+                  android:launchMode="singleTask"
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:hardwareAccelerated="true"
+                  android:process=":test_process"/>
+
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
                   android:theme="@android:style/Theme.NoDisplay"
                   android:excludeFromRecents="true"

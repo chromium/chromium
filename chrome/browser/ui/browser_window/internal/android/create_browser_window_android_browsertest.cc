@@ -24,10 +24,8 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
   BrowserWindowInterface* new_browser_window =
       CreateBrowserWindow(std::move(create_params));
 
-  // TODO(http://crbug.com/444744965): verify the new browser window.
-  //
-  // For comprehensive testing, you may need to downcast the new browser window
-  // to AndroidBrowserWindow and use APIs not available in
-  // BrowserWindowInterface, such as AndroidBrowserWindow::GetActivity().
-  ASSERT_EQ(new_browser_window, nullptr);
+  ASSERT_NE(new_browser_window, nullptr);
+  EXPECT_EQ(new_browser_window->GetType(),
+            BrowserWindowInterface::Type::TYPE_NORMAL);
+  EXPECT_EQ(new_browser_window->GetProfile(), profile);
 }
