@@ -28,6 +28,7 @@ source_set("internal") {
     "versioning_message_controller_impl.h",
   ]
   deps = [
+    ":migration",
     ":tab_group_sync_bridge",
     "//base",
     "//components/data_sharing/public:features",
@@ -64,6 +65,20 @@ source_set("internal") {
   }
 
   public_deps = [ ":model" ]
+}
+
+source_set("migration") {
+  sources = [
+    "migration/tab_group_entity_converter.cc",
+    "migration/tab_group_entity_converter.h",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/migration/public",
+    "//components/saved_tab_groups/public",
+    "//components/sync/protocol:util",
+    "//components/tab_groups",
+  ]
 }
 
 source_set("model") {
@@ -170,6 +185,7 @@ source_set("service_test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "migration/tab_group_entity_converter_unittest.cc",
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
@@ -187,6 +203,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":internal",
+    ":migration",
     ":model",
     ":tab_group_sync_bridge",
     "//base",

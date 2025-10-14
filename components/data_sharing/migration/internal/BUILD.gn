@@ -23,6 +23,7 @@ source_set("internal") {
   deps = [
     ":migration_state_proto",
     "//base",
+    "//components/data_sharing/migration/public",
     "//components/data_sharing/public",
   ]
 }
