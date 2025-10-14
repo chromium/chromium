@@ -9,3 +9,4 @@ per-file android*=clhager@google.com
 # loads.
 cep-review@google.com
 
+file://components/enterprise/CEP_OWNERS
