@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.chrome_item_picker;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ViewGroup;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.IntentUtils;
@@ -33,6 +34,9 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
         super.onCreateInternal(savedInstanceState);
         setContentView(R.layout.chrome_item_picker_activity);
 
+        ViewGroup containerView = findViewById(R.id.chrome_item_picker_container);
+        ViewGroup rootView = containerView;
+
         // TODO: Set mWindowId to be the most recently used window.
         mWindowId =
                 IntentUtils.safeGetIntExtra(
@@ -45,9 +49,16 @@ public class ChromeItemPickerActivity extends SnackbarActivity {
         }
 
         mItemPickerCoordinator =
-                new TabItemPickerCoordinator(mCallbackController, getProfileSupplier(), mWindowId);
+                new TabItemPickerCoordinator(
+                        mCallbackController,
+                        getProfileSupplier(),
+                        mWindowId,
+                        this,
+                        this.getSnackbarManager(),
+                        rootView,
+                        containerView);
 
-        mItemPickerCoordinator.requestTabModel(this::handleModelFailure);
+        mItemPickerCoordinator.showTabItemPicker(this::handleModelFailure);
     }
 
     @Override

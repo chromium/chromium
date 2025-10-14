@@ -6,13 +6,16 @@ package org.chromium.chrome.browser.chrome_item_picker;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Activity;
 import android.os.Looper;
+import android.view.ViewGroup;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +37,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Unit tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,9 +50,13 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModelSelectorImpl mTabModelSelector;
     @Mock private Callback<TabModelSelector> mCallback;
-
-    private TabItemPickerCoordinator mItemPickerCoordinator;
+    @Mock private Activity mActivity;
+    @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
+    @Mock private ViewGroup mRootView;
+    @Mock private ViewGroup mContainerView;
+    @Mock private SnackbarManager mSnackbarManager;
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
+    private TabItemPickerCoordinator mItemPickerCoordinator;
     private CallbackController mCallbackController;
     private final int mWindowId = 5;
 
@@ -55,13 +64,23 @@ public class TabItemPickerCoordinatorUnitTest {
     public void setUp() {
         mCallbackController = new CallbackController();
         mProfileSupplierImpl = new OneshotSupplierImpl<>();
+        TabItemPickerCoordinator realCoordinator =
+                new TabItemPickerCoordinator(
+                        mCallbackController,
+                        mProfileSupplierImpl,
+                        mWindowId,
+                        mActivity,
+                        mSnackbarManager,
+                        mRootView,
+                        mContainerView);
+        mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-
-        mItemPickerCoordinator =
-                new TabItemPickerCoordinator(mCallbackController, mProfileSupplierImpl, mWindowId);
+        doReturn(mTabListEditorCoordinator)
+                .when(mItemPickerCoordinator)
+                .createTabListEditorCoordinator(any(TabModelSelector.class));
     }
 
     @After
@@ -71,13 +90,13 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
-    public void testRequestTabModel_SuccessPath() {
+    public void testShowTabItemPicker_SuccessPath() {
         // Mock the window manager to return a valid selector upon request
         when(TabWindowManagerSingleton.getInstance()
                         .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
                 .thenReturn(mTabModelSelector);
 
-        mItemPickerCoordinator.requestTabModel(mCallback);
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);
         shadowOf(Looper.getMainLooper()).idle();
 
@@ -90,15 +109,19 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
-    public void testRequestTabModel_InvalidWindowIdFailsEarly() {
+    public void testShowTabItemPicker_InvalidWindowIdFailsEarly() {
         // Mock coordinator with an invalid window ID
         TabItemPickerCoordinator coordinatorWithInvalidId =
                 new TabItemPickerCoordinator(
                         mCallbackController,
                         mProfileSupplierImpl,
-                        TabWindowManager.INVALID_WINDOW_ID);
+                        TabWindowManager.INVALID_WINDOW_ID,
+                        mActivity,
+                        mSnackbarManager,
+                        mRootView,
+                        mContainerView);
 
-        coordinatorWithInvalidId.requestTabModel(mCallback);
+        coordinatorWithInvalidId.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);
         shadowOf(Looper.getMainLooper()).idle();
 
@@ -111,12 +134,12 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
-    public void testRequestTabModel_AcquisitionFailsReturnsNull() {
+    public void testShowTabItemPicker_AcquisitionFailsReturnsNull() {
         // Mock the window manager to explicitly return NULL
         Mockito.when(mTabWindowManager.requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
                 .thenReturn(null);
 
-        mItemPickerCoordinator.requestTabModel(mCallback);
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
         mProfileSupplierImpl.set(mProfile);
         shadowOf(Looper.getMainLooper()).idle();
 
