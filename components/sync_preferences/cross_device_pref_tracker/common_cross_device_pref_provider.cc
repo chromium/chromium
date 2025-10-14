@@ -18,9 +18,14 @@ CommonCrossDevicePrefProvider::~CommonCrossDevicePrefProvider() = default;
 const base::flat_set<std::string_view>&
 CommonCrossDevicePrefProvider::GetProfilePrefs() const {
   static const base::NoDestructor<base::flat_set<std::string_view>>
-      kProfilePrefs({safety_check::prefs::kSafetyCheckHomeModuleEnabled,
-                     ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
-                     commerce::kPriceTrackingHomeModuleEnabled});
+      kProfilePrefs({
+          // go/keep-sorted start
+          commerce::kPriceTrackingHomeModuleEnabled,
+          ntp_tiles::prefs::kMostVisitedHomeModuleEnabled,
+          ntp_tiles::prefs::kTabResumptionHomeModuleEnabled,
+          safety_check::prefs::kSafetyCheckHomeModuleEnabled,
+          // go/keep-sorted end
+      });
   return *kProfilePrefs;
 }
 

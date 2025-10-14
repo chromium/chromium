@@ -17,6 +17,10 @@ namespace prefs {
 inline constexpr char kCrossDeviceCrossPlatformPromosIOS16thActiveDay[] =
     "cross_device.cross_platform_promos.ios_16th_active_day";
 
+// Dictionary that stores if the Most Visited Tiles Home Module is enabled.
+inline constexpr char kCrossDeviceMostVisitedHomeModuleEnabled[] =
+    "cross_device.home.module.most_visited.enabled";
+
 // Dictionary that stores the value of the omnibox position (bottom/top) across
 // a user's syncing devices.
 inline constexpr char kCrossDeviceOmniboxIsInBottomPosition[] =
