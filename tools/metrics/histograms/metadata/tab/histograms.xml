@@ -448,28 +448,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.NewTabAnimationProgress.{AnimationType}"
-    enum="AnimationFreezeCheckerState" expires_after="2026-04-20">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>polardz@google.com</owner>
-  <summary>
-    Records the progress of new tab animations on Android to detect freezes. The
-    animation is split into multiple parts, each with its own histogram.
-    {AnimationType}
-  </summary>
-  <token key="AnimationType">
-    <variant name="BackgroundAnimation" summary="The background animation."/>
-    <variant name="ForegroundCornerAnimation"
-        summary="The foreground corner animation."/>
-    <variant name="ForegroundExpandAnimation"
-        summary="The foreground expand animation set."/>
-    <variant name="ForegroundFadeAnimation"
-        summary="The foreground fade out animation."/>
-    <variant name="ForegroundRectAnimation"
-        summary="The foreground rectangle animation."/>
-  </token>
-</histogram>
-
 <histogram name="Tab.Organization.Declutter.DeclutterTabCount" units="tabs"
     expires_after="2026-01-31">
   <owner>emshack@chromium.org</owner>
@@ -907,6 +885,28 @@ chromium-metrics-reviews@google.com.
     In M130, this metric was updated to include Custom Tabs on Android, which
     were probably unintentionally excluded.
   </summary>
+</histogram>
+
+<histogram name="Tab.{AnimationType}.NewTabAnimationProgress"
+    enum="AnimationFreezeCheckerState" expires_after="2026-04-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Records the progress of new tab animations on Android to detect freezes. The
+    animation is split into multiple parts, each with its own histogram.
+    {AnimationType}
+  </summary>
+  <token key="AnimationType">
+    <variant name="BackgroundAnimation" summary="The background animation."/>
+    <variant name="ForegroundCornerAnimation"
+        summary="The foreground corner animation."/>
+    <variant name="ForegroundExpandAnimation"
+        summary="The foreground expand animation set."/>
+    <variant name="ForegroundFadeAnimation"
+        summary="The foreground fade out animation."/>
+    <variant name="ForegroundRectAnimation"
+        summary="The foreground rectangle animation."/>
+  </token>
 </histogram>
 
 <histogram
