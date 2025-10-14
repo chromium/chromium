@@ -191,6 +191,8 @@ void SoftNavigationContext::OnInputOrScroll() {
   if (!first_input_or_scroll_time_.is_null()) {
     return;
   }
+  TRACE_EVENT_INSTANT("loading", "SoftNavigationContext::OnInputOrScroll",
+                      "painted_area", painted_area_);
   // Between interaction and first painted area, we allow other inputs or
   // scrolling to happen.  Once we observe the first paint, we have to constrain
   // to that initial viewport, or else the viewport area and set of candidates

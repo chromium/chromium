@@ -129,6 +129,23 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
   }
 }
 
+const char* ScrollTypeToString(mojom::blink::ScrollType scroll_type) {
+  switch (scroll_type) {
+    case mojom::blink::ScrollType::kUser:
+      return "user";
+    case mojom::blink::ScrollType::kProgrammatic:
+      return "programmatic";
+    case mojom::blink::ScrollType::kClamping:
+      return "clamping";
+    case mojom::blink::ScrollType::kCompositor:
+      return "compositor";
+    case mojom::blink::ScrollType::kAnchoring:
+      return "anchoring";
+    case mojom::blink::ScrollType::kScrollStart:
+      return "scrollstart";
+  }
+}
+
 }  // namespace
 
 PaintTimingDetector::PaintTimingDetector(LocalFrameView* frame_view)
@@ -321,6 +338,10 @@ void PaintTimingDetector::NotifyInputEvent(WebInputEvent::Type type) {
 }
 
 void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
+  // TODO(crbug.com/330709851): Remove once we're sure scroll restoration is
+  // handled properly for soft navs.
+  TRACE_EVENT("loading", "PaintTimingDetector::NotifyScroll", "type",
+              ScrollTypeToString(scroll_type));
   if (scroll_type != mojom::blink::ScrollType::kUser &&
       scroll_type != mojom::blink::ScrollType::kCompositor) {
     return;
