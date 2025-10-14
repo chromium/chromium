@@ -96,11 +96,7 @@ std::string_view Platform2ProjectName(uint64_t project_name_hash) {
 
 void IncrementProjectCount(base::flat_map<uint64_t, int>& project_count_map,
                            uint64_t project_name_hash) {
-  if (project_count_map.contains(project_name_hash)) {
-    project_count_map[project_name_hash] += 1;
-  } else {
-    project_count_map[project_name_hash] = 1;
-  }
+  project_count_map[project_name_hash]++;
 }
 
 void ProcessEventProtosProjectCounts(
