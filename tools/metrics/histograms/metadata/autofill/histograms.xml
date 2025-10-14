@@ -5538,6 +5538,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
+<histogram name="Autofill.ProfileDeleted.ImplicitAccountNameEmail"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records true when the AccountNameEmail profile gets implicitly removed,
+    because of the not accepted suggestions strike limit hit. Records false if
+    the suggestion contained AccountNameEmail profile, but the counter is lower
+    than the removal threshold. Recorded after user leaves the page with form
+    where a suggestion containing AccountNameEmail profile was shown.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2026-03-01">
   <owner>tchudakov@google.com</owner>

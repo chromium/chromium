@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
@@ -36,13 +37,26 @@ AccountNameEmailStrikeManager::~AccountNameEmailStrikeManager() {
     return;
   }
 
-  // TODO(crbug.com/356845298): React to the pref changes in
-  // `AccountNameEmailStore` and possibly delete the profile.
+  int not_selected_count = pref_service->GetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
   pref_service->SetInteger(
       prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
-      pref_service->GetInteger(
-          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) +
-          1);
+      not_selected_count + 1);
+  // Record metric if the implicit removal will happen.
+  // It is intentionally recorded here, since recording in
+  // `AccountNameEmailStore::OnCounterPrefUpdated()` or
+  // `AccountNameEmailStore::ApplyChange()` would lead to overrecording because
+  // those two methods are also called as the result of a profile being removed
+  // on a different device using the same account.
+  if (not_selected_count ==
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get()) {
+    base::UmaHistogramBoolean(
+        "Autofill.ProfileDeleted.ImplicitAccountNameEmail", true);
+  } else if (not_selected_count <
+             features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get()) {
+    base::UmaHistogramBoolean(
+        "Autofill.ProfileDeleted.ImplicitAccountNameEmail", false);
+  }
 }
 
 void AccountNameEmailStrikeManager::OnSuggestionsShown(

@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -125,12 +127,41 @@ TEST_F(AccountNameEmailStrikeManagerTest,
   EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
                    .was_name_email_profile_filled());
 
+  base::HistogramTester histogram_tester;
   autofill_manager().Reset();
   EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             1);
   EXPECT_FALSE(autofill_client().GetPrefs()->GetBoolean(
       prefs::kAutofillWasNameAndEmailProfileUsed));
+  // The counter pref is too low to trigger the implicit removal.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.ImplicitAccountNameEmail", false, 1);
+}
+
+TEST_F(AccountNameEmailStrikeManagerTest,
+       OnDidFillOrPreviewForm_ImplicitRemovalMetricRecorded) {
+  // Set the initial pref value such that the next suggestion will trigger the
+  // implicit removal.
+  autofill_client().GetPrefs()->SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
+
+  AutofillProfile profile =
+      CreateAutofillProfileWithType(RecordType::kAccountNameEmail);
+
+  autofill_manager().DidShowSuggestions({CreateSuggestionForProfile(profile)},
+                                        FormData(), FieldGlobalId(),
+                                        base::DoNothing());
+  autofill_manager().OnDidFillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, FormStructure(FormData()),
+      AutofillField(), {}, {}, &profile, AutofillTriggerSource::kPopup,
+      std::nullopt);
+
+  base::HistogramTester histogram_tester;
+  autofill_manager().Reset();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.ImplicitAccountNameEmail", true, 1);
 }
 
 TEST_F(AccountNameEmailStrikeManagerTest,
