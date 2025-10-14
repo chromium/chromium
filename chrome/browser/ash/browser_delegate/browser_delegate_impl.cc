@@ -110,7 +110,7 @@ bool BrowserDelegateImpl::IsAttemptingToClose() const {
 }
 
 bool BrowserDelegateImpl::IsClosing() const {
-  return browser_->IsBrowserClosing();
+  return browser_->is_delete_scheduled();
 }
 
 bool BrowserDelegateImpl::IsActive() const {
