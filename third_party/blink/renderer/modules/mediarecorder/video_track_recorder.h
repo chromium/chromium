@@ -82,6 +82,25 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     kLast
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // (kMaxValue being the only exception, as it does not map to a logged value,
+  // and should be renumbered as new values are inserted.)
+  //
+  // LINT.IfChange(CodecHistogram)
+  enum class CodecHistogram : uint8_t {
+    kUnknown = 0,
+    kVp8 = 1,
+    kVp9 = 2,
+    kH264 = 3,
+    kAv1 = 4,
+    kHevc = 5,
+    kMaxValue = kHevc,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaRecorderVideoCodec)
+
+  static CodecHistogram CodecHistogramFromCodecId(CodecId);
+
   // Callback interface for VideoTrackRecorders. The methods here need to all be
   // called on the main thread.
   class CallbackInterface : public GarbageCollectedMixin {

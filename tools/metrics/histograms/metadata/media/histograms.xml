@@ -5040,7 +5040,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaRecorder.Codec" enum="MediaRecorderCodec"
+<histogram name="Media.MediaRecorder.Codec" enum="MediaRecorderVideoCodecImpl"
     expires_after="2026-02-22">
   <owner>clarissagarvey@chromium.org</owner>
   <owner>chromeos-gfx-video@chromium.org</owner>
@@ -5048,6 +5048,26 @@ chromium-metrics-reviews@google.com.
     The codec and hardware/software variant used by MediaRecorder, recorded once
     when the VideoTrackRecorder initializes the encoder.
   </summary>
+</histogram>
+
+<histogram name="Media.MediaRecorder.Codec.{Query}.{Result}"
+    enum="MediaRecorderVideoCodec" expires_after="2026-05-01">
+  <owner>handellm@google.com</owner>
+  <owner>guidou@google.com</owner>
+  <summary>
+    Codec queried through MediaRecorder{Query} where the result is {Result}.
+    Logged when the call is made.
+  </summary>
+  <token key="Query">
+    <variant name="EncodingInfo" summary="EncodingInfo"/>
+    <variant name="IsTypeSupported" summary=".isTypeSupported"/>
+    <variant name="MediaRecorderCtor" summary="ctor"/>
+    <variant name="Test" summary="Test"/>
+  </token>
+  <token key="Result">
+    <variant name="Supported" summary="supported"/>
+    <variant name="Unsupported" summary="unsupported"/>
+  </token>
 </histogram>
 
 <histogram name="Media.MediaRecorder.HasCorrectAV1CodecString"

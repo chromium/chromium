@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
+#include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -402,8 +403,9 @@ bool MediaRecorder::isTypeSupported(ExecutionContext* context,
   // not available to support the concrete media encoding.
   // https://w3c.github.io/mediacapture-record/#dom-mediarecorder-istypesupported
   ContentType content_type(type);
-  bool result = handler->CanSupportMimeType(content_type.GetType(),
-                                            content_type.Parameter("codecs"));
+  bool result = handler->CanSupportMimeType(
+      content_type.GetType(), content_type.Parameter("codecs"),
+      MediaRecorderHandler::CanSupportMimeTypeCaller::kIsTypeSupported);
   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kMediaRecorder_IsTypeSupported)) {
     blink::IdentifiabilityMetricBuilder(context->UkmSourceID())

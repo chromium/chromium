@@ -230,12 +230,12 @@ media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
       media::VideoEncodeAccelerator::SupportedProfiles());
 }
 
-void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
+void UmaHistogramForCodecImpl(bool uses_acceleration, CodecId codec_id) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // (kMaxValue being the only exception, as it does not map to a logged value,
   // and should be renumbered as new values are inserted.)
-  enum class VideoTrackRecorderCodecHistogram : uint8_t {
+  enum class VideoTrackRecorderCodecImplHistogram : uint8_t {
     kUnknown = 0,
     kVp8Sw = 1,
     kVp8Hw = 2,
@@ -248,26 +248,26 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
     kHevcHw = 9,
     kMaxValue = kHevcHw,
   };
-  auto histogram = VideoTrackRecorderCodecHistogram::kUnknown;
+  auto histogram = VideoTrackRecorderCodecImplHistogram::kUnknown;
   if (uses_acceleration) {
     switch (codec_id) {
       case CodecId::kVp8:
-        histogram = VideoTrackRecorderCodecHistogram::kVp8Hw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kVp8Hw;
         break;
       case CodecId::kVp9:
-        histogram = VideoTrackRecorderCodecHistogram::kVp9Hw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kVp9Hw;
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case CodecId::kH264:
-        histogram = VideoTrackRecorderCodecHistogram::kH264Hw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kH264Hw;
         break;
 #endif
       case CodecId::kAv1:
-        histogram = VideoTrackRecorderCodecHistogram::kAv1Hw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kAv1Hw;
         break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case CodecId::kHevc:
-        histogram = VideoTrackRecorderCodecHistogram::kHevcHw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kHevcHw;
         break;
 #endif
       case CodecId::kLast:
@@ -276,18 +276,18 @@ void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
   } else {
     switch (codec_id) {
       case CodecId::kVp8:
-        histogram = VideoTrackRecorderCodecHistogram::kVp8Sw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kVp8Sw;
         break;
       case CodecId::kVp9:
-        histogram = VideoTrackRecorderCodecHistogram::kVp9Sw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kVp9Sw;
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case CodecId::kH264:
-        histogram = VideoTrackRecorderCodecHistogram::kH264Sw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kH264Sw;
         break;
 #endif
       case CodecId::kAv1:
-        histogram = VideoTrackRecorderCodecHistogram::kAv1Sw;
+        histogram = VideoTrackRecorderCodecImplHistogram::kAv1Sw;
         break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case CodecId::kHevc:
@@ -411,6 +411,29 @@ std::optional<media::VideoTransformation> GetFrameTransformation(
   return std::nullopt;
 }
 }  // anonymous namespace
+
+// static
+VideoTrackRecorder::CodecHistogram
+VideoTrackRecorder::CodecHistogramFromCodecId(CodecId codec_id) {
+  switch (codec_id) {
+    case CodecId::kVp8:
+      return CodecHistogram::kVp8;
+    case CodecId::kVp9:
+      return CodecHistogram::kVp9;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    case CodecId::kH264:
+      return CodecHistogram::kH264;
+#endif
+    case CodecId::kAv1:
+      return CodecHistogram::kAv1;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case CodecId::kHevc:
+      return CodecHistogram::kHevc;
+#endif
+    default:
+      return CodecHistogram::kUnknown;
+  }
+}
 
 VideoTrackRecorder::VideoTrackRecorder(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
@@ -1033,7 +1056,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   auto encoding_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   CHECK(encoding_task_runner);
-  UmaHistogramForCodec(create_vea_encoder, codec_profile.codec_id);
+  UmaHistogramForCodecImpl(create_vea_encoder, codec_profile.codec_id);
 
   CreateMediaVideoEncoder(encoding_task_runner, codec_profile, is_screencast,
                           create_vea_encoder);

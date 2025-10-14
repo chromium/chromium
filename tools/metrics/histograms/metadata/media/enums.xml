@@ -1464,7 +1464,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User opened the combobox and chose a different device"/>
 </enum>
 
-<enum name="MediaRecorderCodec">
+<!-- LINT.IfChange(MediaRecorderVideoCodec) -->
+
+<enum name="MediaRecorderVideoCodec">
+  <int value="0" label="UnknownOrAudio"/>
+  <int value="1" label="VP8"/>
+  <int value="2" label="VP9"/>
+  <int value="3" label="H264"/>
+  <int value="4" label="AV1"/>
+  <int value="5" label="H265"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h:CodecHistogram) -->
+
+<enum name="MediaRecorderVideoCodecImpl">
   <int value="0" label="Unknown"/>
   <int value="1" label="VP8_sw"/>
   <int value="2" label="VP8_hw"/>

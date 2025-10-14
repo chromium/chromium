@@ -71,6 +71,14 @@ class MODULES_EXPORT MediaRecorderHandler final
       public VideoTrackRecorder::CallbackInterface,
       public AudioTrackRecorder::CallbackInterface {
  public:
+  // Caller for CanSupportMimeType. Influences emitted UMA histograms.
+  enum class CanSupportMimeTypeCaller {
+    kIsTypeSupported,
+    kMediaRecorderCtor,
+    kEncodingInfo,
+    kTest,
+  };
+
   MediaRecorderHandler(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       KeyFrameRequestProcessor::Configuration key_frame_config);
@@ -84,7 +92,12 @@ class MODULES_EXPORT MediaRecorderHandler final
   // sufficient resources are not available to support the concrete media
   // encoding."
   // [1] https://w3c.github.io/mediacapture-record/MediaRecorder.html#methods
-  bool CanSupportMimeType(const String& type, const String& web_codecs);
+  bool CanSupportMimeType(const String& type,
+                          const String& web_codecs,
+                          CanSupportMimeTypeCaller caller);
+  bool CanSupportMimeTypeForCodec(const String& type, std::string_view codec);
+  static const char* StringFromCanSupportMimeTypeCaller(
+      CanSupportMimeTypeCaller);
   bool Initialize(MediaRecorder* client,
                   MediaStreamDescriptor* media_stream,
                   const String& type,
