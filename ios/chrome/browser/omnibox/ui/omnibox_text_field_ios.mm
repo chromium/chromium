@@ -988,7 +988,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// `self.attributedAdditionalText`.
 - (void)setTextInternal:(NSAttributedString*)text
      autocompleteLength:(NSUInteger)autocompleteLength {
+  if (autocompleteLength > text.length) {
+    DUMP_WILL_BE_NOTREACHED() << "autocomplete length: " << autocompleteLength
+                              << " text length: " << text.length;
+    autocompleteLength = text.length;
+  }
   _autocompleteTextLength = autocompleteLength;
+
   // Extract substrings for the permanent text and the autocomplete text.  The
   // former needs to retain any text attributes from the original string.
   NSUInteger beginningOfAutocomplete = text.length - autocompleteLength;
@@ -1050,15 +1056,22 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       UITextPosition* endOfUserText =
           [self positionFromPosition:self.beginningOfDocument
                               offset:beginningOfAutocomplete];
-      // Move the cursor to the beginning of the field before setting the
-      // position to the end of the user input so if the text is very wide, the
-      // user sees the beginning of the text instead of the end.
-      self.selectedTextRange =
-          [self textRangeFromPosition:self.beginningOfDocument
-                           toPosition:self.beginningOfDocument];
-      // Preserve the cursor position at the end of the user input.
-      self.selectedTextRange = [self textRangeFromPosition:endOfUserText
-                                                toPosition:endOfUserText];
+      if (endOfUserText) {
+        // Move the cursor to the beginning of the field before setting the
+        // position to the end of the user input so if the text is very wide,
+        // the user sees the beginning of the text instead of the end.
+        self.selectedTextRange =
+            [self textRangeFromPosition:self.beginningOfDocument
+                             toPosition:self.beginningOfDocument];
+        // Preserve the cursor position at the end of the user input.
+        self.selectedTextRange = [self textRangeFromPosition:endOfUserText
+                                                  toPosition:endOfUserText];
+      } else {
+        DUMP_WILL_BE_NOTREACHED()
+            << "autocomplete length: " << autocompleteLength
+            << " text length: " << text.length
+            << " has endOfUserText: " << !!endOfUserText;
+      }
     }
   }
 
