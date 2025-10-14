@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -87,7 +86,10 @@ using base::UserMetricsAction;
 
 @end
 
-@implementation KeyCommandsProvider
+@implementation KeyCommandsProvider {
+  // Whether the keyboard is visible or not.
+  BOOL _keyboardVisible;
+}
 
 #pragma mark - Public
 
@@ -96,6 +98,16 @@ using base::UserMetricsAction;
   self = [super init];
   if (self) {
     _browser = browser->AsWeakPtr();
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardDidShow)
+               name:UIKeyboardDidShowNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardDidHide)
+               name:UIKeyboardDidHideNotification
+             object:nil];
   }
   return self;
 }
@@ -595,8 +607,7 @@ using base::UserMetricsAction;
 - (BOOL)isEditingText {
   UIResponder* firstResponder = GetFirstResponder();
   return [firstResponder isKindOfClass:[UITextField class]] ||
-         [firstResponder isKindOfClass:[UITextView class]] ||
-         [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
+         [firstResponder isKindOfClass:[UITextView class]] || _keyboardVisible;
 }
 
 - (void)openNewRegularTab {
@@ -641,6 +652,16 @@ using base::UserMetricsAction;
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForProfile(_browser->GetProfile());
   return bookmarkModel->IsBookmarked(url);
+}
+
+// Updates keyboard visibility when the keyboard is visible.
+- (void)keyboardDidShow {
+  _keyboardVisible = YES;
+}
+
+// Updates keyboard visibility when the keyboard is hidden.
+- (void)keyboardDidHide {
+  _keyboardVisible = NO;
 }
 
 @end

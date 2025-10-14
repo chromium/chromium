@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
-#import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -1031,8 +1030,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 #pragma mark - Keyboard events
 
 - (void)keyboardDidChangeFrame:(NSNotification*)notification {
-  CGFloat keyboardHeight =
-      [KeyboardObserverHelper keyboardHeightInWindow:self.tableView.window];
+  CGRect keyboardFrame =
+      [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGFloat keyboardHeight = keyboardFrame.size.height;
   if (self.keyboardHeight != keyboardHeight) {
     self.keyboardHeight = keyboardHeight;
     self.shouldUpdateVisibleSuggestionCount = YES;

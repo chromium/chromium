@@ -22,8 +22,6 @@ source_set("util") {
     "dynamic_type_util.mm",
     "file_size_util.h",
     "file_size_util.mm",
-    "keyboard_observer_helper.h",
-    "keyboard_observer_helper.mm",
     "layout_guide_names.h",
     "layout_guide_names.mm",
     "named_guide.h",
@@ -171,31 +169,6 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
     "//url",
-  ]
-}
-
-source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "keyboard_observer_helper_app_interface.h",
-    "keyboard_observer_helper_app_interface.mm",
-  ]
-  deps = [
-    ":util",
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/test/app:test_support",
-  ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "keyboard_observer_helper_app_interface.h" ]
-  deps = [
-    ":util",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
 

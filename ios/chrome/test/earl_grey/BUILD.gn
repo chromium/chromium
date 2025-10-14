@@ -240,7 +240,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:eg_app_support+eg2",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
     "//ios/chrome/browser/snackbar/ui_bundled",
     "//ios/chrome/browser/snackbar/ui_bundled:test_support",
