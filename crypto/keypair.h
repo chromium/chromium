@@ -160,6 +160,11 @@ class CRYPTO_EXPORT PublicKey {
   // this on a non-EC PublicKey.
   std::vector<uint8_t> ToUncompressedForm() const;
 
+  // Export the components (e, n) of an RSA public key, as big-endian integers.
+  // It is illegal to call these on a non-RSA PublicKey.
+  std::vector<uint8_t> GetRsaExponent() const;
+  std::vector<uint8_t> GetRsaModulus() const;
+
   EVP_PKEY* key() { return key_.get(); }
   const EVP_PKEY* key() const { return key_.get(); }
 

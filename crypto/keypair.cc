@@ -369,6 +369,24 @@ std::vector<uint8_t> PublicKey::ToUncompressedForm() const {
   return EvpToUncompressedEcForm(key_.get());
 }
 
+std::vector<uint8_t> PublicKey::GetRsaExponent() const {
+  CHECK(IsRsa());
+  RSA* rsa = EVP_PKEY_get0_RSA(key_.get());
+  const BIGNUM* e = RSA_get0_e(rsa);
+  std::vector<uint8_t> result(BN_num_bytes(e));
+  BN_bn2bin(e, result.data());
+  return result;
+}
+
+std::vector<uint8_t> PublicKey::GetRsaModulus() const {
+  CHECK(IsRsa());
+  RSA* rsa = EVP_PKEY_get0_RSA(key_.get());
+  const BIGNUM* n = RSA_get0_n(rsa);
+  std::vector<uint8_t> result(BN_num_bytes(n));
+  BN_bn2bin(n, result.data());
+  return result;
+}
+
 bool PublicKey::IsRsa() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA;
 }

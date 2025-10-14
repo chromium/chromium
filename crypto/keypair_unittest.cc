@@ -150,4 +150,15 @@ TEST(Keypair, ImportUncompressed) {
   }
 }
 
+TEST(Keypair, RsaPublicComponents) {
+  const auto key = FixedRsa2048PublicKeyForTesting();
+
+  const auto n = key.GetRsaModulus();
+  const auto e = key.GetRsaExponent();
+
+  const auto new_key = PublicKey::FromRsaPublicKeyComponents(n, e);
+  ASSERT_TRUE(new_key.has_value());
+  EXPECT_EQ(key.ToSubjectPublicKeyInfo(), new_key->ToSubjectPublicKeyInfo());
+}
+
 }  // namespace
