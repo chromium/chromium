@@ -1225,7 +1225,7 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
-                             &form_structure, &autofill_field);
+                                      &form_structure, &autofill_field);
 
   auto all_suggestion_data =
       base::MakeFlatMap<SuggestionDataSource,
@@ -1784,40 +1784,40 @@ void BrowserAutofillManager::FillOrPreviewForm(
                              &autofill_field)) {
     return;
   }
-  std::visit(absl::Overload{
-                 [&](const AutofillProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source);
-                 },
-                 [&](const CreditCard* credit_card) {
-                   // We still need to take care of authentication flows,
-                   // which is why we do not forward right away to
-                   // FormFiller.
-                   FillOrPreviewCreditCardForm(action_persistence, form,
-                                               CHECK_DEREF(form_structure),
-                                               CHECK_DEREF(autofill_field),
-                                               *credit_card, trigger_source);
-                 },
-                 [&](const EntityInstance*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source);
-                 },
-                 [&](const VerifiedProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source);
-                 },
-                 [&](const OtpFillData*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source);
-                 }},
+  std::visit(absl::Overload{[&](const AutofillProfile*) {
+                              form_filler_->FillOrPreviewForm(
+                                  action_persistence, form, filling_payload,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
+                            },
+                            [&](const CreditCard* credit_card) {
+                              // We still need to take care of authentication
+                              // flows, which is why we do not forward right
+                              // away to FormFiller.
+                              FillOrPreviewCreditCardForm(
+                                  action_persistence, form,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), *credit_card,
+                                  trigger_source);
+                            },
+                            [&](const EntityInstance*) {
+                              form_filler_->FillOrPreviewForm(
+                                  action_persistence, form, filling_payload,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
+                            },
+                            [&](const VerifiedProfile*) {
+                              form_filler_->FillOrPreviewForm(
+                                  action_persistence, form, filling_payload,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
+                            },
+                            [&](const OtpFillData*) {
+                              form_filler_->FillOrPreviewForm(
+                                  action_persistence, form, filling_payload,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
+                            }},
              filling_payload);
 }
 
@@ -2696,36 +2696,35 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
-      absl::Overload{
-          [&](const AutofillProfile* profile) {
-            LogAndRecordProfileFill(form, trigger_field, *profile,
-                                    trigger_source,
-                                    refill_trigger_reason.has_value());
-            MaybeShowPlusAddressEmailOverrideNotification(
-                safe_filled_fields, *profile, form.global_id());
-          },
-          [&](const CreditCard* credit_card) {
-            LogAndRecordCreditCardFill(form, trigger_field, filled_field_ids,
-                                       safe_filled_field_ids, *credit_card,
-                                       trigger_source,
-                                       refill_trigger_reason.has_value());
-          },
-          [&](const EntityInstance* entity) {
-            if (AutofillAiManager* ai_manager =
-                    client().GetAutofillAiManager()) {
-              ai_manager->OnDidFillSuggestion(*entity, form, trigger_field,
-                                              safe_filled_fields,
-                                              driver().GetPageUkmSourceId());
-            }
-          },
-          [&](const VerifiedProfile*) {
-            // TODO(crbug.com/380367784): consider moving the
-            // notification to the delegate here.
-          },
-          [&](const OtpFillData*) {
-            metrics_->otp_form_event_logger.OnDidFillOtpSuggestion(
-                form, trigger_field);
-          }},
+      absl::Overload{[&](const AutofillProfile* profile) {
+                       LogAndRecordProfileFill(
+                           form, trigger_field, *profile, trigger_source,
+                           refill_trigger_reason.has_value());
+                       MaybeShowPlusAddressEmailOverrideNotification(
+                           safe_filled_fields, *profile, form.global_id());
+                     },
+                     [&](const CreditCard* credit_card) {
+                       LogAndRecordCreditCardFill(
+                           form, trigger_field, filled_field_ids,
+                           safe_filled_field_ids, *credit_card, trigger_source,
+                           refill_trigger_reason.has_value());
+                     },
+                     [&](const EntityInstance* entity) {
+                       if (AutofillAiManager* ai_manager =
+                               client().GetAutofillAiManager()) {
+                         ai_manager->OnDidFillSuggestion(
+                             *entity, form, trigger_field, safe_filled_fields,
+                             driver().GetPageUkmSourceId());
+                       }
+                     },
+                     [&](const VerifiedProfile*) {
+                       // TODO(crbug.com/380367784): consider moving the
+                       // notification to the delegate here.
+                     },
+                     [&](const OtpFillData*) {
+                       metrics_->otp_form_event_logger.OnDidFillOtpSuggestion(
+                           form, trigger_field);
+                     }},
       filling_payload);
 }
 
