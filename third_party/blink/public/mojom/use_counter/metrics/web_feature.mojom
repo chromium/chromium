@@ -4996,6 +4996,15 @@ enum WebFeature {
   kCryptoAlgorithmMlDsa87 = 5681,
   kCryptoAlgorithmMlKem768 = 5682,
   kCryptoAlgorithmMlKem1024 = 5683,
+  kClipboardChangedBetweenReadAndGetType = 5684,
+  kClipboardChangedBetweenGetTypes = 5685,
+  kClipboardReadAndGetTypeTimeDiffIsBetween5SecAnd1Min = 5686,
+  kClipboardReadAndGetTypeTimeDiffIsBetween1MinAnd10Min = 5687,
+  kClipboardReadAndGetTypeTimeDiffIsMoreThan10Min = 5688,
+  kClipboardGetTypeTimeDiffOfSameTypeIsBetween5SecAnd1Min = 5689,
+  kClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min = 5690,
+  kClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min = 5691,
+  kClipboardGetTypeWindowNotInFocus = 5692,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

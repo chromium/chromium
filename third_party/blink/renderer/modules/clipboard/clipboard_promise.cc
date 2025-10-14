@@ -391,7 +391,10 @@ void ClipboardPromise::ResolveRead() {
     items.emplace_back(item.first, promise);
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {
-      MakeGarbageCollected<ClipboardItem>(items)};
+      RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()
+          ? MakeGarbageCollected<ClipboardItem>(
+                items, GetLocalFrame()->GetSystemClipboard()->SequenceNumber())
+          : MakeGarbageCollected<ClipboardItem>(items)};
   script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
       clipboard_items);
 }

@@ -1010,6 +1010,11 @@
       status: "stable",
     },
     {
+      // Allows usecounter in `ClipboardItem`
+      name: "ClipboardItemGetTypeCounter",
+      status: "stable",
+    },
+    {
       // Support ClipboardItemData of Promise<DOMString> type according to spec
       // https://w3c.github.io/clipboard-apis/#typedefdef-clipboarditemdata
       name: "ClipboardItemWithDOMStringSupport",

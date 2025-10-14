@@ -6293,6 +6293,19 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5681" label="CryptoAlgorithmMlDsa87"/>
   <int value="5682" label="CryptoAlgorithmMlKem768"/>
   <int value="5683" label="CryptoAlgorithmMlKem1024"/>
+  <int value="5684" label="ClipboardChangedBetweenReadAndGetType"/>
+  <int value="5685" label="ClipboardChangedBetweenGetTypes"/>
+  <int value="5686"
+      label="ClipboardReadAndGetTypeTimeDiffIsBetween5SecAnd1Min"/>
+  <int value="5687"
+      label="ClipboardReadAndGetTypeTimeDiffIsBetween1MinAnd10Min"/>
+  <int value="5688" label="ClipboardReadAndGetTypeTimeDiffIsMoreThan10Min"/>
+  <int value="5689"
+      label="ClipboardGetTypeTimeDiffOfSameTypeIsBetween5SecAnd1Min"/>
+  <int value="5690"
+      label="ClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min"/>
+  <int value="5691" label="ClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min"/>
+  <int value="5692" label="ClipboardGetTypeWindowNotInFocus"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
