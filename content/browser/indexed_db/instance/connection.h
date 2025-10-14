@@ -137,7 +137,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
       std::optional<blink::mojom::IDBTransactionMode> required_mode = {});
 
  private:
-  friend class TransactionTest;
+  friend class TransactionTestBase;
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, ForcedClose);
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, PendingDelete);
   FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest, GetWithInvalidId);

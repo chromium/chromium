@@ -300,7 +300,7 @@ class CONTENT_EXPORT BucketContext
   friend class BackingStoreTestBase;
   friend class DatabaseTest;
   friend class IndexedDBTest;
-  friend class TransactionTest;
+  friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
