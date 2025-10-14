@@ -82,11 +82,22 @@ chromium-metrics-reviews@google.com.
 <histogram name="Content.SharedWorker.Host.DestructionSource"
     enum="SharedWorkerHostDestructionSource" expires_after="2026-04-05">
   <owner>yyanagisawa@chromium.org</owner>
-  <owner>chrome-worker@google.org</owner>
+  <owner>chrome-worker@google.com</owner>
   <summary>
     Records the reason why a SharedWorkerHost is destroyed. This is to
     investigate why a shared worker is terminated unexpectedly. This is also
     used for understanding the ratio of destruction cases.
+  </summary>
+</histogram>
+
+<histogram name="Content.SharedWorker.Service.LastClientCheckTime" units="ms"
+    expires_after="2026-04-01">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time spent checking if a navigating page with a SharedWorker is the last
+    active client. This is recorded whenever a page with a SharedWorker
+    connection navigates away.
   </summary>
 </histogram>
 

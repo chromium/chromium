@@ -1148,10 +1148,12 @@
       "Win"
     ],
     "bases": [
-      "wpt_internal/fenced_frame"
+      "wpt_internal/fenced_frame",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.tentative.https.window.js"
     ],
     "exclusive_tests": [
-      "wpt_internal/fenced_frame"
+      "wpt_internal/fenced_frame",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.tentative.https.window.js"
     ],
     "args": [
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"
@@ -4297,7 +4299,6 @@
     "owners": ["annasato@chromium.org"],
     "platforms": ["Mac", "Win", "Linux"],
     "bases": [
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js"
     ],

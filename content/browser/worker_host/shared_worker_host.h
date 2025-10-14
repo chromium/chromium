@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
@@ -163,6 +164,13 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // Returns true if this worker is connected to at least one client.
   bool HasClients() const;
+
+  // Returns true if the worker has a client with `render_frame_host`.
+  bool ContainsClient(const RenderFrameHostImpl* render_frame_host) const;
+
+  // Evicts other BFCached clients and returns true if `render_frame_host` is
+  // the last active client.
+  bool EvictBFCachedClientsIfLastActive(RenderFrameHostImpl* render_frame_host);
 
   // Returns the frame ids of this worker's clients.
   std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();

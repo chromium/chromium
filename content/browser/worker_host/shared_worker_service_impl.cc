@@ -15,7 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -535,6 +537,26 @@ void SharedWorkerServiceImpl::ScriptLoadFailed(
   mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(
       std::move(client));
   remote_client->OnScriptLoadFailed(error_message);
+}
+
+bool SharedWorkerServiceImpl::EvictBFCachedClientsIfLastActive(
+    RenderFrameHostImpl* render_frame_host) {
+  TRACE_EVENT0("navigation",
+               "SharedWorkerServiceImpl::EvictBFCachedClientsIfLastActive");
+  base::ElapsedTimer timer;
+  bool was_last_active_for_any_worker = false;
+  RenderFrameHostImpl* const client_main_frame =
+      render_frame_host->GetOutermostMainFrame();
+
+  for (const auto& host : worker_hosts_) {
+    if (host && host->ContainsClient(render_frame_host) &&
+        host->EvictBFCachedClientsIfLastActive(client_main_frame)) {
+      was_last_active_for_any_worker = true;
+    }
+  }
+  base::UmaHistogramTimes("Content.SharedWorker.Service.LastClientCheckTime",
+                          timer.Elapsed());
+  return was_last_active_for_any_worker;
 }
 
 }  // namespace content

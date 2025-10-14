@@ -41,6 +41,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -1161,6 +1162,25 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
         rfh->frame_tree_node()->HasPendingCommitNavigation()) {
       result.No(
           BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kBFCacheWithSharedWorker)) {
+    // If this frame is a client of a Shared Worker and all other clients are in
+    // this frame's frame-tree, block this frame from entering BFCache. Also,
+    // other clients of the same worker that are already in BFCache will be
+    // evicted.
+    // TODO(crbug.com/406420935): Freeze the worker instead of blocking BFCache.
+
+    // If rfh is already in BFCache then we are evicting it and there is no need
+    // to check if it's the last active client.
+    if (!rfh->IsInBackForwardCache()) {
+      SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+          rfh->GetStoragePartition()->GetSharedWorkerService());
+      if (service && service->EvictBFCachedClientsIfLastActive(rfh)) {
+        result.No(BackForwardCacheMetrics::NotRestoredReason::
+                      kSharedWorkerWithNoActiveClient);
+      }
     }
   }
 }

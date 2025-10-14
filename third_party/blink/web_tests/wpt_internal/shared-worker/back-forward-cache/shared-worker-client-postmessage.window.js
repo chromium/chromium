@@ -14,6 +14,15 @@ promise_test(async t => {
   const workerScriptUrl =
       '/wpt_internal/shared-worker/back-forward-cache/resources/worker-sending-message.js';
 
+  // TODO(crbug.com/406420935): Remove this client once SharedWorker freezing is
+  // implemented. This is a workaround to ensure rc1 is not the last active
+  // client, which would currently block it from entering BFCache.
+  const helper_client = await rcHelper.addWindow(
+      /*config=*/ {}, /*options=*/ {features: 'noopener'});
+  await helper_client.executeScript((workerUrl) => {
+    window.foo = new SharedWorker(workerUrl);
+  }, [workerScriptUrl]);
+
   const rc1 = await rcHelper.addWindow(
       /*config=*/ {}, /*options=*/ {features: 'noopener'});
   await rc1.executeScript((workerUrl) => {

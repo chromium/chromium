@@ -1008,6 +1008,42 @@ bool SharedWorkerHost::HasClients() const {
   return !clients_.empty();
 }
 
+bool SharedWorkerHost::ContainsClient(
+    const RenderFrameHostImpl* render_frame_host) const {
+  const GlobalRenderFrameHostId& client_render_frame_host_id =
+      render_frame_host->GetGlobalId();
+  return std::any_of(
+      clients_.begin(), clients_.end(), [&](const ClientInfo& info) {
+        return info.render_frame_host_id == client_render_frame_host_id;
+      });
+}
+
+bool SharedWorkerHost::EvictBFCachedClientsIfLastActive(
+    RenderFrameHostImpl* render_frame_host) {
+  std::vector<RenderFrameHostImpl*> bf_cached_clients;
+
+  for (const ClientInfo& info : clients_) {
+    RenderFrameHostImpl* const other_rfh =
+        RenderFrameHostImpl::FromID(info.render_frame_host_id);
+    if (!other_rfh || other_rfh->GetOutermostMainFrame() == render_frame_host) {
+      // Skip frames on the same page (e.g., self, iframes) and destroyed ones,
+      continue;
+    }
+    if (other_rfh->IsActive()) {
+      // If any other client is still active, then this is not the last active
+      // client.
+      return false;
+    }
+    bf_cached_clients.push_back(other_rfh);
+  }
+  for (RenderFrameHostImpl* rfh_to_evict : bf_cached_clients) {
+    rfh_to_evict->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::
+            kSharedWorkerWithNoActiveClient);
+  }
+  return true;
+}
+
 const base::UnguessableToken& SharedWorkerHost::GetDevToolsToken() const {
   return devtools_handle_->dev_tools_token();
 }
