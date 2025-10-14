@@ -252,12 +252,11 @@ inline AttributeCollection ElementData::Attributes() const {
 }
 
 inline AttributeCollection ShareableElementData::Attributes() const {
-  return AttributeCollection(attribute_array_, bit_field_.get<ArraySize>());
+  return AttributeCollection(AttributesSpan());
 }
 
 inline AttributeCollection UniqueElementData::Attributes() const {
-  return AttributeCollection(attribute_vector_.data(),
-                             attribute_vector_.size());
+  return AttributeCollection(attribute_vector_);
 }
 
 inline MutableAttributeCollection UniqueElementData::Attributes() {
