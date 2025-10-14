@@ -234,7 +234,8 @@ public class LocationBarCoordinator
                                         ? ControlsPosition.TOP
                                         : mBrowserControlsStateProvider.getControlsPosition(),
                         mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
-                        bottomWindowPaddingSupplier);
+                        bottomWindowPaddingSupplier,
+                        locationBarDataProvider);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         final boolean isIncognito =

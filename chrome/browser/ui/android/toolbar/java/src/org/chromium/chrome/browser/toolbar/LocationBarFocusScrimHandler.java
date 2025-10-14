@@ -10,6 +10,7 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -80,6 +81,13 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
 
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
+        if (ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
+                && mLocationBarDataProvider
+                        .getNewTabPageDelegate()
+                        .isIncognitoNewTabPageCurrentlyVisible()) {
+            return;
+        }
+
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         boolean useLightColor =
                 !isTablet

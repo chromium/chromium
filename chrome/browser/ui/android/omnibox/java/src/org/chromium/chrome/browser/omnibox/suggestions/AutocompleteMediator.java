@@ -27,6 +27,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -421,7 +422,16 @@ class AutocompleteMediator
 
         if (activated) {
             initAutocompleteInput();
-            mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
+
+            // Do not attach IME observer when omnibox autofocus feature enabled and Incognito NTP
+            // visible.
+            if (!ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
+                    || !mDataProvider
+                            .getNewTabPageDelegate()
+                            .isIncognitoNewTabPageCurrentlyVisible()) {
+                mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
+            }
+
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;

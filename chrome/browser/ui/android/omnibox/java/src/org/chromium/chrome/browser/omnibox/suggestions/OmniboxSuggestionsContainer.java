@@ -97,6 +97,15 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
+        // Propagate touch events, to make possible touch elements behind this container. Omnibox
+        // autofocus feature prevents the Scrim to be shown as a result tab content is covered by
+        // this transparent container.
+        boolean shouldPassThroughUnhandledTouchEvents =
+                mEmbedder != null && mEmbedder.shouldPassThroughUnhandledTouchEvents();
+        if (shouldPassThroughUnhandledTouchEvents) {
+            return false;
+        }
+
         // Swallow all touch events, especially if these were not consumed by the Dropdown.
         // This ensures that touching the blank areas of the container does not dismiss the
         // Omnibox.

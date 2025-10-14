@@ -37,6 +37,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.test.R;
 
@@ -55,6 +58,7 @@ public class OmniboxSuggestionsContainerUnitTest {
             new ObservableSupplierImpl<>();
     private boolean mIsTablet;
     private boolean mAttachedToWindow;
+    private boolean mShouldPassThroughUnhandledTouchEvents;
     private final OmniboxSuggestionsDropdownEmbedder mEmbedder =
             new OmniboxSuggestionsDropdownEmbedder() {
                 @Override
@@ -91,6 +95,11 @@ public class OmniboxSuggestionsContainerUnitTest {
                 @Override
                 public float getVerticalTranslationForAnimation() {
                     return 0.0f;
+                }
+
+                @Override
+                public boolean shouldPassThroughUnhandledTouchEvents() {
+                    return mShouldPassThroughUnhandledTouchEvents;
                 }
             };
 
@@ -274,6 +283,38 @@ public class OmniboxSuggestionsContainerUnitTest {
     public void testOnTouchEvent_returnsTrue() {
         var event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
         assertTrue(mContainer.onTouchEvent(event));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void testOnTouchEvent_whenIncognitoNtpAndAutofocusEnabled_returnsFalse() {
+        checkContainerConsumesTouchEvents(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void testOnTouchEvent_whenNotIncognitoNtpAndAutofocusEnabled_returnsTrue() {
+        checkContainerConsumesTouchEvents(true);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void testOnTouchEvent_whenAutofocusDisabled_returnsTrue() {
+        checkContainerConsumesTouchEvents(true);
+    }
+
+    public void checkContainerConsumesTouchEvents(boolean consume) {
+        mContainer.setEmbedder(mEmbedder);
+        mShouldPassThroughUnhandledTouchEvents = !consume;
+
+        var event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        boolean isConsumed = mContainer.onTouchEvent(event);
+
+        if (consume) {
+            assertTrue(isConsumed);
+        } else {
+            assertFalse(isConsumed);
+        }
     }
 
     @Test

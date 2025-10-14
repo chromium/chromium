@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -59,6 +60,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private int mWindowHeightDp;
     private @Nullable WindowInsetsCompat mWindowInsetsCompat;
     private final @Nullable View mBaseChromeLayout;
+    private final LocationBarDataProvider mLocationBarDataProvider;
 
     /**
      * @param windowAndroid Window object in which the dropdown will be displayed.
@@ -79,6 +81,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      *     out of this region to be fully visible and interactable. This is used to ensure the
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
+     * @param locationBarDataProvider Provides LocationBar data, e.g. the current URL.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
             WindowAndroid windowAndroid,
@@ -88,7 +91,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             @Nullable View baseChromeLayout,
             Supplier<@ControlsPosition Integer> controlsPositionSupplier,
             Supplier<Integer> keyboardHeightSupplier,
-            Supplier<Integer> bottomWindowPaddingSupplier) {
+            Supplier<Integer> bottomWindowPaddingSupplier,
+            LocationBarDataProvider locationBarDataProvider) {
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
@@ -102,6 +106,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mWindowWidthDp = configuration.smallestScreenWidthDp;
         mWindowHeightDp = configuration.screenHeightDp;
         mBaseChromeLayout = baseChromeLayout;
+        mLocationBarDataProvider = locationBarDataProvider;
         recalculateOmniboxAlignment();
     }
 
@@ -125,6 +130,14 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         if (mForcePhoneStyleOmnibox) return false;
         return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
                 && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
+    }
+
+    @Override
+    public boolean shouldPassThroughUnhandledTouchEvents() {
+        return ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
+                && mLocationBarDataProvider
+                        .getNewTabPageDelegate()
+                        .isIncognitoNewTabPageCurrentlyVisible();
     }
 
     @Override
@@ -263,7 +276,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             paddingRight = 0;
         }
 
-        int keyboardHeight = mKeyboardHeightSupplier.get();
+        int overlayKeyboardHeight = mKeyboardHeightSupplier.get();
+        int keyboardHeight = overlayKeyboardHeight;
 
         int windowHeight;
         if (DeviceInfo.isAutomotive()
@@ -316,11 +330,19 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                         .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
         int windowSpace =
                 Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
+
+        // Calculate height of content covered by overlay keyboard.
+        // In "overlay" mode (overlayKeyboardHeight > 0), the content view is not resized, so we
+        // subtract the full physical keyboard height (`keyboardHeight`).
+        // In "resizing" mode (overlayKeyboardHeight == 0), the content view is already shrunk, so
+        // we subtract 0 as keyboard not covering the content.
+        int contentHeightCoveredByKeyboard = overlayKeyboardHeight > 0 ? keyboardHeight : 0;
+
         // If content view is null, then omnibox might not be in the activity content.
         int contentSpace =
                 contentView == null
                         ? Integer.MAX_VALUE
-                        : contentView.getMeasuredHeight() - keyboardHeight;
+                        : contentView.getMeasuredHeight() - contentHeightCoveredByKeyboard;
         int height;
         if (controlsPosition == ControlsPosition.BOTTOM) {
             height = Math.min(windowSpace, contentSpace) - mAnchorView.getMeasuredHeight();

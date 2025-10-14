@@ -122,6 +122,12 @@ public interface OmniboxSuggestionsDropdownEmbedder {
     boolean isTablet();
 
     /**
+     * Returns whether {@link OmniboxSuggestionsContainer} should pass through unhandled touch
+     * events.
+     */
+    boolean shouldPassThroughUnhandledTouchEvents();
+
+    /**
      * The dropdown must call this when it is attached to the window to start the process of
      * alignment recalculation. Updates are skipped prior to this point to avoid repeated, unused
      * calculation of alignment values.
