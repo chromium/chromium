@@ -2051,6 +2051,9 @@ class GapAccumulator {
   void BuildGapGeometry(const GridLayoutData& layout_data) {
     BuildMainGaps(layout_data);
     BuildCrossGaps(layout_data);
+
+    main_gaps_aggregator_ = GapSegmentStateAggregator(cross_gaps_.size() + 1);
+    cross_gaps_aggregator_ = GapSegmentStateAggregator(main_gaps_.size() + 1);
   }
 
   // Aggregates the intervals of gaps blocked by a `grid_item`. This identifies
@@ -2066,80 +2069,11 @@ class GapAccumulator {
   //
   // For an item spanning tracks [start_line, end_line], the gap indices it
   // crosses are [start_line, end_line - 1).
-  void AggregateGapsToBlockedTracks(const GridItemData& grid_item) {
-    auto AggregateBlockedTracksFor =
-        [&](GridTrackSizingDirection direction, const GridItemData& grid_item,
-            GapToTrackRangesMap& gap_to_blocked_track) {
-          // Empty or single spans don't block gaps, so return early.
-          if (grid_item.SpanSize(direction) < 2) {
-            return;
-          }
-
-          const GridSpan& main_span = grid_item.Span(direction);
-          GridTrackSizingDirection cross_direction =
-              direction == kForColumns ? kForRows : kForColumns;
-          const GridSpan& cross_span = grid_item.Span(cross_direction);
-          TrackRange cross_track_range{cross_span.StartLine(),
-                                       cross_span.EndLine()};
-
-          // Iterate through all gaps the item spans across. For tracks [start,
-          // end], gaps are [start, end - 1).
-          for (wtf_size_t gap_index = main_span.StartLine();
-               gap_index < main_span.EndLine() - 1; ++gap_index) {
-            auto it = gap_to_blocked_track.find(gap_index);
-            if (it == gap_to_blocked_track.end()) {
-              // First spanning item for this gap: create new entry.
-              gap_to_blocked_track.insert(
-                  gap_index, Vector<TrackRange>(1, cross_track_range));
-            } else {
-              // Additional spanning item for this gap: append to existing list.
-              it->value.push_back(cross_track_range);
-            }
-          }
-        };
-
-    AggregateBlockedTracksFor(kForColumns, grid_item,
-                              col_gaps_to_blocked_row_ranges_);
-    AggregateBlockedTracksFor(kForRows, grid_item,
-                              row_gaps_to_blocked_column_ranges_);
-  }
-
-  // Sorts and merges overlapping or adjacent track ranges to optimize storage.
-  // This reduces memory usage by consolidating multiple overlapping or
-  // consecutive ranges into fewer, larger ranges.
-  //
-  // For Example:
-  // [(1, 3), (2, 4), (7, 8)] ==> [(1, 4), (7, 8)]
-  // The first two ranges overlap, so they merge into (1, 4).
-  void SortAndMergeTrackRanges(Vector<TrackRange>& ranges) {
-    if (ranges.size() < 2) {
-      return;
-    }
-
-    // Sort ranges by their start position to enable linear merging. End
-    // positions will be handled automatically by the merge algorithm, even if
-    // they're out-of-order.
-    std::sort(ranges.begin(), ranges.end(),
-              [](const TrackRange& a, const TrackRange& b) {
-                return a.start < b.start;
-              });
-
-    TrackRanges merged_ranges;
-    merged_ranges.reserve(ranges.size());
-
-    TrackRange current_range = ranges[0];
-    for (wtf_size_t i = 1; i < ranges.size(); ++i) {
-      // Merge if overlapping or adjacent.
-      if (ranges[i].start <= current_range.end) {
-        current_range.end = std::max(current_range.end, ranges[i].end);
-      } else {
-        merged_ranges.push_back(current_range);
-        current_range = ranges[i];
-      }
-    }
-    merged_ranges.push_back(current_range);
-
-    ranges = std::move(merged_ranges);
+  void AggregateCellStates(const GridItemData& grid_item) {
+    main_gaps_aggregator_.ProcessItem(grid_item.Span(kForRows),
+                                      grid_item.Span(kForColumns));
+    cross_gaps_aggregator_.ProcessItem(grid_item.Span(kForColumns),
+                                       grid_item.Span(kForRows));
   }
 
   // Returns a mapping from row gap indices to their corresponding set indices.
@@ -2213,6 +2147,19 @@ class GapAccumulator {
     gap_geometry->SetInlineGapSize(col_gutter_size_);
     gap_geometry->SetBlockGapSize(row_gutter_size_);
 
+    // Finalize the `GapSegmentStateRanges` for each gap using the aggregated
+    // cell states collected during `AggregateCellStates`.
+    for (wtf_size_t gap_index = 0; gap_index < main_gaps_.size(); ++gap_index) {
+      main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+          main_gaps_[gap_index], gap_index);
+    }
+
+    for (wtf_size_t gap_index = 0; gap_index < cross_gaps_.size();
+         ++gap_index) {
+      cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+          cross_gaps_[gap_index], gap_index);
+    }
+
     if (row_gutter_size_ > LayoutUnit() && !main_gaps_.empty()) {
       gap_geometry->SetMainGaps(std::move(main_gaps_));
     }
@@ -2221,38 +2168,17 @@ class GapAccumulator {
       gap_geometry->SetCrossGaps(std::move(cross_gaps_));
     }
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-      gap_geometry->SetContentInlineOffsets(content_inline_start_,
-                                            content_inline_end_);
-      gap_geometry->SetContentBlockOffsets(content_block_start_,
-                                           content_block_end_);
+    gap_geometry->SetContentInlineOffsets(content_inline_start_,
+                                          content_inline_end_);
+    gap_geometry->SetContentBlockOffsets(content_block_start_,
+                                         content_block_end_);
 
-      // Optimize the spanning items maps by sorting and merging overlapping
-      // ranges. This step is crucial for paint performance as it:
-      // 1. Reduces the number of ranges to check during gap decoration painting
-      // 2. Eliminates redundant overlapping ranges from multiple spanning items
-      // 3. Merges adjacent ranges that can be treated as a single larger range
-      for (auto& [gap_index, ranges] : col_gaps_to_blocked_row_ranges_) {
-        SortAndMergeTrackRanges(ranges);
-      }
-      for (auto& [gap_index, ranges] : row_gaps_to_blocked_column_ranges_) {
-        SortAndMergeTrackRanges(ranges);
-      }
-
-      gap_geometry->SetRowGapsToBlockedColumnRanges(
-          std::move(row_gaps_to_blocked_column_ranges_));
-      gap_geometry->SetColumnGapsToBlockedRowRanges(
-          std::move(col_gaps_to_blocked_row_ranges_));
-    }
     return gap_geometry;
   }
 
  private:
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
-
-  GapToTrackRangesMap row_gaps_to_blocked_column_ranges_;
-  GapToTrackRangesMap col_gaps_to_blocked_row_ranges_;
 
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;
@@ -2261,6 +2187,9 @@ class GapAccumulator {
 
   LayoutUnit col_gutter_size_;
   LayoutUnit row_gutter_size_;
+
+  GapSegmentStateAggregator main_gaps_aggregator_;
+  GapSegmentStateAggregator cross_gaps_aggregator_;
 };
 
 }  // namespace
@@ -2414,7 +2343,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     }
 
     if (gap_accumulator) {
-      gap_accumulator->AggregateGapsToBlockedTracks(grid_item);
+      gap_accumulator->AggregateCellStates(grid_item);
     }
   }
 

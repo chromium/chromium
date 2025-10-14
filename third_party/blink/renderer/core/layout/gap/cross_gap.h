@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_CROSS_GAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -133,10 +134,33 @@ class CORE_EXPORT CrossGap {
   }
   bool GapIntersectsContainerEdge() const { return edge_state_ != kNone; }
 
+  bool HasGapSegmentStateRanges() const {
+    return gap_segment_state_ranges_.has_value();
+  }
+
+  const GapSegmentStateRanges& GetGapSegmentStateRanges() const {
+    CHECK(gap_segment_state_ranges_.has_value());
+    return gap_segment_state_ranges_.value();
+  }
+
+  void AddGapSegmentStateRange(
+      const GapSegmentStateRange& gap_segment_state_range) {
+    if (!HasGapSegmentStateRanges()) {
+      gap_segment_state_ranges_ = GapSegmentStateRanges();
+    }
+    gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
+  }
+
  private:
   LogicalOffset gap_logical_offset_;
 
   EdgeIntersectionState edge_state_ = EdgeIntersectionState::kNone;
+
+  // If present, holds slices of this cross gap, each with a `GapSegmentState`
+  // (Blocked / Empty). A cross gap usually spans range [1, N) in one piece, but
+  // the presence of spanning items or empty cells can break it into multiple
+  // state-specific sub‑ranges.
+  std::optional<GapSegmentStateRanges> gap_segment_state_ranges_;
 };
 
 }  // namespace blink

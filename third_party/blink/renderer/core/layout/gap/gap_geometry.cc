@@ -386,28 +386,50 @@ bool GapGeometry::IsEdgeIntersection(
   return false;
 }
 
-bool GapGeometry::IsTrackCovered(GridTrackSizingDirection track_direction,
-                                 wtf_size_t main_index,
-                                 wtf_size_t cross_index) const {
-  const GapToTrackRangesMap& spanners =
-      track_direction == kForRows ? row_gaps_to_blocked_column_ranges_
-                                  : column_gaps_to_blocked_row_ranges_;
-  auto it = spanners.find(main_index);
-  // If no spanners are found for the main index, the track is not covered.
-  if (it == spanners.end()) {
-    return false;
-  }
-  const TrackRanges& ranges = it->value;
+GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t primary_index,
+    wtf_size_t secondary_index) const {
+  const GapSegmentStateRanges* gap_segment_state_ranges = nullptr;
 
-  // TODO: Can use std::binary_search since `ranges` is sorted.
-  for (const TrackRange& range : ranges) {
-    // If the cross index is within the range, the track is covered.
-    if (cross_index >= range.start && cross_index < range.end) {
-      return true;
+  if (IsMainDirection(track_direction)) {
+    CHECK(primary_index < main_gaps_.size());
+    if (main_gaps_[primary_index].HasGapSegmentStateRanges()) {
+      gap_segment_state_ranges =
+          &main_gaps_[primary_index].GetGapSegmentStateRanges();
+    }
+  } else {
+    CHECK(primary_index < cross_gaps_.size());
+    if (cross_gaps_[primary_index].HasGapSegmentStateRanges()) {
+      gap_segment_state_ranges =
+          &cross_gaps_[primary_index].GetGapSegmentStateRanges();
     }
   }
 
-  return false;
+  // If no ranges exist for this gap, assume `kNone` (both sides
+  // occupied).
+  if (!gap_segment_state_ranges) {
+    return GapSegmentState(GapSegmentState::kNone);
+  }
+
+  // TODO(samomekarajr): Can likely use std::binary_search or an iterator since
+  // `ranges` is sorted and processed in order at paint time.
+  for (const auto& range : *gap_segment_state_ranges) {
+    if (secondary_index >= range.start && secondary_index < range.end) {
+      return range.state;
+    }
+  }
+
+  return GapSegmentState(GapSegmentState::kNone);
+}
+
+bool GapGeometry::IsTrackCovered(GridTrackSizingDirection track_direction,
+                                 wtf_size_t primary_index,
+                                 wtf_size_t secondary_index) const {
+  GapSegmentState gap_state = GetIntersectionGapSegmentState(
+      track_direction, primary_index, secondary_index);
+
+  return gap_state.HasGapStatus(GapSegmentState::kBlocked);
 }
 
 BlockedStatus GapGeometry::GetIntersectionBlockedStatus(

@@ -51,22 +51,6 @@ class CORE_EXPORT BlockedStatus {
 using MainGaps = Vector<MainGap>;
 using CrossGaps = Vector<CrossGap>;
 
-// Represents a range of tracks within a grid or columns within a multicol. Used
-// to track areas inside a gap that are blocked by spanners.
-struct TrackRange {
-  wtf_size_t start;
-  wtf_size_t end;
-};
-
-using TrackRanges = Vector<TrackRange>;
-
-// Represents a mapping from gap indices to the ranges of tracks blocked within
-// those gaps. For example, a gap with index 0 might map to a list of track
-// ranges such as {[2, 4], 7, 9]}, indicating that tracks 2 through 4 and 7
-// through 9 are blocked in gap[0].
-using GapToTrackRangesMap =
-    HashMap<wtf_size_t, TrackRanges, blink::IntWithZeroKeyHashTraits<int>>;
-
 // Gap geometry is used to determine gap locations for the purpose of painting
 // gap decorations.
 //
@@ -87,22 +71,18 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // content block offsets. This is useful for fragmentation where most states
   // remain the same, but the content block offsets and main gaps may differ.
   GapGeometry(const GapGeometry& other,
-              MainGaps&& main_gaps,
-              LayoutUnit content_block_start,
-              LayoutUnit content_block_end)
+              MainGaps&& new_main_gaps,
+              LayoutUnit new_content_block_start,
+              LayoutUnit new_content_block_end)
       : inline_gap_size_(other.inline_gap_size_),
         block_gap_size_(other.block_gap_size_),
         container_type_(other.container_type_),
-        main_gaps_(std::move(main_gaps)),
+        main_gaps_(std::move(new_main_gaps)),
         cross_gaps_(other.cross_gaps_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
-        content_block_start_(content_block_start),
-        content_block_end_(content_block_end),
-        row_gaps_to_blocked_column_ranges_(
-            other.row_gaps_to_blocked_column_ranges_),
-        column_gaps_to_blocked_row_ranges_(
-            other.column_gaps_to_blocked_row_ranges_),
+        content_block_start_(new_content_block_start),
+        content_block_end_(new_content_block_end),
         main_direction_(other.main_direction_),
         main_gap_running_index_(other.main_gap_running_index_) {}
 
@@ -159,29 +139,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return main_direction_ == direction;
   }
 
-  void SetRowGapsToBlockedColumnRanges(
-      GapToTrackRangesMap&& row_gaps_to_blocked_column_ranges) {
-    row_gaps_to_blocked_column_ranges_ =
-        std::move(row_gaps_to_blocked_column_ranges);
-  }
-
-  void SetColumnGapsToBlockedRowRanges(
-      GapToTrackRangesMap&& column_gaps_to_blocked_row_ranges) {
-    column_gaps_to_blocked_row_ranges_ =
-        std::move(column_gaps_to_blocked_row_ranges);
-  }
-
   const Vector<MainGap>& GetMainGaps() const { return main_gaps_; }
 
   const Vector<CrossGap>& GetCrossGaps() const { return cross_gaps_; }
-
-  const GapToTrackRangesMap& GetRowGapsToBlockedColumnRanges() const {
-    return row_gaps_to_blocked_column_ranges_;
-  }
-
-  const GapToTrackRangesMap& GetColumnGapsToBlockedRowRanges() const {
-    return column_gaps_to_blocked_row_ranges_;
-  }
 
   // Returns the center offset of the gap at the specified `gap_index` in the
   // given `direction` (main or cross axis). For the main axis, it returns the
@@ -210,15 +170,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                           bool is_main_gap,
                           const Vector<LayoutUnit>& intersections) const;
 
-  // Determines if a given track at `cross_index` is covered for gap at
-  // `main_index`. For the given `track_direction`, this function looks up any
-  // spanners associated with the gap at `main_index`. If no spanners exist, the
-  // track is uncovered. Otherwise, it determines if `cross_index` falls within
-  // any of the gap spanner ranges, indicating that the track is covered by a
-  // spanning item.
+  // Returns the `GapSegmentState` for the intersection at `secondary_index`
+  // within the gap at `primary_index` in the `track_direction`.
+  GapSegmentState GetIntersectionGapSegmentState(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t primary_index,
+      wtf_size_t secondary_index) const;
+
+  // Determines if a given track at `secondary_index` is covered for gap at
+  // `primary_index`. For the given `track_direction`, this function looks up
+  // any spanners associated with the gap at `primary_index`. If no spanners
+  // exist, the track is uncovered. Otherwise, it determines if
+  // `secondary_index` falls within any of the gap spanner ranges, indicating
+  // that the track is covered by a spanning item.
   bool IsTrackCovered(GridTrackSizingDirection track_direction,
-                      wtf_size_t main_index,
-                      wtf_size_t cross_index) const;
+                      wtf_size_t primary_index,
+                      wtf_size_t secondary_index) const;
 
   // Determines the blocked status of a specific intersection within a grid.
   // `primary_index` represents the gap index along the track direction and
@@ -303,13 +270,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit content_inline_end_;
   LayoutUnit content_block_start_;
   LayoutUnit content_block_end_;
-
-  // Maintains the portions of each gap that are blocked by spanning items. A
-  // gap normally represents a continuous range of intersections (e.g. tracks
-  // 1–N), but a spanning item may block part of that range, resulting in one or
-  // more sub-ranges.
-  GapToTrackRangesMap row_gaps_to_blocked_column_ranges_;
-  GapToTrackRangesMap column_gaps_to_blocked_row_ranges_;
 
   // TODO(samomekarajr): Consider making this type a display agnostic type that
   // uses inline/block rather than rows/columns.

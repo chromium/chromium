@@ -380,45 +380,40 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItems) {
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(320));
   EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(320));
 
-  const GapToTrackRangesMap& row_gaps_to_blocked_column_ranges =
-      gap_geometry->GetRowGapsToBlockedColumnRanges();
-  const GapToTrackRangesMap& column_gaps_to_blocked_row_ranges =
-      gap_geometry->GetColumnGapsToBlockedRowRanges();
-
   // Expected column gap blocked ranges:
-  // Gap 0 (between columns 0-1): spanned by item1 covering row [0,1].
-  // Gap 1 (between columns 1-2): spanned by item8 covering row [2,3].
+  // Cross gap 0 (between cols 0-1): spanned by item1 covering row tracks [0,1].
+  {
+    ASSERT_TRUE(cross_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    // Ensure the recorded segment is marked blocked.
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+  // Cross gap 1 (between cols 1-2): spanned by item8 covering row tracks [2,3].
+  {
+    ASSERT_TRUE(cross_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 2u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
 
-  ASSERT_EQ(column_gaps_to_blocked_row_ranges.size(), 2u);
-
-  // Check column gap 0: should have one range [0,1] from item1.
-  auto col_gap_0_it = column_gaps_to_blocked_row_ranges.find(0);
-  ASSERT_NE(col_gap_0_it, column_gaps_to_blocked_row_ranges.end());
-  const Vector<TrackRange>& col_gap_0_ranges = col_gap_0_it->value;
-  ASSERT_EQ(col_gap_0_ranges.size(), 1u);
-  EXPECT_EQ(col_gap_0_ranges[0].start, 0u);
-  EXPECT_EQ(col_gap_0_ranges[0].end, 1u);
-
-  // Check column gap 1: should have one range [2,3] from item8.
-  auto col_gap_1_it = column_gaps_to_blocked_row_ranges.find(1);
-  ASSERT_NE(col_gap_1_it, column_gaps_to_blocked_row_ranges.end());
-  const Vector<TrackRange>& col_gap_1_ranges = col_gap_1_it->value;
-  ASSERT_EQ(col_gap_1_ranges.size(), 1u);
-  EXPECT_EQ(col_gap_1_ranges[0].start, 2u);
-  EXPECT_EQ(col_gap_1_ranges[0].end, 3u);
-
-  // Expected row gap spanning:
-  // Gap 0 (between rows 0-1): spanned by item3 covering columns [2,3].
-
-  ASSERT_EQ(row_gaps_to_blocked_column_ranges.size(), 1u);
-
-  // Check row gap 0: should have one range [2,3] from item3.
-  auto row_gap_0_it = row_gaps_to_blocked_column_ranges.find(0);
-  ASSERT_NE(row_gap_0_it, row_gaps_to_blocked_column_ranges.end());
-  const Vector<TrackRange>& row_gap_0_ranges = row_gap_0_it->value;
-  ASSERT_EQ(row_gap_0_ranges.size(), 1u);
-  EXPECT_EQ(row_gap_0_ranges[0].start, 2u);
-  EXPECT_EQ(row_gap_0_ranges[0].end, 3u);
+  // Expected row gap blocked ranges:
+  // Main gap 0 (between rows 0-1): spanned by item3 covering column tracks
+  // [2,3].
+  {
+    ASSERT_TRUE(main_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+    EXPECT_EQ(ranges[0].start, 2u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+  // Main gap 1 should have no blocked column ranges.
+  EXPECT_FALSE(main_gaps[1].HasGapSegmentStateRanges());
 }
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {

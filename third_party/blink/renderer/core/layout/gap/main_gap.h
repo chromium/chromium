@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/gap/cross_gap.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -101,6 +102,23 @@ class CORE_EXPORT MainGap {
     return spanner_main_gap_type_ != SpannerMainGapType::kNone;
   }
 
+  bool HasGapSegmentStateRanges() const {
+    return gap_segment_state_ranges_.has_value();
+  }
+
+  const GapSegmentStateRanges& GetGapSegmentStateRanges() const {
+    CHECK(gap_segment_state_ranges_.has_value());
+    return gap_segment_state_ranges_.value();
+  }
+
+  void AddGapSegmentStateRange(
+      const GapSegmentStateRange& gap_segment_state_range) {
+    if (!HasGapSegmentStateRanges()) {
+      gap_segment_state_ranges_ = GapSegmentStateRanges();
+    }
+    gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
+  }
+
  private:
   // This represents the midpoint offset (block or inline) of the gap. If the main
   // direction is row it'll be the block offset otherwise it'll be the inline.
@@ -115,6 +133,12 @@ class CORE_EXPORT MainGap {
   // falling either before or after that main gap).
   CrossGapRange range_of_cross_gaps_before_;
   CrossGapRange range_of_cross_gaps_after_;
+
+  // If present, holds slices of this main gap, each with a `GapSegmentState`
+  // (Blocked / Empty). A main gap usually spans range [1, N) in one piece, but
+  // the presence of spanning items or empty cells can break it into multiple
+  // state-specific sub‑ranges.
+  std::optional<GapSegmentStateRanges> gap_segment_state_ranges_;
 
   // Only used for multicol.
   SpannerMainGapType spanner_main_gap_type_ = SpannerMainGapType::kNone;
