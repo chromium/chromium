@@ -1538,7 +1538,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // canvas to be treated as a brand new surface if additional draws occur.
   // It also gives us a mechanism to detect post-transfer-out draws, which is
   // used in `transferBackFromWebGPU` to raise an exception.
-  auto owned_provider = ReplaceResourceProviderForCanvas2D(nullptr);
+  auto owned_provider = ReplaceResourceProvider(nullptr);
 
   // Note: This must be a CRPSI since this method would have bailed out earlier
   // otherwise.
@@ -1603,8 +1603,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // surrendering our temporary ownership of the provider.
   CanvasResourceProviderSharedImage* resource_provider =
       resource_provider_from_webgpu_access_.get();
-  ReplaceResourceProviderForCanvas2D(
-      std::move(resource_provider_from_webgpu_access_));
+  ReplaceResourceProvider(std::move(resource_provider_from_webgpu_access_));
   resource_provider->SetDelegate(host);
 
   // Disassociate the WebGPU texture from the SharedImage to end its

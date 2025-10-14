@@ -265,7 +265,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-OffscreenCanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
+OffscreenCanvasRenderingContext2D::ReplaceResourceProvider(
     std::unique_ptr<CanvasResourceProvider> provider) {
   std::unique_ptr<CanvasResourceProvider> old_resource_provider =
       std::move(resource_provider_);

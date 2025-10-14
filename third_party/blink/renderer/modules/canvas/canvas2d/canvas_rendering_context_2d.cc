@@ -1404,7 +1404,7 @@ CanvasRenderingContext2D::GetOrCreateResourceProvider() {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
+CanvasRenderingContext2D::ReplaceResourceProvider(
     std::unique_ptr<CanvasResourceProvider> provider) {
   std::unique_ptr<CanvasResourceProvider> old_resource_provider =
       std::move(resource_provider_);
@@ -1433,7 +1433,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
   canvas()->ResetLayer();
-  ReplaceResourceProviderForCanvas2D(nullptr);
+  ReplaceResourceProvider(nullptr);
 
   // Bail out if the context is lost.
   if (isContextLost() && !IsContextBeingRestored()) {
@@ -1520,7 +1520,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   canvas()->DiscardResources();
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ReplaceResourceProviderForCanvas2D(std::move(provider));
+  ReplaceResourceProvider(std::move(provider));
 }
 
 }  // namespace blink
