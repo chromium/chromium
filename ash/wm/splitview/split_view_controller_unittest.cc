@@ -537,15 +537,15 @@ TEST_F(SplitViewControllerTest,
   SplitViewController* controller = split_view_controller();
 
   aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
-      &delegate1, /*id=*/-1, gfx::Rect(200, 300)));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.delegate = &delegate1, .bounds = {200, 300}}));
   EXPECT_FALSE(controller->IsWindowInSplitView(window1.get()));
 
   // Create `window2` and set the minimum size to be between 1/3 and 1/2 so that
   // it can only be snapped with 0.5 snap ratio.
   aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
-      &delegate2, /*id=*/-1, gfx::Rect(450, 600)));
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShell({.delegate = &delegate2, .bounds = {450, 600}}));
   delegate2.set_minimum_size(gfx::Size(420, 300));
   EXPECT_FALSE(controller->IsWindowInSplitView(window2.get()));
   EXPECT_FALSE(
@@ -3548,8 +3548,8 @@ TEST_F(SplitViewControllerTest, SnapTwoThirdPartialWindow) {
   // Create a window that has a minimum width such that it cannot be snapped one
   // half, but can be snapped two thirds.
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {500, 500}}));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
@@ -3566,15 +3566,15 @@ TEST_F(SplitViewControllerTest, SelectWindowCannotOneThirdSnap) {
 
   // The first window can be snapped 2/3, but not 1/2 or 1/3.
   aura::test::TestWindowDelegate window_delegate1;
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
-      &window_delegate1, /*id=*/-1, gfx::Rect(500, 500)));
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShell(
+      {.delegate = &window_delegate1, .bounds = {500, 500}}));
   window_delegate1.set_minimum_size(gfx::Size(500, 500));
   window1->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
   // The second window can be snapped 1/2 but not 1/3.
   aura::test::TestWindowDelegate window_delegate2;
-  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
-      &window_delegate2, /*id=*/-1, gfx::Rect(500, 500)));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShell(
+      {.delegate = &window_delegate2, .bounds = {500, 500}}));
   window_delegate2.set_minimum_size(gfx::Size(400, 400));
   window2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 

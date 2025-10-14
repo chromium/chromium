@@ -539,8 +539,8 @@ TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
 TEST_F(TabletModeMultitaskMenuTest, WindowMinimumSizes) {
   UpdateDisplay("800x600");
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, /*id=*/-1, gfx::Rect(800, 600)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.delegate = &delegate, .bounds = {800, 600}}));
   wm::ActivateWindow(window.get());
   EXPECT_TRUE(WindowState::Get(window.get())->CanMaximize());
 
@@ -619,8 +619,8 @@ TEST_F(TabletModeMultitaskMenuTest, HiddenButtons) {
   // A window with a minimum size of 600x600 will not be snappable or
   // floatable.
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(700, 700)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {700, 700}}));
   window_delegate.set_minimum_size(gfx::Size(600, 600));
   wm::ActivateWindow(window.get());
 

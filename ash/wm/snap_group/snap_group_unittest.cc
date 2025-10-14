@@ -1288,8 +1288,8 @@ TEST_F(FasterSplitScreenTest, SnapWindowWithMinimumSize) {
   // 1 - Test min size > 1/3 scenario.
   // Set `w2` min size to be > 1/3 of the display width.
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      &delegate, /*id=*/-1, gfx::Rect(800, 600)));
+  std::unique_ptr<aura::Window> w2(
+      CreateTestWindowInShell({.delegate = &delegate}));
   int min_width = 396;
   delegate.set_minimum_size(gfx::Size(min_width, 0));
 
@@ -2336,13 +2336,13 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInLandscape) {
   const gfx::Size window_minimum_size = gfx::Size(500, 0);
 
   aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
-      &delegate1, /*id=*/-1, gfx::Rect(800, 600)));
+  std::unique_ptr<aura::Window> w1(
+      CreateTestWindowInShell({.delegate = &delegate1, .bounds = {800, 600}}));
   delegate1.set_minimum_size(window_minimum_size);
   w1->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      &delegate2, /*id=*/-1, gfx::Rect(500, 0, 800, 600)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &delegate2, .bounds = {500, 0, 800, 600}}));
   delegate2.set_minimum_size(window_minimum_size);
   w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
@@ -2374,13 +2374,13 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
   const gfx::Size window_minimum_size = gfx::Size(0, 500);
 
   aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
-      &delegate1, /*id=*/-1, gfx::Rect(800, 600)));
+  std::unique_ptr<aura::Window> w1(
+      CreateTestWindowInShell({.delegate = &delegate1, .bounds = {800, 600}}));
   w1->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   delegate1.set_minimum_size(window_minimum_size);
   aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      &delegate2, /*id=*/-1, gfx::Rect(500, 0, 800, 600)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &delegate2, .bounds = {500, 0, 800, 600}}));
   delegate2.set_minimum_size(window_minimum_size);
   w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
@@ -2633,9 +2633,8 @@ TEST_F(SnapGroupTest, DragWindowOutToBreakSnapGroup) {
   // process of this event.
   aura::test::TestWindowDelegate test_window_delegate;
   test_window_delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      &test_window_delegate, aura::client::WINDOW_TYPE_NORMAL,
-      gfx::Rect(400, 5, 100, 50)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &test_window_delegate, .bounds = {400, 5, 100, 50}}));
   w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
   auto* event_generator = GetEventGenerator();
@@ -2734,9 +2733,8 @@ TEST_F(SnapGroupTest, ToplevelWindowEventHandlerDragCrashFix) {
 
   aura::test::TestWindowDelegate test_window_delegate;
   test_window_delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-      &test_window_delegate, aura::client::WINDOW_TYPE_NORMAL,
-      gfx::Rect(400, 5, 100, 50)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &test_window_delegate, .bounds = {400, 5, 100, 50}}));
   w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
   auto* event_generator = GetEventGenerator();
@@ -9430,13 +9428,14 @@ TEST_F(SnapGroupMultiDisplayTest, NoGapAfterSnapGroupCreation) {
     SCOPED_TRACE(base::StringPrintf("window origin = %d", window_x_origin));
 
     aura::test::TestWindowDelegate delegate1;
-    std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
-        &delegate1, /*id=*/-1, gfx::Rect(window_x_origin, 0, 800, 600)));
+    std::unique_ptr<aura::Window> w1(CreateTestWindowInShell(
+        {.delegate = &delegate1, .bounds = {window_x_origin, 0, 800, 600}}));
     w1->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     delegate1.set_minimum_size(window_minimum_size);
     aura::test::TestWindowDelegate delegate2;
-    std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-        &delegate2, /*id=*/-1, gfx::Rect(window_x_origin + 500, 0, 800, 600)));
+    std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+        {.delegate = &delegate2,
+         .bounds = {window_x_origin + 500, 0, 800, 600}}));
     w2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     delegate2.set_minimum_size(window_minimum_size);
 

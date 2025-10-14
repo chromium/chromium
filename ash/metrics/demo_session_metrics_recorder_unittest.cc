@@ -98,9 +98,10 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
 
   // Creates a browser window.
   std::unique_ptr<aura::Window> CreateBrowserWindow() {
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
-        gfx::Rect(0, 0, 10, 10)));
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {10, 10}}));
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     return window;
   }
@@ -108,9 +109,10 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   // Creates a browser window associated with a hosted app.
   std::unique_ptr<aura::Window> CreateHostedAppBrowserWindow(
       const std::string& app_id) {
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
-        gfx::Rect(0, 0, 10, 10)));
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {10, 10}}));
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     window->SetProperty(
         kShelfIDKey,
@@ -121,9 +123,10 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   // Creates a normal Chrome platform app window.
   std::unique_ptr<aura::Window> CreateChromeAppWindow(
       const std::string& app_id) {
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
-        gfx::Rect(0, 0, 10, 10)));
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {10, 10}}));
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     window->SetProperty(
         kShelfIDKey,
@@ -134,9 +137,10 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
   // Creates a normal ARC++ app window.
   std::unique_ptr<aura::Window> CreateArcWindow(
       const std::string& package_name) {
-    std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
-        gfx::Rect(0, 0, 10, 10)));
+    std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = {10, 10}}));
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
     // ARC++ shelf app IDs are hashes of package_name#activity_name formatted as

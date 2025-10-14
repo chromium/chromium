@@ -3479,12 +3479,12 @@ TEST_P(
   std::unique_ptr<aura::Window> win1 = CreateTestWindow(gfx::Rect(small));
   aura::test::TestWindowDelegate win2_delegate;
   win2_delegate.set_minimum_size(big);
-  std::unique_ptr<aura::Window> win2(CreateTestWindowInShellWithDelegate(
-      &win2_delegate, /*id=*/-1, gfx::Rect(big)));
+  std::unique_ptr<aura::Window> win2(CreateTestWindowInShell(
+      {.delegate = &win2_delegate, .bounds = gfx::Rect(big)}));
   aura::test::TestWindowDelegate win3_delegate;
   win3_delegate.set_minimum_size(big);
-  std::unique_ptr<aura::Window> win3(CreateTestWindowInShellWithDelegate(
-      &win3_delegate, /*id=*/-1, gfx::Rect(big)));
+  std::unique_ptr<aura::Window> win3(CreateTestWindowInShell(
+      {.delegate = &win3_delegate, .bounds = gfx::Rect(big)}));
 
   ASSERT_TRUE(EnterOverview());
   split_view_controller()->SnapWindow(win1.get(), SnapPosition::kPrimary);

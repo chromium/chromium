@@ -1438,8 +1438,8 @@ TEST_F(TabletWindowFloatTest, CanBrowsersFloat) {
       chromeos::wm::kFloatedWindowPaddingDp * 2;
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {500, 500}}));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
@@ -1476,8 +1476,8 @@ TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {300, 300}}));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
@@ -1500,8 +1500,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(850, 850)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {850, 850}}));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
@@ -1519,8 +1519,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   UpdateDisplay("1800x1000");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {300, 300}}));
   window_delegate.set_minimum_size(gfx::Size(400, 400));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());

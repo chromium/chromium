@@ -190,8 +190,10 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // will not crash.
   aura::WindowTracker tracker;
   DeleteOnBlurDelegate delete_on_blur_delegate;
-  aura::Window* d2 = CreateTestWindowInShellWithDelegate(
-      &delete_on_blur_delegate, 0, gfx::Rect(50, 50, 100, 100));
+  aura::Window* d2 =
+      CreateTestWindowInShell({.delegate = &delete_on_blur_delegate,
+                               .bounds = {50, 50, 100, 100},
+                               .window_id = 0});
   delete_on_blur_delegate.SetWindow(d2);
   aura::client::GetFocusClient(root_windows[0])->FocusWindow(d2);
   tracker.Add(d2);
@@ -1096,8 +1098,8 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ClickDoesNotFocusKeyboard) {
 
   // Create a test window in the background with the same size as the screen.
   aura::test::EventCountDelegate delegate;
-  std::unique_ptr<aura::Window> background_window(
-      CreateTestWindowInShellWithDelegate(&delegate, 0, root_window->bounds()));
+  std::unique_ptr<aura::Window> background_window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = root_window->bounds()}));
   background_window->Focus();
   EXPECT_TRUE(background_window->IsVisible());
   EXPECT_TRUE(background_window->HasFocus());

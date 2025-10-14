@@ -466,8 +466,8 @@ TEST_F(AutoclickTest, SynthesizedMouseMovesIgnored) {
   // result, synthesized mouse events will be dispatched to the window, but it
   // should not trigger an autoclick.
   aura::test::EventCountDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 123, gfx::Rect(50, 50, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {50, 50, 100, 100}, .window_id = 123}));
   window->Show();
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());

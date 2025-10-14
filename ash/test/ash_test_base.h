@@ -188,10 +188,6 @@ class AshTestBase : public testing::Test {
   // StackingController instead of taking a parent.
   aura::Window* CreateTestWindowInShell(aura::test::WindowBuilderParams params);
 
-  aura::Window* CreateTestWindowInShellWithDelegate(
-      aura::WindowDelegate* delegate,
-      int window_id,
-      const gfx::Rect& bounds);
   aura::Window* CreateTestWindowInShellWithDelegateAndType(
       aura::WindowDelegate* delegate,
       aura::client::WindowType type,

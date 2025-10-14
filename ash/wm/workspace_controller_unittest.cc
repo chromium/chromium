@@ -657,8 +657,10 @@ TEST_F(WorkspaceControllerTest, DontCrashOnChangeAndActivate) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
 
   DontCrashOnChangeAndActivateDelegate delegate;
-  std::unique_ptr<Window> w1(CreateTestWindowInShellWithDelegate(
-      &delegate, 1000, gfx::Rect(10, 11, 250, 251)));
+  std::unique_ptr<Window> w1(
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = {10, 11, 250, 251},
+                               .window_id = 1000}));
 
   w1->Show();
   WindowState* w1_state = WindowState::Get(w1.get());

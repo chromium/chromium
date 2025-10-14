@@ -1496,8 +1496,8 @@ TEST_F(TabletModeControllerTest,
 TEST_F(TabletModeControllerTest,
        StartTabletActiveDesktopOnlyLeftSnapPreviousRightSnap) {
   aura::test::TestWindowDelegate left_window_delegate;
-  std::unique_ptr<aura::Window> left_window(CreateTestWindowInShellWithDelegate(
-      &left_window_delegate, /*id=*/-1, /*bounds=*/gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> left_window(CreateTestWindowInShell(
+      {.delegate = &left_window_delegate, .bounds = {400, 400}}));
   const gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           left_window.get());
@@ -1525,10 +1525,8 @@ TEST_F(TabletModeControllerTest,
        StartTabletActiveDesktopOnlyRightSnapPreviousLeftSnap) {
   std::unique_ptr<aura::Window> left_window = CreateDesktopWindowSnappedLeft();
   aura::test::TestWindowDelegate right_window_delegate;
-  std::unique_ptr<aura::Window> right_window(
-      CreateTestWindowInShellWithDelegate(
-          &right_window_delegate, /*id=*/-1,
-          /*bounds=*/gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> right_window(CreateTestWindowInShell(
+      {.delegate = &right_window_delegate, .bounds = {400, 400}}));
   const gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           right_window.get());
@@ -1555,10 +1553,8 @@ TEST_F(TabletModeControllerTest,
        StartTabletActiveLeftSnapPreviousDesktopOnlyRightSnap) {
   std::unique_ptr<aura::Window> left_window = CreateDesktopWindowSnappedLeft();
   aura::test::TestWindowDelegate right_window_delegate;
-  std::unique_ptr<aura::Window> right_window(
-      CreateTestWindowInShellWithDelegate(
-          &right_window_delegate, /*id=*/-1,
-          /*bounds=*/gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> right_window(CreateTestWindowInShell(
+      {.delegate = &right_window_delegate, .bounds = {400, 400}}));
   const gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           right_window.get());
@@ -1586,8 +1582,8 @@ TEST_F(TabletModeControllerTest,
 TEST_F(TabletModeControllerTest,
        StartTabletActiveRightSnapPreviousDesktopOnlyLeftSnap) {
   aura::test::TestWindowDelegate left_window_delegate;
-  std::unique_ptr<aura::Window> left_window(CreateTestWindowInShellWithDelegate(
-      &left_window_delegate, /*id=*/-1, /*bounds=*/gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> left_window(CreateTestWindowInShell(
+      {.delegate = &left_window_delegate, .bounds = {400, 400}}));
   const gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           left_window.get());

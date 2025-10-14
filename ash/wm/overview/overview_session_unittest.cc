@@ -1269,7 +1269,7 @@ TEST_P(OverviewSessionTest, MinimizedWindowState) {
 // Tests that a bounds change during overview is corrected for.
 TEST_P(OverviewSessionTest, BoundsChangeDuringOverview) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect(400, 400)));
+      CreateTestWindowInShell({.bounds = {400, 400}}));
   // Use overview headers above the window in this test.
   window->SetProperty(aura::client::kTopViewInset, 0);
   ToggleOverview();
@@ -1723,8 +1723,8 @@ TEST_P(OverviewSessionTest, DragDropInProgress) {
   auto* window_delegate =
       aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
   window_delegate->set_window_component(HTCAPTION);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      window_delegate, -1, gfx::Rect(100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = window_delegate, .bounds = {100, 100}}));
 
   GetEventGenerator()->set_current_screen_location(
       window->GetBoundsInScreen().CenterPoint());
@@ -2895,11 +2895,11 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // shadows match the ratios of the untransformed windows.
   UpdateDisplay("900x800");
   std::unique_ptr<aura::Window> wide(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect(400, 100)));
+      CreateTestWindowInShell({.bounds = {400, 100}}));
   std::unique_ptr<aura::Window> tall(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect(100, 400)));
+      CreateTestWindowInShell({.bounds = {100, 400}}));
   std::unique_ptr<aura::Window> normal(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect(200, 200)));
+      CreateTestWindowInShell({.bounds = {200, 200}}));
   wide->SetProperty(aura::client::kTopViewInset, 0);
   tall->SetProperty(aura::client::kTopViewInset, 0);
   normal->SetProperty(aura::client::kTopViewInset, 0);
@@ -3506,8 +3506,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   std::vector<std::unique_ptr<aura::Window>> windows;
   windows.reserve(window_count + 1);
   for (int i = 0; i < window_count; ++i) {
-    windows.emplace_back(
-        CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
+    windows.emplace_back(CreateTestWindowInShell({}));
     windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
@@ -3517,8 +3516,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
               testing::UnorderedElementsAreArray(ids));
 
   // Add a new window to overview.
-  std::unique_ptr<aura::Window> new_window(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
+  std::unique_ptr<aura::Window> new_window(CreateTestWindowInShell({}));
   constexpr viz::FrameSinkId new_window_id{6u, 6u};
   new_window->SetEmbedFrameSinkId(new_window_id);
   new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
@@ -3551,8 +3549,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   std::vector<std::unique_ptr<aura::Window>> windows;
   windows.reserve(window_count + 1);
   for (int i = 0; i < window_count; ++i) {
-    windows.emplace_back(
-        CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
+    windows.emplace_back(CreateTestWindowInShell({}));
     windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   }
 
@@ -3565,8 +3562,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   ToggleOverview();
 
   // Add a new window to overview.
-  std::unique_ptr<aura::Window> new_window(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
+  std::unique_ptr<aura::Window> new_window(CreateTestWindowInShell({}));
   new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   windows_to_throttle.push_back(new_window.get());
   EXPECT_CALL(observer, OnThrottlingEnded());
@@ -5404,9 +5400,10 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
 
  protected:
   aura::Window* CreateWindow(const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-        bounds);
+    aura::Window* window = CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = bounds});
     return window;
   }
 
@@ -5415,7 +5412,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
     auto* delegate =
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     aura::Window* window =
-        CreateTestWindowInShellWithDelegate(delegate, -1, bounds);
+        CreateTestWindowInShell({.delegate = delegate, .bounds = bounds});
     delegate->set_minimum_size(size);
     return window;
   }
@@ -7555,8 +7552,9 @@ class SplitViewOverviewSessionInClamshellTest
 
   aura::Window* CreateWindowWithHitTestComponent(int hit_test_component,
                                                  const gfx::Rect& bounds) {
-    return CreateTestWindowInShellWithDelegate(
-        new TestWindowHitTestDelegate(hit_test_component), 0, bounds);
+    return CreateTestWindowInShell(
+        {.delegate = new TestWindowHitTestDelegate(hit_test_component),
+         .bounds = bounds});
   }
 
  private:
@@ -9226,7 +9224,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
     aura::test::TestWindowDelegate* delegate =
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate();
     std::unique_ptr<aura::Window> window(
-        CreateTestWindowInShellWithDelegate(delegate, /*id=*/-1, bounds));
+        CreateTestWindowInShell({.delegate = delegate, .bounds = bounds}));
     // Before setting a minimum size, expect that |window| can be snapped in
     // split view on either root window.
     EXPECT_TRUE(SplitViewController::Get(root_windows[0])

@@ -468,8 +468,8 @@ TEST_F(SplitViewDragIndicatorsTest, PreviewAreaVisibilityDefaultSnapRatio) {
   UpdateDisplay("900x600");
   constexpr int screen_width = 900;
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(100, 100, 500, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {100, 100, 500, 500}}));
 
   // Snap `window` to 1/3 to set its snap ratio to 1/3.
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,

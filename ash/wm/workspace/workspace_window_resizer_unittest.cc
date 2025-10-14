@@ -207,8 +207,10 @@ class WorkspaceWindowResizerTest : public AshTestBase {
 
   void InitTouchResizeWindow(const gfx::Rect& bounds, int window_component) {
     touch_resize_delegate_.set_window_component(window_component);
-    touch_resize_window_.reset(CreateTestWindowInShellWithDelegate(
-        &touch_resize_delegate_, 0, bounds));
+    touch_resize_window_.reset(
+        CreateTestWindowInShell({.delegate = &touch_resize_delegate_,
+                                 .bounds = bounds,
+                                 .window_id = 0}));
   }
 
   bool IsDwellCountdownTimerRunning() {

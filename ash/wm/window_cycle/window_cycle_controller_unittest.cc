@@ -1108,8 +1108,8 @@ TEST_F(WindowCycleControllerTest, WindowDestruction) {
 // whether events occur within the cycle view.
 TEST_F(WindowCycleControllerTest, MouseEventWhenCycleViewDoesNotExist) {
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<Window> w0(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<Window> w0(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {100, 100}, .window_id = 0}));
   EventCounter event_count;
   w0->AddPreTargetHandler(&event_count);
   ui::test::EventGenerator* generator = GetEventGenerator();

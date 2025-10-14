@@ -2087,8 +2087,8 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   TestAccessibilityControllerClient client;
 
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {100, 100}, .window_id = 0}));
   window->Show();
 
   WindowBackdrop::Get(window.get())
@@ -2338,9 +2338,10 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   auto CreateWindow = [this](const gfx::Rect& bounds) {
-    aura::Window* window = CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-        bounds);
+    aura::Window* window = CreateTestWindowInShell(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .bounds = bounds});
     return window;
   };
 

@@ -246,11 +246,11 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
   TestActivationDelegate d1;
   aura::test::TestWindowDelegate wd;
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
+      CreateTestWindowInShell({.delegate = &wd, .bounds = {10, 10, 50, 50}}));
   d1.SetWindow(w1.get());
   TestActivationDelegate d2;
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithDelegate(&wd, -2, gfx::Rect(70, 70, 50, 50)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = {70, 70, 50, 50}, .window_id = -2}));
   d2.SetWindow(w2.get());
 
   aura::client::FocusClient* focus_client =
@@ -346,8 +346,8 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
                                       .bounds = {10, 10, 10, 10},
                                       .window_id = -1});
     // Move focus to |w2| first.
-    w2.reset(CreateTestWindowInShellWithDelegate(&wd, -1,
-                                                 gfx::Rect(70, 70, 50, 50)));
+    w2.reset(
+        CreateTestWindowInShell({.delegate = &wd, .bounds = {70, 70, 50, 50}}));
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w2.get());
     generator.ClickLeftButton();
     EXPECT_EQ(w2.get(), focus_client->GetFocusedWindow());
@@ -366,9 +366,9 @@ TEST_F(WindowManagerTest, ActivateOnPointerWindowProperty) {
   // Create two test windows, window1 and window2.
   aura::test::TestWindowDelegate wd;
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithDelegate(&wd, -2, gfx::Rect(70, 70, 50, 50)));
+      CreateTestWindowInShell({.delegate = &wd, .bounds = {10, 10, 50, 50}}));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = {70, 70, 50, 50}, .window_id = -2}));
 
   // Activate window1.
   wm::ActivateWindow(w1.get());
@@ -406,11 +406,11 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   TestActivationDelegate d1;
   aura::test::TestWindowDelegate wd;
   std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithDelegate(&wd, -1, gfx::Rect(10, 10, 50, 50)));
+      CreateTestWindowInShell({.delegate = &wd, .bounds = {10, 10, 50, 50}}));
   d1.SetWindow(w1.get());
   TestActivationDelegate d2;
-  std::unique_ptr<aura::Window> w2(
-      CreateTestWindowInShellWithDelegate(&wd, -2, gfx::Rect(70, 70, 50, 50)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = {70, 70, 50, 50}, .window_id = -2}));
   d2.SetWindow(w2.get());
 
   aura::client::FocusClient* focus_client =
@@ -486,8 +486,9 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   const int kWindowLeft = 123;
   const int kWindowTop = 45;
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, -1, gfx::Rect(kWindowLeft, kWindowTop, 640, 480)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.delegate = &window_delegate,
+                               .bounds = {kWindowLeft, kWindowTop, 640, 480}}));
 
   // Create two mouse movement events we can switch between.
   gfx::Point point1(kWindowLeft, kWindowTop);
@@ -607,8 +608,8 @@ TEST_F(WindowManagerTest, TransformActivate) {
 
   TestActivationDelegate d1;
   aura::test::TestWindowDelegate wd;
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShellWithDelegate(&wd, 1, gfx::Rect(0, 15, 50, 50)));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShell(
+      {.delegate = &wd, .bounds = {0, 15, 50, 50}, .window_id = 1}));
   d1.SetWindow(w1.get());
   w1->Show();
 

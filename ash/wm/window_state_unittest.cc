@@ -163,8 +163,9 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
       display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate,
+       .bounds = gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)}));
 
   // It should be possible to snap a window with a minimum size.
   const int kMinimumWidth = 750;
@@ -412,15 +413,15 @@ TEST_F(WindowStateTest, SnapModalWindow) {
       display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate parent_delegate;
-  std::unique_ptr<aura::Window> parent_window(
-      CreateTestWindowInShellWithDelegate(
-          &parent_delegate, -1,
-          gfx::Rect(kWorkAreaBounds.width(), 0, kWorkAreaBounds.width() / 2,
-                    kWorkAreaBounds.height() - 1)));
+  std::unique_ptr<aura::Window> parent_window(CreateTestWindowInShell(
+      {.delegate = &parent_delegate,
+       .bounds =
+           gfx::Rect(kWorkAreaBounds.width(), 0, kWorkAreaBounds.width() / 2,
+                     kWorkAreaBounds.height() - 1)}));
 
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(100, 100, 400, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = gfx::Rect(100, 100, 400, 500)}));
 
   delegate.set_minimum_size(gfx::Size(200, 300));
 
@@ -445,8 +446,8 @@ TEST_F(WindowStateTest, TestRespectMinimumSize) {
   const gfx::Size minimum_size(gfx::Size(500, 300));
   delegate.set_minimum_size(minimum_size);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(0, 100, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = gfx::Rect(0, 100, 100, 100)}));
 
   // Check that the window has the correct minimum size.
   EXPECT_EQ(minimum_size.ToString(), window->bounds().size().ToString());
@@ -477,8 +478,8 @@ TEST_F(WindowStateTest, TestIgnoreTooBigMinimumSize) {
   delegate.set_minimum_size(minimum_size);
 
   // The creation should force the window to respect the screen size.
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegate(&delegate, -1, illegal_bounds));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = illegal_bounds}));
   EXPECT_EQ(work_area_size.ToString(), window->bounds().size().ToString());
 
   // Trying to set the size to something bigger then the screen size should be
@@ -501,8 +502,8 @@ TEST_F(WindowStateTest, TestRespectMaximumSize) {
 
   delegate.set_maximum_size(max_size);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(larger_size)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = gfx::Rect(larger_size)}));
 
   // Check that the window has the correct maximum size.
   EXPECT_EQ(max_size, window->bounds().size());
@@ -522,8 +523,8 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   const gfx::Rect kWorkAreaBounds =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(100, 100, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = gfx::Rect(100, 100, 100, 100)}));
   delegate.set_window_component(HTRIGHT);
   WindowState* window_state = WindowState::Get(window.get());
   const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
@@ -1133,10 +1134,8 @@ TEST_F(WindowStateTest, MouseDragWindowInMultiDisplays) {
 
   aura::test::TestWindowDelegate test_window_delegate;
   test_window_delegate.set_window_component(HTCAPTION);
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithDelegateAndType(
-          &test_window_delegate, aura::client::WINDOW_TYPE_NORMAL, 0,
-          initial_bounds));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &test_window_delegate, .bounds = initial_bounds}));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_EQ(displays[0].id(),
             screen->GetDisplayNearestWindow(window.get()).id());
@@ -2204,8 +2203,9 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
       display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate,
+       .bounds = gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)}));
 
   // It should be possible to snap a window with a minimum width that is larger
   // a half screen width in horizontal snap layout and snap a window with a

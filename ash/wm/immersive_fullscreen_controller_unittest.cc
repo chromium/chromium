@@ -763,8 +763,10 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
 TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
   gfx::Rect window_bounds = window()->GetBoundsInScreen();
   aura::test::TestWindowDelegate child_delegate;
-  std::unique_ptr<aura::Window> behind(CreateTestWindowInShellWithDelegate(
-      &child_delegate, 1234, window_bounds));
+  std::unique_ptr<aura::Window> behind(
+      CreateTestWindowInShell({.delegate = &child_delegate,
+                               .bounds = window_bounds,
+                               .window_id = 1234}));
   behind->Show();
   behind->SetBounds(window_bounds);
   widget()->StackAbove(behind.get());
