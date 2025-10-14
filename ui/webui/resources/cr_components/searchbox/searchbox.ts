@@ -1162,7 +1162,7 @@ export class SearchboxElement extends SearchboxElementBase {
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
         e.shiftKey);
     this.updateInput_({
-      text: decodeString16(this.selectedMatch_!.fillIntoEdit),
+      text: decodeString16(match.fillIntoEdit),
       inline: '',
       moveCursorToEnd: true,
     });
