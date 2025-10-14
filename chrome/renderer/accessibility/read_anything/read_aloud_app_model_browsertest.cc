@@ -79,6 +79,11 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   }
 
+  void DisableReadAloud() {
+    scoped_feature_list_.InitWithFeatures({},
+                                          {features::kReadAnythingReadAloud});
+  }
+
   void EnablePhraseHighlighting() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
@@ -215,6 +220,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
 // Read Aloud is currently only enabled by default on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithoutReadAloud) {
+  DisableReadAloud();
   auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
   base::HistogramTester histogram_tester;
 
