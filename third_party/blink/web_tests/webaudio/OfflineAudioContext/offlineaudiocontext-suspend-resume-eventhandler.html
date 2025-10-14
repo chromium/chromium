@@ -2,95 +2,86 @@
 <html>
   <head>
     <title>
-      offlineaudiocontext-suspend-resume-eventhandler.html
+      OfflineAudioContext: Validate Suspend/Resume Event Flow
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-
-      let context;
-      let renderQuantum = 128;
+    <script>
+      const renderQuantum = 128;
 
       // The sample rate is multiple of the rendering quantum, so suspension
       // times in the test will fall on the render quantum boundary. Although
       // this is not necessary, it is easier to understand the test.
-      let sampleRate = renderQuantum * 100;
+      const sampleRate = renderQuantum * 100;
 
-      let renderDuration = 2;
-      let scheduledSuspendTime = 0;
+      const renderDuration = 2;
 
       // With the sample rate setting above, this ensures suspension time fall
       // in to the render quantum boundary.
-      let suspendInterval = 0.25;
+      const suspendInterval = 0.25;
 
-      audit.define(
-          {
-            label: 'test',
-            description: 'Test event handler from resume() and suspend()'
-          },
-          (task, should) => {
-            context = new OfflineAudioContext(
-                1, sampleRate * renderDuration, sampleRate);
+      promise_test((t) => new Promise((resolve) => {
+        const context = new OfflineAudioContext(
+            1, sampleRate * renderDuration, sampleRate);
+        let scheduledSuspendTime = 0;
+        let rejectedSuspensionPromise = Promise.resolve();
 
-            context.onstatechange = function() {
-              if (context.state === 'suspended' &&
-                  context.currentTime === scheduledSuspendTime) {
-                should(
-                    context.state === 'suspended' &&
-                        context.currentTime === scheduledSuspendTime,
-                    'onstatechange event handler: context is suspended at ' +
-                        scheduledSuspendTime + ' second(s)')
-                    .beTrue();
-                scheduledSuspendTime = context.currentTime + suspendInterval;
+        context.onstatechange = () => {
+          if (context.state === 'suspended' &&
+              context.currentTime === scheduledSuspendTime) {
+            assert_equals(
+                context.state, 'suspended',
+                'onstatechange event handler: context should be suspended');
+            assert_equals(
+                context.currentTime, scheduledSuspendTime,
+                'onstatechange event handler: suspend should happen at ' +
+                    scheduledSuspendTime + ' second(s)');
+            scheduledSuspendTime = context.currentTime + suspendInterval;
 
+            if (scheduledSuspendTime < renderDuration) {
+              try {
                 // Scheduling a suspend before the render duration should pass.
-                if (scheduledSuspendTime < renderDuration) {
-                  should(
-                      () => context.suspend(scheduledSuspendTime),
-                      'Scheduling a new suspend at ' + scheduledSuspendTime +
-                          ' second(s)')
-                      .notThrow();
-                  ;
-                }
-
-                // Scheduling a suspend exactly at the render duration should be
-                // rejected.
-                if (scheduledSuspendTime === renderDuration) {
-                  should(
-                      context.suspend(scheduledSuspendTime),
-                      'Scheduling at ' + renderDuration + ' seconds')
-                      .beRejected();
-                }
-
-                context.resume();
+                context.suspend(scheduledSuspendTime);
+              } catch (e) {
+                assert_unreached(
+                    'onstatechange event handler: context is suspended at ' +
+                        scheduledSuspendTime + ' second(s)');
               }
-            };
+            } else if (scheduledSuspendTime === renderDuration) {
+              // Scheduling a suspend exactly at the render duration
+              // should be rejected.
+              rejectedSuspensionPromise = promise_rejects_dom(
+                  t, 'InvalidStateError',
+                  context.suspend(scheduledSuspendTime),
+                  'Scheduling at ' + renderDuration + ' seconds should reject');
+            }
 
-            // This test is for verifying all the event handlers on OAC and that
-            // is why 'oncomplete' is used here.
-            context.oncomplete = function() {
-              should(context.state, 'oncomplete event handler: context.state')
-                  .beEqualTo('closed');
-              task.done();
-            };
+            context.resume();
+          }
+        };
 
-            // Schedule the first suspension.
-            should(
-                () => context.suspend(scheduledSuspendTime),
-                'A new suspend has been scheduled at ' + scheduledSuspendTime +
-                    ' second(s)')
-                .notThrow();
-            ;
+        // This test is for verifying all the event handlers on OAC and that
+        // is why 'oncomplete' is used here.
+        context.oncomplete = () => {
+          assert_equals(
+              context.state, 'closed',
+              'oncomplete event handler: context.state');
+          rejectedSuspensionPromise.then(resolve);
+        };
 
-            context.startRendering();
-          });
+        // Schedule the first suspension.
+        try {
+          context.suspend(scheduledSuspendTime);
+        } catch (error) {
+          assert_unreached(
+              'A new suspend has been scheduled at ' + scheduledSuspendTime +
+                  ' second(s) threw: ' + error);
+        }
 
-      audit.run();
+        context.startRendering();
+      }), `Test event handler from resume() and suspend()`);
     </script>
   </body>
 </html>
