@@ -79,6 +79,10 @@ class ContextualTasksService : public KeyedService {
   virtual void RemoveThreadFromTask(const base::Uuid& task_id,
                                     ThreadType type,
                                     const std::string& server_id) = 0;
+  virtual void UpdateThreadTurnId(const base::Uuid& task_id,
+                                  ThreadType thread_type,
+                                  const std::string& server_id,
+                                  const std::string& conversation_turn_id) = 0;
 
   // Methods related to attaching URLs to tasks.
   virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;

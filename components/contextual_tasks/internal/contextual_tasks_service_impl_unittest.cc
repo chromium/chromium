@@ -133,11 +133,13 @@ class ContextualTasksServiceImplTest : public testing::Test {
 TEST_F(ContextualTasksServiceImplTest, CreateTask) {
   service_->AddObserver(&observer_);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(
       observer_,
-      OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal));
+      OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   ContextualTask task = service_->CreateTask();
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
   EXPECT_TRUE(task.GetTaskId().is_valid());
 
   std::vector<ContextualTask> tasks = GetTasks();
@@ -186,11 +188,13 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   service_->AttachSessionIdToTask(task.GetTaskId(), session_id);
   EXPECT_TRUE(service_->GetMostRecentContextualTaskForSessionID(session_id));
 
+  base::RunLoop run_loop;
   EXPECT_CALL(observer_,
               OnTaskRemoved(task.GetTaskId(),
-                            ContextualTasksService::TriggerSource::kLocal));
+                            ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->DeleteTask(task.GetTaskId());
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
   EXPECT_TRUE(GetTasks().empty());
   EXPECT_FALSE(service_->GetMostRecentContextualTaskForSessionID(session_id));
   service_->RemoveObserver(&observer_);
@@ -226,12 +230,14 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
   std::string title = "foo";
   std::string conversation_turn_id = "conversation_turn_id";
 
+  base::RunLoop run_loop;
   EXPECT_CALL(
       observer_,
-      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal));
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->AddThreadToTask(
       task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
@@ -297,25 +303,35 @@ TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
   std::string title = "foo";
   std::string conversation_turn_id = "conversation_turn_id";
 
-  service_->AddThreadToTask(
-      task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->AddThreadToTask(
+        task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
+    run_loop.Run();
+  }
 
   std::vector<ContextualTask> tasks_before_remove = GetTasks();
   ASSERT_EQ(1u, tasks_before_remove.size());
   EXPECT_TRUE(tasks_before_remove[0].GetThread().has_value());
 
-  EXPECT_CALL(
-      observer_,
-      OnTaskRemoved(testing::_, ContextualTasksService::TriggerSource::kLocal));
-  service_->RemoveThreadFromTask(task.GetTaskId(), type, server_id);
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskRemoved(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->RemoveThreadFromTask(task.GetTaskId(), type, server_id);
+    run_loop.Run();
+  }
   std::vector<ContextualTask> tasks_after_remove = GetTasks();
   ASSERT_EQ(0u, tasks_after_remove.size());
 
   // Calling remove again should be a no-op and not crash.
   service_->RemoveThreadFromTask(task.GetTaskId(), type, server_id);
-  task_environment_.RunUntilIdle();
   std::vector<ContextualTask> tasks_after_second_remove = GetTasks();
   ASSERT_EQ(0u, tasks_after_remove.size());
   service_->RemoveObserver(&observer_);
@@ -329,12 +345,14 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
   std::string title = "foo";
   std::string conversation_turn_id = "conversation_turn_id";
 
+  base::RunLoop run_loop;
   EXPECT_CALL(
       observer_,
-      OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal));
+      OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->AddThreadToTask(
       task_id, Thread(type, server_id, title, conversation_turn_id));
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
@@ -348,16 +366,174 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
   service_->RemoveObserver(&observer_);
 }
 
+TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId) {
+  service_->AddObserver(&observer_);
+  ContextualTask task = service_->CreateTask();
+  ThreadType type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
+  std::string new_conversation_turn_id = "new_conversation_turn_id";
+
+  // Add a thread to the task to set up the initial state.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->AddThreadToTask(
+        task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
+    run_loop.Run();
+  }
+
+  // Update the thread's turn ID and verify that the observer is notified
+  // with the correct data.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce([&](const ContextualTask& updated_task,
+                      ContextualTasksService::TriggerSource source) {
+          EXPECT_EQ(updated_task.GetTaskId(), task.GetTaskId());
+          std::optional<Thread> thread = updated_task.GetThread();
+          ASSERT_TRUE(thread.has_value());
+          EXPECT_EQ(thread->server_id, server_id);
+          EXPECT_EQ(thread->conversation_turn_id, new_conversation_turn_id);
+          run_loop.Quit();
+        });
+    service_->UpdateThreadTurnId(task.GetTaskId(), type, server_id,
+                                 new_conversation_turn_id);
+    run_loop.Run();
+  }
+
+  std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
+  ASSERT_TRUE(result.has_value());
+  std::optional<Thread> thread = result->GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(new_conversation_turn_id, thread->conversation_turn_id);
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest,
+       UpdateThreadTurnId_CreatesTaskIfNotFound) {
+  service_->AddObserver(&observer_);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ThreadType type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string conversation_turn_id = "conversation_turn_id";
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      observer_,
+      OnTaskAdded(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce([&](const ContextualTask& new_task,
+                    ContextualTasksService::TriggerSource source) {
+        EXPECT_EQ(new_task.GetTaskId(), task_id);
+        std::optional<Thread> thread = new_task.GetThread();
+        ASSERT_TRUE(thread.has_value());
+        EXPECT_EQ(thread->server_id, server_id);
+        EXPECT_EQ(thread->conversation_turn_id, conversation_turn_id);
+        run_loop.Quit();
+      });
+  service_->UpdateThreadTurnId(task_id, type, server_id, conversation_turn_id);
+  run_loop.Run();
+
+  std::optional<ContextualTask> result = GetTaskById(task_id);
+  ASSERT_TRUE(result.has_value());
+  std::optional<Thread> thread = result->GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(server_id, thread->server_id);
+  EXPECT_EQ(conversation_turn_id, thread->conversation_turn_id);
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ThreadDoesNotExist) {
+  service_->AddObserver(&observer_);
+  ContextualTask task = service_->CreateTask();
+  ThreadType type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string conversation_turn_id = "conversation_turn_id";
+
+  // The task is created without a thread.
+  ASSERT_FALSE(GetTaskById(task.GetTaskId())->GetThread().has_value());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      observer_,
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce([&](const ContextualTask& updated_task,
+                    ContextualTasksService::TriggerSource source) {
+        EXPECT_EQ(updated_task.GetTaskId(), task.GetTaskId());
+        std::optional<Thread> thread = updated_task.GetThread();
+        ASSERT_TRUE(thread.has_value());
+        EXPECT_EQ(thread->server_id, server_id);
+        EXPECT_EQ(thread->conversation_turn_id, conversation_turn_id);
+        EXPECT_EQ(thread->type, type);
+        EXPECT_TRUE(thread->title.empty());
+        run_loop.Quit();
+      });
+  service_->UpdateThreadTurnId(task.GetTaskId(), type, server_id,
+                               conversation_turn_id);
+  run_loop.Run();
+
+  std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
+  ASSERT_TRUE(result.has_value());
+  std::optional<Thread> thread = result->GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(server_id, thread->server_id);
+  EXPECT_EQ(conversation_turn_id, thread->conversation_turn_id);
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest, UpdateThreadTurnId_ServerIdMismatch) {
+  service_->AddObserver(&observer_);
+  ContextualTask task = service_->CreateTask();
+  ThreadType type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string title = "foo";
+  std::string conversation_turn_id = "conversation_turn_id";
+  std::string new_conversation_turn_id = "new_conversation_turn_id";
+
+  // Add a thread to the task to set up the initial state.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->AddThreadToTask(
+        task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
+    run_loop.Run();
+  }
+
+  // Attempt to update the thread with a wrong server ID and verify that the
+  // observer is not notified.
+  EXPECT_CALL(observer_, OnTaskUpdated(testing::_, testing::_)).Times(0);
+  service_->UpdateThreadTurnId(task.GetTaskId(), type, "wrong_server_id",
+                               new_conversation_turn_id);
+
+  std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
+  ASSERT_TRUE(result.has_value());
+  std::optional<Thread> thread = result->GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(conversation_turn_id, thread->conversation_turn_id);
+  service_->RemoveObserver(&observer_);
+}
+
 TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
   service_->AddObserver(&observer_);
   ContextualTask task = service_->CreateTask();
   GURL url("https://www.google.com");
 
+  base::RunLoop run_loop;
   EXPECT_CALL(
       observer_,
-      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal));
+      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   service_->AttachUrlToTask(task.GetTaskId(), url);
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
@@ -408,16 +584,27 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   ContextualTask task = service_->CreateTask();
   GURL url("https://www.google.com");
 
-  service_->AttachUrlToTask(task.GetTaskId(), url);
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->AttachUrlToTask(task.GetTaskId(), url);
+    run_loop.Run();
+  }
   std::vector<ContextualTask> tasks_before_detach = GetTasks();
   EXPECT_EQ(1u, tasks_before_detach[0].GetUrlResources().size());
 
-  EXPECT_CALL(
-      observer_,
-      OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal));
-  service_->DetachUrlFromTask(task.GetTaskId(), url);
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->DetachUrlFromTask(task.GetTaskId(), url);
+    run_loop.Run();
+  }
   std::vector<ContextualTask> tasks_after_detach = GetTasks();
   EXPECT_TRUE(tasks_after_detach[0].GetUrlResources().empty());
   service_->RemoveObserver(&observer_);

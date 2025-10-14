@@ -56,6 +56,13 @@ class MockContextualTasksService : public ContextualTasksService {
               (const base::Uuid& task_id, const Thread& thread),
               (override));
   MOCK_METHOD(void,
+              UpdateThreadTurnId,
+              (const base::Uuid& task_id,
+               ThreadType thread_type,
+               const std::string& server_id,
+               const std::string& conversation_turn_id),
+              (override));
+  MOCK_METHOD(void,
               RemoveThreadFromTask,
               (const base::Uuid& task_id,
                ThreadType type,
@@ -231,6 +238,62 @@ TEST_F(ContextualTasksContextControllerImplTest, GetTask_NotFound) {
 
   std::optional<ContextualTask> task = GetTaskById(task_id);
   EXPECT_FALSE(task.has_value());
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, CreateTask) {
+  ContextualTask expected_task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(mock_service_, CreateTask()).WillOnce(Return(expected_task));
+  ContextualTask task = controller_->CreateTask();
+  EXPECT_EQ(task.GetTaskId(), expected_task.GetTaskId());
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, AssignThreadToTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ThreadType thread_type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string conversation_turn_id = "conversation_turn_id";
+  std::string title = "title";
+
+  EXPECT_CALL(mock_service_, AddThreadToTask(task_id, _))
+      .WillOnce([&](const base::Uuid&, const Thread& thread) {
+        EXPECT_EQ(thread.type, thread_type);
+        EXPECT_EQ(thread.server_id, server_id);
+        EXPECT_EQ(thread.title, title);
+        EXPECT_EQ(thread.conversation_turn_id, conversation_turn_id);
+      });
+  controller_->AssignThreadToTask(task_id, thread_type, server_id,
+                                  conversation_turn_id, title);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest,
+       AssignThreadToTask_EmptyTitle) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ThreadType thread_type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string conversation_turn_id = "conversation_turn_id";
+
+  EXPECT_CALL(mock_service_, AddThreadToTask(task_id, _))
+      .WillOnce([&](const base::Uuid&, const Thread& thread) {
+        EXPECT_EQ(thread.type, thread_type);
+        EXPECT_EQ(thread.server_id, server_id);
+        EXPECT_TRUE(thread.title.empty());
+        EXPECT_EQ(thread.conversation_turn_id, conversation_turn_id);
+      });
+  controller_->AssignThreadToTask(task_id, thread_type, server_id,
+                                  conversation_turn_id, std::nullopt);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, UpdateThreadTurnId) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ThreadType thread_type = ThreadType::kAiMode;
+  std::string server_id = "server_id";
+  std::string conversation_turn_id = "conversation_turn_id";
+
+  EXPECT_CALL(mock_service_, UpdateThreadTurnId(task_id, thread_type, server_id,
+                                                conversation_turn_id))
+      .Times(1);
+  controller_->UpdateThreadTurnId(task_id, thread_type, server_id,
+                                  conversation_turn_id);
 }
 
 TEST_F(ContextualTasksContextControllerImplTest, AssociateTabWithTask) {

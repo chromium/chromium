@@ -115,6 +115,44 @@ void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
   }
 }
 
+void ContextualTasksServiceImpl::UpdateThreadTurnId(
+    const base::Uuid& task_id,
+    ThreadType thread_type,
+    const std::string& server_id,
+    const std::string& conversation_turn_id) {
+  auto it = tasks_.find(task_id);
+  bool is_new_task = (it == tasks_.end());
+  if (is_new_task) {
+    it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+  }
+
+  std::optional<Thread> thread = it->second.GetThread();
+  if (thread.has_value() && thread->server_id != server_id) {
+    return;
+  }
+
+  if (!thread.has_value()) {
+    it->second.AddThread(
+        Thread(thread_type, server_id, "", conversation_turn_id));
+  } else {
+    thread->conversation_turn_id = conversation_turn_id;
+    it->second.AddThread(thread.value());
+  }
+
+  if (is_new_task) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                  weak_ptr_factory_.GetWeakPtr(), it->second,
+                                  TriggerSource::kLocal));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                       weak_ptr_factory_.GetWeakPtr(), it->second,
+                       TriggerSource::kLocal));
+  }
+}
+
 void ContextualTasksServiceImpl::RemoveThreadFromTask(
     const base::Uuid& task_id,
     ThreadType type,

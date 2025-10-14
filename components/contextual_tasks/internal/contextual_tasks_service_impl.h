@@ -54,6 +54,10 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   void RemoveThreadFromTask(const base::Uuid& task_id,
                             ThreadType type,
                             const std::string& server_id) override;
+  void UpdateThreadTurnId(const base::Uuid& task_id,
+                          ThreadType thread_type,
+                          const std::string& server_id,
+                          const std::string& conversation_turn_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
   void AttachSessionIdToTask(const base::Uuid& task_id,

@@ -33,6 +33,26 @@ class ContextualTasksContextController : public KeyedService {
  public:
   ~ContextualTasksContextController() override;
 
+  // Creates a new `ContextualTask` which represents a user's journey to
+  // accomplish a goal.
+  virtual ContextualTask CreateTask() = 0;
+
+  // Assigns a server-side conversation, identified by `server_id`, to a task.
+  // If a task with the given `task_id` does not exist, it will be created.
+  virtual void AssignThreadToTask(const base::Uuid& task_id,
+                                  ThreadType thread_type,
+                                  const std::string& server_id,
+                                  const std::string& conversation_turn_id,
+                                  std::optional<std::string> title) = 0;
+
+  // Updates the `conversation_turn_id` for a thread associated with a task.
+  // The thread is identified by its `server_id`.
+  // If a task with the given `task_id` does not exist, it will be created.
+  virtual void UpdateThreadTurnId(const base::Uuid& task_id,
+                                  ThreadType thread_type,
+                                  const std::string& server_id,
+                                  const std::string& conversation_turn_id) = 0;
+
   // Retrieve a snapshot of all current contextual tasks.
   // The result is a copy of the original data, so mutate operations will have
   // no effect on internal data.

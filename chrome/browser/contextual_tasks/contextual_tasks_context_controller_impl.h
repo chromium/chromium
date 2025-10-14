@@ -29,7 +29,17 @@ class ContextualTasksContextControllerImpl
       AimEligibilityService* aim_eligibility_service);
   ~ContextualTasksContextControllerImpl() override;
 
-  // ContextualTasksController implementation.
+  // ContextualTasksContextController implementation.
+  ContextualTask CreateTask() override;
+  void AssignThreadToTask(const base::Uuid& task_id,
+                          ThreadType thread_type,
+                          const std::string& server_id,
+                          const std::string& conversation_turn_id,
+                          std::optional<std::string> title) override;
+  void UpdateThreadTurnId(const base::Uuid& task_id,
+                          ThreadType thread_type,
+                          const std::string& server_id,
+                          const std::string& conversation_turn_id) override;
   void GetTasks(
       base::OnceCallback<void(std::vector<ContextualTask>)> callback) override;
   void GetTask(const base::Uuid& task_id,

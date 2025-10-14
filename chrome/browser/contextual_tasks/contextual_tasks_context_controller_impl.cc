@@ -25,6 +25,30 @@ ContextualTasksContextControllerImpl::ContextualTasksContextControllerImpl(
 ContextualTasksContextControllerImpl::~ContextualTasksContextControllerImpl() =
     default;
 
+ContextualTask ContextualTasksContextControllerImpl::CreateTask() {
+  return service_->CreateTask();
+}
+
+void ContextualTasksContextControllerImpl::AssignThreadToTask(
+    const base::Uuid& task_id,
+    ThreadType thread_type,
+    const std::string& server_id,
+    const std::string& conversation_turn_id,
+    std::optional<std::string> title) {
+  service_->AddThreadToTask(
+      task_id,
+      Thread(thread_type, server_id, title.value_or(""), conversation_turn_id));
+}
+
+void ContextualTasksContextControllerImpl::UpdateThreadTurnId(
+    const base::Uuid& task_id,
+    ThreadType thread_type,
+    const std::string& server_id,
+    const std::string& conversation_turn_id) {
+  service_->UpdateThreadTurnId(task_id, thread_type, server_id,
+                               conversation_turn_id);
+}
+
 void ContextualTasksContextControllerImpl::GetTasks(
     base::OnceCallback<void(std::vector<ContextualTask>)> callback) {
   service_->GetTasks(std::move(callback));
