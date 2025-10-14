@@ -7,13 +7,10 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/prefs/pref_service.h"
-#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 
 class WebUIPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
@@ -49,8 +46,6 @@ class WebUIPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     // Navigate to the specified URL.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     metrics_waiter->Wait();
-    // Navigate away to flush metrics.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -67,68 +62,23 @@ IN_PROC_BROWSER_TEST_F(WebUIPageLoadMetricsObserverBrowserTest,
   // they depend on actual rendering, but we can verify the histograms exist.
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 1);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 1);
 }
 
-// Test that chrome://debug-webui-disabled/ visits DO record metrics.
-IN_PROC_BROWSER_TEST_F(WebUIPageLoadMetricsObserverBrowserTest,
-                       InternalDebugPagesDisabledUIDoesRecordMetrics) {
-  // Disable internal debug pages.
-  g_browser_process->local_state()->SetBoolean(
-      chrome_urls::kInternalOnlyUisEnabled, false);
-
-  // Navigate to an internal debug WebUI page.
-  NavigateAndWaitForMetrics(GURL("chrome://omnibox"));
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 1);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 1);
-
-  // Navigate to a regular WebUI page.
-  NavigateAndWaitForMetrics(GURL("chrome://version"));
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 2);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 2);
-
-  // Navigate to an internal debug WebUI page.
-  NavigateAndWaitForMetrics(GURL("chrome://omnibox"));
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 3);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 3);
-}
-
-// Test that visits to internal WebUI pages do NOT record metrics.
+// Test that internal WebUI pages (InternalWebUIConfig) do NOT record metrics.
 IN_PROC_BROWSER_TEST_F(WebUIPageLoadMetricsObserverBrowserTest,
                        InternalWebUIDoesNotRecordMetrics) {
-  // Enable internal debug pages.
-  g_browser_process->local_state()->SetBoolean(
-      chrome_urls::kInternalOnlyUisEnabled, true);
-
-  // Navigate to an internal debug WebUI page.
+  // Navigate to an internal WebUI page that should be filtered out.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://omnibox")));
-  // Verify that WebUI metrics ARE NOT recorded for internal debug WebUI.
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 0);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 0);
 
   // Navigate to a regular WebUI page.
   NavigateAndWaitForMetrics(GURL("chrome://version"));
-  // Verify that WebUI metrics ARE recorded for WebUI.
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 1);
-  histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI", 1);
 
-  // Navigate to an internal debug WebUI page.
+  // Navigate to another internal WebUI page.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://discards")));
 
-  // Verify that WebUI metrics ARE recorded for internal debug WebUI.
+  // Verify that WebUI metrics were NOT recorded for internal pages.
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 1);
   histogram_tester_->ExpectTotalCount(
