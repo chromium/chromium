@@ -29,7 +29,8 @@ GeneratedJavascriptOptimizerPref::GeneratedJavascriptOptimizerPref(
     : profile_(profile) {
   user_prefs_registrar_.Init(profile->GetPrefs());
   user_prefs_registrar_.AddMultiple(
-      {kGeneratedJavascriptOptimizerPref, prefs::kSafeBrowsingEnabled},
+      {prefs::kJavascriptOptimizerBlockedForUnfamiliarSites,
+       prefs::kSafeBrowsingEnabled},
       base::BindRepeating(
           &GeneratedJavascriptOptimizerPref::OnPreferencesChanged,
           base::Unretained(this)));
