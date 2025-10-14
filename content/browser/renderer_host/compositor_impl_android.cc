@@ -399,6 +399,10 @@ void CompositorImpl::SetWindowBounds(const gfx::Size& size) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kFluidResize)) {
+    CacheBackBufferForCurrentSurface();
+  }
+
   size_ = size;
   if (host_) {
     // TODO(ccameron): Ensure a valid LocalSurfaceId here.
@@ -583,6 +587,7 @@ void CompositorImpl::DidSubmitCompositorFrame() {
 }
 
 void CompositorImpl::DidReceiveCompositorFrameAck() {
+  EvictCachedBackBuffer();
   TRACE_EVENT0("compositor", "CompositorImpl::DidReceiveCompositorFrameAck");
   DCHECK_GT(pending_frames_, 0U);
   pending_frames_--;
