@@ -299,7 +299,7 @@ id<GREYMatcher> SafariImportButton() {
 // Tests that clearing the cookies through the UI does clear all of them. Use a
 // local server to navigate to a page that sets then tests a cookie, and then
 // clears the cookie and tests it is not set.
-// TODO(crbug.com/384871835): Re-enable this test.
+// TODO(crbug.com/451929382): Re-enable this test.
 - (void)DISABLED_testClearCookies {
   // Set pref to the last hour.
   [ChromeEarlGrey
