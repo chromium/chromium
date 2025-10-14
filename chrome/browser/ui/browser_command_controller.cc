@@ -153,8 +153,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
-using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
-
 namespace chrome {
 
 namespace {

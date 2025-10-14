@@ -3301,36 +3301,69 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
   return GetSiteInstance()->group() != parent_->GetSiteInstance()->group();
 }
 
-WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
-  DCHECK_EQ(GetSiteInstance()->GetSiteInfo().web_exposed_isolation_info(),
-            GetProcess()->GetProcessLock().GetWebExposedIsolationInfo());
-  // First, get the WebExposedIsolationLevel that was computed based on whether
-  // this page is in IsolatedWebApp, or was cross-origin isolated through the
-  // use of COOP and COEP.
-  WebExposedIsolationLevel level = GetProcess()->GetWebExposedIsolationLevel();
-
-  // Cross-origin isolation set through COOP and COEP can be restricted through
-  // a PermissionPolicy. In this case, the document should be considered as not
-  // isolated.
-  if (!IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
-    level = WebExposedIsolationLevel::kNotIsolated;
+bool RenderFrameHostImpl::HasAccessToCrossOriginIsolatedAPIs() {
+  // If the current document is not cross-origin isolated, it does not have
+  // access to cross-origin isolated APIs.
+  if (!GetSiteInstance()
+           ->GetSiteInfo()
+           .web_exposed_isolation_info()
+           .is_isolated() &&
+      !GetSiteInstance()
+           ->GetSiteInfo()
+           .agent_cluster_key()
+           .IsCrossOriginIsolated()) {
+    return false;
   }
 
-  // Check if cross-origin isolation was enabled through
-  // DocumentIsolationPolicy. This is stored in the AgentClusterKey, and not the
-  // WebExposedIsolationLevel in the RenderProcessHost. This is not affected by
-  // PermissionPolicy.
-  if (GetSiteInstance()
-          ->GetSiteInfo()
-          .agent_cluster_key()
-          .IsCrossOriginIsolated()) {
-    if (level == WebExposedIsolationLevel::kNotIsolated) {
-      level = WebExposedIsolationLevel::kIsolated;
-    }
+  // Cross-origin isolated documents always have access to cross-origin isolated
+  // APIs when cross-origin isolation was enabled through
+  // DocumentIsolationPolicy.
+  if (policy_container_host()->document_isolation_policy().value ==
+          network::mojom::DocumentIsolationPolicyValue::
+              kIsolateAndRequireCorp ||
+      policy_container_host()->document_isolation_policy().value ==
+          network::mojom::DocumentIsolationPolicyValue::
+              kIsolateAndCredentialless) {
+    return true;
   }
 
-  return level;
+  // When cross-origin isolation is enabled through COOP and COEP, it can be
+  // restricted through PermissionPolicy. Check if that is the case.
+  return IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated);
+}
+
+bool RenderFrameHostImpl::HasAccessToIsolatedWebAppsAPIs() {
+  // This should only be called for active RenderFrameHosts as this function
+  // needs to compare the committed origin with the origin of the Isolated Web
+  // App stored in the WebExposedIsolationInfo.
+  CHECK(lifecycle_state_ != LifecycleStateImpl::kSpeculative &&
+        lifecycle_state_ != LifecycleStateImpl::kPendingCommit);
+
+  // First, check if this RenderFrameHost is hosting a document that is part of
+  // an Isolated Web App.
+  auto& web_exposed_isolation_info =
+      GetSiteInstance()->GetSiteInfo().web_exposed_isolation_info();
+  if (!web_exposed_isolation_info.is_isolated_application()) {
+    return false;
+  }
+
+  // Check if the process has access to Isolate Web Apps APIs.
+  if (!GetSiteInstance()->GetProcess()->IsIsolatedApplication()) {
+    return false;
+  }
+
+  // If the document is cross-origin with the Isolated Web App origin, it does
+  // not have access to Isolated Web Apps APIs.
+  if (!GetLastCommittedOrigin().IsSameOriginWith(
+          web_exposed_isolation_info.origin())) {
+    return false;
+  }
+
+  // Isolated Web Apps must at least be cross-origin isolated. Check if the
+  // cross-origin isolated capability has been restricted by Permission Policy.
+  return IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated);
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() const {

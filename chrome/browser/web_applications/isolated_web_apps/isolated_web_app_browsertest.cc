@@ -64,7 +64,6 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -304,8 +303,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
-  EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
-            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(app_frame->HasAccessToIsolatedWebAppsAPIs());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, SameOriginWindowOpen) {
@@ -407,8 +405,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
   EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
-  EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
-            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(app_frame->HasAccessToIsolatedWebAppsAPIs());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -434,8 +431,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
   EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
-  EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
-            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(app_frame->HasAccessToIsolatedWebAppsAPIs());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -459,8 +455,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 
   // Because we accessed a nonexistent path, we should get a
   // window with error message instead of the actual IWA
-  EXPECT_NE(content::WebExposedIsolationLevel::kIsolatedApplication,
-            app_frame->GetWebExposedIsolationLevel());
+  EXPECT_FALSE(app_frame->HasAccessToIsolatedWebAppsAPIs());
   EXPECT_THAT(
       EvalJs(app_frame, "document.body.innerText").ExtractString(),
       HasSubstr(
@@ -762,8 +757,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
       iframe->GetLastCommittedURL(),
       Eq("data:text/html;base64,PCFET0NUWVBFIGh0bWw+PHA+ZGF0YTogVVJMPC9wPg=="));
   EXPECT_THAT(iframe->GetLastCommittedOrigin().opaque(), Eq(true));
-  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kNotIsolated));
+  EXPECT_THAT(iframe->HasAccessToIsolatedWebAppsAPIs(), Eq(false));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
@@ -792,12 +786,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(true));
   EXPECT_THAT(EvalJs(iframe, "window.crossOriginIsolated"), Eq(false));
   EXPECT_THAT(EvalJs(iframe, "'TCPSocket' in window"), Eq(false));
-  EXPECT_THAT(iframe->GetProcess()->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kIsolated));
+  EXPECT_THAT(iframe->GetProcess()->IsIsolatedApplication(), Eq(false));
   EXPECT_THAT(iframe->GetLastCommittedURL(), Eq(start_url));
   EXPECT_THAT(iframe->GetLastCommittedOrigin().opaque(), Eq(true));
-  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kNotIsolated));
+  EXPECT_THAT(iframe->HasAccessToIsolatedWebAppsAPIs(), Eq(false));
+  EXPECT_THAT(iframe->HasAccessToCrossOriginIsolatedAPIs(), Eq(false));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
@@ -836,8 +829,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   // Non-sandboxed srcdoc iframes are same-origin with their parent, meaning
   // they also have application isolation level (i.e. are IsolatedContexts).
   // This is safe because they also inherit the strict CSP.
-  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(iframe->HasAccessToIsolatedWebAppsAPIs(), Eq(true));
   EXPECT_THAT(EvalJs(iframe, "String(window.ranScript)"), Eq("undefined"));
   EXPECT_THAT(EvalJs(iframe, "String(window.ranBundledScript)"), Eq("true"));
   EXPECT_THAT(
@@ -883,8 +875,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(EvalJs(iframe, "window.crossOriginIsolated"), Eq(true));
   EXPECT_THAT(iframe->GetLastCommittedURL().SchemeIsBlob(), Eq(true));
   EXPECT_THAT(iframe->GetLastCommittedOrigin(), Eq(url_info.origin()));
-  EXPECT_THAT(iframe->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(iframe->HasAccessToIsolatedWebAppsAPIs(), Eq(true));
   EXPECT_THAT(EvalJs(iframe, "String(window.ranScript)"), Eq("undefined"));
   EXPECT_THAT(EvalJs(iframe, "String(window.ranBundledScript)"), Eq("true"));
   EXPECT_THAT(
@@ -930,8 +921,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(EvalJs(app_frame, "window.crossOriginIsolated"), Eq(true));
   EXPECT_THAT(app_frame->GetLastCommittedURL().SchemeIsBlob(), Eq(true));
   EXPECT_THAT(app_frame->GetLastCommittedOrigin(), Eq(url_info.origin()));
-  EXPECT_THAT(app_frame->GetWebExposedIsolationLevel(),
-              Eq(content::WebExposedIsolationLevel::kIsolatedApplication));
+  EXPECT_THAT(app_frame->HasAccessToIsolatedWebAppsAPIs(), Eq(true));
   EXPECT_THAT(EvalJs(app_frame, "String(window.ranScript)"), Eq("undefined"));
   EXPECT_THAT(EvalJs(app_frame, "String(window.ranBundledScript)"), Eq("true"));
   EXPECT_THAT(
@@ -1278,8 +1268,7 @@ var kApplicationServerKey = new Uint8Array([
   auto* new_app_frame = GetPrimaryMainFrame(new_app_window);
   auto* new_storage_partition = new_app_frame->GetStoragePartition();
   EXPECT_EQ(new_storage_partition, storage_partition_);
-  EXPECT_EQ(new_app_frame->GetWebExposedIsolationLevel(),
-            content::WebExposedIsolationLevel::kIsolatedApplication);
+  EXPECT_TRUE(new_app_frame->HasAccessToIsolatedWebAppsAPIs());
   EXPECT_TRUE(AppBrowserController::IsWebApp(new_app_window));
 }
 

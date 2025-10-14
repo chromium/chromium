@@ -30,7 +30,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -415,8 +414,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInSandboxedIframe) {
   content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 1);
   ASSERT_NE(iframe, nullptr);
 
-  EXPECT_EQ(content::WebExposedIsolationLevel::kNotIsolated,
-            iframe->GetWebExposedIsolationLevel());
+  EXPECT_FALSE(iframe->HasAccessToCrossOriginIsolatedAPIs());
+  EXPECT_FALSE(iframe->HasAccessToIsolatedWebAppsAPIs());
   EXPECT_EQ(false, EvalJs(iframe, "window.crossOriginIsolated"));
   EXPECT_EQ("null", EvalJs(iframe, "window.origin"));
 

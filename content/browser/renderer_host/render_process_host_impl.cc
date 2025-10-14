@@ -3354,9 +3354,9 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
     return;
 
   // Check if the process is cross_origin isolated based on the
-  // WebExposedIsolationLevel and the AgentClusterKey.
-  bool is_cross_origin_isolated = process_lock.GetWebExposedIsolationLevel() >=
-                                  WebExposedIsolationLevel::kIsolated;
+  // WebExposedIsolationInfo and the AgentClusterKey.
+  bool is_cross_origin_isolated =
+      process_lock.GetWebExposedIsolationInfo().is_isolated();
   is_cross_origin_isolated |=
       process_lock.agent_cluster_key().GetCrossOriginIsolationKey() &&
       process_lock.agent_cluster_key()
@@ -5379,8 +5379,27 @@ size_t RenderProcessHost::GetActiveViewCount() {
   return num_active_views;
 }
 
-WebExposedIsolationLevel RenderProcessHost::GetWebExposedIsolationLevel() {
-  return GetProcessLock().GetWebExposedIsolationLevel();
+bool RenderProcessHost::IsIsolatedApplication() {
+  if (!GetProcessLock()
+           .GetWebExposedIsolationInfo()
+           .is_isolated_application()) {
+    return false;
+  }
+
+  // Even if the RenderProcessHost is hosting contexts that are part of an
+  // Isolated Web App, these contexts should be same origin to have access to
+  // Isolated Web Apps APIs. Check if the origin of the AgentClusterKey of
+  // ProcessLock is same-origin with the Isolated Web App top-origin. Note that
+  // an Isolated Web App is cross-origin isolated, so it is guaranteed to have
+  // an origin-keyed AgentClusterKey. Also note that sandboxed opaque iframes of
+  // an isolated web app do not have access to Isolated Web Apps APIs.
+  CHECK(GetProcessLock().agent_cluster_key().IsOriginKeyed());
+  return GetProcessLock()
+             .GetWebExposedIsolationInfo()
+             .origin()
+             .IsSameOriginWith(
+                 GetProcessLock().agent_cluster_key().GetOrigin()) &&
+         !GetProcessLock().is_sandboxed();
 }
 
 void RenderProcessHost::PostTaskWhenProcessIsReady(base::OnceClosure task) {

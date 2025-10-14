@@ -118,8 +118,7 @@ bool WebMeasureMemorySecurityCheckerImpl::IsMeasureMemoryAllowed(
   // the measurement result will be thrown away, so this is not a security
   // issue, but it does mean doing extra work.
   content::RenderFrameHost* rfh = frame->GetRenderFrameHostProxy().Get();
-  if (rfh->GetWebExposedIsolationLevel() !=
-      content::WebExposedIsolationLevel::kNotIsolated) {
+  if (rfh->HasAccessToCrossOriginIsolatedAPIs()) {
     return true;
   }
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

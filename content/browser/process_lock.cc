@@ -7,7 +7,6 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 
 namespace content {
 
@@ -17,10 +16,6 @@ ProcessLock ProcessLock::CreateAllowAnySite(
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
         cross_origin_isolation_key) {
-  WebExposedIsolationLevel web_exposed_isolation_level =
-      SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
-          web_exposed_isolation_info);
-
   AgentClusterKey agent_cluster_key;
   if (cross_origin_isolation_key.has_value()) {
     agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
@@ -44,7 +39,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       /*site_url=*/GURL(),
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       storage_partition_config, web_exposed_isolation_info,
-      web_exposed_isolation_level, /*is_guest=*/false,
+      /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_pdf=*/false, /*is_fenced=*/false));
@@ -114,11 +109,6 @@ StoragePartitionConfig ProcessLock::GetStoragePartitionConfig() const {
 WebExposedIsolationInfo ProcessLock::GetWebExposedIsolationInfo() const {
   return site_info_.has_value() ? site_info_->web_exposed_isolation_info()
                                 : WebExposedIsolationInfo::CreateNonIsolated();
-}
-
-WebExposedIsolationLevel ProcessLock::GetWebExposedIsolationLevel() const {
-  return site_info_.has_value() ? site_info_->web_exposed_isolation_level()
-                                : WebExposedIsolationLevel::kNotIsolated;
 }
 
 bool ProcessLock::IsASiteOrOrigin() const {

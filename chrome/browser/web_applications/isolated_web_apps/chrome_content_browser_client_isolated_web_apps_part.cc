@@ -11,7 +11,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 

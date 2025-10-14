@@ -492,7 +492,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const std::optional<gfx::Size>& GetFrameSize() override;
   size_t GetFrameDepth() override;
   bool IsCrossProcessSubframe() override;
-  WebExposedIsolationLevel GetWebExposedIsolationLevel() override;
+  bool HasAccessToCrossOriginIsolatedAPIs() override;
+  bool HasAccessToIsolatedWebAppsAPIs() override;
   const GURL& GetLastCommittedURL() const override;
   const url::Origin& GetLastCommittedOrigin() const override;
   const net::NetworkIsolationKey& GetNetworkIsolationKey() override;

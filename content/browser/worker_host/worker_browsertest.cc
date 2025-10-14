@@ -355,8 +355,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPRequireCorpDocument) {
   auto page_lock =
       ProcessLock::FromSiteInfo(page_rfh->GetSiteInstance()->GetSiteInfo());
   EXPECT_TRUE(page_lock.GetWebExposedIsolationInfo().is_isolated());
-  EXPECT_GT(page_rfh->GetWebExposedIsolationLevel(),
-            WebExposedIsolationLevel::kNotIsolated);
+  EXPECT_TRUE(page_rfh->HasAccessToCrossOriginIsolatedAPIs());
 
   // Create a shared worker from the cross-origin-isolated page:
 

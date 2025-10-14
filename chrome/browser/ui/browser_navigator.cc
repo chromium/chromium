@@ -88,7 +88,6 @@
 using content::GlobalRequestID;
 using content::NavigationController;
 using content::WebContents;
-using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace {
 

@@ -1679,23 +1679,21 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   }
 }
 
-// Checks that the WebExposedIsolationLevel of a RenderFrameHost is properly
+// Checks that a RenderFrameHost having access to COI-gated APIs is properly
 // computed when cross-origin isolation is enabled through
 // DocumentIsolationPolicy.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
-                       WebExposedIsolationLevel) {
+                       HasAccessToCrossOriginIsolatedAPIs) {
   GURL isolated_page = GetDocumentIsolationPolicyURL("a.test");
   GURL isolated_page_b = GetDocumentIsolationPolicyURL("b.test");
 
   // Not isolated:
   EXPECT_TRUE(NavigateToURL(shell(), https_server()->GetURL("/empty.html")));
-  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
-            current_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_FALSE(current_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
 
   // Cross-Origin Isolated:
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            current_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(current_frame_host()->HasAccessToCrossOriginIsolatedAPIs());
 
   // Cross-origin isolated iframe without permission delegation. The iframe
   // should be cross-origin isolated, as the permission only applies to
@@ -1713,8 +1711,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, isolated_page_b)));
   RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            iframe_rfh->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(iframe_rfh->HasAccessToCrossOriginIsolatedAPIs());
 }
 
 // Checks that a document with document isolation policy has its

@@ -109,8 +109,7 @@ std::optional<extensions::mojom::HostID> GenerateHostIDFromEmbedder(
         extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
 
-  if (embedder_rfh->GetWebExposedIsolationLevel() >=
-      content::WebExposedIsolationLevel::kIsolatedApplication) {
+  if (embedder_rfh->HasAccessToIsolatedWebAppsAPIs()) {
     const std::string origin =
         embedder_rfh->GetMainFrame()->GetLastCommittedOrigin().Serialize();
     return extensions::mojom::HostID(

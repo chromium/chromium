@@ -24,11 +24,6 @@ namespace content {
 
 namespace {
 
-static constexpr WebExposedIsolationLevel kNotIsolated =
-    WebExposedIsolationLevel::kNotIsolated;
-static constexpr WebExposedIsolationLevel kIsolatedApplication =
-    WebExposedIsolationLevel::kIsolatedApplication;
-
 const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "other.com";
 
@@ -168,7 +163,8 @@ class IsolatedWebAppThrottleBrowserTest : public HttpsBrowserTest {
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        BlockMainFrameNavigationIntoApp) {
   EXPECT_TRUE(NavigateToURL(web_contents(), GetNonAppURL("/simple_page.html")));
-  EXPECT_EQ(kNotIsolated, main_rfh()->GetWebExposedIsolationLevel());
+  EXPECT_FALSE(main_rfh()->HasAccessToIsolatedWebAppsAPIs());
+  EXPECT_FALSE(main_rfh()->HasAccessToCrossOriginIsolatedAPIs());
 
   TestNavigationObserver navigation_observer(web_contents());
   shell()->LoadURL(GetAppURL("/cross-origin-isolated.html"));
@@ -182,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        CancelCrossOriginNavigationInApp) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
-  EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(main_rfh()->HasAccessToIsolatedWebAppsAPIs());
 
   TestNavigationObserver navigation_observer(web_contents());
   shell()->LoadURL(GetNonAppURL("/simple_page.html"));
@@ -195,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        IframeInitiatedIframeNavigationIntoAppBlocked) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
-  EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(main_rfh()->HasAccessToIsolatedWebAppsAPIs());
 
   RenderFrameHost* iframe =
       CreateChildIframe(main_rfh(), GetNonAppURL("/corp-cross-origin.html"));
@@ -214,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        AppInitiatedIframeNavigationIntoAppAllowed) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
-  EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(main_rfh()->HasAccessToIsolatedWebAppsAPIs());
 
   RenderFrameHost* iframe =
       CreateChildIframe(main_rfh(), GetNonAppURL("/corp-cross-origin.html"));
@@ -231,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        ExternalLinkClickOpensInNewTab) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
-  ASSERT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+  EXPECT_TRUE(main_rfh()->HasAccessToIsolatedWebAppsAPIs());
 
   GURL external_url("https://www.example.com/");
   EXPECT_TRUE(ExecJs(main_rfh(), JsReplace(R"(

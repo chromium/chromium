@@ -35,7 +35,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
@@ -83,7 +82,7 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                   /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                   CreateStoragePartitionConfigForTesting(),
                   WebExposedIsolationInfo::CreateNonIsolated(),
-                  WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+                  /*is_guest=*/false,
                   /*does_site_request_dedicated_process_for_coop=*/false,
                   /*is_jit_disabled=*/false,
                   /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
@@ -311,7 +310,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
                WebExposedIsolationInfo::CreateNonIsolated(),
-               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/true,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false,
@@ -330,7 +329,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
                WebExposedIsolationInfo::CreateNonIsolated(),
-               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/true,
                /*are_v8_optimizations_disabled=*/false,
@@ -347,7 +346,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
                WebExposedIsolationInfo::CreateNonIsolated(),
-               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/true,
@@ -365,7 +364,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
                WebExposedIsolationInfo::CreateNonIsolated(),
-               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/true,
@@ -380,7 +379,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
                WebExposedIsolationInfo::CreateNonIsolated(),
-               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+               /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
@@ -864,7 +863,6 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
       SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
                                    /*is_guest=*/false, /*is_fenced=*/false,
                                    WebExposedIsolationInfo::CreateNonIsolated(),
-                                   WebExposedIsolationLevel::kNotIsolated,
                                    /*cross_origin_isolation_key=*/std::nullopt);
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
@@ -927,7 +925,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(),
-      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_pdf=*/false, /*is_fenced=*/false);
@@ -1732,7 +1730,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(),
-      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_pdf=*/false, /*is_fenced=*/false);
@@ -1776,85 +1774,6 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   SetBrowserClientForTesting(regular_client);
 }
 
-TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
-  GURL url("https://example.com/");
-  auto origin = url::Origin::Create(url);
-  GURL other_url("https://example2.com/");
-
-  // SiteInfos in a non-isolated BrowsingInstance shouldn't be isolated.
-  auto non_isolated =
-      SiteInfo::Create(IsolationContext(context()),
-                       UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-                           WebExposedIsolationInfo::CreateNonIsolated())));
-  EXPECT_FALSE(non_isolated.web_exposed_isolation_info().is_isolated());
-  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
-            non_isolated.web_exposed_isolation_level());
-
-  // SiteInfos in an isolated BrowsingInstance should be isolated.
-  auto isolated_same_origin =
-      SiteInfo::Create(IsolationContext(context()),
-                       UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-                           WebExposedIsolationInfo::CreateIsolated(origin))));
-  EXPECT_TRUE(isolated_same_origin.web_exposed_isolation_info().is_isolated());
-  EXPECT_FALSE(isolated_same_origin.web_exposed_isolation_info()
-                   .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            isolated_same_origin.web_exposed_isolation_level());
-
-  // Cross-origin SiteInfos in an isolated BrowsingInstance should be isolated.
-  auto isolated_cross_origin = SiteInfo::Create(
-      IsolationContext(context()),
-      UrlInfo(UrlInfoInit(other_url).WithWebExposedIsolationInfo(
-          WebExposedIsolationInfo::CreateIsolated(origin))));
-  EXPECT_TRUE(isolated_cross_origin.web_exposed_isolation_info().is_isolated());
-  EXPECT_FALSE(isolated_cross_origin.web_exposed_isolation_info()
-                   .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            isolated_cross_origin.web_exposed_isolation_level());
-
-  // Same-origin SiteInfos in an isolated application BrowsingInstance should
-  // have the "isolated application" isolation level.
-  auto isolated_app_same_origin = SiteInfo::Create(
-      IsolationContext(context()),
-      UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-          WebExposedIsolationInfo::CreateIsolatedApplication(origin))));
-  EXPECT_TRUE(
-      isolated_app_same_origin.web_exposed_isolation_info().is_isolated());
-  EXPECT_TRUE(isolated_app_same_origin.web_exposed_isolation_info()
-                  .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
-            isolated_app_same_origin.web_exposed_isolation_level());
-
-  // Cross-origin SiteInfos in an isolated application BrowsingInstance should
-  // only have the "isolated" isolation level.
-  auto isolated_app_cross_origin = SiteInfo::Create(
-      IsolationContext(context()),
-      UrlInfo(UrlInfoInit(other_url).WithWebExposedIsolationInfo(
-          WebExposedIsolationInfo::CreateIsolatedApplication(origin))));
-  EXPECT_TRUE(
-      isolated_app_cross_origin.web_exposed_isolation_info().is_isolated());
-  EXPECT_TRUE(isolated_app_cross_origin.web_exposed_isolation_info()
-                  .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            isolated_app_cross_origin.web_exposed_isolation_level());
-
-  // Sandboxed iframes should be considered cross-origin and not inherit the
-  // application isolation level.
-  auto isolated_app_same_origin_sandboxed = SiteInfo::Create(
-      IsolationContext(context()),
-      UrlInfo(
-          UrlInfoInit(url)
-              .WithWebExposedIsolationInfo(
-                  WebExposedIsolationInfo::CreateIsolatedApplication(origin))
-              .WithSandbox(true)));
-  EXPECT_TRUE(isolated_app_same_origin_sandboxed.web_exposed_isolation_info()
-                  .is_isolated());
-  EXPECT_TRUE(isolated_app_same_origin_sandboxed.web_exposed_isolation_info()
-                  .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
-            isolated_app_same_origin_sandboxed.web_exposed_isolation_level());
-}
-
 namespace {
 
 ProcessLock ProcessLockFromString(const std::string& url) {
@@ -1865,7 +1784,7 @@ ProcessLock ProcessLockFromString(const std::string& url) {
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(),
-      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
       /*is_pdf=*/false, /*is_fenced=*/false));
@@ -2170,7 +2089,6 @@ TEST_F(SiteInstanceTest, ErrorPage) {
       SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
                                    /*is_guest=*/false, /*is_fenced=*/false,
                                    WebExposedIsolationInfo::CreateNonIsolated(),
-                                   WebExposedIsolationLevel::kNotIsolated,
                                    /*cross_origin_isolation_key=*/std::nullopt);
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
