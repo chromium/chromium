@@ -963,10 +963,24 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       page_rule->SetCascadeLayer(cascade_layer);
       AddPageRule(page_rule);
     } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
-      if (const auto* route_map =
-              RouteMap::Get(medium.GetMediaValues().GetDocument())) {
-        if (route_map->MatchesRoute(route_rule->GetName(),
-                                    route_rule->GetPreposition())) {
+      Document* document = medium.GetMediaValues().GetDocument();
+      if (route_rule->GetURLPattern() && document) {
+        // A URLPattern becomes an anonymous route. One route for each unique
+        // URLPattern.
+        RouteMap::Ensure(*document).AddAnonymousRoute(
+            route_rule->GetURLPattern());
+      }
+      if (const auto* route_map = RouteMap::Get(document)) {
+        bool matches;
+        if (!route_rule->GetName().empty()) {
+          matches = route_map->MatchesRoute(route_rule->GetName(),
+                                            route_rule->GetPreposition());
+        } else {
+          DCHECK(route_rule->GetURLPattern());
+          matches = route_map->MatchesURLPattern(route_rule->GetURLPattern(),
+                                                 route_rule->GetPreposition());
+        }
+        if (matches) {
           AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
                         add_rule_flags, container_query, cascade_layer,
                         style_scope, apply_mixins_stack);
@@ -1235,20 +1249,21 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     }
   }
 
-  if (const auto* route_map = RouteMap::Get(medium.GetDocument())) {
-    // In case there are multiple style sheets, we only need to do this once:
-    if (at_routes_.empty() && from_routes_.empty() && to_routes_.empty()) {
-      at_routes_ = route_map->GetActiveRoutes(RoutePreposition::kAt);
-      from_routes_ = route_map->GetActiveRoutes(RoutePreposition::kFrom);
-      to_routes_ = route_map->GetActiveRoutes(RoutePreposition::kTo);
-    }
-  }
-
   InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(sheet);
   ApplyMixinsStack apply_mixins_stack;
   AddChildRules(/*parent_rule=*/nullptr, sheet->ChildRules(), medium, mixins,
                 kRuleHasNoSpecialState, nullptr /* container_query */,
                 cascade_layer, style_scope, apply_mixins_stack);
+
+  if (const auto* route_map = RouteMap::Get(medium.GetDocument())) {
+    // Need to do this for every style sheet, since each may add their own
+    // anonymous routes.
+    //
+    // TODO(crbug.com/436805487): See if we can find a better place for this.
+    // Maybe RuleSet isn't the right place. DidRoutesChange() was modeled after
+    // DidMediaQueryResultsChange(), but maybe there's a better way.
+    route_match_state_ = RouteMatchState::Create(*route_map);
+  }
 }
 
 void RuleSet::NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
@@ -1738,14 +1753,11 @@ bool RuleSet::DidMediaQueryResultsChange(
 
 bool RuleSet::DidRoutesChange(const Document* document) const {
   const RouteMap* map = RouteMap::Get(document);
-  if (!map) {
+  if (!map || !route_match_state_) {
     return false;
   }
-  HashSet<String> at_routes = map->GetActiveRoutes(RoutePreposition::kAt);
-  HashSet<String> from_routes = map->GetActiveRoutes(RoutePreposition::kFrom);
-  HashSet<String> to_routes = map->GetActiveRoutes(RoutePreposition::kTo);
-  return at_routes != at_routes_ || from_routes != from_routes_ ||
-         to_routes != to_routes_;
+  auto* new_state = RouteMatchState::Create(*map);
+  return !new_state->Equals(*route_match_state_);
 }
 
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
@@ -1805,6 +1817,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(layer_intervals_);
   visitor->Trace(container_query_intervals_);
   visitor->Trace(scope_intervals_);
+  visitor->Trace(route_match_state_);
 #if DCHECK_IS_ON()
   visitor->Trace(all_rules_);
 #endif  // DCHECK_IS_ON()

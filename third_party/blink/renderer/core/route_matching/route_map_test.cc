@@ -11,6 +11,8 @@
 
 namespace blink {
 
+namespace {
+
 class RouteMapTest : public PageTestBase {
  public:
   RouteMap& GetRouteMap() const { return RouteMap::Ensure(GetDocument()); }
@@ -71,16 +73,15 @@ TEST_F(RouteMapTest, GetActiveRoutes) {
     ]
   })");
 
-  HashSet<String> active_routes =
-      route_map.GetActiveRoutes(RoutePreposition::kAt);
-  EXPECT_EQ(2u, active_routes.size());
-  EXPECT_TRUE(active_routes.Contains("route1"));
-  EXPECT_TRUE(active_routes.Contains("route3"));
+  RouteMatchState::MatchCollection collection;
+  route_map.GetActiveRoutes(RoutePreposition::kAt, &collection);
+  EXPECT_EQ(2u, collection.size());
 
   SetURL("https://example.com/bar");
-  active_routes = route_map.GetActiveRoutes(RoutePreposition::kAt);
-  EXPECT_EQ(1u, active_routes.size());
-  EXPECT_TRUE(active_routes.Contains("route2"));
+  route_map.GetActiveRoutes(RoutePreposition::kAt, &collection);
+  EXPECT_EQ(1u, collection.size());
 }
+
+}  // anonymous namespace
 
 }  // namespace blink

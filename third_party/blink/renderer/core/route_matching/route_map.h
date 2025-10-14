@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/core/route_matching/route_preposition.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -19,6 +21,7 @@ namespace blink {
 
 class Document;
 class Route;
+class URLPattern;
 
 // TODO(crbug.com/436805487): Document this when we know more.
 //
@@ -81,13 +84,18 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   ParseResult ParseRoutes(const String& route_map_text);
 
+  void AddAnonymousRoute(URLPattern*);
+
   bool MatchesRoute(const String& route_name, RoutePreposition) const;
+
+  bool MatchesURLPattern(const URLPattern*, RoutePreposition) const;
 
   // Re-match all routes. Schedule for re-evaluation of CSS rules if something
   // changed.
   void UpdateActiveRoutes();
 
-  HashSet<String> GetActiveRoutes(RoutePreposition) const;
+  void GetActiveRoutes(RoutePreposition,
+                       RouteMatchState::MatchCollection*) const;
 
   // Set the URLs that we're navigating between at the start of navigation. This
   // is used to match @route "from" (and "to") rules.
@@ -107,6 +115,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
  private:
   HeapHashMap<String, Member<Route>> routes_;
+  HeapHashMap<String, Member<Route>> anonymous_routes_;
 
   // Only set while navigating from one URL to another one.
   KURL previous_url_;

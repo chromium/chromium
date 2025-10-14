@@ -13,6 +13,8 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -57,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -1907,36 +1910,71 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
 
   // TODO(crbug.com/436805487): Figure out where whitespace is allowed and not.
   // And how about multiple routes in one rule?
+  //
+  // For now we only support this:
+  //
+  // @route <route-test-in-parens> { <rule-list> }
+  // <route-test-in-parens> =
+  //   ( <route-location> | <route-keyword> : <route-location> )
   String route_name;
   RoutePreposition preposition = RoutePreposition::kAt;
-  bool header_valid = [&] {
-    CSSParserTokenStream::BlockGuard header_guard(stream);
-    if (stream.Peek().GetType() != kIdentToken) {
+  URLPattern* url_pattern = nullptr;
+
+  auto parse_url_pattern = [&] {
+    if (stream.Peek().GetType() != kFunctionToken ||
+        stream.Peek().Value() != "urlpattern") {
       return false;
     }
 
-    String first_string =
-        stream.ConsumeIncludingWhitespace().Value().ToString();
-    if (stream.Peek().GetType() == kColonToken) {
-      if (first_string == "at") {
-        preposition = RoutePreposition::kAt;
-      } else if (first_string == "from") {
-        preposition = RoutePreposition::kFrom;
-      } else if (first_string == "to") {
-        preposition = RoutePreposition::kTo;
-      } else {
-        return false;
-      }
-      stream.ConsumeIncludingWhitespace();
-      if (stream.Peek().GetType() != kIdentToken) {
-        return false;
-      }
-      route_name = stream.ConsumeIncludingWhitespace().Value().ToString();
-      return stream.AtEnd();
+    CSSParserTokenStream::BlockGuard function_guard(stream);
+    stream.ConsumeWhitespace();
+    if (stream.Peek().GetType() != kStringToken) {
+      return false;
     }
-    if (stream.AtEnd()) {
-      route_name = first_string;
-      return true;
+    const CSSParserToken& pattern = stream.ConsumeIncludingWhitespace();
+    if (pattern.GetType() == kBadStringToken || !stream.UncheckedAtEnd()) {
+      return false;
+    }
+
+    const Document& document = *context_->GetDocument();
+    V8URLPatternInput* url_pattern_input =
+        MakeGarbageCollected<V8URLPatternInput>(
+            pattern.Value().ToAtomicString());
+    url_pattern =
+        URLPattern::Create(document.GetExecutionContext()->GetIsolate(),
+                           url_pattern_input, document.Url(), IGNORE_EXCEPTION);
+    return true;
+  };
+
+  bool header_valid = [&]() {
+    CSSParserTokenStream::BlockGuard header_guard(stream);
+    if (stream.Peek().GetType() == kIdentToken) {
+      String first_string =
+          stream.ConsumeIncludingWhitespace().Value().ToString();
+      if (stream.Peek().GetType() == kColonToken) {
+        if (first_string == "at") {
+          preposition = RoutePreposition::kAt;
+        } else if (first_string == "from") {
+          preposition = RoutePreposition::kFrom;
+        } else if (first_string == "to") {
+          preposition = RoutePreposition::kTo;
+        } else {
+          return false;
+        }
+        stream.ConsumeIncludingWhitespace();
+        if (stream.Peek().GetType() == kIdentToken) {
+          route_name = stream.ConsumeIncludingWhitespace().Value().ToString();
+        } else if (!parse_url_pattern()) {
+          return false;
+        }
+        return stream.AtEnd();
+      }
+      if (stream.AtEnd()) {
+        route_name = first_string;
+        return true;
+      }
+    } else {
+      return parse_url_pattern();
     }
     return false;
   }();
@@ -1969,8 +2007,8 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
     observer_->EndRuleBody(stream.Offset());
   }
 
-  return MakeGarbageCollected<StyleRuleRoute>(route_name, preposition,
-                                              std::move(rules));
+  return MakeGarbageCollected<StyleRuleRoute>(route_name, url_pattern,
+                                              preposition, std::move(rules));
 }
 
 StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(

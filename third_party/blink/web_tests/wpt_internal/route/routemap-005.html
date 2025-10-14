@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<title>@route with urlpattern()</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/#urlpattern-function">
+<style>
+  #target {
+    width: 7px;
+    height: 7px;
+  }
+
+  /* Assuming here that "route" is part of the test path but no other parts of the URL. */
+  @route (at: urlpattern("*route*")) {
+    #target { width: 100px; }
+  }
+
+  @route (from: urlpattern("*route*")) {
+    #target { padding-top: 20px; }
+  }
+
+  @route (to: urlpattern("match-later-r2")) {
+    #target { padding-bottom: 30px; }
+  }
+
+  @route (at: urlpattern("match-later-r2")) {
+    #target { height: 90px; }
+  }
+
+  @route (from: urlpattern("match-later-r2")) {
+    #target { margin-left: 70px; }
+  }
+
+  @route (to: urlpattern("match-later-r4")) {
+    #target { margin-right: 80px; }
+  }
+
+  /* These should never match in the test. */
+  @route (to: urlpattern("*route*")) {
+    #target { padding-left: 666px; }
+  }
+
+  @route (from: urlpattern("match-later-r4")) {
+    #target { padding-right: 666px; }
+  }
+</style>
+<div id="target"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  const entrychange = Promise.withResolvers();
+  const finished = Promise.withResolvers();
+  navigation.addEventListener("currententrychange", e => { entrychange.resolve(); });
+  navigation.addEventListener("navigatesuccess", e => { finished.resolve(); });
+  navigation.addEventListener("navigate", e => { e.intercept(); });
+
+  function assert_invariants(msg) {
+    assert_equals(getComputedStyle(target).paddingLeft, "0px", msg);
+    assert_equals(getComputedStyle(target).paddingRight, "0px", msg);
+  }
+
+  function assert_no_matches(msg) {
+    assert_equals(getComputedStyle(target).width, "7px", msg);
+    assert_equals(getComputedStyle(target).height, "7px", msg);
+    assert_equals(getComputedStyle(target).paddingTop, "0px", msg);
+    assert_equals(getComputedStyle(target).paddingBottom, "0px", msg);
+    assert_equals(getComputedStyle(target).marginLeft, "0px", msg);
+    assert_equals(getComputedStyle(target).marginRight, "0px", msg);
+    assert_invariants(msg);
+  }
+
+  promise_test(async (t) => {
+    // at:urlpattern("*route*") should match.
+    let state = "at initial";
+    assert_equals(getComputedStyle(target).width, "100px", state);
+    assert_equals(getComputedStyle(target).height, "7px", state);
+    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
+    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
+    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
+    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_invariants(state);
+
+    navigation.navigate("match-later-r2");
+    await entrychange.promise;
+    // at:urlpattern("match-later-r2"), from:urlpattern("*route*"),
+    // and "to:urlpattern("match-later-r2")" should match.
+    state = "to match-later-r2";
+    assert_equals(getComputedStyle(target).width, "7px", state);
+    assert_equals(getComputedStyle(target).height, "90px", state);
+    assert_equals(getComputedStyle(target).paddingTop, "20px", state);
+    assert_equals(getComputedStyle(target).paddingBottom, "30px", state);
+    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
+    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_invariants(state);
+    await finished.promise;
+    // at:urlpattern("match-later-r2") should match.
+    state = "at match-later-r2";
+    assert_equals(getComputedStyle(target).width, "7px", state);
+    assert_equals(getComputedStyle(target).height, "90px", state);
+    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
+    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
+    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
+    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_invariants(state);
+
+    navigation.navigate("match-later-r3");
+    await entrychange.promise;
+    // from:urlpattern("match-later-r2") should match.
+    state = "to match-later-r2";
+    assert_equals(getComputedStyle(target).width, "7px", state);
+    assert_equals(getComputedStyle(target).height, "7px", state);
+    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
+    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
+    assert_equals(getComputedStyle(target).marginLeft, "70px", state);
+    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_invariants(state);
+    await finished.promise;
+    // Nothing should match.
+    assert_no_matches("at match-later-r3");
+
+    navigation.navigate("match-later-r4");
+    await entrychange.promise;
+    // to:urlpattern("match-later-r4") should match.
+    state = "to match-later-r4";
+    assert_equals(getComputedStyle(target).width, "7px", state);
+    assert_equals(getComputedStyle(target).height, "7px", state);
+    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
+    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
+    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
+    assert_equals(getComputedStyle(target).marginRight, "80px", state);
+    assert_invariants();
+    await finished.promise;
+    // Nothing should match.
+    assert_no_matches("at match-later-r4");
+  }, "Between routes");
+</script>

@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -991,17 +992,31 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 StyleRuleRoute::StyleRuleRoute(const String& name,
+                               URLPattern* url_pattern,
                                RoutePreposition preposition,
                                HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleCondition(kRoute, std::move(child_rules)),
       name_(name),
-      preposition_(preposition) {}
+      url_pattern_(url_pattern),
+      preposition_(preposition) {
+  // TODO(crbug.com/436805487): If we end up allowing both route names AND
+  // URLPattern in the end, we need to refactor. Maybe use std::variant and
+  // different constructors, as both cannot be set for one and the same route.
+  // It should also be possible to combine multiple routes in a single selector
+  // (with "and"/"or"), that needs to be handled somehow.
+  DCHECK(!name != !url_pattern);
+}
 
 StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other,
                                HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleCondition(kRoute, std::move(child_rules)),
       name_(other.name_),
       preposition_(other.preposition_) {}
+
+void StyleRuleRoute::TraceAfterDispatch(Visitor* v) const {
+  v->Trace(url_pattern_);
+  StyleRuleCondition::TraceAfterDispatch(v);
+}
 
 StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)

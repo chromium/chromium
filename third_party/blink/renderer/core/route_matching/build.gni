@@ -8,6 +8,8 @@ blink_core_sources_route_matching = [
   "route_event.h",
   "route_map.cc",
   "route_map.h",
+  "route_match_state.cc",
+  "route_match_state.h",
   "route_preposition.h",
 ]
 

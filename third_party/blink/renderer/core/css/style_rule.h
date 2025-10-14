@@ -50,6 +50,7 @@ class CSSRule;
 class CSSStyleSheet;
 class CustomEnvBindings;
 class ExecutionContext;
+class URLPattern;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -601,20 +602,21 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
 class StyleRuleRoute : public StyleRuleCondition {
  public:
   StyleRuleRoute(const String& name,
+                 URLPattern* url_pattern,
                  RoutePreposition,
                  HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleRoute(const StyleRuleRoute&) = delete;
   StyleRuleRoute(const StyleRuleRoute&, HeapVector<Member<StyleRuleBase>>);
 
   const String& GetName() const { return name_; }
+  URLPattern* GetURLPattern() const { return url_pattern_; }
   RoutePreposition GetPreposition() const { return preposition_; }
 
-  void TraceAfterDispatch(Visitor* v) const {
-    StyleRuleCondition::TraceAfterDispatch(v);
-  }
+  void TraceAfterDispatch(Visitor*) const;
 
  private:
   String name_;
+  Member<URLPattern> url_pattern_;
   RoutePreposition preposition_;
 };
 
