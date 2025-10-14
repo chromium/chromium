@@ -690,23 +690,7 @@ class WebViewChromium
             mAwInit = mFactory.getAwInit();
             factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium = new SharedWebViewChromium(mFactory.getRunQueue(), mAwInit);
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                // If the app targets >= JB MR2 then we require that WebView is only used from a
-                // single thread. So, we set the current thread as the Chromium  UI thread.
-                mAwInit.maybeSetChromiumUiThread(Looper.myLooper());
-            } else {
-                // For older apps, only the view methods that relate to the view hierarchy must come
-                // from a single thread. Other calls, including the constructor itself, can come
-                // from any thread, and will be posted to the UI thread if necessary. We can't just
-                // use the current thread as the UI thread, because it *is* somewhat common for old
-                // apps to construct WebView on a background thread and then attach it to the view
-                // hierarchy on the main looper. So, we set the Android main looper as the UI thread
-                // for older apps.
-                mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.WebView.Startup.WebViewInitCalledOnAndroidMainLooper",
-                        Looper.getMainLooper() == Looper.myLooper());
-            }
+            mAwInit.maybeSetChromiumUiThread(Looper.myLooper());
         }
     }
 

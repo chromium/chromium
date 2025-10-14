@@ -8879,20 +8879,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.WebView.Startup.WebViewInitCalledOnAndroidMainLooper"
-    enum="Boolean" expires_after="2026-05-26">
-  <owner>abhijithnair@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Reports whether or not `WebViewChromium#init` is called on the main looper.
-
-    This will be emitted each time within a call to the WebView constructor.
-
-    Only recorded on Android WebView on apps whose target SDK version is less
-    than JELLY_BEAN_MR2.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.StorageAccessAutoGrantTime" units="ms"
     expires_after="2025-07-26">
   <owner>bewise@chromium.org</owner>
