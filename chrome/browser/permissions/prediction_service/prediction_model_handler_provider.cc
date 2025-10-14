@@ -9,12 +9,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/request_type.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/download/public/background_service/download_params.h"
+#endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/permissions/prediction_service/prediction_model_handler.h"
@@ -100,14 +105,22 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
 
   if (IsAiv4ModelAvailable()) {
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";
-    // TODO(crbug.com/382447738) for android, set scheduling parameters that
-    // take account for limited internet connection and battery.
+#if BUILDFLAG(IS_ANDROID)
+    download::SchedulingParams scheduling_params;
+    scheduling_params.priority = download::SchedulingParams::Priority::HIGH;
+    scheduling_params.battery_requirements =
+        download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE;
+    scheduling_params.network_requirements =
+        download::SchedulingParams::NetworkRequirements::UNMETERED;
+#else
+    std::optional<download::SchedulingParams> scheduling_params = std::nullopt;
+#endif
     notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide, getNotificationsAiv4OptTarget(),
-        RequestType::kNotifications, std::nullopt);
+        RequestType::kNotifications, scheduling_params);
     geolocation_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide, getGeolocationAiv4OptTarget(),
-        RequestType::kGeolocation, std::nullopt);
+        RequestType::kGeolocation, scheduling_params);
     return;
   }
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
