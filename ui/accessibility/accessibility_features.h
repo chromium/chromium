@@ -325,8 +325,8 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kDataCollectionModeForScreen2x);
 AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
 
 // Enable Immersive Mode for Read Anything.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImmersiveReadingMode);
-AX_BASE_EXPORT bool IsImmersiveReadingModeEnabled();
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImmersiveReadAnything);
+AX_BASE_EXPORT bool IsImmersiveReadingAnythingEnabled();
 
 // Identify and annotate the main node of the AXTree where one was not already
 // provided.

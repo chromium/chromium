@@ -406,9 +406,9 @@ bool IsDataCollectionModeForScreen2xEnabled() {
       ::features::kDataCollectionModeForScreen2x);
 }
 
-BASE_FEATURE(kImmersiveReadingMode, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsImmersiveReadingModeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kImmersiveReadingMode);
+BASE_FEATURE(kImmersiveReadAnything, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsImmersiveReadingAnythingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kImmersiveReadAnything);
 }
 
 BASE_FEATURE(kMainNodeAnnotations, base::FEATURE_DISABLED_BY_DEFAULT);
