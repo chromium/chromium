@@ -406583,6 +406583,10 @@
         "inflight-fetch-redirects-expected.txt": [
          "ba35bd1eae99b0b84fc266bedeba883a0653952f",
          []
+        ],
+        "shared-worker-expected.txt": [
+         "d251a84950de5464da310204a9870f1dc939b530",
+         []
         ]
        },
        "focus-expected.txt": [
@@ -431972,8 +431976,8 @@
        "aabc5015a963f65d1de8e6e9f8c2742639958dac",
        []
       ],
-      "opener-postMessage-onload.html": [
-       "97e1d82058c96eb3981065e720cbdbe2d5f056c9",
+      "opener-postMessage-onpageshow.html": [
+       "4507c8b8f392705a774268df4c6b7e7320d2a8ca",
        []
       ]
      }
@@ -448745,16 +448749,16 @@
      []
     ],
     "bfcache": {
-     "held.tentative.https-expected.txt": [
-      "2ceced94b5eb4262dcce9209ef1e06afb0e9c44d",
+     "abort.tentative.https-expected.txt": [
+      "b8b8f2e0be08062aab5f5bbb8dc045dfab5ed35a",
       []
      ],
      "helpers.js": [
       "7997f982a8f748281c21e1be05c9c74407600fe2",
       []
      ],
-     "sharedworker-multiple.tentative.https-expected.txt": [
-      "ee57367e45bf718b8fd2d2b85970f5ad5eb4c8c8",
+     "release.tentative.https-expected.txt": [
+      "6696de06b8f3c254ce619c93135e978817ac6876",
       []
      ]
     },
@@ -621339,6 +621343,37 @@
           }
          ]
         ],
+        "shared-worker-active-client.window.js": [
+         "6676d5c44fb21de24eb7900cc798cf0a3d475e2e",
+         [
+          "html/browsers/browsing-the-web/back-forward-cache/eligibility/shared-worker-active-client.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "BFCache is allowed for a page with SharedWorker if another client is active."
+            ],
+            [
+             "script",
+             "/common/utils.js"
+            ],
+            [
+             "script",
+             "/common/dispatcher/dispatcher.js"
+            ],
+            [
+             "script",
+             "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
         "shared-worker.html": [
          "77139fd08aa0d4348bd221300467fbcbed60fb65",
          [
@@ -695979,7 +696014,7 @@
     },
     "navigate-event": {
      "cross-origin-traversal-does-not-fire-navigate.html": [
-      "36491be22c9e7dad38fb711024cfa35488d68a2e",
+      "58e7268f0096cf1f7f52f32907d86fc7f43d622f",
       [
        null,
        {}
@@ -696638,7 +696673,7 @@
       ]
      ],
      "navigation-back-cross-document-preventDefault.html": [
-      "0b5b750876d7775d352d6471f118d882a259669f",
+      "ee9a2f60d5f1d990d4fff95359a78dd05b98ed59",
       [
        null,
        {}
