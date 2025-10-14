@@ -10,9 +10,6 @@ source_set("chromeos") {
     "ash_mojom_video_consumer.h",
     "ash_proxy.cc",
     "ash_proxy.h",
-    "audio_helper_chromeos.h",
-    "audio_helper_chromeos_impl.cc",
-    "audio_helper_chromeos_impl.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
     "frame_sink_desktop_capturer.cc",
@@ -46,7 +43,6 @@ source_set("chromeos") {
 
   deps = [
     ":features",
-    "//media/mojo/common",
     "//remoting/base",
     "//remoting/host:clipboard",
     "//ui/base/cursor/mojom:cursor_type",
@@ -142,7 +138,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "audio_helper_chromeos_impl_unittest.cc",
     "clipboard_aura_unittest.cc",
     "file_session_storage_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
@@ -164,7 +159,6 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/viz/service",
     "//content/public/browser",
-    "//media:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
