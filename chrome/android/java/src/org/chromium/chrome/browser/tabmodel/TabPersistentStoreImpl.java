@@ -16,7 +16,6 @@ import android.util.SparseIntArray;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
@@ -1238,11 +1237,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mMetadataSaveMode == MetadataSaveMode.SAVING_ALLOWED) {
             mMetadataSaveMode = MetadataSaveMode.PAUSED_AND_CLEAN;
         }
-    }
-
-    @Override
-    public void resumeSaveTabList() {
-        resumeSaveTabList(CallbackUtils.emptyRunnable());
     }
 
     @Override

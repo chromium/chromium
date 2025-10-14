@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -23,21 +24,24 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
-public class TabStateStore {
+public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
 
     private final TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
+    private final TabModelSelector mTabModelSelector;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
-    private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
-    private final TabMoveObserver mTabMoveObserver;
+
+    private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
+    private @Nullable TabMoveObserver mTabMoveObserver;
 
     private class InnerRegistrationObserver
             implements TabModelSelectorTabRegistrationObserver.Observer {
@@ -80,23 +84,123 @@ public class TabStateStore {
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager) {
         mTabStateStorageService = tabStateStorageService;
+        mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
-        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(tabModelSelector);
+    }
+
+    @Override
+    public void onNativeLibraryReady() {
+        assert mTabRegistrationObserver == null && mTabMoveObserver == null;
+        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
                 new InnerRegistrationObserver());
 
-        mTabMoveObserver = new TabMoveObserver(tabModelSelector.getModel(/* incognito= */ false));
-        // TODO(https://crbug.com/427254267): Watch for incognito as well eventually. But before
+        mTabMoveObserver = new TabMoveObserver(mTabModelSelector.getModel(/* incognito= */ false));
+        // TODO(https://crbug.com/451614469): Watch for incognito as well eventually. But before
         // things are fully functional, do not write any incognito data to avoid regressing on
         // privacy.
+    }
 
+    @Override
+    public void waitForMigrationToFinish() {
+        // Not relevant for this impl.
+    }
+
+    @Override
+    public void saveState() {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void loadState(boolean ignoreIncognitoFiles) {
         loadAllTabsFromService();
     }
 
-    /** Cleans up observation. */
+    @Override
+    public void mergeState() {
+        // Not currently supported by this impl.
+        assert false;
+    }
+
+    @Override
+    public void restoreTabs(boolean setActiveTab) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void restoreTabStateForUrl(String url) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void restoreTabStateForId(int id) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public int getRestoredTabCount() {
+        // TODO(https://crbug.com/448151052): Implement.
+        return 0;
+    }
+
+    @Override
+    public void clearState() {
+        // TODO(https://crbug.com/448151845): Raze the db.
+    }
+
+    @Override
+    public void cancelLoadingTabs(boolean incognito) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void removeTabFromQueues(Tab tab) {
+        // Not relevant to impl.
+    }
+
+    @Override
     public void destroy() {
-        mTabRegistrationObserver.destroy();
-        mTabMoveObserver.destroy();
+        if (mTabRegistrationObserver != null) {
+            mTabRegistrationObserver.destroy();
+        }
+        if (mTabMoveObserver != null) {
+            mTabMoveObserver.destroy();
+        }
+    }
+
+    @Override
+    public void saveTabListAsynchronously() {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void pauseSaveTabList() {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void resumeSaveTabList() {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void cleanupStateFile(int instanceId) {
+        // TODO(https://crbug.com/451624258): Implement.
+    }
+
+    @Override
+    public void addObserver(TabPersistentStoreObserver observer) {
+        // TODO(https://crbug.com/448151052): Implement.
+    }
+
+    @Override
+    public void removeObserver(TabPersistentStoreObserver observer) {
+        // TODO(https://crbug.com/448151052): Implement.
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -185,7 +186,9 @@ public interface TabPersistentStore {
     void pauseSaveTabList();
 
     /** See {@link #resumeSaveTabList(Runnable)}. */
-    void resumeSaveTabList();
+    default void resumeSaveTabList() {
+        resumeSaveTabList(CallbackUtils.emptyRunnable());
+    }
 
     /**
      * Resumes the async saving of the tab state, then kicks off an AsyncTask to save the current
