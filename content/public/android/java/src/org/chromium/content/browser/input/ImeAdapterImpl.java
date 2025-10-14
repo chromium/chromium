@@ -392,7 +392,9 @@ public class ImeAdapterImpl
                 && Build.VERSION.SDK_INT <= 38) {
             int unicodeChar = event.getUnicodeChar();
             int action = event.getAction();
-            if (action == KeyEvent.ACTION_DOWN && unicodeChar != 0) {
+            if (action == KeyEvent.ACTION_DOWN
+                    && unicodeChar != 0
+                    && (unicodeChar & KeyCharacterMap.COMBINING_ACCENT) == 0) {
                 removeOldKeyDownEvents();
                 mKeyDownEvents.add(new KeyEvent(event));
                 long maxQueueSize = 1000;
