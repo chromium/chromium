@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -1463,18 +1464,61 @@ void PrefetchContainer::AddClientHintsHeaders(
     return;
   }
 
-  // TODO(crbug.com/41497015): Consider supporting UA override mode here
+  auto* referring_ftn = base::FeatureList::IsEnabled(
+                            features::kPrefetchDevtoolsUserAgentOverride) &&
+                                request().referring_web_contents()
+                            ? FrameTreeNode::From(RenderFrameHostImpl::FromID(
+                                  request()
+                                      .referring_web_contents()
+                                      ->GetPrimaryMainFrame()
+                                      ->GetGlobalId()))
+                            : nullptr;
+
+  // TODO(crbug.com/41497015): Consider supporting UA override mode here.
   const bool is_ua_override_on = false;
   net::HttpRequestHeaders client_hints_headers;
   if (request().is_javascript_enabled()) {
+    // Add Client Hints headers
+    //
     // Historically, `AddClientHintsHeadersToPrefetchNavigation` added
     // Client Hints headers iff `request().is_javascript_enabled()`, so the `if`
     // block here is to persist the behavior.
     // TODO(crbug.com/394716357): Revisit if we really want to allow prefetch
     // for non-Javascript enabled profile/origins.
+    //
+    // The request headers added by `referring_ftn` is the initial guess for the
+    // request headers that will be used in the navigations served by this
+    // prefetch, and can be different from the navigation target's
+    // `FrameTreeNode` (crbug.com/444065296).
+    // TODO(crbug.com/444065296): Validate the Client Hint headers added here
+    // using `referring_ftn` against the navigation request's headers.
     AddClientHintsHeadersToPrefetchNavigation(
         origin, &client_hints_headers, request().browser_context(),
-        client_hints_delegate, is_ua_override_on);
+        client_hints_delegate, is_ua_override_on, referring_ftn);
+
+    // This is an initial guess (crbug.com/444065296), e.g. ideally, the
+    // DevTools UA overrides of the navigation target FrameTreeNode should be
+    // used, but this is not available at the time of prefetch, so we use the
+    // prefetch initiator's FrameTreeNode instead as an initial guess.
+    // TODO(crbug.com/444065296): Validate the header against the actual
+    // navigation's request header.
+    //
+    // For now, we only apply a part of
+    // `devtools_instrumentation::ApplyNetworkRequestOverrides()` which is
+    // applied to navigational request in
+    // `NavigationRequest::OnStartChecksComplete()`.
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchDevtoolsUserAgentOverride) &&
+        referring_ftn && RenderFrameDevToolsAgentHost::GetFor(referring_ftn)) {
+      // Add/override `User-Agent` headers for DevTools emulation mode  by
+      // `referring_ftn`'s devtools emulation mode.
+      // TODO(crbug.com/422193319): This part only addresses devtools emulation
+      // mode UA override. There are other types of UA overrides, which are at
+      // WebContents level.
+      devtools_instrumentation::ApplyEmulationOverrides(
+          RenderFrameDevToolsAgentHost::GetFor(referring_ftn),
+          &client_hints_headers);
+    }
   }
 
   // Merge in the client hints which are suitable to include given this is a

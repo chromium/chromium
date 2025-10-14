@@ -12,12 +12,11 @@ void AddClientHintsHeadersToPrefetchNavigation(
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on) {
-  // TODO(crbug.com/422193319): Specify the correct FrameTreeNode for DevTools
-  // to support DevTools-initiated UA overrides.
-  AddPrefetchNavigationRequestClientHintsHeaders(
-      origin, headers, context, delegate, is_ua_override_on,
-      /*ftn_for_devtools_override=*/nullptr);
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_devtools_override) {
+  AddPrefetchNavigationRequestClientHintsHeaders(origin, headers, context,
+                                                 delegate, is_ua_override_on,
+                                                 ftn_for_devtools_override);
 }
 
 }  // namespace content

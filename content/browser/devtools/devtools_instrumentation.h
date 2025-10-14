@@ -18,13 +18,15 @@
 #include "base/values.h"
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/devtools/protocol/emulation_handler.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream_type.h"
@@ -102,6 +104,14 @@ class InspectorIssue;
 
 namespace devtools_instrumentation {
 
+// Struct which holds output parameters for functions such as
+// `ApplyEmulationOverrides`.
+// TODO(robertlin): Make `ApplyNetworkRequestOverrides` use this struct as well.
+struct DevtoolsOverriddenOutputParams {
+  bool user_agent_overridden = false;
+  bool accept_language_overridden = false;
+};
+
 // Applies network request overrides to the auction worklet's network
 // request. Will set `network_instrumentation_enabled` to true if there is a
 // network handler listening. Also handles whether cache is disabled or not.
@@ -124,6 +134,14 @@ void ApplyNetworkRequestOverrides(
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden,
     GURL* referrer_override);
+
+// If this function overrides the `User-Agent` header, it sets the returned
+// `user_agent_overridden` to true; otherwise, false. If this function overrides
+// the `Accept-Language` header, it sets the returned
+// `accept_language_overridden` to true; otherwise, false.
+DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
+    DevToolsAgentHostImpl* agent_host,
+    net::HttpRequestHeaders* headers);
 
 // Returns true if devtools want |*override_out| to be used.
 // (A true return and |*override_out| being nullopt means no user agent client

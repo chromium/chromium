@@ -879,6 +879,25 @@
     ]
   },
   {
+    "prefix": "enable-prefetch-devtools-ua-override",
+    "owners": [
+      "robertlin@chromium.org"
+    ],
+    "platforms": [
+      "Mac",
+      "Win",
+      "Linux"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/prefetch/prefetch-ua-override.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=PrefetchDevtoolsUserAgentOverride"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
     "prefix": "enable-purpose-prefetch-header",
     "owners": [
       "stevenwei@microsoft.com"
