@@ -157,9 +157,11 @@ syncer::DataTypeSyncBridge* ValuableSyncBridge::FromWebDataService(
 }
 
 bool ValuableSyncBridge::SupportsIncrementalUpdates() const {
-  // TODO(crbug.com/): Enable support for incremental updates behind a kill
-  // switch.
-  return false;
+  // To allow write requests for sync types that are always fully downloaded,
+  // the client must be able to process incremental updates locally, despite the
+  // server not supporting them.
+  return IsSyncWalletFlightReservationsEnabled() ||
+         IsSyncWalletVehicleRegistrationsEnabled();
 }
 
 AutofillSyncMetadataTable* ValuableSyncBridge::GetSyncMetadataStore() {

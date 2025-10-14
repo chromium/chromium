@@ -283,7 +283,7 @@ TEST_F(ValuableSyncBridgeTest, GetClientTag) {
 }
 
 TEST_F(ValuableSyncBridgeTest, SupportsIncrementalUpdates) {
-  EXPECT_FALSE(bridge().SupportsIncrementalUpdates());
+  EXPECT_TRUE(bridge().SupportsIncrementalUpdates());
 }
 
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
