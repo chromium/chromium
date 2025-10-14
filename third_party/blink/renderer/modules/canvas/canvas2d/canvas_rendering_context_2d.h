@@ -350,7 +350,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void DropAndRecreateExistingResourceProvider();
 
   // This method should be called only when `resource_provider_` is null.
-  void RecreateCanvasResourceProviderForCanvas2D();
+  void RecreateResourceProvider();
 
   void WakeUpFromHibernation();
 

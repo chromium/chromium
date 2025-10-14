@@ -1394,7 +1394,7 @@ CanvasRenderingContext2D::GetOrCreateResourceProvider() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  RecreateCanvasResourceProviderForCanvas2D();
+  RecreateResourceProvider();
 
   canvas()->UpdateMemoryUsage();
 
@@ -1441,7 +1441,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   }
 
   // Bail out if it's not possible to create a new provider.
-  RecreateCanvasResourceProviderForCanvas2D();
+  RecreateResourceProvider();
   if (!resource_provider_) {
     return;
   }
@@ -1452,7 +1452,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   canvas()->UpdateMemoryUsage();
 }
 
-void CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
+void CanvasRenderingContext2D::RecreateResourceProvider() {
   CHECK(GetHibernationHandler());
   CHECK(!resource_provider_);
 
