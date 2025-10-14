@@ -304,6 +304,10 @@ BrowserViewLayoutDelegateImpl::GetBoundsForWebAppFrameToolbarInBrowserView()
 
   const auto layout = GetFrameView()->GetBrowserLayoutParams();
   gfx::RectF bounds_f = gfx::RectF(layout.visual_client_area);
+  // Note: on Mac in fullscreen these exclusions have zero width, but may still
+  // have nonzero height to ensure that the top area has the same height as it
+  // would have had if they were present; see https://crbug.com/450817281 for
+  // why this is needed.
   const float max_bound =
       std::max(layout.leading_exclusion.content.height() +
                    layout.leading_exclusion.vertical_padding,

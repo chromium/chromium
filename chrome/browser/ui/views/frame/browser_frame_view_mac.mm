@@ -210,12 +210,19 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForWebAppFrameToolbar(
 }
 
 BrowserLayoutParams BrowserFrameViewMac::GetBrowserLayoutParams() const {
+  auto params = BrowserFrameView::GetBrowserLayoutParams();
   if (browser_view()->IsFullscreen()) {
     // No insets for caption buttons in fullscreen, since caption buttons are on
-    // a separate pane that slides in.
-    return BrowserLayoutParams{.visual_client_area = GetBoundsForClientView()};
+    // a separate pane that slides in. However, preserve the height of the
+    // caption area to ensure that the toolbar renders correctly (this is kind
+    // of a hack but it prevents having to insert random hard-coded constants -
+    // which is worse - see https://crbug.com/450817281).
+    params.leading_exclusion.content.set_width(0);
+    params.leading_exclusion.horizontal_padding = 0;
+    params.trailing_exclusion.content.set_width(0);
+    params.trailing_exclusion.horizontal_padding = 0;
   }
-  return BrowserFrameView::GetBrowserLayoutParams();
+  return params;
 }
 
 int BrowserFrameViewMac::GetTopInset(bool restored) const {
