@@ -255,22 +255,24 @@ void ClientResourceProvider::PrepareSendToParent(
     imports.push_back(&it->second);
   }
 
-  static auto can_verify_resource =
-      [](const ImportedResource* imported_resource) {
-        CHECK(imported_resource);
-        return !imported_resource->resource.is_software &&
-               !imported_resource->resource.sync_token().verified_flush();
-      };
-
   if (shared_image_interface) {
-    shared_image_interface->VerifySyncTokens(
-        imports, [](ImportedResource* imported) {
-          return can_verify_resource(imported)
-                     ? &imported->resource.mutable_sync_token()
-                     : nullptr;
-        });
+    // Note for this lamdba -> gpu::SyncToken& is required as implicit auto
+    // decays removing the reference
+    static auto get_sync_token =
+        [](ImportedResource* imported_resource) -> gpu::SyncToken& {
+      CHECK(imported_resource);
+      return imported_resource->resource.mutable_sync_token();
+    };
+
+    shared_image_interface->VerifySyncTokens(imports, get_sync_token);
   } else {
-    DCHECK(std::none_of(imports.begin(), imports.end(), can_verify_resource));
+    static auto check_is_verified =
+        [](const ImportedResource* imported_resource) {
+          CHECK(imported_resource);
+          return !imported_resource->resource.sync_token().verified_flush();
+        };
+
+    DCHECK(std::none_of(imports.begin(), imports.end(), check_is_verified));
   }
 
   list->reserve(list->size() + imports.size());

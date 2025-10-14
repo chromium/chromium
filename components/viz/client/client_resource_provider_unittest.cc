@@ -150,8 +150,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
   gpu::SyncToken verified_sync_token = tran.sync_token();
-  if (!tran.is_software)
-    verified_sync_token.SetVerifyFlush();
+  verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
   EXPECT_EQ(exported[0].is_software, tran.is_software);
   EXPECT_EQ(exported[0].size, tran.size);
@@ -196,8 +195,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
   // verified if it's a gpu resource.
   for (int i = 0; i < 2; ++i) {
     gpu::SyncToken verified_sync_token = tran[i].sync_token();
-    if (!tran[i].is_software)
-      verified_sync_token.SetVerifyFlush();
+    verified_sync_token.SetVerifyFlush();
     EXPECT_EQ(exported[i].id, to_send[i]);
     EXPECT_EQ(exported[i].is_software, tran[i].is_software);
     EXPECT_EQ(exported[i].size, tran[i].size);

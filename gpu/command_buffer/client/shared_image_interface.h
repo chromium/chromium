@@ -347,30 +347,30 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   // if there is anything to sync.
   //
   // The `proj` parameter allows using this function with ranges containing
-  // elements other than raw gpu::SyncToken pointers. For example to handle a
+  // elements other than gpu::SyncToken references. For example to handle a
   // vector of unique_ptrs, use:
-  // `[](const auto& p) { return p.get(); }`
+  // `[](const auto& p) { return *p.get(); }`
   template <std::ranges::input_range Range, typename Proj = std::identity>
     requires std::convertible_to<
         std::invoke_result_t<Proj&, std::ranges::range_reference_t<Range>>,
-        gpu::SyncToken*>
+        gpu::SyncToken&>
   void VerifySyncTokens(Range&& sync_token_range, Proj proj = {}) {
     bool flush_required = false;
     for (auto const& element : sync_token_range) {
-      gpu::SyncToken* const sync_token = proj(element);
-      if (!sync_token || sync_token->verified_flush()) {
+      gpu::SyncToken& sync_token = proj(element);
+      if (sync_token.verified_flush()) {
         continue;
       }
 
-      if (!sync_token->HasData()) {
-        sync_token->SetVerifyFlush();
+      if (!sync_token.HasData()) {
+        sync_token.SetVerifyFlush();
         continue;
       }
 
-      if (CanVerifySyncToken(*sync_token)) {
+      if (CanVerifySyncToken(sync_token)) {
         flush_required = true;
 
-        sync_token->SetVerifyFlush();
+        sync_token.SetVerifyFlush();
       }
     }
 
