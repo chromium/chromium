@@ -25,7 +25,7 @@ void CreateBrowserWindow(
 BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
     Profile& profile) {
   if (profile.ShutdownStarted()) {
-    return BrowserWindowInterface::CreationStatus::kErrorNoProcess;
+    return BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable;
   }
 
   return BrowserWindowInterface::CreationStatus::kOk;

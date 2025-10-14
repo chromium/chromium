@@ -101,7 +101,7 @@ void CreateBrowserWindow(
 BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
     Profile& profile) {
   if (!g_browser_process || g_browser_process->IsShuttingDown()) {
-    return BrowserWindowInterface::CreationStatus::kErrorNoProcess;
+    return BrowserWindowInterface::CreationStatus::kErrorShuttingDown;
   }
 
   if (!IncognitoModePrefs::CanOpenBrowser(&profile) ||

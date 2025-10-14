@@ -179,12 +179,14 @@ class BrowserWindowInterface : public content::PageNavigator {
   enum class CreationStatus {
     // A new browser window can be created.
     kOk,
+
     // Indicates that the browser is shutting down.
-    // TODO(devlin): Why not call this kErrorShuttingDown? That's more clear.
-    kErrorNoProcess,
+    kErrorShuttingDown,
+
     // Indicates the profile is unsuitable for a new window. This can happen for
     // profiles that don't allow new windows, like certain incognito profiles or
-    // other special profiles (signin screen, etc).
+    // other special profiles (signin screen, etc) or if the profile is shutting
+    // down.
     kErrorProfileUnsuitable,
 
   // TODO(devlin): Update this to be BUILDFLAG(IS_CHROMEOS). That's the only
