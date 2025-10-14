@@ -341,6 +341,9 @@ class ServiceWorkerTaskQueue
     RE_REGISTER_ON_TIMEOUT,
   };
 
+  // Manages registration/start retry attempts with exponential backoff.
+  struct RetryState;
+
   // KeyedService:
   void Shutdown() override;
 
@@ -359,17 +362,9 @@ class ServiceWorkerTaskQueue
   void DispatchTasksImmediately(const SequencedContextId& context_id,
                                 base::span<PendingTask> tasks);
 
-  // Checks if the `activation_token` has any more worker registration retries
-  // left. Retries are only performed on registration timeout and up to 3 times
-  // before silently failing.
-  bool ShouldRetryRegistrationRequest(
-      const base::UnguessableToken& activation_token) const;
-
-  // Checks if the `activation_token` has any more worker start retries
-  // left. Retries are only performed for retryable error codes and up to 3
-  // times before silently failing.
-  bool ShouldRetryStartRequest(
-      const base::UnguessableToken& activation_token,
+  // Returns true if a service worker start failure is transient and should be
+  // retried, false otherwise.
+  bool IsStartFailureRetryable(
       blink::ServiceWorkerStatusCode status_code) const;
 
   // Callbacks called when the worker is registered or unregistered,
@@ -469,8 +464,27 @@ class ServiceWorkerTaskQueue
   void MaybeStartWorker(ServiceWorkerState* worker_state,
                         const SequencedContextId& context_id);
 
+  // Attempts to register the worker again after a previous failure.
+  void RetryRegisterServiceWorker(const SequencedContextId& context_id,
+                                  RegistrationReason reason);
+
   // Attempts to start the worker again after a previous failure.
   void RetryStartWorker(const SequencedContextId& context_id);
+
+  using RetryMap =
+      std::map<base::UnguessableToken, std::unique_ptr<RetryState>>;
+
+  // Schedules a retry attempt using the provided map. Returns true if a retry
+  // was scheduled, false if retries are exhausted.
+  bool ScheduleRetry(const base::UnguessableToken& token,
+                     RetryMap& retry_map,
+                     base::OnceClosure retry_callback);
+
+  // Clears retry state from the given map and logs metrics.
+  void ClearRetryState(const base::UnguessableToken& token,
+                       RetryMap& retry_map,
+                       const char* histogram_name,
+                       bool success);
 
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.
@@ -506,13 +520,11 @@ class ServiceWorkerTaskQueue
   // Current activation tokens for each activated extensions.
   std::map<ExtensionId, base::UnguessableToken> activation_tokens_;
 
-  // The number of times that a worker start request has been retried
-  // for an activation token.
-  std::map<base::UnguessableToken, int> worker_start_retry_attempts_;
+  // Manages worker start retries for an activation token.
+  RetryMap worker_start_retries_;
 
-  // The number of times that a worker registration request has been retried
-  // for an activation token.
-  std::map<base::UnguessableToken, int> worker_reregistration_attempts_;
+  // Manages worker registration retries for an activation token.
+  RetryMap worker_registration_retries_;
 
   // A set of service worker registrations that are pending storage.
   // These are registrations that succeeded in the first step (triggering

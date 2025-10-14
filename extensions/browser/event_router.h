@@ -599,7 +599,11 @@ struct Event {
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
   // tab only works if extension is allowed incognito access).
-  const raw_ptr<content::BrowserContext> restrict_to_browser_context;
+  // NOTE: The Event may outlive the BrowserContext during shutdown.
+  // That's not an issue because this pointer is only used for comparison and is
+  // not dereferenced.
+  const raw_ptr<content::BrowserContext, DisableDanglingPtrDetection>
+      restrict_to_browser_context;
 
   // If present, then the event will only be sent to this context type.
   const std::optional<mojom::ContextType> restrict_to_context_type;
