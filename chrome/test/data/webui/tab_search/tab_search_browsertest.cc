@@ -15,7 +15,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, App) {
   RunTest("tab_search/tab_search_app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, Page) {
+// TODO(crbug.com/451682396): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Page DISABLED_Page
+#else
+#define MAYBE_Page Page
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchTest, MAYBE_Page) {
   RunTest("tab_search/tab_search_page_test.js", "mocha.run()");
 }
 
