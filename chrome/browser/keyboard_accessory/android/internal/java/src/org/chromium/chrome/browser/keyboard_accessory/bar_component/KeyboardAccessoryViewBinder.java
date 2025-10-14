@@ -44,8 +44,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.GroupBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
@@ -90,6 +92,8 @@ class KeyboardAccessoryViewBinder {
                 return new BarItemTextViewHolder(parent, viewType);
             case BarItem.Type.ACTION_CHIP:
                 return new BarItemActionChipViewHolder(parent);
+            case BarItem.Type.GROUP:
+                return new BarItemGroupViewHolder(keyboarAccessory, uiConfiguration, parent);
             default:
                 throw new IllegalStateException("Action type " + viewType + " was not handled!");
         }
@@ -141,6 +145,35 @@ class KeyboardAccessoryViewBinder {
         protected static boolean useLargeChips(Context context) {
             return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
                     && context.getResources().getConfiguration().fontScale >= LARGE_FONT_THRESHOLD;
+        }
+    }
+
+    static class BarItemGroupViewHolder
+            extends BarItemViewHolder<GroupBarItem, KeyboardAccessoryChipGroup> {
+        private final KeyboardAccessoryView mKeyboardAccessory;
+        private final UiConfiguration mUiConfiguration;
+        private final ViewGroup mParent;
+
+        BarItemGroupViewHolder(
+                KeyboardAccessoryView keyboarAccessory,
+                UiConfiguration uiConfiguration,
+                ViewGroup parent) {
+            super(new KeyboardAccessoryChipGroup(parent.getContext()));
+            mKeyboardAccessory = keyboarAccessory;
+            mUiConfiguration = uiConfiguration;
+            mParent = parent;
+        }
+
+        @Override
+        protected void bind(GroupBarItem group, KeyboardAccessoryChipGroup chipGroup) {
+            chipGroup.removeAllViews();
+            for (ActionBarItem item : group.getActionBarItems()) {
+                BarItemViewHolder viewHolder =
+                        create(mKeyboardAccessory, mUiConfiguration, mParent, item.getViewType());
+
+                viewHolder.bind(item, viewHolder.itemView);
+                chipGroup.addView(viewHolder.itemView);
+            }
         }
     }
 
@@ -310,7 +343,7 @@ class KeyboardAccessoryViewBinder {
         }
     }
 
-    static class BarItemTextViewHolder extends BarItemViewHolder<BarItem, TextView> {
+    static class BarItemTextViewHolder extends BarItemViewHolder<ActionBarItem, TextView> {
         private final @BarItem.Type int mBarItemType;
 
         BarItemTextViewHolder(ViewGroup parent, @BarItem.Type int barItemType) {
@@ -322,7 +355,7 @@ class KeyboardAccessoryViewBinder {
         }
 
         @Override
-        public void bind(BarItem barItem, TextView textView) {
+        public void bind(ActionBarItem barItem, TextView textView) {
             KeyboardAccessoryData.Action action = barItem.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             textView.setText(barItem.getCaptionId());
@@ -377,13 +410,13 @@ class KeyboardAccessoryViewBinder {
         }
     }
 
-    static class BarItemActionChipViewHolder extends BarItemViewHolder<BarItem, ChipView> {
+    static class BarItemActionChipViewHolder extends BarItemViewHolder<ActionBarItem, ChipView> {
         BarItemActionChipViewHolder(ViewGroup parent) {
             super(new ChipView(parent.getContext(), null, 0, selectStyle(parent.getContext())));
         }
 
         @Override
-        protected void bind(BarItem item, ChipView chipView) {
+        protected void bind(ActionBarItem item, ChipView chipView) {
             chipView.getPrimaryTextView().setText(item.getCaptionId());
             @Nullable Action action = item.getAction();
             if (action != null) {

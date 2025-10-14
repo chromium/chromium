@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
@@ -84,6 +85,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -185,13 +187,13 @@ public class KeyboardAccessoryControllerTest {
         verify(mMockActionListObserver).onItemRangeChanged(mModel.get(BAR_ITEMS), 0, 1, null);
         verify(mMockActionListObserver).onItemRangeInserted(mModel.get(BAR_ITEMS), 1, 1);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2)); // Plus tab switcher.
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(equalTo(testAction)));
+        assertThat(flattenItemGroups().get(0).getAction(), is(equalTo(testAction)));
 
         // If the coordinator receives a new set of actions, the model should report a change.
         testProvider.notifyObservers(new Action[] {testAction});
         verify(mMockActionListObserver).onItemRangeChanged(mModel.get(BAR_ITEMS), 0, 2, null);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2)); // Plus tab switcher.
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(equalTo(testAction)));
+        assertThat(flattenItemGroups().get(0).getAction(), is(equalTo(testAction)));
 
         // If the coordinator receives an empty set of actions, the model should report a deletion.
         testProvider.notifyObservers(new Action[] {});
@@ -260,9 +262,9 @@ public class KeyboardAccessoryControllerTest {
 
         // CredManAction should come later than suggestions but before the tab layout.
         assertThat(mModel.get(BAR_ITEMS).size(), is(5));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
+        assertThat(flattenItemGroups().get(0).getAction(), is(generationAction));
         assertThat(
-                mModel.get(BAR_ITEMS).get(0).getCaptionId(),
+                flattenItemGroups().get(0).getCaptionId(),
                 is(R.string.password_generation_accessory_button));
         assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
         AutofillBarItem autofillBarItem1 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(1);
@@ -272,8 +274,8 @@ public class KeyboardAccessoryControllerTest {
         AutofillBarItem autofillBarItem2 = (AutofillBarItem) mModel.get(BAR_ITEMS).get(2);
         assertThat(autofillBarItem2.getViewType(), is(BarItem.Type.SUGGESTION));
         assertThat(autofillBarItem2.getSuggestion(), is(suggestion2));
-        assertThat(mModel.get(BAR_ITEMS).get(3).getAction(), is(credManAction));
-        assertThat(mModel.get(BAR_ITEMS).get(3).getCaptionId(), is(R.string.select_passkey));
+        assertThat(flattenItemGroups().get(3).getAction(), is(credManAction));
+        assertThat(flattenItemGroups().get(3).getCaptionId(), is(R.string.select_passkey));
         assertThat(mModel.get(BAR_ITEMS).get(4).getViewType(), is(BarItem.Type.TAB_LAYOUT));
     }
 
@@ -297,8 +299,8 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
         AutofillBarItem autofillBarItem = (AutofillBarItem) mModel.get(BAR_ITEMS).get(0);
         assertThat(autofillBarItem.getSuggestion(), is(suggestion));
-        assertThat(mModel.get(BAR_ITEMS).get(1).getAction(), is(credManAction));
-        assertThat(mModel.get(BAR_ITEMS).get(1).getCaptionId(), is(R.string.more_passkeys));
+        assertThat(flattenItemGroups().get(1).getAction(), is(credManAction));
+        assertThat(flattenItemGroups().get(1).getCaptionId(), is(R.string.more_passkeys));
     }
 
     @Test
@@ -316,7 +318,7 @@ public class KeyboardAccessoryControllerTest {
 
         // Autofill suggestions should always come last, independent of when they were added.
         assertThat(mModel.get(BAR_ITEMS).size(), is(4)); // Additional tab switcher
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
+        assertThat(flattenItemGroups().get(0).getAction(), is(generationAction));
         assertThat(mModel.get(BAR_ITEMS).get(1).getViewType(), is(BarItem.Type.SUGGESTION));
         assertThat(
                 ((AutofillBarItem) mModel.get(BAR_ITEMS).get(1)).getSuggestion(), is(suggestion1));
@@ -347,7 +349,7 @@ public class KeyboardAccessoryControllerTest {
         // Drop all Autofill suggestions. Only the generation action should remain.
         mCoordinator.setSuggestions(List.of(), mMockAutofillDelegate);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
+        assertThat(flattenItemGroups().get(0).getAction(), is(generationAction));
 
         // Readd an Autofill suggestion and drop the generation. Only the suggestion should remain.
         mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
@@ -366,7 +368,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mModel.get(BAR_ITEMS).size(), is(1));
         mModel.get(BAR_ITEMS)
                 .add(
-                        new BarItem(
+                        new ActionBarItem(
                                 BarItem.Type.ACTION_BUTTON,
                                 new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                 /* captionId= */ 0));
@@ -539,11 +541,11 @@ public class KeyboardAccessoryControllerTest {
         mModel.get(BAR_ITEMS)
                 .set(
                         new BarItem[] {
-                            new BarItem(
+                            new ActionBarItem(
                                     BarItem.Type.ACTION_BUTTON,
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     0),
-                            new BarItem(
+                            new ActionBarItem(
                                     BarItem.Type.ACTION_BUTTON,
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     1)
@@ -554,11 +556,11 @@ public class KeyboardAccessoryControllerTest {
         mModel.get(BAR_ITEMS)
                 .set(
                         new BarItem[] {
-                            new BarItem(
+                            new ActionBarItem(
                                     BarItem.Type.ACTION_BUTTON,
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     0),
-                            new BarItem(
+                            new ActionBarItem(
                                     BarItem.Type.ACTION_BUTTON,
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     1)
@@ -660,7 +662,7 @@ public class KeyboardAccessoryControllerTest {
         generationProvider.notifyObservers(new Action[] {generationAction});
 
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
+        assertThat(flattenItemGroups().get(0).getAction(), is(generationAction));
         assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
         assertThat(
                 mModel.get(BAR_ITEMS_FIXED),
@@ -680,5 +682,13 @@ public class KeyboardAccessoryControllerTest {
 
     private AutofillBarItem getAutofillItemAt(int position) {
         return (AutofillBarItem) mModel.get(BAR_ITEMS).get(position);
+    }
+
+    private List<ActionBarItem> flattenItemGroups() {
+        List<ActionBarItem> items = new ArrayList<>();
+        for (BarItem item : mModel.get(BAR_ITEMS)) {
+            items.addAll(item.getActionBarItems());
+        }
+        return items;
     }
 }

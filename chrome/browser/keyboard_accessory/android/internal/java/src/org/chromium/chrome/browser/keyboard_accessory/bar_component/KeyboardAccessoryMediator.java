@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualSta
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.BarVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.TabSwitchingDelegate;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
@@ -160,6 +161,8 @@ class KeyboardAccessoryMediator
      *     bar.
      */
     private void setBarContents(List<BarItem> scrollableItems) {
+        // TODO: crbug.com/450830784 - Group the first 2 or 3 suggestions to conditionally limit
+        // their width.
         // TODO(crbug.com/441006939): Show dismiss on first launch too.
         List<BarItem> fixedBarItems = new ArrayList<BarItem>();
         if (mIsLargeFormFactorSupplier.get()
@@ -179,10 +182,12 @@ class KeyboardAccessoryMediator
         List<BarItem> retainedItems = new ArrayList<>();
         // Fallback sheet menu and dismiss button are never retained.
         for (BarItem item : mModel.get(BAR_ITEMS)) {
-            if (item.getAction() == null) continue;
-            if (item.getAction().getActionType() == AccessoryAction.DISMISS) continue;
-            if (item.getAction().getActionType() == actionType) continue;
-            retainedItems.add(item);
+            for (ActionBarItem actionItem : item.getActionBarItems()) {
+                if (actionItem.getAction() == null) continue;
+                if (actionItem.getAction().getActionType() == AccessoryAction.DISMISS) continue;
+                if (actionItem.getAction().getActionType() == actionType) continue;
+                retainedItems.add(actionItem);
+            }
         }
         return retainedItems;
     }
@@ -250,11 +255,11 @@ class KeyboardAccessoryMediator
         return barItems;
     }
 
-    private Collection<BarItem> toBarItems(Action[] actions) {
-        List<BarItem> barItems = new ArrayList<>(actions.length);
+    private Collection<ActionBarItem> toBarItems(Action[] actions) {
+        List<ActionBarItem> barItems = new ArrayList<>(actions.length);
         for (Action action : actions) {
             barItems.add(
-                    new BarItem(
+                    new ActionBarItem(
                             toBarItemType(action.getActionType()),
                             action,
                             getCaptionId(action.getActionType())));

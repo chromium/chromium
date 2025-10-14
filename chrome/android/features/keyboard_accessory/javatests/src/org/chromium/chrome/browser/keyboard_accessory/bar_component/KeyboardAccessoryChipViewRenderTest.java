@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
@@ -263,7 +264,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         BarItem.Type.ACTION_CHIP);
         ChipView chipView = (ChipView) viewHolder.itemView;
         viewHolder.bind(
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_CHIP,
                         credmanAction,
                         org.chromium.chrome.browser.keyboard_accessory.R.string.select_passkey),
@@ -285,7 +286,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         BarItem.Type.ACTION_BUTTON);
         View view = viewHolder.itemView;
         viewHolder.bind(
-                new BarItem(
+                new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
                         generatePasswordAction,
                         org.chromium.chrome.browser.keyboard_accessory.R.string

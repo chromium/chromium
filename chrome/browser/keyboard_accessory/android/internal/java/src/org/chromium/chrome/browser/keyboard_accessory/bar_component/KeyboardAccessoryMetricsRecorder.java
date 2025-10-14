@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
@@ -80,10 +81,13 @@ class KeyboardAccessoryMetricsRecorder {
             assert l == mModel.get(BAR_ITEMS) : "Tried to record metrics for unknown list " + l;
             // Record any unrecorded type, but not more than once (i.e. one set of suggestion).
             for (int index = first; index < first + count; ++index) {
-                KeyboardAccessoryData.Action action = mModel.get(BAR_ITEMS).get(index).getAction();
-                if (action == null) continue; // Item is no relevant action.
-                if (mRecordedActionImpressions.add(action.getActionType())) {
-                    ManualFillingMetricsRecorder.recordActionImpression(action.getActionType());
+                for (ActionBarItem actionBarItem :
+                        mModel.get(BAR_ITEMS).get(index).getActionBarItems()) {
+                    KeyboardAccessoryData.Action action = actionBarItem.getAction();
+                    if (action == null) continue; // Item is no relevant action.
+                    if (mRecordedActionImpressions.add(action.getActionType())) {
+                        ManualFillingMetricsRecorder.recordActionImpression(action.getActionType());
+                    }
                 }
             }
         }
@@ -101,9 +105,12 @@ class KeyboardAccessoryMetricsRecorder {
                 ListObservable<Void> source, int index, int count, @Nullable Void payload) {
             // Remove all actions that were changed, so changes are treated as new recordings.
             for (int i = index; i < index + count; ++i) {
-                KeyboardAccessoryData.Action action = mModel.get(BAR_ITEMS).get(i).getAction();
-                if (action == null) continue; // Item is no recordable action.
-                mRecordedActionImpressions.remove(action.getActionType());
+                for (ActionBarItem actionBarItem :
+                        mModel.get(BAR_ITEMS).get(i).getActionBarItems()) {
+                    KeyboardAccessoryData.Action action = actionBarItem.getAction();
+                    if (action == null) continue; // Item is no recordable action.
+                    mRecordedActionImpressions.remove(action.getActionType());
+                }
             }
             recordUnrecordedList(source, index, count);
         }
