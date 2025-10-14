@@ -70,7 +70,7 @@ class ContextualSearchboxHandler
 
   // SearchboxHandler:
   std::string AutocompleteIconToResourceName(
-      const gfx::VectorIcon& icon) override;
+      const gfx::VectorIcon& icon) const override;
 
  protected:
   std::set<base::UnguessableToken> deleted_context_tokens_;

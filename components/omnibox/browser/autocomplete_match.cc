@@ -1261,11 +1261,11 @@ bool AutocompleteMatch::IsActionCompatible() const {
 }
 
 bool AutocompleteMatch::HasInstantKeyword(
-    TemplateURLService* template_url_service) const {
+    const TemplateURLService* template_url_service) const {
   if (associated_keyword.empty()) {
     return false;
   }
-  TemplateURL* turl =
+  const TemplateURL* turl =
       GetTemplateURLWithKeyword(template_url_service, associated_keyword, "");
   return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
 }
