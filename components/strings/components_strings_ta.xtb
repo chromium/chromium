@@ -19,7 +19,7 @@
 <translation id="1030949145805074938">{COUNT,plural, =0{எதுவுமில்லை}=1{ஒரு தளத்திலிருந்து. பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும். }other{# தளங்களிலிருந்து. பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும். }}</translation>
 <translation id="1035509598913574970">சியான் 3</translation>
 <translation id="1035709686865413354">குடிநீர் வடிகட்டிகள் &amp; சுத்திகரிப்பான்கள்</translation>
-<translation id="1036348656032585052">முடக்கு</translation>
+<translation id="1036348656032585052">ஆஃப் செய்</translation>
 <translation id="1036881361735705143">என்வெலப் C4</translation>
 <translation id="1038842779957582377">அறியப்படாத பெயர்</translation>
 <translation id="1041998700806130099">பணித் தாள் மெசேஜ்</translation>
@@ -4277,7 +4277,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">கட்டண முறை</translation>
 <translation id="8103643211515685474">பரவாயில்லை, அச்சிடு</translation>
-<translation id="8105368624971345109">முடக்கு</translation>
+<translation id="8105368624971345109">ஆஃப் செய்</translation>
 <translation id="810875025413331850">அருகில் சாதனங்கள் இல்லை.</translation>
 <translation id="8116925261070264013">ஒலியடக்கியவை</translation>
 <translation id="8118489163946903409">கட்டண முறை</translation>

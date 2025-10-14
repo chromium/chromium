@@ -4992,7 +4992,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4416582610654027550">Saisissez une URL valide</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{Suspendre cet onglet}one{Suspendre cet onglet}other{Suspendre ces onglets}}</translation>
 <translation id="4419287616181386201">Les mots de passe peuvent être supprimés dans leurs paramètres de gestion</translation>
-<translation id="4421932172707401417">Les suggestions de texte dépendent de vos requêtes et du contenu de la page Web</translation>
+<translation id="4421932172707401417">Les suggestions de texte dépendent de vos prompts et du contenu de la page Web</translation>
 <translation id="4421932782753506458">Félix</translation>
 <translation id="4423376891418188461">Rétablir les paramètres</translation>
 <translation id="4423525817792153232">Montrer toutes vos dents</translation>
@@ -6604,7 +6604,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5575528586625653441">Un problème est survenu avec la demande d'enregistrement en mode de démonstration.</translation>
 <translation id="557722062034137776">La réinitialisation de votre appareil n'a aucune incidence sur vos comptes Google ni sur leurs données synchronisées. Toutefois, tous les fichiers enregistrés en local sur votre appareil vont être supprimés.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
-<translation id="5578387000057347457">Saisissez une requête personnalisée ou mettez du texte en surbrillance pour créer une image</translation>
+<translation id="5578387000057347457">Saisissez un prompt personnalisé ou mettez du texte en surbrillance pour créer une image</translation>
 <translation id="5579225964082017560">Supprimer <ph name="SITE" /> de la liste <ph name="SECTION_HEADER" /></translation>
 <translation id="5581134892342029705">Traduction en <ph name="LANGUAGE" /> terminée</translation>
 <translation id="558170650521898289">Vérification de pilote matériel Microsoft Windows</translation>
