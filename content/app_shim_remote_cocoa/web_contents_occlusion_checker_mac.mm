@@ -11,11 +11,9 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 
@@ -73,7 +71,7 @@ bool IsBrowserProcess() {
 }
 
 + (BOOL)manualOcclusionDetectionSupportedForPackedVersion:(int)version {
-  if (version >= 13'00'00 && version < 13'03'00) {
+  if ((version >= 13'00'00 && version < 13'03'00) || version >= 26'00'00) {
     return NO;
   }
 
