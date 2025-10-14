@@ -132,6 +132,15 @@ def GetActualUserActionsFileContent():
         return f.read()
 
 
+def GetActualActionNames():
+    """Returns the list of action names in the golden file."""
+    actions_content = GetActualUserActionsFileContent()
+    segmentation_actions = set(line.strip()
+                               for line in actions_content.splitlines())
+    segmentation_actions.discard('')
+    return segmentation_actions
+
+
 def GetExpectedUserActionsFileContent():
     """Creates the expected content of the user actions golden file."""
     user_actions = _FindUserActions(MODEL_DIR)
