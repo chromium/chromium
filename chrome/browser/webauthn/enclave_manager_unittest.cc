@@ -312,6 +312,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
   void OnKeysStored() override { stored_count_++; }
+  void OnStateUpdated() override { notified_about_state_update_count_++; }
 
   void DoCreate(
       std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
@@ -498,6 +499,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
 
   base::test::TaskEnvironment task_env_;
   unsigned stored_count_ = 0;
+  unsigned notified_about_state_update_count_ = 0;
   const TempDir temp_dir_;
   const std::pair<base::Process, uint16_t> process_and_port_;
   const enclave::ScopedEnclaveOverride enclave_override_;
@@ -579,6 +581,27 @@ TEST_F(EnclaveManagerTest, Basic) {
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.EnclaveTransactionResult",
       device::enclave::EnclaveTransactionResult::kSuccess, 2);
+}
+
+TEST_F(EnclaveManagerTest,
+       NotifiedAboutStateUpdateAfterStoringKeyAndAddingDeviceToAccount) {
+  security_domain_service_->pretend_there_are_members();
+  ASSERT_EQ(notified_about_state_update_count_, 0u);
+  ASSERT_FALSE(manager_.is_ready());
+
+  // Storing keys and adding device to account is supposed to notify observers
+  // about enclave state update:
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)}, kSecretVersion);
+  BoolFuture add_future;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
+
+  // `notified_about_state_update_count_` is being incremented whenever
+  // `OnStateUpdated()` is called:
+  EXPECT_EQ(notified_about_state_update_count_, 1u);
+  ASSERT_TRUE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {

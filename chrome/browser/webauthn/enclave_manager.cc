@@ -4076,6 +4076,9 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
 void EnclaveManager::Stopped() {
   state_machine_.reset();
   Act();
+  for (Observer& observer : observer_list_) {
+    observer.OnStateUpdated();
+  }
 }
 
 void EnclaveManager::CancelAllActions() {

@@ -751,6 +751,8 @@ void GPMEnclaveController::OnKeysStored() {
   }
 }
 
+void GPMEnclaveController::OnStateUpdated() {}
+
 void GPMEnclaveController::OnDeviceAdded(bool success) {
   ResetDeclinedBootstrappingCount(GetProfile());
   if (!success) {

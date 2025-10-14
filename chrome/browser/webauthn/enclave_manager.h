@@ -111,6 +111,11 @@ class EnclaveManager : public EnclaveManagerInterface {
     // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
     // by calling `StoreKeys`.
     virtual void OnKeysStored() = 0;
+
+    // `OnStateUpdated` is called from `EnclaveManager::Stopped()` - indicating
+    // that the state machine reached its final state (so the state of the
+    // enclave manager might be updated now, e.g. it might become ready).
+    virtual void OnStateUpdated() = 0;
   };
 
   struct UVKeyOptions {
