@@ -28,6 +28,7 @@ GlicActivePinnedFocusedTabManager::AddFocusedTabChangedCallback(
         active_tab_tracker_.AddActiveTabChangedCallback(base::BindRepeating(
             &GlicActivePinnedFocusedTabManager::OnActiveTabChanged,
             base::Unretained(this)));
+    UpdateActiveTabDataObserver(active_tab_tracker_.GetActiveTab());
   }
   if (!tab_pinning_status_changed_subscription_ && sharing_manager_) {
     tab_pinning_status_changed_subscription_ =
@@ -75,13 +76,7 @@ FocusedTabData GlicActivePinnedFocusedTabManager::GetFocusedTabData() {
 
 void GlicActivePinnedFocusedTabManager::OnActiveTabChanged(
     tabs::TabInterface* active_tab) {
-  // TODO(b:444463509): consider handling TabChangedAt() events.
-  active_tab_data_observer_ = std::make_unique<TabDataObserver>(
-      active_tab ? active_tab->GetContents() : nullptr,
-      base::BindRepeating(
-          &GlicActivePinnedFocusedTabManager::OnActiveTabDataChanged,
-          base::Unretained(this)));
-
+  UpdateActiveTabDataObserver(active_tab);
   UpdateFocusedTab();
 }
 
@@ -98,6 +93,16 @@ void GlicActivePinnedFocusedTabManager::OnTabPinningStatusChanged(
   if (active_tab && tab && active_tab == tab) {
     UpdateFocusedTab();
   }
+}
+
+void GlicActivePinnedFocusedTabManager::UpdateActiveTabDataObserver(
+    tabs::TabInterface* active_tab) {
+  // TODO(b:444463509): consider handling TabChangedAt() events.
+  active_tab_data_observer_ = std::make_unique<TabDataObserver>(
+      active_tab ? active_tab->GetContents() : nullptr,
+      base::BindRepeating(
+          &GlicActivePinnedFocusedTabManager::OnActiveTabDataChanged,
+          base::Unretained(this)));
 }
 
 void GlicActivePinnedFocusedTabManager::UpdateFocusedTab() {

@@ -59,6 +59,9 @@ class GlicActivePinnedFocusedTabManager
   // Callback for tab data changes to active tab.
   void OnActiveTabDataChanged(TabDataChange change);
 
+  // Updates the tab data observer to track the provided active tab.
+  void UpdateActiveTabDataObserver(tabs::TabInterface* active_tab);
+
   // Updates the currently focused tab and notifies subscribers when changed.
   void UpdateFocusedTab();
 
