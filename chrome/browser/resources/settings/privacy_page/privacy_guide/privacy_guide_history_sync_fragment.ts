@@ -15,8 +15,8 @@ import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
 
-import type {SyncBrowserProxy, SyncPrefs} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -69,6 +69,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
   private syncPrefs_: SyncPrefs;
+  private syncStatus_: SyncStatus;
   /*
    * |null| indicates that the value is currently unknown and that it will be
    * set with the next sync prefs update.
@@ -91,6 +92,11 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
 
+    this.addWebUiListener(
+        'sync-status-changed',
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
+    this.syncBrowserProxy_.getSyncStatus().then(
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.addWebUiListener(
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
@@ -139,20 +145,45 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     }
   }
 
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    this.syncStatus_ = syncStatus;
+    this.updateHistorySyncVirtualPrefValue_();
+  }
+
   private onSyncPrefsChange_(syncPrefs: SyncPrefs) {
     this.syncPrefs_ = syncPrefs;
     if (this.syncAllCache_ === null) {
       this.syncAllCache_ = this.syncPrefs_.syncAllDataTypes;
     }
-    this.set('historySyncVirtualPref_.value', this.syncPrefs_.typedUrlsSynced);
-
     if (this.firstSyncPrefUpdate_) {
       this.startStateHistorySyncOn_ = this.syncPrefs_.typedUrlsSynced;
       this.firstSyncPrefUpdate_ = false;
     }
+    this.updateHistorySyncVirtualPrefValue_();
+  }
+
+  private updateHistorySyncVirtualPrefValue_() {
+    if (!this.syncPrefs_) {
+      return;
+    }
+    if (!this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
+      const mergedToggleValue = this.syncPrefs_.typedUrlsSynced ||
+          this.syncPrefs_.tabsSynced || this.syncPrefs_.savedTabGroupsSynced;
+      this.set('historySyncVirtualPref_.value', mergedToggleValue);
+    } else {
+      this.set(
+          'historySyncVirtualPref_.value',
+          this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
+    }
   }
 
   private onToggleClick_() {
+    if (!this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
+      this.syncPrefs_.tabsSynced = this.historySyncVirtualPref_.value;
+      this.syncPrefs_.savedTabGroupsSynced = this.historySyncVirtualPref_.value;
+    }
     this.syncPrefs_.typedUrlsSynced = this.historySyncVirtualPref_.value;
     this.syncPrefs_.syncAllDataTypes = this.shouldSyncAllBeOn_();
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs_);
