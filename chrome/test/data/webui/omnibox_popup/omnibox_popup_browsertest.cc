@@ -35,12 +35,11 @@ class OmniboxPopupFullTest : public WebUIMochaBrowserTest {
  protected:
   OmniboxPopupFullTest() {
     set_test_loader_host(chrome::kChromeUIOmniboxPopupHost);
-    scoped_feature_list_.InitWithFeatures(
-        {omnibox::kWebUIOmniboxPopup, omnibox::kWebUIOmniboxFullPopup}, {});
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      omnibox::kWebUIOmniboxFullPopup};
 };
 
 #if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)

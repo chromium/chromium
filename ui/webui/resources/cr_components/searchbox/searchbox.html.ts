@@ -14,6 +14,7 @@ ${this.ntpRealboxNextEnabled ? html`
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
   <input id="input" class="truncate" type="search" autocomplete="off"
+      part="searchbox-input"
       spellcheck="false" aria-live="${this.inputAriaLive_}" role="combobox"
       aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
       aria-description="${this.searchboxAriaDescription}"

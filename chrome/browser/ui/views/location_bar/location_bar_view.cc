@@ -313,7 +313,13 @@ void LocationBarView::Init() {
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   omnibox_view_->Init();
 
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+  const bool web_ui_popup_dropdown_only =
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) &&
+      !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+
+  if ((web_ui_popup_dropdown_only &&
+       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_, omnibox_view_->controller(),
         /*location_bar_view=*/this);

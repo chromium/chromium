@@ -14,6 +14,12 @@ cr-searchbox {
   display: block;
 }
 
+:host([omnibox-popup-debug-enabled_]) cr-searchbox::part(searchbox-input) {
+  /* For debugging purposes, makes it more obvious when the WebUI input is
+   * showing. */
+  background-color: lightgreen;
+}
+
 cr-searchbox::part(dropdown-content) {
   border-radius: 0;
 }

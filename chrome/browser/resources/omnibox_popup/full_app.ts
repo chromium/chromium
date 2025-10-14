@@ -7,6 +7,7 @@ import '/strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './full_app.css.js';
@@ -24,6 +25,18 @@ export class OmniboxFullAppElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {
+      omniboxPopupDebugEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
+
+  protected accessor omniboxPopupDebugEnabled_ =
+      loadTimeData.getBoolean('omniboxPopupDebugEnabled');
 
   private isDebug_: boolean =
       new URLSearchParams(window.location.search).has('debug');
