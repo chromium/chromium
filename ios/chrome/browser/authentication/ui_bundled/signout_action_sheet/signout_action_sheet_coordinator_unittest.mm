@@ -16,6 +16,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -263,12 +264,10 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   SignInManagedIdentity();
 
   // Mark the user as "migrated from previously syncing".
-  GetPrefs()->SetString(
-      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
-      base::SysNSStringToUTF8(
-          authentication_service()
-              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-              .gaiaID));
+  GetPrefs()->SetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn,
+                        authentication_service()
+                            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                            .gaiaId.ToString());
   GetPrefs()->SetString(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       base::SysNSStringToUTF8(
