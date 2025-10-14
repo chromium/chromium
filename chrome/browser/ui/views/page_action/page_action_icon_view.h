@@ -49,6 +49,10 @@ enum class PageActionPageEvent {
   kMaxValue = kMultipleActionsShown,
 };
 
+// WARNING WARNING WARNING WARNING
+// This class is deprecated in favor of `PageActionView`. Please see
+// the `README.md` for details on integrating with the new page actions
+// framework. Reach out to alsan@ for help.
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {

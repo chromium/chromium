@@ -2160,6 +2160,13 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
         surface_as_gerrit_lint=True,
     ),
+    BanRule(
+      pattern='PageActionIconView',
+      explanation=(
+          'PageActionIconView will soon be removed. Use PageActionView instead. '
+          'See chrome/browser/ui/views/page_action/README.md for details.'),
+      treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
