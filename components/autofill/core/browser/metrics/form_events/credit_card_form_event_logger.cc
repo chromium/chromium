@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -147,7 +148,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   }
 
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
-      payments::BnplManager::IsEligibleForBnpl(owner_->client())) {
+      payments::IsEligibleForBnpl(owner_->client())) {
     LogBnplFormEvent(BnplFormEvent::kSuggestionsShown);
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }

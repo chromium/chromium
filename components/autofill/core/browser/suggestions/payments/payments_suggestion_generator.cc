@@ -1447,7 +1447,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     suggestions.push_back(suggestion);
   }
   if (manager.GetPaymentsBnplManager() &&
-      payments::BnplManager::IsEligibleForBnpl(manager.client()) &&
+      payments::IsEligibleForBnpl(manager.client()) &&
       base::FeatureList::IsEnabled(features::kAutofillEnableAmountExtraction) &&
       base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
     suggestions.reserve(suggestions.size() + 1);

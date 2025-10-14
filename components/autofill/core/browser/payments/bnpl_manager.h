@@ -48,13 +48,6 @@ class BnplManager {
   // Returns if `issuer_id` is a supported BNPL issuer.
   static bool IsBnplIssuerSupported(std::string_view issuer_id);
 
-  // Determines if autofill BNPL is supported.
-  // Returns true if:
-  // 1. The profile is not off the record.
-  // 2. The client has an `AutofillOptimizationGuideDecider` assigned.
-  // 3. The URL being visited is within the BNPL issuer allowlist.
-  static bool IsEligibleForBnpl(const AutofillClient& client);
-
   // Initializes the BNPL flow, which includes UI shown to the user to select an
   // issuer, a possible ToS dialog, and redirecting to the selected issuer's
   // website before filling the form, if the flow succeeds.

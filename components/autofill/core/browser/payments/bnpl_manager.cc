@@ -95,32 +95,6 @@ bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
   return supported_issuers.contains(issuer_id);
 }
 
-// static
-bool BnplManager::IsEligibleForBnpl(const AutofillClient& client) {
-  // BNPL is not supported in off-the-record (incognito) mode.
-  if (client.IsOffTheRecord()) {
-    return false;
-  }
-
-  AutofillOptimizationGuideDecider* autofill_optimization_guide_decider =
-      client.GetAutofillOptimizationGuideDecider();
-  if (!autofill_optimization_guide_decider) {
-    return false;
-  }
-
-  const GURL& url = client.GetLastCommittedPrimaryMainFrameURL();
-
-  return std::ranges::any_of(
-      client.GetPaymentsAutofillClient()
-          ->GetPaymentsDataManager()
-          .GetBnplIssuers(),
-      [&autofill_optimization_guide_decider,
-       &url](const BnplIssuer& bnpl_issuer) {
-        return autofill_optimization_guide_decider->IsUrlEligibleForBnplIssuer(
-            bnpl_issuer.issuer_id(), url);
-      });
-}
-
 void BnplManager::OnDidAcceptBnplSuggestion(
     std::optional<uint64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {

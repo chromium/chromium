@@ -11,10 +11,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -187,13 +190,38 @@ bool ShouldAppendBnplSuggestion(const AutofillClient& client,
   }
   // BNPL suggestions require that at least one BNPL issuer is present and the
   // domain is eligible for BNPL.
-  if (!BnplManager::IsEligibleForBnpl(client)) {
+  if (!IsEligibleForBnpl(client)) {
     return false;
   }
   // This feature can only be enabled by the feature flag:
   // `kAutofillEnableAiBasedAmountExtraction`.
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableAiBasedAmountExtraction);
+}
+
+bool IsEligibleForBnpl(const AutofillClient& client) {
+  // BNPL is not supported in off-the-record (incognito) mode.
+  if (client.IsOffTheRecord()) {
+    return false;
+  }
+
+  AutofillOptimizationGuideDecider* autofill_optimization_guide_decider =
+      client.GetAutofillOptimizationGuideDecider();
+  if (!autofill_optimization_guide_decider) {
+    return false;
+  }
+
+  const GURL& url = client.GetLastCommittedPrimaryMainFrameURL();
+
+  return std::ranges::any_of(
+      client.GetPaymentsAutofillClient()
+          ->GetPaymentsDataManager()
+          .GetBnplIssuers(),
+      [&autofill_optimization_guide_decider,
+       &url](const BnplIssuer& bnpl_issuer) {
+        return autofill_optimization_guide_decider->IsUrlEligibleForBnplIssuer(
+            bnpl_issuer.issuer_id(), url);
+      });
 }
 
 }  // namespace autofill::payments

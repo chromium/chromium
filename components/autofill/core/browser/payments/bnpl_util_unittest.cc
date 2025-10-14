@@ -21,6 +21,12 @@
 
 namespace autofill::payments {
 namespace {
+
+using IssuerId = autofill::BnplIssuer::IssuerId;
+using ::testing::_;
+using ::testing::Return;
+using ::testing::Test;
+
 constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
 
 struct EligibleBnplIssuerParams {
@@ -29,7 +35,7 @@ struct EligibleBnplIssuerParams {
 };
 
 class BnplUtilEligibleTest
-    : public testing::Test,
+    : public Test,
       public testing::WithParamInterface<EligibleBnplIssuerParams> {};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -89,9 +95,10 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
   MOCK_METHOD(std::vector<BnplIssuer>, GetBnplIssuers, (), (const, override));
 };
 
-class BnplUtilTest : public testing::Test,
-                     public WithTestAutofillClientDriverManager<> {
+class BnplUtilTest : public Test, public WithTestAutofillClientDriverManager<> {
  public:
+  const std::string kCurrency = "USD";
+
   BnplUtilTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillEnableAmountExtraction,
@@ -110,14 +117,40 @@ class BnplUtilTest : public testing::Test,
     ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
                 autofill_client().GetAutofillOptimizationGuideDecider()),
             IsUrlEligibleForBnplIssuer)
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(Return(true));
 
     ON_CALL(
         static_cast<MockPaymentsDataManager&>(
             autofill_client().GetPersonalDataManager().payments_data_manager()),
         GetBnplIssuers)
-        .WillByDefault(testing::Return(
-            std::vector<BnplIssuer>{test::GetTestLinkedBnplIssuer()}));
+        .WillByDefault(
+            Return(std::vector<BnplIssuer>{test::GetTestLinkedBnplIssuer()}));
+  }
+
+  // Sets up the PersonalDataManager with an unlinked bnpl issuer.
+  void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
+                               uint64_t price_higher_bound_in_micros,
+                               IssuerId issuer_id) {
+    std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+    eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
+                                       price_higher_bound_in_micros);
+    test_api(autofill_client().GetPersonalDataManager().payments_data_manager())
+        .AddBnplIssuer(BnplIssuer(std::nullopt, issuer_id,
+                                  std::move(eligible_price_ranges)));
+  }
+
+  // Sets up the PersonalDataManager with a linked bnpl issuer.
+  void SetUpLinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
+                             uint64_t price_higher_bound_in_micros,
+                             IssuerId issuer_id,
+                             const int64_t instrument_id) {
+    std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+    eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
+                                       price_higher_bound_in_micros);
+
+    test_api(autofill_client().GetPersonalDataManager().payments_data_manager())
+        .AddBnplIssuer(BnplIssuer(instrument_id, issuer_id,
+                                  std::move(eligible_price_ranges)));
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -285,7 +318,7 @@ TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_BnplNotEligible) {
   ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
               autofill_client().GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(Return(false));
 
   EXPECT_FALSE(ShouldAppendBnplSuggestion(autofill_client(),
                                           /*is_card_number_field_empty=*/true,
@@ -319,6 +352,77 @@ TEST_F(BnplUtilTest, ShouldAppendBnplSuggestion_AllConditionsMet) {
     EXPECT_TRUE(ShouldAppendBnplSuggestion(
         autofill_client(), /*is_card_number_field_empty=*/true, trigger_field));
   }
+}
+
+// Tests that `IsEligibleForBnpl()` returns false if the client does not have
+// an `AutofillOptimizationGuideDecider` assigned.
+TEST_F(BnplUtilTest, IsEligibleForBnpl_NoAutofillOptimizationGuideDecider) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  autofill_client().ResetAutofillOptimizationGuideDecider();
+  EXPECT_FALSE(IsEligibleForBnpl(autofill_client()));
+}
+
+// Tests that `IsEligibleForBnpl()` returns false if the client is in an
+// off-the-record (incognito) session.
+TEST_F(BnplUtilTest, IsEligibleForBnpl_OffTheRecord) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  EXPECT_TRUE(IsEligibleForBnpl(autofill_client()));
+  autofill_client().set_is_off_the_record(true);
+  EXPECT_FALSE(IsEligibleForBnpl(autofill_client()));
+}
+
+// Tests that `IsEligibleForBnpl()` returns false if the current visiting
+// url is not in the allowlist.
+TEST_F(BnplUtilTest, IsEligibleForBnpl_UrlNotSupported) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(IsEligibleForBnpl(autofill_client()));
+}
+
+// Tests that when the current visiting url is only supported by one of the
+// BNPL issuers, `IsEligibleForBnpl()` returns true.
+TEST_F(BnplUtilTest, IsEligibleForBnpl_UrlSupportedByOneIssuer) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm, /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer(IssuerId::kBnplAffirm, _))
+      .WillByDefault(Return(true));
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer(IssuerId::kBnplZip, _))
+      .WillByDefault(Return(false));
+  EXPECT_TRUE(IsEligibleForBnpl(autofill_client()));
 }
 
 }  // namespace

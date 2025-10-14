@@ -100,6 +100,13 @@ bool ShouldAppendBnplSuggestion(const AutofillClient& client,
                                 bool is_card_number_field_empty,
                                 FieldType trigger_field_type);
 
+// Determines if autofill BNPL is supported.
+// Returns true if:
+// 1. The profile is not off the record.
+// 2. The `client` has an `AutofillOptimizationGuideDecider` assigned.
+// 3. The URL being visited is within the BNPL issuer allowlist.
+bool IsEligibleForBnpl(const AutofillClient& client);
+
 }  // namespace payments
 
 }  // namespace autofill
