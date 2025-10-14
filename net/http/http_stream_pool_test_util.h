@@ -334,6 +334,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   NextProtoSet allowed_alpns() const override;
   const ProxyInfo& proxy_info() const override;
   const NetLogWithSource& net_log() const override;
+  const perfetto::Flow& flow() const override;
   void OnStreamFailed(HttpStreamPool::Job* job,
                       int status,
                       const NetErrorDetails& net_error_details,
@@ -360,6 +361,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   NetLogWithSource net_log_;
+  perfetto::Flow flow_;
 
   std::unique_ptr<HttpStreamPool::Job> job_;
 

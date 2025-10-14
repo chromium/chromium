@@ -240,6 +240,7 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
   // JobController should check idle streams before starting a request Job.
   CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
 
+  TRACE_EVENT("net.stream", "Job::RequestStream", job->flow());
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::RequestStream", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
 
@@ -277,6 +278,7 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   CHECK(job->type() == JobType::kAltSvcQuicPreconnect ||
         group_->ActiveStreamSocketCount() < job->num_streams());
 
+  TRACE_EVENT("net.stream", "Job::Preconnect", job->flow());
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
 
@@ -1723,6 +1725,8 @@ void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(
   Job* raw_job = job.get();
   limit_ignoring_jobs_.erase(raw_job);
   notified_jobs_.emplace(std::move(job));
+  TRACE_EVENT("net.stream", "Job::OnPreconnectComplete", raw_job->flow(),
+              "result", rv);
   TRACE_EVENT_INSTANT("net.stream",
                       "AttemptManager::NotifyJobOfPreconnectComplete", track_,
                       NetLogWithSourceToFlow(raw_job->request_net_log()));
@@ -1872,6 +1876,8 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
     std::optional<SessionSource> session_source) {
   Job* job = ExtractFirstJobToNotify();
   CHECK(job);
+  TRACE_EVENT("net.stream", "Job::NotifyStreamReady", job->flow(),
+              "negotiated_protocol", negotiated_protocol);
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NotifyStreamReady", track_,
                       NetLogWithSourceToFlow(job->request_net_log()),
                       "negotiated_protocol", negotiated_protocol);

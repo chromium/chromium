@@ -64,6 +64,8 @@ class HttpStreamPool::Job {
 
     virtual const NetLogWithSource& net_log() const = 0;
 
+    virtual const perfetto::Flow& flow() const = 0;
+
     // Callback methods: Only one of these methods will be called.
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
@@ -159,6 +161,8 @@ class HttpStreamPool::Job {
   const NetLogWithSource& net_log() const { return job_net_log_; }
 
   const NetLogWithSource& request_net_log() const { return request_net_log_; }
+
+  const perfetto::Flow& flow() const { return delegate_->flow(); }
 
   quic::ParsedQuicVersion quic_version() const { return quic_version_; }
 

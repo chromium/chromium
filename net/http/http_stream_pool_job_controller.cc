@@ -32,6 +32,7 @@
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
@@ -141,7 +142,10 @@ HttpStreamPool::JobController::JobController(
                                         request_info,
                                         enable_alternative_services_)),
       net_log_(request_info.factory_job_controller_net_log),
+      flow_(NetLogWithSourceToFlow(net_log_)),
       created_time_(base::TimeTicks::Now()) {
+  TRACE_EVENT("net.stream", "JobController::JobController", flow_,
+              "destination", request_info.destination.Serialize());
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE, [&] {
         base::Value::Dict dict;
@@ -167,6 +171,7 @@ HttpStreamPool::JobController::JobController(
 
 HttpStreamPool::JobController::~JobController() {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE);
+  TRACE_EVENT("net.stream", "JobController::~JobController", flow_);
 }
 
 void HttpStreamPool::JobController::HandleStreamRequest(
@@ -175,6 +180,7 @@ void HttpStreamPool::JobController::HandleStreamRequest(
   CHECK(stream_request);
   CHECK(!delegate_);
   CHECK(!stream_request_);
+  TRACE_EVENT("net.stream", "JobController::HandleStreamRequest", flow_);
 
   stream_request->SetHelperForSwitchingToPool(this);
   delegate_ = delegate;
@@ -196,6 +202,9 @@ void HttpStreamPool::JobController::HandleStreamRequest(
 
   pending_stream_ = MaybeCreateStreamFromExistingSession();
   if (pending_stream_) {
+    TRACE_EVENT("net.stream", "JobController::CreateStreamFromExistingSession",
+                "negotiated_protocol", pending_stream_->negotiated_protocol);
+
     if (pending_stream_->negotiated_protocol != NextProto::kProtoQUIC &&
         origin_quic_version_.IsKnown()) {
       StartAltSvcQuicPreconnect();
@@ -229,6 +238,8 @@ void HttpStreamPool::JobController::HandleStreamRequest(
 int HttpStreamPool::JobController::Preconnect(
     size_t num_streams,
     CompletionOnceCallback callback) {
+  TRACE_EVENT("net.stream", "JobController::Preconnect", flow_);
+
   num_streams = std::min(kDefaultMaxStreamSocketsPerGroup, num_streams);
 
   if (!IsPortAllowedForScheme(origin_stream_key_.destination().port(),
@@ -319,11 +330,17 @@ const NetLogWithSource& HttpStreamPool::JobController::net_log() const {
   return net_log_;
 }
 
+const perfetto::Flow& HttpStreamPool::JobController::flow() const {
+  return flow_;
+}
+
 void HttpStreamPool::JobController::OnStreamReady(
     Job* job,
     std::unique_ptr<HttpStream> stream,
     NextProto negotiated_protocol,
     std::optional<SessionSource> session_source) {
+  TRACE_EVENT("net.stream", "JobController::OnStreamReady", flow_);
+
   SetJobResult(job, OK);
 
   // If there's already a `pending_stream_` or the callback has already been
@@ -351,6 +368,9 @@ void HttpStreamPool::JobController::OnStreamFailed(
     int status,
     const NetErrorDetails& net_error_details,
     ResolveErrorInfo resolve_error_info) {
+  TRACE_EVENT("net.stream", "JobController::OnStreamFailed", flow_, "result",
+              status);
+
   stream_request_->AddConnectionAttempts(job->connection_attempts());
   SetJobResult(job, status);
   if (AllJobsFinished()) {
@@ -369,6 +389,9 @@ void HttpStreamPool::JobController::OnCertificateError(
     Job* job,
     int status,
     const SSLInfo& ssl_info) {
+  TRACE_EVENT("net.stream", "JobController::OnCertificateError", flow_,
+              "result", status);
+
   stream_request_->AddConnectionAttempts(job->connection_attempts());
   CancelOtherJob(job);
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
@@ -383,6 +406,8 @@ void HttpStreamPool::JobController::OnCertificateError(
 void HttpStreamPool::JobController::OnNeedsClientAuth(
     Job* job,
     SSLCertRequestInfo* cert_info) {
+  TRACE_EVENT("net.stream", "JobController::OnNeedsClientAuth", flow_);
+
   stream_request_->AddConnectionAttempts(job->connection_attempts());
   CancelOtherJob(job);
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
@@ -395,6 +420,8 @@ void HttpStreamPool::JobController::OnNeedsClientAuth(
 }
 
 void HttpStreamPool::JobController::OnPreconnectComplete(Job* job, int status) {
+  TRACE_EVENT("net.stream", "JobController::OnPreconnectComplete", flow_,
+              "result", status);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::ResetJobAndInvokePreconnectCallback,

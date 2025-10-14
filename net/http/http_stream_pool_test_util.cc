@@ -13,6 +13,7 @@
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_job.h"
+#include "net/log/net_log_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
@@ -404,7 +405,8 @@ void WaitForAttemptManagerComplete(
   run_loop.Run();
 }
 
-TestJobDelegate::TestJobDelegate(std::optional<HttpStreamKey> stream_key) {
+TestJobDelegate::TestJobDelegate(std::optional<HttpStreamKey> stream_key)
+    : flow_(NetLogWithSourceToFlow(net_log_)) {
   if (stream_key.has_value()) {
     key_builder_.from_key(*stream_key);
   } else {
@@ -462,6 +464,10 @@ const ProxyInfo& TestJobDelegate::proxy_info() const {
 
 const NetLogWithSource& TestJobDelegate::net_log() const {
   return net_log_;
+}
+
+const perfetto::Flow& TestJobDelegate::flow() const {
+  return flow_;
 }
 
 void TestJobDelegate::OnStreamFailed(HttpStreamPool::Job* job,
