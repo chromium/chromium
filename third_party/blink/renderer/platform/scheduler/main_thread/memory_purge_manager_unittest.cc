@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
+#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -68,7 +69,11 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenInBackgroundedRenderer) {
   memory_purge_manager_.SetRendererBackgrounded(true);
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 }
 
 // Verify that OnPageFrozen() does not trigger a memory pressure notification in
@@ -91,7 +96,11 @@ TEST_F(MemoryPurgeManagerTest, PageResumedUndoMemoryPressureSuppression) {
   memory_purge_manager_.SetRendererBackgrounded(true);
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   EXPECT_TRUE(base::MemoryPressureListener::AreNotificationsSuppressed());
   memory_purge_manager_.OnPageResumed();
@@ -111,17 +120,29 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenPurgeMemoryAllPagesFrozenDisabled) {
 
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
   EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(2U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(2U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
   EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(3U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(3U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
   EXPECT_TRUE(base::MemoryPressureListener::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageResumed();
@@ -149,7 +170,11 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeAfterFreeze) {
   // The memory pressure notification happens soon, in a differnt task.
   EXPECT_EQ(0U, MemoryPressureCount());
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/true);
 }
@@ -184,7 +209,11 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeWithDelayNewActivePageCreated) {
   // Some page is sill frozen, keep going.
   memory_purge_manager_.OnPageCreated();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/true);
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
@@ -236,7 +265,11 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenAndResumedWhileBackgrounded) {
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
   // Since the renderer is still backgrounded, the memory purge should happen
   // even though there are no frozen pages.
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
 }
@@ -266,13 +299,21 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeLimitEnabled) {
   memory_purge_manager_.OnPageCreated();
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   // The second freeze should not trigger a memory purge.
   memory_purge_manager_.OnPageResumed();
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(1U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(1U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 
   // Another freeze after foregrounding the renderer triggers a memory purge.
   memory_purge_manager_.SetRendererBackgrounded(false);
@@ -280,7 +321,11 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeLimitEnabled) {
   memory_purge_manager_.SetRendererBackgrounded(true);
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(2U, MemoryPressureCount());
+  if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
+    EXPECT_EQ(2U, MemoryPressureCount());
+  } else {
+    EXPECT_EQ(0U, MemoryPressureCount());
+  }
 }
 
 TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeDisabled) {

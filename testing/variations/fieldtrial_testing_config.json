@@ -14321,31 +14321,6 @@
             ]
         }
     ],
-    "InfiniteTabsFreezingOnMemoryPressure": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NoPurge",
-                    "disable_features": [
-                        "InfiniteTabsFreezingOnMemoryPressure",
-                        "MemoryPurgeOnFreeze"
-                    ]
-                },
-                {
-                    "name": "NoPurgeAndFreeze",
-                    "enable_features": [
-                        "InfiniteTabsFreezingOnMemoryPressure"
-                    ],
-                    "disable_features": [
-                        "MemoryPurgeOnFreeze"
-                    ]
-                }
-            ]
-        }
-    ],
     "InlineFullscreenPerfExperiment": [
         {
             "platforms": [
@@ -15791,23 +15766,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MemoryCoordinatorLastChanceGC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MemoryPurgeOnFreezeDisabled": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "MemoryPurgeOnFreeze"
                     ]
                 }
             ]
