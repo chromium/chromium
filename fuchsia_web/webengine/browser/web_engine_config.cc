@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/display/display_switches.h"
@@ -150,6 +151,12 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
   // TODO(b/326282208): Remove once config-data are updated to use the new
   // feature.
   AppendToSwitch(switches::kDisableFeatures, features::kWebRtcHWDecoding.name,
+                 command_line);
+
+  // Disable kLocalNetworkAccessChecks until fuchsia-dir:// is supported.
+  // TODO(crbug.com/451700528): Re-enable kLocalNetworkAccessChecks.
+  AppendToSwitch(switches::kDisableFeatures,
+                 network::features::kLocalNetworkAccessChecks.name,
                  command_line);
 
   return true;
