@@ -5,6 +5,7 @@
 package org.chromium.android_browsertests_apk;
 
 import android.content.Intent;
+import android.os.Build;
 
 import org.chromium.base.PathUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -19,6 +20,11 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     private static final String TAG = "browser_test";
 
     private final NativeTest mTest = new NativeTest();
+
+    // It appears Android kills our process immediately on Activity finishing on Android 16 (desktop
+    // only?). For now we'll instead send Chrome to the background where tests should expect the
+    // browser to be killable.
+    private final boolean mFinishOnShutdown = Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA;
 
     @Override
     public void performPreInflationStartup() {
@@ -82,7 +88,17 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
-        NativeBrowserTest.setActivityTeardownCallback(() -> finish());
+        NativeBrowserTest.setActivityTeardownCallback(
+                () -> {
+                    if (mFinishOnShutdown) {
+                        finish();
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                });
         NativeBrowserTest.javaStartupTasksComplete();
     }
 
@@ -95,7 +111,17 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     @Override
     public void onDestroyInternal() {
         super.onDestroyInternal();
-        NativeBrowserTest.activityTeardownComplete();
+        if (mFinishOnShutdown) {
+            NativeBrowserTest.activityTeardownComplete();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (!mFinishOnShutdown) {
+            NativeBrowserTest.activityTeardownComplete();
+        }
     }
 
     @Override
