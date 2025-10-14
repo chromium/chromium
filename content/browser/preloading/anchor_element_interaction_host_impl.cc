@@ -8,6 +8,7 @@
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"

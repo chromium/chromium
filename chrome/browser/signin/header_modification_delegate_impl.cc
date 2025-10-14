@@ -29,6 +29,7 @@
 #include "net/base/schemeful_site.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "content/public/browser/site_instance.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 

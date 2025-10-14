@@ -20,10 +20,8 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
 #include "ipc/constants.mojom.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
@@ -32,12 +30,14 @@
 #include "url/gurl.h"
 
 namespace network {
+class ResourceRequestBody;
 class SharedURLLoaderFactory;
 }
 
 namespace content {
 
 class NavigationHandle;
+class SiteInstance;
 class WebContents;
 
 struct CONTENT_EXPORT OpenURLParams {

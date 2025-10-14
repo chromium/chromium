@@ -19,16 +19,18 @@
 #include "chrome/browser/task_manager/providers/web_contents/prerender_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/subframe_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/guest_view/browser/guest_view_base.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::RenderFrameHost;
 using content::RenderProcessHost;

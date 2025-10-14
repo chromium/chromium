@@ -130,6 +130,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/media_foundation_service_monitor.h"
+#include "content/public/browser/site_instance.h"
 #include "media/mojo/mojom/media_foundation_preferences.mojom.h"
 #include "media/mojo/services/media_foundation_preferences.h"
 #endif  // BUILDFLAG(IS_WIN)
