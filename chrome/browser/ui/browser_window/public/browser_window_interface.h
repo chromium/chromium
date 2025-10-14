@@ -189,9 +189,7 @@ class BrowserWindowInterface : public content::PageNavigator {
     // down.
     kErrorProfileUnsuitable,
 
-  // TODO(devlin): Update this to be BUILDFLAG(IS_CHROMEOS). That's the only
-  // spot we have kiosk mode.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
     // Indicates the profile is currently loading kiosk mode, so no new windows
     // should be allowed.
     kErrorLoadingKiosk,
