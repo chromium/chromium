@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='splitter' interesting name='Ordinary presentation element with id'
 ++android.view.View role_description='splitter' interesting name='An aria-owned element is never ignored'
 ++android.view.View
-++++android.widget.Button role_description='button' clickable focusable interesting name='button-in-owned-tree'
+++++android.widget.Button clickable focusable interesting name='button-in-owned-tree'
 ++android.view.View role_description='splitter' interesting name='Element with aria-owns is never ignored'
 ++android.view.View
 ++++android.widget.EditText clickable editable_text focusable interesting input_type=1

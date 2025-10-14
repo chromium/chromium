@@ -7,4 +7,4 @@ android.webkit.WebView focusable focused
 ++++++++android.widget.TextView interesting name='So are '
 ++++++++android.view.View role_description='highlight' interesting name='other elements'
 ++++++++android.widget.TextView interesting name='!'
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Even a button'
+++++++android.widget.Button clickable focusable interesting name='Even a button'

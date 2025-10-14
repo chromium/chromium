@@ -2,7 +2,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View text:"Ordinary presentation element with id" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View text:"An aria-owned element is never ignored" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
-++++Button text:"button-in-owned-tree" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++++Button text:"button-in-owned-tree" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++View text:"Element with aria-owns is never ignored" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++EditText viewIdResName:"textbox" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]

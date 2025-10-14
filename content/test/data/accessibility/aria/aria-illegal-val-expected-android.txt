@@ -6,7 +6,7 @@ android.webkit.WebView focusable focused
 ++android.view.View interesting name='Current illegal' state_description='current item'
 ++android.view.View disabled interesting name='Disabled illegal'
 ++android.view.View role_description='tree item' clickable collection_item expanded interesting content_description='Expanded illegal' expanded_state=3
-++android.widget.Button role_description='button' clickable interesting content_description='Haspopup illegal'
+++android.widget.Button clickable interesting content_description='Haspopup illegal'
 ++android.view.View content_invalid interesting name='Invalid illegal'
 ++android.view.View role_description='log' interesting name='Live illegal'
 ++android.app.AlertDialog role_description='dialog' interesting name='Modal illegal'

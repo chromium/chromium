@@ -25,7 +25,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++RadioButton text:"Chocolate cakes" stateDescription:"Not checked. In group, option 2 of 2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="sectionWithoutName"]
 ++++View viewIdResName:"pTag" actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
-++++++Button text:"changedFromRadio" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++++++Button text:"changedFromRadio" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++++View text:"red" viewIdResName:"parent" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
 ++++++View text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="lineBreak"]
 ++++++RadioButton text:"blue" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]

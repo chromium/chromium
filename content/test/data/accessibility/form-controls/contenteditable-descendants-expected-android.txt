@@ -4,7 +4,7 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView interesting name='link'
 ++++android.widget.TextView interesting name=' and an '
 ++++android.widget.TextView interesting name=' and a '
-++++android.widget.Button role_description='button' clickable focusable interesting name='Button'
+++++android.widget.Button clickable focusable interesting name='Button'
 ++++android.widget.TextView interesting name='.'
 ++++android.widget.TextView interesting name='Always expose editable tables as tables.'
 ++++android.widget.TextView interesting name='1. '

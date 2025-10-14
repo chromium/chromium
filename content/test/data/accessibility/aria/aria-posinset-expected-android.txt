@@ -25,7 +25,7 @@ android.webkit.WebView focusable focused
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable interesting name='Chocolate cakes' state_description='Not checked. In group, option 2 of 2' item_index=1 row_index=1
 ++android.view.View
 ++++android.view.View
-++++++android.widget.Button role_description='button' clickable focusable interesting name='changedFromRadio'
+++++++android.widget.Button clickable focusable interesting name='changedFromRadio'
 ++++++android.view.View interesting name='red'
 ++++++android.view.View name='<newline>'
 ++++++android.widget.RadioButton role_description='radio button' checkable clickable focusable interesting name='blue'

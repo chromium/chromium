@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused interesting name='Action verbs'
 ++android.widget.TextView interesting name='Generic div'
 ++android.widget.TextView role_description='heading 1' heading interesting name='Heading'
-++android.widget.Button role_description='button' clickable focusable interesting name='Button'
+++android.widget.Button clickable focusable interesting name='Button'
 ++android.view.View role_description='link' clickable focusable link interesting name='Link'
 ++++android.widget.TextView name='Link'
 ++android.widget.EditText clickable editable_text focusable interesting input_type=1
@@ -22,11 +22,11 @@ android.webkit.WebView focusable focused interesting name='Action verbs'
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Menu item 1'
 ++++android.view.MenuItem role_description='checkbox' checkable clickable collection_item interesting name='Menu item 2' item_index=1 row_index=1 checked=1
 ++++android.view.MenuItem role_description='radio button' checkable clickable collection_item interesting name='Menu item 3' item_index=2 row_index=2
-++android.widget.Button role_description='button' clickable interesting name='ARIA Button'
-++android.widget.Button role_description='button' clickable focusable interesting name='ARIA button with tab index'
-++android.widget.Button role_description='button' clickable focusable interesting name='ARIA button with negative tab index'
+++android.widget.Button clickable interesting name='ARIA Button'
+++android.widget.Button clickable focusable interesting name='ARIA button with tab index'
+++android.widget.Button clickable focusable interesting name='ARIA button with negative tab index'
 ++android.view.View clickable
-++++android.widget.Button role_description='button' clickable focusable interesting name='ARIA button that is an active descendant'
+++++android.widget.Button clickable focusable interesting name='ARIA button that is an active descendant'
 ++android.view.View clickable
 ++++android.widget.ToggleButton role_description='switch' checkable clickable interesting name='ARIA switch in clickable container' state_description='Off'
 ++++android.widget.TextView interesting name='Generic in clickable container'

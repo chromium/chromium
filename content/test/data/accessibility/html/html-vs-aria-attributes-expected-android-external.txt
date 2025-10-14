@@ -30,6 +30,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++EditText viewIdResName:"required-4" clickable editable focusable required inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
 ++TextView text:"Button type changes" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="group"]
-++++Button text:"Regular Button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++++Button text:"Regular Button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++ToggleButton text:"Pressed Button" stateDescription:"On" checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", clickableScore="300", roleDescription="toggle button"]
 ++++View text:"Option Button" clickable focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

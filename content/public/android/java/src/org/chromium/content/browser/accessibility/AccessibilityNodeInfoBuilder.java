@@ -387,6 +387,10 @@ public class AccessibilityNodeInfoBuilder {
             bundle.putCharSequence(EXTRAS_KEY_BRAILLE_ROLE_DESCRIPTION, brailleRoleDescription);
         }
         bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
+
+        // TODO(crbug.com/451797082): Replace by `setRoleDescription` API and
+        // consider not setting (or setting null value) when roleDescription is
+        // empty.
         bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
         // We added the hint Bundle extra pre Android-O, and keep it to not risk breaking changes.
         bundle.putCharSequence(EXTRAS_KEY_HINT, hint);

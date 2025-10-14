@@ -5,7 +5,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Default:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Button: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Button:'
+++++++android.widget.Button clickable focusable interesting name='Button:'
 ++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting name='Checkbox:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Color: '
@@ -27,10 +27,10 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Empty:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='File: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='No file chosen' hint='File:: No file chosen'
+++++++android.widget.Button clickable focusable interesting name='No file chosen' hint='File:: No file chosen'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Image: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Image:'
+++++++android.widget.Button clickable focusable interesting name='Image:'
 ++++android.widget.TextView name=' '
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Invalid: '
@@ -50,13 +50,13 @@ android.webkit.WebView focusable focused
 ++++++android.widget.SeekBar role_description='slider' clickable focusable range interesting name='50, Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Reset: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Reset:'
+++++++android.widget.Button clickable focusable interesting name='Reset:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Search: '
 ++++++android.widget.EditText role_description='search text field' clickable editable_text focusable interesting hint='Search:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Submit: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Submit:'
+++++++android.widget.Button clickable focusable interesting name='Submit:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Tel: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Tel:' input_type=3

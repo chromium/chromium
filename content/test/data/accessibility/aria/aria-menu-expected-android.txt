@@ -9,8 +9,8 @@ android.webkit.WebView focusable focused
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Save' item_index=2 row_index=2
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Quit' item_index=3 row_index=3
 ++android.view.View role_description='menu' collection name='Non-menu container' column_count=1
-++++android.widget.Button role_description='button' clickable interesting name='Action 1'
-++++android.widget.Button role_description='button' clickable interesting name='Action 2'
+++++android.widget.Button clickable interesting name='Action 1'
+++++android.widget.Button clickable interesting name='Action 2'
 ++++android.widget.TextView interesting name='Regular text'
 ++android.view.View role_description='menu' collection name='Menu with grouped items' item_count=6 row_count=6 column_count=1
 ++++android.view.View name='File operations'
@@ -23,8 +23,8 @@ android.webkit.WebView focusable focused
 ++++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Paste' item_index=5 row_index=5
 ++android.view.View role_description='menu' collection name='Menu with non-menuitem group' column_count=1
 ++++android.view.View name='Toolbar actions'
-++++++android.widget.Button role_description='button' clickable interesting name='Bold'
-++++++android.widget.Button role_description='button' clickable interesting name='Italic'
+++++++android.widget.Button clickable interesting name='Bold'
+++++++android.widget.Button clickable interesting name='Italic'
 ++++++android.view.View role_description='link' clickable link name='Help'
 ++++++++android.widget.TextView name='Help'
 ++++android.view.View role_description='splitter'
@@ -33,7 +33,7 @@ android.webkit.WebView focusable focused
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Direct menu item'
 ++++android.view.View name='Grouped items'
 ++++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Grouped menu item' item_index=1 row_index=1
-++++++android.widget.Button role_description='button' clickable interesting name='Non-menu button'
+++++++android.widget.Button clickable interesting name='Non-menu button'
 ++++android.view.View role_description='splitter'
 ++android.view.View role_description='menu' collection name='Group with non-menuitems' column_count=1
 ++++android.view.View name='Control group'
