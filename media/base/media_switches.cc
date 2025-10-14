@@ -1207,7 +1207,7 @@ BASE_FEATURE(kUseOutOfProcessVideoDecoding,
 );
 
 // Use shared image interface to transport video frame resources.
-BASE_FEATURE(kUseSharedImageInOOPVDProcess, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSharedImageInOOPVDProcess, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
