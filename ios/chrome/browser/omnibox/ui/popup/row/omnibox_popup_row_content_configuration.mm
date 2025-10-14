@@ -142,6 +142,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   configuration.semanticContentAttribute = self.semanticContentAttribute;
   configuration.faviconRetriever = self.faviconRetriever;
   configuration.imageRetriever = self.imageRetriever;
+  configuration.useBottomOmniboxInPopup = self.useBottomOmniboxInPopup;
 
   // Setting `suggestion` already sets some properties in "Content View
   // interface". Update the properties that can change with

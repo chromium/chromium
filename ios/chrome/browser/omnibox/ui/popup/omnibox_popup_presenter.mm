@@ -50,8 +50,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 // The layout guide center to use to refer to the omnibox.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 @property(nonatomic, strong) UILayoutGuide* topOmniboxGuide;
-// Whether to show the omnibox in the bottom when the popup is open.
-@property(nonatomic, readonly) BOOL useBottomOmniboxInPopup;
 
 @end
 

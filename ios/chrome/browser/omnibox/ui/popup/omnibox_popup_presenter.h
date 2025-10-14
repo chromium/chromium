@@ -58,6 +58,9 @@
 /// height.
 @property(nonatomic, assign) CGFloat keyboardAttachedBottomOmniboxHeight;
 
+/// Whether to show the omnibox in the bottom when the popup is open.
+@property(nonatomic, readonly) BOOL useBottomOmniboxInPopup;
+
 /// Uses the popup's intrinsic content size to add or remove the popup view
 /// if necessary. The animation changes depending on:
 /// `isFocusingOmnibox`: Omnibox is being focused.

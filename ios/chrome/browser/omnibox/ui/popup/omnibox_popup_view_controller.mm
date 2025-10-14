@@ -127,6 +127,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// of.
 @property(nonatomic, readonly) UILayoutGuide* omniboxGuide;
 
+/// Whether to show the omnibox in the bottom when the popup is open.
+@property(nonatomic, assign) BOOL useBottomOmniboxInPopup;
+
 @end
 
 @implementation OmniboxPopupViewController {
@@ -224,6 +227,15 @@ const CGFloat kHeaderTopPadding = 16.0f;
     _carouselCell.menuProvider = self.carouselMenuProvider;
   }
   return _carouselCell;
+}
+
+- (void)setUseBottomOmniboxInPopup:(BOOL)useBottomOmniboxInPopup {
+  if (_useBottomOmniboxInPopup == useBottomOmniboxInPopup) {
+    return;
+  }
+
+  _useBottomOmniboxInPopup = useBottomOmniboxInPopup;
+  [self.tableView reloadData];
 }
 
 #pragma mark - View lifecycle
@@ -910,6 +922,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
       DCHECK(cell);
       DCHECK(configuration);
+      configuration.useBottomOmniboxInPopup = self.useBottomOmniboxInPopup;
       configuration.suggestion = suggestion;
       configuration.delegate = self;
       configuration.indexPath = indexPath;

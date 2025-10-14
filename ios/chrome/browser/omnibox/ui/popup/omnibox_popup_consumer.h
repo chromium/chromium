@@ -31,6 +31,8 @@
 - (void)setKeyboardAttachedBottomOmniboxHeight:
     (CGFloat)keyboardAttachedBottomOmniboxHeight;
 
+- (void)setUseBottomOmniboxInPopup:(BOOL)useBottomOmniboxInPopup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_POPUP_OMNIBOX_POPUP_CONSUMER_H_

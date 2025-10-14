@@ -359,6 +359,8 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   // Trailing Button.
   _trailingButton.trailingIconType = configuration.trailingIconType;
   _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
+  _trailingButton.useBottomOmniboxInPopup =
+      configuration.useBottomOmniboxInPopup;
   _textTrailingToButtonConstraint.active = !_trailingButton.hidden;
 
   // Separator.

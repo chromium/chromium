@@ -104,6 +104,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [self.consumer setKeyboardAttachedBottomOmniboxHeight:
                      self.presenter.keyboardAttachedBottomOmniboxHeight];
   [self.consumer newResultsAvailable];
+  [_consumer setUseBottomOmniboxInPopup:self.presenter.useBottomOmniboxInPopup];
 
   self.open = hasSuggestions;
   [self.presenter updatePopupOnFocus:isFocusing];
@@ -144,6 +145,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)onTraitCollectionChange {
   [self.presenter updatePopupAfterTraitCollectionChange];
+  [_consumer setUseBottomOmniboxInPopup:self.presenter.useBottomOmniboxInPopup];
 }
 
 - (void)selectSuggestion:(id<AutocompleteSuggestion>)suggestion

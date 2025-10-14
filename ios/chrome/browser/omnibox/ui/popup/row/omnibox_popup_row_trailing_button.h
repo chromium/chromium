@@ -30,6 +30,9 @@ enum class TrailingIconType {
 /// The context in which the omnibox is presented.
 @property(nonatomic, assign) OmniboxPresentationContext presentationContext;
 
+/// Whether to show the omnibox in the bottom when the popup is open.
+@property(nonatomic, assign) BOOL useBottomOmniboxInPopup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_POPUP_ROW_OMNIBOX_POPUP_ROW_TRAILING_BUTTON_H_
