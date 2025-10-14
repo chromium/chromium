@@ -790,6 +790,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
+  // Have the test track this tab's glic instance.
+  TrackGlicInstanceWithId(GetGlicInstance()->id());
   content::RenderFrameHost* guest_frame = FindGlicGuestMainFrame();
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -892,7 +894,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
 
   // Select the second tab, open glic, and execute the test on the second
   // instance.
-  SetGlicInstanceTabIndex(1);
+  TrackGlicInstanceWithTabIndex(1);
   browser()->tab_strip_model()->ActivateTabAt(1);
   RunTestSequence(InstrumentTab(kSecondTab),
                   OpenGlicWindow(GlicWindowMode::kDetached,
@@ -900,7 +902,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
   ExecuteJsTest({.params = base::Value("second")});
 
   // Continue on the first tab.
-  SetGlicInstanceTabIndex(0);
+  TrackGlicInstanceWithTabIndex(0);
   ContinueJsTest();
 }
 
@@ -985,7 +987,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  TrackGlicInstanceById(GetGlicInstance()->id());
+  TrackGlicInstanceWithId(GetGlicInstance()->id());
   ExecuteJsTest();
 
   // Open a new incognito tab so that Chrome doesn't exit, and close the first
@@ -1238,7 +1240,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetFocusedTabStateV2WithNavigationWhenInactive) {
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  TrackGlicInstanceById(GetGlicInstance()->id());
+  TrackGlicInstanceWithId(GetGlicInstance()->id());
   // Confirm that the observer is notified through getFocusedTabState of the
   // initial state, i.e. the first page navigation. It should then hide.
   ExecuteJsTest();
@@ -2312,7 +2314,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   // resulting in deleting the second glic instance.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(1);
-  SetGlicInstanceTabIndex(1);
+  TrackGlicInstanceWithTabIndex(1);
   RunTestSequence(InstrumentTab(kSecondTab),
                   OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));

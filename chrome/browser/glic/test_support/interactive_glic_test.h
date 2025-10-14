@@ -46,6 +46,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -595,30 +596,6 @@ class InteractiveGlicTestMixin : public T {
         glic_service()->window_controller());
   }
 
-  GlicInstance* GetGlicInstance() {
-    if (tracked_instance_id_) {
-      for (GlicInstance* instance : window_controller().GetInstances()) {
-        if (instance->id() == *tracked_instance_id_) {
-          return instance;
-        }
-      }
-      return nullptr;
-    }
-
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-      // TODO(harringtond): Currently, we only use the instance tied to the
-      // first tab. This allows us to test what happens when the instance is not
-      // tied to the active tab, but does seem arbitrary. We should make it
-      // possible to switch which instance is used by default in this class, and
-      // make this behavior more obvious somehow.
-
-      return glic_service()->GetInstanceForTab(
-          browser()->tab_strip_model()->GetTabAtIndex(
-              glic_instance_tab_index_));
-    }
-    return glic_service()->GetInstanceForActiveTab(browser());
-  }
-
   GlicInstanceImpl* GetGlicInstanceImpl() {
     CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
     return static_cast<GlicInstanceImpl*>(GetGlicInstance());
@@ -731,14 +708,60 @@ class InteractiveGlicTestMixin : public T {
     }
   }
 
-  // Have all glic instance operations linked to a glic instance with this ID,
-  // instead of always operating on the instance in tab 0.
-  void TrackGlicInstanceById(InstanceId id) { tracked_instance_id_ = id; }
+  // Glic tracking functions. By default, this fixture applies operations toward
+  // the glic instance in tab 0. You can change this behavior by calling one of
+  // these functions.
 
-  // Sets the tab index to use when fetching the glic instance. Tests can use
-  // this to swap between interacting with multiple instances. This affects
-  // many functions in this fixture.
-  void SetGlicInstanceTabIndex(int index) { glic_instance_tab_index_ = index; }
+  // Have all glic instance operations linked to a glic instance with this ID.
+  void TrackGlicInstanceWithId(InstanceId id) {
+    tracked_instance_id_ = id;
+    glic_instance_tab_index_ = std::nullopt;
+    glic_instance_tab_handle_ = std::nullopt;
+  }
+
+  // Track the glic instance at a specific tab index.
+  void TrackGlicInstanceWithTabIndex(int index) {
+    glic_instance_tab_index_ = index;
+    tracked_instance_id_ = std::nullopt;
+    glic_instance_tab_handle_ = std::nullopt;
+  }
+
+  // Track the glic instance at this tab.
+  void TrackGlicInstanceWithTabHandle(tabs::TabInterface::Handle handle) {
+    glic_instance_tab_index_ = std::nullopt;
+    tracked_instance_id_ = std::nullopt;
+    glic_instance_tab_handle_ = handle;
+  }
+
+  // Returns the currently tracked glic instance.
+  GlicInstance* GetGlicInstance() {
+    if (tracked_instance_id_) {
+      for (GlicInstance* instance : window_controller().GetInstances()) {
+        if (instance->id() == *tracked_instance_id_) {
+          return instance;
+        }
+      }
+      return nullptr;
+    }
+
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      if (glic_instance_tab_handle_) {
+        if (glic_instance_tab_handle_->Get()) {
+          return glic_service()->GetInstanceForTab(
+              glic_instance_tab_handle_->Get());
+        }
+        return nullptr;
+      }
+      if (glic_instance_tab_index_ != std::nullopt) {
+        return glic_service()->GetInstanceForTab(
+            browser()->GetTabStripModel()->GetTabAtIndex(
+                *glic_instance_tab_index_));
+      }
+      return glic_service()->GetInstanceForTab(
+          browser()->GetTabStripModel()->GetTabAtIndex(0));
+    }
+    return glic_service()->GetInstanceForActiveTab(browser());
+  }
 
  private:
   // Because of limitations in the template system, calls to base class methods
@@ -747,10 +770,12 @@ class InteractiveGlicTestMixin : public T {
   using Api = InteractiveBrowserTestApi;
   using Test = InProcessBrowserTest;
 
+  // These determine which glic instance is tracked by this class. This affects
+  // many functions in this fixture. Only one will be present at a time.
   std::optional<InstanceId> tracked_instance_id_;
-  // Which tab index to use when getting the glic instance. This affects many
-  // functions in this fixture.
-  int glic_instance_tab_index_ = 0;
+  std::optional<int> glic_instance_tab_index_ = 0;
+  std::optional<tabs::TabInterface::Handle> glic_instance_tab_handle_;
+
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
