@@ -346,6 +346,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/autofill",
       "//chrome/browser/badging",
       "//chrome/browser/contextual_cueing",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",

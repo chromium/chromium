@@ -440,6 +440,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/password_manager/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "device/fido/features.h"
@@ -843,6 +844,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   ConsentAuditorFactory::GetInstance();
   contextual_tasks::ContextualTasksContextControllerFactory::GetInstance();
   contextual_tasks::ContextualTasksServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  contextual_tasks::ContextualTasksUiServiceFactory::GetInstance();
+#endif
   ContentIndexProviderFactory::GetInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   contextual_cueing::ContextualCueingServiceFactory::GetInstance();

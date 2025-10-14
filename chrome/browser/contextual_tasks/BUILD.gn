@@ -75,23 +75,32 @@ if (!is_android) {
       "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui.h",
+      "contextual_tasks_ui_service.cc",
+      "contextual_tasks_ui_service.h",
+      "contextual_tasks_ui_service_factory.cc",
+      "contextual_tasks_ui_service_factory.h",
     ]
 
     public_deps = [
+      ":contextual_tasks",
       ":mojo_bindings",
       "//components/contextual_tasks/public:feature_list",
       "//content/public/browser",
       "//content/public/common",
       "//ui/webui",
+      "//url",
     ]
 
     deps = [
       "//base",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/top_chrome",
+      "//components/contextual_tasks/public:feature_list",
+      "//components/keyed_service/core",
     ]
   }
 
