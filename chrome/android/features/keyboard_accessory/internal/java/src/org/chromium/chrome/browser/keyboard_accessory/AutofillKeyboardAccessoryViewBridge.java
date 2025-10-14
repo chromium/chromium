@@ -192,6 +192,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      *
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
      *     unfocused fields of the form. If {@see label} is empty, then this must be empty too.
+     * @param voiceOver Voice over text read for the keyboard accessory suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionType Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
@@ -206,6 +207,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String sublabel,
+            @JniType("std::u16string") String voiceOver,
             int iconId,
             @SuggestionType int suggestionType,
             boolean isDeletable,
@@ -218,6 +220,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSubLabel(sublabel)
+                .setVoiceOver(voiceOver)
                 .setIconId(drawableId)
                 .setSuggestionType(suggestionType)
                 .setIsDeletable(isDeletable)

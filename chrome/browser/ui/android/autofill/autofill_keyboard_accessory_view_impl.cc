@@ -128,8 +128,8 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
         std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
     java_suggestions.push_back(
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
-            env, label, sublabel, android_icon_id,
-            base::to_underlying(suggestion.type),
+            env, label, sublabel, suggestion.voice_over.value_or(u""),
+            android_icon_id, base::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr),
             suggestion.iph_metadata.feature
                 ? suggestion.iph_metadata.feature->name

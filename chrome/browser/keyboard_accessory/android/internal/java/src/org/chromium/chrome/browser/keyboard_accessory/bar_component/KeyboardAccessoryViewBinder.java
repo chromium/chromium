@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -244,7 +245,6 @@ class KeyboardAccessoryViewBinder {
             chipView.getPrimaryTextView().setEllipsize(null);
 
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
-            chipView.getPrimaryTextView().setContentDescription(item.getSuggestion().getLabel());
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
             chipView.getSecondaryTextView()
                     .setVisibility(
@@ -286,6 +286,11 @@ class KeyboardAccessoryViewBinder {
                 iconDrawable.setAlpha((int) (255 * iconAlpha));
             }
             chipView.setIcon(iconDrawable, /* tintWithTextColor= */ false);
+
+            @Nullable String voiceOver = item.getSuggestion().getVoiceOver();
+            if (!TextUtils.isEmpty(voiceOver)) {
+                chipView.setContentDescription(voiceOver);
+            }
 
             TraceEvent.end("BarItemChipViewHolder#bind");
         }

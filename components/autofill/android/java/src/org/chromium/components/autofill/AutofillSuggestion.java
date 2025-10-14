@@ -22,6 +22,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mSecondaryLabel;
     private final String mSublabel;
     private final @Nullable String mSecondarySublabel;
+    private final @Nullable String mVoiceOver;
     private final int mIconId;
     private final @SuggestionType int mSuggestionType;
     private final boolean mIsDeletable;
@@ -39,6 +40,7 @@ public class AutofillSuggestion extends DropdownItemBase {
      *
      * @param label The main label of the Autofill suggestion.
      * @param sublabel The describing sublabel of the Autofill suggestion.
+     * @param voiceOver Voice over text read for the Autofill suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
      * @param popupItemId The type of suggestion.
@@ -55,6 +57,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondaryLabel,
             String sublabel,
             @Nullable String secondarySublabel,
+            @Nullable String voiceOver,
             int iconId,
             @SuggestionType int popupItemId,
             boolean isDeletable,
@@ -67,6 +70,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
+        mVoiceOver = voiceOver;
         mIconId = iconId;
         mSuggestionType = popupItemId;
         mIsDeletable = isDeletable;
@@ -140,6 +144,10 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mIphDescriptionText;
     }
 
+    public @Nullable String getVoiceOver() {
+        return mVoiceOver;
+    }
+
     public @Nullable AutofillProfilePayload getAutofillProfilePayload() {
         if (mPayload instanceof AutofillProfilePayload) {
             return (AutofillProfilePayload) mPayload;
@@ -205,6 +213,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private @Nullable String mSecondaryLabel;
         private @Nullable String mSubLabel;
         private @Nullable String mSecondarySubLabel;
+        private @Nullable String mVoiceOver;
         private int mSuggestionType;
         private @Nullable Payload mPayload;
 
@@ -263,6 +272,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setVoiceOver(String voiceOver) {
+            this.mVoiceOver = voiceOver;
+            return this;
+        }
+
         public Builder setPayload(Payload payload) {
             this.mPayload = payload;
             return this;
@@ -278,6 +292,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSecondaryLabel,
                     mSubLabel,
                     mSecondarySubLabel,
+                    mVoiceOver,
                     mIconId,
                     mSuggestionType,
                     mIsDeletable,
