@@ -12,6 +12,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -75,6 +76,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -214,6 +216,9 @@ public class NewTabPage
 
     private TopInsetCoordinator.@org.chromium.build.annotations.Nullable Observer
             mTopInsetChangeObserver;
+    private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
+            HomepageStateListener
+            mHomepageStateListener;
 
     private @Nullable SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
     private @Nullable NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
@@ -653,6 +658,7 @@ public class NewTabPage
                         windowAndroid, mIsTablet);
         if (mCanSupportEdgeToEdgeForCustomizedTheme) {
             initTopInsetCoordinatorObserver();
+            initHomepageStateListener();
         }
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
@@ -802,6 +808,42 @@ public class NewTabPage
                     }
                 };
         mTopInsetCoordinatorSupplier.addObserver(mTopInsetCoordinatorCallback);
+    }
+
+    // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
+    // HomepageStateListener.
+    private void initHomepageStateListener() {
+        mHomepageStateListener =
+                new NtpCustomizationConfigManager.HomepageStateListener() {
+                    @Override
+                    public void onBackgroundChanged(
+                            Bitmap originalBitmap,
+                            @Nullable BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
+                            return;
+                        }
+                        mNewTabPageLayout.onCustomizedBackgroundChanged(
+                                /* applyWhiteBackgroundOnSearchBox= */ true);
+                    }
+
+                    @Override
+                    public void onBackgroundColorChanged(
+                            int backgroundColor,
+                            boolean fromInitialization,
+                            int oldType,
+                            int newType) {
+                        if (!NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(oldType)) {
+                            return;
+                        }
+                        // Resets the fake search box's background.
+                        mNewTabPageLayout.onCustomizedBackgroundChanged(
+                                /* applyWhiteBackgroundOnSearchBox= */ false);
+                    }
+                };
+        NtpCustomizationConfigManager.getInstance().addListener(mHomepageStateListener, mContext);
     }
 
     /**
@@ -1143,6 +1185,11 @@ public class NewTabPage
         if (topInsetCoordinator != null && mTopInsetChangeObserver != null) {
             topInsetCoordinator.removeObserver(mTopInsetChangeObserver);
             mTopInsetChangeObserver = null;
+        }
+
+        if (mHomepageStateListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
         }
 
         if (mTopInsetCoordinatorCallback != null) {

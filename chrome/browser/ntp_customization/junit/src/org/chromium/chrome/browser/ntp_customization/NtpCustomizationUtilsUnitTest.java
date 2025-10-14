@@ -538,4 +538,36 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(id);
         assertEquals(id, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
     }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldApplyWhiteBackgroundOnSearchBox_flagDisabled() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
+
+        assertFalse(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
+
+        configManager.resetForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldApplyWhiteBackgroundOnSearchBox_withType() {
+        assertFalse(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                        NtpBackgroundImageType.DEFAULT));
+        assertFalse(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                        NtpBackgroundImageType.CHROME_COLOR));
+        assertFalse(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                        NtpBackgroundImageType.COLOR_FROM_HEX));
+
+        assertTrue(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                        NtpBackgroundImageType.IMAGE_FROM_DISK));
+        assertTrue(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                        NtpBackgroundImageType.THEME_COLLECTION));
+    }
 }

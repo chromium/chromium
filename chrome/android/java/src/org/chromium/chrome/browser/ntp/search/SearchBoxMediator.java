@@ -206,4 +206,8 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     void setSearchBoxHintText(@Nullable String hint) {
         mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hint);
     }
+
+    void applyWhiteBackgroundWithShadow(boolean apply) {
+        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
+    }
 }

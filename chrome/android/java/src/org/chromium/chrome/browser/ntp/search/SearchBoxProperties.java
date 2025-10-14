@@ -51,6 +51,8 @@ interface SearchBoxProperties {
     WritableIntPropertyKey SEARCH_BOX_TEXT_STYLE_RES_ID = new WritableIntPropertyKey();
     WritableBooleanPropertyKey ENABLE_SEARCH_BOX_EDIT_TEXT = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<String> SEARCH_BOX_HINT_TEXT = new WritableObjectPropertyKey<>();
+    WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND_WITH_SHADOW =
+            new WritableBooleanPropertyKey();
 
     WritableIntPropertyKey COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID = new WritableIntPropertyKey();
 
@@ -78,6 +80,7 @@ interface SearchBoxProperties {
                 SEARCH_BOX_TEXT_STYLE_RES_ID,
                 ENABLE_SEARCH_BOX_EDIT_TEXT,
                 SEARCH_BOX_HINT_TEXT,
+                APPLY_WHITE_BACKGROUND_WITH_SHADOW,
                 COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID,
             };
 }

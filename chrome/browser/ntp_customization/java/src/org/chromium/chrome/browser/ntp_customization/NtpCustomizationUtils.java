@@ -326,6 +326,23 @@ public class NtpCustomizationUtils {
                 matrixToString(backgroundImageInfo.landscapeMatrix));
     }
 
+    /** Returns whether a white background should be applied on fake search box. */
+    public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
+        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return false;
+
+        return shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationConfigManager.getInstance().getBackgroundImageType());
+    }
+
+    /**
+     * Returns whether a white background should be applied on fake search box based on the provided
+     * background image type.
+     */
+    public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundImageType int type) {
+        return type == NtpBackgroundImageType.IMAGE_FROM_DISK
+                || type == NtpBackgroundImageType.THEME_COLLECTION;
+    }
+
     @VisibleForTesting
     static void saveBackgroundImageFile(Bitmap backgroundImageBitmap) {
         File file = getBackgroundImageFile();

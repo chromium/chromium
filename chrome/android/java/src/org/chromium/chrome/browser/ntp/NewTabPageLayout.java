@@ -288,6 +288,9 @@ public class NewTabPageLayout extends LinearLayout
                         ? getResources()
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
+        if (NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox()) {
+            onCustomizedBackgroundChanged(/* applyWhiteBackgroundOnSearchBox= */ true);
+        }
 
         updateSearchBoxWidth();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
@@ -1312,6 +1315,22 @@ public class NewTabPageLayout extends LinearLayout
                 getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow) + mTopInset,
                 getPaddingEnd(),
                 getPaddingBottom());
+    }
+
+    /**
+     * Called when a customized background image is selected or deselected.
+     *
+     * @param applyWhiteBackgroundOnSearchBox Whether to apply a white background color to the fake
+     *     search box.
+     */
+    void onCustomizedBackgroundChanged(boolean applyWhiteBackgroundOnSearchBox) {
+        // applyWhiteBackgroundWithShadow() will be called immediately after mSearchBoxCoordinator
+        // is initialized, early exits here.
+        if (mSearchBoxCoordinator == null) {
+            return;
+        }
+
+        mSearchBoxCoordinator.applyWhiteBackgroundWithShadow(applyWhiteBackgroundOnSearchBox);
     }
 
     /** Returns the top inset of the NTP. */

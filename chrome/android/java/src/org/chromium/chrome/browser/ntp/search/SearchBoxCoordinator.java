@@ -149,4 +149,8 @@ public class SearchBoxCoordinator {
     public void setSearchBoxHintText(@Nullable String hint) {
         mMediator.setSearchBoxHintText(hint);
     }
+
+    public void applyWhiteBackgroundWithShadow(boolean apply) {
+        mMediator.applyWhiteBackgroundWithShadow(apply);
+    }
 }

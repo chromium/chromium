@@ -34,7 +34,8 @@ public class SearchBoxViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View.OnClickListener mOnClickListener;
 
-    @Mock private SearchBoxContainerView mView;
+    @Mock private SearchBoxContainerView mSearchBoxLayout;
+    @Mock private View mSearchBoxContainer;
     @Mock private LottieAnimationView mComposeplateButtonView;
     @Mock private TextView mSearchBoxTextView;
 
@@ -43,9 +44,13 @@ public class SearchBoxViewBinderUnitTest {
     @Before
     public void setup() {
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(mPropertyModel, mView, new SearchBoxViewBinder());
-        when(mView.findViewById(R.id.composeplate_button)).thenReturn(mComposeplateButtonView);
-        when(mView.findViewById(R.id.search_box_text)).thenReturn(mSearchBoxTextView);
+        PropertyModelChangeProcessor.create(
+                mPropertyModel, mSearchBoxLayout, new SearchBoxViewBinder());
+        when(mSearchBoxLayout.findViewById(R.id.search_box_container))
+                .thenReturn(mSearchBoxContainer);
+        when(mSearchBoxLayout.findViewById(R.id.composeplate_button))
+                .thenReturn(mComposeplateButtonView);
+        when(mSearchBoxLayout.findViewById(R.id.search_box_text)).thenReturn(mSearchBoxTextView);
     }
 
     @Test
@@ -58,10 +63,10 @@ public class SearchBoxViewBinderUnitTest {
     @Test
     public void testSetComposeplateButtonVisibility() {
         mPropertyModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY, true);
-        verify(mView).setComposeplateButtonVisibility(eq(true));
+        verify(mSearchBoxLayout).setComposeplateButtonVisibility(eq(true));
 
         mPropertyModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY, false);
-        verify(mView).setComposeplateButtonVisibility(eq(false));
+        verify(mSearchBoxLayout).setComposeplateButtonVisibility(eq(false));
     }
 
     @Test
@@ -74,21 +79,21 @@ public class SearchBoxViewBinderUnitTest {
     @Test
     public void testSetSearchBoxEndPadding() {
         int padding = 20;
-        when(mView.getPaddingLeft()).thenReturn(10);
-        when(mView.getPaddingTop()).thenReturn(10);
-        when(mView.getPaddingBottom()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingLeft()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingTop()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingBottom()).thenReturn(10);
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, padding);
-        verify(mView).setPadding(10, 10, padding, 10);
+        verify(mSearchBoxContainer).setPadding(10, 10, padding, 10);
     }
 
     @Test
     public void testSetSearchBoxStartPadding() {
         int padding = 20;
-        when(mView.getPaddingTop()).thenReturn(10);
-        when(mView.getPaddingEnd()).thenReturn(10);
-        when(mView.getPaddingBottom()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingTop()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingEnd()).thenReturn(10);
+        when(mSearchBoxContainer.getPaddingBottom()).thenReturn(10);
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_START_PADDING, padding);
-        verify(mView).setPadding(padding, 10, 10, 10);
+        verify(mSearchBoxContainer).setPadding(padding, 10, 10, 10);
     }
 
     @Test
@@ -112,5 +117,14 @@ public class SearchBoxViewBinderUnitTest {
         String hintText = "new hint";
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hintText);
         verify(mSearchBoxTextView).setHint(eq(hintText));
+    }
+
+    @Test
+    public void testApplyWhiteBackgroundWithShadow() {
+        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
+        verify(mSearchBoxLayout).applyWhiteBackgroundWithShadow(eq(true));
+
+        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
+        verify(mSearchBoxLayout).applyWhiteBackgroundWithShadow(eq(false));
     }
 }

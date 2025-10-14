@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -13,7 +14,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -143,5 +146,39 @@ public class SearchBoxMediatorUnitTest {
         String hint = "new hint";
         mMediator.setSearchBoxHintText(hint);
         assertEquals(hint, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
+    }
+
+    @Test
+    public void testApplyWhiteBackgroundWithShadow() {
+        float expectedElevation =
+                mContext.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
+        assertNotEquals(0, Float.compare(0f, expectedElevation));
+        Drawable defaultBackground =
+                mContext.getDrawable(R.drawable.home_surface_search_box_background);
+        View searchBoxContainer = mView.findViewById(R.id.search_box_container);
+
+        // Tests the case to apply a white background with shadow.
+        mMediator.applyWhiteBackgroundWithShadow(true);
+        assertTrue(mPropertyModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        assertEquals(0, Float.compare(expectedElevation, mView.getElevation()));
+        assertTrue(mView.getClipToOutline());
+        // Verifies that the search_box_container's background is set to color white.
+        Drawable whiteBackground = searchBoxContainer.getBackground();
+        assertTrue(whiteBackground instanceof GradientDrawable whiteGradientDrawable);
+        assertEquals(
+                Color.WHITE, ((GradientDrawable) whiteBackground).getColor().getDefaultColor());
+
+        // Tests the case to remove the white background with shadow.
+        mMediator.applyWhiteBackgroundWithShadow(false);
+        assertFalse(mPropertyModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        assertEquals(0, Float.compare(0f, mView.getElevation()));
+        assertFalse(mView.getClipToOutline());
+        assertNull(mView.getBackground());
+        // Verifies that the background of the search_box_container is to reset to the default one.
+        assertEquals(
+                ((GradientDrawable) defaultBackground).getColor().getDefaultColor(),
+                ((GradientDrawable) searchBoxContainer.getBackground())
+                        .getColor()
+                        .getDefaultColor());
     }
 }

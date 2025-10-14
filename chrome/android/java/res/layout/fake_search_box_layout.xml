@@ -4,80 +4,85 @@ Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<view
+<org.chromium.chrome.browser.ntp.search.SearchBoxContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
     android:id="@+id/search_box"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ntp_search_box_height"
     android:layout_marginStart="@dimen/mvt_container_lateral_margin"
     android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
     android:layout_marginTop="0dp"
-    android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin"
-    android:gravity="center_vertical"
-    android:background="@drawable/home_surface_search_box_background"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/fake_search_box_start_padding"
-    android:paddingEnd="@dimen/fake_search_box_end_padding">
-    <!-- Fake searchbox is only showing when Google is the DSE. -->
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/search_box_engine_icon"
-        style="@style/LocationBarActionButtonForFakeSearchBox"
-        android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
-        android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
-        android:layout_marginEnd="@dimen/fake_search_box_start_padding_with_dse_logo"
-        android:tint="@null"
-        android:focusable="false"
-        android:importantForAccessibility="no"
-        android:visibility="gone"
-        android:src="@drawable/ic_logo_googleg_24dp"/>
+    android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin">
 
-    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/search_box_container"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@drawable/home_surface_search_box_background"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/fake_search_box_start_padding"
+        android:paddingEnd="@dimen/fake_search_box_end_padding">
 
-        <EditText
-            tools:ignore="Autofill,LabelFor"
-            style="@style/TextAppearance.FakeSearchBoxText"
-            android:id="@+id/search_box_text"
-            android:layout_width="match_parent"
+        <!-- Fake searchbox is only showing when Google is the DSE. -->
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/search_box_engine_icon"
+            style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_marginEnd="@dimen/fake_search_box_start_padding_with_dse_logo"
+            android:tint="@null"
+            android:focusable="false"
+            android:importantForAccessibility="no"
+            android:visibility="gone"
+            android:src="@drawable/ic_logo_googleg_24dp"/>
+
+        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textAlignment="viewStart"
-            android:background="@null"
-            android:ellipsize="end"
-            android:focusableInTouchMode="false"
-            android:inputType="text"
-            android:singleLine="true"
-            android:hint="@string/omnibox_empty_hint"/>
+            android:layout_weight="1"
+            android:gravity="center_vertical">
 
-    </RelativeLayout>
+            <EditText
+                tools:ignore="Autofill,LabelFor"
+                style="@style/TextAppearance.FakeSearchBoxText"
+                android:id="@+id/search_box_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAlignment="viewStart"
+                android:background="@null"
+                android:ellipsize="end"
+                android:focusableInTouchMode="false"
+                android:inputType="text"
+                android:singleLine="true"
+                android:hint="@string/omnibox_empty_hint"/>
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/composeplate_button"
-        style="@style/LocationBarActionButtonForFakeSearchBox"
-        android:foreground="@drawable/oval_ripple"
-        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
-        app:lottie_rawRes="@raw/composeplate_loop_light"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        android:visibility="gone"/>
+        </RelativeLayout>
 
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/voice_search_button"
-        style="@style/LocationBarActionButtonForFakeSearchBox"
-        android:contentDescription="@string/accessibility_toolbar_btn_mic"
-        android:src="@drawable/ic_mic_white_24dp"/>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/composeplate_button"
+            style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:foreground="@drawable/oval_ripple"
+            android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+            app:lottie_rawRes="@raw/composeplate_loop_light"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:visibility="gone"/>
 
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/lens_camera_button"
-        style="@style/LocationBarActionButtonForFakeSearchBox"
-        android:contentDescription="@string/accessibility_btn_lens_camera"
-        android:src="@drawable/lens_camera_icon"
-        android:visibility="gone"/>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/voice_search_button"
+            style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:contentDescription="@string/accessibility_toolbar_btn_mic"
+            android:src="@drawable/ic_mic_white_24dp"/>
 
-</view>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/lens_camera_button"
+            style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:contentDescription="@string/accessibility_btn_lens_camera"
+            android:src="@drawable/lens_camera_icon"
+            android:visibility="gone"/>
+    </LinearLayout>
+</org.chromium.chrome.browser.ntp.search.SearchBoxContainerView>
