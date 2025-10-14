@@ -96,6 +96,8 @@ histograms-xml-to-struct.py script to generate enums for histograms.
   <int value="5" label="FeatureNotAvailable"/>
   <int value="6" label="DownloadGeneralError"/>
   <int value="7" label="DownloadNotEnoughDiskSpaceError"/>
+  <int value="8" label="GetPersistentModeError"/>
+  <int value="9" label="PersistentModeNotEnabled"/>
 </enum>
 
 <enum name="VeryLowPerformanceReason">

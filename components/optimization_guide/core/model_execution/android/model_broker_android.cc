@@ -19,6 +19,7 @@
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "services/on_device_model/android/backend_model_impl_android.h"
+#include "services/on_device_model/android/downloader_params.mojom.h"
 #include "services/on_device_model/android/model_downloader_android.h"
 #include "services/on_device_model/on_device_model_mojom_impl.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -229,9 +230,12 @@ void ModelBrokerAndroid::SolutionFactory::MaybeStartDownload(
   if (model_downloaders_.contains(feature)) {
     return;
   }
+  auto params = on_device_model::mojom::DownloaderParams::New();
+  // TODO(crbug.com/449213567): Add a feature flag to control this.
+  params->require_persistent_mode = false;
   model_downloaders_[feature] =
       std::make_unique<on_device_model::ModelDownloaderAndroid>(
-          ToModelExecutionFeatureProto(feature));
+          ToModelExecutionFeatureProto(feature), std::move(params));
   model_downloaders_[feature]->StartDownload(
       base::BindOnce(&SolutionFactory::OnAICoreModelUpdated,
                      weak_ptr_factory_.GetWeakPtr(), feature));

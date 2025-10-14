@@ -75,6 +75,14 @@ void OnDeviceModelBridgeNativeUnitTestHelper::
       env, java_helper_);
 }
 
+void OnDeviceModelBridgeNativeUnitTestHelper::VerifyDownloaderParams(
+    optimization_guide::proto::ModelExecutionFeature feature,
+    bool require_persistent_mode) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_OnDeviceModelBridgeNativeUnitTestHelper_verifyDownloaderParams(
+      env, java_helper_, static_cast<int>(feature), require_persistent_mode);
+}
+
 void OnDeviceModelBridgeNativeUnitTestHelper::TriggerDownloaderOnUnavailable(
     ModelDownloaderAndroid::DownloadFailureReason reason) {
   JNIEnv* env = base::android::AttachCurrentThread();

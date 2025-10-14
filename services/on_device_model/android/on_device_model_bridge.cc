@@ -31,12 +31,18 @@ base::android::ScopedJavaLocalRef<jobject> OnDeviceModelBridge::CreateSession(
 // static
 base::android::ScopedJavaLocalRef<jobject>
 OnDeviceModelBridge::CreateModelDownloader(
-    optimization_guide::proto::ModelExecutionFeature feature) {
+    optimization_guide::proto::ModelExecutionFeature feature,
+    on_device_model::mojom::DownloaderParamsPtr params) {
   CHECK_NE(feature, optimization_guide::proto::ModelExecutionFeature::
                         MODEL_EXECUTION_FEATURE_UNSPECIFIED)
       << "Feature is required to create a downloader.";
+  CHECK(params) << "DownloaderParams is required to create a downloader.";
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_OnDeviceModelBridge_createModelDownloader(env, feature);
+  // There isn't a generic mojo utility for converting c++ mojo struct to java,
+  // so disassemble the struct here and reassemble it in java.
+  // Only passing the parameters that are supported on Android.
+  return Java_OnDeviceModelBridge_createModelDownloader(
+      env, feature, params->require_persistent_mode);
 }
 
 }  // namespace on_device_model

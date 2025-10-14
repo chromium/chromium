@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/android/downloader_params.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace on_device_model {
@@ -24,7 +25,8 @@ class OnDeviceModelBridge {
   // Creates a new AiCoreModelDownloader instance. Caller is responsible for
   // creating a global ref if it needs to be stored.
   static base::android::ScopedJavaLocalRef<jobject> CreateModelDownloader(
-      optimization_guide::proto::ModelExecutionFeature feature);
+      optimization_guide::proto::ModelExecutionFeature feature,
+      mojom::DownloaderParamsPtr params);
 };
 
 }  // namespace on_device_model

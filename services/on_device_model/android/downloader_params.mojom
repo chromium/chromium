@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_model.mojom;
+
+// Parameters for the model downloader. Defined as a mojom struct to facilitate
+// convenient message passing between C++ and Java.
+struct DownloaderParams {
+  // If true, and the device is not in persistent mode (which lowers the
+  // marginal cost of inference requests by loading the model ahead of time),
+  // then this downloader will not trigger any new downloads, and will report
+  // the model as unavailable (even if it was previously downloaded by other
+  // features), to ensure that no adaptation file will be downloaded and no
+  // session will be created.
+  // This is default to true (even though limiting features to a small set of
+  // devices), because enabling features in non-persistent mode has a higher bar
+  // that should be approved by the Android System Health Council.
+  bool require_persistent_mode = true;
+};

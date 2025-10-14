@@ -10,6 +10,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.optimization_guide.proto.ModelExecutionProto.ModelExecutionFeature;
+import org.chromium.on_device_model.mojom.DownloaderParams;
 import org.chromium.on_device_model.mojom.SessionParams;
 
 /**
@@ -50,17 +51,21 @@ class OnDeviceModelBridge {
      *
      * @param feature The feature id requested this downloader. This is a proto enum
      *     ModelExecutionFeature.
+     * @param requirePersistentMode Whether the download is gated by persistent mode.
      * @return The AiCoreModelDownloaderWrapper instance.
      */
     @CalledByNative
-    private static AiCoreModelDownloaderWrapper createModelDownloader(int feature) {
+    private static AiCoreModelDownloaderWrapper createModelDownloader(
+            int feature, boolean requirePersistentMode) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
+        DownloaderParams params = new DownloaderParams();
+        params.requirePersistentMode = requirePersistentMode;
         AiCoreFactory factory = ServiceLoaderUtil.maybeCreate(AiCoreFactory.class);
         AiCoreModelDownloaderBackend backend;
         if (factory == null) {
             backend = new AiCoreModelDownloaderBackendUpstreamImpl();
         } else {
-            backend = factory.createModelDownloader(modelExecutionFeatureId);
+            backend = factory.createModelDownloader(modelExecutionFeatureId, params);
         }
         return new AiCoreModelDownloaderWrapper(backend);
     }

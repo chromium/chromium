@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/android/downloader_params.mojom.h"
 #include "services/on_device_model/android/sequence_checker_helper.h"
 
 namespace on_device_model {
@@ -50,14 +51,21 @@ class ModelDownloaderAndroid {
     kDownloadGeneralError = 6,
     // There is no enough disk space when downloading the model.
     kDownloadNotEnoughDiskSpaceError = 7,
-    kMaxValue = kDownloadNotEnoughDiskSpaceError,
+    // The feature is gated by persistent mode, but there is an error when
+    // determining if persistent mode is enabled..
+    kGetPersistentModeError = 8,
+    // The feature is gated by persistent mode, but persistent mode is not
+    // enabled.
+    kPersistentModeNotEnabled = 9,
+    kMaxValue = kPersistentModeNotEnabled,
   };
 
   using OnDownloadCompleteCallback = base::OnceCallback<void(
       base::expected<BaseModelSpec, DownloadFailureReason>)>;
 
-  explicit ModelDownloaderAndroid(
-      optimization_guide::proto::ModelExecutionFeature feature);
+  ModelDownloaderAndroid(
+      optimization_guide::proto::ModelExecutionFeature feature,
+      mojom::DownloaderParamsPtr params);
   ~ModelDownloaderAndroid();
 
   // Starts downloading the model for this feature.

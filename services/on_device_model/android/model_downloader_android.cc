@@ -47,8 +47,11 @@ void LogModelDownloadResult(
 }  // namespace
 
 ModelDownloaderAndroid::ModelDownloaderAndroid(
-    optimization_guide::proto::ModelExecutionFeature feature)
-    : java_downloader_(OnDeviceModelBridge::CreateModelDownloader(feature)),
+    optimization_guide::proto::ModelExecutionFeature feature,
+    mojom::DownloaderParamsPtr params)
+    : java_downloader_(
+          OnDeviceModelBridge::CreateModelDownloader(feature,
+                                                     std::move(params))),
       feature_(feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();

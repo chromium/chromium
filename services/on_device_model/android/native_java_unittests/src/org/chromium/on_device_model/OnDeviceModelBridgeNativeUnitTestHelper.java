@@ -9,6 +9,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.components.optimization_guide.proto.ModelExecutionProto.ModelExecutionFeature;
+import org.chromium.on_device_model.mojom.DownloaderParams;
 import org.chromium.on_device_model.mojom.GenerateOptions;
 import org.chromium.on_device_model.mojom.InputPiece;
 import org.chromium.on_device_model.mojom.SessionParams;
@@ -114,11 +115,21 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
      * to simulate the download status change.
      */
     public static class MockAiCoreModelDownloaderBackend implements AiCoreModelDownloaderBackend {
+        // Below are the params received in the constructor.
+        private final ModelExecutionFeature mFeature;
+        private final DownloaderParams mParams;
+
         private DownloaderResponder mResponder;
         private boolean mNativeDestroyed;
         // If true, the callbacks will be called asynchronously through a different thread. This
         // field should be set before startDownload() is called.
         private boolean mCallbackOnDifferentThread;
+
+        public MockAiCoreModelDownloaderBackend(
+                ModelExecutionFeature feature, DownloaderParams params) {
+            mFeature = feature;
+            mParams = params;
+        }
 
         @Override
         public void startDownload(DownloaderResponder responder) {
@@ -171,8 +182,9 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
 
         @Override
-        public AiCoreModelDownloaderBackend createModelDownloader(ModelExecutionFeature feature) {
-            mDownloaderBackend = new MockAiCoreModelDownloaderBackend();
+        public AiCoreModelDownloaderBackend createModelDownloader(
+                ModelExecutionFeature feature, DownloaderParams params) {
+            mDownloaderBackend = new MockAiCoreModelDownloaderBackend(feature, params);
             return mDownloaderBackend;
         }
 
@@ -204,6 +216,14 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         GenerateOptions generateOptions =
                 mMockAiCoreFactory.mSessionBackends.get(index).mGenerateOptions;
         assertEquals(maxOutputTokens, generateOptions.maxOutputTokens);
+    }
+
+    @CalledByNative
+    public void verifyDownloaderParams(int feature, boolean requirePersistentMode) {
+        ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
+        MockAiCoreModelDownloaderBackend downloaderBackend = mMockAiCoreFactory.mDownloaderBackend;
+        assertEquals(modelExecutionFeatureId, downloaderBackend.mFeature);
+        assertEquals(requirePersistentMode, downloaderBackend.mParams.requirePersistentMode);
     }
 
     @CalledByNative

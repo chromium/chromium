@@ -332,6 +332,7 @@ source_set("model_execution") {
       deps += [
         "//services/on_device_model:on_device_model_service",
         "//services/on_device_model/android",
+        "//services/on_device_model/android:mojom",
       ]
     }
   }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
@@ -21,6 +22,7 @@ source_set("android") {
 
   deps = [
     ":jni_headers",
+    ":mojom",
     "//base",
     "//components/optimization_guide/core:core_util",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":android",
+    ":mojom",
     ":native_java_unittests_java",
     ":test_support",
     "//base/test:test_support",
@@ -80,6 +83,7 @@ android_library("java") {
     "java/src/org/chromium/on_device_model/SessionResponder.java",
   ]
   deps = [
+    ":mojom_java",
     "//base:base_java",
     "//base:service_loader_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
@@ -98,6 +102,7 @@ android_library("native_java_unittests_java") {
   sources = [ "native_java_unittests/src/org/chromium/on_device_model/OnDeviceModelBridgeNativeUnitTestHelper.java" ]
   deps = [
     ":java",
+    ":mojom_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:service_loader_java",
@@ -129,4 +134,9 @@ java_cpp_enum("java_enum_srcjar") {
     "backend_session_impl_android.h",
     "model_downloader_android.h",
   ]
+}
+
+mojom("mojom") {
+  sources = [ "downloader_params.mojom" ]
+  generate_java = true
 }

@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/android/downloader_params.mojom.h"
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +30,14 @@ constexpr optimization_guide::proto::ModelExecutionFeature kFeature =
 class ModelDownloaderAndroidTest : public testing::Test {
  public:
   ModelDownloaderAndroidTest() = default;
+
+  mojom::DownloaderParamsPtr MakeDownloaderParams(
+      bool require_persistent_mode) {
+    auto params = mojom::DownloaderParams::New();
+    params->require_persistent_mode = require_persistent_mode;
+    return params;
+  }
+
   ~ModelDownloaderAndroidTest() override = default;
 
  protected:
@@ -63,7 +72,8 @@ class ModelDownloaderAndroidTest : public testing::Test {
 TEST_F(ModelDownloaderAndroidTest, DefaultDownloader) {
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
   downloader->StartDownload(future.GetCallback());
   EXPECT_EQ(future.Get(),
             base::unexpected(DownloadFailureReason::kApiNotAvailable));
@@ -76,8 +86,11 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailable) {
 
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/true));
   downloader->StartDownload(future.GetCallback());
+  java_helper_.VerifyDownloaderParams(kFeature,
+                                      /*require_persistent_mode=*/true);
   java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -92,7 +105,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailable) {
 
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
   downloader->StartDownload(future.GetCallback());
   java_helper_.TriggerDownloaderOnUnavailable(
       DownloadFailureReason::kUnknownError);
@@ -107,7 +121,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadAvailableOnDifferentThread) {
 
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
   java_helper_.SetDownloaderCallbackOnDifferentThread();
 
   downloader->StartDownload(future.GetCallback());
@@ -126,7 +141,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
 
   base::test::TestFuture<base::expected<BaseModelSpec, DownloadFailureReason>>
       future;
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
   java_helper_.SetDownloaderCallbackOnDifferentThread();
 
   downloader->StartDownload(future.GetCallback());
@@ -142,7 +158,8 @@ TEST_F(ModelDownloaderAndroidTest, DownloadUnavailableOnDifferentThread) {
 TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
   java_helper_.SetMockAiCoreFactory();
 
-  auto downloader = std::make_unique<ModelDownloaderAndroid>(kFeature);
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
   downloader->StartDownload(base::DoNothing());
   // Delete the native session manually and ensure async completion doesn't
   // cause a crash.

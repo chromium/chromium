@@ -38,6 +38,10 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
   void ResumeOnCompleteCallback();
   void SetDownloaderCallbackOnDifferentThread();
 
+  void VerifyDownloaderParams(
+      optimization_guide::proto::ModelExecutionFeature feature,
+      bool require_persistent_mode);
+
   void TriggerDownloaderOnUnavailable(
       ModelDownloaderAndroid::DownloadFailureReason reason);
   void TriggerDownloaderOnAvailable(const std::string& name,
