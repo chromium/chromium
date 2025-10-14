@@ -61,6 +61,9 @@ class CastPixmap : public gfx::NativePixmap {
   gfx::BufferFormat GetBufferFormat() const override {
     return gfx::BufferFormat::BGRA_8888;
   }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return viz::SinglePlaneFormat::kBGRA_8888;
+  }
   size_t GetNumberOfPlanes() const override { return 1; }
   bool SupportsZeroCopyWebGPUImport() const override {
     // TODO(crbug.com/40201271): Figure out how to import multi-planar pixmap
