@@ -193,7 +193,7 @@ void PaintTiming::SetFirstMeaningfulPaintCandidate(base::TimeTicks timestamp) {
     return;
   first_meaningful_paint_candidate_ = timestamp;
   if (GetFrame() && GetFrame()->View() && !GetFrame()->View()->IsAttached()) {
-    GetFrame()->GetFrameScheduler()->OnFirstMeaningfulPaint(timestamp);
+    GetFrame()->GetFrameScheduler()->OnFirstMeaningfulPaint();
   }
 }
 

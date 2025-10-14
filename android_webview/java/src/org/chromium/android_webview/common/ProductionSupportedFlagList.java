@@ -618,10 +618,6 @@ public final class ProductionSupportedFlagList {
                 "PartitionAllocUseSmallSingleSlotSpans",
                 "Uses a more nuanced heuristic to classify small single-slot spans."),
         Flag.baseFeature(
-                BlinkFeatures.LOADING_PHASE_BUFFER_TIME_AFTER_FIRST_MEANINGFUL_PAINT,
-                "Enables extending the loading phase by some buffer time after "
-                        + "First Meaningful Paint is signaled."),
-        Flag.baseFeature(
                 BlinkFeatures.DISCARD_INPUT_EVENTS_TO_RECENTLY_MOVED_FRAMES,
                 "Enables a browser intervention which silently ignores input events "
                         + "targeting a cross-origin iframe which has moved within its "

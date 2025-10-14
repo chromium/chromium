@@ -123,22 +123,13 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
 
   void OnFirstContentfulPaintInMainFrame() override;
-  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
+  void OnFirstMeaningfulPaint() override;
   void OnMainFrameInteractive() override;
-  void OnDispatchLoadEvent() override;
   void OnDidInstallNewDocument() override;
   base::TimeDelta UnreportedTaskTime() const override;
 
   bool IsWaitingForContentfulPaint() const;
   bool IsWaitingForMeaningfulPaint() const;
-
-  // Returns true when
-  // 1. the FrameSchedulerImpl is still waiting for the meaningful paint signal,
-  // or
-  // 2. the FrameSchedulerImpl has received the meaningful paint signal not
-  // longer than `GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint` ago, and
-  // the load event is not dispatched yet.
-  bool IsLoading() const;
 
   // An "ordinary" FrameScheduler is responsible for a frame whose parent page
   // is a fully-featured page owned by a web view (as opposed to, e.g.: a Page
@@ -405,8 +396,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       waiting_for_contentful_paint_;
   TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
       waiting_for_meaningful_paint_;
-  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-      is_load_event_dispatched_;
   base::TimeTicks first_meaningful_paint_timestamp_;
 
   using TaskRunnerMap =

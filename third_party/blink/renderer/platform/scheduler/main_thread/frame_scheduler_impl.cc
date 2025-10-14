@@ -255,14 +255,7 @@ FrameSchedulerImpl::FrameSchedulerImpl(
               this,
               *tracing_track_),
           &tracing_controller_,
-          YesNoStateToString),
-      is_load_event_dispatched_(false,
-                                perfetto::NamedTrack::FromPointer(
-                                    "FrameScheduler.IsLoadEventDispatched",
-                                    this,
-                                    *tracing_track_),
-                                &tracing_controller_,
-                                YesNoStateToString) {
+          YesNoStateToString) {
   frame_task_queue_controller_ = base::WrapUnique(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
@@ -741,7 +734,6 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   if (!is_same_document) {
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
-    is_load_event_dispatched_ = false;
   }
 
   if (is_outermost_main_frame && !is_same_document) {
@@ -1062,9 +1054,8 @@ void FrameSchedulerImpl::OnMainFrameInteractive() {
   }
 }
 
-void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
+void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
-  first_meaningful_paint_timestamp_ = timestamp;
 
   if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
       is_in_embedded_frame_tree_) {
@@ -1075,10 +1066,6 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
   if (delegate_) {
     return delegate_->MainFrameFirstMeaningfulPaint();
   }
-}
-
-void FrameSchedulerImpl::OnDispatchLoadEvent() {
-  is_load_event_dispatched_ = true;
 }
 
 void FrameSchedulerImpl::OnDidInstallNewDocument() {
@@ -1093,22 +1080,10 @@ bool FrameSchedulerImpl::IsWaitingForMeaningfulPaint() const {
   return waiting_for_meaningful_paint_;
 }
 
-bool FrameSchedulerImpl::IsLoading() const {
-  if (waiting_for_meaningful_paint_) {
-    return true;
-  }
-
-  if (is_load_event_dispatched_) {
-    return false;
-  }
-
-  return base::TimeTicks::Now() - first_meaningful_paint_timestamp_ <=
-         GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
-}
-
 bool FrameSchedulerImpl::IsOrdinary() const {
-  if (!parent_page_scheduler_)
+  if (!parent_page_scheduler_) {
     return true;
+  }
   return parent_page_scheduler_->IsOrdinary();
 }
 

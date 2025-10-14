@@ -85,18 +85,5 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
   return base::Seconds(seconds);
 }
 
-// TODO(crbug.com/1475915): convert this param value to TimeDelta instead of int
-// after the experiment.
-MIRACLE_PARAMETER_FOR_INT(
-    GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis,
-    features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
-    "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
-    0)
-
-base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
-  return base::Milliseconds(
-      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
-}
-
 }  // namespace scheduler
 }  // namespace blink

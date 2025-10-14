@@ -453,7 +453,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   bool IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const;
   bool IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const;
-  bool IsAnyOrdinaryMainFrameLoading() const;
 
   struct Policy {
     DISALLOW_NEW();
@@ -811,8 +810,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         waiting_for_any_main_frame_contentful_paint;
     TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
         waiting_for_any_main_frame_meaningful_paint;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-        is_any_main_frame_loading;
     TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
         have_seen_input_since_navigation;
   };

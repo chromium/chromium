@@ -1541,11 +1541,6 @@ BASE_FEATURE_ENUM_PARAM(LinkPreviewTriggerType,
                         LinkPreviewTriggerType::kAltHover,
                         &link_preview_trigger_type_options);
 
-// A feature to control whether the loading phase should be extended beyond
-// First Meaningful Paint by a configurable buffer.
-BASE_FEATURE(kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
 BASE_FEATURE(kLoadingTasksUnfreezable, base::FEATURE_ENABLED_BY_DEFAULT);

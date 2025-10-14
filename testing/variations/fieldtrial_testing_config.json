@@ -15157,28 +15157,6 @@
             ]
         }
     ],
-    "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "buffer_500ms_20230907",
-                    "params": {
-                        "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis": "500"
-                    },
-                    "enable_features": [
-                        "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint"
-                    ]
-                }
-            ]
-        }
-    ],
     "LoadingPredictorLimitPreconnectSocketCount": [
         {
             "platforms": [

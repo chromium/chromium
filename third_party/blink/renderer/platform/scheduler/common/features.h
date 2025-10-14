@@ -62,11 +62,6 @@ BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
              "MbiOverrideTaskRunnerHandle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Buffer time that we want to extend the loading state after the FMP is
-// received.
-PLATFORM_EXPORT base::TimeDelta
-GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
-
 }  // namespace scheduler
 }  // namespace blink
 

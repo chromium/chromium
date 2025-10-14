@@ -288,7 +288,6 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
         .WillByDefault(Return(false));
     ON_CALL(*this, IsWaitingForMainFrameMeaningfulPaint)
         .WillByDefault(Return(false));
-    ON_CALL(*this, IsMainFrameLoading).WillByDefault(Return(false));
     ON_CALL(*this, IsMainFrameLocal).WillByDefault(Return(true));
     ON_CALL(*this, IsOrdinary).WillByDefault(Return(true));
 
@@ -303,7 +302,6 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
   MOCK_METHOD(bool, RequestBeginMainFrameNotExpected, (bool));
   MOCK_METHOD(bool, IsWaitingForMainFrameContentfulPaint, (), (const));
   MOCK_METHOD(bool, IsWaitingForMainFrameMeaningfulPaint, (), (const));
-  MOCK_METHOD(bool, IsMainFrameLoading, (), (const));
   MOCK_METHOD(bool, IsMainFrameLocal, (), (const));
   MOCK_METHOD(bool, IsOrdinary, (), (const));
 };
@@ -1023,29 +1021,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
 };
 
-class
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest
-    : public MainThreadSchedulerImplTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest() {
-    if (GetParam()) {
-      feature_list_.Reset();
-      feature_list_.InitWithFeaturesAndParameters(
-          {base::test::FeatureRefAndParams(
-              features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
-              {{"LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
-                "5000"}})},
-          {});
-    }
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    testing::Bool());
-
 TEST_F(MainThreadSchedulerImplTest, TestPostDefaultTask) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "D1 D2 D3 D4");
@@ -1485,16 +1460,13 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_MainThread) {
   EXPECT_THAT(run_order, testing::ElementsAre("L1", "T1", "T2"));
 }
 
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    InitiallyInEarlyLoadingUseCase) {
+TEST_F(MainThreadSchedulerImplTest, InitiallyInEarlyLoadingUseCase) {
   // `IsWaitingForMainFrame(Contentful|Meaningful)Paint return true for a new
   // page scheduler in production.
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
 
   scheduler_->OnMainFramePaint();
 
@@ -1508,21 +1480,18 @@ TEST_P(
 
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(false));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(false));
   scheduler_->OnMainFramePaint();
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
 
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    NonOrdinaryPageDoesNotTriggerLoadingUseCase) {
+TEST_F(MainThreadSchedulerImplTest,
+       NonOrdinaryPageDoesNotTriggerLoadingUseCase) {
   // `IsWaitingForMainFrame(Contentful|Meaningful)Paint return true for a new
   // page scheduler in production.
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameContentfulPaint)
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
 
   // Make the page non-ordinary.
   ON_CALL(*page_scheduler_, IsOrdinary).WillByDefault(Return(false));
@@ -2705,9 +2674,7 @@ TEST_F(MainThreadSchedulerImplTest, TestDefaultRAILMode) {
   scheduler_->RemoveRAILModeObserver(&observer);
 }
 
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    TestLoadRAILMode) {
+TEST_F(MainThreadSchedulerImplTest, TestLoadRAILMode) {
   InSequence s;
   MockRAILModeObserver observer;
   EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kDefault));
@@ -2719,7 +2686,6 @@ TEST_P(
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
   scheduler_->DidStartProvisionalLoad(true);
   EXPECT_EQ(RAILMode::kLoad, GetRAILMode());
   EXPECT_EQ(UseCase::kEarlyLoading, ForceUpdatePolicyAndGetCurrentUseCase());
@@ -2729,16 +2695,13 @@ TEST_P(
   EXPECT_EQ(UseCase::kLoading, ForceUpdatePolicyAndGetCurrentUseCase());
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(false));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(false));
   scheduler_->OnMainFramePaint();
   EXPECT_EQ(UseCase::kNone, ForceUpdatePolicyAndGetCurrentUseCase());
   EXPECT_EQ(RAILMode::kDefault, GetRAILMode());
   scheduler_->RemoveRAILModeObserver(&observer);
 }
 
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    TestLoadRAILModeWhileHidden) {
+TEST_F(MainThreadSchedulerImplTest, TestLoadRAILModeWhileHidden) {
   InSequence s;
   MockRAILModeObserver observer;
   EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kDefault));
@@ -2749,7 +2712,6 @@ TEST_P(
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
 
   // Because the widget is hidden, the mode should still be kDefault while
   // loading.
@@ -2762,16 +2724,13 @@ TEST_P(
   EXPECT_EQ(UseCase::kLoading, ForceUpdatePolicyAndGetCurrentUseCase());
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(false));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(false));
   scheduler_->OnMainFramePaint();
   EXPECT_EQ(UseCase::kNone, ForceUpdatePolicyAndGetCurrentUseCase());
   EXPECT_EQ(RAILMode::kDefault, GetRAILMode());
   scheduler_->RemoveRAILModeObserver(&observer);
 }
 
-TEST_P(
-    MainThreadSchedulerImplWithLoadingPhaseBufferTimeAfterFirstMeaningfulPaintTest,
-    InputTerminatesLoadRAILMode) {
+TEST_F(MainThreadSchedulerImplTest, InputTerminatesLoadRAILMode) {
   InSequence s;
   MockRAILModeObserver observer;
   EXPECT_CALL(observer, OnRAILModeChanged(RAILMode::kDefault));
@@ -2783,7 +2742,6 @@ TEST_P(
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
   scheduler_->DidStartProvisionalLoad(true);
   EXPECT_EQ(RAILMode::kLoad, GetRAILMode());
   EXPECT_EQ(UseCase::kEarlyLoading, ForceUpdatePolicyAndGetCurrentUseCase());
@@ -4096,7 +4054,6 @@ TEST_P(DeferRendererTasksAfterInputTest, DiscreteInputDoesNotChangeRAILMode) {
       .WillByDefault(Return(true));
   ON_CALL(*page_scheduler_, IsWaitingForMainFrameMeaningfulPaint)
       .WillByDefault(Return(true));
-  ON_CALL(*page_scheduler_, IsMainFrameLoading).WillByDefault(Return(true));
   scheduler_->DidStartProvisionalLoad(true);
   EXPECT_EQ(ForceUpdatePolicyAndGetCurrentUseCase(), UseCase::kEarlyLoading);
   EXPECT_EQ(GetRAILMode(), RAILMode::kLoad);
