@@ -17171,6 +17171,7 @@ from previous Chrome versions.
   <int value="1050664817" label="CSSFragmentIdentifiers:enabled"/>
   <int value="1051252858" label="ClearIdentityInCanMakePaymentEvent:enabled"/>
   <int value="1051797561" label="OngoingProcesses:enabled"/>
+  <int value="1051962433" label="AutoPictureInPictureAndroid:disabled"/>
   <int value="1052550677"
       label="BlockRootWindowAccessibleNameChangeEvent:enabled"/>
   <int value="1053593250" label="UnicornChromeActivityReporting:enabled"/>
@@ -19069,6 +19070,7 @@ from previous Chrome versions.
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1708689134" label="PWAsDefaultOfflinePage:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
+  <int value="1709348169" label="AutoPictureInPictureAndroid:enabled"/>
   <int value="1710067851" label="AndroidDesktopWebPrefsLargeDisplays:disabled"/>
   <int value="1710590340" label="NavigationCaptureRefactorAndroid:disabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>

@@ -9820,6 +9820,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"auto-picture-in-picture-android",
+     flag_descriptions::kAutoPictureInPictureAndroidName,
+     flag_descriptions::kAutoPictureInPictureAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(media::kAutoPictureInPictureAndroid)},
+#endif
+
     {"document-patching", flag_descriptions::kDocumentPatchingName,
      flag_descriptions::kDocumentPatchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDocumentPatching)},

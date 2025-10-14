@@ -596,6 +596,11 @@ extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
 extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutoPictureInPictureAndroidName[];
+extern const char kAutoPictureInPictureAndroidDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAutoPictureInPictureForVideoPlaybackName[];
 extern const char kAutoPictureInPictureForVideoPlaybackDescription[];
 

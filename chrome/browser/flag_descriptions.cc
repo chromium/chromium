@@ -1008,6 +1008,13 @@ const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
     "When enabled, changes the amount of time required for VCN enrollment "
     "prompt strikes to expire.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAutoPictureInPictureAndroidName[] =
+    "Auto picture in picture on Android";
+const char kAutoPictureInPictureAndroidDescription[] =
+    "Enables auto picture in picture on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAutoPictureInPictureForVideoPlaybackName[] =
     "Auto picture in picture for video playback";
 const char kAutoPictureInPictureForVideoPlaybackDescription[] =

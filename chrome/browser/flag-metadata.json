@@ -769,6 +769,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "auto-picture-in-picture-android",
+    "owners": [
+      "philyan@chromium.org",
+      "media-dev@chromium.org"
+    ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "auto-picture-in-picture-for-video-playback",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 145
