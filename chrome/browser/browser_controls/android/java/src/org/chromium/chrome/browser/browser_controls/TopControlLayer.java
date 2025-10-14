@@ -58,4 +58,65 @@ public interface TopControlLayer {
      * @param offsetTagsInfo The latest offset tags info. Null if the layer becomes not scrollable.
      */
     default void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
+
+    /**
+     * Interface method to receive top offset for the current layer. The layer will be able to fully
+     * utilize this offset so it can correctly position itself on the screen.
+     *
+     * <p>The |layerYOffset| will be a generic position benchmark. This demonstrate how much the
+     * layer has to move to be shown. When yOffset = 0, the top edge of the layer will be at the top
+     * of Chrome's window. The larger the yOffset, the more the layer is positioned lower. (e.g. a
+     * negative |yOffset| means the layer is partially invisible).
+     *
+     * <pre>
+     * Example 1: Three layers in the stacker at resting position. L1(20 minH), L2(80), L3(50).
+     * Top layer L1 has minHeight.
+     *
+     *    ┌──────────────┐
+     *    │   20 minH    │       L1: yOffset = 0
+     *    ├──────────────┤
+     *    │              │
+     *    │      80      │       L2: yOffset = 20
+     *    │              │
+     *    ├──────────────┤
+     *    │      50      │       L3: yOffset = 100
+     *    ├──────────────┤
+     * </pre>
+     *
+     * <pre>
+     * Example 2: Three layers in the stacker. L1(20 minH), L2(80), L3(50). L2 is partially scroll
+     * off by 10px. The top of the layer 2 (10px) is drawn below layer 1.
+     *
+     *    ┌──────────────┐
+     *    │   20 minH    │       L1: yOffset = 0      ┌──────────────┐
+     *    ├──────────────┤                            │┄┄┄┄┄┄┄┄┄┄┄┄┄┄│
+     *    │      80      │       L2: yOffset = 10     │ 70 (80 - 10) │
+     *    │  (10 hidden) │                            │              │
+     *    ├──────────────┤                            ├──────────────┤
+     *    │      50      │       L3: yOffset = 90
+     *    ├──────────────┤
+     *
+     * </pre>
+     *
+     * <pre>
+     * Example 3: At resting, two layers, L2(80) and L3(50) are in the stacker at resting offset.
+     * L1(20 minH) is being added to the stacker, and the height increase requires an animation.
+     * The animation has started and L1 is 5px into the screen (15px hidden)
+     *
+     *    ┌──────────────┐
+     *    │  (15 hidden) │
+     *  ┄┄│   20 minH    │┄┄      L1: yOffset = -15
+     *    ├──────────────┤
+     *    │              │
+     *    │      80      │        L2: yOffset = 5
+     *    │              │
+     *    ├──────────────┤
+     *    │      50      │        L3: yOffset = 85
+     *    ├──────────────┤
+     *
+     * </pre>
+     *
+     * @param layerYOffset The offset for the layer in the top controls.
+     */
+    default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
 }

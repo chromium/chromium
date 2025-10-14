@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import android.util.SparseIntArray;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -85,6 +89,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     // All controls are stored in a Map and we should only have one of each control type.
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
+    private final SparseIntArray mLayerRestingOffsets = new SparseIntArray();
+    private final SparseIntArray mLayerYOffset = new SparseIntArray();
 
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final BrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
@@ -180,7 +186,14 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
 
         recalculateHeights();
+        recalculateLayerRestingOffsets();
         updateTopControlsHeight(animate);
+
+        repositionLayers(
+                mBrowserControlsSizer.getTopControlOffset(),
+                mBrowserControlsSizer.getTopControlsMinHeightOffset(),
+                animate,
+                isVisibilityForced());
 
         // Add more implementations here when necessary (e.g. offset calculation)
     }
@@ -223,7 +236,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
             totalHeight += layer.getTopControlHeight();
 
-            boolean hasMinHeight = isLayerAlwaysVisible(layer);
+            boolean hasMinHeight = shouldLayerScrollOff(layer);
             if (hasMinHeight) {
                 minHeight += layer.getTopControlHeight();
 
@@ -239,7 +252,124 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         mMinHeight = minHeight;
     }
 
-    private boolean isLayerAlwaysVisible(TopControlLayer layer) {
+    private void recalculateLayerRestingOffsets() {
+        int cumulativeHeight = 0;
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (layer == null) continue;
+
+            if (layer.getTopControlVisibility() == TopControlVisibility.HIDDEN) {
+                mLayerRestingOffsets.delete(type);
+            } else {
+                mLayerRestingOffsets.put(type, cumulativeHeight);
+                if (layer.contributesToTotalHeight()) {
+                    cumulativeHeight += layer.getTopControlHeight();
+                }
+            }
+        }
+    }
+
+    // Core logic to dispatch offset to top control layers. This handles offsets either during user
+    // scrolling, or a browser or render driven animation is ran.
+    private void repositionLayers(
+            int initialTopOffset,
+            int initialTopControlsMinHeightOffset,
+            boolean animated,
+            boolean offsetsAppliedByBrowser) {
+        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()
+                || !ChromeFeatureList.sTopControlsRefactorV2.isEnabled()) return;
+
+        // 1. Calculate the offset based on the current layer position.
+        SparseIntArray yOffsetOfLayers = new SparseIntArray();
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !offsetsAppliedByBrowser) {
+            // If offset can be handled by render, put layers at their resting positions.
+            for (@TopControlType int type : STACK_ORDER) {
+                TopControlLayer layer = mControls.get(type);
+                if (isLayerHidden(layer)) {
+                    continue;
+                }
+
+                yOffsetOfLayers.put(type, mLayerRestingOffsets.get(type));
+            }
+        } else {
+            calculateStackLayersOffsets(
+                    yOffsetOfLayers, initialTopOffset, initialTopControlsMinHeightOffset);
+        }
+
+        // 2. Animation. Adjust yOffsets based on layer's animation status.
+        if (animated && initialTopOffset != 0) {
+            // TODO: Add animation logic
+            Log.v(TAG, "Animation logic not supported yet.");
+        }
+
+        // 3. Dispatch yOffset to layers after cleanup.
+        for (int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (layer == null) continue;
+
+            // Save the offset for future animation use.
+            int yOffset = yOffsetOfLayers.get(type, -layer.getTopControlHeight());
+            if (layer.getTopControlVisibility() == TopControlVisibility.HIDDEN) {
+                mLayerYOffset.delete(type);
+                yOffset = -layer.getTopControlHeight();
+            } else {
+                mLayerYOffset.put(type, yOffset);
+            }
+
+            layer.onBrowserControlsOffsetUpdate(yOffset);
+        }
+    }
+
+    // Calculate the offset based on stack order.
+    private void calculateStackLayersOffsets(
+            SparseIntArray yOffsetOfLayers, int topControlsOffset, int topControlsMinHeightOffset) {
+
+        int validationHeight = 0;
+        int validationMinHeight = 0;
+
+        // Limit the topControlsMinHeightOffset to mMinHeight, similar to bottom controls.
+        // (See crbug.com/359539294). Then, convert the minHeightOffsets (resting at |minHeight|) to
+        // be the same coordinates as topOffset (resting at 0).
+        // When minHeight is increasing (in animation), this value should be negative value, similar
+        // to top controls; when minHeight decreases, the nonScrollableYOffset is a positive value.
+        int nonScrollableYOffset = Math.min(topControlsMinHeightOffset, mMinHeight) - mMinHeight;
+        int scrollableYOffset = topControlsOffset;
+
+        for (@TopControlType int type : STACK_ORDER) {
+            TopControlLayer layer = mControls.get(type);
+            if (isLayerHidden(layer)) continue;
+
+            boolean hasMinHeight = shouldLayerScrollOff(layer);
+            int layerHeight = layer.contributesToTotalHeight() ? layer.getTopControlHeight() : 0;
+
+            validationHeight += layerHeight;
+            validationMinHeight += hasMinHeight ? layerHeight : 0;
+
+            if (hasMinHeight) {
+                // First portion: Non-scrollable layers.
+                yOffsetOfLayers.put(type, nonScrollableYOffset);
+                nonScrollableYOffset += layerHeight;
+
+                // As we are still calculating the offset for non-scrollable layers, the first
+                // scrollable layer's baseline should be increased too, but not at the point where
+                // it would exceed the nonScrollableYOffset.
+                scrollableYOffset = Math.min(nonScrollableYOffset, scrollableYOffset + layerHeight);
+            } else {
+                // Second portion: Scrollable layers.
+                // To avoid scrollable layers keeps getting update after it is scrolled off,
+                // limit the yOffset, so the scrollable layer's bottom is aligned with
+                // the bottom of the last non-scrollable layer (nonScrollableYOffset).
+                int optimizedYOffset =
+                        Math.max(scrollableYOffset, nonScrollableYOffset - layerHeight);
+                yOffsetOfLayers.put(type, optimizedYOffset);
+                scrollableYOffset += layerHeight;
+            }
+        }
+
+        logIfHeightMismatch(mTotalHeight, mMinHeight, validationHeight, validationMinHeight);
+    }
+
+    private boolean shouldLayerScrollOff(TopControlLayer layer) {
         if (layer.getScrollBehavior() == ScrollBehavior.NEVER_SCROLLABLE) {
             return true;
         }
@@ -268,6 +398,16 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         if (mScrollingDisabled) {
             requestLayerUpdate(false);
         }
+    }
+
+    @Contract("null -> true")
+    private boolean isLayerHidden(@Nullable TopControlLayer layer) {
+        return layer == null || layer.getTopControlVisibility() == TopControlVisibility.HIDDEN;
+    }
+
+    private boolean isVisibilityForced() {
+        return mBrowserControlsState == BrowserControlsState.HIDDEN
+                || mBrowserControlsState == BrowserControlsState.SHOWN;
     }
 
     /**
@@ -327,10 +467,49 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         requestLayerUpdate(false);
     }
 
+    @Override
+    public void onControlsOffsetChanged(
+            int topOffset,
+            int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
+            boolean isVisibilityForced) {
+        if (mControls.isEmpty()) return;
+
+        repositionLayers(
+                topOffset,
+                topControlsMinHeightOffset,
+                requestNewFrame,
+                requestNewFrame || isVisibilityForced);
+    }
+
     /** Tear down |this| and clear all existing controls from the Map. */
     public void destroy() {
         mControls.clear();
         mBrowserControlsVisibilityDelegate.removeObserver(mBrowserControlsStateCallback);
         mBrowserControlsSizer.removeObserver(this);
+    }
+
+    private static void logIfHeightMismatch(
+            int expectedHeight, int expectedMinHeight, int actualHeight, int actualMinHeight) {
+
+        if (expectedHeight == actualHeight && expectedMinHeight == actualMinHeight) return;
+
+        Log.w(
+                TAG,
+                "Height mismatch observed."
+                        + " [Expected]"
+                        + " expectedHeight= "
+                        + expectedHeight
+                        + " expectedMinHeight= "
+                        + expectedMinHeight
+                        + " [Actual]"
+                        + " actualHeight = "
+                        + actualHeight
+                        + " actualMinHeight= "
+                        + actualMinHeight);
     }
 }
