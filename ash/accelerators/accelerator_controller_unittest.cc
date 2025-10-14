@@ -372,6 +372,12 @@ class AcceleratorControllerTest : public AshTestBase {
         std::make_unique<AcceleratorControllerImpl::TestApi>(controller_);
   }
 
+  void TearDown() override {
+    test_api_.reset();
+    controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
   static bool ProcessInController(const ui::Accelerator& accelerator) {
     AcceleratorControllerImpl* controller =
@@ -507,8 +513,7 @@ class AcceleratorControllerTest : public AshTestBase {
 
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
-  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
-      nullptr;  // Not owned.
+  raw_ptr<AcceleratorControllerImpl> controller_ = nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
 
  private:
@@ -2963,12 +2968,12 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
     EXPECT_FALSE(
         input_method_manager_->observers_.HasObserver(controller_.get()));
 
-    input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
+    input_method::InputMethodManager::Shutdown();
   }
 
  protected:
-  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
+  raw_ptr<TestInputMethodManager> input_method_manager_ =
       nullptr;  // Not owned.
 };
 
@@ -3016,9 +3021,13 @@ class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
     AcceleratorControllerTest::SetUp();
   }
 
+  void TearDown() override {
+    mock_input_ = nullptr;
+    AcceleratorControllerTest::TearDown();
+  }
+
  protected:
-  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged> mock_input_ =
-      nullptr;  // Not owned.
+  raw_ptr<AcceleratorMockInputMethod> mock_input_ = nullptr;  // Not owned.
 };
 
 // In some layouts positional accelerators can be on dead/compose keys. To

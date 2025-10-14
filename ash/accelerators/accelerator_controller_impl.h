@@ -109,8 +109,7 @@ class ASH_EXPORT AcceleratorControllerImpl
     void SetCanHandleCapsLock(bool can_handle);
 
    private:
-    raw_ptr<AcceleratorControllerImpl, DanglingUntriaged>
-        controller_;  // Not owned.
+    raw_ptr<AcceleratorControllerImpl> controller_;  // Not owned.
   };
 
   explicit AcceleratorControllerImpl(AshAcceleratorConfiguration* config);
