@@ -230,6 +230,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   }
 
   void TearDown() override {
+    window_state_ = nullptr;
     controller()->RemoveObserver(&observer_);
     window_.reset();
     AshTestBase::TearDown();
@@ -248,7 +249,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   const TestSessionObserver* observer() const { return &observer_; }
 
  protected:
-  raw_ptr<WindowState, DanglingUntriaged> window_state_ = nullptr;
+  raw_ptr<WindowState> window_state_ = nullptr;
 
  private:
   TestSessionObserver observer_;
