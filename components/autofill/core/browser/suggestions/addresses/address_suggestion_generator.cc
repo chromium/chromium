@@ -129,6 +129,22 @@ std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
   return base::UTF8ToUTF16(formatted_phone_number);
 }
 
+std::u16string GetFullSuggestionText(const Suggestion& suggestion) {
+  std::vector<Suggestion::Text> all_text_parts;
+  all_text_parts.push_back(suggestion.main_text);
+  all_text_parts.insert(all_text_parts.end(), suggestion.minor_texts.begin(),
+                        suggestion.minor_texts.end());
+
+  for (const std::vector<Suggestion::Text>& label : suggestion.labels) {
+    all_text_parts.insert(all_text_parts.end(), label.begin(), label.end());
+  }
+
+  return base::CollapseWhitespace(
+      base::JoinString(base::ToVector(all_text_parts, &Suggestion::Text::value),
+                       u" "),
+      /*trim_sequences_with_line_breaks=*/true);
+}
+
 bool ShouldTransliterateMainTextToKatakana(
     const AutofillProfile& profile,
     const FormFieldData& trigger_field,
@@ -586,12 +602,18 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
             suggestion.iph_metadata = Suggestion::IPHMetadata(
                 &feature_engagement::
                     kIPHAutofillHomeWorkProfileSuggestionFeature);
+            suggestion.voice_over =
+                l10n_util::GetStringFUTF16(IDS_HOME_SUGGESTION_VOICE_OVER,
+                                           GetFullSuggestionText(suggestion));
             break;
           case AutofillProfile::RecordType::kAccountWork:
             suggestion.icon = Suggestion::Icon::kWork;
             suggestion.iph_metadata = Suggestion::IPHMetadata(
                 &feature_engagement::
                     kIPHAutofillHomeWorkProfileSuggestionFeature);
+            suggestion.voice_over =
+                l10n_util::GetStringFUTF16(IDS_WORK_SUGGESTION_VOICE_OVER,
+                                           GetFullSuggestionText(suggestion));
             break;
           case AutofillProfile::RecordType::kLocalOrSyncable:
           case AutofillProfile::RecordType::kAccount:

@@ -49,6 +49,7 @@ namespace {
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
+using testing::Optional;
 using testing::Property;
 
 constexpr char kAddressesSuppressedHistogramName[] =
@@ -896,8 +897,8 @@ TEST_F(
                   EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
-// Tests that Home/Work icons are correctly assigned.
-TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
+// Tests that Home/Work suggestions are correctly generated.
+TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWork) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableSupportForHomeAndWork);
 
@@ -922,9 +923,12 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
   EXPECT_THAT(
       suggestions,
       ElementsAre(
-          AllOf(HasIcon(Suggestion::Icon::kAccount), HasNoIphFeature()),
-          AllOf(HasIcon(Suggestion::Icon::kHome), HasIphFeature(kIphFeature)),
-          AllOf(HasIcon(Suggestion::Icon::kWork), HasIphFeature(kIphFeature))));
+          AllOf(HasIcon(Suggestion::Icon::kAccount), HasNoIphFeature(),
+                Field(&Suggestion::voice_over, std::nullopt)),
+          AllOf(HasIcon(Suggestion::Icon::kHome), HasIphFeature(kIphFeature),
+                Field(&Suggestion::voice_over, Optional(Not(IsEmpty())))),
+          AllOf(HasIcon(Suggestion::Icon::kWork), HasIphFeature(kIphFeature),
+                Field(&Suggestion::voice_over, Optional(Not(IsEmpty()))))));
 
   FormFieldData triggering_field_email;
   triggering_field_email.set_label(u"Email");
