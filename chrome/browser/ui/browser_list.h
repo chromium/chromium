@@ -25,6 +25,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -55,16 +56,6 @@ class BrowserList {
 
   bool empty() const { return browsers_.empty(); }
   size_t size() const { return browsers_.size(); }
-
-  // Returns iterated access to list of open browsers ordered by activation. The
-  // underlying data structure is a vector and we push_back on recent access so
-  // a reverse iterator gives the latest accessed browser first.
-  const_reverse_iterator begin_browsers_ordered_by_activation() const {
-    return browsers_ordered_by_activation_.rbegin();
-  }
-  const_reverse_iterator end_browsers_ordered_by_activation() const {
-    return browsers_ordered_by_activation_.rend();
-  }
 
   // Returns the set of browsers that are currently in the closing state.
   const BrowserSet& currently_closing_browsers() const {
@@ -158,6 +149,22 @@ class BrowserList {
   BrowserList();
   ~BrowserList();
 
+  // Returns iterated access to list of open browsers ordered by activation. The
+  // underlying data structure is a vector and we push_back on recent access so
+  // a reverse iterator gives the latest accessed browser first.
+  //
+  // These functions are deprecated and should only be used by
+  // browser_window_interface_iterator_non_android.cc's
+  // ForEachCurrentBrowserWindowInterfaceOrderedByActivation() and
+  // ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation()
+  const_reverse_iterator deprecated_begin_browsers_ordered_by_activation()
+      const {
+    return browsers_ordered_by_activation_.rbegin();
+  }
+  const_reverse_iterator deprecated_end_browsers_ordered_by_activation() const {
+    return browsers_ordered_by_activation_.rend();
+  }
+
   // Helper method to remove a browser instance from a list of browsers
   static void RemoveBrowserFrom(Browser* browser, BrowserVector* browser_list);
 
@@ -217,6 +224,14 @@ class BrowserList {
       observers_;
 
   static BrowserList* instance_;
+
+  // These browser_window_interface_iterator_non_android.cc functions need
+  // access to deprecated_begin_browsers_ordered_by_activation() and
+  // deprecated_end_browsers_ordered_by_activation().
+  friend void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
+  friend void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+      base::FunctionRef<bool(BrowserWindowInterface*)> on_browser);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIST_H_
