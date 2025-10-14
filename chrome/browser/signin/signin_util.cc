@@ -400,6 +400,30 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+bool HasExplicitlyDisabledHistorySync(Profile& profile) {
+  // If the user is signed out, we cannot know if the toggles were interacted
+  // with or not.
+  CHECK(GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) ==
+        signin_util::SignedInState::kSignedIn);
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+  if (!sync_service) {
+    return false;
+  }
+
+  for (auto type :
+       {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
+        syncer::UserSelectableType::kSavedTabGroups}) {
+    if (sync_service->GetUserSettings()->GetTypePrefStateForAccount(type) ==
+        syncer::SyncUserSettings::UserSelectableTypePrefState::kDisabled) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(
     Profile& profile) {
   if (GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) !=

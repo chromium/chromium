@@ -204,6 +204,12 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
     const syncer::UserSelectableTypeSet& types);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// True if the user has explicitly disabled syncing history, tabs or saved tab
+// groups through the settings.
+// This method does not take into account the feature flag
+// `ReplaceSyncPromosWithSignInPromos`.
+bool HasExplicitlyDisabledHistorySync(Profile& profile);
+
 // Returns the value `ShouldShowHistorySyncOptinResult::kShow`
 // if the necessary conditions to show the History Sync Optin screen
 // are met. Otherwise it returns a skip reason.

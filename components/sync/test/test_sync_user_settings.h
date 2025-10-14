@@ -99,6 +99,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetPassphraseType(PassphraseType type);
   void SetExplicitPassphraseTime(base::Time t);
 
+  void SetDisabledType(UserSelectableType type);
+
 #if BUILDFLAG(IS_CHROMEOS)
   void SetSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -119,6 +121,10 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet selected_types_ = UserSelectableTypeSet::All();
   UserSelectableTypeSet managed_by_policy_types_;
   UserSelectableTypeSet managed_by_custodian_types_;
+
+  // This can be populated through `SetDisabledType()`. Types are removed from
+  // this set once they are enabled again.
+  UserSelectableTypeSet disabled_types_;
 
   bool initial_sync_feature_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
