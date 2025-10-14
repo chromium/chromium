@@ -209,7 +209,7 @@ class CORE_EXPORT ElementRuleCollector {
   void AddTryStyleProperties();
   void AddTryTacticsStyleProperties();
   void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
-    current_matching_tree_scope_ = &tree_scope;
+    current_rule_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
   }
 
@@ -231,6 +231,25 @@ class CORE_EXPORT ElementRuleCollector {
   const HeapVector<MatchedRule, 32>& MatchedRulesForTest() const {
     return matched_rules_;
   }
+
+  // For SVG <use> shadow trees, stylesheets from the referenced subtree are
+  // applied as if they belong to the same scope as the elements for cascading
+  // purposes, and for populating tree-scoped names and references.
+  // However, we need to use the TreeScope of where the rules actually came from
+  // in order to find the stylesheet and create CSSOM wrappers for devtools
+  // tracking. We need to override current_rule_tree_scope_ while collecting
+  // those rules.
+  class ScopedRuleTreeScope {
+    STACK_ALLOCATED();
+
+   public:
+    ScopedRuleTreeScope(ElementRuleCollector& collector,
+                        const TreeScope& rule_tree_scope)
+        : tree_scope_(&collector.current_rule_tree_scope_, &rule_tree_scope) {}
+
+   private:
+    base::AutoReset<const TreeScope*> tree_scope_;
+  };
 
  private:
   // If stop_at_first_match = true, CollectMatchingRules*() will stop
@@ -299,7 +318,9 @@ class CORE_EXPORT ElementRuleCollector {
       false;  // Document rules and watched selectors.
   bool suppress_visited_;
   EInsideLink inside_link_;
-  const TreeScope* current_matching_tree_scope_ = nullptr;
+  // The TreeScope from which the currently matched rules originate.
+  // This is used to associate rules with stylesheets for devtools.
+  const TreeScope* current_rule_tree_scope_ = nullptr;
 
   HeapVector<MatchedRule, 32> matched_rules_;
   ContainerSelectorCache container_selector_cache_;

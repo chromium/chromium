@@ -888,8 +888,11 @@ void MatchElementScopeRules(const Element& element,
                             StyleRuleUsageTracker* tracker) {
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
   UAShadowPseudoResult spr = UAShadowPseudoCascading(element);
+
   collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   if (element_scope_resolver) {
+    ElementRuleCollector::ScopedRuleTreeScope scope(
+        collector, element_scope_resolver->GetTreeScope());
     collector.ClearMatchedRules();
     element_scope_resolver->CollectMatchingElementScopeRules(
         element.GetTreeScope().RootNode(), collector,
@@ -898,7 +901,6 @@ void MatchElementScopeRules(const Element& element,
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
-
   if (!spr.cascade_style_attribute_in_parent_scope) {
     MatchStyleAttribute(element, collector, tracker);
   }

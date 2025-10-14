@@ -699,7 +699,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
   if (perf_trace_enabled) {
     DCHECK_EQ(mode_, SelectorChecker::kResolvingStyle);
     selector_statistics_collector.EndCollectionForCurrentRule();
-    AggregateRulePerfData(current_matching_tree_scope_,
+    AggregateRulePerfData(current_rule_tree_scope_,
                           context_.GetElement().GetDocument(),
                           selector_statistics_collector.PerRuleStatistics());
   }
@@ -1252,8 +1252,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
 
   if (mode_ == SelectorChecker::kCollectingCSSRules) {
     for (unsigned i = 0; i < matched_rules_.size(); ++i) {
-      AppendCSSOMWrapperForRule(current_matching_tree_scope_, matched_rules_[i],
-                                i);
+      AppendCSSOMWrapperForRule(current_rule_tree_scope_, matched_rules_[i], i);
     }
     return;
   }
@@ -1481,7 +1480,7 @@ void ElementRuleCollector::AddMatchedRulesToTracker(
     StyleRuleUsageTracker* tracker) const {
   for (const auto& matched_rule : matched_rules_) {
     const StyleRule* rule = matched_rule.Rule();
-    tracker->Track(FindStyleSheet(current_matching_tree_scope_,
+    tracker->Track(FindStyleSheet(current_rule_tree_scope_,
                                   context_.GetElement().GetDocument(), rule),
                    rule);
   }
