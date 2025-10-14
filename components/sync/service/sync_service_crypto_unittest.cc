@@ -526,6 +526,7 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
 
   // Verify that GetExplicitPassphraseDecryptionNigoriKey() result equals to
   // `expected_nigori`.
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   std::unique_ptr<Nigori> stored_nigori =
       crypto_.GetExplicitPassphraseDecryptionNigoriKey();
   ASSERT_THAT(stored_nigori, NotNull());
@@ -540,6 +541,7 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
 TEST_F(SyncServiceCryptoTest,
        ShouldGetNullDecryptionKeyFromEmptyBootstrapToken) {
   // GetEncryptionBootstrapToken() returns empty string by default.
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 
@@ -548,6 +550,7 @@ TEST_F(SyncServiceCryptoTest,
   // Mimic corrupted bootstrap token being stored.
   ON_CALL(delegate_, GetEncryptionBootstrapToken)
       .WillByDefault(Return("corrupted_token"));
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 

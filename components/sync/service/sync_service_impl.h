@@ -279,6 +279,9 @@ class SyncServiceImpl : public SyncService,
   // Simulates data type error reported by the bridge.
   void ReportDataTypeErrorForTest(DataType type);
 
+  // Wraps RunOrQueueTaskOnEngineInitialized() for testing.
+  void RunOrQueueTaskOnEngineInitializedForTest(base::OnceClosure task);
+
   size_t GetQueuedLocalDataMigrationItemCountForTest() const;
 
  private:
@@ -375,6 +378,14 @@ class SyncServiceImpl : public SyncService,
 
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
+
+  // Queues a task to be run once the engine is initialized. If the engine is
+  // already initialized, the task is run immediately.
+  void RunOrQueueTaskOnEngineInitialized(base::OnceClosure task);
+
+  // The implementation of SendExplicitPassphraseToPlatformClient, to be run
+  // once the engine is initialized.
+  void SendExplicitPassphraseToPlatformClientImpl();
 
   // Records (or may record) histograms related to trusted vault passphrase
   // type.
@@ -521,6 +532,9 @@ class SyncServiceImpl : public SyncService,
   std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
   std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
+
+  // Tasks that should run after the engine is initialized.
+  std::vector<base::OnceClosure> tasks_waiting_for_engine_initialization_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on

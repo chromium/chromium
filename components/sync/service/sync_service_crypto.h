@@ -67,9 +67,15 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;
+
+  // The following methods may only be called if the sync engine is initialized.
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
+
   void SetExplicitPassphraseDecryptionNigoriKey(std::unique_ptr<Nigori> nigori);
+  // Returns stored decryption key, corresponding to the last successfully
+  // decrypted explicit passphrase Nigori. Returns nullptr if there is no such
+  // stored decryption key.
   std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey() const;
 
   // Returns whether it's already possible to determine whether trusted vault

@@ -695,6 +695,8 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
   TRACE_EVENT0("sync", "SyncServiceImpl::ResetEngine");
   CHECK(data_type_manager_);
 
+  tasks_waiting_for_engine_initialization_.clear();
+
   const ShutdownReason shutdown_reason =
       ShutdownReasonForResetEngineReason(reset_reason);
 
@@ -1030,6 +1032,12 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   data_type_manager_->SetConfigurer(engine_.get());
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
+
+  std::vector<base::OnceClosure> tasks;
+  tasks.swap(tasks_waiting_for_engine_initialization_);
+  for (base::OnceClosure& task : tasks) {
+    std::move(task).Run();
+  }
 
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart2(
       GetAccountInfo().gaia, user_settings_->IsUsingExplicitPassphrase());
@@ -1567,6 +1575,11 @@ void SyncServiceImpl::ReportDataTypeErrorForTest(DataType type) {
       data_type_manager_->GetControllerForTest(type);  // IN-TEST
   CHECK(controller);
   controller->ReportBridgeErrorForTest();  // IN-TEST
+}
+
+void SyncServiceImpl::RunOrQueueTaskOnEngineInitializedForTest(
+    base::OnceClosure task) {
+  RunOrQueueTaskOnEngineInitialized(std::move(task));
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
@@ -2116,7 +2129,14 @@ void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
 }
 
 void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
+  RunOrQueueTaskOnEngineInitialized(base::BindOnce(
+      &SyncServiceImpl::SendExplicitPassphraseToPlatformClientImpl,
+      weak_factory_.GetWeakPtr()));
+}
+
+void SyncServiceImpl::SendExplicitPassphraseToPlatformClientImpl() {
 #if BUILDFLAG(IS_ANDROID)
+  CHECK(engine_ && engine_->IsInitialized());
   int version_code = 0;
   bool has_min_gms_version =
       base::StringToInt(base::android::device_info::gms_version_code(),
@@ -2129,7 +2149,7 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
   }
 
   std::unique_ptr<syncer::Nigori> nigori_key =
-      user_settings_->GetExplicitPassphraseDecryptionNigoriKey();
+      crypto_.GetExplicitPassphraseDecryptionNigoriKey();
   if (!nigori_key) {
     return;
   }
@@ -2307,6 +2327,15 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
   // to be open right now.
   ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
                            /*bypass_setup_in_progress_check=*/true);
+}
+
+void SyncServiceImpl::RunOrQueueTaskOnEngineInitialized(base::OnceClosure task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (engine_ && engine_->IsInitialized()) {
+    std::move(task).Run();
+    return;
+  }
+  tasks_waiting_for_engine_initialization_.push_back(std::move(task));
 }
 
 void SyncServiceImpl::GetTypesWithUnsyncedData(

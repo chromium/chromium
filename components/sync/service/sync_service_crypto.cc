@@ -289,6 +289,7 @@ void SyncServiceCrypto::SetExplicitPassphraseDecryptionNigoriKey(
 
 std::unique_ptr<Nigori>
 SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
+  CHECK(state_.engine);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
 }
