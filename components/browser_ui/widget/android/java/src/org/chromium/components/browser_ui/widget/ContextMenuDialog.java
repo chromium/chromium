@@ -31,8 +31,8 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
@@ -410,7 +410,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *
      * @param hasFocus Whether this dialog's content should have focus.
      */
-    public void setWindowFocus(boolean hasFocus) {
-        ListMenuUtils.setWindowFocus((ViewGroup) mContentView, hasFocus);
+    public void setWindowFocusForFlyoutMenus(boolean hasFocus) {
+        HierarchicalMenuController.setWindowFocusForFlyoutMenus((ViewGroup) mContentView, hasFocus);
     }
 }

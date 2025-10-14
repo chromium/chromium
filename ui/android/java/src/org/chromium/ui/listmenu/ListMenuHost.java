@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
@@ -246,7 +247,7 @@ public class ListMenuHost
         mPopupMenus.subList(clearFromIndex, mPopupMenus.size()).clear();
 
         if (mPopupMenus.size() > 0) {
-            setWindowFocus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, true);
+            setWindowFocusForFlyoutMenus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, true);
         }
     }
 
@@ -287,19 +288,19 @@ public class ListMenuHost
                         .build();
 
         assert mPopupMenus.size() > 0;
-        setWindowFocus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, false);
+        setWindowFocusForFlyoutMenus(mPopupMenus.get(mPopupMenus.size() - 1).popupWindow, false);
 
-        setWindowFocus(popupMenu, true);
+        setWindowFocusForFlyoutMenus(popupMenu, true);
         popupMenu.show();
 
         mPopupMenus.add(new FlyoutPopupEntry(item, popupMenu));
     }
 
-    private void setWindowFocus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
+    private void setWindowFocusForFlyoutMenus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
         ViewGroup contentView = (ViewGroup) popupWindow.getContentView();
         if (contentView == null) return;
 
-        ListMenuUtils.setWindowFocus(contentView, hasFocus);
+        HierarchicalMenuController.setWindowFocusForFlyoutMenus(contentView, hasFocus);
     }
 
     public Rect calculateFlyoutAnchorRect(View itemView) {

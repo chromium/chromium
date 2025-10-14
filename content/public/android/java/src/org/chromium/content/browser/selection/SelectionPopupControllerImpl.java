@@ -5,7 +5,6 @@
 package org.chromium.content.browser.selection;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -157,6 +156,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private @Nullable ActionModeCallback mCallback;
     private @Nullable RenderFrameHost mRenderFrameHost;
     private long mNativeSelectionPopupController;
+    private final HierarchicalMenuController mHierarchicalMenuController;
 
     private final SelectionClient.ResultCallback mResultCallback;
 
@@ -368,6 +368,26 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mLastSelectedText = "";
         mCustomActionMenuItemClickListeners = new HashMap<>();
         getPopupController().registerPopup(this);
+
+        mHierarchicalMenuController =
+                new HierarchicalMenuController<SelectionPopupController>(
+                        new ListMenuUtils.ListMenuKeyProvider(),
+                        // TODO(crbug.com/433410990): Implement flyouts for selected text context
+                        // menu.
+                        new FlyoutController.FlyoutHandler<SelectionPopupController>() {
+                            @Override
+                            public List<FlyoutController.FlyoutPopupEntry<SelectionPopupController>>
+                                    getFlyoutWindows() {
+                                return Collections.emptyList();
+                            }
+
+                            @Override
+                            public void addFlyoutWindow(
+                                    ListItem item, View view, int levelOfHoveredItem) {}
+
+                            @Override
+                            public void removeFlyoutWindows(int removeFromIndex) {}
+                        });
     }
 
     private void reset() {
@@ -778,31 +798,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             }
         }
 
-        HierarchicalMenuController hierarchicalMenuController =
-                new HierarchicalMenuController<SelectionPopupController>(
-                        new ListMenuUtils.ListMenuKeyProvider(),
-                        // TODO(crbug.com/433410990): Implement flyouts for selected text context
-                        // menu.
-                        new FlyoutController.FlyoutHandler<SelectionPopupController>() {
-                            @Override
-                            public List<FlyoutController.FlyoutPopupEntry<SelectionPopupController>>
-                                    getFlyoutWindows() {
-                                return Collections.emptyList();
-                            }
-
-                            @Override
-                            public void addFlyoutWindow(
-                                    ListItem item, View view, int levelOfHoveredItem) {}
-
-                            @Override
-                            public void removeFlyoutWindows(int removeFromIndex) {}
-                        });
-
-        setupCallbacksRecursively(
+        mHierarchicalMenuController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 items,
                 this::dismissMenu,
-                hierarchicalMenuController.getFlyoutController(),
                 /* drillDownOverrideValue= */ true);
 
         SelectionDropdownMenuDelegate.ItemClickListener itemClickListener =

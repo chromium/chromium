@@ -15,7 +15,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
-import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
@@ -59,9 +58,11 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -249,6 +250,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected final @Nullable MultiInstanceManager mMultiInstanceManager;
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
+    private final HierarchicalMenuController mHierarchicalMenuController;
+
     private final @LayoutRes int mMenuLayout;
     private final Context mContext;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
@@ -279,6 +282,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
         assert collaborationService != null;
         mCollaborationService = collaborationService;
         mContext = context;
+        mHierarchicalMenuController =
+                new HierarchicalMenuController(
+                        new ListMenuUtils.ListMenuKeyProvider(), /* flyoutHandler= */ null);
     }
 
     /**
@@ -516,8 +522,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
             buildCollaborationMenuItems(
                     modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));
         }
-        // Set up callbacks for submenu navigation
-        setupCallbacksRecursively(
+        // Set up callbacks for submenu navigation.
+        mHierarchicalMenuController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 modelList,
                 () -> {
@@ -525,7 +531,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         mMenuHolder.dismiss();
                     }
                 },
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
     }
 

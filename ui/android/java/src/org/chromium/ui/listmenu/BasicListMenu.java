@@ -260,13 +260,8 @@ public class BasicListMenu implements ListMenu {
         HierarchicalMenuController hierarchicalMenuController =
                 new HierarchicalMenuController(
                         new ListMenuUtils.ListMenuKeyProvider(), flyoutHandler);
-
-        ListMenuUtils.setupCallbacksRecursively(
-                mHeaderModelList,
-                mContentModelList,
-                dismissDialog,
-                hierarchicalMenuController.getFlyoutController(),
-                drillDownOverrideValue);
+        hierarchicalMenuController.setupCallbacksRecursively(
+                mHeaderModelList, mContentModelList, dismissDialog, drillDownOverrideValue);
     }
 
     private void callDelegate(@Nullable Delegate delegate, PropertyModel model, View view) {

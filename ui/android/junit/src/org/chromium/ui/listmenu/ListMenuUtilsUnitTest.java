@@ -23,7 +23,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
-import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +40,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -49,7 +49,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link ListMenuUtils}. */
+/**
+ * Unit tests for {@link ListMenuUtils}.
+ *
+ * <p>TODO(crbug.com/449896119): Move this test to under /hierarchicalmenu.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ListMenuUtilsUnitTest {
 
@@ -76,9 +80,14 @@ public class ListMenuUtilsUnitTest {
     private ListItem mSubmenu0Child1;
     private ListItem mSubmenuLevel0;
     private ListItem mListItemWithoutModelClickCallback;
+    private HierarchicalMenuController mController;
 
     @Before
     public void setUp() {
+        mController =
+                new HierarchicalMenuController(
+                        new ListMenuUtils.ListMenuKeyProvider(), /* flyoutHandler= */ null);
+
         mListItemWithModelClickCallback =
                 new ListItem(
                         MENU_ITEM,
@@ -137,11 +146,10 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_submenuNavigation_noStaticHeader() {
-        setupCallbacksRecursively(
+        mController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -193,12 +201,8 @@ public class ListMenuUtilsUnitTest {
     @Test
     public void getItemList_submenuNavigation_withStaticHeader() {
         // Begin test
-        setupCallbacksRecursively(
-                mHeaderModelList,
-                mModelList,
-                mDismissDialog,
-                /* flyoutController= */ null,
-                /* drillDownOverrideValue= */ true);
+        mController.setupCallbacksRecursively(
+                mHeaderModelList, mModelList, mDismissDialog, /* drillDownOverrideValue= */ true);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
         assertEquals(
@@ -287,11 +291,10 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_withoutModelClickCallback_noClickCallbackAdded() {
-        setupCallbacksRecursively(
+        mController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
         boolean hasClickListener =
                 mListItemWithoutModelClickCallback.model.containsKey(CLICK_LISTENER);
@@ -309,11 +312,10 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_withModelClickCallback_dismissAdded() {
-        setupCallbacksRecursively(
+        mController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
         mListItemWithModelClickCallback.model.get(CLICK_LISTENER).onClick(mListView);
         verify(mDismissDialog, times(1)).run();
@@ -321,11 +323,10 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_submenuNavigation_noOneByOneDataChange() {
-        setupCallbacksRecursively(
+        mController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
         mModelList.addObserver(mListObserver);
         // Click into submenu 0
@@ -342,12 +343,9 @@ public class ListMenuUtilsUnitTest {
         AccessibilityListObserver observer =
                 new AccessibilityListObserver(
                         mParentView, mHeaderListView, mListView, mHeaderModelList, mModelList);
-        setupCallbacksRecursively(
-                mHeaderModelList,
-                mModelList,
-                mDismissDialog,
-                /* flyoutController= */ null,
-                /* drillDownOverrideValue= */ true);
+        mController.setupCallbacksRecursively(
+                mHeaderModelList, mModelList, mDismissDialog, /* drillDownOverrideValue= */ true);
+        mHeaderModelList.addObserver(observer);
         mModelList.addObserver(observer);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -368,11 +366,10 @@ public class ListMenuUtilsUnitTest {
                         mListView,
                         mHeaderModelList,
                         mModelList);
-        setupCallbacksRecursively(
+        mController.setupCallbacksRecursively(
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutController= */ null,
                 /* drillDownOverrideValue= */ true);
         mModelList.addObserver(observer);
         // Click into submenu 0

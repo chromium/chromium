@@ -42,7 +42,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
-import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
@@ -82,6 +81,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private WebContentsObserver mWebContentsObserver;
     private @Nullable ContextMenuChipController mChipController;
     private ContextMenuHeaderCoordinator mHeaderCoordinator;
+    private final HierarchicalMenuController mHierarchicalMenuController;
 
     private final List<ContextMenuListView> mListViews;
     private final float mTopContentOffsetPx;
@@ -121,6 +121,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mIsCustomItemPresent = isCustomItemPresent;
         mDialogs = new ArrayList<>();
         mListViews = new ArrayList<>();
+        mHierarchicalMenuController =
+                new HierarchicalMenuController(new ListMenuUtils.ListMenuKeyProvider(), this);
     }
 
     @Override
@@ -332,12 +334,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         this::dismiss,
                         mUsePopupWindow);
 
-        HierarchicalMenuController hierarchicalMenuController =
-                new HierarchicalMenuController(new ListMenuUtils.ListMenuKeyProvider(), this);
-
-        FlyoutController flyoutController = hierarchicalMenuController.getFlyoutController();
-        assert flyoutController != null;
-
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
                 mediator.updateAndGetModelList(
@@ -346,7 +342,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         // preview the page before initiating any actions. This is not needed for
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage(),
-                        flyoutController);
+                        mHierarchicalMenuController);
 
         ModelListAdapter adapter = createAdapter(listItems);
 
@@ -416,7 +412,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.subList(clearFromIndex, mListViews.size()).clear();
 
         if (mDialogs.size() > 0) {
-            mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocus(true);
+            mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocusForFlyoutMenus(true);
         }
     }
 
@@ -456,9 +452,9 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         });
 
         assert mDialogs.size() > 0;
-        mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocus(false);
+        mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocusForFlyoutMenus(false);
 
-        dialog.setWindowFocus(true);
+        dialog.setWindowFocusForFlyoutMenus(true);
         dialog.show();
 
         mDialogs.add(new FlyoutPopupEntry(item, dialog));
