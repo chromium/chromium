@@ -183,7 +183,7 @@ void FetchAndRankHelper::OnFetched(ResultStatus status,
                                    std::vector<URLVisitAggregate> aggregates) {
   if (status != ResultStatus::kSuccess) {
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
-    std::move(entries_callback_).Run(std::move(entries));
+    std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
     return;
   }
 
@@ -199,7 +199,7 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
   if (status != ResultStatus::kSuccess) {
-    std::move(entries_callback_).Run(std::move(entries));
+    std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
     return;
   }
 
@@ -265,5 +265,5 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
         fetcher_entry.second);
   }
 
-  std::move(entries_callback_).Run(std::move(entries));
+  std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
 }

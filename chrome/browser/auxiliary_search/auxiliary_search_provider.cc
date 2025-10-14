@@ -130,7 +130,8 @@ base::WeakPtr<TabAndroid> FilterNonSensitiveSearchableTab(
 
 void OnDataReady(JNIEnv* env,
                  base::android::ScopedJavaGlobalRef<jobject> j_callback,
-                 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries) {
+                 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
+                 const visited_url_ranking::URLVisitsMetadata& metadata) {
   Java_AuxiliarySearchBridge_onDataReady(env, entries, j_callback);
 }
 

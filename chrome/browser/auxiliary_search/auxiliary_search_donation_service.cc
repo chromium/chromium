@@ -17,6 +17,9 @@ namespace {
 // triggered, in order to batch together multiple annotations.
 constexpr base::TimeDelta kDonationDelay = base::Minutes(5);
 
+// The maximum time before "now" to fetch history from.
+constexpr base::TimeDelta kHistoryAgeThreshold = base::Hours(24);
+
 }  // namespace
 
 AuxiliarySearchDonationService::AuxiliarySearchDonationService(
@@ -58,22 +61,45 @@ base::TimeDelta AuxiliarySearchDonationService::GetDonationDelayForTesting()
   return kDonationDelay;
 }
 
+base::TimeDelta
+AuxiliarySearchDonationService::GetHistoryAgeThresholdForTesting() const {
+  return kHistoryAgeThreshold;
+}
+
 void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
-  // TODO: https://crbug.com/432359106 - Set `begin_time` to the time of the
-  // most recent visit that was donated.
+  // Only fetch history entries newer than the most recent visit from the
+  // previous fetch. If that is too old (more than `kHistoryAgeThreshold` ago),
+  // then start from `kHistoryAgeThreshold`.
+  const base::Time threshold_time = base::Time::Now() - kHistoryAgeThreshold;
+  const base::Time begin_time =
+      last_donated_history_entry_visit_time_.has_value()
+          ? std::max(*last_donated_history_entry_visit_time_, threshold_time)
+          : threshold_time;
+
   scoped_refptr<FetchAndRankHelper> helper =
       base::MakeRefCounted<FetchAndRankHelper>(
           ranking_service_,
           base::BindOnce(&AuxiliarySearchDonationService::DonateHistoryEntries,
                          weak_factory_.GetWeakPtr()),
-          /*custom_tab_url=*/std::nullopt,
-          /*begin_time=*/std::nullopt);
+          /*custom_tab_url=*/std::nullopt, begin_time);
 
   helper->StartFetching();
 }
 
 void AuxiliarySearchDonationService::DonateHistoryEntries(
-    std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries) {
+    std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
+    const visited_url_ranking::URLVisitsMetadata& metadata) {
   // TODO: https://crbug.com/432359106 - Use AuxiliarySearchDonor to donate the
   // entries.
+  // TODO: https://crbug.com/432359106 - Write the visit time to prefs so it
+  // persists across sessions.
+  if (!metadata.most_recent_timestamp.has_value()) {
+    return;
+  }
+
+  last_donated_history_entry_visit_time_ =
+      last_donated_history_entry_visit_time_.has_value()
+          ? std::max(*last_donated_history_entry_visit_time_,
+                     *metadata.most_recent_timestamp)
+          : *metadata.most_recent_timestamp;
 }
