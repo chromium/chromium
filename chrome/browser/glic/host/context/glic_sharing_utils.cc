@@ -46,6 +46,10 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
   BrowserList::AddObserver(this);
+  // If we already have an active browser, set up active tab subscription.
+  UpdateActiveTabSubscription(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
   // Trigger an update now, even though we have no subscribers, so that
   // GetActiveTab works correctly.
   UpdateActiveTab();
@@ -55,15 +59,24 @@ GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() {
   BrowserList::RemoveObserver(this);
 }
 
-void GlicActiveTabForProfileTracker::OnBrowserSetLastActive(Browser* browser) {
-  if (browser->profile() == profile_) {
+bool GlicActiveTabForProfileTracker::IsBrowserActiveForProfile(
+    BrowserWindowInterface* browser) {
+  return browser && browser->GetProfile() == profile_ && browser->IsActive();
+}
+
+void GlicActiveTabForProfileTracker::UpdateActiveTabSubscription(
+    BrowserWindowInterface* browser) {
+  if (IsBrowserActiveForProfile(browser)) {
     active_tab_subscription_ = browser->RegisterActiveTabDidChange(
         base::BindRepeating(&GlicActiveTabForProfileTracker::OnActiveTabChanged,
                             base::Unretained(this)));
   } else {
     active_tab_subscription_ = {};
   }
+}
 
+void GlicActiveTabForProfileTracker::OnBrowserSetLastActive(Browser* browser) {
+  UpdateActiveTabSubscription(browser);
   UpdateActiveTab();
 }
 
@@ -83,7 +96,7 @@ void GlicActiveTabForProfileTracker::UpdateActiveTab() {
 
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (browser && browser->GetProfile() == profile_ && browser->IsActive()) {
+  if (IsBrowserActiveForProfile(browser)) {
     active_tab = browser->GetActiveTabInterface();
   }
 
