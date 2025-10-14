@@ -97,7 +97,6 @@ void OnRenderProcessGone(
           base::UmaHistogramEnumeration(
               kRenderProcessGoneHistogramName,
               RenderProcessGoneResult::kCrashNotHandled);
-          // Keeps this log unchanged, CTS test uses it to detect crash.
           std::string message = base::StringPrintf(
               "Render process (%d)'s crash wasn't handled by all associated  "
               "webviews, triggering application crash.",
