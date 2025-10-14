@@ -20,13 +20,8 @@
 +org.chromium.chrome.browser.lens.LensPolicyUtils
 +org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
 +org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
-+org.chromium.chrome.browser.omnibox.geo.GeolocationTracker
-+org.chromium.chrome.browser.omnibox.geo.PlatformNetworksManager
-+org.chromium.chrome.browser.omnibox.geo.VisibleNetworksTracker
-+org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider
-+org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager
 +org.chromium.chrome.browser.omnibox.UrlBarData
-+org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil
++org.chromium.chrome.browser.omnibox.geo.VisibleNetworksTracker
 +org.chromium.chrome.browser.partnercustomizations.CustomizationProviderDelegateUpstreamImpl
 +org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations
 +org.chromium.chrome.browser.profiles.Profile

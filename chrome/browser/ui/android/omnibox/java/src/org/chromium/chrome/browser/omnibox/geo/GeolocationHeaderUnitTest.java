@@ -69,7 +69,7 @@ public class GeolocationHeaderUnitTest {
     private static final long LOCATION_TIME = 400;
     // Encoded location for LOCATION_LAT, LOCATION_LONG, LOCATION_ACCURACY and LOCATION_TIME.
     private static final String ENCODED_PROTO_LOCATION = "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRg==";
-    private static int sRefreshLastKnownLocation;
+    private int mRefreshLastKnownLocationCount;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -86,6 +86,7 @@ public class GeolocationHeaderUnitTest {
     public void setUp() {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
+        GeolocationTracker.setLocationForTesting(null, null);
         GeolocationTracker.setLocationAgeForTesting(null);
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ true);
         // This is to reset `sCurrentLocationRequested`.
@@ -104,7 +105,9 @@ public class GeolocationHeaderUnitTest {
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
                 .thenReturn("https://example.com/");
         when(mTemplateUrlServiceMock.isDefaultSearchEngineGoogle()).thenReturn(true);
-        sRefreshLastKnownLocation = 0;
+        mRefreshLastKnownLocationCount = 0;
+        GeolocationTracker.setRefreshLastKnownLocationRunnableForTesting(
+                () -> mRefreshLastKnownLocationCount++);
         ShadowLocationServices.sFusedLocationProviderClient = mLocationProviderClient;
     }
 
@@ -139,23 +142,20 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class})
     @DisableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     public void testPrimeLocationForGeoHeader() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
-        assertEquals(1, sRefreshLastKnownLocation);
+        assertEquals(1, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeaderPermissionOff() {
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ false, /* hasFine= */ false);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class})
     public void testPrimeLocationForGeoHeaderDseAutograntOff() {
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
@@ -164,11 +164,11 @@ public class GeolocationHeaderUnitTest {
         setSiteGeolocationPermissions(
                 /* approximate= */ ContentSetting.ASK, /* precise= */ ContentSetting.ASK);
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
+    @Config(shadows = {ShadowLocationServices.class})
     public void testFusedLocationProvider() {
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         verify(mLocationProviderClient)
@@ -192,7 +192,7 @@ public class GeolocationHeaderUnitTest {
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
         assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ true));
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
 
         GeolocationHeader.stopListeningForLocationUpdates();
         verify(mLocationProviderClient).removeLocationUpdates(mLocationListenerCaptor.getValue());
@@ -203,11 +203,11 @@ public class GeolocationHeaderUnitTest {
                         any(LocationRequest.class), any(LocationListener.class), eq(null));
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
 
-        assertEquals(1, sRefreshLastKnownLocation);
+        assertEquals(1, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
+    @Config(shadows = {ShadowLocationServices.class})
     public void testFusedLocationProvider_SitePrecisePermissionGranted() {
         // App-level and site-level permissions are granted at precise-level by default in `setUp`.
 
@@ -224,11 +224,11 @@ public class GeolocationHeaderUnitTest {
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
         assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ true));
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
+    @Config(shadows = {ShadowLocationServices.class})
     public void testFusedLocationProvider_SiteApproximatePermissionGranted() {
         // App-level permissions are granted by default in setUp.
         // Site-level permission is granted for approximate.
@@ -248,11 +248,11 @@ public class GeolocationHeaderUnitTest {
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
         assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ false));
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
+    @Config(shadows = {ShadowLocationServices.class})
     public void testFusedLocationProvider_SitePermissionDenied() {
         // App-level permissions are granted by default in setUp.
         // Site-level permission is denied.
@@ -263,11 +263,11 @@ public class GeolocationHeaderUnitTest {
         verify(mLocationProviderClient, never())
                 .requestLocationUpdates(
                         any(LocationRequest.class), any(LocationListener.class), eq(null));
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     @Test
-    @Config(shadows = {ShadowGeolocationTracker.class, ShadowLocationServices.class})
+    @Config(shadows = {ShadowLocationServices.class})
     public void testFusedLocationProvider_AppCoarseSitePrecisePermission() {
         // App has only coarse permission.
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ false);
@@ -291,7 +291,7 @@ public class GeolocationHeaderUnitTest {
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
         assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ false));
-        assertEquals(0, sRefreshLastKnownLocation);
+        assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
     private void setSiteGeolocationPermissions(
@@ -323,15 +323,6 @@ public class GeolocationHeaderUnitTest {
         location.setElapsedRealtimeNanos(
                 SystemClock.elapsedRealtimeNanos() + 1000000 * (time - System.currentTimeMillis()));
         return location;
-    }
-
-    /** Shadow for GeolocationTracker */
-    @Implements(GeolocationTracker.class)
-    public static class ShadowGeolocationTracker {
-        @Implementation
-        public static void refreshLastKnownLocation(Context context, long maxAge) {
-            sRefreshLastKnownLocation++;
-        }
     }
 
     /** Shadow for LocationServices */

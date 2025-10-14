@@ -16,7 +16,6 @@ import static org.chromium.chrome.browser.omnibox.UrlBarProperties.SELECT_ALL_ON
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.view.View.OnLongClickListener;
 
@@ -33,24 +32,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link UrlBarViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Callback<Boolean> mFocusChangeCallback;
@@ -61,23 +52,10 @@ public class UrlBarViewBinderUnitTest {
     UrlBar mUrlBar;
     ConstraintLayout.LayoutParams mUrlBarLayoutParams = new LayoutParams(0, 100);
 
-    @Implements(OmniboxResourceProvider.class)
-    static class ShadowOmniboxResourceProvider {
-        @Implementation
-        public static int getUrlBarPrimaryTextColor(
-                Context context, @BrandedColorScheme int brandedColorScheme) {
-            return Color.LTGRAY;
-        }
-
-        @Implementation
-        public static int getUrlBarHintTextColor(
-                Context context, @BrandedColorScheme int brandedColorScheme) {
-            return Color.LTGRAY;
-        }
-    }
-
     @Before
     public void setUp() {
+        OmniboxResourceProvider.setUrlBarPrimaryTextColorForTesting(Color.LTGRAY);
+        OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);

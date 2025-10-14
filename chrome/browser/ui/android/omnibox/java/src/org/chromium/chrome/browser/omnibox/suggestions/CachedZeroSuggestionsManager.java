@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -41,6 +42,12 @@ import java.util.Set;
 /** CachedZeroSuggestionsManager manages caching and restoring zero suggestions. */
 @NullMarked
 public class CachedZeroSuggestionsManager {
+    public interface OverridesForTesting {
+        void saveToCache(int pageClass, AutocompleteResult r);
+
+        AutocompleteResult readFromCache(int pageClass);
+    }
+
     /** Jump-Start Omnibox: the context of the most recently visited page. */
     public static class JumpStartContext {
         /** The GURL representing the most recently visited page. */
@@ -77,9 +84,20 @@ public class CachedZeroSuggestionsManager {
     /* package */ static final Set<String> ADDITIONAL_KEYS_TO_ERASE =
             Set.of(KEY_JUMP_START_URL, KEY_JUMP_START_PAGE_CLASS);
 
+    private static @Nullable OverridesForTesting sOverridesForTesting;
+
+    public static void setOverridesForTesting(OverridesForTesting value) {
+        sOverridesForTesting = value;
+        ResettersForTesting.register(() -> sOverridesForTesting = null);
+    }
+
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
     @SuppressWarnings("ApplySharedPref")
     public static void saveToCache(int pageClass, AutocompleteResult resultToCache) {
+        if (sOverridesForTesting != null) {
+            sOverridesForTesting.saveToCache(pageClass, resultToCache);
+            return;
+        }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
 
         var serializedBytes = resultToCache.serialize().toByteArray();
@@ -117,6 +135,9 @@ public class CachedZeroSuggestionsManager {
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
     static AutocompleteResult readFromCache(int pageClass) {
+        if (sOverridesForTesting != null) {
+            return sOverridesForTesting.readFromCache(pageClass);
+        }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         String key = getCacheKey(pageClass);
 

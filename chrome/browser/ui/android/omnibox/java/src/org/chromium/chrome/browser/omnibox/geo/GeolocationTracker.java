@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Process;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
@@ -35,6 +36,7 @@ class GeolocationTracker {
     private static boolean sUseLocationForTesting;
     private static long sLocationAgeForTesting;
     private static boolean sUseLocationAgeForTesting;
+    private static @Nullable Runnable sRefreshLastKnownLocationRunnableForTesting;
 
     private static class SelfCancelingListener implements LocationListener {
 
@@ -132,6 +134,11 @@ class GeolocationTracker {
     static void refreshLastKnownLocation(Context context, long maxAge) {
         ThreadUtils.assertOnUiThread();
 
+        if (sRefreshLastKnownLocationRunnableForTesting != null) {
+            sRefreshLastKnownLocationRunnableForTesting.run();
+            return;
+        }
+
         if (!hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             return;
         }
@@ -171,6 +178,11 @@ class GeolocationTracker {
         }
         sLocationAgeForTesting = locationAgeForTesting;
         sUseLocationAgeForTesting = true;
+    }
+
+    static void setRefreshLastKnownLocationRunnableForTesting(Runnable runnable) {
+        sRefreshLastKnownLocationRunnableForTesting = runnable;
+        ResettersForTesting.register(() -> sRefreshLastKnownLocationRunnableForTesting = null);
     }
 
     private static boolean hasPermission(Context context, String permission) {

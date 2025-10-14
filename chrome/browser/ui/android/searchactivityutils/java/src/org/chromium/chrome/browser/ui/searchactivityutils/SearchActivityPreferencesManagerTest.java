@@ -51,7 +51,6 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
@@ -61,7 +60,6 @@ import java.util.function.Consumer;
 @Config(
         shadows = {
             SearchActivityPreferencesManagerTest.ShadowLensController.class,
-            SearchActivityPreferencesManagerTest.ShadowVoiceRecognitionUtil.class,
         })
 public class SearchActivityPreferencesManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -80,15 +78,6 @@ public class SearchActivityPreferencesManagerTest {
             var controller = mock(LensController.class);
             doAnswer(i -> sIsAvailable).when(controller).isLensEnabled(any());
             return controller;
-        }
-    }
-
-    @Implements(VoiceRecognitionUtil.class)
-    public static class ShadowVoiceRecognitionUtil {
-        public static boolean sIsAvailable = true;
-
-        public static boolean isVoiceSearchEnabled(AndroidPermissionDelegate delegate) {
-            return sIsAvailable;
         }
     }
 
@@ -472,7 +461,7 @@ public class SearchActivityPreferencesManagerTest {
     @Test
     public void updateFeatureAvailability() {
         ShadowLensController.sIsAvailable = true;
-        ShadowVoiceRecognitionUtil.sIsAvailable = true;
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         IncognitoUtils.setEnabledForTesting(true);
 
         SearchActivityPreferencesManager.updateFeatureAvailability(
@@ -492,7 +481,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.incognitoAvailable);
 
         // Disable Voice.
-        ShadowVoiceRecognitionUtil.sIsAvailable = false;
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
         data = SearchActivityPreferencesManager.getCurrent();
