@@ -73,6 +73,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".google_calendar" summary="Module ID for Google Calendar"/>
   <variant name=".history_clusters"
       summary="Module ID for History Clusters module"/>
+  <variant name=".microsoft_authentication"
+      summary="Module ID for Microsoft Authentication"/>
+  <variant name=".microsoft_files" summary="Module ID for Microsoft Files"/>
+  <variant name=".outlook_calendar" summary="Module ID for Outlook Calendar"/>
   <variant name=".shopping_tasks" summary="Module ID for Shopping Tasks"/>
   <variant name=".tab_resumption" summary="Module ID for Tab Resumption"/>
 </variants>
