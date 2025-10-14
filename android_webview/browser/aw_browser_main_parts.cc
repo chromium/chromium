@@ -56,6 +56,7 @@
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info_values.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -146,6 +147,83 @@ bool IsBundleInterestingAccordingToVersionCode(
   char variant = version_code[version_code.length() - 2];
 
   return arch_codes_mixed.count(arch_code) > 0 && variant == kTriChromeVariant;
+}
+
+std::vector<std::string> getIdsForWebViewApkType(const ApkType& apk_type) {
+  std::vector<std::string> gws_experiment_ids;
+  base::Version product_version(PRODUCT_VERSION);
+  const version_info::Channel channel = version_info::android::GetChannel();
+
+  if (apk_type == ApkType::TRICHROME) {
+    gws_experiment_ids.push_back("3393822");
+    if (channel == version_info::Channel::STABLE) {
+      gws_experiment_ids.push_back("3393824");
+      if (product_version.IsValid()) {
+        // Currently, we plan to start the experiment in M142, M143 or M144. So,
+        // we have separate id for each.
+        auto milestone = product_version.components()[0];
+        if (milestone >= 142) {
+          gws_experiment_ids.push_back("3393826");
+        }
+        if (milestone >= 143) {
+          gws_experiment_ids.push_back("3393828");
+        }
+        if (milestone >= 144) {
+          gws_experiment_ids.push_back("3393830");
+        }
+      }
+    } else if (channel == version_info::Channel::BETA) {
+      gws_experiment_ids.push_back("3393832");
+      if (product_version.IsValid()) {
+        auto milestone = product_version.components()[0];
+        if (milestone >= 142) {
+          gws_experiment_ids.push_back("3393834");
+        }
+        if (milestone >= 143) {
+          gws_experiment_ids.push_back("3393836");
+        }
+        if (milestone >= 144) {
+          gws_experiment_ids.push_back("3393838");
+        }
+      }
+    } else if (channel == version_info::Channel::DEV) {
+      gws_experiment_ids.push_back("3393840");
+    }
+  } else if (apk_type == ApkType::STANDALONE) {
+    gws_experiment_ids.push_back("3393823");
+    if (channel == version_info::Channel::STABLE) {
+      gws_experiment_ids.push_back("3393825");
+      if (product_version.IsValid()) {
+        auto milestone = product_version.components()[0];
+        if (milestone >= 142) {
+          gws_experiment_ids.push_back("3393827");
+        }
+        if (milestone >= 143) {
+          gws_experiment_ids.push_back("3393829");
+        }
+        if (milestone >= 144) {
+          gws_experiment_ids.push_back("3393831");
+        }
+      }
+    } else if (channel == version_info::Channel::BETA) {
+      gws_experiment_ids.push_back("3393833");
+      if (product_version.IsValid()) {
+        auto milestone = product_version.components()[0];
+        if (milestone >= 142) {
+          gws_experiment_ids.push_back("3393835");
+        }
+        if (milestone >= 143) {
+          gws_experiment_ids.push_back("3393837");
+        }
+        if (milestone >= 144) {
+          gws_experiment_ids.push_back("3393839");
+        }
+      }
+    } else if (channel == version_info::Channel::DEV) {
+      gws_experiment_ids.push_back("3393841");
+    }
+  }
+  return gws_experiment_ids;
 }
 
 }  // namespace
@@ -266,7 +344,10 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   }
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, kWebViewApkTypeTrial, apk_type_string,
-      variations::SyntheticTrialAnnotationMode::kNextLog);
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
+      getIdsForWebViewApkType(apk_type), "");
 
   // Set up experiment for 64-bit WebView.
   //

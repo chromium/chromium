@@ -198,4 +198,14 @@ jint JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(JNIEnv* env) {
   return static_cast<jint>(GetRendererLibraryPrefetchMode());
 }
 
+// static
+void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
+    JNIEnv* env,
+    std::vector<std::string>& variationIds,
+    std::string& commandLineVariationIds) {
+  variations::VariationsIdsProvider::GetInstance()
+      ->ForceVariationIdsForTesting(  // IN-TEST
+          variationIds, commandLineVariationIds);
+}
+
 }  // namespace android_webview

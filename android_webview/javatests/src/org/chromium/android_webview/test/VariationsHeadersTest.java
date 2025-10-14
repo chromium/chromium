@@ -20,14 +20,13 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.variations.VariationsSwitches;
 
+import java.util.List;
+
 /** Tests that the variations headers are correctly set. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
-@CommandLineFlags.Add({
-    VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
-    VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"
-})
+@CommandLineFlags.Add({VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG})
 public class VariationsHeadersTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -39,6 +38,7 @@ public class VariationsHeadersTest extends AwParameterizedTest {
     @Test
     public void testGetVariationsHeader() throws Throwable {
         // Check the value is equal to the base64 encoded proto with the forced variations IDs.
+        AwContentsStatics.forceVariationIdsForTesting(List.of(), "4,10,34");
         String expectedHeader = "CAQICggi";
         Assert.assertEquals(expectedHeader, AwContentsStatics.getVariationsHeader());
         Assert.assertEquals(
