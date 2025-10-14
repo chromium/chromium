@@ -1255,11 +1255,6 @@
         "version": "3.0.2"
     },
     {
-        "name": "gson",
-        "group": "com.google.code.gson",
-        "version": "2.9.0"
-    },
-    {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
         "version": "2.30.0"

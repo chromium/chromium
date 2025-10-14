@@ -1137,7 +1137,6 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_core_core_java",
       ":androidx_pdf_pdf_viewer_java",
-      "//third_party/android_deps:com_google_code_gson_gson_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -1790,6 +1789,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
