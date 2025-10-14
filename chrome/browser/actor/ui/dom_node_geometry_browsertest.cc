@@ -8,6 +8,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_tab_data.h"
+#include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -83,6 +85,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
         features::kGlicActorUi,
         {{features::kGlicActorUiOverlayMagicCursorName, "true"}});
   }
+
   ~ActorUiDomNodeGeometryBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -97,6 +100,8 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+  void TearDownOnMainThread() override { tab_data_ = nullptr; }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -130,12 +135,16 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
 
   void SetPageContent(base::OnceClosure quit_closure,
                       std::optional<AIPageContentResult> page_content) {
-    apc_ = std::move(page_content->proto);
+    auto apc = std::move(page_content->proto);
     aria_label_to_dom_node_.clear();
     BuildAriaLabelMap(
-        apc_.root_node(),
-        apc_.main_frame_data().document_identifier().serialized_token(),
+        apc.root_node(),
+        apc.main_frame_data().document_identifier().serialized_token(),
         &aria_label_to_dom_node_);
+
+    tab_data_ =
+        ActorTabData::From(browser()->tab_strip_model()->GetActiveTab());
+    tab_data_->DidObserveContent(apc);
     std::move(quit_closure).Run();
   }
 
@@ -146,6 +155,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
         web_contents(), std::move(options),
         base::BindOnce(&ActorUiDomNodeGeometryBrowserTest::SetPageContent,
                        base::Unretained(this), run_loop.QuitClosure()));
+
     run_loop.Run();
   }
 
@@ -170,8 +180,8 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   }
 
   gfx::Point GetAriaLabelPoint(std::string_view label) {
-    std::optional<gfx::Point> point =
-        GetDomNodePointFromApc(apc_, GetDomNodeForAriaLabel(label));
+    auto point = tab_data_->GetLastObservedDomNodeGeometry()->GetDomNode(
+        GetDomNodeForAriaLabel(label));
     EXPECT_TRUE(point.has_value());
     EXPECT_GT(point->x(), 0);
     EXPECT_GT(point->y(), 0);
@@ -196,7 +206,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ViewSkiaGoldPixelDiff> pixel_diff_;
-  AnnotatedPageContent apc_;
+  raw_ptr<ActorTabData> tab_data_;
   AriaToDomNodeMap aria_label_to_dom_node_;
 };
 

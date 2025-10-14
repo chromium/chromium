@@ -51,6 +51,7 @@ source_set("actor") {
     ":types",
     "//base",
     "//chrome/browser/actor/resources:browser_resources",
+    "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/actor/ui:states",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/password_manager/actor_login:service",

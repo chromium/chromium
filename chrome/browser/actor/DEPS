@@ -17,6 +17,11 @@ specific_include_rules = {
     # Required to create the ActorTask.
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],
+  'actor_tab_data\.cc': [
+    # Possible work-around to dependency: introduce an ActorUiTabData class,
+    # but this comes with extra coordination overhead.
+    "+chrome/browser/actor/ui/dom_node_geometry.h",
+  ],
   'actor_task\.cc': [
     # This dependency is intentional and required to provide a translation
     # layer between the service and ui.

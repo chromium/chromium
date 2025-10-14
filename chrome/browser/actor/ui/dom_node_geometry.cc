@@ -4,23 +4,20 @@
 
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
-#include <absl/container/flat_hash_map.h>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace actor::ui {
 namespace {
 using base::UmaHistogramEnumeration;
+using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentAttributes;
 using optimization_guide::proto::ContentNode;
 using optimization_guide::proto::DocumentIdentifier;
+using NodeGeomMap = DomNodeGeometry::NodeGeomMap;
 
-using NodeGeomMap = absl::flat_hash_map<DomNode, ContentAttributes>;
-
-constexpr char kDomNodeResultHistogram[] =
+constexpr std::string_view kDomNodeResultHistogram =
     "Actor.DomNodeGeometry.GetDomNodeResult";
 
 void BuildNodeMapInternal(const DocumentIdentifier& doc_id,
@@ -53,45 +50,57 @@ NodeGeomMap BuildNodeMap(const DocumentIdentifier& doc_id,
 }
 }  // namespace
 
-std::optional<gfx::Point> GetDomNodePointFromApc(
-    const optimization_guide::proto::AnnotatedPageContent& apc,
-    const DomNode& node) {
-  TRACE_EVENT("actor", "GetDomNodePointFromApc");
-  if (!features::kGlicActorUiOverlayMagicCursor.Get()) {
-    // Disabled unless Magic Cursor is on to improve latency.
-    return std::nullopt;
-  }
+std::unique_ptr<DomNodeGeometry> DomNodeGeometry::InitFromApc(
+    const AnnotatedPageContent& apc) {
+  TRACE_EVENT("actor", "DomNodeGeometry::InitFromApc");
   if (!apc.has_main_frame_data() ||
       !apc.main_frame_data().has_document_identifier()) {
-    UmaHistogramEnumeration(kDomNodeResultHistogram,
-                            GetDomNodeResult::kNoApcMainFrameData);
-    return std::nullopt;
+    return base::WrapUnique(
+        new DomNodeGeometry(GetDomNodeResult::kNoApcMainFrameData));
   }
-  NodeGeomMap node_map = BuildNodeMap(
-      apc.main_frame_data().document_identifier(), apc.root_node());
-  auto it = node_map.find(node);
-  if (it == node_map.end()) {
-    UmaHistogramEnumeration(kDomNodeResultHistogram,
-                            GetDomNodeResult::kNodeNotFoundInApc);
-    return std::nullopt;
+  auto map = BuildNodeMap(apc.main_frame_data().document_identifier(),
+                          apc.root_node());
+  return base::WrapUnique(new DomNodeGeometry(std::move(map)));
+}
+
+base::expected<gfx::Point, GetDomNodeResult> DomNodeGeometry::GetDomNode(
+    const DomNode& node) const {
+  TRACE_EVENT("actor", "DomNodeGeometry::GetDomNode");
+  auto result = InternalGetDomNode(node);
+  UmaHistogramEnumeration(kDomNodeResultHistogram,
+                          result.error_or(GetDomNodeResult::kSuccess));
+  return result;
+}
+
+base::expected<gfx::Point, GetDomNodeResult>
+DomNodeGeometry::InternalGetDomNode(const DomNode& node) const {
+  if (init_error_.has_value()) {
+    return base::unexpected(init_error_.value());
+  }
+  auto it = node_map_.find(node);
+  if (it == node_map_.end()) {
+    return base::unexpected(GetDomNodeResult::kNodeNotFoundInApc);
   }
   const ContentAttributes& attr = it->second;
   if (!attr.has_geometry()) {
-    UmaHistogramEnumeration(kDomNodeResultHistogram,
-                            GetDomNodeResult::kNoGeometry);
-    return std::nullopt;
+    return base::unexpected(GetDomNodeResult::kNoGeometry);
   }
   const auto& geom = attr.geometry();
   if (!geom.has_visible_bounding_box()) {
-    UmaHistogramEnumeration(kDomNodeResultHistogram,
-                            GetDomNodeResult::kOffScreen);
-    return std::nullopt;
+    return base::unexpected(GetDomNodeResult::kOffScreen);
   }
   const auto& rect = geom.visible_bounding_box();
   const int x = rect.x() + rect.width() / 2;
   const int y = rect.y() + rect.height() / 2;
-  UmaHistogramEnumeration(kDomNodeResultHistogram, GetDomNodeResult::kSuccess);
   return gfx::Point(x, y);
 }
+
+DomNodeGeometry::DomNodeGeometry(GetDomNodeResult init_error)
+    : init_error_(init_error), node_map_() {}
+
+DomNodeGeometry::DomNodeGeometry(NodeGeomMap node_map)
+    : init_error_(std::nullopt), node_map_(std::move(node_map)) {}
+
+DomNodeGeometry::~DomNodeGeometry() = default;
 
 }  // namespace actor::ui

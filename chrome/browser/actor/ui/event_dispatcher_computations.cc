@@ -42,16 +42,17 @@ AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
     return MouseMove(tab, std::nullopt, TargetSource::kUnresolvableInApc);
   }
 
-  auto* apc = actor_tab_data->GetLastObservedPageContent();
-  if (!apc) {
-    VLOG(4) << "ComputedMouseMove: No cached APC available for tab "
-            << tab.raw_value();
+  auto* geom = actor_tab_data->GetLastObservedDomNodeGeometry();
+  if (!geom) {
+    VLOG(4)
+        << "ComputedMouseMove: No cached APC/DomNodeGeometry available for tab "
+        << tab.raw_value();
     UmaHistogramEnumeration(kComputedTargetResultHistogram,
                             ComputedTargetResult::kMissingAnnotatedPageContent);
     return MouseMove(tab, std::nullopt, TargetSource::kUnresolvableInApc);
   }
 
-  auto pt_target = GetDomNodePointFromApc(*apc, std::get<DomNode>(target));
+  auto pt_target = geom->GetDomNode(std::get<DomNode>(target));
   if (!pt_target.has_value()) {
     VLOG(4) << "ComputedMouseMove: Failed to resolve point target for "
             << DebugString(target);

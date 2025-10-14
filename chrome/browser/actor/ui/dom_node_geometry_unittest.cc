@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
@@ -13,13 +14,14 @@
 
 namespace actor::ui {
 namespace {
+using base::test::ErrorIs;
 using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentNode;
 using optimization_guide::proto::FrameData;
 using optimization_guide::proto::Geometry;
 using optimization_guide::proto::IframeData;
 
-constexpr char kDomNodeResultHistogram[] =
+constexpr std::string_view kDomNodeResultHistogram =
     "Actor.DomNodeGeometry.GetDomNodeResult";
 
 constexpr char kArbiraryDocId[] = "4D7AF36711F7531ACB55F32BC7C6242E";
@@ -62,8 +64,10 @@ TEST_F(ActorUiDomNodeGeometryTest, NodeNotFound) {
       .node_id = 1509,
       .document_identifier = kArbiraryDocId,
   };
-  EXPECT_EQ(std::nullopt, GetDomNodePointFromApc(
-                              BuildApcProto(node.document_identifier), node));
+  auto geom =
+      DomNodeGeometry::InitFromApc(BuildApcProto(node.document_identifier));
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kNodeNotFoundInApc));
   histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
                                        GetDomNodeResult::kNodeNotFoundInApc, 1);
 }
@@ -74,7 +78,9 @@ TEST_F(ActorUiDomNodeGeometryTest, NoMainFrameData) {
       .document_identifier = kArbiraryDocId,
   };
   AnnotatedPageContent apc;
-  EXPECT_EQ(std::nullopt, GetDomNodePointFromApc(apc, node));
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kNoApcMainFrameData));
   histogram_tester_.ExpectUniqueSample(
       kDomNodeResultHistogram, GetDomNodeResult::kNoApcMainFrameData, 1);
 }
@@ -88,7 +94,8 @@ TEST_F(ActorUiDomNodeGeometryTest, NoGeometry) {
   ContentNode* content_node = apc.mutable_root_node();
   content_node->mutable_content_attributes()->set_common_ancestor_dom_node_id(
       node.node_id);
-  EXPECT_EQ(std::nullopt, GetDomNodePointFromApc(apc, node));
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node), ErrorIs(GetDomNodeResult::kNoGeometry));
   histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
                                        GetDomNodeResult::kNoGeometry, 1);
 }
@@ -104,7 +111,8 @@ TEST_F(ActorUiDomNodeGeometryTest, OffScreen) {
       node.node_id);
   // Set the geometry, but not the visible bounding box.
   content_node->mutable_content_attributes()->mutable_geometry();
-  EXPECT_EQ(std::nullopt, GetDomNodePointFromApc(apc, node));
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node), ErrorIs(GetDomNodeResult::kOffScreen));
   histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
                                        GetDomNodeResult::kOffScreen, 1);
 }
@@ -119,7 +127,8 @@ TEST_F(ActorUiDomNodeGeometryTest, Success) {
   content_node->mutable_content_attributes()->set_common_ancestor_dom_node_id(
       node.node_id);
   SetGeometry(content_node, gfx::Rect(10, 20, 30, 40));
-  std::optional<gfx::Point> p = GetDomNodePointFromApc(apc, node);
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  auto p = geom->GetDomNode(node);
   ASSERT_TRUE(p.has_value());
   EXPECT_EQ(25, p->x());
   EXPECT_EQ(40, p->y());
@@ -143,7 +152,8 @@ TEST_F(ActorUiDomNodeGeometryTest, NestedNodesAndIframes) {
       ->set_common_ancestor_dom_node_id(node.node_id);
   SetGeometry(grandchild_node, gfx::Rect(100, 200, 50, 60));
 
-  std::optional<gfx::Point> p = GetDomNodePointFromApc(apc, node);
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  auto p = geom->GetDomNode(node);
   ASSERT_TRUE(p.has_value());
   EXPECT_EQ(125, p->x());
   EXPECT_EQ(230, p->y());
@@ -167,7 +177,9 @@ TEST_F(ActorUiDomNodeGeometryTest, MismatchedIframe) {
       ->set_common_ancestor_dom_node_id(node.node_id);
   SetGeometry(grandchild_node, gfx::Rect(100, 200, 50, 60));
 
-  EXPECT_EQ(std::nullopt, GetDomNodePointFromApc(apc, node));
+  auto geom = DomNodeGeometry::InitFromApc(apc);
+  EXPECT_THAT(geom->GetDomNode(node),
+              ErrorIs(GetDomNodeResult::kNodeNotFoundInApc));
   histogram_tester_.ExpectUniqueSample(kDomNodeResultHistogram,
                                        GetDomNodeResult::kNodeNotFoundInApc, 1);
 }
