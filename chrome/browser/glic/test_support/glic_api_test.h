@@ -168,11 +168,13 @@ class GlicApiTestBase : public T {
     T::SetGlicPagePath("/glic/browser_tests/test.html");
     T::add_mock_glic_query_param("testsrc", js_source_path);
   }
+
   ~GlicApiTestBase() override = default;
 
   void SetUpOnMainThread() override {
     T::host_resolver()->AddRule("a.com", "127.0.0.1");
     T::host_resolver()->AddRule("b.com", "127.0.0.1");
+    T::DisableWarming();
     NonInteractiveGlicTest::SetUpOnMainThread();
   }
 

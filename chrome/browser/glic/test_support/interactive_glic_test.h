@@ -557,6 +557,15 @@ class InteractiveGlicTestT : public T {
     host->Reload();
   }
 
+  void DisableWarming() {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      GetInstanceCoordinator().SetWarmingEnabledForTesting(false);
+    } else {
+      // Not supported for single-instance, as warming is disabled by feature
+      // flag.
+    }
+  }
+
  protected:
   GlicKeyedService* glic_service() {
     return GlicKeyedServiceFactory::GetGlicKeyedService(

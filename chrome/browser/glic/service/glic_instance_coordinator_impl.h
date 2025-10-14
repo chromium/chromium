@@ -113,6 +113,9 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
       content::WebContents* source_glic_web_contents,
       tabs::TabInterface* tab_to_bind) override;
 
+  // Testing support.
+  void SetWarmingEnabledForTesting(bool warming_enabled);
+
  private:
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
@@ -146,6 +149,8 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   raw_ptr<GlicInstance> last_active_instance_ = nullptr;
   base::RepeatingCallbackList<void(GlicInstance*)>
       last_active_instance_changed_callback_list_;
+
+  bool warming_enabled_ = true;
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };

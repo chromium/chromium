@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
@@ -237,7 +238,11 @@ GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
 }
 
 void GlicInstanceCoordinatorImpl::Preload() {
-  CreateWarmedInstance();
+  if (warming_enabled_) {
+    CreateWarmedInstance();
+  } else {
+    VLOG(1) << "Warming is disabled, skipping warming";
+  }
 }
 
 void GlicInstanceCoordinatorImpl::Reload(
@@ -346,7 +351,11 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   }
   auto* instance_ptr = warmed_instance_.get();
   instances_[instance_ptr->id()] = std::move(warmed_instance_);
-  CreateWarmedInstance();
+  if (warming_enabled_) {
+    CreateWarmedInstance();
+  } else {
+    VLOG(1) << "Warming is disabled, skipping warming";
+  }
   return instance_ptr;
 }
 
@@ -427,6 +436,14 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   target_instance->Show(options);
 
   std::move(callback).Run(std::nullopt);
+}
+
+void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
+    bool warming_enabled) {
+  warming_enabled_ = warming_enabled;
+  if (!warming_enabled_) {
+    warmed_instance_.reset();
+  }
 }
 
 }  // namespace glic
