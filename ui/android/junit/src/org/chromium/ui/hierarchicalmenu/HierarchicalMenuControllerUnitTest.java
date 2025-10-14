@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.listmenu;
+package org.chromium.ui.hierarchicalmenu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,15 +14,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
-import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_MENU_ITEM_KEYS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ALL_SUBMENU_ITEM_KEYS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.CLICK_LISTENER;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.ENABLED;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.IS_HIGHLIGHTED;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_ID;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_SUBMENU_HEADER;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.SUBMENU_ITEMS;
+import static org.chromium.ui.hierarchicalmenu.HierarchicalMenuTestUtils.TITLE;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,7 +42,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -49,13 +50,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Unit tests for {@link ListMenuUtils}.
- *
- * <p>TODO(crbug.com/449896119): Move this test to under /hierarchicalmenu.
- */
+/** Unit tests for {@link HierarchicalMenuControllerUnitTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ListMenuUtilsUnitTest {
+public class HierarchicalMenuControllerUnitTest {
 
     private static final int TEST_MENU_ITEM_ID = 3; // Arbitrary int for testing
     private static final String TOP_LEVEL_ITEM = "Top level item";
@@ -86,12 +83,12 @@ public class ListMenuUtilsUnitTest {
     public void setUp() {
         mController =
                 new HierarchicalMenuController(
-                        new ListMenuUtils.ListMenuKeyProvider(), /* flyoutHandler= */ null);
+                        HierarchicalMenuTestUtils.createKeyProvider(), /* flyoutHandler= */ null);
 
         mListItemWithModelClickCallback =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(ENABLED, true)
                                 .with(TITLE, SUBMENU_1_CHILD_0)
                                 .with(CLICK_LISTENER, mItemClickListener)
@@ -101,7 +98,7 @@ public class ListMenuUtilsUnitTest {
         mSubmenuLevel1 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_1)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mListItemWithModelClickCallback))
@@ -111,7 +108,7 @@ public class ListMenuUtilsUnitTest {
         mSubmenu0Child1 =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_0_CHILD_1)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
@@ -120,7 +117,7 @@ public class ListMenuUtilsUnitTest {
         mSubmenuLevel0 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
                                 .with(TITLE, SUBMENU_LEVEL_0)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(mSubmenuLevel1, mSubmenu0Child1))
@@ -132,7 +129,7 @@ public class ListMenuUtilsUnitTest {
         mListItemWithoutModelClickCallback =
                 new ListItem(
                         MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
                                 .with(TITLE, TOP_LEVEL_ITEM)
                                 .with(ENABLED, true)
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
@@ -160,7 +157,7 @@ public class ListMenuUtilsUnitTest {
         ListItem header = mModelList.get(0);
         assertEquals(
                 "Expected 1st element after clicking into submenu level 0 to have header type",
-                SUBMENU_HEADER,
+                MENU_ITEM_SUBMENU_HEADER,
                 header.type);
         // Go back to the root level
         activateClickListener(header);
@@ -190,7 +187,7 @@ public class ListMenuUtilsUnitTest {
         // Assert correctness of contents
         assertEquals(
                 "Expected 1st element after clicking into submenu level 1 to have header type",
-                SUBMENU_HEADER,
+                MENU_ITEM_SUBMENU_HEADER,
                 mModelList.get(0).type);
         assertEquals(
                 "Expected 2nd element to be correct child",
@@ -216,7 +213,7 @@ public class ListMenuUtilsUnitTest {
         ListItem header = mHeaderModelList.get(0);
         assertEquals(
                 "Expected header element after clicking into submenu level 0 to have header type",
-                SUBMENU_HEADER,
+                MENU_ITEM_SUBMENU_HEADER,
                 header.type);
         assertEquals(
                 "Expected 2nd element after clicking into submenu level 0 to be another submenu"
@@ -277,7 +274,7 @@ public class ListMenuUtilsUnitTest {
         ListItem mSubmenuLevel1Header = mHeaderModelList.get(0);
         assertEquals(
                 "Expected header type to be SUBMENU_HEADER",
-                SUBMENU_HEADER,
+                MENU_ITEM_SUBMENU_HEADER,
                 mSubmenuLevel1Header.type);
         assertEquals(
                 "Expected title to be submenu header 1",
