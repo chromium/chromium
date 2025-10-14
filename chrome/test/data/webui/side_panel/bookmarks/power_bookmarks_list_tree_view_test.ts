@@ -120,8 +120,7 @@ suite('TreeView', () => {
 
     // Verify nested bookmarks are now visible
     const nestedBookmarkElement =
-        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
-            '#bookmark-6');
+        getPowerBookmarksRowElement(folderElement, '6');
     assertTrue(!!nestedBookmarkElement);
     // Verify that the nested bookmark has the correct depth
     assertEquals(1, nestedBookmarkElement.depth);
@@ -150,10 +149,135 @@ suite('TreeView', () => {
     await folderElement.updateComplete;
 
     // Verify nested bookmarks are no longer visible
-    const collapsedNestedBookmarkElement =
-        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
-            '#bookmark-6');
-    assertFalse(!!collapsedNestedBookmarkElement);
+    assertFalse(!!getPowerBookmarksRowElement(folderElement, '6'));
+  });
+
+
+  test('expands and collapses folders with arrow keys', async () => {
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    assertTrue(!!folderRow);
+    assertFalse(folderRow.toggleExpand, 'Folder should be initially collapsed');
+
+    // Child should not be visible initially.
+    assertFalse(
+        !!getPowerBookmarksRowElement(powerBookmarksList, '6'),
+        'Child bookmark should not be visible initially');
+
+    // Focus the item before sending key presses.
+    const urlListItem = folderRow.shadowRoot.querySelector('cr-url-list-item')!;
+    urlListItem.focus();
+
+    // Expand with Right Arrow.
+    let toggleEvent =
+        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    folderRow.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowRight', bubbles: true, composed: true}));
+    await toggleEvent;
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+    assertTrue(
+        folderRow.toggleExpand, 'Folder should be expanded after ArrowRight');
+    assertTrue(
+        !!getPowerBookmarksRowElement(folderRow, '6'),
+        'Child bookmark should be visible');
+
+    // Collapse with Left Arrow.
+    toggleEvent = eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    folderRow.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowLeft', bubbles: true, composed: true}));
+    await toggleEvent;
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+    assertFalse(
+        folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
+    assertFalse(
+        !!getPowerBookmarksRowElement(folderRow, '6'),
+        'Child bookmark should not be visible');
+  });
+
+  // TODO(crbug.com/450969896): Re-enable this test.
+  test.skip(
+      'moves focus to first child on right arrow if already open', async () => {
+        const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+        assertTrue(!!folderRow);
+
+        // Expand the folder first.
+        const toggleEvent =
+            eventToPromise('power-bookmark-toggle', powerBookmarksList);
+        folderRow.shadowRoot
+            .querySelector<PowerBookmarkRowElement>('#expandButton')!.click();
+        await toggleEvent;
+        await flushTasks();
+        await waitAfterNextRender(powerBookmarksList);
+        assertTrue(folderRow.toggleExpand, 'Folder should be expanded');
+        const childRow = getPowerBookmarksRowElement(folderRow, '6');
+        assertTrue(!!childRow, 'Child bookmark should be visible');
+
+        // Focus the folder before sending key presses.
+        const urlListItem =
+            folderRow.shadowRoot.querySelector('cr-url-list-item')!;
+        urlListItem.focus();
+
+        // Right arrow on expanded folder should move focus.
+        folderRow.dispatchEvent(new KeyboardEvent(
+            'keydown', {key: 'ArrowRight', bubbles: true, composed: true}));
+        await flushTasks();
+
+        assertEquals(
+            childRow, powerBookmarksList.shadowRoot!.activeElement,
+            'Focus should move to the first child');
+      });
+
+  test('right arrow does nothing on non-folder', async () => {
+    const bookmarkRow = getPowerBookmarksRowElement(powerBookmarksList, '3');
+    assertTrue(!!bookmarkRow);
+
+    const urlListItem =
+        bookmarkRow.shadowRoot.querySelector('cr-url-list-item')!;
+    urlListItem.focus();
+
+    // This should not throw errors or change state.
+    bookmarkRow.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowRight', bubbles: true, composed: true}));
+    await flushTasks();
+
+    // No toggleExpand property to check, just make sure nothing broke.
+    assertTrue(!!getPowerBookmarksRowElement(powerBookmarksList, '3'));
+  });
+
+  // TODO(crbug.com/450969896): Re-enable this test.
+  test.skip('moves focus to parent on left arrow from child', async () => {
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    assertTrue(!!folderRow);
+
+    // Expand the folder first.
+    const toggleEvent =
+        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    folderRow.dispatchEvent(
+        new MouseEvent('click', {bubbles: true, composed: true}));
+    await toggleEvent;
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+    assertTrue(folderRow.toggleExpand, 'Folder should be expanded');
+
+    const childRow = getPowerBookmarksRowElement(folderRow, '6');
+    assertTrue(!!childRow, 'Child bookmark should be visible');
+
+    // Focus the child before sending key presses.
+    const childUrlListItem =
+        childRow.shadowRoot.querySelector('cr-url-list-item')!;
+    childUrlListItem.focus();
+
+    // Left arrow on child should move focus to parent and collapse it.
+    childRow.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowLeft', bubbles: true, composed: true}));
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+
+    assertEquals(
+        folderRow, powerBookmarksList.shadowRoot!.activeElement,
+        'Focus should move to the parent folder');
+    assertFalse(folderRow.toggleExpand, 'Parent folder should be collapsed');
   });
 
   test('LogsMetricsCountExpanded', async () => {
