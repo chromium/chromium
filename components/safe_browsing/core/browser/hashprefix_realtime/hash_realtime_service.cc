@@ -440,9 +440,9 @@ void HashRealTimeService::OnURLLoaderComplete(
     }
 
     // Merge together the results from the cache and from the response.
-    for (const auto& response_hash : response.value()->full_hashes()) {
-      result_full_hashes.push_back(response_hash);
-    }
+    result_full_hashes.insert(result_full_hashes.end(),
+                              response.value()->full_hashes().begin(),
+                              response.value()->full_hashes().end());
     SBThreatInfo sb_threat_info =
         DetermineSBThreatInfo(url, result_full_hashes);
     sb_threat_type = sb_threat_info.threat_type;
