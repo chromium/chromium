@@ -438,7 +438,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   // The tab may have been created in a different window, so make sure we look
   // at the right tab strip.
-  TabStripModel* tab_strip =
+  TabStripModel* const tab_strip =
       navigate_params.browser->GetBrowserForMigrationOnly()->tab_strip_model();
   const int new_index = tab_strip->GetIndexOfWebContents(
       navigate_params.navigated_or_inserted_contents);
@@ -819,17 +819,22 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
   DCHECK(tab_strip_model);
   DCHECK(tab_index);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    int index = tab_strip->GetIndexOfWebContents(web_contents);
-    if (index != -1) {
-      *tab_strip_model = tab_strip;
-      *tab_index = index;
-      return true;
-    }
-  }
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [web_contents, tab_strip_model, tab_index,
+       &found](BrowserWindowInterface* browser_window_interface) {
+        TabStripModel* tab_strip = browser_window_interface->GetTabStripModel();
+        int index = tab_strip->GetIndexOfWebContents(web_contents);
+        if (index != -1) {
+          *tab_strip_model = tab_strip;
+          *tab_index = index;
+          found = true;
+          return false;
+        }
+        return true;
+      });
 
-  return false;
+  return found;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1206,14 +1211,17 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
     }
   }
 #else
-  for (Browser* target_browser : *BrowserList::GetInstance()) {
-    if (target_browser->profile() == profile ||
-        target_browser->profile() == incognito_profile) {
-      TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-
-      active_contents.push_back(target_tab_strip->GetActiveWebContents());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, incognito_profile,
+       &active_contents](BrowserWindowInterface* browser_window_interface) {
+        const Profile* browser_profile = browser_window_interface->GetProfile();
+        if (browser_profile == profile ||
+            browser_profile == incognito_profile) {
+          active_contents.push_back(browser_window_interface->GetTabStripModel()
+                                        ->GetActiveWebContents());
+        }
+        return true;
+      });
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return active_contents;

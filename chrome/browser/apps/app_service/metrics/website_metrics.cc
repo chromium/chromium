@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
@@ -60,12 +61,20 @@ aura::Window* GetWindowWithBrowser(Browser* browser) {
 }
 
 aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      return GetWindowWithBrowser(browser);
-    }
-  }
-  return nullptr;
+  aura::Window* found_window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model,
+       &found_window](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetTabStripModel() == tab_strip_model) {
+          if (ui::BaseWindow* const base_window =
+                  browser_window_interface->GetWindow()) {
+            found_window = base_window->GetNativeWindow();
+          }
+          return false;  // Stop iteration.
+        }
+        return true;  // Continue iteration.
+      });
+  return found_window;
 }
 
 wm::ActivationClient* GetActivationClient(aura::Window* window) {

@@ -48,10 +48,18 @@ namespace {
 bool ProfileHasBrowsers(const Profile* profile) {
   DCHECK(profile);
   profile = profile->GetOriginalProfile();
-  return std::ranges::any_of(
-      *BrowserList::GetInstance(), [profile](Browser* browser) {
-        return browser->profile()->GetOriginalProfile() == profile;
+  bool has_browsers = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile,
+       &has_browsers](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile()->GetOriginalProfile() ==
+            profile) {
+          has_browsers = true;
+          return false;
+        }
+        return true;
       });
+  return has_browsers;
 }
 
 // Wrapper Action for DialogManager. Shows a 30s warning dialog, shared across
@@ -286,20 +294,29 @@ class ReloadPagesAction : public Action {
       if (model->GetProfile() != profile) {
         continue;  // Deliberately ignore incognito.
       }
-#else
-    // This covers regular tabs and PWAs.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      TabStripModel* model = browser->tab_strip_model();
-      if (model->profile() != profile) {
-        continue;  // Deliberately ignore incognito.
-      }
-#endif  // BUILDFLAG(IS_ANDROID)
       for (int i = 0; i < model->GetTabCount(); i++) {
         model->GetWebContentsAt(i)->GetController().Reload(
             content::ReloadType::NORMAL,
             /*check_for_repost=*/true);
       }
     }
+#else
+    // This covers regular tabs and PWAs.
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [profile](BrowserWindowInterface* browser_window_interface) {
+          const TabStripModel* model =
+              browser_window_interface->GetTabStripModel();
+          if (model->profile() != profile) {
+            return true;
+          }
+          for (int i = 0; i < model->GetTabCount(); i++) {
+            model->GetWebContentsAt(i)->GetController().Reload(
+                content::ReloadType::NORMAL,
+                /*check_for_repost=*/true);
+          }
+          return true;
+        });
+#endif  // BUILDFLAG(IS_ANDROID)
     metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kReloadPages,
                                   true);
     std::move(continuation).Run(/*success=*/true);

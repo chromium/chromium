@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace {
 
@@ -97,12 +98,15 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
 
   Profile* profile = it->second;
   bool has_opened_browser = false;
-  for (Browser* opened_browser : *BrowserList::GetInstance()) {
-    if (opened_browser->profile() == profile) {
-      has_opened_browser = true;
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile,
+       &has_opened_browser](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile() == profile) {
+          has_opened_browser = true;
+          return false;
+        }
+        return true;
+      });
 
   // If no browsers are opened - dispose right away.
   if (!has_opened_browser) {
@@ -124,14 +128,13 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
 void DevToolsBrowserContextManager::OnProfileWillBeDestroyed(Profile* profile) {
   // This is likely happening during shutdown. We'll immediately
   // close all browser windows for our profile without unload handling.
-  BrowserList::BrowserVector browsers_to_close;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile)
-      browsers_to_close.push_back(browser);
-  }
-  for (Browser* browser : browsers_to_close) {
-    browser->window()->Close();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile() == profile) {
+          browser_window_interface->GetWindow()->Close();
+        }
+        return true;
+      });
 
   StopObservingProfileIfAny(profile);
 }
@@ -141,9 +144,17 @@ void DevToolsBrowserContextManager::OnBrowserRemoved(Browser* browser) {
   auto pending_disposal = pending_context_disposals_.find(context_id);
   if (pending_disposal == pending_context_disposals_.end())
     return;
-  for (Browser* opened_browser : *BrowserList::GetInstance()) {
-    if (opened_browser->profile() == browser->profile())
-      return;
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [browser, &found](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile() == browser->profile()) {
+          found = true;
+          return false;
+        }
+        return true;
+      });
+  if (found) {
+    return;
   }
 
   StopObservingProfileIfAny(browser->profile());

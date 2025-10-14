@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1312,7 +1313,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
 
     // A single browser for the IWA should now be open.
     ASSERT_EQ(BrowserList::GetInstance()->size(), 1ul);
-    Browser* iwa_browser = *BrowserList::GetInstance()->begin();
+    BrowserWindowInterface* iwa_browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+    ASSERT_TRUE(iwa_browser);
     TabListInterface* tab_list = TabListInterface::From(iwa_browser);
     ASSERT_EQ(tab_list->GetTabCount(), 1);
 

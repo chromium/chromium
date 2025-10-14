@@ -340,6 +340,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   // migrating a large chunk of code to BrowserWindowInterface, to allow
   // incremental migration.
   virtual Browser* GetBrowserForMigrationOnly() = 0;
+  virtual const Browser* GetBrowserForMigrationOnly() const = 0;
 
   // Checks if the browser popup is tab modal dialog.
   virtual bool IsTabModalPopupDeprecated() const = 0;

@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "ui/views/win/hwnd_util.h"
 
 namespace {
@@ -38,18 +40,23 @@ void UpdateTaskbarProgressBar(int download_count,
   }
 
   // Iterate through all the browser windows, and draw the progress bar.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    BrowserWindow* window = browser->window();
-    if (!window)
-      continue;
-    HWND frame = views::HWNDForNativeWindow(window->GetNativeWindow());
-    if (download_count == 0 || progress == 1.0f)
-      taskbar->SetProgressState(frame, TBPF_NOPROGRESS);
-    else if (!progress_known)
-      taskbar->SetProgressState(frame, TBPF_INDETERMINATE);
-    else
-      taskbar->SetProgressValue(frame, static_cast<int>(progress * 100), 100);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window_interface) {
+        ui::BaseWindow* const window = browser_window_interface->GetWindow();
+        if (!window) {
+          return true;
+        }
+        HWND frame = views::HWNDForNativeWindow(window->GetNativeWindow());
+        if (download_count == 0 || progress == 1.0f) {
+          taskbar->SetProgressState(frame, TBPF_NOPROGRESS);
+        } else if (!progress_known) {
+          taskbar->SetProgressState(frame, TBPF_INDETERMINATE);
+        } else {
+          taskbar->SetProgressValue(frame, static_cast<int>(progress * 100),
+                                    100);
+        }
+        return true;
+      });
 }
 
 }  // namespace

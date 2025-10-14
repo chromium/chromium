@@ -1257,6 +1257,10 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
+const Browser* Browser::GetBrowserForMigrationOnly() const {
+  return this;
+}
+
 bool Browser::IsTabModalPopupDeprecated() const {
   return is_tab_modal_popup_deprecated_;
 }

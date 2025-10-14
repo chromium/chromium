@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -186,13 +187,16 @@ void WebAppUiManagerImpl::Start() {
   DCHECK(!started_);
   started_ = true;
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!IsBrowserForInstalledApp(browser)) {
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        if (!IsBrowserForInstalledApp(browser_window_interface)) {
+          return true;
+        }
 
-    ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
-  }
+        ++num_windows_for_apps_map_[GetAppIdForBrowser(
+            browser_window_interface)];
+        return true;
+      });
 
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&WebAppUiManagerImpl::OnExtensionSystemReady,
@@ -224,12 +228,15 @@ size_t WebAppUiManagerImpl::GetNumWindowsForApp(const webapps::AppId& app_id) {
 void WebAppUiManagerImpl::CloseAppWindows(const webapps::AppId& app_id) {
   DCHECK(started_);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    const AppBrowserController* app_controller = browser->app_controller();
-    if (app_controller && app_controller->app_id() == app_id) {
-      browser->window()->Close();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&app_id](BrowserWindowInterface* browser_window_interface) {
+        const AppBrowserController* const app_controller =
+            browser_window_interface->GetAppBrowserController();
+        if (app_controller && app_controller->app_id() == app_id) {
+          browser_window_interface->GetWindow()->Close();
+        }
+        return true;
+      });
 }
 
 void WebAppUiManagerImpl::NotifyOnAllAppWindowsClosed(

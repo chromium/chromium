@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
@@ -127,11 +128,14 @@ const ui::ThemeProvider* GetThemeProviderDeprecated(
   // be sent to another profile.
   // TODO(crbug.com/40823135): Remove this fallback by associating the
   // WebContents during navigation.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  browser = browser_list->empty()
-                ? nullptr
-                : *std::prev(BrowserList::GetInstance()->end());
-  return browser ? browser->window()->GetThemeProvider() : nullptr;
+  const BrowserWindowInterface* const browser_window_interface =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
+  return browser_window_interface
+             ? browser_window_interface->GetBrowserForMigrationOnly()
+                   ->window()
+                   ->GetThemeProvider()
+             : nullptr;
 }
 
 void SetThemeProviderForTestingDeprecated(

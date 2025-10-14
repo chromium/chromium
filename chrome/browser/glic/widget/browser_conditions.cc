@@ -137,9 +137,12 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
         observer_(observer),
         browser_list_observation_(this),
         browser_widget_observations_(this) {
-    for (auto browser : *BrowserList::GetInstance()) {
-      OnBrowserAdded(browser);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser_window_interface) {
+          OnBrowserAdded(
+              browser_window_interface->GetBrowserForMigrationOnly());
+          return true;
+        });
     browser_list_observation_.Observe(BrowserList::GetInstance());
     current_value_ = FindBrowserForAttachment(profile_);
   }

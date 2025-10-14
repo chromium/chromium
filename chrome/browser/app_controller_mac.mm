@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -302,14 +303,19 @@ void ConfigureNSAppForKioskMode() {
 // Returns the list of windows for all browser windows (excluding apps).
 NSSet<NSWindow*>* GetBrowserWindows() {
   NSMutableSet<NSWindow*>* result = [NSMutableSet set];
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // When focusing Chrome, don't focus any browser windows associated with
-    // an app (https://crbug.com/40626510).
-    if (browser->is_type_app()) {
-      continue;
-    }
-    [result addObject:browser->window()->GetNativeWindow().GetNativeNSWindow()];
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [result](BrowserWindowInterface* browser_window_interface) {
+        // When focusing Chrome, don't focus any browser windows associated with
+        // an app (https://crbug.com/40626510).
+        if (browser_window_interface->GetType() ==
+            BrowserWindowInterface::TYPE_APP) {
+          return true;
+        }
+        [result addObject:browser_window_interface->GetWindow()
+                              ->GetNativeWindow()
+                              .GetNativeNSWindow()];
+        return true;
+      });
   return result;
 }
 
@@ -954,7 +960,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (BOOL)runConfirmQuitPanel {
   // If there are no windows, quit immediately.
-  if (BrowserList::GetInstance()->empty() &&
+  if (!GetLastActiveBrowserWindowInterfaceWithAnyProfile() &&
       !AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0)) {
     return YES;
   }

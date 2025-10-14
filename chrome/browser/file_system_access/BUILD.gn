@@ -61,6 +61,10 @@ source_set("impl") {
     deps += [ "//chrome/browser/ui/android/tab_model" ]
   }
 
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
   if (safe_browsing_mode != 0) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }

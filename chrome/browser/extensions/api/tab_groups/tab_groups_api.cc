@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -118,70 +119,76 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!profile->IsSameOrParent(browser->profile()))
-      continue;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window_interface) {
+        if (!profile->IsSameOrParent(browser_window_interface->GetProfile())) {
+          return true;
+        }
 
-    if (!browser->window())
-      continue;
+        if (!include_incognito_information() &&
+            profile != browser_window_interface->GetProfile()) {
+          return true;
+        }
 
-    if (!include_incognito_information() && profile != browser->profile())
-      continue;
+        if (!BrowserExtensionWindowController::From(browser_window_interface)
+                 ->IsVisibleToTabsAPIForExtension(
+                     extension(), /*allow_dev_tools_windows=*/false)) {
+          return true;
+        }
 
-    if (!BrowserExtensionWindowController::From(browser)
-             ->IsVisibleToTabsAPIForExtension(
-                 extension(), /*allow_dev_tools_windows=*/false)) {
-      continue;
-    }
+        if (params->query_info.window_id) {
+          const int window_id = *params->query_info.window_id;
+          if (window_id >= 0 && window_id != ExtensionTabUtil::GetWindowId(
+                                                 browser_window_interface)) {
+            return true;
+          }
 
-    if (params->query_info.window_id) {
-      const int window_id = *params->query_info.window_id;
-      if (window_id >= 0 && window_id != ExtensionTabUtil::GetWindowId(browser))
-        continue;
+          if (window_id == extension_misc::kCurrentWindowId &&
+              browser_window_interface != current_browser) {
+            return true;
+          }
+        }
 
-      if (window_id == extension_misc::kCurrentWindowId &&
-          browser != current_browser) {
-        continue;
-      }
-    }
+        TabStripModel* tab_strip = browser_window_interface->GetTabStripModel();
+        if (!tab_strip->SupportsTabGroups()) {
+          return true;
+        }
 
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    if (!tab_strip->SupportsTabGroups()) {
-      continue;
-    }
+        for (const tab_groups::TabGroupId& id :
+             tab_strip->group_model()->ListTabGroups()) {
+          const tab_groups::TabGroupVisualData* visual_data =
+              tab_strip->group_model()->GetTabGroup(id)->visual_data();
 
-    for (const tab_groups::TabGroupId& id :
-         tab_strip->group_model()->ListTabGroups()) {
-      const tab_groups::TabGroupVisualData* visual_data =
-          tab_strip->group_model()->GetTabGroup(id)->visual_data();
+          if (params->query_info.collapsed &&
+              *params->query_info.collapsed != visual_data->is_collapsed()) {
+            continue;
+          }
 
-      if (params->query_info.collapsed &&
-          *params->query_info.collapsed != visual_data->is_collapsed()) {
-        continue;
-      }
+          if (params->query_info.title &&
+              !base::MatchPattern(
+                  visual_data->title(),
+                  base::UTF8ToUTF16(*params->query_info.title))) {
+            continue;
+          }
 
-      if (params->query_info.title &&
-          !base::MatchPattern(visual_data->title(),
-                              base::UTF8ToUTF16(*params->query_info.title))) {
-        continue;
-      }
+          if (params->query_info.color != api::tab_groups::Color::kNone &&
+              params->query_info.color !=
+                  ExtensionTabUtil::ColorIdToColor(visual_data->color())) {
+            continue;
+          }
 
-      if (params->query_info.color != api::tab_groups::Color::kNone &&
-          params->query_info.color !=
-              ExtensionTabUtil::ColorIdToColor(visual_data->color())) {
-        continue;
-      }
+          if (params->query_info.shared.has_value() &&
+              ExtensionTabUtil::GetSharedStateOfGroup(id) !=
+                  params->query_info.shared.value()) {
+            continue;
+          }
 
-      if (params->query_info.shared.has_value() &&
-          ExtensionTabUtil::GetSharedStateOfGroup(id) !=
-              params->query_info.shared.value()) {
-        continue;
-      }
-
-      result_list.Append(
-          ExtensionTabUtil::CreateTabGroupObject(id, *visual_data).ToValue());
-    }
-  }
+          result_list.Append(
+              ExtensionTabUtil::CreateTabGroupObject(id, *visual_data)
+                  .ToValue());
+        }
+        return true;
+      });
 
   return RespondNow(WithArguments(std::move(result_list)));
 }

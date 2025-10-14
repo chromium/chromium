@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -203,11 +204,13 @@ class IdleServiceTest : public InProcessBrowserTest {
 
   int GetBrowserCount(Profile* profile) {
     int count = 0;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (browser->profile() == profile) {
-        count++;
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [profile, &count](BrowserWindowInterface* browser_window_interface) {
+          if (browser_window_interface->GetProfile() == profile) {
+            count++;
+          }
+          return true;
+        });
     return count;
   }
 

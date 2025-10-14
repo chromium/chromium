@@ -38,7 +38,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -134,16 +137,19 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
 }
 
 void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  if (!browser_list)
-    return;
-
-  for (Browser* browser : *browser_list) {
-    if (browser && browser->window() &&
-        browser->window()->GetDownloadBubbleUIController()) {
-      browser->window()->GetDownloadBubbleUIController()->HandleButtonPressed();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        DownloadToolbarUIController* download_controller =
+            browser_window_interface->GetFeatures()
+                .download_toolbar_ui_controller();
+        DownloadBubbleUIController* bubble_ui_controller =
+            download_controller ? download_controller->bubble_controller()
+                                : nullptr;
+        if (bubble_ui_controller) {
+          bubble_ui_controller->HandleButtonPressed();
+        }
+        return true;
+      });
 }
 
 #endif

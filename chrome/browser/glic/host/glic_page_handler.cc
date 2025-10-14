@@ -64,9 +64,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -266,10 +266,12 @@ class BrowserIsOpenCalculator : public BrowserListObserver {
   explicit BrowserIsOpenCalculator(Profile* profile, Observer* observer)
       : profile_(profile) {
     BrowserList::AddObserver(this);
-    BrowserList* list = BrowserList::GetInstance();
-    for (Browser* browser : *list) {
-      OnBrowserAdded(browser);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser_window_interface) {
+          OnBrowserAdded(
+              browser_window_interface->GetBrowserForMigrationOnly());
+          return true;
+        });
     // Don't notify observer during construction.
     observer_ = observer;
   }

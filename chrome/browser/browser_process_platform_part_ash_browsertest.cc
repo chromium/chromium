@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -47,18 +48,27 @@
 #include "url/url_constants.h"
 namespace {
 
-Browser* FindOneOtherBrowserForProfile(Profile* profile,
-                                       Browser* not_this_browser) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser != not_this_browser && browser->profile() == profile) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindOneOtherBrowserWindowInterfaceForProfile(
+    Profile* profile,
+    BrowserWindowInterface* not_this_browser) {
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, not_this_browser,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface != not_this_browser &&
+            browser_window_interface->GetProfile() == profile) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
+  return found_browser;
 }
 
-void WaitForLoadStopForBrowser(Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+void WaitForLoadStopForBrowserWindowInterface(
+    BrowserWindowInterface* browser_window_interface) {
+  TabStripModel* const tab_strip_model =
+      browser_window_interface->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
     EXPECT_TRUE(content::WaitForLoadStop(contents));
@@ -112,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   // Startup URLs should not have been applied to the browser window.
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
   auto* new_browser = chrome::FindLastActiveWithProfile(profile);
-  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(new_browser));
-  auto* tab_strip_model = new_browser->tab_strip_model();
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowserWindowInterface(new_browser));
+  auto* const tab_strip_model = new_browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->GetTabCount());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
@@ -163,8 +174,9 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   ASSERT_TRUE(pref_urls_opened_browser);
 
   // Check pref_urls_opened_browser.
-  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(pref_urls_opened_browser));
-  tab_strip_model = pref_urls_opened_browser->tab_strip_model();
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowserWindowInterface(pref_urls_opened_browser));
+  tab_strip_model = pref_urls_opened_browser->GetTabStripModel();
   EXPECT_EQ(3, tab_strip_model->GetTabCount());
   EXPECT_EQ(restore_url_1,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
@@ -179,8 +191,9 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
       profile, /*should_trigger_session_restore=*/true);
   ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
   auto* new_browser = chrome::FindLastActiveWithProfile(profile);
-  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(new_browser));
-  tab_strip_model = new_browser->tab_strip_model();
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowserWindowInterface(new_browser));
+  tab_strip_model = new_browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->GetTabCount());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
@@ -238,20 +251,22 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
 
   auto* last_session_opened_browser =
-      FindOneOtherBrowserForProfile(profile, pref_urls_opened_browser);
+      FindOneOtherBrowserWindowInterfaceForProfile(profile,
+                                                   pref_urls_opened_browser);
   ASSERT_TRUE(last_session_opened_browser);
 
   // Check the last_session_opened_browser.
   EXPECT_NO_FATAL_FAILURE(
-      WaitForLoadStopForBrowser(last_session_opened_browser));
-  tab_strip_model = last_session_opened_browser->tab_strip_model();
+      WaitForLoadStopForBrowserWindowInterface(last_session_opened_browser));
+  tab_strip_model = last_session_opened_browser->GetTabStripModel();
   ASSERT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(original_url,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 
   // Check the pref_urls_opened_browser.
-  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(pref_urls_opened_browser));
-  tab_strip_model = pref_urls_opened_browser->tab_strip_model();
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowserWindowInterface(pref_urls_opened_browser));
+  tab_strip_model = pref_urls_opened_browser->GetTabStripModel();
   EXPECT_EQ(3, tab_strip_model->GetTabCount());
   EXPECT_EQ(restore_url_1,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
@@ -266,8 +281,9 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
       profile, /*should_trigger_session_restore=*/true);
   ASSERT_EQ(3u, chrome::GetBrowserCount(profile));
   EXPECT_EQ(new_browser, chrome::FindLastActiveWithProfile(profile));
-  EXPECT_NO_FATAL_FAILURE(WaitForLoadStopForBrowser(new_browser));
-  tab_strip_model = new_browser->tab_strip_model();
+  EXPECT_NO_FATAL_FAILURE(
+      WaitForLoadStopForBrowserWindowInterface(new_browser));
+  tab_strip_model = new_browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->GetTabCount());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());

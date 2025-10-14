@@ -8,6 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -51,12 +53,14 @@ void BrowserActivator::OnBrowserRemoved(Browser* browser) {
   if (active_browser_.get() == browser || active_browser_.WasInvalidated()) {
     active_lock_.reset();
     if (mode_ == Mode::kFirst) {
-      if (!BrowserList::GetInstance()->empty()) {
-        SetActivePrivate(*BrowserList::GetInstance()->begin());
+      if (auto* const browser_window_interface =
+              GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+        SetActivePrivate(browser_window_interface);
       }
     }
   }
 }
+
 void BrowserActivator::SetActive(Browser* browser) {
   mode_ = Mode::kManual;
   if (!browser) {
@@ -67,10 +71,14 @@ void BrowserActivator::SetActive(Browser* browser) {
   }
 }
 
-void BrowserActivator::SetActivePrivate(Browser* browser) {
-  CHECK(browser);
-  active_lock_ = browser->GetBrowserView().GetWidget()->LockPaintAsActive();
-  active_browser_ = browser->AsWeakPtr();
+void BrowserActivator::SetActivePrivate(
+    BrowserWindowInterface* browser_window_interface) {
+  CHECK(browser_window_interface);
+  if (auto* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
+    active_lock_ = browser_view->GetWidget()->LockPaintAsActive();
+    active_browser_ = browser_window_interface->GetWeakPtr();
+  }
 }
 
 void ForceSigninAndModelExecutionCapability(Profile* profile) {

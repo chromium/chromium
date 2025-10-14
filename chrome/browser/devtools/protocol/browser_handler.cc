@@ -35,15 +35,21 @@ using protocol::Response;
 namespace {
 
 BrowserWindow* GetBrowserWindow(int window_id) {
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b->session_id().id() == window_id)
-      return b->window();
-  }
-  return nullptr;
+  BrowserWindow* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [window_id, &result](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetSessionID().id() == window_id) {
+          result =
+              browser_window_interface->GetBrowserForMigrationOnly()->window();
+          return false;
+        }
+        return true;
+      });
+  return result;
 }
 
 std::unique_ptr<protocol::Browser::Bounds> GetBrowserWindowBounds(
-    BrowserWindow* window) {
+    ui::BaseWindow* window) {
   std::string window_state = "normal";
   if (window->IsMinimized())
     window_state = "minimized";
@@ -87,20 +93,29 @@ Response BrowserHandler::GetWindowForTarget(
   if (!host)
     return Response::ServerError("No target with given id");
   content::WebContents* web_contents = host->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return Response::ServerError("No web contents in the target");
-
-  Browser* browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    int tab_index = b->tab_strip_model()->GetIndexOfWebContents(web_contents);
-    if (tab_index != TabStripModel::kNoTab)
-      browser = b;
   }
-  if (!browser)
-    return Response::ServerError("Browser window not found");
 
-  BrowserWindow* window = browser->window();
-  *out_window_id = browser->session_id().id();
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [web_contents,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        int tab_index =
+            browser_window_interface->GetTabStripModel()->GetIndexOfWebContents(
+                web_contents);
+        if (tab_index != TabStripModel::kNoTab) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
+  if (!found_browser) {
+    return Response::ServerError("Browser window not found");
+  }
+
+  ui::BaseWindow* window = found_browser->GetWindow();
+  *out_window_id = found_browser->GetSessionID().id();
   *out_bounds = GetBrowserWindowBounds(window);
   return Response::Success();
 }

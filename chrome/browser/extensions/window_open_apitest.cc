@@ -12,9 +12,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -47,6 +49,15 @@ class Window;
 namespace extensions {
 
 class WindowOpenApiTest : public ExtensionApiTest {
+ public:
+  static int CountBrowsersForType(BrowserWindowInterface::Type type) {
+    return ui_test_utils::FindMatchingBrowsers(
+               [type](BrowserWindowInterface* browser) {
+                 return browser->GetType() == type;
+               })
+        .size();
+  }
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -82,28 +93,19 @@ bool WaitForTabsPopupsApps(Browser* browser,
                 browser->profile()));
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
 
-  int num_popups_seen = 0;
-  int num_app_popups_seen = 0;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser) {
-      continue;
-    }
-
-    EXPECT_TRUE(b->is_type_popup() || b->is_type_app_popup());
-    if (b->is_type_popup())
-      ++num_popups_seen;
-    else if (b->is_type_app_popup())
-      ++num_app_popups_seen;
-  }
-  EXPECT_EQ(num_popups, num_popups_seen);
-  EXPECT_EQ(num_app_popups, num_app_popups_seen);
+  EXPECT_EQ(num_popups, WindowOpenApiTest::CountBrowsersForType(
+                            BrowserWindowInterface::TYPE_POPUP));
+  EXPECT_EQ(num_app_popups, WindowOpenApiTest::CountBrowsersForType(
+                                BrowserWindowInterface::TYPE_APP_POPUP));
 
   return ((num_browsers ==
            extensions::browsertest_util::GetWindowControllerCountInProfile(
                browser->profile())) &&
           (num_tabs == browser->tab_strip_model()->count()) &&
-          (num_popups == num_popups_seen) &&
-          (num_app_popups == num_app_popups_seen));
+          (num_popups == WindowOpenApiTest::CountBrowsersForType(
+                             BrowserWindowInterface::TYPE_POPUP)) &&
+          (num_app_popups == WindowOpenApiTest::CountBrowsersForType(
+                                 BrowserWindowInterface::TYPE_APP_POPUP)));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, BrowserIsApp) {
@@ -111,14 +113,12 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, BrowserIsApp) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("window_open").AppendASCII("browser_is_app")));
 
-  EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 0, 0, 2));
+  constexpr int kExpectedAppPopups = 2;
+  EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 0, 0, kExpectedAppPopups));
 
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser())
-      ASSERT_FALSE(b->is_type_app_popup());
-    else
-      ASSERT_TRUE(b->is_type_app_popup());
-  }
+  EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP_POPUP);
+  EXPECT_EQ(kExpectedAppPopups,
+            CountBrowsersForType(BrowserWindowInterface::Type::TYPE_APP_POPUP));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, WindowOpenPopupDefault) {

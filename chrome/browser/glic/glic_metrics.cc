@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -224,14 +225,16 @@ class BrowserActivityObserver : public BrowserListObserver {
       return BrowserActiveState::kBrowserActive;
     }
     bool browser_hidden = true;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (!browser->GetWindow()->IsMinimized() &&
-          browser->capabilities()->IsVisibleOnScreen() &&
-          browser->GetWindow()->IsVisible()) {
-        browser_hidden = false;
-        break;
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&browser_hidden](BrowserWindowInterface* browser_window_interface) {
+          if (!browser_window_interface->GetWindow()->IsMinimized() &&
+              browser_window_interface->capabilities()->IsVisibleOnScreen() &&
+              browser_window_interface->GetWindow()->IsVisible()) {
+            browser_hidden = false;
+            return false;
+          }
+          return true;
+        });
     if (browser_hidden) {
       return BrowserActiveState::kBrowserHidden;
     }

@@ -80,8 +80,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -2964,14 +2964,6 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
       continue;
     }
     int tab_count = tabs->GetTabCount();
-#else
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile()) {
-      continue;
-    }
-    TabStripModel* tabs = browser->tab_strip_model();
-    int tab_count = tabs->count();
-#endif
     for (int i = 0; i < tab_count; ++i) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
       if (!web_contents) {
@@ -2986,6 +2978,37 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
       }
     }
   }
+#else
+  bool found_origin = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &origin,
+       &found_origin](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile() != profile()) {
+          return true;
+        }
+        TabStripModel* tabs = browser_window_interface->GetTabStripModel();
+        int tab_count = tabs->count();
+        for (int i = 0; i < tab_count; ++i) {
+          content::WebContents* web_contents = tabs->GetWebContentsAt(i);
+          if (!web_contents) {
+            continue;
+          }
+          url::Origin tab_origin = url::Origin::Create(
+              permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+                  web_contents->GetPrimaryMainFrame()));
+          // Found a tab for this origin, so early exit and don't revoke grants.
+          if (tab_origin == origin) {
+            found_origin = true;
+            return false;
+          }
+        }
+        return true;
+      });
+  if (found_origin) {
+    return;
+  }
+#endif
+
   CleanupPermissions(origin);
 }
 
@@ -3584,28 +3607,31 @@ void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_icon_update_scheduled_ = false;
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile()) {
-      continue;
-    }
-    if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
-      tabs::TabInterface* const tab_interface =
-          browser->GetActiveTabInterface();
-      // TODO(crbug.com/411109399): DoUsageIconUpdate() can be run during
-      // browser destruction, and therefore we need to check for null here. This
-      // should be updated to never run during browser destruction.
-      if (!tab_interface) {
-        continue;
-      }
-      auto* const tab_features = tab_interface->GetTabFeatures();
-      CHECK(tab_features);
-      UpdatePageAction(
-          tab_features->file_system_access_page_action_controller());
-    } else {
-      browser->window()->UpdatePageActionIcon(
-          PageActionIconType::kFileSystemAccess);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetProfile() != profile()) {
+          return true;
+        }
+        if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
+          tabs::TabInterface* const tab_interface =
+              browser_window_interface->GetActiveTabInterface();
+          // TODO(crbug.com/411109399): DoUsageIconUpdate() can be run during
+          // browser destruction, and therefore we need to check for null here.
+          // This should be updated to never run during browser destruction.
+          if (!tab_interface) {
+            return true;
+          }
+          auto* const tab_features = tab_interface->GetTabFeatures();
+          CHECK(tab_features);
+          UpdatePageAction(
+              tab_features->file_system_access_page_action_controller());
+        } else {
+          browser_window_interface->GetBrowserForMigrationOnly()
+              ->window()
+              ->UpdatePageActionIcon(PageActionIconType::kFileSystemAccess);
+        }
+        return true;
+      });
 #endif
 }
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "ui/views/widget/widget.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace glic {
@@ -47,10 +48,10 @@ class BrowserActivator : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  void SetActivePrivate(Browser* browser);
+  void SetActivePrivate(BrowserWindowInterface* browser_window_interface);
 
   Mode mode_ = Mode::kSingleBrowser;
-  base::WeakPtr<Browser> active_browser_;
+  base::WeakPtr<BrowserWindowInterface> active_browser_;
   std::unique_ptr<views::Widget::PaintAsActiveLock> active_lock_;
 };
 

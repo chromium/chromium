@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -575,12 +576,15 @@ void TabsEventRouter::DispatchTabSelectionChanged(
   base::Value::Dict select_info;
 
   int window_id = -1;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      window_id = ExtensionTabUtil::GetWindowId(browser);
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model,
+       &window_id](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetTabStripModel() == tab_strip_model) {
+          window_id = ExtensionTabUtil::GetWindowId(browser_window_interface);
+          return false;
+        }
+        return true;
+      });
 
   select_info.Set(tabs_constants::kWindowIdKey, window_id);
 
