@@ -28,19 +28,33 @@ struct FloatingEmbedderKey {
 using EmbedderKey = std::variant<tabs::TabInterface*, FloatingEmbedderKey>;
 
 struct SidePanelShowOptions {
-  explicit SidePanelShowOptions(tabs::TabInterface& tab_in) : tab(tab_in) {}
+  explicit SidePanelShowOptions(tabs::TabInterface& bound_tab)
+      : tab(bound_tab) {}
   base::raw_ref<tabs::TabInterface> tab;
 };
 
 struct FloatingShowOptions {
-  // Uses `anchor_browser` to get initial location. If `anchor_browser` is
-  // nullptr, it will use default location values.
-  static FloatingShowOptions From(BrowserWindowInterface* anchor_browser);
-
   gfx::Rect initial_bounds;
 };
 
-using ShowOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
+using EmbedderOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
+struct ShowOptions {
+  explicit ShowOptions(EmbedderOptions panel_options);
+  explicit ShowOptions(EmbedderOptions panel_options, bool focus);
+  ~ShowOptions();
+
+  // Uses `anchor_browser` to get initial location. If `anchor_browser` is
+  // nullptr, it will use default location values.
+  static ShowOptions ForFloating(BrowserWindowInterface* anchor_browser);
+  static ShowOptions ForFloating(gfx::Rect initial_bounds);
+  static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab);
+
+  // Shared show options
+  bool focus_on_show = false;
+
+  // Container for options that are different between side panel and floaty.
+  EmbedderOptions embedder_options;
+};
 
 inline EmbedderKey GetEmbedderKey(const ShowOptions& options) {
   return std::visit(absl::Overload{[](const SidePanelShowOptions& opts) {
@@ -49,7 +63,7 @@ inline EmbedderKey GetEmbedderKey(const ShowOptions& options) {
                                    [](const FloatingShowOptions& opts) {
                                      return EmbedderKey(FloatingEmbedderKey());
                                    }},
-                    options);
+                    options.embedder_options);
 }
 
 }  // namespace glic

@@ -170,7 +170,7 @@ void GlicFloatingUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   delegate_->SwitchConversation(
-      FloatingShowOptions{GetGlicWidget()->GetWindowBoundsInScreen()},
+      ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen()),
       std::move(info), std::move(callback));
 }
 

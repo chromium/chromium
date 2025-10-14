@@ -87,7 +87,9 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 
     // Only bind if the previous instance was active.
     if (glic_embedder && glic_embedder->IsShowing()) {
-      instance_->Show(SidePanelShowOptions(*tab_to_bind));
+      auto show_options = ShowOptions{SidePanelShowOptions{*tab_to_bind}};
+      show_options.focus_on_show = tab_to_bind->IsActivated();
+      instance_->Show(show_options);
     }
   }
 
@@ -155,7 +157,7 @@ gfx::Size GlicInstanceImpl::GetPanelSize() {
 
 void GlicInstanceImpl::Show(const ShowOptions& options) {
   if (const auto* side_panel_options =
-          std::get_if<SidePanelShowOptions>(&options);
+          std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options && !side_panel_options->tab->IsActivated()) {
     ShowInactiveSidePanelEmbedderFor(&side_panel_options->tab.get());
     return;
@@ -178,10 +180,16 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   MaybeShowHostUi(embedder_to_show);
   embedder_to_show->Show();
+  if (options.focus_on_show) {
+    embedder_to_show->Focus();
+  }
 }
 
 void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
-  Show(FloatingShowOptions::From(tab->GetBrowserWindowInterface()));
+  auto show_options =
+      ShowOptions::ForFloating(tab->GetBrowserWindowInterface());
+  show_options.focus_on_show = true;
+  Show(show_options);
   Close(CreateSidePanelEmbedderKey(tab));
 }
 
@@ -193,13 +201,15 @@ void GlicInstanceImpl::Close(EmbedderKey key) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
-void GlicInstanceImpl::Toggle(const ShowOptions& options, bool prevent_close) {
+void GlicInstanceImpl::Toggle(ShowOptions&& options, bool prevent_close) {
   EmbedderKey key = GetEmbedderKey(options);
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
     if (!prevent_close) {
       Close(key);
     }
   } else {
+    // We assume that a toggle is user initiated so focus on show.
+    options.focus_on_show = true;
     Show(options);
   }
 }
@@ -418,7 +428,7 @@ void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
   }
   auto* embedder = GetEmbedderForTab(active_tab);
   if (embedder && embedder->IsShowing()) {
-    Show(SidePanelShowOptions{*active_tab});
+    Show(ShowOptions::ForSidePanel(*active_tab));
   }
 }
 
@@ -458,7 +468,7 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
                        return CreateActiveEmbedderForFloaty(
                            opts.initial_bounds);
                      }},
-      options);
+      options.embedder_options);
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
@@ -540,7 +550,7 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
   auto* embedder = GetEmbedderForTab(tab);
   if (embedder && embedder->IsShowing()) {
     // Ensure that the side panel in this tab becomes the active embedder.
-    Show(SidePanelShowOptions(*tab));
+    Show(ShowOptions::ForSidePanel(*tab));
   }
 }
 
@@ -639,9 +649,10 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
     return;
   }
   for (auto const& [key, entry] : embedders_) {
-    if (auto* tab = std::get_if<tabs::TabInterface*>(&key)) {
+    if (tabs::TabInterface* const* tab =
+            std::get_if<tabs::TabInterface*>(&key)) {
       if (entry.embedder->IsShowing()) {
-        Show(SidePanelShowOptions(**tab));
+        Show(ShowOptions::ForSidePanel(**tab));
         return;
       }
     }

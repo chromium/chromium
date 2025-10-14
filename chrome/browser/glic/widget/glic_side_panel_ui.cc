@@ -128,8 +128,8 @@ void GlicSidePanelUi::SidePanelStateChanged(
 void GlicSidePanelUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  delegate_->SwitchConversation(SidePanelShowOptions(*tab_), std::move(info),
-                                std::move(callback));
+  delegate_->SwitchConversation(ShowOptions::ForSidePanel(*tab_),
+                                std::move(info), std::move(callback));
 }
 
 void GlicSidePanelUi::Show() {
@@ -140,7 +140,6 @@ void GlicSidePanelUi::Show() {
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
   delegate_->NotifyPanelStateChanged();
   glic_side_panel_coordinator->Show();
-  Focus();
 }
 
 void GlicSidePanelUi::Close() {

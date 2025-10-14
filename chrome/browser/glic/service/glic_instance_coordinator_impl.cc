@@ -136,7 +136,9 @@ void GlicInstanceCoordinatorImpl::FindInstanceFromGlicContentsAndBindToTab(
   for (auto const& [instance_id, instance] : instances_) {
     if (instance->host().webui_contents() == source_glic_web_contents) {
       // Show the instance in the new tab
-      instance->Show(SidePanelShowOptions(*tab_to_bind));
+      auto show_options = ShowOptions::ForSidePanel(*tab_to_bind);
+      show_options.focus_on_show = tab_to_bind->IsActivated();
+      instance->Show(show_options);
     }
   }
 }
@@ -374,7 +376,7 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
   auto instance_iter = instances_.find(*floating_instance_key_);
   CHECK(instance_iter != instances_.end());
   GlicInstanceImpl* instance = instance_iter->second.get();
-  instance->Toggle(FloatingShowOptions::From(/*anchor_browser=*/nullptr),
+  instance->Toggle(ShowOptions::ForFloating(/*anchor_browser=*/nullptr),
                    prevent_close);
 }
 
@@ -386,7 +388,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
   auto* instance = GetOrCreateGlicInstanceImplForTab(tab);
-  instance->Toggle(SidePanelShowOptions(*tab), prevent_close);
+  instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {

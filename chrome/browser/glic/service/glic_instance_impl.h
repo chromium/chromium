@@ -85,7 +85,7 @@ class GlicInstanceImpl : public GlicInstance,
   // These methods should only be called by the GlicInstanceCoordinator.
   void Show(const ShowOptions& options) override;
   void Close(EmbedderKey key);
-  void Toggle(const ShowOptions& options, bool prevent_close);
+  void Toggle(ShowOptions&& options, bool prevent_close);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);

@@ -72,6 +72,10 @@ class GlicInstanceCoordinatorImpl : public GlicInstanceCoordinator {
   std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
 
+  // Toggles the side panel for the active tab if `browser` is provided,
+  // otherwise toggles the floating window for the instance. Focus is given
+  // to the new panel when opening through toggle since it is assumed all toggle
+  // sources are user initiated.
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source) override;
