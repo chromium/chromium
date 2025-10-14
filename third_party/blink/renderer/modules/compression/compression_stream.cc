@@ -39,6 +39,17 @@ void CompressionStream::Trace(Visitor* visitor) const {
 CompressionStream::CompressionStream(ScriptState* script_state,
                                      const AtomicString& format,
                                      ExceptionState& exception_state) {
+  static auto* const compression_stream_created_at = AllocateCrashKeyString(
+      "compression_stream_created_at", base::debug::CrashKeySize::Size256);
+  String created_at_location = g_empty_string;
+  if (SourceLocation* source_location = CaptureSourceLocation()) {
+    created_at_location = String::Format(
+        "%s:%d:%d (%s)", source_location->Url().Utf8().c_str(),
+        source_location->LineNumber(), source_location->ColumnNumber(),
+        source_location->Function().Utf8().c_str());
+  }
+  SetCrashKeyString(compression_stream_created_at, created_at_location.Utf8());
+
   CompressionFormat deflate_format =
       LookupCompressionFormat(format, exception_state);
   if (exception_state.HadException())
@@ -78,19 +89,28 @@ void ReceiverValidatorForDebugging<CompressionStream>::Validate(
 
   v8::MaybeLocal<v8::Context> creation_context =
       object->GetCreationContext(isolate);
-  v8::MaybeLocal<v8::String> as_string =
-      !creation_context.IsEmpty()
-          ? object->ObjectProtoToString(creation_context.ToLocalChecked())
-          : v8::MaybeLocal<v8::String>();
-  if (!as_string.IsEmpty()) {
-    static auto* const object_to_string = AllocateCrashKeyString(
-        "object_to_string", base::debug::CrashKeySize::Size256);
-    SetCrashKeyString(object_to_string,
-                      ToBlinkString<String>(isolate, as_string.ToLocalChecked(),
-                                            kDoNotExternalize)
-                          .Utf8());
+  {
+    v8::TryCatch try_catch(isolate);
+    v8::MaybeLocal<v8::String> as_string =
+        !creation_context.IsEmpty()
+            ? object->ObjectProtoToString(creation_context.ToLocalChecked())
+            : v8::MaybeLocal<v8::String>();
+    if (as_string.IsEmpty()) {
+      v8::Local<v8::Message> message = try_catch.Message();
+      if (!message.IsEmpty()) {
+        as_string = message->Get();
+      }
+    }
+    if (!as_string.IsEmpty()) {
+      static auto* const object_to_string = AllocateCrashKeyString(
+          "object_to_string", base::debug::CrashKeySize::Size256);
+      SetCrashKeyString(
+          object_to_string,
+          ToBlinkString<String>(isolate, as_string.ToLocalChecked(),
+                                kDoNotExternalize)
+              .Utf8());
+    }
   }
-
   static auto* const constructor =
       AllocateCrashKeyString("constructor", base::debug::CrashKeySize::Size64);
   SetCrashKeyString(constructor,
