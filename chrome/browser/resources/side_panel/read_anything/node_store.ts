@@ -208,24 +208,12 @@ export class NodeStore {
 
   replaceDomNode(current: ChildNode, replacer: Node) {
     const nodeId = this.getAxId(current);
-    // When Screen2x is used, a node id should never be undefined. However,
-    // when Readability.js is used, nodes will not be added to the node_store
-    // in updateContent, as there aren't any associated AxNodeIds. Longer term,
-    // this should be consolidated, but in the short term, continue asserting
-    // for Screen2x to avoid introducing new bugs, while ignoring the
-    // requirement for Readability.js in order for highlighting to work
-    // with Readability.
-    if (!chrome.readingMode.isReadabilityEnabled) {
-      assert(
-          nodeId !== undefined,
-          'trying to replace an element that doesn\'t exist');
-    }
-
-    if (nodeId !== undefined) {
-      // Update map.
-      this.removeDomNode(current);
-      this.setDomNode(replacer, nodeId);
-    }
+    assert(
+        nodeId !== undefined,
+        'trying to replace an element that doesn\'t exist');
+    // Update map.
+    this.removeDomNode(current);
+    this.setDomNode(replacer, nodeId);
     // Replace element in DOM.
     current.replaceWith(replacer);
   }
