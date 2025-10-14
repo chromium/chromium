@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.{CollaborationServiceFlow}.Events"
-    enum="CollaborationServiceFlowEvent" expires_after="2025-10-11">
+    enum="CollaborationServiceFlowEvent" expires_after="2026-02-22">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
