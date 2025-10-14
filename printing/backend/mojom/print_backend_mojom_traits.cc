@@ -5,6 +5,7 @@
 #include "printing/backend/mojom/print_backend_mojom_traits.h"
 
 #include <set>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -24,10 +25,8 @@ struct LessPaper {
   bool operator()(
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& lhs,
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& rhs) const {
-    if (lhs.display_name() < rhs.display_name()) {
-      return true;
-    }
-    return lhs.vendor_id() < rhs.vendor_id();
+    return std::tie(lhs.display_name(), lhs.vendor_id()) <
+           std::tie(rhs.display_name(), rhs.vendor_id());
   }
 };
 
@@ -36,9 +35,8 @@ struct LessPaper {
 struct LessAdvancedCapability {
   bool operator()(const ::printing::AdvancedCapability& lhs,
                   const ::printing::AdvancedCapability& rhs) const {
-    if (lhs.name < rhs.name)
-      return true;
-    return lhs.display_name < rhs.display_name;
+    return std::tie(lhs.name, lhs.display_name) <
+           std::tie(rhs.name, rhs.display_name);
   }
 };
 
