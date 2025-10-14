@@ -319,6 +319,7 @@ luci.realm(
             users = [
                 "chromium-status-hr@appspot.gserviceaccount.com",
                 "luci-notify@appspot.gserviceaccount.com",
+                "luci-bisection@appspot.gserviceaccount.com",
             ],
         ),
         # Only allow Googlers and service accounts.
@@ -329,6 +330,7 @@ luci.realm(
             ],
             users = [
                 "luci-notify@appspot.gserviceaccount.com",
+                "luci-bisection@appspot.gserviceaccount.com",
             ],
         ),
     ],
