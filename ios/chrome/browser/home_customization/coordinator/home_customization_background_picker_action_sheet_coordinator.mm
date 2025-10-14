@@ -366,7 +366,7 @@ CGFloat const kSheetCornerRadius = 30;
                 HomeCustomizationBackgroundPresetGalleryPickerViewController>(
                 _mainViewController);
         base::UmaHistogramCounts100(
-            "IOS.HomeCustomization.Background.Gallery.SelectedIndex",
+            "IOS.HomeCustomization.Background.Gallery.SelectedCollectionIndex",
             presetGalleryPickerViewController.selectedIndex);
       }
       break;
