@@ -268,6 +268,9 @@ extern const base::FeatureParam<int>(
     kGlicActorUiCompletedTaskExpiryDelaySeconds);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGoogleChromeScheme);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityLocalTimeout);
 COMPONENT_EXPORT(CHROME_FEATURES)
