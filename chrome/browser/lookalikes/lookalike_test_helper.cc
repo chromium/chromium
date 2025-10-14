@@ -3,19 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
+#include "components/url_formatter/spoof_checks/top_domains/test_domains_trie.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace test {
-#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
-}
 
 LookalikeTestHelper::LookalikeTestHelper(ukm::TestUkmRecorder* ukm_recorder)
     : ukm_recorder_(ukm_recorder) {}
@@ -24,9 +21,11 @@ LookalikeTestHelper::LookalikeTestHelper(ukm::TestUkmRecorder* ukm_recorder)
 void LookalikeTestHelper::SetUpLookalikeTestParams() {
   // Use test top domain lists instead of the actual list.
   url_formatter::IDNSpoofChecker::HuffmanTrieParams trie_params{
-      test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
-      test::kTopDomainsTrie, test::kTopDomainsTrieBits,
-      test::kTopDomainsRootPosition};
+      url_formatter::kTestTopDomainsHuffmanTree.data(),
+      url_formatter::kTestTopDomainsHuffmanTree.size(),
+      url_formatter::kTestTopDomainsTrie.data(),
+      url_formatter::kTestTopDomainsTrieBits,
+      url_formatter::kTestTopDomainsRootPosition};
   url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
 
   // Use test top bucket domain skeletons instead of the actual list.

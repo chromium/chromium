@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "components/url_formatter/spoof_checks/top_domains/idn_test_domains_trie.h"
+#include "components/url_formatter/spoof_checks/top_domains/test_domains_trie.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uvernum.h"
@@ -1571,7 +1572,6 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
 }
 
 namespace {
-#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
 
 // These tests do not use the production top domain list. This is to avoid
 // having to adjust the tests when the top domain list is updated. Instead,
@@ -1580,8 +1580,9 @@ class TopDomainIDNSpoofCheckerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IDNSpoofChecker::HuffmanTrieParams trie_params{
-        kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-        kTopDomainsTrieBits, kTopDomainsRootPosition};
+        kTestTopDomainsHuffmanTree.data(), kTestTopDomainsHuffmanTree.size(),
+        kTestTopDomainsTrie.data(), kTestTopDomainsTrieBits,
+        kTestTopDomainsRootPosition};
     IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
   }
 
