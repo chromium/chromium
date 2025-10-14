@@ -379,24 +379,29 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Browser* current_browser() { return current_browser_; }
+#endif
 
   content::RenderProcessHost* AddFilenameDeterminer() {
     ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutSecondsForTesting(
         2);
-    // TODO(crbug.com/405219117): Add special navigation for Android here as
-    // the call to chrome::AddSelectedTabWithURL() requires current_browser()
-    // but our usual replacement NavigateToURLInNewTab() does not take a browser
-    // or profile.
-    content::WebContents* tab = chrome::AddSelectedTabWithURL(
-        current_browser(), extension_->GetResourceURL("empty.html"),
-        ui::PAGE_TRANSITION_LINK);
+    GURL url(extension_->GetResourceURL("empty.html"));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    content::WebContents* const tab = chrome::AddSelectedTabWithURL(
+        current_browser(), url, ui::PAGE_TRANSITION_LINK);
+#else
+    // TODO(crbug.com/405219117): Support incognito when we can load an URL into
+    // an existing incognito window on Android.
+    CHECK(current_profile()->IsRegularProfile())
+        << "Incognito not supported yet";
+    content::WebContents* const tab =
+        LoadURLNoWait(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+#endif
     EventRouter::Get(current_profile())
         ->AddEventListener(downloads::OnDeterminingFilename::kEventName,
                            tab->GetPrimaryMainFrame()->GetProcess(),
                            GetExtensionId());
     return tab->GetPrimaryMainFrame()->GetProcess();
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   void RemoveFilenameDeterminer(content::RenderProcessHost* host) {
     EventRouter::Get(current_profile())
@@ -1182,6 +1187,7 @@ scoped_refptr<ExtensionFunction> MockedGetFileIconFunction(
   return function;
 }
 
+// TODO(crbug.com/405219117): Port more tests to desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test downloads.getFileIcon() on in-progress, finished, cancelled and deleted
@@ -2820,6 +2826,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
+// TODO(crbug.com/405219117): Fails on desktop Android, possibly due to
+// networking differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Post_NoBody) {
   LoadExtension("downloads_split");
@@ -2855,6 +2863,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          "  \"url\": \"%s\"}]",
                          result_id, download_url.c_str())));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that cancel()ing an in-progress download causes its state to transition
 // to interrupted, and test that that state transition is detectable by an
@@ -2902,6 +2911,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           result_id)));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219117): Fails on desktop Android, possibly due to
+// networking differences.
 // TODO(crbug.com/41119270): Flaky on macOS
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadExtensionTest_Download_FileSystemURL \
@@ -2924,10 +2936,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   // Setup a file in the filesystem which we can download.
   ASSERT_TRUE(HTML5FileWriter::CreateFileForTesting(
-      current_browser()
-          ->profile()
-          ->GetDefaultStoragePartition()
-          ->GetFileSystemContext(),
+      current_profile()->GetDefaultStoragePartition()->GetFileSystemContext(),
       storage::FileSystemURL::CreateForTest(GURL(download_url)), kPayloadData,
       strlen(kPayloadData)));
 
@@ -2973,6 +2982,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_STREQ(kPayloadData, disk_data.c_str());
 }
 
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_OnDeterminingFilename_NoChange) {
   GoOnTheRecord();
@@ -3097,6 +3108,8 @@ IN_PROC_BROWSER_TEST_F(
                          result_id)));
 }
 
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_OnDeterminingFilename_Twice) {
   GoOnTheRecord();
@@ -3213,6 +3226,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Tests that overriding a safe file extension to a dangerous extension will not
 // trigger the dangerous prompt and will not change the extension.
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_DangerousOverride) {
@@ -3272,6 +3287,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that overriding a dangerous file extension to a safe extension will
 // trigger the dangerous prompt and will not change the extension.
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_SafeOverride) {
@@ -3347,6 +3364,8 @@ IN_PROC_BROWSER_TEST_F(
             item->GetTargetFilePath());
 }
 
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid) {
@@ -3409,6 +3428,8 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
+// TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
+// handling differences.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_IllegalFilename) {
@@ -4413,6 +4434,7 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
+// Desktop Android does not use the download shelf UI.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SetShelfEnabled) {
   LoadExtension("downloads_split");
@@ -4435,7 +4457,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // TODO(benjhayden) Test that the shelf is shown for download() both with and
 // without a WebContents.
-
+//
+// Desktop Android does not use the download shelf UI.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SetUiOptions) {
   LoadExtension("downloads_split");
@@ -4455,6 +4478,8 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }
 
+// TODO(crbug.com/450662444): Enable this test on desktop Android when the
+// DownloadDangerPrompt is implemented.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_AcceptDanger) {
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
@@ -4545,8 +4570,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // The DownloadExtensionBubbleEnabledTest relies on the download surface, which
-// ChromeOS_ASH doesn't use (see crbug.com/1323505).
-#if !BUILDFLAG(IS_CHROMEOS)
+// ChromeOS_ASH and Android don't use (see crbug.com/1323505).
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 class DownloadExtensionBubbleEnabledTest : public DownloadExtensionTest {
  public:
   DownloadExtensionBubbleEnabledTest() = default;
@@ -4644,7 +4669,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionBubbleEnabledTest,
   items[0]->Cancel(true);
   EXPECT_TRUE(GetDownloadToolbarButton()->IsShowing());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
