@@ -230,6 +230,11 @@ src/webgpu/api/operation/shader_module/compilation_info.spec.ts
 src/webgpu/api/operation/storage_texture/read_only.spec.ts
 src/webgpu/api/operation/storage_texture/read_write.spec.ts
 src/webgpu/api/operation/texture_view/format_reinterpretation.spec.ts
+src/webgpu/shader/types.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
+src/webgpu/api/validation/capability_checks/features/texture_component_swizzle_utils.ts
+src/webgpu/api/operation/texture_view/texture_component_swizzle.spec.ts
 src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
@@ -257,6 +262,7 @@ src/webgpu/api/validation/buffer/threading.spec.ts
 src/webgpu/api/validation/capability_checks/limits/limit_utils.ts
 src/webgpu/api/validation/capability_checks/features/clip_distances.spec.ts
 src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
+src/webgpu/api/validation/capability_checks/features/texture_component_swizzle.spec.ts
 src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats_tier1.spec.ts
@@ -371,9 +377,6 @@ src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout_limits.spec.ts
 src/webgpu/compat/api/validation/createPipelineLayout.spec.ts
-src/webgpu/shader/types.ts
-src/webgpu/shader/validation/decl/util.ts
-src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/compat/api/validation/pipeline_creation.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
