@@ -142,6 +142,13 @@ void RecordMetricsForLoginWithChangedPassword(
     password_manager::PasswordManagerClient* client,
     const PasswordFormManager& submitted_manager,
     bool login_successful) {
+  if (client->IsPasswordChangeOngoing()) {
+    // During password change Chrome saved a newly generated password as a
+    // backup before filling, and later Password Manager might detect change
+    // password form submission. This shouldn't be recorded as login attempt.
+    return;
+  }
+
   const PasswordForm* change_password_login =
       password_manager_util::FindChangedPasswordLoginWithBackup(
           submitted_manager);
