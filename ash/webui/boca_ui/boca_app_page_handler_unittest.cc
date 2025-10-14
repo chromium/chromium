@@ -316,6 +316,7 @@ class MockSessionManager : public BocaSessionManager {
               (std::string_view),
               (override));
   MOCK_METHOD(void, EndSpotlightSession, (base::OnceClosure), (override));
+  MOCK_METHOD(void, CleanupPresenters, (), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -708,6 +709,11 @@ class BocaAppPageHandlerProducerTest : public BocaAppPageHandlerTest {
   void SetUp() override {
     BocaAppPageHandlerTest::SetUp();
     CreateBocaAppHandler(/*is_producer=*/true);
+  }
+
+  void TearDown() override {
+    EXPECT_CALL(*session_manager(), CleanupPresenters).Times(1);
+    BocaAppPageHandlerTest::TearDown();
   }
 };
 

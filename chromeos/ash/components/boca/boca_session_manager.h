@@ -268,6 +268,7 @@ class BocaSessionManager
   virtual TeacherScreenPresenter* GetTeacherScreenPresenter();
   virtual std::optional<std::string> GetStudentActiveDeviceId(
       std::string_view student_id);
+  virtual void CleanupPresenters();
 
   base::ObserverList<Observer>& observers() { return observers_; }
 

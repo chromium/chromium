@@ -331,6 +331,7 @@ BocaAppHandler::~BocaAppHandler() {
     // scheduled to close.
     return;
   }
+  GetSessionManager()->CleanupPresenters();
   // Best effort end session. Not handling response, if update failed,
   // persistent notification will stay.
   EndSession(base::BindOnce([](std::optional<mojom::UpdateSessionError>) {}));

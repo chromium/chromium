@@ -506,6 +506,11 @@ std::optional<std::string> BocaSessionManager::GetStudentActiveDeviceId(
   return std::nullopt;
 }
 
+void BocaSessionManager::CleanupPresenters() {
+  student_screen_presenter_.reset();
+  teacher_screen_presenter_.reset();
+}
+
 void BocaSessionManager::LoadInitialNetworkState() {
   cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(

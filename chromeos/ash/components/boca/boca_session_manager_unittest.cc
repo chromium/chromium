@@ -1345,15 +1345,28 @@ TEST_F(BocaSessionManagerTest, GetStudentScreenPresenter) {
   boca_session_manager()->OnInvalidationReceived("payload");
   EXPECT_TRUE(active_signal.Wait());
   EXPECT_THAT(boca_session_manager()->GetStudentScreenPresenter(), NotNull());
+
+  boca_session_manager()->CleanupPresenters();
+  EXPECT_THAT(boca_session_manager()->GetStudentScreenPresenter(), IsNull());
 }
 
 TEST_F(BocaSessionManagerTest, GetTeacherScreenPresenter) {
   auto screen_presenter_factory =
       std::make_unique<MockScreenPresenterFactory>();
-  EXPECT_CALL(*screen_presenter_factory, CreateTeacherScreenPresenter)
-      .WillOnce(Return(std::make_unique<MockTeacherScreenPresenter>()));
+  auto* const screen_presenter_factory_ptr = screen_presenter_factory.get();
   boca_session_manager()->SetScreenPresenterFactory(
       std::move(screen_presenter_factory));
+
+  EXPECT_CALL(*screen_presenter_factory_ptr, CreateTeacherScreenPresenter)
+      .WillOnce(Return(std::make_unique<MockTeacherScreenPresenter>()));
+  EXPECT_THAT(boca_session_manager()->GetTeacherScreenPresenter(), NotNull());
+  // A second call to `GetTeacherScreenPresenter()` will return the same teacher
+  // screen presenter instance.
+  EXPECT_THAT(boca_session_manager()->GetTeacherScreenPresenter(), NotNull());
+
+  boca_session_manager()->CleanupPresenters();
+  EXPECT_CALL(*screen_presenter_factory_ptr, CreateTeacherScreenPresenter)
+      .WillOnce(Return(std::make_unique<MockTeacherScreenPresenter>()));
   EXPECT_THAT(boca_session_manager()->GetTeacherScreenPresenter(), NotNull());
 }
 
