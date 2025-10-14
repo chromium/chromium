@@ -111,4 +111,7 @@ interface LensSidePanelPage {
 
   // Focuses the results iframe.
   FocusResultsFrame();
+
+  // Informs the side panel that the overlay is showing or hiding.
+  SetIsOverlayShowing(bool is_showing);
 };

@@ -570,6 +570,32 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('notifySessionStarted'), 1);
   });
 
+  test('lens icon click calls handler', async () => {
+    createComposeboxElement();
+
+    const lensIcon = $$<HTMLElement>(composeboxElement, '#lensIcon');
+    assertTrue(!!lensIcon);
+
+    lensIcon.click();
+    await handler.whenCalled('handleLensButtonClick');
+    assertEquals(1, handler.getCallCount('handleLensButtonClick'));
+  });
+
+  test('lens icon mousedown prevents default', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    const lensIcon = $$<HTMLElement>(composeboxElement, '#lensIcon');
+    assertTrue(!!lensIcon);
+
+    const event = new MouseEvent(
+        'mousedown', {bubbles: true, cancelable: true, composed: true});
+    lensIcon.dispatchEvent(event);
+    await microtasksFinished();
+
+    assertTrue(event.defaultPrevented);
+  });
+
   test('image upload button clicks file input', async () => {
     loadTimeData.overrideValues({
       'composeboxShowContextMenu': false,

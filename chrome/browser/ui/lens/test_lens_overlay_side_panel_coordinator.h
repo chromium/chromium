@@ -27,6 +27,8 @@ class TestLensOverlaySidePanelCoordinator
 
   void AimHandshakeReceived() override;
 
+  void SetIsOverlayShowing(bool is_showing) override;
+
   void ResetSidePanelTracking();
 
   lens::ClientToAimMessage last_sent_client_message_to_aim_;
@@ -34,6 +36,7 @@ class TestLensOverlaySidePanelCoordinator
   int aim_handshake_received_call_count_ = 0;
   int side_panel_loading_set_to_true_ = 0;
   int side_panel_loading_set_to_false_ = 0;
+  std::optional<bool> last_is_showing_;
 };
 
 }  // namespace lens

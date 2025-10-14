@@ -37,9 +37,15 @@ void TestLensOverlaySidePanelCoordinator::AimHandshakeReceived() {
   aim_handshake_received_call_count_++;
 }
 
+void TestLensOverlaySidePanelCoordinator::SetIsOverlayShowing(bool is_showing) {
+  last_is_showing_ = is_showing;
+  LensOverlaySidePanelCoordinator::SetIsOverlayShowing(is_showing);
+}
+
 void TestLensOverlaySidePanelCoordinator::ResetSidePanelTracking() {
   side_panel_loading_set_to_true_ = 0;
   side_panel_loading_set_to_false_ = 0;
+  last_is_showing_.reset();
 }
 
 }  // namespace lens

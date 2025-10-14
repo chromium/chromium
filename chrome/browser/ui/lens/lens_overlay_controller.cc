@@ -352,6 +352,7 @@ void LensOverlayController::CloseUI(
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
+  NotifyIsOverlayShowing(false);
   state_ = State::kOff;
 
   // Update the entrypoints now that the controller is closed.
@@ -1500,6 +1501,7 @@ void LensOverlayController::ShowOverlay() {
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
 
+  NotifyIsOverlayShowing(true);
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
     // Restore the state to show the overlay.
@@ -2554,6 +2556,8 @@ void LensOverlayController::HideOverlay() {
   }
   SetLiveBlur(false);
   HidePreselectionBubble();
+
+  NotifyIsOverlayShowing(false);
 }
 
 void LensOverlayController::HideOverlayAndMaybeSetHiddenState() {
@@ -2563,7 +2567,7 @@ void LensOverlayController::HideOverlayAndMaybeSetHiddenState() {
   }
 
   // If the side panel is open, set the overlay state to kHidden.
-  if (results_side_panel_coordinator_->IsSidePanelBound()) {
+  if (state_ == State::kOverlayAndResults) {
     state_ = State::kHidden;
   }
 }
@@ -2787,6 +2791,12 @@ void LensOverlayController::UpdateEntryPointsState() {
       .lens_overlay_entry_point_controller()
       ->UpdateEntryPointsState(
           /*hide_toolbar_entrypoint=*/false);
+}
+
+void LensOverlayController::NotifyIsOverlayShowing(bool is_showing) {
+  if (results_side_panel_coordinator_) {
+    results_side_panel_coordinator_->SetIsOverlayShowing(is_showing);
+  }
 }
 
 void LensOverlayController::OnPdfPartialPageTextRetrieved(
