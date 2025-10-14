@@ -395,12 +395,21 @@ cr-searchbox-icon {
 :host([ntp-realbox-next-enabled]) .dropdownContainer {
   background-color: var(--color-searchbox-results-background);
   border-radius: var(--cr-searchbox-border-radius);
-  box-shadow: var(--cr-searchbox-shadow);
   gap: 16px;
   margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
   overflow: hidden;
   padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
   padding-top: var(--cr-searchbox-dropdown-padding-top);
+}
+
+:host([ntp-realbox-next-enabled][dropdown-is-visible]),
+:host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) {
+  box-shadow: none;
+}
+
+:host([ntp-realbox-next-enabled][dropdown-is-visible]) .dropdownContainer,
+:host([ntp-realbox-next-enabled]:not([context-files-count_="0"])) .dropdownContainer {
+  box-shadow: var(--cr-searchbox-shadow);
 }
 
 :host([ntp-realbox-next-enabled]) #errorScrim {
@@ -465,6 +474,10 @@ cr-searchbox-icon {
 
 :host-context([realbox-layout-mode^='Tall']) #composeButton {
   --cr-button-height: 36px;
+}
+
+:host([realbox-layout-mode='TallBottomContext'][dropdown-is-visible]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+  margin-top: 10px;
 }
 
 :host-context([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
