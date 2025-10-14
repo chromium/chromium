@@ -35,13 +35,6 @@ bool IsSafariDataImportEntryPointVisible(bool verify_visibility) {
   return visible;
 }
 
-/// Action button on the import screen with text.
-id<GREYMatcher> ImportScreenButtonWithTextId(int text_id) {
-  return grey_allOf(PromoScreenPrimaryButtonMatcher(),
-                    ButtonWithAccessibilityLabelId(text_id),
-                    grey_interactable(), nil);
-}
-
 }  // namespace
 
 void DismissSafariDataImportEntryPoint(bool verify_visibility) {
@@ -87,6 +80,12 @@ void GoToImportScreen() {
               grey_interactable(), nil)] performAction:grey_tap()];
 }
 
+id<GREYMatcher> ImportScreenButtonWithTextId(int text_id) {
+  return grey_allOf(PromoScreenPrimaryButtonMatcher(),
+                    ButtonWithAccessibilityLabelId(text_id),
+                    grey_interactable(), nil);
+}
+
 void LoadFile(SafariDataImportTestFile file) {
   std::unique_ptr<EarlGreyScopedBlockSwizzler> url_access_swizzler =
       std::make_unique<EarlGreyScopedBlockSwizzler>(
@@ -104,11 +103,11 @@ void LoadFile(SafariDataImportTestFile file) {
   base::test::ios::SpinRunLoopWithMinDelay(
       base::test::ios::kWaitForUIElementTimeout);
   __block BOOL file_selected;
-  NSString* error_message =
-      [SafariDataImportAppInterface selectFile:SafariDataImportTestFile::kValid
-                                    completion:^{
-                                      file_selected = true;
-                                    }];
+  NSString* error_message = [SafariDataImportAppInterface selectFile:file
+                                                          completion:^{
+                                                            file_selected =
+                                                                true;
+                                                          }];
   GREYAssertNil(error_message, error_message);
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
                      base::test::ios::kWaitForActionTimeout,
@@ -135,28 +134,39 @@ void ExpectImportTableHasRowCount(int expected_count) {
   GREYAssertEqual(visible, expected_count > 0,
                   visible ? @"Import table is unexpectedly displayed."
                           : @"Import table is unexpectedly hidden.");
-  id<GREYMatcher> last_row = grey_accessibilityID(
-      GetSafariDataItemTableViewCellAccessibilityIdentifier(expected_count -
-                                                            1));
-  id<GREYMatcher> row_index_out_of_bounds = grey_accessibilityID(
-      GetSafariDataItemTableViewCellAccessibilityIdentifier(expected_count));
+  id<GREYMatcher> last_row =
+      grey_allOf(grey_accessibilityID(
+                     GetSafariDataItemTableViewCellAccessibilityIdentifier(
+                         expected_count - 1)),
+                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> row_index_out_of_bounds =
+      grey_allOf(grey_accessibilityID(
+                     GetSafariDataItemTableViewCellAccessibilityIdentifier(
+                         expected_count)),
+                 grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:last_row]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:row_index_out_of_bounds]
       assertWithMatcher:grey_nil()];
 }
 
-void ImportLoadedFile() {
-  [[EarlGrey selectElementWithMatcher:
-                 ImportScreenButtonWithTextId(
-                     IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
-      performAction:grey_tap()];
+void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected) {
+  id<GREYMatcher> row = grey_accessibilityID(
+      GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(idx));
+  [[EarlGrey selectElementWithMatcher:grey_allOf(grey_ancestor(row),
+                                                 grey_selected(), nil)]
+      assertWithMatcher:selected ? grey_sufficientlyVisible() : grey_nil()];
 }
 
-void WaitForImportCompletes() {
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      ImportScreenButtonWithTextId(
-                          IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)];
+void TapInfoButtonForInvalidPasswords() {
+  id<GREYMatcher> password_cell = ButtonWithAccessibilityLabelId(
+      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_PASSWORDS);
+  [[EarlGrey selectElementWithMatcher:password_cell]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  id<GREYMatcher> info_button =
+      grey_allOf(grey_ancestor(password_cell),
+                 grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  [[EarlGrey selectElementWithMatcher:info_button] performAction:grey_tap()];
 }
 
 void CompletesImportWorkflow() {
@@ -165,8 +175,7 @@ void CompletesImportWorkflow() {
                      IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)]
       performAction:grey_tap()];
   /// Handles "Delete file" dialog. Keep the file for other test cases.
-  id<GREYMatcher> buttonToDeleteFile = grey_allOf(
+  id<GREYMatcher> delete_button = grey_allOf(
       StaticTextWithAccessibilityLabelId(IDS_CANCEL), grey_interactable(), nil);
-  [[EarlGrey selectElementWithMatcher:buttonToDeleteFile]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:delete_button] performAction:grey_tap()];
 }

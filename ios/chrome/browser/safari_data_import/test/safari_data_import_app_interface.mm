@@ -13,8 +13,10 @@ NSString* GetFilename(SafariDataImportTestFile file) {
   switch (file) {
     case SafariDataImportTestFile::kValid:
       return @"valid_test_archive.zip";
-    case SafariDataImportTestFile::kInvalid:
+    case SafariDataImportTestFile::kPartiallyValid:
       return @"garbage_test_archive.zip";
+    case SafariDataImportTestFile::kInvalid:
+      return @"empty_test_archive.zip";
   }
 }
 

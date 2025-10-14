@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 /// Available files that could be used for Safari data import test cases.
-enum class SafariDataImportTestFile { kValid, kInvalid };
+enum class SafariDataImportTestFile { kValid, kPartiallyValid, kInvalid };
 
 @interface SafariDataImportAppInterface : NSObject
 

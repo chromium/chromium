@@ -138,15 +138,23 @@ copy("non_ascii_valid_test_archive") {
   outputs = [ "$root_out_dir/non_ascii测试文件.zip" ]
 }
 
+zip("empty_test_archive") {
+  testonly = true
+  inputs = []
+  output = "$root_out_dir/empty_test_archive.zip"
+}
+
 if (is_ios) {
   bundle_data("test_archive_bundle_data") {
     testonly = true
     public_deps = [
+      ":empty_test_archive",
       ":garbage_test_archive",
       ":non_ascii_valid_test_archive",
       ":valid_test_archive",
     ]
     sources = [
+      "$root_out_dir/empty_test_archive.zip",
       "$root_out_dir/garbage_test_archive.zip",
       "$root_out_dir/non_ascii测试文件.zip",
       "$root_out_dir/valid_test_archive.zip",

@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/safari_data_import/public/utils.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -16,8 +23,23 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::PromoScreenSecondaryButtonMatcher;
+using chrome_test_util::StaticTextWithAccessibilityLabelId;
+
+namespace {
+
+/// User name and passwords for conflicted passwords in the valid ZIP file.
+NSString* const kURL = @"https://sebsg.github.io/";
+NSString* const kUsername1 = @"Homer_Simpson";
+NSString* const kUsername2 = @"Superman";
+NSString* const kPassword2 = @"LouisLane";
+
+/// User name for the invalid password.
+NSString* const kInvalidPasswordUsername = @"Superman";
+
+}  // namespace
 
 /// Tests for Safari data import.
 @interface SafariDataImportTestCase : ChromeTestCase
@@ -45,6 +67,39 @@ using chrome_test_util::PromoScreenSecondaryButtonMatcher;
       "promos_manager::Promo::SafariImportRemindMeLater");
   return config;
 }
+
+- (void)setUp {
+  [super setUp];
+  /// Clear existing data.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [BookmarkEarlGrey clearBookmarks];
+  [PasswordManagerAppInterface clearCredentials];
+  [AutofillAppInterface clearCreditCardStore];
+}
+
+/// Verify that the current number of items in the storage matches the
+/// parameters.
+- (void)verifyItemCountForBookmarks:(int)bookmarksCount
+                          passwords:(int)passwordsCount
+                         creditCard:(int)ccCount {
+  /// TODO(crbug.com/450598882): Add verification for history entries.
+  if (bookmarksCount == 0) {
+    [BookmarkEarlGrey
+        verifyAbsenceOfFolderWithTitle:@"Favorites"
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
+  } else {
+    [BookmarkEarlGrey verifyChildCount:bookmarksCount
+                      inFolderWithName:@"Favorites"
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
+  }
+  GREYAssertEqual([PasswordManagerAppInterface storedCredentialsCount],
+                  passwordsCount,
+                  @"Number of imported passwords do not match.");
+  GREYAssertEqual([AutofillAppInterface localCreditCount], ccCount,
+                  @"Number of imported credit cards do not match.");
+}
+
+#pragma mark - Test cases
 
 /// Tests that the Safari import entry point is displayed on first run and on
 /// reminder.
@@ -186,16 +241,151 @@ using chrome_test_util::PromoScreenSecondaryButtonMatcher;
     /// Check that the items table has displayed.
     ExpectImportTableHasRowCount(4);
     /// Import the data and wait until completion.
-    ImportLoadedFile();
-    WaitForImportCompletes();
-    /// TODO(crbug.com/441124865): Check invalid passwords.
+    [[EarlGrey selectElementWithMatcher:
+                   ImportScreenButtonWithTextId(
+                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+        performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                        ImportScreenButtonWithTextId(
+                            IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)];
+    ExpectImportTableHasRowCount(4);
+    /// Check invalid passwords.
+    TapInfoButtonForInvalidPasswords();
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
+                                            kInvalidPasswordUsername)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            StaticTextWithAccessibilityLabelId(
+                IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_MISSING_URL)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_buttonTitle(l10n_util::GetNSString(
+                IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE))]
+        performAction:grey_tap()];
+    /// Dismiss the workflow. Verify that NTP logo is interactable, which means
+    /// that the entry point is dismissed.
     CompletesImportWorkflow();
-    /// Verify that NTP logo is interactable, which means that the entry point
-    /// is dismissed.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
         assertWithMatcher:grey_interactable()];
     GREYAssertFalse(IsSafariDataImportEntryPointVisible(),
                     @"Safari data import workflow is not fully dismissed.");
+    [self verifyItemCountForBookmarks:4 passwords:3 creditCard:3];
+  }
+}
+
+/// Tests that the workflow will display the table for the user to resolve
+/// password conflicts, if there is any,
+- (void)testPasswordConflictResolution {
+  if (@available(iOS 18.2, *)) {
+    /// Store some password that will result in a conflict.
+    NSString* existingPassword = @"Google!Password)";
+    NSURL* url = [NSURL URLWithString:kURL];
+    [PasswordManagerAppInterface storeCredentialWithUsername:kUsername1
+                                                    password:existingPassword
+                                                         URL:url];
+    [PasswordManagerAppInterface storeCredentialWithUsername:kUsername2
+                                                    password:existingPassword
+                                                         URL:url];
+    /// Start the flow.
+    GoToImportScreen();
+    LoadFile(SafariDataImportTestFile::kValid);
+    ExpectImportTableHasRowCount(4);
+    /// Import the data and check conflict resolution page.
+    [[EarlGrey selectElementWithMatcher:
+                   ImportScreenButtonWithTextId(
+                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+        performAction:grey_tap()];
+    id<GREYMatcher> conflictResolutionTable = grey_accessibilityID(
+        GetPasswordConflictResolutionTableViewAccessibilityIdentifier());
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:conflictResolutionTable];
+    /// Tests "(de)select all" button.
+    id<GREYMatcher> row2 = grey_accessibilityID(
+        GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(1));
+    id<GREYMatcher> select_all = grey_allOf(
+        grey_buttonTitle(l10n_util::GetNSString(
+            IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_SELECT_ALL)),
+        grey_interactable(), nil);
+    id<GREYMatcher> deselect_all = grey_allOf(
+        grey_buttonTitle(l10n_util::GetNSString(
+            IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_DESELECT_ALL)),
+        grey_interactable(), nil);
+    [[EarlGrey selectElementWithMatcher:select_all] performAction:grey_tap()];
+    ExpectPasswordConflictCellAtIndexSelected(0, YES);
+    ExpectPasswordConflictCellAtIndexSelected(1, YES);
+    [[EarlGrey selectElementWithMatcher:deselect_all] performAction:grey_tap()];
+    ExpectPasswordConflictCellAtIndexSelected(0, NO);
+    ExpectPasswordConflictCellAtIndexSelected(1, NO);
+    /// Select all and deselect one row.
+    [[EarlGrey selectElementWithMatcher:select_all] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:grey_allOf(grey_ancestor(row2),
+                                                   grey_selected(), nil)]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:select_all]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    ExpectPasswordConflictCellAtIndexSelected(0, YES);
+    ExpectPasswordConflictCellAtIndexSelected(1, NO);
+    [[EarlGrey selectElementWithMatcher:grey_buttonTitle(l10n_util::GetNSString(
+                                            IDS_CONTINUE))]
+        performAction:grey_tap()];
+    /// Dismiss the workflow after import completes. Verify that NTP logo is
+    /// interactable, which means that the entry point is dismissed.
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                        ImportScreenButtonWithTextId(
+                            IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)];
+    ExpectImportTableHasRowCount(4);
+    CompletesImportWorkflow();
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+        assertWithMatcher:grey_interactable()];
+    GREYAssertFalse(IsSafariDataImportEntryPointVisible(),
+                    @"Safari data import workflow is not fully dismissed.");
+    [self verifyItemCountForBookmarks:4 passwords:3 creditCard:3];
+    /// Verify the right password is overridden.
+    [PasswordManagerAppInterface
+        verifyCredentialStoredWithUsername:kUsername1
+                                  password:existingPassword];
+    [PasswordManagerAppInterface verifyCredentialStoredWithUsername:kUsername2
+                                                           password:kPassword2];
+  }
+}
+
+/// Tests uploading a file that only contains potential "history" items.
+- (void)testUploadPartiallyValidFile {
+  if (@available(iOS 18.2, *)) {
+    GoToImportScreen();
+    LoadFile(SafariDataImportTestFile::kPartiallyValid);
+    ExpectImportTableHasRowCount(4);
+    [[EarlGrey selectElementWithMatcher:
+                   ImportScreenButtonWithTextId(
+                       IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
+        performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                        ImportScreenButtonWithTextId(
+                            IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)];
+    ExpectImportTableHasRowCount(1);
+    CompletesImportWorkflow();
+    [self verifyItemCountForBookmarks:0 passwords:0 creditCard:0];
+  }
+}
+
+/// Tests uploading an invalid file.
+- (void)testUploadInvalidFile {
+  if (@available(iOS 18.2, *)) {
+    GoToImportScreen();
+    LoadFile(SafariDataImportTestFile::kInvalid);
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:
+            StaticTextWithAccessibilityLabelId(
+                IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION)];
+    [[EarlGrey
+        selectElementWithMatcher:grey_text(l10n_util::GetNSString(IDS_OK))]
+        performAction:grey_tap()];
+    /// Try selecting a valid file. It should proceed.
+    LoadFile(SafariDataImportTestFile::kValid);
+    ExpectImportTableHasRowCount(4);
+    [self verifyItemCountForBookmarks:0 passwords:0 creditCard:0];
   }
 }
 

@@ -109,6 +109,11 @@ const GURL GetFrenchUrl();
 - (void)verifyExistenceOfFolderWithTitle:(NSString*)title
                                inStorage:(BookmarkStorageType)storageType;
 
+// Verifies the absence of a folder with `title`. GREYAssert is induced if the
+// folder does exist.
+- (void)verifyAbsenceOfFolderWithTitle:(NSString*)title
+                             inStorage:(BookmarkStorageType)storageType;
+
 #pragma mark - Promo
 
 // Checks that the promo has already been seen or not. GREYAssert is induced if

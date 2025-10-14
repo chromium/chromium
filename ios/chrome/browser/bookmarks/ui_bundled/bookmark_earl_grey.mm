@@ -144,6 +144,13 @@ const GURL GetFrenchUrl() {
                              inStorage:storageType]);
 }
 
+- (void)verifyAbsenceOfFolderWithTitle:(NSString*)title
+                             inStorage:(BookmarkStorageType)storageType {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
+      verifyAbsenceOfFolderWithTitle:title
+                           inStorage:storageType]);
+}
+
 #pragma mark - Promo
 
 - (void)verifyPromoAlreadySeen:(BOOL)seen {

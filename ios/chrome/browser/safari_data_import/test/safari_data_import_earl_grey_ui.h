@@ -26,6 +26,9 @@ void SetReminderOnSafariDataImportEntryPoint();
 /// Taps all the way to the import screen.
 void GoToImportScreen();
 
+/// Action button on the import screen with text.
+id<GREYMatcher> ImportScreenButtonWithTextId(int text_id);
+
 /// Load selected file. Returns either when the file is ready to import or when
 /// loading fails.
 void LoadFile(SafariDataImportTestFile file);
@@ -34,11 +37,13 @@ void LoadFile(SafariDataImportTestFile file);
 /// table should not be visible, `expected_count` should be 0.
 void ExpectImportTableHasRowCount(int expected_count);
 
-/// Taps the "Import" button to import the loaded file.
-void ImportLoadedFile();
+/// Verify that the cell at `index` in the password conflict screen is
+/// selected/not selected.
+void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected);
 
-/// Wait for import completes.
-void WaitForImportCompletes();
+/// Tap the "info" button to display invalid passwords. Fail if there is no
+/// invalid passwords.
+void TapInfoButtonForInvalidPasswords();
 
 /// Exits the import workflow after file is imported.
 void CompletesImportWorkflow();

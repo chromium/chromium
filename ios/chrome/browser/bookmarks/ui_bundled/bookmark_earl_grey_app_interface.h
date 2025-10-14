@@ -85,6 +85,10 @@ enum class BookmarkStorageType;
 + (NSError*)verifyExistenceOfFolderWithTitle:(NSString*)title
                                    inStorage:(BookmarkStorageType)storageType;
 
+// Verifies the absence a folder called `title`.
++ (NSError*)verifyAbsenceOfFolderWithTitle:(NSString*)title
+                                 inStorage:(BookmarkStorageType)storageType;
+
 // Checks that the promo has already been seen or not.
 + (NSError*)verifyPromoAlreadySeen:(BOOL)seen;
 

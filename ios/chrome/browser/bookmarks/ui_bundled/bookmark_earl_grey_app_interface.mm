@@ -382,6 +382,18 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
   return nil;
 }
 
++ (NSError*)verifyAbsenceOfFolderWithTitle:(NSString*)title
+                                 inStorage:(BookmarkStorageType)storageType {
+  bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
+  const bookmarks::BookmarkNode* folder =
+      GetFirstBookmarkWithTitle(title, bookmarkModel, storageType);
+  if (folder && folder->is_folder()) {
+    return testing::NSErrorWithLocalizedDescription(
+        [NSString stringWithFormat:@"There is a folder for %@", title]);
+  }
+  return nil;
+}
+
 + (NSError*)verifyPromoAlreadySeen:(BOOL)seen {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   PrefService* prefs = profile->GetPrefs();

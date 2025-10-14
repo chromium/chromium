@@ -8,6 +8,13 @@ source_set("eg2_tests") {
   sources = [ "safari_data_import_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/confirmation_alert:constants",
@@ -15,6 +22,7 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",
+    "//ui/base",
   ]
 }
 
