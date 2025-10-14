@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/record.h"
@@ -138,6 +139,9 @@ blink::IndexedDBKeyPath ColumnKeyPath(sql::Statement& statement,
   // `Array` key path.
   return blink::IndexedDBKeyPath(std::move(parts));
 }
+
+// Key used in MetaTable to track the data encoding version used by Blink/V8.
+constexpr std::string_view kV8DataVersionKey = "v8_data_version";
 
 // These are schema versions of our implementation of `sql::Database`; not the
 // version supplied by the application for the IndexedDB database.
@@ -747,6 +751,11 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
       base::WrapUnique(new DatabaseConnection(path, backing_store));
   Status s = connection->Init(name);
   if (!s.ok()) {
+    IndexedDBDataLossInfo loss;
+    if (connection->marked_for_permanent_deletion_) {
+      loss.status = blink::mojom::IDBDataLoss::Total;
+      loss.message = s.ToString();
+    }
     // If opening fails, recover or destroy the DB and try once more. This is
     // accomplished by destroying `connection`, since the destructor handles
     // errors.
@@ -754,6 +763,7 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     // attempt.
     connection = base::WrapUnique(new DatabaseConnection(path, backing_store));
     s = connection->Init(name);
+    connection->data_loss_info_ = std::move(loss);
   }
   if (!s.ok()) {
     return base::unexpected(s);
@@ -839,7 +849,8 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   sql::Transaction transaction(db_.get());
   RETURN_STATUS_ON_ERROR(transaction.Begin());
 
-  if (!sql::MetaTable::DoesTableExist(db_.get())) {
+  const bool is_new_db = !sql::MetaTable::DoesTableExist(db_.get());
+  if (is_new_db) {
     IDB_RETURN_IF_ERROR(CreateSchema(db_.get(), *name));
   }
 
@@ -851,6 +862,26 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
     return Fatal(Status::NotFound("Database too new"),
                  SpecificEvent::kDatabaseTooNew);
   }
+
+  // The "data format version" refers to the encoding routine Blink/V8 uses to
+  // serialize values. It will always be backwards compatible, but we may open a
+  // database that is too new (written by a future version of the browser),
+  // which will be a fatal error.
+  const auto current_data_format = IndexedDBDataFormatVersion::GetCurrent();
+  if (!is_new_db) {
+    int64_t data_format_version;
+    if (!meta_table_->GetValue(kV8DataVersionKey, &data_format_version)) {
+      return Fatal(Status::Corruption("Missing data format version"),
+                   SpecificEvent::kV8FormatTooNewOrMissing);
+    }
+    if (!current_data_format.IsAtLeast(
+            IndexedDBDataFormatVersion::Decode(data_format_version))) {
+      return Fatal(
+          Status::NotFound("Unintelligible data format version: too new"),
+          SpecificEvent::kV8FormatTooNewOrMissing);
+    }
+  }
+  meta_table_->SetValue(kV8DataVersionKey, current_data_format.Encode());
 
   switch (meta_table_->GetVersionNumber()) {
     // ...

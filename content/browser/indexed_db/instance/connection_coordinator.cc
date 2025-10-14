@@ -208,7 +208,11 @@ class ConnectionCoordinator::OpenRequest
 
   void InitDatabase(bool has_connections) {
     saved_status_ = db_->OpenInternal();
-    if (!saved_status_.ok()) {
+    if (saved_status_.ok()) {
+      if (bucket_context_handle_->ShouldUseSqlite()) {
+        pending_->data_loss_info = db_->GetDataLossInfo();
+      }
+    } else {
       // TODO(jsbell): Consider including sanitized leveldb status message.
       std::u16string message;
       if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {

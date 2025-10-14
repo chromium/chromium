@@ -41,6 +41,7 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content::indexed_db {
 class BucketContext;
+struct IndexedDBDataLossInfo;
 class Connection;
 class DatabaseCallbacks;
 class Transaction;
@@ -227,6 +228,7 @@ class CONTENT_EXPORT Database {
   class DeleteRequest;
 
   Status OpenInternal();
+  const IndexedDBDataLossInfo& GetDataLossInfo() const;
 
   // This class informs its result sink of an error if a `GetAllOperation` is
   // deleted without being run. This functionality mimics that of

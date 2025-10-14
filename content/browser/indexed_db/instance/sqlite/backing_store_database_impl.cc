@@ -24,6 +24,10 @@ const blink::IndexedDBDatabaseMetadata& BackingStoreDatabaseImpl::GetMetadata()
   return db_->metadata();
 }
 
+const IndexedDBDataLossInfo& BackingStoreDatabaseImpl::GetDataLossInfo() const {
+  return db_->data_loss_info();
+}
+
 std::string BackingStoreDatabaseImpl::GetObjectStoreLockIdKey(
     int64_t object_store_id) const {
   NOTREACHED();

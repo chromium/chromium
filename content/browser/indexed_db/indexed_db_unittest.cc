@@ -2336,11 +2336,6 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 
 // Test for `IndexedDBDataFormatVersion`.
 TEST_P(IndexedDBTest, DataLoss) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // TODO(crbug.com/450044205): update test for SQLite.
-    GTEST_SKIP();
-  }
-
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   BucketLocator bucket_locator = BucketLocator();

@@ -25,6 +25,7 @@ class WaitableEvent;
 
 namespace content::indexed_db {
 
+struct IndexedDBDataLossInfo;
 struct IndexedDBValue;
 
 // NB: This interface is a WIP and is expected to experience heavy churn in the
@@ -69,6 +70,10 @@ class BackingStore {
 
     // Memory-cached metadata for this database.
     virtual const blink::IndexedDBDatabaseMetadata& GetMetadata() const = 0;
+
+    // Returns info relating to any lost/corrupted data when this database was
+    // opened.
+    virtual const IndexedDBDataLossInfo& GetDataLossInfo() const = 0;
 
     // Generates the lock ID key for the given object store. Not called on
     // SQLite backing stores.

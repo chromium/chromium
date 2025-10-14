@@ -1053,6 +1053,10 @@ Status Database::OpenInternal() {
   return result.error();
 }
 
+const IndexedDBDataLossInfo& Database::GetDataLossInfo() const {
+  return backing_store_db_->GetDataLossInfo();
+}
+
 std::unique_ptr<Connection> Database::CreateConnection(
     std::unique_ptr<DatabaseCallbacks> database_callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
