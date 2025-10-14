@@ -64,7 +64,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     private @Nullable Intent mPendingFragmentIntent;
 
-    private final FragmentTracker mFragmentTracker = new FragmentTracker();
+    private final List<Observer> mObservers = new ArrayList<>();
+
+    private final FragmentTracker mFragmentTracker = new FragmentTracker(mObservers);
 
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
@@ -260,8 +262,25 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
-    private class FragmentTracker extends FragmentManager.FragmentLifecycleCallbacks {
-        final List<ObservableSupplier<String>> mSuppliers = new ArrayList<>();
+    static class Title {
+        Title(ObservableSupplier<String> titleSupplier, int backStackCount) {
+            this.titleSupplier = titleSupplier;
+            this.backStackCount = backStackCount;
+        }
+
+        public final ObservableSupplier<String> titleSupplier;
+
+        /** the number of back stack entries when the fragment started */
+        public final int backStackCount;
+    }
+
+    static class FragmentTracker extends FragmentManager.FragmentLifecycleCallbacks {
+        final List<Title> mTitles = new ArrayList<>();
+        private final List<Observer> mObservers;
+
+        FragmentTracker(List<Observer> observers) {
+            mObservers = observers;
+        }
 
         @Override
         public void onFragmentStarted(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -271,20 +290,29 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             }
 
             // This is coming from the click on header pane pref.
-            if (getChildFragmentManager().getBackStackEntryCount() == 0) {
-                mSuppliers.clear();
+            int backStackCount = fm.getBackStackEntryCount();
+            if (backStackCount == 0) {
+                mTitles.clear();
             }
 
             if (f instanceof EmbeddableSettingsPage page) {
-                ObservableSupplier<String> title = page.getPageTitle();
-                int index = mSuppliers.indexOf(title);
+                ObservableSupplier<String> titleSupplier = page.getPageTitle();
+                int index = -1;
+                for (int i = 0; i < mTitles.size(); ++i) {
+                    Title candidate = mTitles.get(i);
+                    if (candidate.titleSupplier == titleSupplier) {
+                        index = i;
+                        break;
+                    }
+                }
+
                 if (index < 0) {
                     // Enter into more detailed page.
-                    mSuppliers.add(title);
+                    mTitles.add(new Title(titleSupplier, backStackCount));
                 } else {
                     // Move back from the detailed page.
-                    for (int i = mSuppliers.size() - 1; i > index; --i) {
-                        mSuppliers.remove(i);
+                    for (int i = mTitles.size() - 1; i > index; --i) {
+                        mTitles.remove(i);
                     }
                 }
             }
@@ -295,11 +323,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
-    List<ObservableSupplier<String>> getTitles() {
-        return mFragmentTracker.mSuppliers;
+    List<Title> getTitles() {
+        return mFragmentTracker.mTitles;
     }
-
-    private final List<Observer> mObservers = new ArrayList<>();
 
     public void addObserver(@NonNull Observer o) {
         mObservers.add(o);

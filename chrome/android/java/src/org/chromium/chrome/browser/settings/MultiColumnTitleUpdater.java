@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -104,7 +106,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             mCurrentPageTitle = null;
         } else {
             // Otherwise, use the last fragment, because it is what a user is seeing.
-            mCurrentPageTitle = titles.get(titles.size() - 1);
+            mCurrentPageTitle = titles.get(titles.size() - 1).titleSupplier;
             mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mMainTitleSetter);
         }
     }
@@ -134,7 +136,29 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 mContainer.addView(view);
             }
             var view = new DetailedTitle(mContext);
-            view.setSupplier(titles.get(i));
+            var title = titles.get(i);
+            view.setSupplier(title.titleSupplier);
+
+            final int backStackCount = title.backStackCount;
+            view.setOnClickListener(
+                    (View v) -> {
+                        assert mMultiColumnSettings != null;
+                        // Note: The current getBackStackEntryCount and recorded backStackCount
+                        // can be same, e.g., if the user tabs the last component of the
+                        // detailed title.
+                        if (mMultiColumnSettings.getChildFragmentManager().getBackStackEntryCount()
+                                > backStackCount) {
+                            var entry =
+                                    mMultiColumnSettings
+                                            .getChildFragmentManager()
+                                            .getBackStackEntryAt(backStackCount);
+                            mMultiColumnSettings
+                                    .getChildFragmentManager()
+                                    .popBackStack(
+                                            entry.getId(),
+                                            FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        }
+                    });
             mContainer.addView(view);
         }
     }
