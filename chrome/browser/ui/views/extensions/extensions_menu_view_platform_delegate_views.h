@@ -19,6 +19,7 @@ namespace views {
 class View;
 }  // namespace views
 
+class ExtensionsMenuViewModel;
 class Browser;
 class ExtensionsContainer;
 class ExtensionsMenuMainPageView;
@@ -44,6 +45,10 @@ class ExtensionsMenuViewPlatformDelegateViews
   const ExtensionsMenuViewPlatformDelegateViews& operator=(
       const ExtensionsMenuViewPlatformDelegateViews&) = delete;
   ~ExtensionsMenuViewPlatformDelegateViews() override;
+
+  // ExtensionsMenuViewPlatformDelegate:
+  void AttachToModel(ExtensionsMenuViewModel* model) override;
+  void DetachFromModel() override;
 
   // ExtensionsMenuHandler:
   void OpenMainPage() override;
@@ -148,6 +153,9 @@ class ExtensionsMenuViewPlatformDelegateViews
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<views::View> bubble_contents_;
+
+  // The platform-agnostic menu view model.
+  raw_ptr<ExtensionsMenuViewModel> menu_model_{nullptr};
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>

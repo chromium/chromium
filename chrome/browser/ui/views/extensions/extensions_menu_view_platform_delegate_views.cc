@@ -313,6 +313,18 @@ ExtensionsMenuViewPlatformDelegateViews::
 ExtensionsMenuViewPlatformDelegateViews::
     ~ExtensionsMenuViewPlatformDelegateViews() = default;
 
+void ExtensionsMenuViewPlatformDelegateViews::AttachToModel(
+    ExtensionsMenuViewModel* model) {
+  CHECK(model);
+  CHECK(!menu_model_);
+  menu_model_ = model;
+}
+
+void ExtensionsMenuViewPlatformDelegateViews::DetachFromModel() {
+  CHECK(menu_model_);
+  menu_model_ = nullptr;
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get(), GetActiveWebContents());

@@ -6,6 +6,10 @@
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate)
-    : platform_delegate_(std::move(platform_delegate)) {}
+    : platform_delegate_(std::move(platform_delegate)) {
+  platform_delegate_->AttachToModel(this);
+}
 
-ExtensionsMenuViewModel::~ExtensionsMenuViewModel() = default;
+ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
+  platform_delegate_->DetachFromModel();
+}
