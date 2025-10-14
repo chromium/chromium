@@ -63,9 +63,6 @@ class MEDIA_EXPORT AudioBus {
                                               base::span<uint8_t> data);
   static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
                                               base::span<float> data);
-  static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(
-      const AudioParameters& params,
-      const void* data);
 
   // Based on the given number of channels and frames, calculates the minimum
   // required size in bytes of a contiguous block of memory to be passed to
