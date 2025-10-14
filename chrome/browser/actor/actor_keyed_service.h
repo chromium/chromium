@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
@@ -87,6 +88,7 @@ class ActorKeyedService : public KeyedService {
       std::vector<ActionResultWithLatencyInfo> /* action_results */)>;
   void PerformActions(TaskId task_id,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                      ActorTaskMetadata task_metadata,
                       PerformActionsCallback callback);
 
   // Stops a task by its ID, `success` determines if the task was finished

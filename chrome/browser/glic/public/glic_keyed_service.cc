@@ -563,7 +563,7 @@ void GlicKeyedService::PerformActions(
       actions.has_skip_async_observation_collection() &&
       actions.skip_async_observation_collection();
   actor_keyed_service_->PerformActions(
-      task_id, std::move(requests.value()),
+      task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
       base::BindOnce(&GlicKeyedService::PerformActionsFinished, GetWeakPtr(),
                      std::move(callback), task_id, start_time,
                      skip_async_observation_information));

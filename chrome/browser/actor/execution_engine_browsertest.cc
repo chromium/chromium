@@ -495,12 +495,6 @@ class ExecutionEngineOriginGatingBrowserTest
   base::CallbackListSubscription user_confirmation_dialog_subscription_;
 };
 
-std::string EncodeURI(const std::string& component) {
-  url::RawCanonOutputT<char> encoded;
-  url::EncodeURIComponent(component, &encoded);
-  return std::string(encoded.view());
-}
-
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        GateCrossOriginNavigations_Denied) {
   const GURL start_url =
@@ -546,6 +540,47 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                               content::JsReplace("setLink($1);", second_url)));
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       AddWritableMainframeOrigins) {
+  // This test is not meaningful if origin gating is disabled.
+  if (!origin_gating_enabled()) {
+    return;
+  }
+
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(cross_origin_url.spec())}));
+
+  // Mock IPC response waill always reject navigation.
+  CreateMockPromptIPCResponse(url::Origin::Create(cross_origin_url),
+                              /*permission_granted=*/false);
+
+  // Start on link page on foo.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), link_page_url));
+  // Click on full-page link to bar.com only.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+  ActResultFuture result1;
+  actor_task().Act(ToRequestList(click_link), result1.GetCallback());
+  // Expect the navigation to be blocked by origin gating.
+  ExpectErrorResult(result1,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  // Add bar.com's origin to writable mainframe origins.
+  actor_task().GetExecutionEngine()->AddWritableMainframeOrigins(
+      {url::Origin::Create(cross_origin_url)});
+
+  // Click on full-page link to bar.com only.
+  std::unique_ptr<ToolRequest> click_link_again =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+  ActResultFuture result2;
+  actor_task().Act(ToRequestList(click_link_again), result2.GetCallback());
+  // Now the navigation should not be blocked.
+  ExpectOkResult(result2);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,

@@ -43,6 +43,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/url_util.h"
 
 namespace actor {
 
@@ -541,8 +542,17 @@ void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
   const auto& result = *(future.Get<0>());
   EXPECT_EQ(result.code, expected_code)
-      << "Expected error " << base::to_underlying(expected_code) << ", got "
-      << ToDebugString(result);
+      << "Result is " << ToDebugString(result);
+}
+
+void ExpectErrorResult(PerformActionsFuture& future,
+                       mojom::ActionResultCode expected_code) {
+  const auto& actual_code = future.Get<0>();
+  EXPECT_EQ(actual_code, expected_code);
+}
+
+void PrintTo(const mojom::ActionResultCode& code, std::ostream* os) {
+  *os << base::to_underlying(code);
 }
 
 void SetUpBlocklist(base::CommandLine* command_line,
@@ -573,6 +583,12 @@ void SetUpBlocklist(base::CommandLine* command_line,
 
   command_line->AppendSwitchASCII(
       optimization_guide::switches::kHintsProtoOverride, encoded_config);
+}
+
+std::string EncodeURI(const std::string& component) {
+  url::RawCanonOutputT<char> encoded;
+  url::EncodeURIComponent(component, &encoded);
+  return std::string(encoded.view());
 }
 
 }  // namespace actor

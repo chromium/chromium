@@ -70,6 +70,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     std::vector<std::unique_ptr<actor::ToolRequest>> actions;
     actions.push_back(actor::MakeWaitRequest());
     GetActorKeyedService()->PerformActions(task_id_, std::move(actions),
+                                           actor::ActorTaskMetadata(),
                                            result_future.GetCallback());
     ExpectOkResult(result_future);
   }

@@ -925,6 +925,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest,
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(actor::MakeWaitRequest());
   actor_keyed_service->PerformActions(task_id, std::move(actions),
+                                      actor::ActorTaskMetadata(),
                                       result_future.GetCallback());
   EXPECT_EQ(result_future.Get<0>(), actor::mojom::ActionResultCode::kOk);
 

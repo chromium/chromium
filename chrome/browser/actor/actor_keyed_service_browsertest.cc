@@ -130,9 +130,9 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   std::unique_ptr<ToolRequest> action_request =
       std::make_unique<NavigateToolRequest>(
           browser()->GetActiveTabInterface()->GetHandle(), url);
-  actor_keyed_service()->PerformActions(first_task_id,
-                                        ToRequestList(action_request),
-                                        result_future.GetCallback());
+  actor_keyed_service()->PerformActions(
+      first_task_id, ToRequestList(action_request), ActorTaskMetadata(),
+      result_future.GetCallback());
   ExpectOkResult(result_future);
   EXPECT_FALSE(result_future.Get<1>().has_value());
   EXPECT_EQ(result_future.Get<2>().size(), 1u);
@@ -234,6 +234,77 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_EQ(actions_result->tabs_size(), 1);
   EXPECT_FALSE(actions_result->tabs()[0].has_annotated_page_content());
   EXPECT_FALSE(actions_result->tabs()[0].has_screenshot());
+}
+
+class ActorKeyedServiceOriginGatingBrowserTest
+    : public ActorKeyedServiceBrowserTest {
+ public:
+  ActorKeyedServiceOriginGatingBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicActor,
+                              kGlicCrossOriginNavigationGating},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+
+  void CreateMockPromptIPCResponse(
+      std::optional<url::Origin> expected_navigation_origin,
+      bool permission_granted) {
+    user_confirmation_dialog_subscription_ =
+        actor_keyed_service()
+            ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
+                base::BindLambdaForTesting(
+                    [expected_navigation_origin, permission_granted](
+                        const std::optional<url::Origin>& got_navigation_origin,
+                        const std::optional<int32_t> got_download_id,
+                        ActorKeyedService::UserConfirmationDialogCallback
+                            callback) {
+                      EXPECT_EQ(got_navigation_origin,
+                                expected_navigation_origin);
+                      EXPECT_FALSE(got_download_id);
+                      // Send a mock IPC response.
+                      std::move(callback).Run(
+                          webui::mojom::UserConfirmationDialogResponse::New(
+                              webui::mojom::UserConfirmationDialogResult::
+                                  NewPermissionGranted(permission_granted)));
+                    }));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription user_confirmation_dialog_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceOriginGatingBrowserTest,
+                       AddWritableMainframeOrigins) {
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
+                               EncodeURI(cross_origin_url.spec())}));
+
+  // Navigate the active tab to the link page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), link_page_url));
+
+  CreateMockPromptIPCResponse(url::Origin::Create(cross_origin_url),
+                              /*permission_granted=*/false);
+
+  TaskId task_id = actor_keyed_service()->CreateTask();
+
+  PerformActionsFuture result1;
+  actor_keyed_service()->PerformActions(
+      task_id, ToRequestList(MakeClickRequest(*active_tab(), gfx::Point(1, 1))),
+      ActorTaskMetadata(), result1.GetCallback());
+  ExpectErrorResult(result1,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  PerformActionsFuture result2;
+  actor_keyed_service()->PerformActions(
+      task_id, ToRequestList(MakeClickRequest(*active_tab(), gfx::Point(1, 1))),
+      ActorTaskMetadata::WithAddedWritableMainframeOriginsForTesting(
+          {url::Origin::Create(cross_origin_url)}),
+      result2.GetCallback());
+  ExpectOkResult(result2);
 }
 
 }  // namespace

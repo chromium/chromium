@@ -591,6 +591,18 @@ void ExecutionEngine::OnCredentialSelected(
   }
 }
 
+void ExecutionEngine::AddWritableMainframeOrigins(
+    const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins) {
+  if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+    return;
+  }
+  for (const auto& origin : added_writable_mainframe_origins) {
+    // Intentionally storing a copy of the origin so that ExecutionEngine owns
+    // the url::Origin's stored in allowed_navigation_origins_.
+    allowed_navigation_origins_.insert(url::Origin(origin));
+  }
+}
+
 void ExecutionEngine::PromptToConfirmCrossOriginNavigation(
     const url::Origin& navigation_origin,
     ExecutionEngine::UserConfirmationDialogCallback callback) {

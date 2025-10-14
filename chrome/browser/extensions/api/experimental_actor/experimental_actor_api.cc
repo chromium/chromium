@@ -17,6 +17,7 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -274,7 +275,7 @@ ExperimentalActorPerformActionsFunction::Run() {
   }
 
   actor_service->PerformActions(
-      task_id, std::move(requests.value()),
+      task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
           task_id, start_time, skip_async_observation_information));

@@ -313,6 +313,7 @@ void ActorKeyedService::RequestTabObservation(
 void ActorKeyedService::PerformActions(
     TaskId task_id,
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
+    ActorTaskMetadata task_metadata,
     PerformActionsCallback callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::PerformActions");
   std::vector<ActionResultWithLatencyInfo> empty_results;
@@ -333,6 +334,8 @@ void ActorKeyedService::PerformActions(
     return;
   }
 
+  task->GetExecutionEngine()->AddWritableMainframeOrigins(
+      task_metadata.added_writable_mainframe_origins());
   task->Act(
       std::move(actions),
       base::BindOnce(&ActorKeyedService::OnActionsFinished,

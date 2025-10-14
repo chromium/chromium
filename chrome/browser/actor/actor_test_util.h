@@ -201,10 +201,16 @@ void ExpectOkResult(ActResultFuture& future);
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code);
 void ExpectOkResult(PerformActionsFuture& future);
+void ExpectErrorResult(PerformActionsFuture& future,
+                       mojom::ActionResultCode expected_code);
+void PrintTo(const mojom::ActionResultCode& code, std::ostream* os);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host.
 void SetUpBlocklist(base::CommandLine* command_line,
                     const std::string& blocked_host);
+
+// For tests with link pages whose destination is encoded in URL parameters.
+std::string EncodeURI(const std::string& component);
 
 }  // namespace actor
 

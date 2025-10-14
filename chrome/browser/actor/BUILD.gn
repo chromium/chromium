@@ -20,6 +20,7 @@ source_set("actor") {
     "actor_switches.h",
     "actor_tab_data.h",
     "actor_task.h",
+    "actor_task_metadata.h",
     "aggregated_journal.h",
     "aggregated_journal_file_serializer.h",
     "aggregated_journal_in_memory_serializer.h",
@@ -80,6 +81,7 @@ source_set("impl") {
     "actor_switches.cc",
     "actor_tab_data.cc",
     "actor_task.cc",
+    "actor_task_metadata.cc",
     "aggregated_journal.cc",
     "aggregated_journal_file_serializer.cc",
     "aggregated_journal_in_memory_serializer.cc",
@@ -213,6 +215,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_keyed_service_unittest.cc",
+    "actor_task_metadata_unittest.cc",
     "aggregated_journal_unittest.cc",
     "shared_types_unittest.cc",
     "site_policy_unittest.cc",
