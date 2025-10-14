@@ -117,7 +117,7 @@ void RenderWidgetHostViewChildFrame::
 }
 
 void RenderWidgetHostViewChildFrame::SetFrameConnector(
-    CrossProcessFrameConnector* frame_connector) {
+    CrossProcessFrameConnectorBase* frame_connector) {
   if (frame_connector_ == frame_connector)
     return;
 
@@ -218,7 +218,7 @@ void RenderWidgetHostViewChildFrame::Focus() {
     return;
   }
   if (frame_connector_->HasFocus() ==
-      CrossProcessFrameConnector::RootViewFocusState::kNotFocused) {
+      CrossProcessFrameConnectorBase::RootViewFocusState::kNotFocused) {
     return frame_connector_->FocusRootView();
   }
 }
@@ -228,7 +228,7 @@ bool RenderWidgetHostViewChildFrame::HasFocus() {
     return false;
   }
   return frame_connector_->HasFocus() ==
-         CrossProcessFrameConnector::RootViewFocusState::kFocused;
+         CrossProcessFrameConnectorBase::RootViewFocusState::kFocused;
 }
 
 bool RenderWidgetHostViewChildFrame::IsSurfaceAvailableForCopy() {
@@ -759,7 +759,7 @@ void RenderWidgetHostViewChildFrame::PreProcessTouchEvent(
     return;
   }
 
-  CrossProcessFrameConnector::RootViewFocusState state =
+  CrossProcessFrameConnectorBase::RootViewFocusState state =
       frame_connector_->HasFocus();
 #if BUILDFLAG(IS_ANDROID)
   UMA_HISTOGRAM_ENUMERATION(
@@ -767,7 +767,8 @@ void RenderWidgetHostViewChildFrame::PreProcessTouchEvent(
       state);
 #endif
 
-  if (state == CrossProcessFrameConnector::RootViewFocusState::kNotFocused) {
+  if (state ==
+      CrossProcessFrameConnectorBase::RootViewFocusState::kNotFocused) {
     Focus();
   }
 }
