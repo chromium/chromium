@@ -36,19 +36,29 @@ namespace {
 using ::base::test::EqualsProto;
 using ::testing::ElementsAre;
 using ::testing::Pointee;
+using ::testing::ValuesIn;
+
+constexpr auto kNoExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId;
+constexpr auto kCpssV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
+constexpr auto kAiV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
+constexpr auto kAiV4ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
+
 // Helper common requests and responses. All of these are for the NOTIFICATION
 // type.
 
 // A request that has all counts 0. With user gesture.
 permissions::PredictionRequestFeatures createFeaturesAllCountsZero(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId,
-    GURL url = GURL()) {
+        kNoExperimentId) {
   return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
           .type = permissions::RequestType::kNotifications,
           .requested_permission_counts = {0, 0, 0, 0},
           .all_permission_counts = {0, 0, 0, 0},
-          .url = url,
+          .url = GURL(),
           .experiment_id = experiment_id};
 }
 
@@ -56,7 +66,7 @@ permissions::PredictionRequestFeatures createFeaturesAllCountsZero(
 // gesture.
 permissions::PredictionRequestFeatures createFeaturesCountsNeedingRounding(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   return {.gesture = permissions::PermissionRequestGestureType::NO_GESTURE,
           .type = permissions::RequestType::kNotifications,
           .requested_permission_counts = {6, 5, 5, 5},
@@ -68,7 +78,7 @@ permissions::PredictionRequestFeatures createFeaturesCountsNeedingRounding(
 // A request that has all counts 50. With user gesture.
 permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
           .type = permissions::RequestType::kNotifications,
           .requested_permission_counts = {50, 50, 50, 50},
@@ -80,7 +90,7 @@ permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100(
 // A request that has all counts 100. With user gesture.
 permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100Alt(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
           .type = permissions::RequestType::kNotifications,
           .requested_permission_counts = {100, 100, 100, 100},
@@ -93,7 +103,7 @@ permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100Alt(
 // gesture.
 permissions::PredictionRequestFeatures createFeaturesDifferentCounts(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   return {.gesture = permissions::PermissionRequestGestureType::NO_GESTURE,
           .type = permissions::RequestType::kNotifications,
           .requested_permission_counts = {0, 0, 0, 0},
@@ -104,13 +114,8 @@ permissions::PredictionRequestFeatures createFeaturesDifferentCounts(
 
 permissions::GeneratePredictionsRequest createRequestAllCountsZero(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId,
-    std::optional<std::string> origin = std::nullopt) {
+        kNoExperimentId) {
   permissions::GeneratePredictionsRequest request;
-  if (origin) {
-    request.mutable_site_features()->set_origin(origin.value());
-  }
-
   auto* client_features = request.mutable_client_features();
   client_features->set_platform(permissions::GetCurrentPlatformProto());
   client_features->set_platform_enum(
@@ -147,7 +152,7 @@ permissions::GeneratePredictionsRequest createRequestAllCountsZero(
 // are 0.29 (~6/21). Without user gesture.
 permissions::GeneratePredictionsRequest createRequestRoundedCounts(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   permissions::GeneratePredictionsRequest request;
 
   auto* client_features = request.mutable_client_features();
@@ -186,7 +191,7 @@ permissions::GeneratePredictionsRequest createRequestRoundedCounts(
 // gesture.
 permissions::GeneratePredictionsRequest createRequestEqualCountsTotal20(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   permissions::GeneratePredictionsRequest request;
 
   auto* client_features = request.mutable_client_features();
@@ -225,7 +230,7 @@ permissions::GeneratePredictionsRequest createRequestEqualCountsTotal20(
 // notifications ratios and counts 0. Without user gesture.
 permissions::GeneratePredictionsRequest createRequestDifferentCounts(
     permissions::PredictionRequestFeatures::ExperimentId experiment_id =
-        permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId) {
+        kNoExperimentId) {
   permissions::GeneratePredictionsRequest request;
 
   auto* client_features = request.mutable_client_features();
@@ -282,14 +287,16 @@ permissions::GeneratePredictionsResponse createResponseUnlikely() {
   return response;
 }
 
-constexpr auto kCpssV3ExperimentId =
-    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
-
-constexpr auto kAiV4ExperimentId =
-    permissions::PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
 }  // namespace
 
 namespace permissions {
+
+struct PredictionServiceTestParam {
+  PredictionRequestFeatures features;
+  GeneratePredictionsRequest expected_request;
+  std::optional<std::string> url_string_for_features;
+};
+
 class PredictionServiceTest : public testing::Test {
  public:
   PredictionServiceTest()
@@ -442,45 +449,11 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
   }
 }
 
-TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
-  // Test origin being added correctly in the request.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv4},
-      {});
-  struct {
-    PredictionRequestFeatures entity;
-    GeneratePredictionsRequest expected_request;
-  } kTests[] = {
-      {createFeaturesAllCountsZero(kAiV4ExperimentId,
-                                   GURL("https://www.test.example/")),
-       createRequestAllCountsZero(kAiV4ExperimentId,
-                                  "https://www.test.example/")},
-      {createFeaturesCountsNeedingRounding(kAiV4ExperimentId),
-       createRequestRoundedCounts(kAiV4ExperimentId)},
-      {createFeaturesEvenCountsOver100(kAiV4ExperimentId),
-       createRequestEqualCountsTotal20(kAiV4ExperimentId)},
-      {createFeaturesEvenCountsOver100Alt(kAiV4ExperimentId),
-       createRequestEqualCountsTotal20(kAiV4ExperimentId)},
-      {createFeaturesDifferentCounts(kAiV4ExperimentId),
-       createRequestDifferentCounts(kAiV4ExperimentId)},
-  };
+class PredictionServiceProtoRequestTest
+    : public PredictionServiceTest,
+      public testing::WithParamInterface<PredictionServiceTestParam> {};
 
-  prediction_service_->set_prediction_service_url_for_testing(
-      GURL(kUrl_Likely));
-  for (const auto& kTest : kTests) {
-    base::RunLoop run_loop;
-    StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
-
-    run_loop.Run();
-    EXPECT_THAT(received_requests_,
-                ElementsAre(Pointee(EqualsProto(kTest.expected_request))));
-    received_requests_.clear();
-  }
-}
-
-TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
+TEST_P(PredictionServiceProtoRequestTest, BuiltProtoRequestIsCorrect) {
   // Test origin being added correctly in the request.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -488,37 +461,39 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
        permissions::features::kPermissionsAIv4},
       {});
 
-  struct {
-    PredictionRequestFeatures entity;
-    GeneratePredictionsRequest expected_request;
-  } kTests[] = {
-      {createFeaturesAllCountsZero(kCpssV3ExperimentId,
-                                   GURL("https://www.test.example/")),
-       createRequestAllCountsZero(kCpssV3ExperimentId,
-                                  "https://www.test.example/")},
-      {createFeaturesCountsNeedingRounding(kCpssV3ExperimentId),
-       createRequestRoundedCounts(kCpssV3ExperimentId)},
-      {createFeaturesEvenCountsOver100(kCpssV3ExperimentId),
-       createRequestEqualCountsTotal20(kCpssV3ExperimentId)},
-      {createFeaturesEvenCountsOver100Alt(kCpssV3ExperimentId),
-       createRequestEqualCountsTotal20(kCpssV3ExperimentId)},
-      {createFeaturesDifferentCounts(kCpssV3ExperimentId),
-
-       createRequestDifferentCounts(kCpssV3ExperimentId)},
-  };
+  PredictionServiceTestParam param = GetParam();
+  if (param.url_string_for_features.has_value()) {
+    param.features.url = GURL(param.url_string_for_features.value());
+    param.expected_request.mutable_site_features()->set_origin(
+        param.url_string_for_features.value());
+  }
 
   prediction_service_->set_prediction_service_url_for_testing(
       GURL(kUrl_Likely));
-  for (const auto& kTest : kTests) {
-    base::RunLoop run_loop;
-    StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
-    run_loop.Run();
+  base::RunLoop run_loop;
+  StartLookup(param.features, &run_loop, nullptr /* response_loop */);
 
-    EXPECT_THAT(received_requests_,
-                ElementsAre(Pointee(EqualsProto(kTest.expected_request))));
-    received_requests_.clear();
-  }
+  run_loop.Run();
+  EXPECT_THAT(received_requests_,
+              ElementsAre(Pointee(EqualsProto(param.expected_request))));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PredictionServiceProtoRequestTest,
+    ValuesIn(std::vector<PredictionServiceTestParam>{
+        {createFeaturesAllCountsZero(kNoExperimentId),
+         createRequestAllCountsZero(kNoExperimentId),
+         "https://www.test.example/"},
+        {createFeaturesCountsNeedingRounding(kAiV3ExperimentId),
+         createRequestRoundedCounts(kAiV3ExperimentId), std::nullopt},
+        {createFeaturesEvenCountsOver100(kAiV4ExperimentId),
+         createRequestEqualCountsTotal20(kAiV4ExperimentId), std::nullopt},
+        {createFeaturesEvenCountsOver100Alt(kCpssV3ExperimentId),
+         createRequestEqualCountsTotal20(kCpssV3ExperimentId), std::nullopt},
+        {createFeaturesDifferentCounts(kAiV4ExperimentId),
+         createRequestDifferentCounts(kAiV4ExperimentId), std::nullopt},
+    }));
 
 TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   struct {
