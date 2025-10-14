@@ -340,7 +340,7 @@ enum class SigninScreenState {
 
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
-    GaiaId gaia(self.selectedIdentity.gaiaID);
+    GaiaId gaia(self.selectedIdentity.gaiaId);
     return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
                           [](const AccountInfo& info) { return info.gaia; });
   }
