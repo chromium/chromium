@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace content {
@@ -46,8 +48,8 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   bubble_view_ = bubble_view.get();
   bubble_view_->View::AddObserver(this);
 
-  auto* icon_view = toolbar_button_provider->GetPageActionIconView(
-      PageActionIconType::kCookieControls);
+  auto* icon_view =
+      toolbar_button_provider->GetPageActionView(kActionShowCookieControls);
   CHECK(icon_view);
   bubble_view_->SetHighlightedButton(icon_view);
 

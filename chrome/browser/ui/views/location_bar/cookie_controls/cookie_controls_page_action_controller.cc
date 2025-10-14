@@ -124,6 +124,8 @@ const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
 }
 }  // namespace
 
+DEFINE_USER_DATA(CookieControlsPageActionController);
+
 CookieControlsPageActionController::CookieControlsPageActionController(
     tabs::TabInterface& tab_interface,
     Profile& profile,
@@ -140,13 +142,20 @@ CookieControlsPageActionController::CookieControlsPageActionController(
               HostContentSettingsMapFactory::GetForProfile(&profile),
               TrackingProtectionSettingsFactory::GetForProfile(&profile),
               profile.IsIncognitoProfile())),
-      bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)) {
+      bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kCookieControls));
   RegisterAsPageActionObserver(page_action_controller_.get());
 }
 
 CookieControlsPageActionController::~CookieControlsPageActionController() =
     default;
+
+// static
+CookieControlsPageActionController* CookieControlsPageActionController::From(
+    tabs::TabInterface& tab) {
+  return Get(tab.GetUnownedUserDataHost());
+}
 
 void CookieControlsPageActionController::Init() {
   controller_observation_.Observe(cookie_controls_controller_.get());
@@ -164,9 +173,29 @@ void CookieControlsPageActionController::Init() {
           [](content_settings::CookieControlsController& cookies_controller,
              tabs::TabInterface* tab, content::WebContents* old_contents,
              content::WebContents* new_contents) {
-            cookies_controller.Update(new_contents);
+            if (new_contents) {
+              cookies_controller.Update(new_contents);
+            }
           },
           std::ref(*cookie_controls_controller_)));
+
+  tab_deactivation_subscription_ =
+      tab_->RegisterWillDeactivate(base::BindRepeating(
+          [](content_settings::CookieControlsController& cookies_controller,
+             tabs::TabInterface* tab) {
+            cookies_controller.OnBubbleCloseTriggered();
+          },
+          std::ref(*cookie_controls_controller_)));
+
+  tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      [](content_settings::CookieControlsController& cookies_controller,
+         tabs::TabInterface* tab,
+         tabs::TabInterface::DetachReason detach_reason) {
+        if (tab->IsActivated()) {
+          cookies_controller.OnBubbleCloseTriggered();
+        }
+      },
+      std::ref(*cookie_controls_controller_)));
 }
 
 void CookieControlsPageActionController::OnPageActionChipShown(
@@ -218,7 +247,8 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
   }
 
   if (!icon_status_.icon_visible || !icon_status_.should_highlight ||
-      icon_status_.controls_state != CookieControlsState::kBlocked3pc) {
+      icon_status_.controls_state != CookieControlsState::kBlocked3pc ||
+      bubble_delegate_->HasBubble()) {
     return;
   }
   if (icon_status_.blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
@@ -226,7 +256,7 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
             tab_->GetBrowserWindowInterface())) {
       MaybeShowIPH(*user_education);
     }
-  } else if (!bubble_delegate_->HasBubble() && !IsManagedIPHActive()) {
+  } else if (!IsManagedIPHActive()) {
     page_action_controller_->OverrideText(
         kActionShowCookieControls,
         l10n_util::GetStringUTF16(

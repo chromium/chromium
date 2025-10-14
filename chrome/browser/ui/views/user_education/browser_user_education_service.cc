@@ -23,12 +23,14 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/feature_first_run/autofill_ai_first_run_dialog.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -904,13 +906,21 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* cookie_controls_icon_view =
-                    views::ElementTrackerViews::GetInstance()
-                        ->GetFirstMatchingViewAs<CookieControlsIconView>(
-                            kCookieControlsIconElementId,
-                            ctx->GetElementContext());
-                if (cookie_controls_icon_view != nullptr) {
-                  cookie_controls_icon_view->ShowCookieControlsBubble();
+                if (IsPageActionMigrated(PageActionIconType::kCookieControls)) {
+                  actions::ActionManager::Get()
+                      .FindAction(
+                          kActionShowCookieControls,
+                          GetBrowser(ctx)->GetActions()->root_action_item())
+                      ->InvokeAction();
+                } else {
+                  auto* cookie_controls_icon_view =
+                      views::ElementTrackerViews::GetInstance()
+                          ->GetFirstMatchingViewAs<CookieControlsIconView>(
+                              kCookieControlsIconElementId,
+                              ctx->GetElementContext());
+                  if (cookie_controls_icon_view != nullptr) {
+                    cookie_controls_icon_view->ShowCookieControlsBubble();
+                  }
                 }
               }))
           .SetBubbleTitleText(IDS_COOKIE_CONTROLS_PROMO_TITLE)

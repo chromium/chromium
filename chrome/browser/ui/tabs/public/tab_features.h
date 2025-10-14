@@ -15,6 +15,7 @@
 
 class AskBeforeHttpDialogController;
 class CollaborationMessagingPageActionController;
+class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class IntentPickerViewPageActionController;
@@ -420,6 +421,10 @@ class TabFeatures {
   // Responsible for managing the "Show Collaboration History" page action.
   std::unique_ptr<CollaborationMessagingPageActionController>
       collaboration_messaging_page_action_controller_;
+
+  // Manages the Cookie Controls page action.
+  std::unique_ptr<CookieControlsPageActionController>
+      cookie_controls_page_action_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
