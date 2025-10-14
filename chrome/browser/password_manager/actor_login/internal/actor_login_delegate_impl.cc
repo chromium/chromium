@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -147,7 +148,12 @@ void ActorLoginDelegateImpl::AttemptLogin(
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));
-  credential_filler_->AttemptLogin(password_manager);
+  credential_filler_->AttemptLogin(
+      password_manager,
+      // This `WebContents` comes from the `TabInterface` that
+      // `ActorLoginService` is invoked with, so we know the `WebContents` is
+      // attached to a tab.
+      *tabs::TabInterface::GetFromContents(&GetWebContents()));
 }
 
 void ActorLoginDelegateImpl::OnGetCredentialsCompleted(

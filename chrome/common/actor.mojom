@@ -386,6 +386,10 @@ enum ActionResultCode {
   // The page changed before the credential selected by the user was filled.
   kLoginPageChangedDuringSelection = 905,
 
+  // The task is in a background tab and filling requires device reauth. The
+  // user needs to focus that tab first.
+  kLoginDeviceReauthRequired = 906,
+
   // Please see the comment above about adding new values.
 };
 

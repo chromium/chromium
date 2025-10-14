@@ -125,6 +125,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ErrorFillingNotAllowed"/>
   <int value="8" label="ErrorServiceBusy"/>
   <int value="9" label="ErrorInvalidTabInterface"/>
+  <int value="10" label="ErrorDeviceReauthRequired"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:AttemptLoginResult) -->

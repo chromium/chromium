@@ -7,6 +7,7 @@
 #include <ranges>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/strings/to_string.h"
@@ -27,6 +28,7 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace actor_login {
@@ -102,7 +104,8 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
 ActorLoginCredentialFiller::~ActorLoginCredentialFiller() = default;
 
 void ActorLoginCredentialFiller::AttemptLogin(
-    password_manager::PasswordManagerInterface* password_manager) {
+    password_manager::PasswordManagerInterface* password_manager,
+    const tabs::TabInterface& tab) {
   CHECK(client_);
   CHECK(password_manager);
 
@@ -169,7 +172,11 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
-    ReauthenticateAndFill(std::move(fill_cb));
+    if (!tab.IsActivated()) {
+      std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
+    } else {
+      ReauthenticateAndFill(std::move(fill_cb));
+    }
   } else {
     std::move(fill_cb).Run();
   }

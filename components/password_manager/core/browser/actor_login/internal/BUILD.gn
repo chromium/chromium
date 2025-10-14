@@ -37,6 +37,7 @@ source_set("delegate") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/strings:components_strings",
+    "//components/tabs:public",
     "//url",
   ]
 }
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

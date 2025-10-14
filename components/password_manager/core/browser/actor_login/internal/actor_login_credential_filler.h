@@ -18,6 +18,10 @@ namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace actor_login {
 
 // Fills a given credential into the matching signin form if one exists.
@@ -36,8 +40,12 @@ class ActorLoginCredentialFiller {
 
   // Attempts to fill the credential provided in the constructor.
   // `password_manager` is used to find the signin form.
+  // `tab` is used if the user needs to re-authenticate. In this case the tab
+  // must be in foreground, otherwise this will result in
+  // `kErrorDeviceReauthRequired`.
   void AttemptLogin(
-      password_manager::PasswordManagerInterface* password_manager);
+      password_manager::PasswordManagerInterface* password_manager,
+      const tabs::TabInterface& tab);
 
  private:
   enum class FieldType { kUsername, kPassword };

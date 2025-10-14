@@ -41,7 +41,8 @@ enum class AttemptLoginResult {
   kErrorFillingNotAllowed = 7,
   kErrorServiceBusy = 8,
   kErrorInvalidTabInterface = 9,
-  kMaxValue = kErrorInvalidTabInterface,
+  kErrorDeviceReauthRequired = 10,
+  kMaxValue = kErrorDeviceReauthRequired,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ActorLoginAttemptLoginResult)
 

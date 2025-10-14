@@ -86,6 +86,7 @@ chromium-metrics-reviews@google.com.
   <int value="903" label="LoginNoFillableFields"/>
   <int value="904" label="LoginFillingNotAllowed"/>
   <int value="905" label="LoginPageChangedDuringSelection"/>
+  <int value="906" label="LoginDeviceReauthRequired"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->

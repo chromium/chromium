@@ -5,8 +5,14 @@
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
@@ -21,10 +27,13 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor_login {
 
@@ -86,21 +95,21 @@ class MockPasswordManagerDriver
 
 }  // namespace
 
-class ActorLoginDelegateImplTest : public ::testing::Test {
+class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
  public:
-  ActorLoginDelegateImplTest() = default;
+  ActorLoginDelegateImplTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-
-    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
-
-    content::WebContentsTester::For(web_contents_)
-        ->NavigateAndCommit(GURL(kTestUrl));
+    ChromeRenderViewHostTestHarness::SetUp();
+    std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
+                                                               GURL(kTestUrl));
 
     delegate_ = static_cast<ActorLoginDelegateImpl*>(
         ActorLoginDelegateImpl::GetOrCreateForTesting(
-            web_contents_, &client_,
+            contents.get(), &client_,
             base::BindRepeating(
                 [](MockPasswordManagerDriver* driver, content::WebContents*)
                     -> PasswordManagerDriver* { return driver; },
@@ -108,11 +117,32 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
 
     client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
     client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
+
+    // Associate `contents` with a tab
+    test_tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &mock_browser_window_interface_);
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &test_tab_strip_model_delegate_, profile());
+    auto tab_model = std::make_unique<tabs::TabModel>(std::move(contents),
+                                                      tab_strip_model_.get());
+    tab_strip_model_->AppendTab(std::move(tab_model),
+                                /*foreground=*/true);
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(Return(tab_strip_model_.get()));
+    ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
   }
 
   void TearDown() override {
     client_.profile_store()->ShutdownOnUIThread();
     client_.account_store()->ShutdownOnUIThread();
+    base::RunLoop().RunUntilIdle();
+
+    // Reset the raw pointer before it becomes dangling in
+    // ChromeRenderViewHostTestHarness::TearDown()
+    delegate_ = nullptr;
+    tab_strip_model_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void SetUpActorCredentialFillerDeps() {
@@ -131,12 +161,6 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
   }
 
  protected:
-  // Declare TaskEnvironment as the FIRST member to ensure proper lifetime.
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  content::TestWebContentsFactory web_contents_factory_;
-  // `raw_ptr` because `TestWebContentsFactory` owns it
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
   FakePasswordManagerClient client_;
   // `raw_ptr` because `WebContentsUserData` owns it
   raw_ptr<ActorLoginDelegateImpl> delegate_ = nullptr;
@@ -144,6 +168,14 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
   NiceMock<MockPasswordFormCache> mock_form_cache_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   MockPasswordManagerDriver mock_driver_;
+
+  // Tab setup
+  MockBrowserWindowInterface mock_browser_window_interface_;
+  TestTabStripModelDelegate test_tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  ui::UnownedUserDataHost user_data_host_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting
+      prevent_tab_features_;
 };
 
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {

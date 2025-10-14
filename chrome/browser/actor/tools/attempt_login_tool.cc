@@ -59,6 +59,10 @@ mojom::ActionResultCode LoginResultToActorResult(
       return mojom::ActionResultCode::kLoginNoFillableFields;
     case actor_login::LoginStatusResult::kErrorFillingNotAllowed:
       return mojom::ActionResultCode::kLoginFillingNotAllowed;
+    case actor_login::LoginStatusResult::kErrorDeviceReauthRequired:
+      // TODO(crbug.com/449923972): Handle this error: draw attention of the
+      // user to the tab and retry once the tab is in the foreground.
+      return mojom::ActionResultCode::kLoginDeviceReauthRequired;
   }
 }
 
