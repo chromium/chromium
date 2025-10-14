@@ -130,7 +130,9 @@ class InteractiveGlicTestMixin : public T {
   }
 
   void SetUpOnMainThread() override {
+    LOG(INFO) << "InteractiveGlicTest: setting up base fixture";
     T::SetUpOnMainThread();
+    LOG(INFO) << "InteractiveGlicTest: setting up";
 
     Test::embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
@@ -173,6 +175,7 @@ class InteractiveGlicTestMixin : public T {
     guest_url_ = Test::embedded_test_server()->GetURL(path.str());
     command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
                                     guest_url_.spec());
+    LOG(INFO) << "InteractiveGlicTest: done setting up";
   }
 
   void TearDownOnMainThread() override { T::TearDownOnMainThread(); }
@@ -196,12 +199,14 @@ class InteractiveGlicTestMixin : public T {
         steps = Api::Steps(
             Api::UninstrumentWebContents(kGlicContentsElementId, false),
             Api::UninstrumentWebContents(kGlicHostElementId, false),
-            Api::InAnyContext(Api::Steps(
-                Api::InstrumentNonTabWebView(kGlicHostElementId,
-                                             kGlicViewElementId),
-                Api::InstrumentInnerWebContents(kGlicContentsElementId,
-                                                kGlicHostElementId, 0),
-                Api::WaitForWebContentsReady(kGlicContentsElementId))),
+            Api::InAnyContext(
+                Api::Steps(Api::InstrumentNonTabWebView(kGlicHostElementId,
+                                                        kGlicViewElementId),
+                           Api::InstrumentInnerWebContents(
+                               kGlicContentsElementId, kGlicHostElementId, 0),
+                           Api::Log("Waiting for Glic web contents ready"),
+                           Api::WaitForWebContentsReady(kGlicContentsElementId),
+                           Api::Log("Glic web contents is ready"))),
             Api::PollUntil(
                 [&]() -> bool {
                   GlicInstance* instance = GetGlicInstanceImpl();
@@ -290,11 +295,12 @@ class InteractiveGlicTestMixin : public T {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
-    auto steps = Api::Steps(CheckGlicIsClosed(),
-                            // Technically, this toggles the window, but we've
-                            // already ensured that it's closed.
-                            ToggleGlicWindow(window_mode),
-                            WaitForAndInstrumentGlic(instrument_mode));
+    auto steps =
+        Api::Steps(Api::Log("Opening glic window"), CheckGlicIsClosed(),
+                   // Technically, this toggles the window, but we've
+                   // already ensured that it's closed.
+                   ToggleGlicWindow(window_mode),
+                   WaitForAndInstrumentGlic(instrument_mode));
     Api::AddDescriptionPrefix(steps, "OpenGlicWindow");
     return steps;
   }

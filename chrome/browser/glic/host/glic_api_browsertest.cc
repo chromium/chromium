@@ -199,6 +199,13 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         });
   }
 
+  void SetUpOnMainThread() override {
+    NonInteractiveGlicApiTest::SetUpOnMainThread();
+
+    histogram_tester = std::make_unique<base::HistogramTester>();
+    user_action_tester = std::make_unique<base::UserActionTester>();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO(b/447705905): Remove extra logging for debugging.
     vmodule_switches_.InitWithSwitches("glic_focused_browser_manager=1");
@@ -209,6 +216,9 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/browser_tests/test.html");
   }
+
+  std::unique_ptr<base::HistogramTester> histogram_tester;
+  std::unique_ptr<base::UserActionTester> user_action_tester;
 
  protected:
   base::test::ScopedFeatureList features_;
@@ -228,13 +238,14 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   void SetUpOnMainThread() override {
     GlicApiTest::SetUpOnMainThread();
 
-    histogram_tester = std::make_unique<base::HistogramTester>();
-    user_action_tester = std::make_unique<base::UserActionTester>();
+    LOG(INFO) << "GlicApiTestWithOneTab: opening tab";
     // Load the test page in a tab, so that there is some page context.
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url()),
+                    Log("Opening Glic window"),
                     OpenGlicWindow(GlicWindowMode::kDetached,
-                                   GlicInstrumentMode::kHostAndContents));
+                                   GlicInstrumentMode::kHostAndContents),
+                    Log("Done opening glic window"));
   }
 
   std::string GetDocumentIdForTab(ui::ElementIdentifier tab_id) {
@@ -248,9 +259,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
         GetDocumentIdentifier(rfh->GetGlobalFrameToken())
             .value();
   }
-
-  std::unique_ptr<base::HistogramTester> histogram_tester;
-  std::unique_ptr<base::UserActionTester> user_action_tester;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
