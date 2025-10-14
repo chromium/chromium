@@ -9,6 +9,7 @@
 #include "chrome/browser/promos/promos_types.h"
 
 class Browser;
+class Profile;
 
 namespace ios_promos_utils {
 
@@ -29,6 +30,10 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
     Browser* browser,
     base::OnceClosure promo_shown_callback,
     base::OnceClosure promo_not_shown_callback);
+
+// Returns true if the signed-in user has been active 16 out of the last 28 days
+// on an iOS device.
+bool IsUserActiveOnIOS(Profile* profile);
 
 }  // namespace ios_promos_utils
 

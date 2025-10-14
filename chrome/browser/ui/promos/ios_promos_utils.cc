@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 
+#include "base/json/values_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,8 +27,23 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#include "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_names.h"
+#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
+
+using sync_preferences::CrossDevicePrefTracker;
+using sync_preferences::TimestampedPrefValue;
 
 namespace {
+
+// The time period over which the user has to have been active for at least 16
+// days in order to be considered active on iOS.
+const base::TimeDelta kActiveUserRecency = base::Days(28);
+
+// Returns true if `time` is less time ago than `delta`.
+bool IsRecent(base::Time time, base::TimeDelta delta) {
+  return base::Time::Now() - time < delta;
+}
 
 // ShowIOSDesktopPromoBubble shows the iOS Desktop Promo Bubble based on the
 // given promo type.
@@ -179,6 +197,22 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
       IOSPromoType::kPayment, IOSPromoBubbleType::kQRCode, browser,
       std::move(promo_will_be_shown_callback),
       std::move(promo_not_shown_callback));
+}
+
+bool IsUserActiveOnIOS(Profile* profile) {
+  CrossDevicePrefTracker* pref_tracker =
+      CrossDevicePrefTrackerFactory::GetForProfile(profile);
+  CHECK(pref_tracker);
+  std::vector<TimestampedPrefValue> values = pref_tracker->GetValues(
+      prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
+      /*filter=*/{syncer::DeviceInfo::OsType::kIOS});
+  for (const TimestampedPrefValue& value : values) {
+    std::optional<base::Time> date = base::ValueToTime(value.value);
+    if (date.has_value() && IsRecent(date.value(), kActiveUserRecency)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ios_promos_utils
