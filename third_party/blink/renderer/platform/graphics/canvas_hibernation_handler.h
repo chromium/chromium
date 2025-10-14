@@ -36,7 +36,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     virtual CanvasResourceProvider* GetResourceProvider() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;
-    virtual void ResetResourceProviderForCanvas2D() = 0;
+    virtual void ResetResourceProvider() = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
     virtual void ClearCanvas2DLayerTexture() {}
   };

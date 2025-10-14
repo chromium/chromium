@@ -47,9 +47,7 @@ class TestHibernationHandlerDelegate
   CanvasResourceProvider* GetResourceProvider() const override {
     return resource_provider_.get();
   }
-  void ResetResourceProviderForCanvas2D() override {
-    resource_provider_.reset();
-  }
+  void ResetResourceProvider() override { resource_provider_.reset(); }
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D() {
     if (GetResourceProvider()) {

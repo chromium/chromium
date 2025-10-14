@@ -164,9 +164,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsPageVisible() const override {
     return canvas() && canvas()->IsPageVisible();
   }
-  void ResetResourceProviderForCanvas2D() override {
-    ReplaceResourceProvider(nullptr);
-  }
+  void ResetResourceProvider() override { ReplaceResourceProvider(nullptr); }
   void SetNeedsCompositingUpdate() override {
     if (canvas()) {
       canvas()->SetNeedsCompositingUpdate();

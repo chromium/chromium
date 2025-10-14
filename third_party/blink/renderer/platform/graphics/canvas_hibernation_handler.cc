@@ -441,7 +441,7 @@ void CanvasHibernationHandler::Hibernate() {
   }
   SaveForHibernation(std::move(sw_image), provider->ReleaseRecorder());
 
-  delegate_->ResetResourceProviderForCanvas2D();
+  delegate_->ResetResourceProvider();
   delegate_->ClearCanvas2DLayerTexture();
 
   // shouldBeDirectComposited() may have changed.
