@@ -98,6 +98,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   CueIntervalTree cue_tree_;
 
   CueList currently_active_cues_;
+  HeapHashSet<Member<TextTrackCue>> newly_introduced_cues_;
   double last_update_time_;
 
   // Timer data for cue events (start, end)
