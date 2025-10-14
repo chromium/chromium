@@ -19,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -123,7 +122,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   static std::unique_ptr<gfx::ClientNativePixmap> CreateFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      viz::SharedImageFormat format) {
+      gfx::BufferFormat format) {
     // |planes| may be empty for non-mappable pixmaps. No need to validate the
     // handle in that case.
     if (handle.planes.empty()) {
@@ -236,7 +235,7 @@ class FlatlandClientNativePixmapFactory final
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      viz::SharedImageFormat format,
+      gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
     return ClientNativePixmapFuchsia::CreateFromHandle(std::move(handle), size,
                                                        format);

@@ -59,9 +59,12 @@ MappableBufferNativePixmap::CreateFromHandle(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   CHECK(viz::HasEquivalentBufferFormat(format));
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          std::move(handle).native_pixmap_handle(), size, format, usage);
+          std::move(handle).native_pixmap_handle(), size, buffer_format, usage);
   if (!native_pixmap) {
     return nullptr;
   }

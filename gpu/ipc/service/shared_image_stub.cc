@@ -345,7 +345,7 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
     const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
     auto format = params->si_info->meta.format;
     if (!gfx::CanFitImageForSizeAndFormat(
-            pixmap_handle, params->si_info->meta.size, format,
+            pixmap_handle, params->si_info->meta.size, ToBufferFormat(format),
             /*assume_single_memory_object=*/false)) {
       LOG(ERROR)
           << "SharedImageStub: Unable to import buffer, failed validation.";

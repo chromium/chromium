@@ -9,6 +9,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 
 namespace gpu {
+class LegacyGpuMemoryBufferForVideo;
 class MappableBufferNativePixmap;
 class SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
 class SharedImageFormatRestrictedUtilsAccessor;
@@ -129,6 +130,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
     SharedImageFormatToBufferFormatRestrictedUtils {
  private:
   friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
+  friend class gpu::LegacyGpuMemoryBufferForVideo;
   friend class gpu::MappableBufferNativePixmap;
   friend class ui::WaylandOverlayManager;
 

@@ -207,7 +207,7 @@ class FakeClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      viz::SharedImageFormat format,
+      gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
     return std::make_unique<FakeClientNativePixmap>(std::move(handle));
   }
