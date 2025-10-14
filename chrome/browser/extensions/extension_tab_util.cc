@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -121,30 +122,6 @@ enum class NavigationScheme {
 // check).
 WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
   return BrowserExtensionWindowController::From(browser);
-}
-
-// Returns the BrowserWindowInterface that contains the given `web_contents`,
-// if any.
-BrowserWindowInterface* GetBrowserForWebContents(
-    content::WebContents* web_contents) {
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
-    return nullptr;
-  }
-  std::vector<BrowserWindowInterface*> all_browsers =
-      GetAllBrowserWindowInterfaces();
-  for (auto* browser : all_browsers) {
-    TabListInterface* tab_list = TabListInterface::From(browser);
-    if (!tab_list) {
-      continue;
-    }
-    std::vector<tabs::TabInterface*> all_tabs = tab_list->GetAllTabs();
-    if (base::Contains(all_tabs, tab)) {
-      return browser;  // Found it!
-    }
-  }
-  return nullptr;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -772,7 +749,7 @@ bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
 
   BrowserWindowInterface* browser =
 #if BUILDFLAG(IS_ANDROID)
-      GetBrowserForWebContents(&web_contents);
+      browser_window_util::GetBrowserForTabContents(web_contents);
 #else
       tab_interface->GetBrowserWindowInterface();
 #endif
@@ -1471,7 +1448,8 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
 // static
 WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
     WebContents* web_contents) {
-  BrowserWindowInterface* browser = GetBrowserForWebContents(web_contents);
+  BrowserWindowInterface* browser =
+      browser_window_util::GetBrowserForTabContents(*web_contents);
   if (browser) {
     return BrowserExtensionWindowController::From(browser);
   }

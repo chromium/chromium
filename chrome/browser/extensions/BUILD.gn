@@ -196,6 +196,8 @@ source_set("extensions") {
     "bookmarks/bookmarks_helpers.h",
     "browser_extension_window_controller.cc",
     "browser_extension_window_controller.h",
+    "browser_window_util.cc",
+    "browser_window_util.h",
     "chrome_app_icon.cc",
     "chrome_app_icon.h",
     "chrome_app_icon_delegate.h",
