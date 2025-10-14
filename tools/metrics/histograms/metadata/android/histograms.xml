@@ -8348,7 +8348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.ShouldInterceptRequest.GetCookieHeader.PostMojo.TimeToRun"
-    units="ms" expires_after="2025-11-20">
+    units="ms" expires_after="2026-10-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8414,7 +8414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.ShouldInterceptRequest.SetCookieHeader.TimeToRun"
-    units="ms" expires_after="2025-11-20">
+    units="ms" expires_after="2026-10-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
