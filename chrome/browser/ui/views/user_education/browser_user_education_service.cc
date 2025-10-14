@@ -980,7 +980,7 @@ void MaybeRegisterChromeFeaturePromos(
                   feature_engagement::events::kSplitViewCreated,
                   AdditionalConditions::Constraint::kAtLeast, 2})))
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TITLE_IPH)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
           .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetCustomActionIsDefault(true)
           .SetMetadata(

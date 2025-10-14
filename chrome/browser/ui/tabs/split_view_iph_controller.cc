@@ -98,9 +98,8 @@ ui::TrackedElement* SplitViewIphController::GetTabSwitchIPHAnchor(
   TabStripModel* tab_strip_model =
       browser_window_interface_->GetTabStripModel();
 
-  // Default to the active tab if tabs have not been switch yet.
-  int tab_strip_tab_index =
-      tab_strip_model->GetIndexOfTab(tab_strip_model->GetActiveTab());
+  // Default to no tab if tabs have not been switched yet.
+  int tab_strip_tab_index = TabStripModel::kNoTab;
 
   if (recent_tabs_.size() >= kNumTabsTracked) {
     const int inactive_tab_index =

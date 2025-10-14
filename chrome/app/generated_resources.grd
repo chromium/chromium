@@ -10068,7 +10068,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Put pages side-by-side in the same tab so you can easily compare options and more
       </message>
       <message name="IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY" desc="The body for first step of quick tab switch split view IPH tutorial.">
-        Right-click on this tab and select “Add tab to new split view”
+        Right-click on this tab and select “New split view with current tab”
       </message>
       <message name="IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY" desc="The body for completion of quick tab switch split view IPH tutorial.">
         You can now use split view to compare, multitask, and more
