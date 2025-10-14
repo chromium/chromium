@@ -347,8 +347,8 @@ void ToolbarView::Init() {
       BackForwardButton::Direction::kForward,
       base::BindRepeating(callback, browser_, IDC_FORWARD), browser_);
 
-  std::unique_ptr<ReloadButton> reload =
-      std::make_unique<ReloadButton>(browser_->command_controller());
+  std::unique_ptr<ReloadButton> reload = std::make_unique<ReloadButton>(
+      browser_->GetProfile(), browser_->command_controller());
 
   PrefService* const prefs = browser_->profile()->GetPrefs();
   std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(

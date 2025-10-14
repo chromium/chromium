@@ -363,6 +363,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/waap",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
       "//chrome/browser/user_education",

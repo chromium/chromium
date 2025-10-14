@@ -222,7 +222,8 @@ void SimpleWebViewDialog::Init() {
   location_bar_ = location_bar.get();
 
   // Reload button.
-  auto reload = std::make_unique<ReloadButton>(command_updater_.get());
+  auto reload = std::make_unique<ReloadButton>(
+      /*profile=*/nullptr, command_updater_.get());
   reload->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                    ui::EF_MIDDLE_MOUSE_BUTTON);
   reload->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));

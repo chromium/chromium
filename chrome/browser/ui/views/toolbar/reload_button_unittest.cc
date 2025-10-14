@@ -42,7 +42,7 @@ class ReloadButtonTest : public ChromeRenderViewHostTestHarness {
   ReloadButton reload_;
 };
 
-ReloadButtonTest::ReloadButtonTest() : reload_(nullptr) {
+ReloadButtonTest::ReloadButtonTest() : reload_(nullptr, nullptr) {
   // Set the timer delays to 0 so that timers will fire as soon as we tell the
   // message loop to run pending tasks.
   reload_.double_click_timer_delay_ = base::TimeDelta();

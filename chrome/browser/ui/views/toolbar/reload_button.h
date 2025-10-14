@@ -16,6 +16,7 @@
 #include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
+class Profile;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -34,7 +35,7 @@ class ReloadButton : public ToolbarButton,
  public:
   enum class Mode { kReload = 0, kStop };
 
-  explicit ReloadButton(CommandUpdater* command_updater);
+  ReloadButton(Profile* profile, CommandUpdater* command_updater);
   ReloadButton(const ReloadButton&) = delete;
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
@@ -58,6 +59,9 @@ class ReloadButton : public ToolbarButton,
   void ShowDropDownMenu(ui::mojom::MenuSourceType source_type) override;
 
   void UpdateCachedTooltipText();
+
+  // Button:
+  void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -88,6 +92,9 @@ class ReloadButton : public ToolbarButton,
 
   // Timer to delay switching between reload and stop states.
   base::OneShotTimer mode_switch_timer_;
+
+  // This may be null.
+  const raw_ptr<Profile> profile_;
 
   // This may be NULL when testing.
   raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;

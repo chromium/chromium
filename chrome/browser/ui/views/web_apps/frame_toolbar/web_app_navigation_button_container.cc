@@ -76,8 +76,8 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
 
   const auto* app_controller = browser_->app_controller();
   if (app_controller->HasReloadButton()) {
-    reload_button_ = AddChildView(
-        std::make_unique<ReloadButton>(browser_->command_controller()));
+    reload_button_ = AddChildView(std::make_unique<ReloadButton>(
+        browser_->GetProfile(), browser_->command_controller()));
     reload_button_->set_tag(IDC_RELOAD);
 #if BUILDFLAG(IS_WIN)
     reload_button_->SetVectorIconsForMode(ReloadButton::Mode::kReload,

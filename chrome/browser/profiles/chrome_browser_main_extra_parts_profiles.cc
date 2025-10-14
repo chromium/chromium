@@ -368,6 +368,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
+#include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
@@ -1428,6 +1429,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   UserEducationServiceFactory::GetInstance();
 #endif
   visited_url_ranking::GroupSuggestionsServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  WaapUIMetricsServiceFactory::GetInstance();
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_app::IsolatedWebAppReaderRegistryFactory::GetInstance();
   web_app::IsolatedWebAppURLLoaderFactory::EnsureAssociatedFactoryBuilt();

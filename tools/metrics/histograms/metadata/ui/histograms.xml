@@ -316,6 +316,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InitialWebUI.Startup.ReloadButton.FirstContentfulPaint{StartupTemperature}"
+    units="ms" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time spent initializing a newly constructed ReloadButton in the
+    pre/post InitialWebUI (WaaP) setup. The timer starts immediately after the
+    browser application startup{StartupTemperature}, and ends immediately after
+    a contentful paint of the view is requested. For browser process (pre-WaaP
+    setup) this is equal to the InitialWebUI.Startup.ReloadButton.FirstPaint
+    metric. For renderer process (post-WaaP setup) this might be slightly
+    different. Only recorded on desktop platforms.
+  </summary>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".ColdStartup"
+        summary="where startup was cold (mostly hard faults)"/>
+    <variant name=".WarmStartup"
+        summary="where startup was warm (almost no hard faults)"/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Startup.ReloadButton.FirstPaint{StartupTemperature}"
+    units="ms" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time spent initializing a newly constructed ReloadButton in the
+    pre/post InitialWebUI (WaaP) setup. The timer starts immediately after the
+    browser application startup{StartupTemperature}, and ends immediately after
+    a paint of the view is requested by either the browser process (pre-WaaP) or
+    by the WebUI renderer process (post-WaaP). Only recorded on desktop
+    platforms.
+  </summary>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".ColdStartup"
+        summary="where startup was cold (mostly hard faults)"/>
+    <variant name=".WarmStartup"
+        summary="where startup was warm (almost no hard faults)"/>
+  </token>
+</histogram>
+
 <histogram name="ListMenuUtils.SetupCallbacksRecursively.Duration"
     units="microseconds" expires_after="2026-10-01">
   <owner>jhimawan@google.com</owner>

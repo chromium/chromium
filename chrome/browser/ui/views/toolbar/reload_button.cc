@@ -12,9 +12,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,11 +37,12 @@
 
 // ReloadButton ---------------------------------------------------------------
 
-ReloadButton::ReloadButton(CommandUpdater* command_updater)
+ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
     : ToolbarButton(base::BindRepeating(&ReloadButton::ButtonPressed,
                                         base::Unretained(this)),
                     CreateMenuModel(),
                     nullptr),
+      profile_(profile),
       command_updater_(command_updater),
       reload_icon_(vector_icons::kReloadChromeRefreshIcon),
       reload_touch_icon_(kReloadTouchIcon),
@@ -123,6 +126,23 @@ void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseExited(event);
   if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, true);
+  }
+}
+
+void ReloadButton::PaintButtonContents(gfx::Canvas* canvas) {
+  // The flag indicates whether the first paint among all instances of the
+  // reload button has been recorded or not. It should only be flagged once
+  // throughout the life of the application.
+  static bool is_first_paint_recorded = false;
+  Button::PaintButtonContents(canvas);
+
+  if (!is_first_paint_recorded && profile_) {
+    is_first_paint_recorded = true;
+    if (auto* waap_service = WaapUIMetricsService::Get(profile_)) {
+      auto now = base::TimeTicks::Now();
+      waap_service->OnFirstPaint(now);
+      waap_service->OnFirstContentfulPaint(now);
+    }
   }
 }
 
