@@ -174,7 +174,7 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 
   // Check if the stored coordinates are same orientation as current.
   BOOL orientationMatches = _framingCoordinates.visibleRect.size.height >
-                                _framingCoordinates.visibleRect.size.width &&
+                                _framingCoordinates.visibleRect.size.width ==
                             self.bounds.size.height > self.bounds.size.width;
   CGRect desiredFrame = UpdateDesiredFrame(_framingCoordinates.visibleRect,
                                            orientationMatches, image.size);
