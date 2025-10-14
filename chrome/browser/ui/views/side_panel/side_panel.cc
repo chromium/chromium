@@ -95,6 +95,8 @@ class SidePanelBorder : public views::Border {
     border_radii_ = radii;
   }
 
+  void SetOutlineVisibility(bool visible) { outline_visible_ = visible; }
+
   // views::Border:
   void Paint(const views::View& view, gfx::Canvas* canvas) override {
     // Undo DSF so that we can be sure to draw an integral number of pixels for
@@ -151,18 +153,20 @@ class SidePanelBorder : public views::Border {
       TopContainerBackground::PaintBackground(canvas, &view, browser_view_);
     }
 
-    // Paint the inner border around SidePanel content. Since half the stroke
-    // gets painted in the clipped area, make this twice as thick, and scale
-    // the thickness by device scale factor since we're working in pixels.
-    const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
+    if (outline_visible_) {
+      // Paint the inner border around SidePanel content. Since half the stroke
+      // gets painted in the clipped area, make this twice as thick, and scale
+      // the thickness by device scale factor since we're working in pixels.
+      const float stroke_thickness = views::Separator::kThickness * 2 * dsf;
 
-    cc::PaintFlags flags;
-    flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setAntiAlias(true);
+      cc::PaintFlags flags;
+      flags.setStrokeWidth(stroke_thickness);
+      flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
+      flags.setStyle(cc::PaintFlags::kStroke_Style);
+      flags.setAntiAlias(true);
 
-    canvas->sk_canvas()->drawRRect(rect, flags);
+      canvas->sk_canvas()->drawRRect(rect, flags);
+    }
   }
 
   gfx::Insets GetInsets() const override {
@@ -182,6 +186,7 @@ class SidePanelBorder : public views::Border {
  private:
   int header_height_ = 0;
   gfx::RoundedCornersF border_radii_;
+  bool outline_visible_ = true;
   const raw_ptr<BrowserView> browser_view_;
 };
 
@@ -202,6 +207,11 @@ class BorderView : public views::View {
   void HeaderViewChanged(views::View* header_view) {
     border_->SetHeaderHeight(
         header_view ? header_view->GetPreferredSize().height() : 0);
+  }
+
+  void SetOutlineVisibilty(bool visible) {
+    border_->SetOutlineVisibility(visible);
+    SchedulePaint();
   }
 
   void SetBorderRadii(const gfx::RoundedCornersF& radii) {
@@ -466,6 +476,10 @@ void SidePanel::SetHeaderVisibility(bool visible) {
       (visible ? header_view_->height() : 0) - GetBorderInsets().top();
   SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
+}
+
+void SidePanel::SetOutlineVisibility(bool visible) {
+  static_cast<BorderView*>(border_view_)->SetOutlineVisibilty(visible);
 }
 
 gfx::Size SidePanel::GetContentSizeUpperBound() const {

@@ -402,6 +402,7 @@ void SidePanelCoordinator::PopulateSidePanel(
                           base::Unretained(this), unique_key));
 
   UpdateSidePanelHeader(entry);
+  side_panel->SetOutlineVisibility(entry->should_show_outline());
 
   auto* content_wrapper = side_panel->GetContentParentView();
   DCHECK(content_wrapper);

@@ -117,6 +117,12 @@ class SidePanelEntry final : public ui::PropertyHandler {
   }
   bool should_show_header() const { return should_show_header_; }
 
+  // Whether the outline should be visible when the entry is shown.
+  void set_should_show_outline(bool should_show_outline) {
+    should_show_outline_ = should_show_outline;
+  }
+  bool should_show_outline() const { return should_show_outline_; }
+
   void AddObserver(SidePanelEntryObserver* observer);
   void RemoveObserver(SidePanelEntryObserver* observer);
 
@@ -166,6 +172,9 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
   // Whether the side panel header will be visible when this entry is showing.
   bool should_show_header_ = true;
+
+  // Whether the side panel outline will be visible when this entry is showing.
+  bool should_show_outline_ = true;
 
   // Scope of this entry, will outlive the entry and its content.
   raw_ptr<SidePanelEntryScope> scope_ = nullptr;

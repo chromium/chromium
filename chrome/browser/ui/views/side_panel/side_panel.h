@@ -65,6 +65,7 @@ class SidePanel : public views::AccessiblePaneView,
   void AddHeaderView(std::unique_ptr<views::View> view);
 
   void SetHeaderVisibility(bool visible);
+  void SetOutlineVisibility(bool visible);
 
   // Gets the upper bound of the content area size if the side panel is shown
   // right now. If the side panel is not showing, returns the minimum width
