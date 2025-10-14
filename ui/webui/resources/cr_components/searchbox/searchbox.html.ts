@@ -18,7 +18,7 @@ ${this.ntpRealboxNextEnabled ? html`
       spellcheck="false" aria-live="${this.inputAriaLive_}" role="combobox"
       aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
       aria-description="${this.searchboxAriaDescription}"
-      placeholder="${this.computePlaceholderText_()}"
+      placeholder="${this.computePlaceholderText_(this.placeholderText)}"
       @copy="${this.onInputCutCopy_}"
       @cut="${this.onInputCutCopy_}" @focus="${this.onInputFocus_}"
       @input="${this.onInputInput_}" @keydown="${this.onInputKeydown_}"
