@@ -154,17 +154,22 @@ bool IsSubdomainOf(std::u16string_view hostname,
 // All the domains in the above file have 4 or fewer labels.
 const size_t kNumberOfLabelsToCheck = 4;
 
-IDNSpoofChecker::HuffmanTrieParams g_trie_params{
-    kTopDomainsHuffmanTree.data(), kTopDomainsHuffmanTree.size(),
-    kTopDomainsTrie.data(), kTopDomainsTrieBits, kTopDomainsRootPosition};
-
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
 const char16_t* kAllowedWholeScriptConfusableWords[] = {
     u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
     u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
 
+IDNSpoofChecker::HuffmanTrieParams& GetTrieParams() {
+  static base::NoDestructor<IDNSpoofChecker::HuffmanTrieParams> params{
+      kTopDomainsHuffmanTree, kTopDomainsTrie, kTopDomainsTrieBits,
+      kTopDomainsRootPosition};
+  return *params;
+}
+
 }  // namespace
+
+IDNSpoofChecker::HuffmanTrieParams::~HuffmanTrieParams() = default;
 
 IDNSpoofChecker::WholeScriptConfusable::WholeScriptConfusable(
     std::unique_ptr<icu::UnicodeSet> arg_all_letters,
@@ -641,10 +646,11 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
   DCHECK(!skeleton.empty());
   // There are no other guarantees about a skeleton string such as not including
   // a dot. Skeleton of certain characters are dots (e.g. "۰" (U+06F0)).
+  IDNSpoofChecker::HuffmanTrieParams& trie_params = GetTrieParams();
   TopDomainPreloadDecoder preload_decoder(
-      g_trie_params.huffman_tree, g_trie_params.huffman_tree_size,
-      g_trie_params.trie, g_trie_params.trie_bits,
-      g_trie_params.trie_root_position);
+      trie_params.huffman_tree.data(), trie_params.huffman_tree.size(),
+      trie_params.trie.data(), trie_params.trie_bits,
+      trie_params.trie_root_position);
   auto labels = base::SplitStringPiece(skeleton, ".", base::KEEP_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
 
@@ -827,14 +833,14 @@ bool IDNSpoofChecker::IsLabelWholeScriptConfusableForScript(
 // static
 void IDNSpoofChecker::SetTrieParamsForTesting(
     const HuffmanTrieParams& trie_params) {
-  g_trie_params = trie_params;
+  GetTrieParams() = trie_params;
 }
 
 // static
 void IDNSpoofChecker::RestoreTrieParamsForTesting() {
-  g_trie_params = HuffmanTrieParams{
-      kTopDomainsHuffmanTree.data(), kTopDomainsHuffmanTree.size(),
-      kTopDomainsTrie.data(), kTopDomainsTrieBits, kTopDomainsRootPosition};
+  GetTrieParams() =
+      HuffmanTrieParams{kTopDomainsHuffmanTree, kTopDomainsTrie,
+                        kTopDomainsTrieBits, kTopDomainsRootPosition};
 }
 
 }  // namespace url_formatter

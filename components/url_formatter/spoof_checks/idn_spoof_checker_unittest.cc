@@ -1166,8 +1166,7 @@ class IDNSpoofCheckerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IDNSpoofChecker::HuffmanTrieParams trie_params{
-        kIdnTestTopDomainsHuffmanTree.data(),
-        kIdnTestTopDomainsHuffmanTree.size(), kIdnTestTopDomainsTrie.data(),
+        kIdnTestTopDomainsHuffmanTree, kIdnTestTopDomainsTrie,
         kIdnTestTopDomainsTrieBits, kIdnTestTopDomainsRootPosition};
     IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
   }
@@ -1580,9 +1579,8 @@ class TopDomainIDNSpoofCheckerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IDNSpoofChecker::HuffmanTrieParams trie_params{
-        kTestTopDomainsHuffmanTree.data(), kTestTopDomainsHuffmanTree.size(),
-        kTestTopDomainsTrie.data(), kTestTopDomainsTrieBits,
-        kTestTopDomainsRootPosition};
+        kTestTopDomainsHuffmanTree, kTestTopDomainsTrie,
+        kTestTopDomainsTrieBits, kTestTopDomainsRootPosition};
     IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
   }
 

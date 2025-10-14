@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -69,9 +70,9 @@ struct TopDomainEntry {
 class IDNSpoofChecker {
  public:
   struct HuffmanTrieParams {
-    const uint8_t* huffman_tree;
-    size_t huffman_tree_size;
-    const uint8_t* trie;
+    ~HuffmanTrieParams();
+    base::raw_span<const uint8_t> huffman_tree;
+    base::raw_span<const uint8_t> trie;
     size_t trie_bits;
     size_t trie_root_position;
   };

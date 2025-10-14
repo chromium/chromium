@@ -62,9 +62,8 @@ class LookalikeUrlUtilTest : public testing::Test {
   void SetUp() override {
     // Use test top domain lists instead of the actual list.
     url_formatter::IDNSpoofChecker::HuffmanTrieParams trie_params{
-        url_formatter::kTestTopDomainsHuffmanTree.data(),
-        url_formatter::kTestTopDomainsHuffmanTree.size(),
-        url_formatter::kTestTopDomainsTrie.data(),
+        url_formatter::kTestTopDomainsHuffmanTree,
+        url_formatter::kTestTopDomainsTrie,
         url_formatter::kTestTopDomainsTrieBits,
         url_formatter::kTestTopDomainsRootPosition};
     url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
