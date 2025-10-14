@@ -1002,6 +1002,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
           level_db::BackingStore::OpenAndVerify(
               *this, data_path_, database_path, blob_path, lock_manager.get(),
               is_first_attempt, create_if_missing);
+      CHECK_EQ(status.ok(), !!backing_store);
       if (is_first_attempt) [[likely]] {
         first_try_status = status;
       }

@@ -1587,12 +1587,16 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
                           bucket_context.AsWeakPtr()));
   status = backing_store->Initialize(/*clean_active_blob_journal=*/!in_memory);
   if (!status.ok()) [[unlikely]] {
+    base::WaitableEvent leveldb_destruct_event;
+    backing_store->TearDown(&leveldb_destruct_event);
+    backing_store.reset();
+    leveldb_destruct_event.Wait();
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
   }
   backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
   backing_store->bucket_context_ = &bucket_context;
   backing_store->database_path_ = std::move(database_path);
-  return {std::move(backing_store), status, std::move(data_loss_info),
+  return {std::move(backing_store), Status::OK(), std::move(data_loss_info),
           /*is_disk_full=*/false};
 }
 

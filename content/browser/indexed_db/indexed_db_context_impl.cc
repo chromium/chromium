@@ -1168,7 +1168,7 @@ void IndexedDBContextImpl::EnsureBucketContext(
           bucket, data_directory, std::move(bucket_delegate),
           quota_manager_proxy_, std::move(cloned_blob_storage_context),
           std::move(fsa_context)));
-  DCHECK(inserted);
+  CHECK(inserted);
   if (pending_failure_injector_) {
     iter->second.AsyncCall(&BucketContext::BindMockFailureSingletonForTesting)
         .WithArgs(std::move(pending_failure_injector_));
