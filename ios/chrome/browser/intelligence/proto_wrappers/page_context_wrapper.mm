@@ -173,8 +173,6 @@ result.links = linksArray;
 
 }  // namespace
 
-// TODO(crbug.com/424258248): Add a timeout for the execution of the async tasks
-// in the PageContextWrapper.
 @implementation PageContextWrapper {
   base::WeakPtr<web::WebState> _webState;
 
