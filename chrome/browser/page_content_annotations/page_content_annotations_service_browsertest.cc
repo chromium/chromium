@@ -941,8 +941,15 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
+// TODO(crbug.com/451682393): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ModelExecutesAndUsesCachedResult \
+  DISABLED_ModelExecutesAndUsesCachedResult
+#else
+#define MAYBE_ModelExecutesAndUsesCachedResult ModelExecutesAndUsesCachedResult
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
-                       ModelExecutesAndUsesCachedResult) {
+                       MAYBE_ModelExecutesAndUsesCachedResult) {
   TestPageContentAnnotator test_annotator;
   test_annotator.UseVisibilityScores(std::nullopt, {{"Test Page", 0.5}});
   service()->OverridePageContentAnnotatorForTesting(&test_annotator);
