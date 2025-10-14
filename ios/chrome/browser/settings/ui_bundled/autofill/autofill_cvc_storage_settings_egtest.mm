@@ -193,7 +193,13 @@ id<GREYMatcher> DeleteConfirmationButton() {
 }
 
 // Tests that the user actions for the delete CVCs flow are recorded correctly.
-- (void)testDeleteActionsAreRecorded {
+// TODO(crbug.com/451607065): Test is disabled on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testDeleteActionsAreRecorded DISABLED_testDeleteActionsAreRecorded
+#else
+#define MAYBE_testDeleteActionsAreRecorded testDeleteActionsAreRecorded
+#endif
+- (void)MAYBE_testDeleteActionsAreRecorded {
   base::UserActionTester userActionTester;
 
   // Create & save local credit card.
