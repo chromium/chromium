@@ -144,8 +144,8 @@ class LocalFrameMojoHandler
   void OnFrameVisibilityChanged(mojom::blink::FrameVisibility visibility) final;
   void PostMessageEvent(
       const std::optional<RemoteFrameToken>& source_frame_token,
-      const String& source_origin,
-      const String& target_origin,
+      const scoped_refptr<const SecurityOrigin>& source_origin,
+      const scoped_refptr<const SecurityOrigin>& target_origin,
       BlinkTransferableMessage message) final;
   void JavaScriptMethodExecuteRequest(
       const String& object_name,

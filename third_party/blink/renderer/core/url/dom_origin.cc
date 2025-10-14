@@ -137,10 +137,9 @@ DOMOrigin* DOMOrigin::from(ScriptState* script_state,
 
   // MessageEvent
   if (MessageEvent* event = V8MessageEvent::ToWrappable(isolate, v8_object)) {
-    // TODO(434131026): We only have a serialized origin here, which means
-    // our handling of `null` is broken. We'll need to teach `MessageEvent`
-    // to hold a `SecurityOrigin` instead.
-    return MakeGarbageCollected<DOMOrigin>(event->GetSecurityOrigin());
+    return event->GetSecurityOrigin()
+               ? MakeGarbageCollected<DOMOrigin>(event->GetSecurityOrigin())
+               : DOMOrigin::Create();
   }
 
   // Origin

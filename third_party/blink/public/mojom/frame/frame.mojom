@@ -1056,17 +1056,30 @@ interface LocalFrame {
   // e.g. if the frame gets set a "display: none" or "visibility: hidden" style.
   OnFrameVisibilityChanged(blink.mojom.FrameVisibility visibility);
 
-  // Posts a message from a frame in another process to the current renderer.
+  // Posts a message from a frame in another process to the current renderer:
+  //
   // |source_frame_token| is the frame token of the RemoteFrame in the current
   // renderer representing the frame (from a different renderer) where this
-  // message is coming from. |source_origin| is the origin of the source frame
-  // when the message was sent, and |target_origin| specifies what the origin of
-  // the target frame must be for the message to be dispatched. An empty string
-  // allows the message to be dispatched to any origin. |message| is the encoded
-  // data, and any extra properties such as transferred ports or blobs.
+  // message is coming from.
+  //
+  // |source_origin| is the origin of the source from which the message was
+  // sent. This will usually be the origin of the execution context that posted
+  // a message but can be null in a few cases. Most notably, messages posted
+  // via a `MessagePort` (which includes those posted from Dedicated Workers)
+  // do not set an origin. Certain embedders, like WebView, also provide APIs
+  // which result in messages being posted without an associated origin.
+  //
+  // |target_origin| specifies the origin of the message's intended target. If
+  // the intended origin does not match the destination frame's origin, the
+  // message will be discarded. If |target_origin| is null, then the caller
+  // has specified a wildcard, allowing the message to be delivered regardless
+  // of the destination frame's origin.
+  //
+  // |message| is the encoded data, and any extra properties such as
+  // transferred ports or blobs.
   PostMessageEvent(blink.mojom.RemoteFrameToken? source_frame_token,
-                   mojo_base.mojom.String16 source_origin,
-                   mojo_base.mojom.String16 target_origin,
+                   url.mojom.Origin? source_origin,
+                   url.mojom.Origin? target_origin,
                    blink.mojom.TransferableMessage message);
 
   // Request for the renderer to execute a given JavaScript method on a given

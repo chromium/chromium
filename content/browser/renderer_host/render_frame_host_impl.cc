@@ -16915,8 +16915,8 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
 
 void RenderFrameHostImpl::PostMessageEvent(
     const std::optional<blink::RemoteFrameToken>& source_token,
-    const std::u16string& source_origin,
-    const std::u16string& target_origin,
+    const url::Origin* source_origin,
+    const url::Origin* target_origin,
     blink::TransferableMessage message) {
   DCHECK(is_render_frame_created());
 
@@ -16929,7 +16929,10 @@ void RenderFrameHostImpl::PostMessageEvent(
   message.task_state_id = std::nullopt;
 
   GetAssociatedLocalFrame()->PostMessageEvent(
-      source_token, source_origin, target_origin, std::move(message));
+      source_token,
+      source_origin ? std::make_optional(*source_origin) : std::nullopt,
+      target_origin ? std::make_optional(*target_origin) : std::nullopt,
+      std::move(message));
 }
 
 bool RenderFrameHostImpl::IsTestRenderFrameHost() const {

@@ -3841,20 +3841,12 @@ void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
 
 void LocalFrame::PostMessageEvent(
     const std::optional<RemoteFrameToken>& source_frame_token,
-    const String& serialized_source_origin,
-    const String& serialized_target_origin,
+    scoped_refptr<const SecurityOrigin> source_origin,
+    scoped_refptr<const SecurityOrigin> target_origin,
     BlinkTransferableMessage message) {
   probe::FrameRelatedTask probe(DomWindow());
   TRACE_EVENT0("blink", "LocalFrame::PostMessageEvent");
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
-
-  // We must pass in the serialized_target_origin to do the security check on
-  // this side, since it may have changed since the original postMessage call
-  // was made.
-  scoped_refptr<const SecurityOrigin> target_origin;
-  if (!serialized_target_origin.empty()) {
-    target_origin = SecurityOrigin::CreateFromString(serialized_target_origin);
-  }
 
   // Preparation of the MessageEvent.
   MessageEvent* message_event = MessageEvent::Create();
@@ -3878,14 +3870,6 @@ void LocalFrame::PostMessageEvent(
         message.user_activation->was_active);
   }
 
-  // `serialized_source_origin` will be an empty string for certain calls
-  // initiated from WebView; we handle that as a nullptr, not an opaque origin.
-  // See `org.chromium.android_webview.AwContents.postMessageToMainFrame()`.
-  scoped_refptr<const SecurityOrigin> source_origin;
-  if (!serialized_source_origin.empty()) {
-    source_origin = SecurityOrigin::CreateFromString(serialized_source_origin);
-  }
-
   const MessageEvent::MessageOriginKind message_origin_kind =
       (source_origin &&
        source_origin->IsSameOriginWith(DomWindow()->GetSecurityOrigin()))
@@ -3893,8 +3877,8 @@ void LocalFrame::PostMessageEvent(
           : MessageEvent::kMessageIsCrossOrigin;
   message_event->initMessageEvent(
       event_type_names::kMessage, false, false, std::move(message.message),
-      source_origin, message_origin_kind, "" /*lastEventId*/, window, ports,
-      user_activation, message.delegated_capability);
+      std::move(source_origin), message_origin_kind, "" /*lastEventId*/, window,
+      std::move(ports), user_activation, message.delegated_capability);
 
   // If the agent cluster id had a value it means this was locked when it
   // was serialized.

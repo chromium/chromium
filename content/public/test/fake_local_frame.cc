@@ -116,8 +116,8 @@ void FakeLocalFrame::OnFrameVisibilityChanged(
 
 void FakeLocalFrame::PostMessageEvent(
     const std::optional<blink::RemoteFrameToken>& source_frame_token,
-    const std::u16string& source_origin,
-    const std::u16string& target_origin,
+    const std::optional<url::Origin>& source_origin,
+    const std::optional<url::Origin>& target_origin,
     blink::TransferableMessage message) {}
 
 void FakeLocalFrame::JavaScriptMethodExecuteRequest(

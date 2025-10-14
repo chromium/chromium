@@ -1953,8 +1953,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
       const std::optional<blink::RemoteFrameToken>& source_token,
-      const std::u16string& source_origin,
-      const std::u16string& target_origin,
+      const url::Origin* source_origin,
+      const url::Origin* target_origin,
       blink::TransferableMessage message);
 
   // Requests to swap the current frame into the frame tree, replacing the

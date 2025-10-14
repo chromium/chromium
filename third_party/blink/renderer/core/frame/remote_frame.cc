@@ -490,13 +490,9 @@ void RemoteFrame::ForwardPostMessage(
   if (source_frame)
     source_token = source_frame->GetLocalFrameToken();
 
-  String target_origin = target_security_origin
-                             ? target_security_origin->ToString()
-                             : g_empty_string;
-
   GetRemoteFrameHostRemote().RouteMessageEvent(
-      source_token, source_security_origin, target_origin,
-      std::move(transferable_message));
+      source_token, std::move(source_security_origin),
+      std::move(target_security_origin), std::move(transferable_message));
 }
 
 bool RemoteFrame::IsRemoteFrameHostRemoteBound() {

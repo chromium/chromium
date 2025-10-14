@@ -1500,9 +1500,7 @@ void SimulateProxyHostPostMessage(RenderFrameHost* source_render_frame_host,
   proxy_host->RouteMessageEvent(
       source_render_frame_host->GetFrameToken(),
       source_render_frame_host->GetLastCommittedOrigin(),
-      base::UTF8ToUTF16(
-          target_render_frame_host->GetLastCommittedOrigin().Serialize()),
-      std::move(message));
+      target_render_frame_host->GetLastCommittedOrigin(), std::move(message));
 }
 
 ScopedSimulateModifierKeyPress::ScopedSimulateModifierKeyPress(

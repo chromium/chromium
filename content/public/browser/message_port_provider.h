@@ -41,11 +41,15 @@ class CONTENT_EXPORT MessagePortProvider {
   // further information on message events.
   // Should be called on UI thread.
   static void PostMessageToFrame(Page& page,
-                                 const std::u16string& source_origin,
-                                 const std::u16string& target_origin,
+                                 const url::Origin* source_origin,
+                                 const url::Origin* target_origin,
                                  const blink::WebMessagePayload& data);
 
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(449581913): Rather than processing serialized strings here, we should
+  // to teach the Android side of the house to use `org.chromium.url.Origin`
+  // and to pass those across the JNI boundary (in e.g.
+  // `org.chromium.content_public.browser.WebContents.postMessageToMainFrame`).
   static void PostMessageToFrame(
       Page& page,
       JNIEnv* env,
@@ -62,12 +66,11 @@ class CONTENT_EXPORT MessagePortProvider {
     BUILDFLAG(ENABLE_CAST_RECEIVER) && \
         (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
   // If |target_origin| is unset, then no origin scoping is applied.
-  static void PostMessageToFrame(
-      Page& page,
-      const std::u16string& source_origin,
-      const std::optional<std::u16string>& target_origin,
-      const std::u16string& data,
-      std::vector<blink::WebMessagePort> ports);
+  static void PostMessageToFrame(Page& page,
+                                 const url::Origin* source_origin,
+                                 const url::Origin* target_origin,
+                                 const std::u16string& data,
+                                 std::vector<blink::WebMessagePort> ports);
 #endif
 };
 

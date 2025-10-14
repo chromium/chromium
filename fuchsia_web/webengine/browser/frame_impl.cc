@@ -1021,9 +1021,9 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  std::optional<std::u16string> origin_utf16;
+  std::optional<url::Origin> target_origin;
   if (origin != kWildcardOrigin)
-    origin_utf16 = base::UTF8ToUTF16(origin);
+    target_origin = url::Origin::Create(GURL(origin));
 
   std::optional<std::u16string> data_utf16 =
       base::ReadUTF8FromVMOAsUTF16(message.data());
@@ -1056,7 +1056,8 @@ void FrameImpl::PostMessage(std::string origin,
   }
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents_->GetPrimaryPage(), std::u16string(), origin_utf16,
+      web_contents_->GetPrimaryPage(), nullptr,
+      target_origin.has_value() ? &(*target_origin) : nullptr,
       std::move(*data_utf16), std::move(message_ports));
   callback(fpromise::ok());
 }

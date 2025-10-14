@@ -1643,14 +1643,14 @@ TEST_F(WebFrameTest, PostMessageEvent) {
   // Send a message with the correct origin.
   scoped_refptr<SecurityOrigin> correct_origin =
       SecurityOrigin::Create(ToKURL(base_url_));
-  frame->PostMessageEvent(std::nullopt, g_empty_string,
-                          correct_origin->ToString(), make_message());
+  frame->PostMessageEvent(std::nullopt, nullptr, std::move(correct_origin),
+                          make_message());
 
   // Send another message with incorrect origin.
   scoped_refptr<SecurityOrigin> incorrect_origin =
       SecurityOrigin::Create(ToKURL(chrome_url_));
-  frame->PostMessageEvent(std::nullopt, g_empty_string,
-                          incorrect_origin->ToString(), make_message());
+  frame->PostMessageEvent(std::nullopt, nullptr, std::move(incorrect_origin),
+                          make_message());
 
   // Verify that only the first addition is in the body of the page.
   std::string content = TestWebFrameContentDumper::DumpWebViewAsText(

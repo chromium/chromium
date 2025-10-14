@@ -91,7 +91,7 @@ class CastWebContentsImpl : public CastWebContents,
   void EnableBackgroundVideoPlayback(bool enabled) override;
   void AddBeforeLoadJavaScript(uint64_t id, std::string_view script) override;
   void PostMessageToMainFrame(
-      const std::string& target_origin,
+      const std::string& serialized_target_origin,
       const std::string& data,
       std::vector<blink::WebMessagePort> ports) override;
   void ExecuteJavaScript(
