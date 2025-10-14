@@ -190,9 +190,10 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
 
   // First locate the popup relative to the main page, in DIPs
   const gfx::Point parent_location =
-      main_host->GetView()->GetBoundsInRootWindow().origin();
+      main_host->GetView()->GetViewBounds().origin();
   const gfx::Point popup_location =
-      popup_host->GetView()->GetBoundsInRootWindow().origin();
+      popup_host->GetView()->GetViewBounds().origin();
+
   const gfx::Point offset_dips =
       PointAtOffsetFromOrigin(popup_location - parent_location);
   const gfx::Vector2d offset_physical =
