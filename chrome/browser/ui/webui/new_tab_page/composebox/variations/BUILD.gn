@@ -18,6 +18,7 @@ source_set("variations") {
     "//chrome/browser/search_engines",
     "//components/omnibox/browser",
     "//components/omnibox/common",
+    "//components/omnibox/composebox",
     "//components/variations/service",
     "//third_party/omnibox_proto",
     "//ui/base",

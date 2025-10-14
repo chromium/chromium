@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
 class Profile;
@@ -28,6 +29,10 @@ extern const base::FeatureParam<std::string> kConfigParam;
 // TODO(crbug.com/430070871): Remove this flag once the server supports the
 // `lns_surface` parameter.
 extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
+// If kSendLnsSurfaceParam is true, whether to suppress the `lns_surface`
+// parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
+// is false.
+extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
 // Whether to show zps suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxZps;
 // Whether to show typed suggestions under the composebox.
@@ -55,6 +60,11 @@ extern const base::FeatureParam<bool> kShowToolsAndModels;
 extern const base::FeatureParam<bool> kShowCreateImageTool;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
+
+// Helper to create a QueryControllerConfigParams object from the feature
+// params.
+std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+CreateQueryControllerConfigParams();
 
 class FeatureConfig : public omnibox_feature_configs::Config<FeatureConfig> {
  public:

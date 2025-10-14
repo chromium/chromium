@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/variations_client.h"
@@ -32,14 +31,14 @@ ContextualSessionService::ContextualSessionService(
 ContextualSessionService::~ContextualSessionService() = default;
 
 std::unique_ptr<ContextualSessionService::SessionHandle>
-ContextualSessionService::CreateSession(bool send_lens_surface,
-                                        bool enable_multi_context_input_flow,
-                                        bool enable_view_port_images) {
+ContextualSessionService::CreateSession(
+    std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+        query_controller_config_params) {
   base::UnguessableToken session_id = base::UnguessableToken::Create();
   auto controller = std::make_unique<ComposeboxQueryController>(
       identity_manager_, url_loader_factory_, channel_, locale_,
-      template_url_service_, variations_client_, send_lens_surface,
-      enable_multi_context_input_flow, enable_view_port_images);
+      template_url_service_, variations_client_,
+      std::move(query_controller_config_params));
   sessions_.emplace(session_id, SessionEntry(std::move(controller)));
 
   return base::WrapUnique(

@@ -865,9 +865,7 @@ void NewTabPageUI::BindInterface(
           ContextualSessionServiceFactory::GetForProfile(profile_);
       auto contextual_session_handle =
           contextual_session_service->CreateSession(
-              ntp_composebox::kSendLnsSurfaceParam.Get(),
-              ntp_composebox::kMaxNumFiles.Get() > 1,
-              ntp_composebox::kEnableViewportImages.Get());
+              ntp_composebox::CreateQueryControllerConfigParams());
       contextual_session_web_contents_helper->set_session_handle(
           std::move(contextual_session_handle));
     }
@@ -1085,9 +1083,7 @@ void NewTabPageUI::CreatePageHandler(
     auto* contextual_session_service =
         ContextualSessionServiceFactory::GetForProfile(profile_);
     auto contextual_session_handle = contextual_session_service->CreateSession(
-        ntp_composebox::kSendLnsSurfaceParam.Get(),
-        ntp_composebox::kMaxNumFiles.Get() > 1,
-        ntp_composebox::kEnableViewportImages.Get());
+        ntp_composebox::CreateQueryControllerConfigParams());
     contextual_session_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
   }

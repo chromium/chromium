@@ -138,6 +138,18 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
       AimEligibilityServiceFactory::GetForProfile(profile), kNtpComposebox);
 }
 
+std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+CreateQueryControllerConfigParams() {
+  auto config_params = std::make_unique<
+      ComposeboxQueryController::QueryControllerConfigParams>();
+  config_params->send_lns_surface = kSendLnsSurfaceParam.Get();
+  config_params->suppress_lns_surface_param_if_no_image =
+      kSuppressLnsSurfaceParamIfNoImage.Get();
+  config_params->enable_multi_context_input_flow = kMaxNumFiles.Get() > 1;
+  config_params->enable_viewport_images = kEnableViewportImages.Get();
+  return config_params;
+}
+
 BASE_FEATURE(kNtpComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
@@ -147,6 +159,11 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
 const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
                                                     "SendLnsSurfaceParam",
                                                     true);
+
+const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
+    &kNtpComposebox,
+    "SuppressLnsSurfaceParamIfNoImage",
+    true);
 
 const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",
@@ -174,10 +191,9 @@ const base::FeatureParam<bool> kShowContextMenuDescription(
     &kNtpComposebox,
     "ShowContextMenuDescription",
     true);
-const base::FeatureParam<bool> kEnableViewportImages(
-    &kNtpComposebox,
-    "EnableViewportImages",
-    true);
+const base::FeatureParam<bool> kEnableViewportImages(&kNtpComposebox,
+                                                     "EnableViewportImages",
+                                                     true);
 
 const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,
                                                    "ShowToolsAndModels",

@@ -185,6 +185,13 @@ bool IsValidFileUploadStatusForMultimodalRequest(
          upload_status == FileUploadStatus::kUploadSuccessful;
 }
 
+// Returns true if the media type has an image.
+bool MediaTypeHasImage(lens::LensOverlayRequestId::MediaType media_type) {
+  return media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
+         media_type ==
+             lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
+         media_type == lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE;
+}
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -194,18 +201,19 @@ ComposeboxQueryController::ComposeboxQueryController(
     std::string locale,
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
-    bool send_lns_surface,
-    bool enable_multi_context_input_flow,
-    bool enable_viewport_images)
+    std::unique_ptr<QueryControllerConfigParams> feature_params)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
       locale_(locale),
       template_url_service_(template_url_service),
-      variations_client_(variations_client),
-      send_lns_surface_(send_lns_surface),
-      enable_multi_context_input_flow_(enable_multi_context_input_flow),
-      enable_viewport_images_(enable_viewport_images) {
+      variations_client_(variations_client) {
+  send_lns_surface_ = feature_params->send_lns_surface;
+  suppress_lns_surface_param_if_no_image_ =
+      feature_params->suppress_lns_surface_param_if_no_image;
+  enable_multi_context_input_flow_ =
+      feature_params->enable_multi_context_input_flow;
+  enable_viewport_images_ = feature_params->enable_viewport_images;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -267,6 +275,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
     if (enable_multi_context_input_flow_) {
       std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
           std::make_unique<lens::LensOverlayContextualInputs>();
+      bool has_image_upload = false;
       for (const auto& [file_token, file_info] : active_files_) {
         if (IsValidFileUploadStatusForMultimodalRequest(
                 file_info->upload_status_)) {
@@ -274,8 +283,14 @@ GURL ComposeboxQueryController::CreateSearchUrl(
           auto* contextual_input = contextual_inputs->add_inputs();
           contextual_input->mutable_request_id()->CopyFrom(
               *file_info->request_id_);
+          has_image_upload |=
+              MediaTypeHasImage(file_info->request_id_->media_type());
         }
       }
+
+      bool should_send_lns_surface =
+          send_lns_surface_ &&
+          (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
       return GetUrlForMultimodalSearch(
           template_url_service_,
           /*is_aim_search=*/search_url_request_info->search_url_type ==
@@ -283,7 +298,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
           omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
           search_url_request_info->query_start_time,
           cluster_info_->search_session_id(), std::move(contextual_inputs),
-          send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
+          should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
           base::UTF8ToUTF16(search_url_request_info->query_text),
           std::move(search_url_request_info->additional_params));
     } else {
@@ -297,6 +312,10 @@ GURL ComposeboxQueryController::CreateSearchUrl(
       if (IsValidFileUploadStatusForMultimodalRequest(
               last_file->upload_status_)) {
         num_files_in_request_ = 1;
+        bool should_send_lns_surface =
+            send_lns_surface_ &&
+            (!suppress_lns_surface_param_if_no_image_ ||
+             MediaTypeHasImage(last_file->request_id_->media_type()));
         return GetUrlForMultimodalSearch(
             template_url_service_,
             /*is_aim_search=*/search_url_request_info->search_url_type ==
@@ -308,7 +327,7 @@ GURL ComposeboxQueryController::CreateSearchUrl(
                              last_file->mime_type_,
                              last_file->request_id_->media_type()),
             last_file->mime_type_,
-            send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
+            should_send_lns_surface ? kLnsSurfaceParameterValue : std::string(),
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params));
       }

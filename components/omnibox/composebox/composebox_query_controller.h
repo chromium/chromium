@@ -211,6 +211,21 @@ class ComposeboxQueryController {
     std::map<std::string, std::string> additional_params;
   };
 
+  // Struct containing configuration params for the query controller.
+  struct QueryControllerConfigParams {
+   public:
+    // Whether to send the `lns_surface` parameter in search URLs.
+    bool send_lns_surface = false;
+    // If `send_lns_surface` is true, whether to suppress the `lns_surface`
+    // parameter if there is no image upload. Does nothing if `send_lns_surface`
+    // is false.
+    bool suppress_lns_surface_param_if_no_image = true;
+    // Whether to enable the multi-context input flow.
+    bool enable_multi_context_input_flow = false;
+    // Whether to enable viewport images.
+    bool enable_viewport_images = false;
+  };
+
   ComposeboxQueryController(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -218,9 +233,7 @@ class ComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      bool send_lns_surface,
-      bool enable_multi_context_input_flow,
-      bool enable_viewport_images);
+      std::unique_ptr<QueryControllerConfigParams> config_params);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -469,6 +482,11 @@ class ComposeboxQueryController {
   // TODO(crbug.com/430070871): Remove this once the server supports the
   // `lns_surface` parameter.
   bool send_lns_surface_;
+
+  // If `send_lns_surface_` is true, whether to suppress the `lns_surface`
+  // parameter if there is no image upload. Does nothing if `send_lns_surface_`
+  // is false.
+  bool suppress_lns_surface_param_if_no_image_;
 
   // Whether or not to use the multiple-input id request generation flow.
   bool enable_multi_context_input_flow_;

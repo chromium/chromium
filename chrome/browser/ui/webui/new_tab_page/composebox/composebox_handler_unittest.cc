@@ -66,12 +66,15 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
+    auto query_controller_config_params = std::make_unique<
+        ComposeboxQueryController::QueryControllerConfigParams>();
+    query_controller_config_params->send_lns_surface = false;
+    query_controller_config_params->enable_multi_context_input_flow = false;
+    query_controller_config_params->enable_viewport_images = true;
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
-        fake_variations_client(), /*send_lns_surface=*/false,
-        /*enable_multi_context_input_flow=*/false,
-        /*enable_viewport_images=*/true);
+        fake_variations_client(), std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
 
     service_ = std::make_unique<ContextualSessionService>(

@@ -112,6 +112,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
+  auto query_contoller_config_params = std::make_unique<
+      ComposeboxQueryController::QueryControllerConfigParams>();
+  query_contoller_config_params->send_lns_surface = false;
+  query_contoller_config_params->enable_multi_context_input_flow = false;
+  query_contoller_config_params->enable_viewport_images = true;
   auto composeboxQueryController =
       std::make_unique<ComposeboxQueryControllerIOS>(
           identityManager, GetApplicationContext()->GetSharedURLLoaderFactory(),
@@ -119,9 +124,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
           templateURLService,
           VariationsClientServiceFactory::GetForProfile(self.profile),
-          /*send_lns_surface=*/false,
-          /*enable_multi_context_input_flow=*/false,
-          /*enable_viewport_images=*/true);
+          std::move(query_contoller_config_params));
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
