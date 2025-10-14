@@ -166,15 +166,23 @@ class FakePredictionModelDownloadManager
   ~FakePredictionModelDownloadManager() override = default;
 
   void StartDownload(const GURL& url,
-                     proto::OptimizationTarget optimization_target) override {
+                     proto::OptimizationTarget optimization_target,
+                     const std::optional<download::SchedulingParams>&
+                         scheduling_params) override {
     last_requested_download_ = url;
     last_requested_optimization_target_ = optimization_target;
+    last_requested_scheduling_params_ = scheduling_params;
   }
 
   GURL last_requested_download() const { return last_requested_download_; }
 
   proto::OptimizationTarget last_requested_optimization_target() const {
     return last_requested_optimization_target_;
+  }
+
+  std::optional<download::SchedulingParams> last_requested_scheduling_params()
+      const {
+    return last_requested_scheduling_params_;
   }
 
   void CancelAllPendingDownloads() override { cancel_downloads_called_ = true; }
@@ -188,6 +196,7 @@ class FakePredictionModelDownloadManager
  private:
   GURL last_requested_download_;
   proto::OptimizationTarget last_requested_optimization_target_;
+  std::optional<download::SchedulingParams> last_requested_scheduling_params_;
   bool cancel_downloads_called_ = false;
   bool is_available_ = true;
 };
@@ -1038,6 +1047,40 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
   EXPECT_EQ(
       prediction_model_download_manager()->last_requested_optimization_target(),
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  EXPECT_FALSE(prediction_model_download_manager()
+                   ->last_requested_scheduling_params()
+                   .has_value());
+}
+
+TEST_F(PredictionManagerTest, ModelDownloadWithCustomSchedulingParams) {
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+
+  download::SchedulingParams scheduling_params;
+  scheduling_params.priority = download::SchedulingParams::Priority::LOW;
+  prediction_manager()->SetModelDownloadSchedulingParams(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, scheduling_params);
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, std::nullopt, task_runner(),
+      &observer);
+
+  SetStoreInitialized();
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+
+  EXPECT_EQ(
+      prediction_model_download_manager()->last_requested_optimization_target(),
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  EXPECT_TRUE(prediction_model_download_manager()
+                  ->last_requested_scheduling_params()
+                  .has_value());
+  EXPECT_EQ(prediction_model_download_manager()
+                ->last_requested_scheduling_params()
+                ->priority,
+            download::SchedulingParams::Priority::LOW);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {

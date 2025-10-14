@@ -31,12 +31,14 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
   PermissionsAiv4Handler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      RequestType request_type);
+      RequestType request_type,
+      const std::optional<download::SchedulingParams>& scheduling_params);
   PermissionsAiv4Handler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
       std::unique_ptr<PermissionsAiv4Executor> model_executor,
+      const std::optional<download::SchedulingParams>& scheduling_params,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner =
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),

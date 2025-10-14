@@ -70,7 +70,8 @@ PermissionsAiv4HandlerFake::PermissionsAiv4HandlerFake(
     permissions::RequestType request_type)
     : PermissionsAiv4Handler(model_provider,
                              optimization_target,
-                             request_type) {}
+                             request_type,
+                             /*scheduling_params=*/std::nullopt) {}
 
 void PermissionsAiv4HandlerFake::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,

@@ -67,7 +67,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
       scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner =
           nullptr,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner =
-          base::SequencedTaskRunner::GetCurrentDefault())
+          base::SequencedTaskRunner::GetCurrentDefault(),
+      const std::optional<download::SchedulingParams>& scheduling_params =
+          std::nullopt)
       : model_provider_(model_provider),
         optimization_target_(optimization_target),
         model_executor_(std::move(model_executor)),
@@ -95,6 +97,11 @@ class ModelHandler : public OptimizationTargetModelObserver {
         model_inference_timeout, optimization_target_,
         model_loading_task_runner, model_task_runner_,
         /*reply_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
+
+    if (scheduling_params) {
+      model_provider_->SetModelDownloadSchedulingParams(optimization_target_,
+                                                        *scheduling_params);
+    }
 
     // Run this after the executor is initialized in case the model is already
     // available.

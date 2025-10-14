@@ -135,7 +135,8 @@ PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
 
 void PredictionModelDownloadManager::StartDownload(
     const GURL& download_url,
-    proto::OptimizationTarget optimization_target) {
+    proto::OptimizationTarget optimization_target,
+    const std::optional<download::SchedulingParams>& scheduling_params) {
   download::DownloadParams download_params;
   download_params.client =
       download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
@@ -155,12 +156,17 @@ void PredictionModelDownloadManager::StartDownload(
   download_params.request_params.method = "GET";
   google_apis::AddAPIKeyToRequest(
       download_params.request_params.request_headers, api_key_);
-  download_params.scheduling_params.priority =
-      download::SchedulingParams::Priority::HIGH;
-  download_params.scheduling_params.battery_requirements =
-      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
-  download_params.scheduling_params.network_requirements =
-      download::SchedulingParams::NetworkRequirements::NONE;
+
+  if (scheduling_params) {
+    download_params.scheduling_params = *scheduling_params;
+  } else {
+    download_params.scheduling_params.priority =
+        download::SchedulingParams::Priority::HIGH;
+    download_params.scheduling_params.battery_requirements =
+        download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+    download_params.scheduling_params.network_requirements =
+        download::SchedulingParams::NetworkRequirements::NONE;
+  }
 
   download::BackgroundDownloadService* download_service =
       download_service_tracker_->GetBackgroundDownloadService();

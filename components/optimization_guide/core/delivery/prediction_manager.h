@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
+#include "components/download/public/background_service/download_params.h"
 #include "components/optimization_guide/core/delivery/model_enums.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_observer.h"
@@ -138,6 +139,9 @@ class PredictionManager : public PredictionModelDownloadObserver,
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) override;
+  void SetModelDownloadSchedulingParams(
+      proto::OptimizationTarget optimization_target,
+      const download::SchedulingParams& params) override;
 
  protected:
   // Process `prediction_models` to be stored in the in memory optimization
@@ -297,6 +301,12 @@ class PredictionManager : public PredictionModelDownloadObserver,
   // internals page. Not owned. Guaranteed to outlive |this|, since the logger
   // and |this| are owned by the optimization guide keyed service.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
+  // Custom scheduling params that can be set for a given optimization target.
+  // If an entry is present for a given target, it will be used instead of the
+  // default params.
+  base::flat_map<proto::OptimizationTarget, download::SchedulingParams>
+      custom_scheduling_params_;
 
   // Callback to build Unzipper remotes.
   unzip::UnzipperFactory unzipper_factory_;

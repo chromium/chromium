@@ -100,12 +100,14 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
 
   if (IsAiv4ModelAvailable()) {
     VLOG(1) << "[PermissionsAI] PredictionModelHandlerProvider init AIv4";
+    // TODO(crbug.com/382447738) for android, set scheduling parameters that
+    // take account for limited internet connection and battery.
     notification_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide, getNotificationsAiv4OptTarget(),
-        RequestType::kNotifications);
+        RequestType::kNotifications, std::nullopt);
     geolocation_aiv4_handler_ = std::make_unique<PermissionsAiv4Handler>(
         optimization_guide, getGeolocationAiv4OptTarget(),
-        RequestType::kGeolocation);
+        RequestType::kGeolocation, std::nullopt);
     return;
   }
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {

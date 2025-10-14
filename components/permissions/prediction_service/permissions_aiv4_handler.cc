@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "components/download/public/background_service/download_params.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
@@ -27,6 +28,7 @@ PermissionsAiv4Handler::PermissionsAiv4Handler(
     optimization_guide::proto::OptimizationTarget optimization_target,
     RequestType request_type,
     std::unique_ptr<PermissionsAiv4Executor> model_executor,
+    const std::optional<download::SchedulingParams>& scheduling_params,
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
     scoped_refptr<base::SequencedTaskRunner> reply_task_runner)
     : ModelHandler<ModelOutput, const ModelInput&>(
@@ -37,18 +39,21 @@ PermissionsAiv4Handler::PermissionsAiv4Handler(
           optimization_target,
           /*model_metadata=*/std::nullopt,
           /*model_loading_task_runner=*/nullptr,
-          reply_task_runner) {}
+          reply_task_runner,
+          scheduling_params) {}
 
 PermissionsAiv4Handler::PermissionsAiv4Handler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target,
-    RequestType request_type)
+    RequestType request_type,
+    const std::optional<download::SchedulingParams>& scheduling_params)
     : PermissionsAiv4Handler(
           model_provider,
           optimization_target,
           request_type,
           /*model_executor=*/
-          std::make_unique<PermissionsAiv4Executor>(request_type)) {}
+          std::make_unique<PermissionsAiv4Executor>(request_type),
+          scheduling_params) {}
 
 PermissionsAiv4Handler::~PermissionsAiv4Handler() = default;
 

@@ -84,9 +84,13 @@ class PredictionModelDownloadManager {
   PredictionModelDownloadManager& operator=(
       const PredictionModelDownloadManager&) = delete;
 
-  // Starts a download for |download_url|.
-  virtual void StartDownload(const GURL& download_url,
-                             proto::OptimizationTarget optimization_target);
+  // Starts a download for |download_url|. If |scheduling_params| is
+  // provided, its fields will be used in place of the default download
+  // parameters.
+  virtual void StartDownload(
+      const GURL& download_url,
+      proto::OptimizationTarget optimization_target,
+      const std::optional<download::SchedulingParams>& scheduling_params);
 
   // Verifies the |download_file_path| came from a trusted source and process
   // the downloaded contents. After verification, creates |base_model_dir|.

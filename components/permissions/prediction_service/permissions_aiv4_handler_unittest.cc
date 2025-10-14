@@ -132,7 +132,8 @@ class PermissionsAiv4HandlerMock : public PermissionsAiv4Handler {
       : PermissionsAiv4Handler(model_provider,
                                optimization_target,
                                request_type,
-                               std::move(model_executor)) {}
+                               std::move(model_executor),
+                               /*scheduling_params=*/std::nullopt) {}
 
   // This is a mock implementation of ExecuteModelWithInput that does not
   // schedule the real model execution but captures the callback. This gives the
@@ -170,7 +171,7 @@ class Aiv4HandlerTestBase : public testing::Test {
         model_provider_.get(),
         /*optimization_target=*/kOptTargetNotifications,
         /*request_type=*/RequestType::kNotifications,
-        std::move(notification_executor_mock));
+        std::move(notification_executor_mock), std::nullopt);
   }
 
   void TearDown() override {

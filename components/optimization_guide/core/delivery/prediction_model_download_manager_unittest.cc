@@ -315,6 +315,46 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
       "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded", 0);
 }
 
+MATCHER_P(SchedulingParamsEq, expected_params, "") {
+  return arg.scheduling_params.priority == expected_params.priority &&
+         arg.scheduling_params.battery_requirements ==
+             expected_params.battery_requirements &&
+         arg.scheduling_params.network_requirements ==
+             expected_params.network_requirements;
+}
+
+TEST_F(PredictionModelDownloadManagerTest,
+       StartDownloadWithDefaultSchedulingParams) {
+  download::SchedulingParams scheduling_params;
+  scheduling_params.priority = download::SchedulingParams::Priority::HIGH;
+  scheduling_params.battery_requirements =
+      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+  scheduling_params.network_requirements =
+      download::SchedulingParams::NetworkRequirements::NONE;
+
+  EXPECT_CALL(*download_service(),
+              StartDownload_(SchedulingParamsEq(scheduling_params)));
+  download_manager()->StartDownload(
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      std::nullopt);
+}
+
+TEST_F(PredictionModelDownloadManagerTest,
+       StartDownloadWithCustomSchedulingParams) {
+  download::SchedulingParams scheduling_params;
+  scheduling_params.priority = download::SchedulingParams::Priority::LOW;
+  scheduling_params.battery_requirements =
+      download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE;
+  scheduling_params.network_requirements =
+      download::SchedulingParams::NetworkRequirements::UNMETERED;
+
+  EXPECT_CALL(*download_service(),
+              StartDownload_(SchedulingParamsEq(scheduling_params)));
+  download_manager()->StartDownload(
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      scheduling_params);
+}
+
 TEST_F(PredictionModelDownloadManagerTest,
        StartDownloadUnrestrictedDownloading) {
   base::HistogramTester histogram_tester;
@@ -323,7 +363,8 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_CALL(*download_service(), StartDownload_(_))
       .WillOnce(MoveArg<0>(&download_params));
   download_manager()->StartDownload(
-      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*scheduling_params=*/std::nullopt);
 
   // Validate parameters - basically that we attach the correct client, just do
   // a passthrough of the URL, and attach the API key.
@@ -376,7 +417,8 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadFailedToSchedule) {
   EXPECT_CALL(*download_service(), StartDownload_(_))
       .WillOnce(MoveArg<0>(&download_params));
   download_manager()->StartDownload(
-      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*scheduling_params=*/std::nullopt);
 
   // Now invoke start callback.
   std::move(download_params.callback)
