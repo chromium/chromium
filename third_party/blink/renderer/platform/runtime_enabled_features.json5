@@ -1107,6 +1107,10 @@
       status: "experimental",
     },
     {
+      name: "ComputeInlineContentsSafeRetarget",
+      status: "stable",
+    },
+    {
       name: "ComputePressure",
       status: {
         "Android": "",

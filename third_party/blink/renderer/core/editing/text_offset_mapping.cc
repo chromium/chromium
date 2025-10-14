@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
@@ -250,8 +251,15 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
   // is anonymous and outside the shadow root we should pass
   // node as Shadow host and get the layout object from that.
   if (node.IsInUserAgentShadowRoot() && block_flow->IsAnonymous()) {
-    return CreateInlineContentsFromBlockFlow(
-        *block_flow, *(node.OwnerShadowHost()->GetLayoutObject()));
+    auto* shadow_host_layout_object = node.OwnerShadowHost()->GetLayoutObject();
+    // The shadow host's LayoutObject may be null, for example when the host
+    // is a <slot> element with `display: contents`.
+    if (RuntimeEnabledFeatures::ComputeInlineContentsSafeRetargetEnabled() &&
+        !shadow_host_layout_object) {
+      return TextOffsetMapping::InlineContents();
+    }
+    return CreateInlineContentsFromBlockFlow(*block_flow,
+                                             *shadow_host_layout_object);
   }
   return CreateInlineContentsFromBlockFlow(*block_flow, *layout_object);
 }
