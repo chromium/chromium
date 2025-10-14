@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import SwiftUI
+import UIKit
 import ios_chrome_common_ui_colors_swift
 
 /// Custom toggle style for Overflow Menu Action rows, consisting of a circle
@@ -196,6 +197,11 @@ struct OverflowMenuActionRow: View {
   var button: some View {
     if isEditing {
       rowContent
+    } else if let menu = action.menu {
+      Button(action: {}) {
+        rowContent
+      }
+      .overlay(UIMenuPresenter(menu: menu))
     } else {
       Button(
         action: {
@@ -262,5 +268,21 @@ struct OverflowMenuActionRow: View {
         }
       }
       .accessibilityIdentifier("overflowRowIPHBadgeIdentifier")
+  }
+}
+
+/// A UIViewRepresentable that wraps a UIButton to present a UIMenu on primary tap.
+struct UIMenuPresenter: UIViewRepresentable {
+  /// The UIMenu to present.
+  let menu: UIMenu
+
+  func makeUIView(context: Context) -> UIButton {
+    let button = UIButton()
+    button.showsMenuAsPrimaryAction = true
+    return button
+  }
+
+  func updateUIView(_ uiView: UIButton, context: Context) {
+    uiView.menu = menu
   }
 }
