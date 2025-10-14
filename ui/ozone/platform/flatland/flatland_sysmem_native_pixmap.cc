@@ -6,6 +6,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -54,6 +55,11 @@ uint64_t FlatlandSysmemNativePixmap::GetBufferFormatModifier() const {
 
 gfx::BufferFormat FlatlandSysmemNativePixmap::GetBufferFormat() const {
   return collection_->format();
+}
+
+viz::SharedImageFormat FlatlandSysmemNativePixmap::GetSharedImageFormat()
+    const {
+  return viz::GetSharedImageFormat(collection_->format());
 }
 
 gfx::Size FlatlandSysmemNativePixmap::GetBufferSize() const {
