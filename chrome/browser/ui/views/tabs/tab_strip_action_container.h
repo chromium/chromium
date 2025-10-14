@@ -153,8 +153,6 @@ class TabStripActionContainer : public views::View,
   // UI controls for updating buttons based on the floaty view state:
   void HighlightGlicActorTaskIcon();
   void UnhighlightGlicActorTaskIcon();
-  void HighlightGlicButton();
-  void UnhighlightGlicButton();
 
   void UpdateButtonBorders(gfx::Insets button_insets);
 

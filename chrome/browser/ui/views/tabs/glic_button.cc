@@ -435,12 +435,6 @@ void GlicButton::AnnounceNudgeShown() {
   GetViewAccessibility().AnnounceAlert(announcement);
 }
 
-void GlicButton::HighlightGlicButton() {
-  SetBackgroundFrameActiveColorId(kColorTabBackgroundInactiveHoverFrameActive);
-  SetBackgroundFrameInactiveColorId(
-      kColorTabBackgroundInactiveHoverFrameInactive);
-}
-
 void GlicButton::SetDefaultColors() {
   SetForegroundFrameActiveColorId(
       EntrypointVariationsEnabled() ? kDefaultTextColorV2

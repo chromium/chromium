@@ -90,9 +90,6 @@ class GlicButton : public TabStripNudgeButton,
   // Sets the button back to its default colors.
   void SetDefaultColors();
 
-  // Sets the button to its highlighted state.
-  void HighlightGlicButton();
-
   // Called when the slide animation finishes.
   void OnAnimationEnded();
 
