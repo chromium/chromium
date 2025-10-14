@@ -7,14 +7,10 @@
 # https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
 
 # TODO(https://crbug.com/341267427): Reduce this list.
-+com.google.android.apps.chrome.rlz.RevenueStatsInternal
-+org.chromium.base.SysUtils
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask
-+org.chromium.base.version_info.VersionInfo
 +org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
 +org.chromium.chrome.browser.firstrun.FirstRunUtils
-+org.chromium.chrome.browser.incognito.IncognitoUtils
 +org.chromium.chrome.browser.init.ChromeBrowserInitializer
 +org.chromium.chrome.browser.lens.LensController
 +org.chromium.chrome.browser.lens.LensPolicyUtils

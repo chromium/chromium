@@ -36,30 +36,41 @@ public class SysUtils {
     private static @Nullable Boolean sLowEndDevice;
     private static @Nullable Integer sAmountOfPhysicalMemoryKB;
     private static @Nullable Boolean sHasCameraForTesting;
+    private static @Nullable Boolean sIsCurrentlyLowMemoryForTesting;
     private static int sLowMemoryThresholdMB = LOW_MEMORY_DEVICE_THRESHOLD_MB;
 
     private SysUtils() {}
 
-    /**
-     * Overrides the value of {@link #isLowEndDevice()} for testing.
-     */
-    public static void setIsLowEndDeviceForTesting(@Nullable Boolean isLowEndDevice) {
+    /** Overrides the value of {@link #isLowEndDevice()} for testing. */
+    public static void setIsLowEndDeviceForTesting(boolean isLowEndDevice) {
         sLowEndDevice = isLowEndDevice;
         ResettersForTesting.register(() -> sLowEndDevice = null);
     }
 
-    /**
-     * Overrides the value of {@link #hasCamera(Context)} for testing.
-     */
+    /** Overrides the value of {@link #amountOfPhysicalMemoryKB()} for testing. */
+    public static void setAmountOfPhysicalMemoryKbForTesting(int value) {
+        Integer prev = sAmountOfPhysicalMemoryKB;
+        sAmountOfPhysicalMemoryKB = value;
+        ResettersForTesting.register(() -> sAmountOfPhysicalMemoryKB = prev);
+    }
+
+    /** Overrides the value of {@link #hasCamera(Context)} for testing. */
     public static void setHasCameraForTesting(@Nullable Boolean hasCamera) {
         sHasCameraForTesting = hasCamera;
         ResettersForTesting.register(() -> sHasCameraForTesting = null);
     }
 
+    /** Overrides the value of {@link #isCurrentlyLowMemory()} for testing. */
+    public static void setIsCurrentlyLowMemoryForTesting(boolean isCurrentlyLowMemory) {
+        sIsCurrentlyLowMemoryForTesting = isCurrentlyLowMemory;
+        ResettersForTesting.register(() -> sIsCurrentlyLowMemoryForTesting = null);
+    }
+
     /**
      * Return the amount of physical memory on this device in kilobytes.
-     * @return Amount of physical memory in kilobytes, or 0 if there was
-     *         an error trying to access the information.
+     *
+     * @return Amount of physical memory in kilobytes, or 0 if there was an error trying to access
+     *     the information.
      */
     private static int detectAmountOfPhysicalMemoryKB() {
         // Extract total memory RAM size by parsing /proc/meminfo, note that
@@ -132,6 +143,9 @@ public class SysUtils {
      * @return Whether or not the system has low available memory.
      */
     public static boolean isCurrentlyLowMemory() {
+        if (sIsCurrentlyLowMemoryForTesting != null) {
+            return sIsCurrentlyLowMemoryForTesting;
+        }
         ActivityManager am =
                 (ActivityManager)
                         ContextUtils.getApplicationContext()

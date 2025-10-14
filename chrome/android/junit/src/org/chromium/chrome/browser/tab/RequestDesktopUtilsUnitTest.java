@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroidManager;
-import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowTabUtils;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
@@ -90,28 +89,11 @@ import java.util.Map;
 @Config(
         manifest = Config.NONE,
         shadows = {
-            ShadowSysUtils.class,
             ShadowDisplayAndroid.class,
             ShadowDisplayAndroidManager.class,
             ShadowTabUtils.class
         })
 public class RequestDesktopUtilsUnitTest {
-
-    /** Shadows {@link SysUtils} class for testing. */
-    @Implements(SysUtils.class)
-    public static class ShadowSysUtils {
-        private static int sMemoryInMB;
-
-        public static void setMemoryInMB(int memoryInMB) {
-            sMemoryInMB = memoryInMB;
-        }
-
-        @Implementation
-        public static int amountOfPhysicalMemoryKB() {
-            return sMemoryInMB * ConversionUtils.KILOBYTES_PER_MEGABYTE;
-        }
-    }
-
     @Implements(DisplayAndroid.class)
     static class ShadowDisplayAndroid {
         private static DisplayAndroid sDisplayAndroid;
@@ -247,7 +229,8 @@ public class RequestDesktopUtilsUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
 
-        ShadowSysUtils.setMemoryInMB(7000);
+        SysUtils.setAmountOfPhysicalMemoryKbForTesting(
+                7000 * ConversionUtils.KILOBYTES_PER_MEGABYTE);
         ShadowDisplayAndroid.setDisplayAndroid(mDisplayAndroid);
         when(mDisplayAndroid.getDisplayWidth()).thenReturn(1600);
         when(mDisplayAndroid.getDisplayHeight()).thenReturn(2560);
@@ -565,7 +548,8 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void testShouldDefaultEnableGlobalSetting_IsAndroidDesktop() {
         mOverrideContextWrapperTestRule.setIsDesktop(true);
-        ShadowSysUtils.setMemoryInMB(4000);
+        SysUtils.setAmountOfPhysicalMemoryKbForTesting(
+                4000 * ConversionUtils.KILOBYTES_PER_MEGABYTE);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11, mActivity);
         Assert.assertTrue(
@@ -576,7 +560,8 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldDefaultEnableGlobalSetting_MemoryThreshold() {
-        ShadowSysUtils.setMemoryInMB(6000);
+        SysUtils.setAmountOfPhysicalMemoryKbForTesting(
+                6000 * ConversionUtils.KILOBYTES_PER_MEGABYTE);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
                         RequestDesktopUtils
