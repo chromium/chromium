@@ -39,7 +39,6 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
   DCHECK(browser_view_);
   DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
   SetID(VIEW_ID_WEB_APP_FRAME_TOOLBAR);
-  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   {
     // TODO(tluk) fix the need for both LayoutInContainer() and a layout
@@ -95,6 +94,9 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
   if (browser_view_->AppUsesBorderlessMode()) {
     UpdateBorderlessModeEnabled();
   }
+
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(
+      std::make_unique<ViewTargeter>(this)));
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -307,25 +309,6 @@ ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
   return right_container_ ? right_container_->GetDownloadButton() : nullptr;
 }
 
-bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
-                                               const gfx::Rect& rect) const {
-  DCHECK_EQ(target, this);
-  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
-    return false;
-  }
-
-  // If the rect is inside the bounds of the center_container, do not claim it.
-  // There is no actionable content in the center_container, and it overlaps
-  // tabs in tabbed PWA windows.
-  gfx::RectF rect_in_center_container_coords_f(rect);
-  View::ConvertRectToTarget(this, center_container_,
-                            &rect_in_center_container_coords_f);
-  gfx::Rect rect_in_client_view_coords =
-      gfx::ToEnclosingRect(rect_in_center_container_coords_f);
-
-  return !center_container_->HitTestRect(rect_in_client_view_coords);
-}
-
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     // The color is not set until the view is added to a widget.
@@ -419,6 +402,59 @@ void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
     SetBackground(views::CreateSolidBackground(background_color));
   }
 }
+
+// A view targeter delegate for the WebAppFrameToolbarView that
+// allows mouse events to fall through to the underlying web contents
+// in regions with no interactive UI.
+class WebAppFrameToolbarView::ViewTargeter
+    : public views::ViewTargeterDelegate {
+ public:
+  explicit ViewTargeter(WebAppFrameToolbarView* view) : view_(view) {}
+  ViewTargeter(const ViewTargeter&) = delete;
+  ViewTargeter& operator=(const ViewTargeter&) = delete;
+  ~ViewTargeter() override = default;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    CHECK_EQ(target, view_);
+
+    if (!view_->browser_view_->IsWindowControlsOverlayEnabled()) {
+      return views::ViewTargeterDelegate::DoesIntersectRect(view_, rect);
+    }
+
+    // When WindowControlsOverlay is enabled, only target the toolbar if the
+    // event hits the visible button containers on the left or right.
+
+    // Check the left container if it exists.
+    if (view_->left_container_) {
+      gfx::RectF converted_rect(rect);
+      views::View::ConvertRectToTarget(view_, view_->left_container_,
+                                       &converted_rect);
+      if (view_->left_container_->HitTestRect(
+              gfx::ToEnclosingRect(converted_rect))) {
+        return true;
+      }
+    }
+
+    // Check the right container.
+    CHECK(view_->right_container_);
+    gfx::RectF converted_rect(rect);
+    views::View::ConvertRectToTarget(view_, view_->right_container_,
+                                     &converted_rect);
+    if (view_->right_container_->HitTestRect(
+            gfx::ToEnclosingRect(converted_rect))) {
+      return true;
+    }
+
+    // The event is within the toolbar's bounds but not on any of the visible
+    // button containers, so let it pass through.
+    return false;
+  }
+
+ private:
+  const raw_ptr<WebAppFrameToolbarView> view_ = nullptr;
+};
 
 BEGIN_METADATA(WebAppFrameToolbarView)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)

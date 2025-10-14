@@ -4989,7 +4989,6 @@ void BrowserView::AddedToWidget() {
   if (GetIsWebAppType()) {
     web_app_frame_toolbar_ = top_container_->AddChildView(
         std::make_unique<WebAppFrameToolbarView>(this));
-    top_container_->set_web_app_frame_toolbar(web_app_frame_toolbar_);
     if (ShouldShowWindowTitle()) {
       web_app_window_title_ = top_container_->AddChildView(
           std::make_unique<views::Label>(GetWindowTitle()));

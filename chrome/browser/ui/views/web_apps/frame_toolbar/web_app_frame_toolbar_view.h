@@ -24,7 +24,6 @@ class LocationBarViewQuietNotificationInteractiveUITest;
 
 namespace views {
 class View;
-class ViewTargeterDelegate;
 }  // namespace views
 
 class BrowserView;
@@ -33,11 +32,11 @@ class PageActionIconController;
 class PinnedToolbarActionsContainer;
 class WebAppNavigationButtonContainer;
 class WebAppToolbarButtonContainer;
+class WebAppFrameToolbarView;
 
 // A container for web app buttons in the title bar.
 class WebAppFrameToolbarView : public views::AccessiblePaneView,
-                               public ToolbarButtonProvider,
-                               public views::ViewTargeterDelegate {
+                               public ToolbarButtonProvider {
   METADATA_HEADER(WebAppFrameToolbarView, views::AccessiblePaneView)
 
  public:
@@ -91,10 +90,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
 
-  // views::ViewTargeterDelegate
-  bool DoesIntersectRect(const View* target,
-                         const gfx::Rect& rect) const override;
-
   void OnWindowControlsOverlayEnabledChanged();
   void UpdateBorderlessModeEnabled();
   void SetWindowControlsOverlayToggleVisible(bool visible);
@@ -113,6 +108,8 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
 
  private:
+  class ViewTargeter;
+  friend class WebAppFrameToolbarViewTargeter;
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
   friend class WebAppFrameViewChromeOSTest;
