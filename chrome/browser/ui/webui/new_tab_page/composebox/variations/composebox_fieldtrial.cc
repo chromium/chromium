@@ -211,10 +211,6 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
     return false;
   }
 
-  if (!ntp_composebox::IsNtpComposeboxEnabled(profile)) {
-    return false;
-  }
-
   // The `AimEligibilityService` depends on the `TemplateURLService`. If the
   // `TemplateURLService` does not exist for this profile, then the
   // `AimEligibilityService` cannot be created.
@@ -242,7 +238,7 @@ const base::FeatureParam<RealboxLayoutMode>::Option
 const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
     &kNtpRealboxNext,
     "RealboxLayoutMode",
-    RealboxLayoutMode::kCompact,
+    RealboxLayoutMode::kTallBottomContext,
     &kRealboxLayoutModeOptions);
 
 std::string_view RealboxLayoutModeToString(

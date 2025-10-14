@@ -288,12 +288,6 @@ export class SearchboxElement extends SearchboxElementBase {
 
       composeButtonEnabled: {type: Boolean},
 
-      placeholderText: {
-        type: String,
-        reflect: true,
-        notify: true,
-      },
-
       //========================================================================
       // Private properties
       //========================================================================
@@ -339,6 +333,12 @@ export class SearchboxElement extends SearchboxElementBase {
        * match from offering inline autocompletion.
        */
       pastedInInput_: {type: Boolean},
+
+      placeholderText: {
+        type: String,
+        reflect: true,
+        notify: true,
+      },
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
@@ -411,7 +411,6 @@ export class SearchboxElement extends SearchboxElementBase {
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
-  accessor placeholderText: string = '';
   protected accessor inputAriaLive_: string = '';
   private accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
@@ -423,6 +422,7 @@ export class SearchboxElement extends SearchboxElementBase {
   private accessor lastInput_: Input = {text: '', inline: ''};
   private accessor lastQueriedInput_: string|null = null;
   private accessor pastedInInput_: boolean = false;
+  private accessor placeholderText: string = '';
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -1216,9 +1216,9 @@ export class SearchboxElement extends SearchboxElementBase {
     return this.result_.matches[this.selectedMatchIndex_] || null;
   }
 
-  protected computePlaceholderText_(placeholderText: string): string {
-    if (placeholderText) {
-      return placeholderText;
+  protected computePlaceholderText_(): string {
+    if (this.placeholderText) {
+      return this.placeholderText;
     }
     return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
                                 this.i18n('searchBoxHint');
