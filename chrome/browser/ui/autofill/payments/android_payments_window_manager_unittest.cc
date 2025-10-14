@@ -133,61 +133,12 @@ TEST_F(AndroidPaymentsWindowManagerTest, InitBnplFlow) {
                                        true, 1);
 }
 
-// Test that when the web contents are destroyed during a BNPL flow after a
-// successful navigation, the correct result is propagated and metrics are
-// logged.
-TEST_F(AndroidPaymentsWindowManagerTest, WebContentsDestroyed_Bnpl_Success) {
-  InitBnplFlowForTest();
-
-  // Simulate navigation to the success URL.
-  const GURL success_url =
-      GURL(std::string(kBnplSuccessUrlPrefix) + "?status=success");
-  window_manager().OnDidFinishNavigationForBnpl(success_url);
-  EXPECT_EQ(test_api(window_manager()).GetMostRecentUrlNavigation(),
-            success_url);
-
-  EXPECT_CALL(
-      bnpl_tab_closed_callback_,
-      Run(PaymentsWindowManager::BnplFlowResult::kSuccess, success_url));
-
-  // Simulate destruction of the tab.
-  window_manager().WebContentsDestroyed();
-
-  // Verify metrics and state reset.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Bnpl.PopupWindowResult.Affirm",
-      PaymentsWindowManager::BnplFlowResult::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Bnpl.PopupWindowLatency.Affirm.Success", 1);
+// Test that destroying web contents after the flow state has already been reset
+// does not cause a crash.
+TEST_F(AndroidPaymentsWindowManagerTest, WebContentsDestroyed_NoOngoingFlow) {
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
-}
 
-// Test that when the web contents are destroyed during a BNPL flow after a
-// failed navigation, the correct result is propagated and metrics are logged.
-TEST_F(AndroidPaymentsWindowManagerTest, WebContentsDestroyed_Bnpl_Failure) {
-  InitBnplFlowForTest();
-
-  // Simulate navigation to the failure URL.
-  const GURL failure_url =
-      GURL(std::string(kBnplFailureUrlPrefix) + "?status=failure");
-  window_manager().OnDidFinishNavigationForBnpl(failure_url);
-  EXPECT_EQ(test_api(window_manager()).GetMostRecentUrlNavigation(),
-            failure_url);
-
-  EXPECT_CALL(
-      bnpl_tab_closed_callback_,
-      Run(PaymentsWindowManager::BnplFlowResult::kFailure, failure_url));
-
-  // Simulate destruction of the tab.
   window_manager().WebContentsDestroyed();
-
-  // Verify metrics and state reset.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.Bnpl.PopupWindowResult.Affirm",
-      PaymentsWindowManager::BnplFlowResult::kFailure, 1);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.Bnpl.PopupWindowLatency.Affirm.Failure", 1);
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 
 // Test that when the web contents are destroyed during a BNPL flow before the
@@ -259,6 +210,31 @@ TEST_F(AndroidPaymentsWindowManagerTest,
       GURL(std::string(kBnplSuccessUrlPrefix) + "?status=success"));
 }
 
+// Test that after navigating to a success URL, the completion callback is
+// triggered, metrics are logged, and the flow state is reset.
+TEST_F(
+    AndroidPaymentsWindowManagerTest,
+    OnDidFinishNavigationForBnpl_WhenSuccessUrl_TriggerCompletionCallbackAndLogMetrics) {
+  InitBnplFlowForTest();
+  const GURL success_url =
+      GURL(std::string(kBnplSuccessUrlPrefix) + "?status=success");
+
+  EXPECT_CALL(
+      bnpl_tab_closed_callback_,
+      Run(PaymentsWindowManager::BnplFlowResult::kSuccess, success_url));
+
+  // Simulate navigation to the success URL.
+  window_manager().OnDidFinishNavigationForBnpl(success_url);
+
+  // Verify metrics and state reset.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Bnpl.PopupWindowResult.Affirm",
+      PaymentsWindowManager::BnplFlowResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Success", 1);
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+}
+
 TEST_F(AndroidPaymentsWindowManagerTest,
        OnDidFinishNavigationForBnpl_WhenFailureUrl_ClosesTab) {
   SetUpMockPaymentsWindowBridge();
@@ -270,6 +246,31 @@ TEST_F(AndroidPaymentsWindowManagerTest,
 
   window_manager().OnDidFinishNavigationForBnpl(
       GURL(std::string(kBnplFailureUrlPrefix) + "?status=failure"));
+}
+
+// Test that after navigating to a failure URL, the completion callback is
+// triggered, metrics are logged, and the flow state is reset.
+TEST_F(
+    AndroidPaymentsWindowManagerTest,
+    OnDidFinishNavigationForBnpl_WhenFailureUrl_TriggerCompletionCallbackAndLogMetrics) {
+  InitBnplFlowForTest();
+  const GURL failure_url =
+      GURL(std::string(kBnplFailureUrlPrefix) + "?status=failure");
+
+  EXPECT_CALL(
+      bnpl_tab_closed_callback_,
+      Run(PaymentsWindowManager::BnplFlowResult::kFailure, failure_url));
+
+  // Simulate navigation to the failure URL.
+  window_manager().OnDidFinishNavigationForBnpl(failure_url);
+
+  // Verify metrics and state reset.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Bnpl.PopupWindowResult.Affirm",
+      PaymentsWindowManager::BnplFlowResult::kFailure, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Failure", 1);
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 
 TEST_F(AndroidPaymentsWindowManagerTest,

@@ -77,7 +77,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -134,12 +133,7 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == BACK_PRESS_HANDLER) {
             view.setBackPressHandler(model.get(BACK_PRESS_HANDLER));
         } else if (propertyKey == VISIBLE) {
-            boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
-            if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
-                assert (model.get(DISMISS_HANDLER) != null);
-                model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
-                view.destroy();
-            }
+            view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == SHEET_ITEMS) {
             // SHEET_ITEMS, CURRENT_SCREEN and FOCUSED_VIEW_ID_FOR_ACCESSIBILITY properties are
             // always updated together.

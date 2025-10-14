@@ -780,7 +780,11 @@ class TouchToFillPaymentMethodMediator {
     }
 
     private void onAcceptedBnplIssuer() {
-        // TODO(crbug.com/430575808): Handle user clicking a BNPL issuer.
+        // TODO(crbug.com/430575808): Handle user clicking a BNPL issuer. During implementation,
+        // make sure that when we hide the bottom sheet to prepare to show the ephemeral tab, we use
+        // `mModel.set(VISIBLE, false)` instead of `hideSheet()`. This preserves the TouchToFill
+        // view and delegate on native side, which is needed when the user completes the flow on the
+        // ephemeral tab and reopens the TTF bottom sheet.
     }
 
     private void onErrorOkPressed() {

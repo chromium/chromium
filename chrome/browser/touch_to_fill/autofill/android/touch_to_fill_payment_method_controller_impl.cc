@@ -266,8 +266,6 @@ void TouchToFillPaymentMethodControllerImpl::OnDismissed(
   delegate_.reset();
   ResetJavaObject();
   keyboard_suppressor_.Unsuppress();
-  // TODO(crbug.com/430575808): Run callback `on_bnpl_flow_dismissed_by_user_`
-  // if provided by an ongoing BNPL UI flow.
 }
 
 void TouchToFillPaymentMethodControllerImpl::ScanCreditCard(JNIEnv* env) {
