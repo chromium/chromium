@@ -2524,10 +2524,7 @@ if (is_android) {
   # This source_set must end up in the root component of a shared library, and
   # the NativeInitializationHook definition must also be in the root component.
   source_set("jni_onload") {
-    sources = [
-      "android/jni_onload.cc",
-      "android/jni_onload.h",
-    ]
+    sources = [ "android/jni_onload.cc" ]
     deps = [ ":base" ]
   }
 }

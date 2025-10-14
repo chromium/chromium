@@ -73,4 +73,9 @@ BASE_EXPORT bool LibraryLoaded(LibraryProcessType library_process_type);
 }  // namespace android
 }  // namespace base
 
+// The JNI_OnLoad in //base cannot depend on any specific process type's init
+// function, so we have this hook that we compile different implementations
+// for depending on what shared library we are building.
+bool NativeInitializationHook(base::android::LibraryProcessType value);
+
 #endif  // BASE_ANDROID_LIBRARY_LOADER_LIBRARY_LOADER_HOOKS_H_

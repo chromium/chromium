@@ -224,6 +224,24 @@
         android:exported="false"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: a550decc
+    <service  # DIFF-ANCHOR: e6a4025d
+        android:name="org.chromium.content.app.NativeServiceSandboxedProcessService0"
+        android:exported="False"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process0">
+      <meta-data android:name="android.app.func_name" android:value="NativeChildProcessService_onCreate"/>
+      <meta-data android:name="android.app.lib_name" android:value="monochrome"/>
+    </service>  # DIFF-ANCHOR: e6a4025d
+    <service  # DIFF-ANCHOR: c5e7c22d
+        android:name="org.chromium.content.app.NativeServiceSandboxedProcessService1"
+        android:exported="False"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process1">
+      <meta-data android:name="android.app.func_name" android:value="NativeChildProcessService_onCreate"/>
+      <meta-data android:name="android.app.lib_name" android:value="monochrome"/>
+    </service>  # DIFF-ANCHOR: c5e7c22d
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"
         android:exported="false"

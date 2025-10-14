@@ -17,7 +17,9 @@ declare_args() {
   # off will enable proguard.
   is_java_debug = is_debug || incremental_install
 
-  enable_javaless_renderers = false
+  # Component build breaks javaless renderers - see
+  # go/javaless-renderers-component-build
+  enable_javaless_renderers = !is_component_build
 }
 
 # These two combinations could theoretically be made to work, but they are

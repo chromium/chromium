@@ -109,6 +109,8 @@ if (is_android && enable_javaless_renderers) {
       "//base",
       "//base:build_info_aidl_native",
       "//base:process_launcher_aidl_native",
+      "//content/common",
+      "//content/public/app",
     ]
   }
 }
