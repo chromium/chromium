@@ -37,8 +37,15 @@ public interface SafetyNetApiHandler {
     interface Observer {
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
 
+        // (TODO:crbug.com/449183636) Remove this overload once internal implementation is changed.
         void onHasHarmfulAppsDone(
                 long callbackId, @HasHarmfulAppsResultStatus int result, int numberOfApps);
+
+        void onHasHarmfulAppsDone(
+                long callbackId,
+                @HasHarmfulAppsResultStatus int result,
+                int numberOfApps,
+                int statusCode);
 
         void onGetSafetyNetIdDone(String result);
     }

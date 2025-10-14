@@ -202,9 +202,15 @@ public final class SafeBrowsingApiBridge {
 
         @Override
         public void onHasHarmfulAppsDone(long callbackId, int result, int numberOfApps) {
+            onHasHarmfulAppsDone(callbackId, result, numberOfApps, 0);
+        }
+
+        @Override
+        public void onHasHarmfulAppsDone(
+                long callbackId, int result, int numberOfApps, int statusCode) {
             synchronized (sSafetyNetApiHandlerLock) {
                 SafeBrowsingApiBridgeJni.get()
-                        .onHasHarmfulAppsDone(callbackId, result, numberOfApps);
+                        .onHasHarmfulAppsDone(callbackId, result, numberOfApps, statusCode);
             }
         }
 
@@ -371,7 +377,7 @@ public final class SafeBrowsingApiBridge {
 
         void onVerifyAppsEnabledDone(long callbackId, int result);
 
-        void onHasHarmfulAppsDone(long callbackId, int result, int numberOfApps);
+        void onHasHarmfulAppsDone(long callbackId, int result, int numberOfApps, int statusCode);
 
         void onGetSafetyNetIdDone(String result);
     }

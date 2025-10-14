@@ -30,7 +30,9 @@ class SafeBrowsingApiHandlerBridge {
   using VerifyAppsResponseCallback =
       base::OnceCallback<void(VerifyAppsEnabledResult)>;
   using HasHarmfulAppsResponseCallback =
-      base::OnceCallback<void(HasHarmfulAppsResultStatus, int)>;
+      base::OnceCallback<void(HasHarmfulAppsResultStatus,
+                              /*num_of_apps=*/int,
+                              /*status_code=*/int)>;
   using GetSafetyNetIdResponseCallback =
       base::OnceCallback<void(const std::string&)>;
 
@@ -99,8 +101,10 @@ class SafeBrowsingApiHandlerBridge {
   }
 
   void SetHarmfulAppsResultForTesting(HasHarmfulAppsResultStatus result,
-                                      int num_of_apps) {
-    harmful_apps_result_for_testing_ = std::make_pair(result, num_of_apps);
+                                      int num_of_apps,
+                                      int status_code) {
+    harmful_apps_result_for_testing_ =
+        std::make_tuple(result, num_of_apps, status_code);
   }
 
   // Resets the cached value and callback subscriptions list.
@@ -160,7 +164,9 @@ class SafeBrowsingApiHandlerBridge {
   std::optional<VerifyAppsEnabledResult> verify_apps_enabled_for_testing_ =
       std::nullopt;
 
-  std::optional<std::pair<HasHarmfulAppsResultStatus, int>>
+  std::optional<std::tuple<HasHarmfulAppsResultStatus,
+                           /*num_of_apps=*/int,
+                           /*status_code=*/int>>
       harmful_apps_result_for_testing_ = std::nullopt;
 
   // Set of URLs specified at the command-line to be enforced on as phishing.

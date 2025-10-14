@@ -39,6 +39,8 @@ constexpr char kHarmfulAppsResultHistogramName[] =
 constexpr char kHarmfulAppsCountHistogramName[] =
     "Enterprise.DeviceSignals.HarmfulApps.Count";
 
+constexpr int kSampleHarmfulAppsErrorCode = 123;
+
 }  // namespace
 
 namespace device_signals {
@@ -107,7 +109,11 @@ class AndroidOsSignalsCollectorTest : public testing::Test {
   void SetHarmfulAppsResult(HasHarmfulAppsResultStatus result,
                             int num_of_apps) {
     safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-        .SetHarmfulAppsResultForTesting(result, num_of_apps);
+        .SetHarmfulAppsResultForTesting(
+            result, num_of_apps,
+            result == HasHarmfulAppsResultStatus::SUCCESS
+                ? 0
+                : kSampleHarmfulAppsErrorCode);
     expected_harmful_app_result_ = result;
     expected_harmful_app_count_ = num_of_apps;
   }
@@ -148,7 +154,7 @@ TEST_F(AndroidOsSignalsCollectorTest, GetSignal_Success) {
   // Test when verify apps is enabled.
   SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_ENABLED);
   // Test when harmful apps detection fails.
-  SetHarmfulAppsResult(HasHarmfulAppsResultStatus::FAILED, 0);
+  SetHarmfulAppsResult(HasHarmfulAppsResultStatus::LOCAL_FAILURE, 0);
 
   SignalName signal_name = SignalName::kOsSignals;
   SignalsAggregationRequest empty_request;

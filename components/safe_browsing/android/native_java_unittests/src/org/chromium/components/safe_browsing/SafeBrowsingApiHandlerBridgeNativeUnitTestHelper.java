@@ -32,8 +32,9 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static int sVerifyAppsResult = VerifyAppsResult.FAILED;
 
         // The results that will be returned in {@link #hasPotentiallyHarmfulApps(long)}}.
-        private static int sHarmfulAppsResultStatus = HasHarmfulAppsResultStatus.FAILED;
-        private static int sHarmfulAppsResult;
+        private static int sHarmfulAppsResult = HasHarmfulAppsResultStatus.FAILED;
+        private static int sHarmfulAppsNumOfApps;
+        private static int sHarmfulAppsStatusCode;
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
@@ -84,7 +85,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         @Override
         public void hasPotentiallyHarmfulApps(final long callbackId) {
             mObserver.onHasHarmfulAppsDone(
-                    callbackId, sHarmfulAppsResultStatus, sHarmfulAppsResult);
+                    callbackId, sHarmfulAppsResult, sHarmfulAppsNumOfApps, sHarmfulAppsStatusCode);
         }
 
         @Override
@@ -117,9 +118,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             sVerifyAppsResult = result;
         }
 
-        public static void setHarmfulAppsResult(int status, int result) {
-            sHarmfulAppsResultStatus = status;
+        public static void setHarmfulAppsResult(int result, int numOfApps, int statusCode) {
             sHarmfulAppsResult = result;
+            sHarmfulAppsNumOfApps = numOfApps;
+            sHarmfulAppsStatusCode = statusCode;
         }
 
         /** Mock the initialization state enum for tests. */
@@ -305,8 +307,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
-    static void setHarmfulAppsResult(int status, int result) {
-        MockSafetyNetApiHandler.setHarmfulAppsResult(status, result);
+    static void setHarmfulAppsResult(int result, int numOfApps, int statusCode) {
+        MockSafetyNetApiHandler.setHarmfulAppsResult(result, numOfApps, statusCode);
     }
 
     @CalledByNative

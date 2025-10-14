@@ -14,6 +14,7 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 
@@ -92,7 +93,14 @@ void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
     std::unique_ptr<OsSignalsResponse> os_signals_response,
     base::OnceClosure done_closure,
     HasHarmfulAppsResultStatus result,
-    int num_of_apps) {
+    int num_of_apps,
+    int status_code) {
+  if (result != HasHarmfulAppsResultStatus::SUCCESS) {
+    VLOG_POLICY(1, REPORTING)
+        << "HasPotentiallyHarmfulApps failed with status "
+        << static_cast<int>(result) << " and code " << status_code;
+  }
+
   os_signals_response->has_potentially_harmful_apps =
       result == HasHarmfulAppsResultStatus::SUCCESS && num_of_apps != 0;
   LogHarmfulAppsResult(result, num_of_apps);

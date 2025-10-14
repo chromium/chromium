@@ -568,7 +568,8 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
 
 void OnHasHarmfulAppsDone(jlong callback_id,
                           jint j_result,
-                          jint j_num_of_apps) {
+                          jint j_num_of_apps,
+                          jint j_status_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PendingHarmfulAppsCallbacksMap& pending_callbacks =
       GetPendingHarmfulAppsCallbacks();
@@ -582,16 +583,18 @@ void OnHasHarmfulAppsDone(jlong callback_id,
   SafeBrowsingApiHandlerBridge::HasHarmfulAppsResponseCallback callback =
       std::move(pending_callbacks[callback_id]);
   std::move(callback).Run(static_cast<HasHarmfulAppsResultStatus>(j_result),
-                          static_cast<int>(j_num_of_apps));
+                          static_cast<int>(j_num_of_apps),
+                          static_cast<int>(j_status_code));
 }
 
 void JNI_SafeBrowsingApiBridge_OnHasHarmfulAppsDone(JNIEnv* env,
                                                     jlong callback_id,
                                                     jint j_result,
-                                                    jint j_num_of_apps) {
+                                                    jint j_num_of_apps,
+                                                    jint j_status_code) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OnHasHarmfulAppsDone, callback_id, j_result,
-                                j_num_of_apps));
+                                j_num_of_apps, j_status_code));
 }
 
 void OnGetSafetyNetIdDone(const std::string& result) {
@@ -755,13 +758,15 @@ void SafeBrowsingApiHandlerBridge::StartHasPotentiallyHarmfulApps(
 
   if (harmful_apps_result_for_testing_.has_value()) {
     auto result_for_test = harmful_apps_result_for_testing_.value();
-    std::move(callback).Run(result_for_test.first, result_for_test.second);
+    std::move(callback).Run(std::get<0>(result_for_test),
+                            std::get<1>(result_for_test),
+                            std::get<2>(result_for_test));
     return;
   }
 
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
-    std::move(callback).Run(HasHarmfulAppsResultStatus::FAILED, 0);
+    std::move(callback).Run(HasHarmfulAppsResultStatus::LOCAL_FAILURE, 0, 0);
     return;
   }
 
