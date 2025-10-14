@@ -30,6 +30,8 @@ class TestResult:
     duration: float
     # Stdout/stderr of the test.
     test_log: str
+    # A mapping of token type to tokens used at the end of the test.
+    token_usage: dict[str, int]
 
     def __lt__(self, other: 'TestResult') -> bool:
         return self.test_file < other.test_file
@@ -106,6 +108,10 @@ class ResultThread(threading.Thread):
             except queue.Empty:
                 continue
 
+            # TODO(crbug.com/449818513): Actually report this to the perf
+            # dashboard or to ResultDB, whichever we end up using for tracking
+            # token usage and test scores.
+            logging.debug('Token usage: %s', test_result.token_usage)
             if not test_result.success or self._print_output_on_success:
                 sys.stdout.write(test_result.test_log)
             if self._result_sink_client:

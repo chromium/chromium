@@ -4,10 +4,15 @@
 # found in the LICENSE file.
 """Tests for gemini_provider."""
 
+import json
+import os
 import pathlib
 import subprocess
+import tempfile
 import unittest
 import unittest.mock
+
+from pyfakefs import fake_filesystem_unittest
 
 import gemini_provider
 
@@ -168,10 +173,14 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['gemini', '-y'])
+        self.assertEqual(args.command, [
+            'gemini', '-y', '--telemetry', '--telemetry-outfile',
+            str(pathlib.Path('/fake/telemetry.out'))
+        ])
         self.assertIsNone(args.home_dir)
         self.assertEqual(args.timeout_seconds,
                          gemini_provider.DEFAULT_TIMEOUT_SECONDS)
@@ -185,10 +194,14 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['/custom/gemini', '-y'])
+        self.assertEqual(args.command, [
+            '/custom/gemini', '-y', '--telemetry', '--telemetry-outfile',
+            str(pathlib.Path('/fake/telemetry.out'))
+        ])
 
     def test_sandbox_enabled(self):
         """Tests that sandbox flags are added when sandbox is enabled."""
@@ -198,10 +211,14 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
-        self.assertEqual(args.command, ['gemini', '-y', '--sandbox'])
+        self.assertEqual(args.command, [
+            'gemini', '-y', '--telemetry', '--telemetry-outfile',
+            str(pathlib.Path('/fake/telemetry.out')), '--sandbox'
+        ])
         self.assertIn('SANDBOX_FLAGS', args.env)
         self.assertEqual(args.env['SANDBOX_FLAGS'], '--sandbox-flag')
 
@@ -213,7 +230,8 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertIsNone(args)
         self.assertEqual(error, 'Fake error')
@@ -225,7 +243,8 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
         self.assertEqual(args.home_dir, pathlib.Path('/custom/home'))
@@ -239,7 +258,8 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertIsNone(args)
         self.assertEqual(error, 'Failed to parse timeout from invalid')
@@ -251,7 +271,8 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = 'test prompt'
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
         self.assertEqual(args.timeout_seconds, 123)
@@ -263,7 +284,8 @@ class GetGeminiCliArgumentsUnittest(unittest.TestCase):
         user_prompt = ''
 
         args, error = gemini_provider._get_gemini_cli_arguments(
-            provider_vars, provider_config, user_prompt)
+            provider_vars, provider_config, user_prompt,
+            pathlib.Path('/fake/telemetry.out'))
 
         self.assertEqual(error, '')
         self.assertEqual(args.console_width, 99)
@@ -387,6 +409,143 @@ class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
         self.mock_popen.return_value.kill.assert_called_once()
 
 
+class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
+    """Unit tests for the `_extract_token_usage` function."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+
+    def test_valid_telemetry_file(self):
+        """Tests that token usage is extracted correctly from a valid file."""
+        telemetry_data = {
+            'scopeMetrics': [{
+                'scope': {
+                    'name': 'gemini-cli'
+                },
+                'metrics': [{
+                    'descriptor': {
+                        'name': 'gemini_cli.token.usage'
+                    },
+                    'dataPoints': [{
+                        'attributes': {
+                            'type': 'prompt'
+                        },
+                        'value': 10
+                    }, {
+                        'attributes': {
+                            'type': 'completion'
+                        },
+                        'value': 20
+                    }]
+                }]
+            }]
+        }
+        telemetry_content = json.dumps(telemetry_data)
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file.write(telemetry_content)
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        token_usage = gemini_provider._extract_token_usage(temp_file_path)
+
+        self.assertEqual(token_usage, {'prompt': 10, 'completion': 20})
+        os.remove(temp_file_path)
+
+    def test_empty_file(self):
+        """Tests that an empty dict is returned for an empty file."""
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        token_usage = gemini_provider._extract_token_usage(temp_file_path)
+
+        self.assertEqual(token_usage, {})
+        os.remove(temp_file_path)
+
+    def test_no_token_usage(self):
+        """Tests that an empty dict is returned when there's no token usage."""
+        telemetry_data = {
+            'scopeMetrics': [{
+                'scope': {
+                    'name': 'gemini-cli'
+                },
+                'metrics': [{
+                    'descriptor': {
+                        'name': 'other_metric'
+                    },
+                    'dataPoints': []
+                }]
+            }]
+        }
+        telemetry_content = json.dumps(telemetry_data)
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file.write(telemetry_content)
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        token_usage = gemini_provider._extract_token_usage(temp_file_path)
+
+        self.assertEqual(token_usage, {})
+        os.remove(temp_file_path)
+
+    def test_multiple_data_points(self):
+        """Tests that the last data point is used when there are multiple."""
+        telemetry_data_1 = {
+            'scopeMetrics': [{
+                'scope': {
+                    'name': 'gemini-cli'
+                },
+                'metrics': [{
+                    'descriptor': {
+                        'name': 'gemini_cli.token.usage'
+                    },
+                    'dataPoints': [{
+                        'attributes': {
+                            'type': 'prompt'
+                        },
+                        'value': 10
+                    }, {
+                        'attributes': {
+                            'type': 'completion'
+                        },
+                        'value': 20
+                    }]
+                }]
+            }]
+        }
+        telemetry_data_2 = {
+            'scopeMetrics': [{
+                'scope': {
+                    'name': 'gemini-cli'
+                },
+                'metrics': [{
+                    'descriptor': {
+                        'name': 'gemini_cli.token.usage'
+                    },
+                    'dataPoints': [{
+                        'attributes': {
+                            'type': 'prompt'
+                        },
+                        'value': 30
+                    }, {
+                        'attributes': {
+                            'type': 'completion'
+                        },
+                        'value': 40
+                    }]
+                }]
+            }]
+        }
+        telemetry_content = (json.dumps(telemetry_data_1) + '\n' +
+                             json.dumps(telemetry_data_2))
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            temp_file.write(telemetry_content)
+            temp_file_path = pathlib.Path(temp_file.name)
+
+        token_usage = gemini_provider._extract_token_usage(temp_file_path)
+
+        self.assertEqual(token_usage, {'prompt': 30, 'completion': 40})
+        os.remove(temp_file_path)
+
+
+
 class CallApiUnittest(unittest.TestCase):
     """Unit tests for the call_api function."""
 
@@ -439,7 +598,8 @@ class CallApiUnittest(unittest.TestCase):
         self.assertNotIn('error', result)
         self.assertEqual(result['output'], 'test output')
         self.mock_get_gemini_cli_arguments.assert_called_once_with(
-            context['vars'], options['config'], 'test prompt')
+            context['vars'], options['config'], 'test prompt',
+            unittest.mock.ANY)
         self.mock_run_gemini_cli_with_output_streaming.assert_called_once()
 
     def test_get_gemini_cli_arguments_fails(self):

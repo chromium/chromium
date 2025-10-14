@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import textwrap
@@ -21,6 +22,7 @@ import constants
 
 sys.path.append(str(constants.CHROMIUM_SRC))
 from agents.common import gemini_helpers
+from agents.common import tempfile_ext
 from agents.testing import checkout_helpers
 
 DEFAULT_TIMEOUT_SECONDS = 600
@@ -232,13 +234,15 @@ def _get_sandbox_flags() -> tuple[list[str], str]:
 
 def _get_gemini_cli_arguments(
         provider_vars: dict[str, Any], provider_config: dict[str, Any],
-        user_prompt: str) -> tuple[GeminiCliArguments | None, str]:
+        user_prompt: str, telemetry_outfile: pathlib.Path
+) -> tuple[GeminiCliArguments | None, str]:
     """Collects arguments relevant to starting/running gemini-cli.
 
     Args:
         provider_vars: The key/value variables given to the provider.
         provider_config: The config parsed from the test's YAML config file.
-        user_prompt: The user prompt to pass to gemini-cli
+        user_prompt: The user prompt to pass to gemini-cli.
+        telemetry_outfile: The file to write gemini-cli telemetry data to.
 
     Returns:
         A tuple (arguments, error). On success, |arguments| will be a
@@ -254,7 +258,13 @@ def _get_gemini_cli_arguments(
         return None, f'Failed to parse timeout from {unparsed_timeout}'
 
     gemini_cli_bin = provider_vars.get('gemini_cli_bin', 'gemini')
-    command = [gemini_cli_bin, '-y']
+    command = [
+        gemini_cli_bin,
+        '-y',
+        '--telemetry',
+        '--telemetry-outfile',
+        str(telemetry_outfile),
+    ]
 
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
@@ -354,6 +364,57 @@ def _run_gemini_cli_with_output_streaming(
                 logging.warning('Output thread did not cleanly terminate.')
 
 
+def _extract_token_usage(telemetry_file: pathlib.Path) -> dict[str, int]:
+    """Extracts token usage data from gemini-cli telemetry.
+
+    Args:
+        telemetry_file: A path to the file that gemini-cli wrote telemetry
+            information to.
+
+    Returns:
+        A dict mapping token type to the total usage of that token type during
+        the test. Returns an empty dict if the telemetry file is empty or
+        invalid.
+    """
+    with open(telemetry_file, encoding='utf-8') as infile:
+        contents = infile.read()
+    # The file contents are mostly-valid JSON, except the multiple objects it
+    # contains aren't within an actual list. So, modify the content to be a
+    # valid list.
+    # The alternative to this would be to spin up an OpenTelemetry collector
+    # and directly receive the telemetry data as the test is running.
+    contents_with_commas = re.sub(r'}\s*{', '},{', contents)
+    corrected_content = f'[{contents_with_commas}]'
+    try:
+        telemetry_data = json.loads(corrected_content)
+    except json.JSONDecodeError:
+        return {}
+
+    def _extract_from_last_report():
+        # Get the last reported token metrics, which should be the total at the
+        # end of the test.
+        gemini_cli_tokens = {}
+        for td in reversed(telemetry_data):
+            scope_metrics = td.get('scopeMetrics', [])
+            if not scope_metrics:
+                continue
+            for sm in scope_metrics:
+                if sm.get('scope', {}).get('name') != 'gemini-cli':
+                    continue
+                for metric in sm.get('metrics', []):
+                    if (metric.get('descriptor', {}).get('name')
+                            != 'gemini_cli.token.usage'):
+                        continue
+                    for dp in metric.get('dataPoints', []):
+                        token_type = dp['attributes']['type']
+                        value = dp['value']
+                        gemini_cli_tokens[token_type] = value
+                    return gemini_cli_tokens
+        return gemini_cli_tokens
+
+    return _extract_from_last_report()
+
+
 def call_api(prompt: str, options: dict[str, Any],
              context: dict[str, Any]) -> dict[str, Any]:
     """A flexible promptfoo provider that runs a command-line tool.
@@ -371,8 +432,31 @@ def call_api(prompt: str, options: dict[str, Any],
     logging.debug('options: %s', json.dumps(options, indent=2))
     logging.debug('context: %s', json.dumps(context, indent=2))
 
+    with tempfile_ext.mkstemp_closed() as telemetry_outfile:
+        return _run_gemini_cli_with_telemetry_output(provider_config,
+                                                     provider_vars, prompt,
+                                                     telemetry_outfile)
+
+
+def _run_gemini_cli_with_telemetry_output(
+        provider_config: dict[str, Any], provider_vars: dict[str, Any],
+        user_prompt: str, telemetry_outfile: pathlib.Path) -> dict[str, Any]:
+    """Runs gemini-cli using the provided information.
+
+    Args:
+        provider_config: The config parsed from the test's YAML config file.
+        provider_vars: The key/value variables given to the provider.
+        user_prompt: The user prompt to use for the test
+        telemetry_outfile: The file to write gemini-cli telemetry info to.
+
+    Returns:
+        A promptfoo result dict.
+    """
+
     gcli_arguments, error = _get_gemini_cli_arguments(provider_vars,
-                                                      provider_config, prompt)
+                                                      provider_config,
+                                                      user_prompt,
+                                                      telemetry_outfile)
     if error:
         return {'error': error}
 
@@ -395,6 +479,11 @@ def call_api(prompt: str, options: dict[str, Any],
         full_output = ''.join(combined_output)
         metrics['full_output'] = full_output
         metrics['duration'] = elapsed_time
+        # We put this information in our own field instead of in promptfoo's
+        # tokenUsage field since how tokens are grouped differs and there is not
+        # a clear mapping from gemini-cli's data to what promptfoo wants.
+        metrics[constants.GEMINI_CLI_TOKEN_USAGE] = _extract_token_usage(
+            telemetry_outfile)
         if process.returncode != 0:
             error_message = (
                 f"Command '{' '.join(gcli_arguments.command)}' failed with "

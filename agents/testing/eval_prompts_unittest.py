@@ -690,7 +690,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         failed_test = results.TestResult(test_file='test',
                                          success=False,
                                          duration=1,
-                                         test_log='')
+                                         test_log='',
+                                         token_usage={})
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
@@ -721,7 +722,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         failed_test = results.TestResult(test_file='test',
                                          success=False,
                                          duration=1,
-                                         test_log='')
+                                         test_log='',
+                                         token_usage={})
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
@@ -778,7 +780,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         failed_test = results.TestResult(test_file='test',
                                          success=False,
                                          duration=1,
-                                         test_log='')
+                                         test_log='',
+                                         token_usage={})
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             side_effect = [
                 [failed_test],
@@ -799,7 +802,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         failed_test = results.TestResult(test_file='test',
                                          success=False,
                                          duration=1,
-                                         test_log='')
+                                         test_log='',
+                                         token_usage={})
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = [
                 failed_test
