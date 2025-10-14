@@ -1367,8 +1367,10 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   // The StyleResolverState is where we actually end up accumulating the
   // computed style. It's just a convenient way of not having to send
   // a lot of input/output variables around between the different functions.
-  StyleResolverState state(GetDocument(), *element, &style_recalc_context,
-                           style_request);
+  //
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED StyleResolverState state(
+      GetDocument(), *element, &style_recalc_context, style_request);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -1752,9 +1754,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
-                                 selector_filter_, cascade.MutableMatchResult(),
-                                 state.InsideLink());
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED ElementRuleCollector collector(
+      state.ElementContext(), style_recalc_context, selector_filter_,
+      cascade.MutableMatchResult(), state.InsideLink());
 
   if (element->IsPseudoElement()) {
     GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(

@@ -294,7 +294,8 @@ void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
   state_.UpdateLengthConversionData();
 
-  CascadeResolver resolver(filter, ++generation_);
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED CascadeResolver resolver(filter, ++generation_);
 
   ApplyCascadeAffecting(resolver);
 
