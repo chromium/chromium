@@ -42,3 +42,7 @@ fun:*iterate_string_chunks*
 # https://crbug.com/400740870
 [pointer-overflow]
 fun:*find_best_partition_order_*
+
+# https://crbug.com/451633108
+[builtin]
+fun:*_dispatch_once*
