@@ -65,9 +65,11 @@ enum class Result {
   kRemoveFormValueForElementName_Failure = 22,
   kAddAutofillProfile_Success = 30,
   kAddAutofillProfile_Failure = 31,
+  kAddAutofillProfile_GetFailure = 32,
   kUpdateAutofillProfile_Success = 40,
   kUpdateAutofillProfile_ReadFailure = 41,
   kUpdateAutofillProfile_WriteFailure = 42,
+  kUpdateAutofillProfile_GetFailure = 43,
   kRemoveAutofillProfile_Success = 50,
   kRemoveAutofillProfile_ReadFailure = 51,
   kRemoveAutofillProfile_WriteFailure = 52,
@@ -388,6 +390,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
   std::optional<AutofillProfile> db_profile =
       table->GetAutofillProfile(profile.guid());
   if (!db_profile) {
+    ReportResult(Result::kAddAutofillProfile_GetFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
   // Notify observers.
@@ -429,6 +432,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   std::optional<AutofillProfile> db_profile =
       table->GetAutofillProfile(profile.guid());
   if (!db_profile) {
+    ReportResult(Result::kUpdateAutofillProfile_GetFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
   // Notify observers.

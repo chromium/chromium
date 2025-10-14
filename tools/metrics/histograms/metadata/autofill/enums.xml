@@ -3184,9 +3184,11 @@ Called by update_autofill_enums.py.-->
   <int value="22" label="RemoveFormValueForElementName: Failure"/>
   <int value="30" label="AddAutofillProfile: Success"/>
   <int value="31" label="AddAutofillProfile: Failure"/>
+  <int value="32" label="AddAutofillProfile: GetFailure"/>
   <int value="40" label="UpdateAutofillProfile: Success"/>
   <int value="41" label="UpdateAutofillProfile: ReadFailure"/>
   <int value="42" label="UpdateAutofillProfile: WriteFailure"/>
+  <int value="43" label="UpdateAutofillProfile: GetFailure"/>
   <int value="50" label="RemoveAutofillProfile: Success"/>
   <int value="51" label="RemoveAutofillProfile: ReadFailure"/>
   <int value="52" label="RemoveAutofillProfile: WriteFailure"/>
