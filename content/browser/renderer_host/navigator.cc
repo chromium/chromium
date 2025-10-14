@@ -645,14 +645,18 @@ void Navigator::DidNavigate(
   // should never get here with a SiteInstance that doesn't have a site
   // assigned in that case.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
-  const UrlInfo& url_info = navigation_request->GetUrlInfo();
-  if (!site_instance->HasSite() &&
-      SiteInstanceImpl::ShouldAssignSiteForUrlInfo(url_info)) {
-    // TODO(alexmos): convert this to a CHECK and remove the fallback call to
-    // ConvertToDefaultOrSetSite() after verifying that this doesn't happen in
-    // practice.
-    NOTREACHED() << "SiteInstance should have already set a site: "
-                 << params.url;
+  {
+    // We don't want the url_info to live to the end of this function because
+    // that could let it outlive the `navigation_request`.
+    const UrlInfo& url_info = navigation_request->GetUrlInfo();
+    if (!site_instance->HasSite() &&
+        SiteInstanceImpl::ShouldAssignSiteForUrlInfo(url_info)) {
+      // TODO(alexmos): convert this to a CHECK and remove the fallback call to
+      // ConvertToDefaultOrSetSite() after verifying that this doesn't happen in
+      // practice.
+      NOTREACHED() << "SiteInstance should have already set a site: "
+                   << params.url;
+    }
   }
 
   // Need to update MIME type here because it's referred to in
