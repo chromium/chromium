@@ -499,7 +499,8 @@ export class SearchboxMatchElement extends CrLitElement {
 
   protected getFocusIndicatorCssClass_(): string {
     return this.selection.line === this.matchIndex &&
-            this.selection.state !== SelectionLineState.kNormal ?
+            this.selection.state !== SelectionLineState.kNormal &&
+            !this.match.hasInstantKeyword ?
         'selected-within' :
         '';
   }
