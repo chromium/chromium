@@ -24,14 +24,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 
-#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -63,20 +61,6 @@ class PLATFORM_EXPORT TextRun final {
   TextRun& operator=(const TextRun&) = delete;
   TextRun(TextRun&&) = default;
   TextRun& operator=(TextRun&&) = delete;
-
-  // direction - An optional TextDirection of the new TextRun. If this is not
-  //             specified, the new TextRun inherits the TextDirection of
-  //             `this`.
-  TextRun SubRun(unsigned start_offset,
-                 unsigned length,
-                 std::optional<TextDirection> direction = std::nullopt) const {
-    return TextRun(StringView(text_, start_offset, length),
-                   direction.value_or(Direction()), directional_override_);
-  }
-
-  // Returns the start index of a sub run if it was created by |SubRun|.
-  // std::numeric_limits<unsigned>::max() if not a sub run.
-  unsigned IndexOfSubRun(const TextRun&) const;
 
   UChar operator[](unsigned i) const { return text_[i]; }
 

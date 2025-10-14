@@ -2386,7 +2386,6 @@ source_set("blink_platform_unittests_sources") {
     "text/suffix_tree_test.cc",
     "text/text_break_iterator_test.cc",
     "text/text_encoding_detector_test.cc",
-    "text/text_run_test.cc",
     "text/unicode_utilities_test.cc",
     "text/writing_direction_mode_test.cc",
     "text/writing_mode_utils_test.cc",

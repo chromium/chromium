@@ -69,14 +69,4 @@ String TextRun::NormalizedUTF16() const {
   return String::Adopt(buffer);
 }
 
-unsigned TextRun::IndexOfSubRun(const TextRun& sub_run) const {
-  if (Is8Bit() == sub_run.Is8Bit() && sub_run.text_.Bytes() >= text_.Bytes()) {
-    size_t start_index = Is8Bit() ? sub_run.Span8().data() - Span8().data()
-                                  : sub_run.Span16().data() - Span16().data();
-    if (start_index + sub_run.length() <= length())
-      return static_cast<unsigned>(start_index);
-  }
-  return std::numeric_limits<unsigned>::max();
-}
-
 }  // namespace blink
