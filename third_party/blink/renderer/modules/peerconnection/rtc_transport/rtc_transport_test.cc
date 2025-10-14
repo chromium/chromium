@@ -110,15 +110,18 @@ class RtcTransportTest : public PageTestBase {
   void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   void CreateInitializedTransport() {
+    CreateInitializedTransport(CreateRtcTransportConfig());
+  }
+
+  void CreateInitializedTransport(RtcTransportConfig* config) {
     auto* context = GetDocument().GetExecutionContext();
     auto mock_connection =
         std::make_unique<testing::NiceMock<MockAsyncDatagramConnection>>();
     mock_connection_ = mock_connection.get();
     DummyExceptionStateForTesting exception_state;
 
-    transport_ = RtcTransport::CreateForTests(
-        context, CreateRtcTransportConfig(), exception_state,
-        std::move(mock_connection));
+    transport_ = RtcTransport::CreateForTests(context, config, exception_state,
+                                              std::move(mock_connection));
     ASSERT_FALSE(exception_state.HadException());
   }
 
@@ -449,6 +452,12 @@ TEST_F(RtcTransportTest, OnIceCandidate) {
   EXPECT_EQ(ice_candidate->port(), 1234);
   EXPECT_EQ(ice_candidate->type(),
             V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kHost));
+}
+
+TEST_F(RtcTransportTest, DtlsWireProtocol) {
+  RtcTransportConfig* config = CreateRtcTransportConfig();
+  config->setWireProtocol(V8RtcTransportWireProtocol::Enum::kDtls);
+  CreateInitializedTransport(config);
 }
 
 class RtcTransportMultithreadedTest : public PageTestBase {

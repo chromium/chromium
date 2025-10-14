@@ -106,11 +106,13 @@ class MODULES_EXPORT RtcTransport final
   void Trace(Visitor* visitor) const override;
 
  private:
-  void ContinueInitialization(bool ice_controlling,
-                              webrtc::ServerAddresses stun_servers,
-                              webrtc::scoped_refptr<webrtc::DatagramConnection>
-                                  injected_datagram_connection,
-                              RtcTransportDependencies* dependencies);
+  void ContinueInitialization(
+      bool ice_controlling,
+      webrtc::ServerAddresses stun_servers,
+      webrtc::scoped_refptr<webrtc::DatagramConnection>
+          injected_datagram_connection,
+      webrtc::DatagramConnection::WireProtocol wire_protocol,
+      RtcTransportDependencies* dependencies);
   void OnInitialized(std::unique_ptr<AsyncDatagramConnection>);
 
   // Pre-finalizer
