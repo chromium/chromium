@@ -320,6 +320,12 @@ BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
 #endif
 
+// Enables a side panel that occupies the vertical space from the top of the
+// toolbar to the bottom of the browser. This is taller than the default side
+// panel, which occupies the space from the top of the WebContents to the bottom
+// of the browser.
+BASE_DECLARE_FEATURE(kToolbarHeightSidePanel);
+
 bool IsToolbarPinningEnabled();
 
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
