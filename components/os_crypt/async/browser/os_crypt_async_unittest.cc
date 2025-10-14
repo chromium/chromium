@@ -5,6 +5,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -55,10 +56,9 @@ class OSCryptAsyncTest : public ::testing::Test {
         []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
     return std::nullopt;
 #elif BUILDFLAG(IS_APPLE)
-    OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
-    return base::ScopedClosureRunner(base::BindOnce([]() {
-      OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
-    }));
+    OSCrypt::SetKeychainForTesting(OSCrypt::MockLockedKeychain());
+    return base::ScopedClosureRunner(
+        base::BindOnce([]() { OSCrypt::SetKeychainForTesting(nullptr); }));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
     return base::ScopedClosureRunner(base::BindOnce([]() {

@@ -145,10 +145,9 @@ class EncryptorTestBase : public ::testing::Test {
       OSCrypt::ClearCacheForTesting();
     }));
 #elif BUILDFLAG(IS_APPLE)
-    OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
-    return base::ScopedClosureRunner(base::BindOnce([]() {
-      OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/false);
-    }));
+    OSCrypt::SetKeychainForTesting(OSCrypt::MockLockedKeychain());
+    return base::ScopedClosureRunner(
+        base::BindOnce([]() { OSCrypt::SetKeychainForTesting(nullptr); }));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
     return base::ScopedClosureRunner(base::BindOnce([]() {

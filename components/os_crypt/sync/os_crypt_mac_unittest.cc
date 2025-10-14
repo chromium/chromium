@@ -4,6 +4,9 @@
 
 #include "components/os_crypt/sync/os_crypt.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/strings/string_view_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/apple/mock_keychain.h"
@@ -64,8 +67,10 @@ TEST_F(OSCryptMacTest, SetAndGetRaw) {
   OSCryptImpl oscrypt1;
   OSCryptImpl oscrypt2;
 
-  oscrypt1.UseMockKeychainForTesting(true);
-  oscrypt2.UseMockKeychainForTesting(true);
+  oscrypt1.SetKeychainForTesting(
+      std::make_unique<crypto::apple::MockKeychain>());
+  oscrypt2.SetKeychainForTesting(
+      std::make_unique<crypto::apple::MockKeychain>());
 
   oscrypt2.SetRawEncryptionKey(oscrypt1.GetRawEncryptionKey());
   EXPECT_GT(oscrypt1.GetRawEncryptionKey().size(), 0u);
