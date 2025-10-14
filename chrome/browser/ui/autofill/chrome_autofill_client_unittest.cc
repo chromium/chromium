@@ -522,7 +522,7 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {
 // Test that the Autofill AI filling journey survey calls the hats service with
 // the expected params.
 TEST_F(ChromeAutofillClientTest,
-       TriggerUserAutofillAiFillingJourneySurvey_Passport_SuggestionAccepted) {
+       TriggerUserAutofillAiFillingJourneySurvey_Vehicle_SuggestionAccepted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAutofillAiFillingSurvey);
 
@@ -537,20 +537,20 @@ TEST_F(ChromeAutofillClientTest,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerAutofillAiFilling, _, _,
           Eq(SurveyBitsData({{"User accepted suggestion", true}})),
-          Eq(SurveyStringData({{"Entity type", "Passport"},
-                               {"Saved entities", "Passport"},
-                               {"Triggering field types", "PASSPORT_NUMBER"}})),
+          Eq(SurveyStringData({{"Entity type", "Vehicle"},
+                               {"Saved entities", "Vehicle"},
+                               {"Triggering field types", "NAME_FULL"}})),
           _, _, _, _, _));
 
   client()->TriggerAutofillAiFillingJourneySurvey(
-      /*suggestion_accepted=*/true, EntityType(EntityTypeName::kPassport),
-      base::flat_set<EntityTypeName>({EntityTypeName::kPassport}),
-      {PASSPORT_NUMBER});
+      /*suggestion_accepted=*/true, EntityType(EntityTypeName::kVehicle),
+      base::flat_set<EntityTypeName>({EntityTypeName::kVehicle}), {NAME_FULL});
 }
 
-TEST_F(
-    ChromeAutofillClientTest,
-    TriggerUserAutofillAiFillingJourneySurvey_NationalId_SuggestionDeclined) {
+// Test that some entities (such as passports) does not trigger AutofillAi
+// filling surveys.
+TEST_F(ChromeAutofillClientTest,
+       TriggerUserAutofillAiFillingJourneySurvey_Passport_SurveyNotTriggered) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAutofillAiFillingSurvey);
 
@@ -560,24 +560,45 @@ TEST_F(
   EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
       .WillRepeatedly(Return(true));
 
-  EXPECT_CALL(*mock_hats_service,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerAutofillAiFilling, _, _,
-                  Eq(SurveyBitsData({{"User accepted suggestion", false}})),
-                  Eq(SurveyStringData(
-                      {{"Entity type",
-                        std::string(EntityType(EntityTypeName::kNationalIdCard)
-                                        .name_as_string())},
-                       {"Triggering field types", "NATIONAL_ID_CARD_NUMBER"},
-                       {"Saved entities", "Passport,National Id Card"}})),
-                  _, _, _, _, _));
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+
+  client()->TriggerAutofillAiFillingJourneySurvey(
+      /*suggestion_accepted=*/true, EntityType(EntityTypeName::kPassport),
+      base::flat_set<EntityTypeName>({EntityTypeName::kPassport}),
+      {PASSPORT_NUMBER});
+}
+
+TEST_F(
+    ChromeAutofillClientTest,
+    TriggerUserAutofillAiFillingJourneySurvey_FlightReservation_SuggestionDeclined) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillAiFillingSurvey);
+
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillAiFilling, _, _,
+          Eq(SurveyBitsData({{"User accepted suggestion", false}})),
+          Eq(SurveyStringData(
+              {{"Entity type",
+                std::string(EntityType(EntityTypeName::kFlightReservation)
+                                .name_as_string())},
+               {"Triggering field types", "FLIGHT_RESERVATION_FLIGHT_NUMBER"},
+               {"Saved entities", "Passport,Flight Reservation"}})),
+          _, _, _, _, _));
 
   client()->TriggerAutofillAiFillingJourneySurvey(
       /*suggestion_accepted=*/false,
-      EntityType(EntityTypeName::kNationalIdCard),
+      EntityType(EntityTypeName::kFlightReservation),
       base::flat_set<EntityTypeName>(
-          {EntityTypeName::kPassport, EntityTypeName::kNationalIdCard}),
-      FieldTypeSet({NATIONAL_ID_CARD_NUMBER}));
+          {EntityTypeName::kPassport, EntityTypeName::kFlightReservation}),
+      FieldTypeSet({FLIGHT_RESERVATION_FLIGHT_NUMBER}));
 }
 
 // Test that the Autofill AI save prompt survey calls the hats service with
@@ -600,13 +621,13 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_CALL(*mock_hats_service,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerAutofillAiSavePrompt, _, _, _,
-                  Eq(SurveyStringData({{"Entity type", "Passport"},
-                                       {"Saved entities", "Passport"}})),
+                  Eq(SurveyStringData({{"Entity type", "Vehicle"},
+                                       {"Saved entities", "Vehicle"}})),
                   _, _, _, Eq("12345"), _));
 
   client()->TriggerAutofillAiSavePromptSurvey(
-      /*prompt_accepted=*/true, EntityType(EntityTypeName::kPassport),
-      base::flat_set<EntityTypeName>({EntityTypeName::kPassport}));
+      /*prompt_accepted=*/true, EntityType(EntityTypeName::kVehicle),
+      base::flat_set<EntityTypeName>({EntityTypeName::kVehicle}));
 }
 
 TEST_F(ChromeAutofillClientTest,
@@ -628,13 +649,13 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_CALL(*mock_hats_service,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerAutofillAiSavePrompt, _, _, _,
-                  Eq(SurveyStringData({{"Entity type", "Passport"},
-                                       {"Saved entities", "Passport"}})),
+                  Eq(SurveyStringData({{"Entity type", "Vehicle"},
+                                       {"Saved entities", "Vehicle"}})),
                   _, _, _, Eq("12345"), _));
 
   client()->TriggerAutofillAiSavePromptSurvey(
-      /*prompt_accepted=*/false, EntityType(EntityTypeName::kPassport),
-      base::flat_set<EntityTypeName>({EntityTypeName::kPassport}));
+      /*prompt_accepted=*/false, EntityType(EntityTypeName::kVehicle),
+      base::flat_set<EntityTypeName>({EntityTypeName::kVehicle}));
 }
 
 TEST_F(ChromeAutofillClientTest,

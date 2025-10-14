@@ -248,6 +248,36 @@ std::string GetStringRepresentatioOfSavedEntitiesTypes(
       ",");
 }
 
+bool CanTriggerAutofillAiFillingSurveyForEntityType(EntityType type) {
+  switch (type.name()) {
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
+      return true;
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kDriversLicense:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool CanTriggerAutofillAiSavePromptSurveyForEntityType(EntityType type) {
+  switch (type.name()) {
+    case EntityTypeName::kVehicle:
+      return true;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kDriversLicense:
+      return false;
+  }
+  NOTREACHED();
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void LaunchPlusAddressUserPerceptionSurvey(
@@ -997,6 +1027,9 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
     const base::flat_set<EntityTypeName>& saved_entities,
     const FieldTypeSet& triggering_field_types) {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!CanTriggerAutofillAiFillingSurveyForEntityType(entity_type)) {
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* hats_service =
@@ -1018,6 +1051,9 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
     EntityType entity_type,
     const base::flat_set<EntityTypeName>& saved_entities) {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!CanTriggerAutofillAiSavePromptSurveyForEntityType(entity_type)) {
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* hats_service =
