@@ -2604,7 +2604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2025-11-25">
+    enum="BooleanValid" expires_after="2026-04-05">
   <owner>bashi@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
