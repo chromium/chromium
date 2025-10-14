@@ -1137,10 +1137,10 @@
     <ph name="TOS_TITLE">$1<ex>Link account and pay with Affirm?</ex></ph> <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay, Affirm logo</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
-    After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked to Google Pay.
+    After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked to your Google account.
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog.">
-    <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide payment plans for you to choose from and complete your purchase.
+    <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If you meet the eligibility criteria, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide potential payment plan(s) to complete your purchase.
   </message>
   <message name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT" desc="The text informing the user the benefits of linking their BNPL account in the Buy-Now-Pay-Later Terms of Service dialog.">
     Keeping your account linked helps you pay faster with <ph name="BNPL_ISSUER_NAME">$1</ph>, but you can unlink it by going to <ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT">$2<ex>wallet.google.com</ex></ph>
