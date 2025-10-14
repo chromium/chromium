@@ -481,7 +481,7 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(glowAnimationWrapper.classList.contains('play'));
   });
 
-  test('adding multiple context files opens composebox', async () => {
+  test('adding context files opens composebox', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
@@ -496,32 +496,16 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(!!contextElement);
 
     // Act & Assert.
-    // 1. Event with 1 file. `contextFilesCount_` is updated, but
-    // `open-composebox` is not fired.
-    assertEquals('0', realbox.getAttribute('context-files-count_'));
-    let openComposeboxFired = false;
-    realbox.addEventListener('open-composebox', () => {
-      openComposeboxFired = true;
-    });
-
-    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
-      detail: {files: 1},
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals('1', realbox.getAttribute('context-files-count_'));
-    assertFalse(openComposeboxFired);
-
-    // 2. Event with >1 file. `open-composebox` is fired.
     const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
-    contextElement.dispatchEvent(new CustomEvent('on-context-files-changed', {
-      detail: {files: 2},
+    contextElement.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {id: 1, title: 'title'},
       bubbles: true,
       composed: true,
     }));
-    await whenOpenComposeBox;
-    assertTrue(openComposeboxFired);
+    const event = await whenOpenComposeBox;
+    assertEquals(event.detail.contextFiles.length, 1);
+    assertEquals(event.detail.contextFiles[0].tabId, 1);
+    assertEquals(event.detail.contextFiles[0].name, 'title');
   });
 
   //============================================================================
@@ -1173,39 +1157,6 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     assertEquals('voiceSearchButton', getDeepActiveElement()!.id);
-  });
-
-  test('autocomplete hides dropdown in typed state with context', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
-    realbox.ntpRealboxNextEnabled = true;
-    document.body.appendChild(realbox);
-
-    realbox.$.input.value = 'typed state';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
-    realbox.$.context.dispatchEvent(
-      new CustomEvent('on-context-files-changed', {
-        detail: {files: 1},
-      }));
-    const matches = [createSearchMatch(), createUrlMatch()];
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResult({
-          input: realbox.$.input.value.trimStart(),
-          matches: matches,
-        }));
-    assertFalse(await areMatchesShowing());
-
-    // Dropdown should show again when context is removed.
-    realbox.$.context.dispatchEvent(
-      new CustomEvent('on-context-files-changed', {
-        detail: {files: 0},
-      }));
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResult({
-          input: realbox.$.input.value.trimStart(),
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing());
   });
 
   //============================================================================

@@ -773,10 +773,7 @@ export class AppElement extends AppElementBase {
         this.shadowRoot.querySelector<ComposeboxElement>('#composebox');
     assert(composebox);
     const closeComposebox = new CustomEvent('closeComposebox', {
-      detail: {
-        composeboxText: composebox.getText(),
-        contextFiles: composebox.getAndResetContextFiles(),
-      },
+      detail: {composeboxText: composebox.getText()},
       bubbles: true,
       cancelable: true,
     });
@@ -786,13 +783,9 @@ export class AppElement extends AppElementBase {
 
   protected closeComposebox_(e: CustomEvent) {
     const composeboxText = e.detail.composeboxText;
-    const contextFiles = e.detail.contextFiles;
 
     if (composeboxText && composeboxText.trim()) {
       this.$.searchbox.setInputText(composeboxText);
-    }
-    if (contextFiles.length > 0) {
-      this.$.searchbox.setContext(contextFiles);
     }
     const composebox =
         this.shadowRoot.querySelector<ComposeboxElement>('#composebox');

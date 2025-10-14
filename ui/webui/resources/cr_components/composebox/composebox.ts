@@ -322,16 +322,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.input_ = text;
   }
 
-  getAndResetContextFiles() {
-    let files: ComposeboxFile[] = [];
-    if (this.contextFilesSize_ > 0) {
-      files = this.$.context.resetContextFiles();
-      this.contextFilesSize_ = 0;
-      this.searchboxHandler_.clearFiles();
-    }
-    return files;
-  }
-
   resetModes() {
     this.$.context.resetModes();
   }
@@ -668,10 +658,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   private closeComposebox_() {
     this.resetModes();
-    this.fire('close-composebox', {
-      composeboxText: this.input_,
-      contextFiles: this.getAndResetContextFiles(),
-    });
+    this.fire('close-composebox', {composeboxText: this.input_});
 
     if (this.isCollapsible) {
       this.expanded_ = false;

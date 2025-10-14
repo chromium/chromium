@@ -414,10 +414,6 @@ cr-searchbox-icon {
   --cr-searchbox-input-padding-top_: 22px;
 }
 
-:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"])) {
-  --cr-searchbox-dropdown-padding-top: 48px;
-}
-
 @media (forced-colors: active) {
   :host([realbox-layout-mode^='Tall']) .dropdownContainer {
     border: 1px solid ActiveBorder;
@@ -447,11 +443,6 @@ cr-searchbox-icon {
   bottom: 10px;
   top: unset;
   height: var(--cr-searchbox-voice-lens-size);
-}
-
-:host([realbox-layout-mode^='Tall']:not([context-files-count_="0"]))
-    .searchbox-icon-button-container {
-  display: none;
 }
 
 :host([realbox-layout-mode^='Tall'][dropdown-is-visible]) cr-searchbox-icon,
