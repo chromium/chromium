@@ -139,6 +139,10 @@ BASE_DECLARE_FEATURE(kLensOverlayForceEmptyCsbQuery);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
 
+// Enables AIM suggestions in the composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensAimSuggestions);
+
 // Enables the zero state contextual searchbox feature which opens the SRP
 // immediately when entering Lens entry points.
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -74,6 +75,16 @@ class LensComposeboxController {
     return composebox_handler_.get();
   }
 
+  const lens::proto::LensOverlaySuggestInputs&
+  get_raw_suggest_inputs_for_testing() const {
+    return suggest_inputs_;
+  }
+
+  lens::proto::LensOverlaySuggestInputs GetLensSuggestInputs() const;
+
+  void UpdateSuggestInputs(
+      const lens::proto::LensOverlaySuggestInputs& suggest_inputs);
+
  private:
   // Builds a SubmitQuery ClientToAimMessage message to send to the side panel
   // remote UI.
@@ -96,6 +107,11 @@ class LensComposeboxController {
   // The class responsible for handling messages between the compose box and
   // the WebUI.
   std::unique_ptr<LensComposeboxHandler> composebox_handler_;
+
+  // The current suggest inputs. The fields in this proto are updated
+  // whenever new data is available (i.e. after an objects or interaction
+  // response is received)
+  lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 };
 }  // namespace lens
 

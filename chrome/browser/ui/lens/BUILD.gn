@@ -171,6 +171,7 @@ source_set("impl") {
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/metrics_services_manager",
+    "//components/omnibox/composebox",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/prefs",

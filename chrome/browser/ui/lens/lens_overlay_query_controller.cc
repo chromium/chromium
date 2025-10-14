@@ -682,7 +682,8 @@ LensOverlayQueryController::GetNextRequestId(
 void LensOverlayQueryController::RunSuggestInputsCallback() {
   suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(true);
   suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
-      lens::features::GetLensOverlaySendLensInputsForLensSuggest());
+      lens::features::GetLensOverlaySendLensInputsForLensSuggest() ||
+      lens::features::GetAimSuggestionsEnabled());
   suggest_inputs_.set_send_vsint_for_lens_suggest(
       lens::features::
           GetLensOverlaySendLensVisualInteractionDataForLensSuggest());

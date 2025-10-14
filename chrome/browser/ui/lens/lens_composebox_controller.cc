@@ -132,6 +132,7 @@ void LensComposeboxController::CloseUI() {
   ResetAimHandshake();
   pending_query_text_.reset();
   composebox_handler_.reset();
+  suggest_inputs_.Clear();
 }
 
 void LensComposeboxController::OnAimMessage(
@@ -181,6 +182,16 @@ void LensComposeboxController::ShowLensSelectionOverlay() {
 lens::LensSessionMetricsLogger*
 LensComposeboxController::GetSessionMetricsLogger() {
   return lens_search_controller_->lens_session_metrics_logger();
+}
+
+lens::proto::LensOverlaySuggestInputs
+LensComposeboxController::GetLensSuggestInputs() const {
+  return suggest_inputs_;
+}
+
+void LensComposeboxController::UpdateSuggestInputs(
+    const lens::proto::LensOverlaySuggestInputs& suggest_inputs) {
+  suggest_inputs_ = suggest_inputs;
 }
 
 lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(

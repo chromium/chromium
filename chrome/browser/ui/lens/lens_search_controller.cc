@@ -790,6 +790,7 @@ void LensSearchController::HandleInteractionResponse(
 void LensSearchController::HandleSuggestInputsResponse(
     lens::proto::LensOverlaySuggestInputs suggest_inputs) {
   lens_searchbox_controller_->HandleSuggestInputsResponse(suggest_inputs);
+  lens_composebox_controller_->UpdateSuggestInputs(suggest_inputs);
 }
 
 void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
