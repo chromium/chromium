@@ -861,6 +861,12 @@ void WebTransport::TearDown() {
 }
 
 void WebTransport::Dispose() {
+  // For tab close scenario: Send explicit connection close
+  // frame to ensure proper termination before cleanup.
+  if (transport_ && !torn_down_ && transport_->session()) {
+    transport_->Close(std::nullopt);
+  }
+
   receiver_.reset();
 
   context_->Remove(this);
