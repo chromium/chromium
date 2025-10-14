@@ -279,6 +279,9 @@ BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables sharing host audio in the Boca app.
 BASE_FEATURE(kBocaHostAudio, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables using audio for the Kiosk client in the Boca app.
+BASE_FEATURE(kBocaAudioForKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2565,6 +2568,10 @@ bool IsBocaScreenSharingStudentEnabled() {
 
 bool IsBocaHostAudioEnabled() {
   return base::FeatureList::IsEnabled(kBocaHostAudio);
+}
+
+bool IsBocaAudioForKioskEnabled() {
+  return base::FeatureList::IsEnabled(kBocaAudioForKiosk);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
