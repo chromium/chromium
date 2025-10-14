@@ -130,6 +130,21 @@ def parse_deps(build_dir, deps_output):
   ['foo.cc']
   >>> sorted(deps['foo.cc'])
   ['foo.h', 'gen.modulemap']
+
+  >>> deps = parse_deps(
+  ...   'dir1/dir2',
+  ...   'module.pcm: #deps 1, deps mtime 123456789 (VALID)\n'
+  ...   '    module.modulemap\n'
+  ...   '\n'
+  ...   'obj/foo.o: #deps 3, deps mtime 123456789 (VALID)\n'
+  ...   '    ../../gen.modulemap\n'
+  ...   '    ../../foo.cc\n'
+  ...   '    ../../foo.h\n'
+  ...   '\n'.splitlines(keepends=True))
+  >>> sorted(deps.keys())
+  ['foo.cc']
+  >>> sorted(deps['foo.cc'])
+  ['foo.h', 'gen.modulemap']
   """
 
   # obj/foo.o: #deps 3, deps mtime 123456789 (VALID)
@@ -150,13 +165,12 @@ def parse_deps(build_dir, deps_output):
     m = HEADER_RE.match(line)
     if not m:
       raise Exception("Unexpected deps header line: '%s'" % line)
-    if m.group(1).endswith(".pcm"):
-      # Ignore modulemap config file.
-      continue
+
     num_deps = int(m.group(2))
-    if m.group(3) == 'STALE':
-      # A deps entry is stale if the .o file doesn't exist or if it's newer than
-      # the deps entry. Skip such entries.
+    if m.group(1).endswith(".pcm") or m.group(3) == 'STALE':
+      # Ignore dependencies for precompiled modules (.pcm) and stale entries.
+      # A 'STALE' entry means the .o file doesn't exist or if it's newer than
+      # the deps entry.
       for _ in range(num_deps + 1):
         next(deps_iter)
       continue
