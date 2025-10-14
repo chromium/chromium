@@ -154,7 +154,7 @@ base::expected<std::string, absl::Status> HostnameEncodeCallback(
   url::Component component;
 
   bool result = url::CanonicalizeHost(
-      input.data(), url::Component(0, base::checked_cast<int>(input.size())),
+      input, url::Component(0, base::checked_cast<int>(input.size())),
       &canon_output, &component);
 
   if (!result) {

@@ -99,7 +99,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   std::string canonicalized_domain_storage;
   url::StdStringCanonOutput canon_output(&canonicalized_domain_storage);
   url::CanonHostInfo host_info;
-  url::CanonicalizeHostVerbose(relying_party_id.data(),
+  url::CanonicalizeHostVerbose(relying_party_id,
                                url::Component(0, relying_party_id.size()),
                                &canon_output, &host_info);
   const std::string_view canonicalized_domain(canon_output.data(),

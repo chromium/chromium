@@ -674,15 +674,15 @@ TEST_F(URLCanonHostTest, Host) {
   for (const auto& host_case : host_cases) {
     // Narrow version.
     if (host_case.input8) {
-      int host_len = static_cast<int>(strlen(host_case.input8));
+      std::string_view input8(host_case.input8);
+      int host_len = static_cast<int>(input8.length());
       Component in_comp(0, host_len);
       Component out_comp;
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      bool success =
-          CanonicalizeHost(host_case.input8, in_comp, &output, &out_comp);
+      bool success = CanonicalizeHost(input8, in_comp, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success)
@@ -706,8 +706,7 @@ TEST_F(URLCanonHostTest, Host) {
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      bool success = CanonicalizeHost(input16.c_str(), in_comp, &output,
-                                      &out_comp);
+      bool success = CanonicalizeHost(input16, in_comp, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success);
@@ -721,14 +720,15 @@ TEST_F(URLCanonHostTest, Host) {
   for (const auto& host_case : host_cases) {
     // Narrow version.
     if (host_case.input8) {
-      int host_len = static_cast<int>(strlen(host_case.input8));
+      std::string_view input8(host_case.input8);
+      int host_len = static_cast<int>(input8.length());
       Component in_comp(0, host_len);
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
       CanonHostInfo host_info;
 
-      CanonicalizeHostVerbose(host_case.input8, in_comp, &output, &host_info);
+      CanonicalizeHostVerbose(input8, in_comp, &output, &host_info);
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family, host_info.family);
@@ -756,7 +756,7 @@ TEST_F(URLCanonHostTest, Host) {
       StdStringCanonOutput output(&out_str);
       CanonHostInfo host_info;
 
-      CanonicalizeHostVerbose(input16.c_str(), in_comp, &output, &host_info);
+      CanonicalizeHostVerbose(input16, in_comp, &output, &host_info);
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family, host_info.family);
@@ -797,8 +797,7 @@ TEST_F(URLCanonTest, SpecialHostPuncutationChar) {
     Component in_comp(0, input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    bool success =
-        CanonicalizeSpecialHost(input.data(), in_comp, output, out_comp);
+    bool success = CanonicalizeSpecialHost(input, in_comp, output, out_comp);
     EXPECT_TRUE(success) << "Input: " << input;
     output.Complete();
     EXPECT_EQ(out_str, input) << "Input: " << input;
@@ -809,8 +808,7 @@ TEST_F(URLCanonTest, SpecialHostPuncutationChar) {
     Component in_comp(0, input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    EXPECT_FALSE(
-        CanonicalizeSpecialHost(input.data(), in_comp, output, out_comp))
+    EXPECT_FALSE(CanonicalizeSpecialHost(input, in_comp, output, out_comp))
         << "Input: " << input;
   }
 
@@ -819,8 +817,7 @@ TEST_F(URLCanonTest, SpecialHostPuncutationChar) {
     Component in_comp(0, c.input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    bool success =
-        CanonicalizeSpecialHost(c.input.data(), in_comp, output, out_comp);
+    bool success = CanonicalizeSpecialHost(c.input, in_comp, output, out_comp);
     EXPECT_TRUE(success) << "Input: " << c.input;
     output.Complete();
     EXPECT_EQ(out_str, c.expected) << "Input: " << c.input;
@@ -843,8 +840,7 @@ TEST_F(URLCanonTest, ForbiddenHostCodePoint) {
     Component in_comp(0, input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    EXPECT_FALSE(
-        CanonicalizeNonSpecialHost(input.data(), in_comp, output, out_comp))
+    EXPECT_FALSE(CanonicalizeNonSpecialHost(input, in_comp, output, out_comp))
         << "Input: " << input;
   }
 
@@ -854,8 +850,8 @@ TEST_F(URLCanonTest, ForbiddenHostCodePoint) {
   Component in_comp(0, 3);
   Component out_comp;
   StdStringCanonOutput output(&out_str);
-  EXPECT_FALSE(
-      CanonicalizeNonSpecialHost(host_with_null, in_comp, output, out_comp));
+  EXPECT_FALSE(CanonicalizeNonSpecialHost(std::string_view(host_with_null, 3u),
+                                          in_comp, output, out_comp));
 }
 
 TEST_F(URLCanonTest, IPv4) {
@@ -3083,12 +3079,12 @@ TEST_F(URLCanonTest, OpaqueHost) {
 
   for (const auto& host_case : host_cases) {
     SCOPED_TRACE(testing::Message() << "url: \"" << host_case.input8 << "\"");
+    std::string_view input8(host_case.input8);
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Component out_comp;
     bool success = CanonicalizeNonSpecialHost(
-        host_case.input8,
-        Component(0, static_cast<int>(strlen(host_case.input8))), output,
+        input8, Component(0, static_cast<int>(input8.length())), output,
         out_comp);
     output.Complete();
     ComponentCaseMatches(success, out_str, out_comp, host_case);
@@ -3103,8 +3099,8 @@ TEST_F(URLCanonTest, OpaqueHost) {
     StdStringCanonOutput output(&out_str);
     Component out_comp;
     bool success = CanonicalizeNonSpecialHost(
-        input16.c_str(), Component(0, static_cast<int>(input16.length())),
-        output, out_comp);
+        input16, Component(0, static_cast<int>(input16.length())), output,
+        out_comp);
     output.Complete();
     ComponentCaseMatches(success, out_str, out_comp, host_case);
   }
@@ -3150,12 +3146,12 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
   for (const auto& ip_address_case : ip_address_cases) {
     SCOPED_TRACE(testing::Message()
                  << "url: \"" << ip_address_case.input8 << "\"");
+    std::string_view view8(ip_address_case.input8);
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     CanonHostInfo host_info;
     CanonicalizeNonSpecialHostVerbose(
-        ip_address_case.input8,
-        Component(0, static_cast<int>(strlen(ip_address_case.input8))), output,
+        view8, Component(0, static_cast<int>(view8.length())), output,
         host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
@@ -3171,8 +3167,8 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
     StdStringCanonOutput output(&out_str);
     CanonHostInfo host_info;
     CanonicalizeNonSpecialHostVerbose(
-        input16.c_str(), Component(0, static_cast<int>(input16.length())),
-        output, host_info);
+        input16, Component(0, static_cast<int>(input16.length())), output,
+        host_info);
     output.Complete();
     IPAddressCaseMatches(out_str, host_info, ip_address_case);
   }

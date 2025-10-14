@@ -39,11 +39,11 @@ bool IsCanonicalHost(std::string_view host, bool is_file_scheme) {
   StdStringCanonOutput canon_host_output(&canon_host);
   CanonHostInfo host_info;
   if (is_file_scheme) {
-    CanonicalizeFileHostVerbose(host.data(), raw_host_component,
-                                canon_host_output, host_info);
+    CanonicalizeFileHostVerbose(host, raw_host_component, canon_host_output,
+                                host_info);
   } else {
-    CanonicalizeSpecialHostVerbose(host.data(), raw_host_component,
-                                   canon_host_output, host_info);
+    CanonicalizeSpecialHostVerbose(host, raw_host_component, canon_host_output,
+                                   host_info);
   }
 
   if (host_info.out_host.is_nonempty() &&

@@ -59,8 +59,10 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
       new_parsed->password.reset();
     }
 
-    success &= CanonicalizeHost(source.host, parsed.host,
-                                output, &new_parsed->host);
+    success &= CanonicalizeHost(
+        std::basic_string_view<CHAR>(
+            source.host, parsed.host.is_valid() ? parsed.host.end() : 0),
+        parsed.host, output, &new_parsed->host);
 
     // Host must not be empty for standard URLs.
     if (parsed.host.is_empty())

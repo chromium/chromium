@@ -297,8 +297,7 @@ void ChromeRequireCTDelegate::AddFilters(
       // not desirable for those.
       url::RawCanonOutputT<char> output;
       url::CanonHostInfo host_info;
-      url::CanonicalizeHostVerbose(pattern.c_str(), parsed.host, &output,
-                                   &host_info);
+      url::CanonicalizeHostVerbose(pattern, parsed.host, &output, &host_info);
       // TODO(rsleevi): Use canonicalized form?
       if (host_info.family == url::CanonHostInfo::NEUTRAL) {
         // Match subdomains (implicit by the omission of '.'). Add in a

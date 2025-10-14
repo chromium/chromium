@@ -337,10 +337,10 @@ std::string CanonicalizeHost(std::string_view host,
   const int kCxxMaxStringBufferSizeWithoutMalloc = 22;
   canon_host_output.Resize(kCxxMaxStringBufferSizeWithoutMalloc);
   if (is_file_scheme) {
-    url::CanonicalizeFileHostVerbose(host.data(), raw_host_component,
+    url::CanonicalizeFileHostVerbose(host, raw_host_component,
                                      canon_host_output, *host_info);
   } else {
-    url::CanonicalizeSpecialHostVerbose(host.data(), raw_host_component,
+    url::CanonicalizeSpecialHostVerbose(host, raw_host_component,
                                         canon_host_output, *host_info);
   }
 

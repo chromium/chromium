@@ -108,9 +108,8 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
     std::string canon_pattern;
     url::Component canon_component;
     url::StdStringCanonOutput canon_output(&canon_pattern);
-    if (!url::CanonicalizeHost(pattern.data(),
-                               url::Component(0, pattern.size()), &canon_output,
-                               &canon_component)) {
+    if (!url::CanonicalizeHost(pattern, url::Component(0, pattern.size()),
+                               &canon_output, &canon_component)) {
       continue;
     }
     canon_output.Complete();

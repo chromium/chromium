@@ -513,7 +513,7 @@ bool DoOpaqueHost(const std::basic_string_view<CharT> host,
 }
 
 template <typename CHAR, typename UCHAR, CanonMode canon_mode>
-void DoHost(const CHAR* spec,
+void DoHost(std::basic_string_view<CHAR> spec,
             const Component& host,
             CanonOutput& output,
             CanonHostInfo& host_info) {
@@ -542,10 +542,11 @@ void DoHost(const CHAR* spec,
   bool success;
   if constexpr (canon_mode == CanonMode::kSpecialURL ||
                 canon_mode == CanonMode::kFileURL) {
-    success = DoHostSubstring<CHAR, UCHAR, canon_mode>(spec, host, &output);
+    success =
+        DoHostSubstring<CHAR, UCHAR, canon_mode>(spec.data(), host, &output);
   } else {
     // URL Standard: https://url.spec.whatwg.org/#concept-opaque-host-parser
-    success = DoOpaqueHost(host.as_string_view_on(spec), output);
+    success = DoOpaqueHost(host.as_string_view_on(spec.data()), output);
   }
 
   if (success) {
@@ -582,7 +583,7 @@ void DoHost(const CHAR* spec,
 
 }  // namespace
 
-bool CanonicalizeHost(const char* spec,
+bool CanonicalizeHost(std::string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
@@ -591,7 +592,7 @@ bool CanonicalizeHost(const char* spec,
   return CanonicalizeSpecialHost(spec, host, *output, *out_host);
 }
 
-bool CanonicalizeHost(const char16_t* spec,
+bool CanonicalizeHost(std::u16string_view spec,
                       const Component& host,
                       CanonOutput* output,
                       Component* out_host) {
@@ -600,7 +601,7 @@ bool CanonicalizeHost(const char16_t* spec,
   return CanonicalizeSpecialHost(spec, host, *output, *out_host);
 }
 
-bool CanonicalizeSpecialHost(const char* spec,
+bool CanonicalizeSpecialHost(std::string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host) {
@@ -611,7 +612,7 @@ bool CanonicalizeSpecialHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeSpecialHost(const char16_t* spec,
+bool CanonicalizeSpecialHost(std::u16string_view spec,
                              const Component& host,
                              CanonOutput& output,
                              Component& out_host) {
@@ -622,7 +623,7 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeFileHost(const char* spec,
+bool CanonicalizeFileHost(std::string_view spec,
                           const Component& host,
                           CanonOutput& output,
                           Component& out_host) {
@@ -633,7 +634,7 @@ bool CanonicalizeFileHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeFileHost(const char16_t* spec,
+bool CanonicalizeFileHost(std::u16string_view spec,
                           const Component& host,
                           CanonOutput& output,
                           Component& out_host) {
@@ -644,7 +645,7 @@ bool CanonicalizeFileHost(const char16_t* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeNonSpecialHost(const char* spec,
+bool CanonicalizeNonSpecialHost(std::string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host) {
@@ -655,7 +656,7 @@ bool CanonicalizeNonSpecialHost(const char* spec,
   return (host_info.family != CanonHostInfo::BROKEN);
 }
 
-bool CanonicalizeNonSpecialHost(const char16_t* spec,
+bool CanonicalizeNonSpecialHost(std::u16string_view spec,
                                 const Component& host,
                                 CanonOutput& output,
                                 Component& out_host) {
@@ -670,12 +671,12 @@ void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
-  DCHECK(output);
-  DCHECK(host_info);
-  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
+  CanonicalizeHostVerbose(
+      std::string_view(spec, host.is_valid() ? host.end() : 0), host, output,
+      host_info);
 }
 
-void CanonicalizeHostVerbose(const char16_t* spec,
+void CanonicalizeHostVerbose(std::string_view spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info) {
@@ -684,7 +685,16 @@ void CanonicalizeHostVerbose(const char16_t* spec,
   CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
 }
 
-void CanonicalizeSpecialHostVerbose(const char* spec,
+void CanonicalizeHostVerbose(std::u16string_view spec,
+                             const Component& host,
+                             CanonOutput* output,
+                             CanonHostInfo* host_info) {
+  DCHECK(output);
+  DCHECK(host_info);
+  CanonicalizeSpecialHostVerbose(spec, host, *output, *host_info);
+}
+
+void CanonicalizeSpecialHostVerbose(std::string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info) {
@@ -692,7 +702,7 @@ void CanonicalizeSpecialHostVerbose(const char* spec,
                                                       host_info);
 }
 
-void CanonicalizeSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeSpecialHostVerbose(std::u16string_view spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info) {
@@ -700,7 +710,7 @@ void CanonicalizeSpecialHostVerbose(const char16_t* spec,
                                                      host_info);
 }
 
-void CanonicalizeFileHostVerbose(const char* spec,
+void CanonicalizeFileHostVerbose(std::string_view spec,
                                  const Component& host,
                                  CanonOutput& output,
                                  CanonHostInfo& host_info) {
@@ -708,7 +718,7 @@ void CanonicalizeFileHostVerbose(const char* spec,
                                                    host_info);
 }
 
-void CanonicalizeFileHostVerbose(const char16_t* spec,
+void CanonicalizeFileHostVerbose(std::u16string_view spec,
                                  const Component& host,
                                  CanonOutput& output,
                                  CanonHostInfo& host_info) {
@@ -730,7 +740,7 @@ bool CanonicalizeHostSubstring(const char16_t* spec,
                                                                      output);
 }
 
-void CanonicalizeNonSpecialHostVerbose(const char* spec,
+void CanonicalizeNonSpecialHostVerbose(std::string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info) {
@@ -738,7 +748,7 @@ void CanonicalizeNonSpecialHostVerbose(const char* spec,
                                                          host_info);
 }
 
-void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
+void CanonicalizeNonSpecialHostVerbose(std::u16string_view spec,
                                        const Component& host,
                                        CanonOutput& output,
                                        CanonHostInfo& host_info) {

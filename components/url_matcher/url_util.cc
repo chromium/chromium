@@ -386,8 +386,7 @@ bool FilterToComponents(const std::string& filter,
   } else {
     url::RawCanonOutputT<char> output;
     url::CanonHostInfo host_info;
-    url::CanonicalizeHostVerbose(filter.c_str(), parsed.host, &output,
-                                 &host_info);
+    url::CanonicalizeHostVerbose(filter, parsed.host, &output, &host_info);
     if (host_info.family == url::CanonHostInfo::NEUTRAL) {
       // We want to match subdomains. Add a dot in front to make sure we only
       // match at domain component boundaries.

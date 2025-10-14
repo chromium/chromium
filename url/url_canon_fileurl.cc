@@ -167,8 +167,10 @@ bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
   // TODO(brettw) This doesn't do any checking for host name validity. We
   // should probably handle validity checking of UNC hosts differently than
   // for regular IP hosts.
-  bool success =
-      CanonicalizeFileHost(source.host, host_range, *output, new_parsed->host);
+  bool success = CanonicalizeFileHost(
+      std::basic_string_view<CHAR>(
+          source.host, host_range.is_valid() ? host_range.end() : 0),
+      host_range, *output, new_parsed->host);
   success &= DoFileCanonicalizePath<CHAR, UCHAR>(source.path, parsed.path,
                                     output, &new_parsed->path);
 

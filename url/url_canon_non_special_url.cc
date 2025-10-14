@@ -73,8 +73,10 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
 
     // Host
     if (parsed.host.is_valid()) {
-      success &= CanonicalizeNonSpecialHost(source.host, parsed.host, output,
-                                            new_parsed.host);
+      success &= CanonicalizeNonSpecialHost(
+          std::basic_string_view<CHAR>(
+              source.host, parsed.host.is_valid() ? parsed.host.end() : 0),
+          parsed.host, output, new_parsed.host);
     } else {
       new_parsed.host.reset();
       // URL is invalid if `have_authority` is true, but `parsed.host` is
