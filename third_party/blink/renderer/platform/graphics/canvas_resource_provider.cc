@@ -567,6 +567,12 @@ void CanvasResourceProviderSharedImage::WillDrawUnaccelerated() {
   EnsureWriteAccess();
 }
 
+void CanvasResourceProviderSharedImage::PrepareForWebGPUDummyMailbox() {
+  if (resource_) {
+    resource_->WaitSyncToken();
+  }
+}
+
 bool CanvasResourceProviderSharedImage::WritePixels(
     const SkImageInfo& orig_info,
     const void* pixels,
