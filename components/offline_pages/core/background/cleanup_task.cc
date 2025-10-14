@@ -71,6 +71,7 @@ void CleanupTask::Prune(
   }
 
   std::vector<int64_t> expired_request_ids;
+  expired_request_ids.reserve(expired_request_ids_and_reasons_.size());
   for (auto const& id_reason_pair : expired_request_ids_and_reasons_)
     expired_request_ids.push_back(id_reason_pair.first);
 
