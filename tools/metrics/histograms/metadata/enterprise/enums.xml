@@ -72,6 +72,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid Upload URL"/>
 </enum>
 
+<enum name="CwsPromotionBannerEvent">
+  <summary>
+    User interaction events with the enterprise promotion banner on the Chrome
+    Web Store.
+  </summary>
+  <int value="0" label="Displayed"/>
+  <int value="1" label="Clicked"/>
+</enum>
+
 <enum name="DataProtectionURLVerdictSource">
   <int value="0" label="Page UserData"/>
   <int value="1" label="Cached lookup result"/>

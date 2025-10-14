@@ -647,6 +647,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CwsPromotionBannerEvent"
+    enum="CwsPromotionBannerEvent" expires_after="2026-02-09">
+  <owner>szpotekagata@google.com</owner>
+  <owner>austinzzr@chromium.org</owner>
+  <summary>
+    It will be recorded when promotion banner is displayed or clicked on Chrome
+    Web Store.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DataProtection.URLVerdictSource"
     enum="DataProtectionURLVerdictSource" expires_after="2026-03-18">
   <owner>alshawwa@chromium.org</owner>
