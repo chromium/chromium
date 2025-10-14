@@ -27,6 +27,8 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
@@ -56,6 +58,7 @@
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sharing_message/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -87,16 +90,38 @@ constexpr ContentSettingsType kUnusedChooserPermission =
     ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 const base::TimeDelta kLifetime = base::Days(30);
 
+namespace {
+
+class MockIOSPromoTriggerService : public IOSPromoTriggerService {
+ public:
+  MockIOSPromoTriggerService() = default;
+  ~MockIOSPromoTriggerService() override = default;
+
+  MOCK_METHOD(void,
+              NotifyPromoShouldBeShown,
+              (IOSPromoType promo_type),
+              (override));
+};
+
+std::unique_ptr<KeyedService> BuildMockIOSPromoTriggerService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockIOSPromoTriggerService>();
+}
+
+}  // namespace
+
 class SafetyHubHandlerTest : public testing::Test {
  public:
   SafetyHubHandlerTest() {
-    feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {content_settings::features::kSafetyCheckUnusedSitePermissions,
-         content_settings::features::
-             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-         features::kSafetyHubExtensionsUwSTrigger,
-         features::kSafetyHubExtensionsOffStoreTrigger},
+        {{content_settings::features::kSafetyCheckUnusedSitePermissions, {}},
+         {content_settings::features::
+              kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
+          {}},
+         {features::kSafetyHubExtensionsUwSTrigger, {}},
+         {features::kSafetyHubExtensionsOffStoreTrigger, {}},
+         {kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}}},
         /*disabled_features=*/{});
   }
 
@@ -1333,6 +1358,22 @@ TEST_F(SafetyHubHandlerTest, ExtensionPrefAndInitialization) {
   safety_hub_test_util::RemoveExtension("jadkojfancihcakelhdnpkcidencgdjg",
                                         ManifestLocation::kInternal, profile());
   EXPECT_EQ(2u, web_ui()->call_data().size());
+}
+
+TEST_F(SafetyHubHandlerTest, OnSafeBrowsingEnhancedChanged) {
+  auto* mock_service = static_cast<MockIOSPromoTriggerService*>(
+      IOSPromoTriggerServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockIOSPromoTriggerService)));
+
+  // Turn off enhanced safe browsing. The promo should not be triggered.
+  EXPECT_CALL(*mock_service, NotifyPromoShouldBeShown(testing::_)).Times(0);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  testing::Mock::VerifyAndClearExpectations(mock_service);
+
+  // Turn on enhanced safe browsing. The promo should be triggered.
+  EXPECT_CALL(*mock_service,
+              NotifyPromoShouldBeShown(IOSPromoType::kEnhancedBrowsing));
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 }
 
 class SafetyHubHandlerUnusedPermissionRevocationDisabledTest

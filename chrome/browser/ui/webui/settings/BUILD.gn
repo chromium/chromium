@@ -41,10 +41,13 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/promos:service",
     "//components/content_settings/core/browser",
     "//components/permissions:permissions_common",
+    "//components/prefs",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/sharing_message",
     "//components/site_engagement/content",
     "//extensions/browser",
   ]

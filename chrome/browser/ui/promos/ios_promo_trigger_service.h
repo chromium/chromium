@@ -26,7 +26,7 @@ class IOSPromoTriggerService : public KeyedService {
   IOSPromoTriggerService& operator=(const IOSPromoTriggerService&) = delete;
 
   // Notifies observers that a promo should be shown.
-  void NotifyPromoShouldBeShown(IOSPromoType promo_type);
+  virtual void NotifyPromoShouldBeShown(IOSPromoType promo_type);
 
   // Registers a callback to be notified when a promo should be shown.
   [[nodiscard]] base::CallbackListSubscription RegisterPromoCallback(
