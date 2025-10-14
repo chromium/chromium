@@ -1679,6 +1679,10 @@
       status: "test",
     },
     {
+      // https://issues.chromium.org/41297237: CSS `text-transform: full-width` value
+      name: "CSSTextTransformFullWidth",
+    },
+    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //

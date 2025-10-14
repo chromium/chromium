@@ -5982,7 +5982,7 @@
       independent: true,
       inherited: true,
       field_template: "keyword",
-      keywords: ["capitalize", "uppercase", "lowercase", "none", "math-auto"],
+      keywords: ["capitalize", "uppercase", "lowercase", "full-width", "none", "math-auto"],
       typedom_types: ["Keyword"],
       default_value: "none",
       valid_for_first_letter: true,
