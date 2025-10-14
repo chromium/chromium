@@ -8,12 +8,15 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
+#import "ui/base/l10n/l10n_util.cc"
 #import "url/gurl.h"
 
 namespace data_controls {
@@ -49,8 +52,8 @@ void DataControlsTabHelper::ShouldAllowCopy(
                          std::move(verdicts), std::move(callback)));
       break;
     case Rule::Level::kBlock:
-      // TODO(crbug.com/438198881): Show a toast to the user indicating that
-      // the copy action has been blocked.
+      ShowRestrictSnackbar();
+      [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
     case Rule::Level::kNotSet:
@@ -93,8 +96,8 @@ void DataControlsTabHelper::ShouldAllowPaste(
                          std::move(callback)));
       break;
     case Rule::Level::kBlock:
-    // TODO(crbug.com/438198881): Show a toast to the user indicating that
-    // the paste action has been blocked.
+      ShowRestrictSnackbar();
+      [[fallthrough]];
     case Rule::Level::kReport:
     case Rule::Level::kAllow:
     case Rule::Level::kNotSet:
@@ -119,6 +122,11 @@ void DataControlsTabHelper::ShouldAllowShare(
 void DataControlsTabHelper::SetDataControlsCommandsHandler(
     id<DataControlsCommands> handler) {
   commands_handler_ = handler;
+}
+
+void DataControlsTabHelper::SetSnackbarHandler(
+    id<SnackbarCommands> snackbar_handler) {
+  snackbar_handler_ = snackbar_handler;
 }
 
 bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
@@ -185,6 +193,15 @@ void DataControlsTabHelper::ShowWarningDialog(
       std::move(on_bypassed_callback).Run(false);
     }
   }
+}
+
+void DataControlsTabHelper::ShowRestrictSnackbar() {
+  [snackbar_handler_
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:nil];
 }
 
 }  // namespace data_controls

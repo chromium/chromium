@@ -15,6 +15,8 @@
 #import "ios/web/public/lazy_web_state_user_data.h"
 #import "url/gurl.h"
 
+@protocol SnackbarCommands;
+
 namespace web {
 class WebState;
 }
@@ -47,6 +49,9 @@ class DataControlsTabHelper
   // Sets the command handler for Data Controls.
   void SetDataControlsCommandsHandler(id<DataControlsCommands> handler);
 
+  // Sets the snackbar handler.
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
+
  private:
   friend class web::LazyWebStateUserData<DataControlsTabHelper>;
   explicit DataControlsTabHelper(web::WebState* web_state);
@@ -71,12 +76,17 @@ class DataControlsTabHelper
   void ShowWarningDialog(DataControlsDialog::Type dialog_type,
                          base::OnceCallback<void(bool)> on_bypassed_callback);
 
+  void ShowRestrictSnackbar();
+
   // Unowned pointer to the WebState owning `this`. `web_state_` will always
   // outlive `this`.
   raw_ptr<web::WebState> web_state_;
 
-  // The command handler.
+  // The data controller command handler.
   __weak id<DataControlsCommands> commands_handler_ = nil;
+
+  // The snackbar command handler.
+  __weak id<SnackbarCommands> snackbar_handler_ = nil;
 
   base::WeakPtrFactory<DataControlsTabHelper> weak_factory_{this};
 };

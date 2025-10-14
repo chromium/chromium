@@ -20,6 +20,7 @@ source_set("model") {
     "//base",
     "//components/enterprise/data_controls/core/browser",
     "//components/open_from_clipboard:open_from_clipboard_impl",
+    "//components/strings",
     "//ios/chrome/browser/enterprise/data_controls/utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

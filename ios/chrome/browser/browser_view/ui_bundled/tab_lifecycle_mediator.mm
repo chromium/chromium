@@ -172,6 +172,9 @@
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
       ->SetDataControlsCommandsHandler(
           HandlerForProtocol(_commandDispatcher, DataControlsCommands));
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+      ->SetSnackbarHandler(
+          static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerTabHelperDelegate);
@@ -350,6 +353,8 @@
 
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
       ->SetDataControlsCommandsHandler(nil);
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+      ->SetSnackbarHandler(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
   DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(nil);

@@ -17,13 +17,16 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/test/fakes/fake_data_controls_commands_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -260,12 +263,21 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Default) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
   SetCopyBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
     run_loop.Quit();
   }));
   run_loop.Run();
+  [(OCMockObject*)snackbar_handler verify];
 }
 
 // Tests that copy is allowed when an "ALLOW" rule matches the page URL.
@@ -385,12 +397,21 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Default) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked) {
   SetPasteBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
     run_loop.Quit();
   }));
   run_loop.Run();
+  [(OCMockObject*)snackbar_handler verify];
 }
 
 // Tests that paste is allowed when an "ALLOW" rule matches the page URL.
@@ -593,12 +614,21 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCut) {
   SetCopyBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  OCMExpect([snackbar_handler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:OCMOCK_ANY]);
+  tab_helper()->SetSnackbarHandler(snackbar_handler);
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCut(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_FALSE(allowed);
     run_loop.Quit();
   }));
   run_loop.Run();
+  [(OCMockObject*)snackbar_handler verify];
 }
 
 // Tests that share is allowed by default.
