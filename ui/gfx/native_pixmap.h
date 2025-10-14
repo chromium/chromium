@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(GFX) NativePixmap
   // The following methods return format, modifier and size of the buffer,
   // respectively.
   virtual gfx::BufferFormat GetBufferFormat() const = 0;
-  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
+  virtual viz::SharedImageFormat GetSharedImageFormat() const;
   virtual uint64_t GetBufferFormatModifier() const = 0;
   virtual gfx::Size GetBufferSize() const = 0;
 

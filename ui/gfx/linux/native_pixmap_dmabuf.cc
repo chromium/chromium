@@ -56,10 +56,6 @@ gfx::BufferFormat NativePixmapDmaBuf::GetBufferFormat() const {
   return format_;
 }
 
-viz::SharedImageFormat NativePixmapDmaBuf::GetSharedImageFormat() const {
-  return viz::GetSharedImageFormat(format_);
-}
-
 size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {
   return handle_.planes.size();
 }
