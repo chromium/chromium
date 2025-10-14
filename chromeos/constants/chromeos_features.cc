@@ -104,6 +104,9 @@ BASE_FEATURE(kMahiManaged, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the mahi debugging.
 BASE_FEATURE(kMahiDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls UI changes related to enabling policy management for USB printers.
+BASE_FEATURE(kManagedUsbPrintersUi, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the pompano feature.
 BASE_FEATURE(kPompano, base::FEATURE_ENABLED_BY_DEFAULT);
 
