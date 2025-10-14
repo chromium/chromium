@@ -1095,7 +1095,16 @@ public class PaymentRequestService
                     "PaymentRequest.CanMakePayment.CallAllowedByPref", allowedByPref);
         }
 
-        boolean response = mCanMakePayment && allowedByPref;
+        boolean response = true;
+        if (!allowedByPref) {
+            response =
+                    PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                            PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE);
+            Log.i(TAG, "Can make payment API disabled by settings, returning \"%b\".", response);
+        } else {
+            response = mCanMakePayment;
+        }
+
         mBrowserPaymentRequest.maybeOverrideCanMakePaymentResponse(
                 response, this::sendCanMakePaymentResponseToRenderer);
     }

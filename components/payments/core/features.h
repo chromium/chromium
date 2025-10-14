@@ -26,6 +26,10 @@ BASE_DECLARE_FEATURE(kAppStoreBilling);
 // installed from specific app stores.
 BASE_DECLARE_FEATURE(kAppStoreBillingDebug);
 
+// If enabled, CanMakePayment returns true (and HasEnrolledInstrument returns
+// false) when the `kCanMakePaymentEnabled` pref is false.
+BASE_DECLARE_FEATURE(kCanMakePaymentTrueWhenPrivate);
+
 // Used to control whether allow crawling just-in-time installable payment app.
 BASE_DECLARE_FEATURE(kWebPaymentsJustInTimePaymentApp);
 
@@ -46,7 +50,7 @@ BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 // Used to enable the refreshed fallback flow for Secure Payment Confirmation.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
 
-// Used to control whether the `kCanMakePaymentEnabled` pref being disabled will
+// Used to control whether the `kCanMakePaymentEnabled` pref being false will
 // stop the IsReadyToPay query from being sent to payment handlers.
 BASE_DECLARE_FEATURE(kRestrictIsReadyToPayQuery);
 

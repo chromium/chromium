@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -31,6 +32,7 @@ import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
+import org.chromium.payments.mojom.CanMakePaymentQueryResult;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentDetails;
@@ -114,6 +116,24 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .create(Mockito.any());
 
         mBrowserPaymentRequest = Mockito.mock(BrowserPaymentRequest.class);
+        Mockito.doAnswer(
+                        (args) -> {
+                            boolean response = args.getArgument(0);
+                            Callback<Boolean> callback = args.getArgument(1);
+                            callback.onResult(response);
+                            return null;
+                        })
+                .when(mBrowserPaymentRequest)
+                .maybeOverrideCanMakePaymentResponse(Mockito.anyBoolean(), Mockito.any());
+        Mockito.doAnswer(
+                        (args) -> {
+                            boolean response = args.getArgument(0);
+                            Callback<Boolean> callback = args.getArgument(1);
+                            callback.onResult(response);
+                            return null;
+                        })
+                .when(mBrowserPaymentRequest)
+                .maybeOverrideHasEnrolledInstrumentResponse(Mockito.anyBoolean(), Mockito.any());
         Mockito.doReturn(true).when(mBrowserPaymentRequest).hasAvailableApps();
         Mockito.doReturn(false)
                 .when(mBrowserPaymentRequest)
@@ -912,5 +932,35 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
         service = defaultBuilder().setPrefsCanMakePayment(false).build();
         Assert.assertFalse(service.prefsCanMakePayment());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE})
+    public void testCanMakePayment_WithTrueWhenPrivateFeature() {
+        PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
+        service.canMakePayment();
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
+        Assert.assertEquals(
+                "PaymentRequest.canMakePayment() should return true when the feature is enabled.",
+                CanMakePaymentQueryResult.CAN_MAKE_PAYMENT,
+                mSentCanMakePayment);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.CAN_MAKE_PAYMENT_TRUE_WHEN_PRIVATE})
+    public void testCanMakePayment_WithTrueWhenPrivateFeatureDisabled() {
+        PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(false).build();
+        service.canMakePayment();
+        mPaymentAppFactoryDelegate.onCanMakePaymentCalculated(true);
+        mPaymentAppFactoryDelegate.onPaymentAppCreated(createDefaultPaymentApp());
+        mPaymentAppFactoryDelegate.onDoneCreatingPaymentApps(null);
+        Assert.assertEquals(
+                "PaymentRequest.canMakePayment() should return false when the feature is disabled.",
+                CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT,
+                mSentCanMakePayment);
     }
 }
