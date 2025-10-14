@@ -69,7 +69,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // ChildProcessHost implementation
   void ForceShutdown() override;
   std::optional<mojo::OutgoingInvitation>& GetMojoInvitation() override;
-  void CreateChannelMojo() override;
+  void CreateChannel() override;
   bool IsChannelOpening() override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;

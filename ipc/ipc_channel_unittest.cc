@@ -7,7 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -52,7 +52,6 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_factory.h"
-#include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
@@ -82,14 +81,14 @@
 namespace ipc_channel_mojo_unittest {
 namespace {
 
-class IPCChannelMojoTestBase : public testing::Test {
+class IPCChannelTestBase : public testing::Test {
  public:
-  IPCChannelMojoTestBase() = default;
+  IPCChannelTestBase() = default;
 
-  IPCChannelMojoTestBase(const IPCChannelMojoTestBase&) = delete;
-  IPCChannelMojoTestBase& operator=(const IPCChannelMojoTestBase&) = delete;
+  IPCChannelTestBase(const IPCChannelTestBase&) = delete;
+  IPCChannelTestBase& operator=(const IPCChannelTestBase&) = delete;
 
-  ~IPCChannelMojoTestBase() override = default;
+  ~IPCChannelTestBase() override = default;
 
   void Init(const std::string& test_client_name) {
     handle_ = helper_.StartChild(test_client_name);
@@ -125,10 +124,10 @@ class IPCChannelMojoTestBase : public testing::Test {
   std::unique_ptr<IPC::Channel> channel_;
 };
 
-class IpcChannelMojoTestClient {
+class IpcChannelTestClient {
  public:
-  IpcChannelMojoTestClient() = default;
-  ~IpcChannelMojoTestClient() = default;
+  IpcChannelTestClient() = default;
+  ~IpcChannelTestClient() = default;
 
   void Init(mojo::ScopedMessagePipeHandle handle) {
     handle_ = std::move(handle);
@@ -159,9 +158,9 @@ class IpcChannelMojoTestClient {
   std::unique_ptr<IPC::Channel> channel_;
 };
 
-// Use this to declare the client side for tests using IPCChannelMojoTestBase
+// Use this to declare the client side for tests using IPCChannelTestBase
 // when a custom test fixture class is required in the client. |test_base| must
-// be derived from IpcChannelMojoTestClient.
+// be derived from IpcChannelTestClient.
 #define DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(client_name,   \
                                                                 test_base)     \
   class client_name##_MainFixture : public test_base {                         \
@@ -182,10 +181,10 @@ class IpcChannelMojoTestClient {
   }                                                                            \
   void client_name##_MainFixture::Main()
 
-// Use this to declare the client side for tests using IPCChannelMojoTestBase.
+// Use this to declare the client side for tests using IPCChannelTestBase.
 #define DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(client_name)   \
   DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE( \
-      client_name, IpcChannelMojoTestClient)
+      client_name, IpcChannelTestClient)
 
 class TestListenerBase : public IPC::Listener {
  public:
@@ -204,7 +203,7 @@ class TestListenerBase : public IPC::Listener {
   base::OnceClosure quit_closure_;
 };
 
-using IPCChannelMojoTest = IPCChannelMojoTestBase;
+using IPCChannelTest = IPCChannelTestBase;
 
 class ListenerThatQuits : public IPC::Listener {
  public:
@@ -269,10 +268,10 @@ class ChannelProxyRunner {
   std::unique_ptr<IPC::ChannelProxy> proxy_;
 };
 
-class IPCChannelProxyMojoTest : public IPCChannelMojoTestBase {
+class IPCChannelProxyMojoTest : public IPCChannelTestBase {
  public:
   void Init(const std::string& client_name) {
-    IPCChannelMojoTestBase::Init(client_name);
+    IPCChannelTestBase::Init(client_name);
     runner_ = std::make_unique<ChannelProxyRunner>(TakeHandle(), true);
   }
 
@@ -482,8 +481,8 @@ class ListenerThatVerifiesPeerPid : public TestListenerBase {
 
 // The global PID is only used on systems that use the zygote. Hence, this
 // test is disabled on other platforms.
-TEST_F(IPCChannelMojoTest, VerifyGlobalPid) {
-  Init("IPCChannelMojoTestVerifyGlobalPidClient");
+TEST_F(IPCChannelTest, VerifyGlobalPid) {
+  Init("IPCChannelTestVerifyGlobalPidClient");
 
   base::RunLoop run_loop;
   ListenerThatVerifiesPeerPid listener(run_loop.QuitClosure());
@@ -497,7 +496,7 @@ TEST_F(IPCChannelMojoTest, VerifyGlobalPid) {
   DestroyChannel();
 }
 
-DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelMojoTestVerifyGlobalPidClient) {
+DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelTestVerifyGlobalPidClient) {
   IPC::Channel::SetGlobalPid(kMagicChildId);
 
   base::RunLoop run_loop;

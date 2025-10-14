@@ -124,7 +124,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
 
     InitializeMojo();
     process_host_ = ChildProcessHost::Create(this);
-    process_host_->CreateChannelMojo();
+    process_host_->CreateChannel();
 
     CHECK(!process_.get());
     process_ = std::make_unique<RenderProcess>();

@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(SecureChannelMojomEnumTraitsTest, ConnectionPriority) {
+TEST(SecureChannelmEnumTraitsTest, ConnectionPriority) {
   static constexpr ash::secure_channel::ConnectionPriority
       kTestConnectionPriorities[] = {
           ash::secure_channel::ConnectionPriority::kLow,

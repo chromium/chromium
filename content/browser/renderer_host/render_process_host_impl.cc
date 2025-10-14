@@ -1872,8 +1872,8 @@ bool RenderProcessHostImpl::Init() {
 #endif
     // As for execution sequence, this callback should have no any dependency
     // on starting in-process-render-thread.
-    // So put it here to trigger ChannelMojo initialization earlier to enable
-    // in-process-render-thread using ChannelMojo there.
+    // So put it here to trigger Channel initialization earlier to enable
+    // in-process-render-thread using Channel there.
     OnProcessLaunched();  // Fake a callback that the process is ready.
 
     in_process_renderer_->StartWithOptions(std::move(options));

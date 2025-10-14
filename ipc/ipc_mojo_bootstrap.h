@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(IPC) MojoBootstrap {
   // mode as specified by |mode|. The result is passed to |delegate|.
   static std::unique_ptr<MojoBootstrap> Create(
       mojo::ScopedMessagePipeHandle handle,
-      Channel::Mode mode,
+      IPC::Channel::Mode mode,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
 

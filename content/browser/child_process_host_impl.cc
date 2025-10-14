@@ -161,7 +161,7 @@ ChildProcessHostImpl::GetMojoInvitation() {
   return mojo_invitation_;
 }
 
-void ChildProcessHostImpl::CreateChannelMojo() {
+void ChildProcessHostImpl::CreateChannel() {
   DCHECK(!channel_);
   DCHECK(child_process_);
 

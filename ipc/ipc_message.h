@@ -202,7 +202,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
 
  protected:
   friend class Channel;
-  friend class ChannelMojo;
+  friend class Channel;
   friend class ChannelPosix;
   friend class ChannelWin;
   friend class MessageReplyDeserializer;

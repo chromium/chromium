@@ -14,7 +14,6 @@ component("ipc") {
   sources = [
     # These are the param_traits sources needed by all platforms,
     # including ios. The rest are added in a conditional block below.
-    "ipc_channel.cc",
     "ipc_message_utils.cc",
     "ipc_message_utils.h",
     "ipc_mojo_param_traits.cc",
@@ -28,11 +27,10 @@ component("ipc") {
     sources += [
       # Most sources go here since ios only needs the param_traits
       # code.
+      "ipc_channel.cc",
       "ipc_channel.h",
       "ipc_channel_factory.cc",
       "ipc_channel_factory.h",
-      "ipc_channel_mojo.cc",
-      "ipc_channel_mojo.h",
       "ipc_channel_proxy.cc",
       "ipc_channel_proxy.h",
       "ipc_listener.cc",
@@ -214,7 +212,7 @@ if (use_blink) {
 
   test("ipc_tests") {
     sources = [
-      "ipc_channel_mojo_unittest.cc",
+      "ipc_channel_unittest.cc",
       "ipc_message_protobuf_utils_unittest.cc",
       "ipc_message_unittest.cc",
       "ipc_message_utils_unittest.cc",

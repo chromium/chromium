@@ -140,10 +140,10 @@ class CONTENT_EXPORT ChildProcessHost {
   // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
   // legacy IPC will be used to communicate with the child process, but
   // otherwise should not be called.
-  virtual void CreateChannelMojo() = 0;
+  virtual void CreateChannel() = 0;
 
   // Returns true iff the IPC channel is currently being opened; this means
-  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // CreateChannel() has been called, but OnChannelConnected() has not yet
   // been invoked.
   virtual bool IsChannelOpening() = 0;
 
