@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck"
-    enum="BooleanYesNo" expires_after="2025-10-12">
+    enum="BooleanYesNo" expires_after="2026-04-13">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
