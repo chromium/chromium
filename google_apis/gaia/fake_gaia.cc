@@ -996,16 +996,8 @@ void FakeGaia::HandleListAccounts(const HttpRequest& request,
                       .verified = true});
   }
 
-  std::string value;
-  bool uses_binary_format =
-      net::GetValueForKeyInQuery(request.GetURL(), "laf", &value) &&
-      value == "b64bin";
-  std::string content =
-      uses_binary_format
-          ? gaia::CreateListAccountsResponseInBinaryFormat(params)
-          : gaia::CreateListAccountsResponseInLegacyFormat(params);
-
-  http_response->set_content(content);
+  http_response->set_content(
+      gaia::CreateListAccountsResponseInBinaryFormat(params));
   http_response->set_code(net::HTTP_OK);
 }
 

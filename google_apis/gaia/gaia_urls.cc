@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/url_util.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
@@ -71,7 +72,7 @@ const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
 const char kServiceLogoutUrlSuffix[] = "Logout";
 const char kBlankPageSuffix[] = "chrome/blank.html";
 const char kOAuthMultiloginSuffix[] = "oauth/multilogin";
-const char kListAccountsSuffix[] = "ListAccounts?json=standard";
+const char kListAccountsSuffix[] = "ListAccounts?json=standard&laf=b64bin";
 const char kEmbeddedSigninSuffix[] = "embedded/setup/chrome/usermenu";
 const char kAddAccountSuffix[] = "AddSession";
 const char kReauthSuffix[] = "embedded/xreauth/chrome";
@@ -330,12 +331,11 @@ const GURL& GaiaUrls::google_apis_origin_url() const {
 
 GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
   if (source.empty()) {
-    // TODO(crbug.com/443901858): Append laf=b64bin parameter universally.
     return list_accounts_url_;
   } else {
     std::string query = list_accounts_url_.GetQuery();
     return list_accounts_url_.Resolve(base::StringPrintf(
-        "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
+        "?gpsia=1&source=%s&%s", source.c_str(), query.c_str()));
   }
 }
 

@@ -70,7 +70,7 @@
       "url": "https://www.exampleapis.com/oauth2/v1/userinfo"
     },
     "list_accounts_url": {
-      "url": "https://accounts.example.com/ListAccounts?json=standard"
+      "url": "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin"
     },
     "embedded_signin_url": {
       "url": "https://accounts.example.com/embedded/setup/chrome/usermenu"

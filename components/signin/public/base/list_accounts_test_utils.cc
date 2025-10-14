@@ -52,15 +52,8 @@ void SetListAccountsResponseWithParams(
           ->ListAccountsURLWithSource(GaiaConstants::kChromeSource)
           .spec();
 
-  std::string value;
-  bool uses_binary_format =
-      net::GetValueForKeyInQuery(GURL(url), "laf", &value) && value == "b64bin";
-  std::string content =
-      uses_binary_format
-          ? gaia::CreateListAccountsResponseInBinaryFormat(params)
-          : gaia::CreateListAccountsResponseInLegacyFormat(params);
-
-  test_url_loader_factory->AddResponse(url, content);
+  test_url_loader_factory->AddResponse(
+      url, gaia::CreateListAccountsResponseInBinaryFormat(params));
 }
 
 void SetListAccountsResponseNoAccounts(

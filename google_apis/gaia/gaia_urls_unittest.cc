@@ -105,8 +105,9 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://accounts.google.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.googleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.google.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.google.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.google.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
@@ -182,7 +183,7 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://test-googleapis.com/oauth2/v1/userinfo");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://test-gaia.com/ListAccounts?json=standard");
+            "https://test-gaia.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://test-gaia.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
@@ -294,8 +295,9 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.example.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.example.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
@@ -364,8 +366,9 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.example.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.example.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
@@ -395,7 +398,7 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
 TEST_F(GaiaUrlsTest, InitializeDefault_ListAccountsFormat) {
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
             "https://accounts.google.com/"
-            "ListAccounts?gpsia=1&source=fake_source&laf=b64bin&json=standard");
+            "ListAccounts?gpsia=1&source=fake_source&json=standard&laf=b64bin");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {

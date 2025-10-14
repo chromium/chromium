@@ -33,10 +33,6 @@ std::string GenerateOAuth2MintTokenConsentResult(
 std::string CreateListAccountsResponseInBinaryFormat(
     const std::vector<CookieParams>& params);
 
-// Creates the content for listing accounts.
-std::string CreateListAccountsResponseInLegacyFormat(
-    const std::vector<CookieParams>& params);
-
 }  // namespace gaia
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_AUTH_TEST_UTIL_H_
