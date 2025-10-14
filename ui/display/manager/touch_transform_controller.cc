@@ -210,17 +210,20 @@ gfx::Transform TouchTransformController::GetTouchTransform(
       touch_area.IsEmpty() || touchscreen.id == ui::InputDevice::kInvalidId)
     return ctm;
 
-  // Translate the touch so that it falls within the display bounds. This
-  // should not be performed if the displays are mirrored.
-  if (display.id() == touch_display.id()) {
-    ctm.Translate(display.bounds_in_native().x(),
-                  display.bounds_in_native().y());
-  }
-
   // If the device is currently under calibration, then do not return any
   // transform as we want to use the raw native touch input data for calibration
-  if (is_calibrating_)
+  if (is_calibrating_) {
+    if (display.id() == touch_display.id()) {
+      ctm.Translate(display.bounds_in_native().x(),
+                    display.bounds_in_native().y());
+    }
     return ctm;
+  }
+
+  // In extended mode, translate the touch so that it falls within the display
+  // bounds. In mirrored mode, the touch display will be mapped to the mirroring
+  // source display.
+  ctm.Translate(display.bounds_in_native().x(), display.bounds_in_native().y());
 
   TouchCalibrationData calibration_data =
       display_manager_->touch_device_manager()->GetCalibrationData(

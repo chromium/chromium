@@ -535,6 +535,29 @@ TEST_F(TouchTransformControllerTest, OzoneTranslation) {
   device_manager->ApplyTouchTransformer(kTouchId2, &x, &y);
   EXPECT_NEAR(1920, x, 0.5);
   EXPECT_NEAR(1200 + kDisplaySize.height() + kHiddenGap, y, 0.5);
+
+  // Mirror mode with external display as primary. Touch screen 1 is associated
+  // to display 2.
+  transforms.push_back(CreateTouchDeviceTransform(
+      display2.id(), touchscreen1.id,
+      GetTouchTransform(display2, display1, touchscreen1)));
+  device_manager->ConfigureTouchDevices(transforms);
+
+  EXPECT_EQ(kDisplayId2,
+            device_manager->GetTargetDisplayForTouchDevice(kTouchId1));
+  EXPECT_EQ(kDisplayId2,
+            device_manager->GetTargetDisplayForTouchDevice(kTouchId2));
+
+  x = 1920.0;
+  y = 1200.0;
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_NEAR(1920, x, 0.5);
+  EXPECT_NEAR(1200 + kDisplaySize.height() + kHiddenGap, y, 0.5);
+
+  x = y = 0;
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_NEAR(0, x, 0.5);
+  EXPECT_NEAR(kDisplaySize.height() + kHiddenGap, y, 0.5);
 }
 
 TEST_F(TouchTransformControllerTest, AccurateUserTouchCalibration) {
