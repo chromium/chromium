@@ -249,8 +249,6 @@ class CORE_EXPORT HTMLCanvasElement final
   UkmParameters GetUkmParameters() override;
   void SetNeedsCompositingUpdate() override;
 
-  void DisableAccelerationForCanvas2D();
-
   // ImageBitmapSource implementation
   ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
@@ -332,6 +330,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool CanStartSelection() const override;
 
   bool ShouldDisableAccelerationBecauseOfReadback() const;
+  void OnAccelerationDisabled();
 
   void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
   const VectorOf<ElementHitTestRegion>& GetHitTestRegions() const;

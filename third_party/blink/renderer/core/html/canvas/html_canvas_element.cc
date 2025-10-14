@@ -821,19 +821,10 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   }
 }
 
-void HTMLCanvasElement::DisableAccelerationForCanvas2D() {
+void HTMLCanvasElement::OnAccelerationDisabled() {
   CHECK(IsRenderingContext2D());
   DisabledAccelerationCounterSupplement::From(GetDocument())
       .IncrementDisabledCount();
-  // Create and configure an unaccelerated CanvasResourceProvider.
-  SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
-
-  RenderingContext()->DropAndRecreateExistingCanvas2DResourceProvider();
-
-  // We must force a paint invalidation on the canvas even if it's
-  // content did not change because it layer was destroyed.
-  DidDraw();
-  SetNeedsCompositingUpdate();
 }
 
 void HTMLCanvasElement::SetNeedsCompositingUpdate() {

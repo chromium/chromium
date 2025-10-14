@@ -344,7 +344,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
-  void DropAndRecreateExistingCanvas2DResourceProvider() override;
+
+  // If the ResourceProvider currently exists, replaces it with a newly-created
+  // CanvasResourceProvider.
+  void DropAndRecreateExistingCanvas2DResourceProvider();
 
   // This method should be called only when `resource_provider_` is null.
   void RecreateCanvasResourceProviderForCanvas2D();

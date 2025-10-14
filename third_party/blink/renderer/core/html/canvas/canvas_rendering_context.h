@@ -281,11 +281,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual int LayerCount() const { return 0; }
   virtual void DisableAccelerationForCanvas2D() { NOTREACHED(); }
 
-  // If the ResourceProvider currently exists, replaces it with a newly-created
-  // CanvasResourceProvider.
-  virtual void DropAndRecreateExistingCanvas2DResourceProvider() {
-    NOTREACHED();
-  }
   virtual const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() {
     return empty_recording_;
   }
