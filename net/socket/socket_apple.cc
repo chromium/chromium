@@ -9,10 +9,29 @@
 #include <stdint.h>
 #include <sys/syscall.h>
 
-#include "build/build_config.h"
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#elif BUILDFLAG(IS_IOS)
+#include "base/system/sys_info.h"
+#endif
 
 namespace net {
 namespace {
+
+bool OSVersionIsAffected() {
+#if BUILDFLAG(IS_MAC)
+  // FB19384824 was introduced in macOS 13.3 and will be fixed in macOS 26.1.
+  const int os_version = base::mac::MacOSVersion();
+  return os_version >= 13'03'00 && os_version < 26'01'00;
+#elif BUILDFLAG(IS_IOS)
+  // These iOS version numbers that correspond to the macOS version numbers
+  // above.
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  const int os_version = major * 1'00'00 + minor * 1'00 + bugfix;
+  return os_version >= 16'03'00 && os_version < 26'01'00;
+#endif
+}
 
 // A 2-integer struct to give access to the secondary return value, normally
 // hidden, that the kernel sets for every system call return.
@@ -39,11 +58,11 @@ ssize_t SendtoAndDetectBogusReturnValue(int const fd,
                                         int const flags,
                                         sockaddr const* const address,
                                         socklen_t const address_size) {
-  // TODO(mark): In the future, when a version of macOS with a fix for
-  // FB19384824 is published, limit this workaround at run-time to only function
-  // on OS versions older than the OS version that contains the fix (such as via
-  // base::mac::MacOSVersion and base::ios::IsRunningOnOrLater). On newer OS
-  // versions, call `sendto` directly.
+  static const bool os_version_is_affected = OSVersionIsAffected();
+  if (!os_version_is_affected) {
+    return sendto(fd, buffer, size, flags, address, address_size);
+  }
+
   ReturnPair const rp =
       sendto_returnpair(fd, buffer, size, flags, address, address_size);
 

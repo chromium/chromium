@@ -5,8 +5,11 @@
 #ifndef NET_SOCKET_SOCKET_APPLE_H_
 #define NET_SOCKET_SOCKET_APPLE_H_
 
+#include <Availability.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#include "build/build_config.h"
 
 // This is a workaround for https://crbug.com/40064248. See also: b/283787255,
 // FB12198214, and FB19384824.
@@ -17,7 +20,8 @@
 // TCP (SOCK_STREAM) and UDP (SOCK_DGRAM), following certain network
 // reconfigurations on the system. It occurs when bringing up a utun-based VPN,
 // when data sent via the socket would become subject to the tunnel. The bug
-// occurs on macOS 13.3 22E252 (2023-03-27) and later OS versions.
+// occurs on macOS 13.3 22E252 (2023-03-27) and later OS versions, and will be
+// fixed in macOS 26.1.
 //
 // This discussion focuses on `sendto` but the bug is identical for `send`, as
 // `send` is a thin C wrapper tail-calling the `sendto` system call; for
@@ -156,11 +160,8 @@
 // versions. However, there’s no guarantee that it must hold into the future,
 // and it’s possible that a future OS version might invalidate these
 // assumptions. In that case, this technique of detecting the bug’s occurrence
-// via x1 and rdx might be jeopardized. The TODO below covering compile-time
-// disabling of the workaround, and a similar one in socket_apple.cc covering
-// run-time disabling of the workaround, are intended to mitigate against this
-// possibility as soon as a macOS version with the fix for this bug is
-// published.
+// via x1 and rdx might be jeopardized. This workaround is only attempted on
+// OS versions where it’s known to be necessary.
 //
 // Note that these assumptions are not valid for an error return from the system
 // call, and the secondary return register is not set during an error return
@@ -181,12 +182,12 @@
 // libraries both expose `wrap_sendto`, so don’t attempt this workaround in ASan
 // or TSan builds.
 //
-// TODO(mark): In the future, when a version of macOS with a fix for FB19384824
-// is published, amend this compile-time guard to add a condition that only
-// enables this workaround so long as the minimum OS version being targeted is
-// older than the OS version that contains the fix (such as via <Availability.h>
-// __MAC_OS_X_VERSION_MIN_REQUIRED and __IPHONE_OS_VERSION_MIN_REQUIRED).
-#if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
+// FB19384824 will be fixed in macOS 26.1 and iOS 26.1 (the fix is present as of
+// 26.1b2). When the minimum runtime OS version is at or beyond this, disable
+// the workaround entirely at compile time.
+#if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) &&          \
+    ((BUILDFLAG(IS_MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < 26'01'00) || \
+     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < 26'01'00))
 #define WORK_AROUND_CRBUG_40064248 1
 
 namespace net {
@@ -220,6 +221,7 @@ inline ssize_t SendAndDetectBogusReturnValue(int const fd,
 
 }  // namespace net
 
-#endif  // !ADDRESS_SANITIZER && !THREAD_SANITIZER
+#endif  // !ADDRESS_SANITIZER && !THREAD_SANITIZER && ((MAC && DT < 26.1) ||
+        // (IOS && DT < 26.1))
 
 #endif  // NET_SOCKET_SOCKET_APPLE_H_
