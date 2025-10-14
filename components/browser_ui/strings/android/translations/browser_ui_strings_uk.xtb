@@ -442,6 +442,7 @@
 <translation id="5876056640971328065">Призупинити відео</translation>
 <translation id="5877248419911025165">Згорнути всі запити</translation>
 <translation id="5878945009165002849">Блокувати підказки щодо входу від сервісів ідентифікації</translation>
+<translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5884085660368669834">Налаштування для сайту</translation>
 <translation id="5887687176710214216">Останнє відвідування: вчора</translation>
 <translation id="5908617755156109052">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
@@ -569,6 +570,7 @@
 <translation id="7406113532070524618">Це налаштування не передбачає вашу ідентифікацію і дозвіл для сайтів на доступ до історії веб-перегляду, хоча сайти можуть надсилати невелику кількість інформації для цілей підтвердження</translation>
 <translation id="7409735910987429903">Сайти можуть показувати спливаючі вікна з оголошеннями або переспрямовувати вас на небажані веб-сайти</translation>
 <translation id="7412160840120117304">Шістнадцятковий код основного кольору</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Масштаб}one{Масштаб: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}few{Масштаб: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}many{Масштаб: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Масштаб: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
 <translation id="7423538860840206698">Заборонено переглядати буфер обміну</translation>
 <translation id="7425915948813553151">Темна тема для сайтів</translation>

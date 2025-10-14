@@ -983,6 +983,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2596415276201385844">Aby nawiązać bezpieczne połączenie, Twój zegar musi mieć ustawioną prawidłową godzinę. Jest to wymagane, ponieważ certyfikaty używane do identyfikacji stron internetowych są ważne tylko przez określony czas. Ponieważ zegar Twojego urządzenia nie jest ustawiony prawidłowo, Chrome nie może zweryfikować tych certyfikatów.</translation>
 <translation id="2597378329261239068">Ten dokument jest chroniony hasłem. Wprowadź hasło.</translation>
 <translation id="2600083925285092409">Gdy zapiszesz tę kartę do użycia w Google Pay, jej dane będą uzupełniane automatycznie podczas zakupów w Chromium</translation>
+<translation id="2602283642570832995">To działanie może naruszać zasady <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Nazwa (fonetycznie)</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2608019759319359258">Gdy temat zostanie zablokowany, nie będzie używany do personalizacji reklam</translation>
@@ -2021,6 +2022,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4281998142035485137">{0,plural, =1{Otworzyć poufny plik?}few{Otworzyć poufne pliki?}many{Otworzyć poufne pliki?}other{Otworzyć poufne pliki?}}</translation>
 <translation id="4282280603030594840">Zakup samochodu</translation>
 <translation id="4282346679996504092">Alerty dotyczące tego produktu zostały wyłączone, a zakładka usunięta</translation>
+<translation id="4284885181066817063">Zablokowane przez <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="4287495839370498922">Większa prywatność w reklamach w Chrome</translation>
 <translation id="4288101205645068104">Usuń pojazd</translation>
@@ -3661,7 +3663,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7020464868401003526">Adres URL skrótu jest za długi. Maksymalna dozwolona liczba znaków: <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="7023162328967545559">Ostrzeżenie administratora</translation>
-<translation id="7023765275461720661">Połączyć konto i zapłacić za pomocą <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7030164307377592766">zmienić ustawienia wypełniania form płatności</translation>
 <translation id="7031110846419387930">Informacje o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu, plikach i adresach IP</translation>

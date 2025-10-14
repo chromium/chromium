@@ -469,6 +469,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2549711466868162843">Mejorar iluminación</translation>
 <translation id="2549985041256363841">Iniciar grabación</translation>
 <translation id="255671100581129685">El Asistente de Google no está disponible en las sesiones públicas.</translation>
+<translation id="2562459326218811217">El dispositivo está enchufado, pero no se está cargando. Prueba con un cargador con más vatios (W) o usa el cargador original.</translation>
 <translation id="256712445991462162">la lupa fijada</translation>
 <translation id="2573588302192866788">No se ha podido conectar (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
@@ -539,6 +540,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Prueba con un cargador con más vatios (W) o usa el cargador original.</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
 <translation id="2822551631199737692">La cámara se está usando</translation>
 <translation id="2825619548187458965">Estantería</translation>
@@ -1732,6 +1734,7 @@ Nueva instalación</translation>
 <translation id="6582012689384648647">Para disfrutar de listas de reproducción personalizadas para concentrarte, permite el acceso a YouTube Music</translation>
 <translation id="6582034443359256692">Calculando el nivel de carga de la batería.</translation>
 <translation id="6585808820553845416">La sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">No se puede cargar el dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara ajustada a la esquina inferior izquierda. Conflicto con la superficie del sistema.</translation>
 <translation id="6605415194043280389">El modo Sin distracciones está activado</translation>

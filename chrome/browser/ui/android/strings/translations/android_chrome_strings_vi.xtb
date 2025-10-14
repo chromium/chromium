@@ -270,6 +270,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2249635629516220541">Tuỳ chỉnh thông tin được các trang web dùng để hiện quảng cáo cho bạn</translation>
 <translation id="2251809247798634662">Cửa sổ ẩn danh mới</translation>
 <translation id="2253927598983295051">Chọn nội dung bạn muốn chia sẻ với <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Thông tin khác về ứng dụng</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, thẻ ẩn danh được chọn</translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
@@ -1011,7 +1012,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="569536719314091526">Dịch trang này sang ngôn ngữ bất kỳ từ nút Tùy chọn khác</translation>
 <translation id="5696597120588531049">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác</translation>
 <translation id="5698878456427040674">Kiểm tra xem tài khoản đã chọn có được hỗ trợ hay không.</translation>
-<translation id="570347048394355941">Chuyển sang thẻ</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> muốn kết nối với một cổng nối tiếp</translation>
 <translation id="5715150588940290235">Xoá mã bảo mật đã lưu?</translation>
 <translation id="571930967925877633">Dấu trang, nhật ký và các dữ liệu khác trên Chrome sẽ không được đồng bộ hoá với Tài khoản Google của bạn nữa</translation>

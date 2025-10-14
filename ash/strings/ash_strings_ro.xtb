@@ -469,6 +469,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2549711466868162843">Iluminare îmbunătățită</translation>
 <translation id="2549985041256363841">Pornește înregistrarea</translation>
 <translation id="255671100581129685">Asistentul Google nu este disponibil într-o sesiune publică.</translation>
+<translation id="2562459326218811217">Dispozitivul este conectat, dar nu se încarcă. Încearcă un încărcător cu mai mulți wați (W) sau folosește încărcătorul original.</translation>
 <translation id="256712445991462162">lupa andocată</translation>
 <translation id="2573588302192866788">Conexiunea cu <ph name="NAME" /> nu s-a putut realiza</translation>
 <translation id="2575685495496069081">Conectarea multiplă a fost dezactivată</translation>
@@ -539,6 +540,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2814448776515246190">Captură parțială</translation>
+<translation id="2815594810045873507">Încearcă un încărcător cu mai mulți wați (W) sau folosește încărcătorul original.</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
 <translation id="2822551631199737692">Camera foto este în uz</translation>
 <translation id="2825619548187458965">Raft</translation>
@@ -1731,6 +1733,7 @@ Instalare nouă</translation>
 <translation id="6582012689384648647">Pentru playlisturi personalizate pentru concentrare, permite accesul la YouTube Music</translation>
 <translation id="6582034443359256692">Se calculează nivelul de încărcare a bateriei.</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Dispozitivul nu se încarcă</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera foto este aliniată cu colțul din stânga jos. Conflict cu platforma de sistem.</translation>
 <translation id="6605415194043280389">Modul Focus este activat</translation>

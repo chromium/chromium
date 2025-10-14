@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">উন্নত লাইটিং</translation>
 <translation id="2549985041256363841">রেকর্ডিং শুরু করুন</translation>
 <translation id="255671100581129685">সর্বজনীন সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
+<translation id="2562459326218811217">ডিভাইস প্লাগ-ইন করা আছে, তবে চার্জ হচ্ছে না। আরও বেশি ওয়াট (W)-এর চার্জার ব্যবহার করে দেখুন অথবা নিজের আসল চার্জার ব্যবহার করুন।</translation>
 <translation id="256712445991462162">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2573588302192866788"><ph name="NAME" />-এ কানেক্ট করা যায়নি</translation>
 <translation id="2575685495496069081">একাধিক সাইন-ইন বিকল্প বন্ধ করা হয়েছে</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2814448776515246190">আংশিক ক্যাপচার</translation>
+<translation id="2815594810045873507">আরও বেশি ওয়াট (W)-এর চার্জার ব্যবহার করে দেখুন অথবা নিজের আসল চার্জার ব্যবহার করুন।</translation>
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
 <translation id="2822551631199737692">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
 <translation id="2825619548187458965">তাক</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">পছন্দমতো ফোকাস করতে সাহায্য করে প্লেলিস্টের জন্য YouTube Music পরিষেবা অ্যাক্সেসের অনুমতি দিন</translation>
 <translation id="6582034443359256692">ব্যাটারির চার্জের লেভেল গণনা করা।</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> এর মধ্যে সেশন শেষ হয়ে যাবে৷</translation>
+<translation id="6586685375736417639">ডিভাইসে চার্জ দেওয়া যাচ্ছে না</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ক্যামেরাটি নিচে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="6605415194043280389">ফোকাস মোড চালু আছে</translation>

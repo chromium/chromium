@@ -469,6 +469,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2549711466868162843">Zlepšenie osvetlenia</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
 <translation id="255671100581129685">Asistent Google nie je k dispozícii vo verejnej relácii.</translation>
+<translation id="2562459326218811217">Zariadenie je pripojené, ale nenabíja sa. Skúste použiť nabíjačku s vyšším výkonom vo wattoch alebo pôvodnú.</translation>
 <translation id="256712445991462162">ukotvená lupa</translation>
 <translation id="2573588302192866788">Zariadenie <ph name="NAME" /> sa nepodarilo pripojiť</translation>
 <translation id="2575685495496069081">Viacnásobné prihlásenie bolo zakázané</translation>
@@ -539,6 +540,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2814448776515246190">Čiastočná snímka</translation>
+<translation id="2815594810045873507">Skúste použiť nabíjačku s vyšším výkonom vo wattoch alebo pôvodnú.</translation>
 <translation id="2819276065543622893">Teraz prebehne odhlásenie.</translation>
 <translation id="2822551631199737692">Kamera sa používa</translation>
 <translation id="2825619548187458965">Polička</translation>
@@ -1731,6 +1733,7 @@ Nová inštalácia</translation>
 <translation id="6582012689384648647">Ak chcete mať k dispozícii prispôsobené zoznamy skladieb na sústredenie, povoľte prístup k službe YouTube Music</translation>
 <translation id="6582034443359256692">Vypočítava sa úroveň nabitia batérie.</translation>
 <translation id="6585808820553845416">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
+<translation id="6586685375736417639">Zariadenie sa nenabíja</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera bola prichytená do ľavého dolného rohu. Konflikt s platformou systému.</translation>
 <translation id="6605415194043280389">Sústredenie je zapnuté</translation>

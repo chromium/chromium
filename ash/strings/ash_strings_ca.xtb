@@ -469,6 +469,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2549711466868162843">Millora la il·luminació</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
+<translation id="2562459326218811217">El dispositiu està endollat, però no s'està carregant. Prova un carregador amb més watts (W) o utilitza el carregador original.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2573588302192866788">No s'han pogut connectar els <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'inici de sessió múltiple s'ha desactivat</translation>
@@ -539,6 +540,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Prova un carregador amb més watts (W) o utilitza el carregador original.</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
 <translation id="2822551631199737692">Càmera en ús</translation>
 <translation id="2825619548187458965">Prestatge</translation>
@@ -1731,6 +1733,7 @@ Instal·lació nova</translation>
 <translation id="6582012689384648647">Per gaudir de llistes de reproducció personalitzades per concentrar-se, permet l'accés a YouTube Music</translation>
 <translation id="6582034443359256692">S'està calculant el nivell de càrrega de la bateria.</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">No es pot carregar el dispositiu</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">La càmera s'ha ajustat a l'extrem inferior esquerre. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="6605415194043280389">El mode Sense distraccions està activat</translation>

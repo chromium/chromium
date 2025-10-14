@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">सुधारिएको प्रकाश</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="255671100581129685">Google सहायक सार्वजनिक सत्रमा उपलब्ध छैन।</translation>
+<translation id="2562459326218811217">डिभाइस प्लगमा लगाइएको छ तर चार्ज भइरहेको छैन। योभन्दा बढी वाट (W) को चार्जर प्रयोग गरी हेर्नुहोस् वा आफ्नो मूल चार्जर प्रयोग गर्नुहोस्।</translation>
 <translation id="256712445991462162">डक गरिएको म्याग्निफायर</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट गर्न सकिएन</translation>
 <translation id="2575685495496069081">एकभन्दा बढी साइन इन गर्ने सुविधा अफ गरिएको छ</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2814448776515246190">स्क्रिनको केही भाग क्याप्चर गर्ने सुविधा</translation>
+<translation id="2815594810045873507">योभन्दा बढी वाट (W) को चार्जर प्रयोग गरी हेर्नुहोस् वा आफ्नो मूल चार्जर प्रयोग गर्नुहोस्।</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="2822551631199737692">क्यामेरा प्रयोग भइरहेको छ</translation>
 <translation id="2825619548187458965">तख</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिन YouTube Music को एक्सेस दिनुहोस्</translation>
 <translation id="6582034443359256692">ब्याट्रीको चार्जको स्तर निकालिँदै छ।</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
+<translation id="6586685375736417639">डिभाइस चार्ज गर्न मिल्दैन</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="6605415194043280389">फोकस मोड अन छ</translation>

@@ -469,6 +469,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2549711466868162843">Luce migliorata</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
+<translation id="2562459326218811217">Dispositivo collegato, ma non in carica. Prova un caricabatterie con più watt (W) o usa quello originale.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
@@ -539,6 +540,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2814448776515246190">Acquisizione parziale</translation>
+<translation id="2815594810045873507">Prova un caricabatterie con più watt (W) o usa quello originale.</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="2822551631199737692">Fotocamera in uso</translation>
 <translation id="2825619548187458965">Barra delle app</translation>
@@ -1728,6 +1730,7 @@ Nuova installazione</translation>
 <translation id="6582012689384648647">Per playlist personalizzate per la concentrazione, consenti l'accesso a YouTube Music</translation>
 <translation id="6582034443359256692">Calcolo del livello di carica della batteria in corso…</translation>
 <translation id="6585808820553845416">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Impossibile ricaricare il dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Fotocamera allineata all'angolo in basso a sinistra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="6605415194043280389">Modalità Niente distrazioni attiva</translation>

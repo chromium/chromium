@@ -442,6 +442,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5876056640971328065">Pausar vídeo</translation>
 <translation id="5877248419911025165">Fechar todas as solicitações</translation>
 <translation id="5878945009165002849">Bloquear solicitações de login de serviços de identificação</translation>
+<translation id="588258955323874662">Tela inteira</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
 <translation id="5908617755156109052">Não permitir que os sites criem um mapa 3D do ambiente ao seu redor nem acompanhem a posição da câmera</translation>
@@ -569,6 +570,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="7406113532070524618">Essa configuração funciona sem identificar você ou permitir que sites acessem o histórico de navegação. Apesar disso, os sites podem compartilhar uma pequena quantidade de informações como parte da verificação.</translation>
 <translation id="7409735910987429903">Os sites podem exibir pop-ups para mostrar anúncios ou usar redirecionamentos para levar até sites que talvez você não queira acessar</translation>
 <translation id="7412160840120117304">Hexadecimal da cor primária</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}one{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>

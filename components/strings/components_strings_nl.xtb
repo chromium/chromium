@@ -983,6 +983,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2596415276201385844">Als je een beveiligde verbinding tot stand wilt brengen, moet je klok juist zijn ingesteld. Dit moet omdat de certificaten die deze websites gebruiken om zichzelf te identificeren, slechts gedurende bepaalde perioden geldig zijn. Aangezien de klok van je apparaat niet goed is ingesteld, kan Chrome deze certificaten niet verifiëren.</translation>
 <translation id="2597378329261239068">Dit document is beveiligd met een wachtwoord. Geef een wachtwoord op.</translation>
 <translation id="2600083925285092409">Deze kaart automatisch invullen voor aankopen die je doet in Chromium als de kaart is opgeslagen voor gebruik met Google Pay</translation>
+<translation id="2602283642570832995">Deze actie schendt misschien het beleid van <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Fonetische naam</translation>
 <translation id="2606760465469169465">Automatisch verifiëren</translation>
 <translation id="2608019759319359258">Als een onderwerp wordt geblokkeerd, wordt het niet gebruikt om advertenties te personaliseren</translation>
@@ -2015,6 +2016,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4281998142035485137">{0,plural, =1{Vertrouwelijk bestand openen?}other{Vertrouwelijke bestanden openen?}}</translation>
 <translation id="4282280603030594840">Voertuigen kopen</translation>
 <translation id="4282346679996504092">Meldingen voor dit product zijn uitgezet en de bookmark is verwijderd</translation>
+<translation id="4284885181066817063">Geblokkeerd door <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="4287495839370498922">Verbeterde advertentieprivacy in Chrome</translation>
 <translation id="4288101205645068104">Voertuig verwijderen</translation>
@@ -3654,7 +3656,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7020464868401003526">De URL van de snelkoppeling is langer dan de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7023162328967545559">Beheerderswaarschuwing</translation>
-<translation id="7023765275461720661">Account koppelen en betalen met <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030164307377592766">instellingen voor het invullen van betaalmethoden aanpassen</translation>
 <translation id="7031110846419387930">Informatie over je browser, OS, apparaat, geïnstalleerde software, bestanden en IP-adressen</translation>

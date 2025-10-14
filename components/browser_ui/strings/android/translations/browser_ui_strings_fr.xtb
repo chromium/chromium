@@ -442,6 +442,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5876056640971328065">Mettre la vidéo en pause</translation>
 <translation id="5877248419911025165">Réduire toutes les demandes</translation>
 <translation id="5878945009165002849">Bloquer les invites de connexion des services d'identité</translation>
+<translation id="588258955323874662">Plein écran</translation>
 <translation id="5884085660368669834">Préférence liée au site</translation>
 <translation id="5887687176710214216">Dernière visite : hier</translation>
 <translation id="5908617755156109052">Ne pas autoriser les sites à créer un plan 3D de votre environnement ni à suivre la position de la caméra</translation>
@@ -569,6 +570,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7406113532070524618">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation. Toutefois, les sites peuvent partager quelques informations lors de la validation.</translation>
 <translation id="7409735910987429903">Les sites peuvent afficher les annonces sous forme de pop-ups ou utiliser des redirections pour vous renvoyer vers des sites Web que vous ne souhaitez pas forcément visiter</translation>
 <translation id="7412160840120117304">Code hexadécimal de la couleur principale</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}one{Zoom : <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}other{Zoom : <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7423538860840206698">Accès en lecture au presse-papiers bloqué</translation>
 <translation id="7425915948813553151">Thème sombre pour les sites</translation>

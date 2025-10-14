@@ -983,6 +983,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2596415276201385844">Jou horlosie moet reg gestel wees om 'n veilige verbinding te maak. Die rede hiervoor is omdat sertifikate wat webwerwe gebruik om hulself te identifiseer, net vir sekere tydperke beskikbaar is. Chrome kan nie hierdie sertifikate verifieer nie, omdat jou toestel se horlosie nie reg gestel is nie.</translation>
 <translation id="2597378329261239068">Hierdie dokument word deur 'n wagwoord beskerm. Voer asseblief 'n wagwoord in.</translation>
 <translation id="2600083925285092409">Outovul hierdie kaart vir aankope wat in Chromium gemaak word wanneer dit gestoor is om met Google Pay te gebruik</translation>
+<translation id="2602283642570832995">Hierdie handeling kan dalk <ph name="DOMAIN" /> se beleide oortree</translation>
 <translation id="2605979593348332811">Fonetiese naam</translation>
 <translation id="2606760465469169465">Outoverifieer</translation>
 <translation id="2608019759319359258">Wanneer ’n onderwerp geblokkeer is, sal dit nie gebruik word om advertensies te personaliseer nie</translation>
@@ -2021,6 +2022,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4281998142035485137">{0,plural, =1{Maak vertroulike lêer oop?}other{Maak vertroulike lêers oop?}}</translation>
 <translation id="4282280603030594840">Voertuiginkopies</translation>
 <translation id="4282346679996504092">Opletberigte vir hierdie produk is afgeskakel en die boekmerk is verwyder</translation>
+<translation id="4284885181066817063">Geblokkeer deur <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Ontspeld</translation>
 <translation id="4287495839370498922">Verbeterde advertensieprivaatheid in Chrome</translation>
 <translation id="4288101205645068104">Vee voertuig uit</translation>
@@ -3661,7 +3663,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7020464868401003526">Die URL van die kortpad oorskry die maksimum toegelate lengte van <ph name="MAX_LENGTH" /> karakters.</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="7023162328967545559">Adminwaarskuwing</translation>
-<translation id="7023765275461720661">Koppel rekening en betaal met <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7030164307377592766">wysig instellings vir die invul van betaalmetodes</translation>
 <translation id="7031110846419387930">Inligting oor jou blaaier, bedryfstelsel, toestel, geïnstalleerde sagteware, lêers en IP-adresse</translation>

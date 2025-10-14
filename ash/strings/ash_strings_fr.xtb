@@ -469,6 +469,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
+<translation id="2562459326218811217">L'appareil est branché, mais ne se recharge pas. Essayez un chargeur avec plus de watts (W) ou utilisez votre chargeur d'origine.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
 <translation id="2573588302192866788">Impossible de connecter l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="2575685495496069081">La connexion multicompte a été désactivée</translation>
@@ -539,6 +540,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
+<translation id="2815594810045873507">Essayez un chargeur avec plus de watts (W) ou utilisez votre chargeur d'origine.</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
 <translation id="2822551631199737692">Caméra utilisée</translation>
 <translation id="2825619548187458965">Étagère</translation>
@@ -1731,6 +1733,7 @@ Nouvelle installation</translation>
 <translation id="6582012689384648647">Pour profiter de playlists personnalisées pour vous concentrer, autorisez l'accès à YouTube Music</translation>
 <translation id="6582034443359256692">Calcul du niveau de charge de la batterie.</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
+<translation id="6586685375736417639">Impossible de recharger l'appareil</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Appareil photo aligné sur l'angle inférieur gauche. Conflit avec la surface du système.</translation>
 <translation id="6605415194043280389">Le mode Sans distractions est activé</translation>

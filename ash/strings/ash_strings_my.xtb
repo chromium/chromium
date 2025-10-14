@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">မီးရောင်မွမ်းမံခြင်း</translation>
 <translation id="2549985041256363841">စတင်ရိုက်ကူးရန်</translation>
 <translation id="255671100581129685">အများသုံးစက်ရှင်တွင် Google Assistant အသုံးပြု၍ မရပါ။</translation>
+<translation id="2562459326218811217">စက်ကို ပလတ်တပ်ထားသော်လည်း အားသွင်းမနေပါ။ ဝပ် (W) ပိုများသော အားသွင်းကိရိယာဖြင့် စမ်းကြည့်ပါ (သို့) မူရင်းအားသွင်းကိရိယာ သုံးပါ။</translation>
 <translation id="256712445991462162">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> နှင့် ချိတ်ဆက်၍ မရပါ</translation>
 <translation id="2575685495496069081">အကောင့်များစွာ လက်မှတ်ထိုးဝင်ခြင်းကို ပိတ်ထားသည်</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2814448776515246190">တစ်စိတ်တစ်ပိုင်း ပုံဖမ်းယူရန်</translation>
+<translation id="2815594810045873507">ဝပ် (W) ပိုများသော အားသွင်းကိရိယာဖြင့် စမ်းကြည့်ပါ (သို့) မူရင်းအားသွင်းကိရိယာ သုံးပါ။</translation>
 <translation id="2819276065543622893">သင်ယခု ထွက်ပါမည်။</translation>
 <translation id="2822551631199737692">ကင်မရာ သုံးနေသည်</translation>
 <translation id="2825619548187458965">စင်</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော အာရုံစိုက်ပလေးလစ်များအတွက် YouTube Music သုံးခွင့်ပြုပါ</translation>
 <translation id="6582034443359256692">ဘက်ထရီအားသွင်းမှုအဆင့်ကို တွက်ချက်နေသည်။</translation>
 <translation id="6585808820553845416">ချိတ်ဆက်ချိန်<ph name="SESSION_TIME_REMAINING" /> မှာ ပြီးဆုံးမည်။</translation>
+<translation id="6586685375736417639">စက်ကို အားသွင်း၍မရပါ</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />၊ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="6605415194043280389">အထူးပြသမှု ဖွင့်ထားသည်</translation>

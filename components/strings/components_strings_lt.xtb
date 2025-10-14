@@ -983,6 +983,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2596415276201385844">Jei norite užmegzti saugų ryšį, turėsite tinkamai nustatyti laikrodį. To reikalaujama todėl, kad svetainių tapatybei įrodyti naudojami sertifikatai galioja tik tam tikrą laikotarpį. Kadangi įrenginio laikrodis nustatytas netinkamai, „Chrome“ negali tinkamai patvirtinti sertifikatų.</translation>
 <translation id="2597378329261239068">Šis dokumentas apsaugotas slaptažodžiu. Įveskite slaptažodį.</translation>
 <translation id="2600083925285092409">Automatiškai užpildyti šios kortelės duomenis „Chromium“ atliekamiems pirkiniams, kai ji išsaugoma naudoti su „Google Pay“</translation>
+<translation id="2602283642570832995">Šis veiksmas gali pažeisti <ph name="DOMAIN" /> politiką</translation>
 <translation id="2605979593348332811">Fonetinis vardas</translation>
 <translation id="2606760465469169465">Automatinis patvirtinimas</translation>
 <translation id="2608019759319359258">Kai tema užblokuota, ji nebus naudojama skelbimams suasmeninti</translation>
@@ -2022,6 +2023,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4281998142035485137">{0,plural, =1{Atidaryti konfidencialų failą?}one{Atidaryti konfidencialius failus?}few{Atidaryti konfidencialius failus?}many{Atidaryti konfidencialius failus?}other{Atidaryti konfidencialius failus?}}</translation>
 <translation id="4282280603030594840">Transporto priemonių pirkimas</translation>
 <translation id="4282346679996504092">Šio produkto įspėjimai išjungti ir žymė pašalinta</translation>
+<translation id="4284885181066817063">Užblokavo: <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Atsegti</translation>
 <translation id="4287495839370498922">Patobulintas su skelbimais susijęs privatumas naršyklėje „Chrome“</translation>
 <translation id="4288101205645068104">Ištrinti transporto priemonę</translation>
@@ -3662,7 +3664,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7020464868401003526">Šaukinio URL viršija didžiausią leistiną <ph name="MAX_LENGTH" /> simb. ilgį.</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7023162328967545559">Administratoriaus įspėjimas</translation>
-<translation id="7023765275461720661">Susieti paskyrą ir mokėti naudojantis „<ph name="BNPL_ISSUER_NAME" />“ paslaugomis?</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7030164307377592766">keisti mokėjimo metodų pildymo nustatymus</translation>
 <translation id="7031110846419387930">Informacija apie jūsų naršyklę, OS, įrenginį, įdiegtą programinę įrangą, failus ir IP adresus</translation>

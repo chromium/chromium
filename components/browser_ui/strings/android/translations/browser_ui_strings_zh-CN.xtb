@@ -442,6 +442,7 @@
 <translation id="5876056640971328065">暂停视频</translation>
 <translation id="5877248419911025165">收起所有请求</translation>
 <translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
+<translation id="588258955323874662">全屏</translation>
 <translation id="5884085660368669834">网站偏好设置</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
 <translation id="5908617755156109052">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
@@ -569,6 +570,7 @@
 <translation id="7406113532070524618">处于启用状态时，此设置不会识别您的身份，也不会允许网站查看您的浏览记录。不过，在验证过程中，网站可能会分享少量信息</translation>
 <translation id="7409735910987429903">网站可能会发送弹出式窗口以展示广告，或者使用重定向将您引导至您可能不想访问的网站</translation>
 <translation id="7412160840120117304">主颜色十六进制代码</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{缩放}other{缩放：<ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">先询问</translation>
 <translation id="7423538860840206698">已阻止读取剪贴板中的内容</translation>
 <translation id="7425915948813553151">为网站开启深色主题</translation>

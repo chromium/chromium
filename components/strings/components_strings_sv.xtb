@@ -983,6 +983,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2596415276201385844">Om du vill upprätta en säker anslutning måste klockan vara rätt inställd. Det beror på att certifikaten som webbplatserna använder för att identifiera sig endast är giltiga under vissa tidsperioder. Chrome kan inte verifiera certifikaten eftersom klockan på enheten inte stämmer.</translation>
 <translation id="2597378329261239068">Dokumentet är lösenordsskyddat. Ange ett lösenord.</translation>
 <translation id="2600083925285092409">Fyll i det här kortet automatiskt vid köp i Chromium när det har sparats för användning med Google Pay</translation>
+<translation id="2602283642570832995">Den här åtgärden kan bryta mot policyerna för <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Fonetiskt namn</translation>
 <translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2608019759319359258">När ett ämne har blockerats används det inte för att anpassa annonser</translation>
@@ -2021,6 +2022,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4281998142035485137">{0,plural, =1{Vill du öppna den konfidentiella filen?}other{Vill du öppna de konfidentiella filerna?}}</translation>
 <translation id="4282280603030594840">Bilhandel</translation>
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>
+<translation id="4284885181066817063">Blockeras av <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="4287495839370498922">Förbättrad annonsintegritet i Chrome</translation>
 <translation id="4288101205645068104">Radera fordon</translation>
@@ -3661,7 +3663,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7020464868401003526">Webbadressen till genvägen överskrider den maximala tillåtna längden på <ph name="MAX_LENGTH" /> tecken.</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="7023162328967545559">Varning från administratören</translation>
-<translation id="7023765275461720661">Vill du länka kontot och betala med <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030164307377592766">ändra inställningarna för att fylla i betalningsmetoder</translation>
 <translation id="7031110846419387930">Information om webbläsaren, operativsystemet, enheten, installerad mjukvara, filer och IP-adresser</translation>

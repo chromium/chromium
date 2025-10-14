@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Знойдзены адрас</translation>
 <translation id="3464194322481586217">Не ўдалося адсачыць цану.</translation>
 <translation id="3469117812148449995">Варыянты захавання пароля</translation>
+<translation id="3472469028191701821">Адкрыецца ў новай укладцы</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{для {COUNT} сайта або праграмы}one{для {COUNT} сайта або праграмы}few{для {COUNT} сайтаў або праграм}many{для {COUNT} сайтаў або праграм}other{для {COUNT} сайта або праграмы}}</translation>
 <translation id="3474624961160222204">Працягнуць як <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Атрымайце доступ да вашых пароляў у іншых праграмах.</translation>
@@ -1370,6 +1371,7 @@
 <translation id="629730747756840877">Уліковы запіс</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
 <translation id="6301767200000930965">Аа</translation>
+<translation id="630308129961693966">Выберыце пазіцыю адраснага радка</translation>
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
 <translation id="6316141353357700666">Выберыце патрэбны пароль са спіса.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
@@ -1637,6 +1639,7 @@
 <translation id="7336264872878993241">Спампавана: <ph name="PERCENT" /> %</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7363349185727752629">Дапаможнік па параметрах прыватнасці</translation>
+<translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="736564850024123010">Вы можаце змяніць пазіцыю адраснага радка для больш зручнага выкарыстання.</translation>
 <translation id="7366909168761621528">Даныя прагляду</translation>
 <translation id="7367530036083223701">Для бяспечнага доступу да сваіх пароляў з галоўнага экрана выкарыстоўвайце віджэт "Менеджар пароляў".</translation>

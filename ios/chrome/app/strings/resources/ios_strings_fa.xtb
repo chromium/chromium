@@ -436,7 +436,7 @@
 <translation id="264215785133931186">آخرین بررسی: همین‌حالا</translation>
 <translation id="2647434099613338025">افزودن زبان</translation>
 <translation id="2649592894792404568">‏در آستانه حذف داده‌هایتان از «مدیر گذرواژه Google» هستید</translation>
-<translation id="2652129567809778422">گذرواژه را انتخاب کنید</translation>
+<translation id="2652129567809778422">انتخاب گذرواژه</translation>
 <translation id="2658056020748144467">فایل باز نشد</translation>
 <translation id="2661809266906115479">‫<ph name="TITLE" />، <ph name="STATE" />، فقط در این دستگاه، <ph name="URL" /></translation>
 <translation id="2664621323652615289">توقف</translation>
@@ -622,6 +622,7 @@
 <translation id="345348365500626747">نشانی پیدا شد</translation>
 <translation id="3464194322481586217">قیمت پیگیری نشد.</translation>
 <translation id="3469117812148449995">گزینه‌های ذخیره کردن گذرواژه</translation>
+<translation id="3472469028191701821">در زبانه جدید باز می‌شود</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{برای {COUNT} سایت یا برنامه}one{برای {COUNT} سایت یا برنامه}other{برای {COUNT} سایت یا برنامه}}</translation>
 <translation id="3474624961160222204">ادامه دادن به‌عنوان <ph name="NAME" /></translation>
 <translation id="3476450923187944815">در برنامه‌های دیگر به گذرواژه‌هایتان دسترسی داشته باشید.</translation>
@@ -1370,6 +1371,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="629730747756840877">حساب</translation>
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">انتخاب کردن موقعیت نوار نشانی</translation>
 <translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6316141353357700666">در فهرستی که خواهید دید، گذرواژه موردنظر برای استفاده را انتخاب کنید.</translation>
 <translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
@@ -1637,6 +1639,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7336264872878993241"><ph name="PERCENT" /> درصد بارگیری شد</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7363349185727752629">راهنمای گزینه‌های حریم خصوصی</translation>
+<translation id="7364796246159120393">انتخاب فایل</translation>
 <translation id="736564850024123010">برای داشتن تجربه‌ای سفارشی‌سازی‌شده، موقعیت نوار نشانی را تغییر دهید.</translation>
 <translation id="7366909168761621528">داده‌های مرور</translation>
 <translation id="7367530036083223701">با ابزاره «مدیر گذرواژه»، به‌طور ایمن ازطریق صفحه اصلی به گذرواژه‌هایتان دسترسی پیدا کنید.</translation>
@@ -1661,7 +1664,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7431851541687113774">غیرفعال کردن تشخیص نشانی</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
-<translation id="7437712592381799950">برای دیدن محتوای بیشتری که متناسب با سلیقه شما است، می‌توانید تند به بالا بکشید.</translation>
+<translation id="7437712592381799950">برای دیدن محتوای بیشتری که مناسب با سلیقه شما است، می‌توانید تند به بالا بکشید.</translation>
 <translation id="7438473148803748807">همه دسترسی به گروه زبانه‌های «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
 <translation id="7445682342344043969">پنجره‌های بازشو مسدود هستند</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>

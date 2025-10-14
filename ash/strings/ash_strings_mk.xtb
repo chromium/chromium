@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Подобрување на осветлувањето</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
+<translation id="2562459326218811217">Уредот е приклучен, но не се полни. Обидете се со полнач со повеќе вати (W) или користете го оригиналниот полнач.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
 <translation id="2573588302192866788">Не можеше да се поврзе <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2814448776515246190">Делумно снимање</translation>
+<translation id="2815594810045873507">Обидете се со полнач со повеќе вати (W) или користете го оригиналниот полнач.</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
 <translation id="2822551631199737692">Камерата е во употреба</translation>
 <translation id="2825619548187458965">Полица</translation>
@@ -1732,6 +1734,7 @@
 <translation id="6582012689384648647">За персонализирани плејлисти за „Режим за концентрација“, дозволете пристап до YouTube Music</translation>
 <translation id="6582034443359256692">Се пресметува нивото на полнење на батеријата.</translation>
 <translation id="6585808820553845416">Сесијата ќе заврши во <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Уредот не се полни</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="6605415194043280389">„Режимот за концентрација“ е вклучен</translation>

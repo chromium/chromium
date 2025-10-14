@@ -469,6 +469,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2549711466868162843">Iluminación mellorada</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="255671100581129685">O Asistente de Google non está dispoñible cando se utiliza unha sesión pública.</translation>
+<translation id="2562459326218811217">O dispositivo está enchufado, pero non se está cargando. Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
 <translation id="2573588302192866788">Non se puido conectar o dispositivo (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Desactivouse o inicio de sesión múltiple</translation>
@@ -539,6 +540,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
 <translation id="2822551631199737692">Estase utilizando a cámara</translation>
 <translation id="2825619548187458965">Estante</translation>
@@ -1732,6 +1734,7 @@ Nova instalación</translation>
 <translation id="6582012689384648647">Se queres desfrutar de listas de reprodución personalizadas para concentrarte, permite o acceso a YouTube Music</translation>
 <translation id="6582034443359256692">Calculando o nivel de carga da batería.</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
+<translation id="6586685375736417639">Non se pode cargar o dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara axustada á esquina inferior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="6605415194043280389">Modo Sen distraccións activado</translation>

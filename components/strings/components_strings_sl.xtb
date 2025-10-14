@@ -983,6 +983,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2596415276201385844">Če želite vzpostaviti varno povezavo, mora biti ura pravilno nastavljena. Potrdila, ki jih uporabljajo spletna mesta za prepoznavanje, namreč veljajo samo določen čas. Ker je ura sistema nepravilna, Chrome teh potrdil ne more preveriti.</translation>
 <translation id="2597378329261239068">Dokument je zaščiten z geslom. Vnesite geslo.</translation>
 <translation id="2600083925285092409">Samodejno izpolnjevanje te kartice za nakupe v Chromiumu, ko je shranjena za uporabo z Googlom Pay</translation>
+<translation id="2602283642570832995">To dejanje morda krši pravilnike mesta <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Fonetično ime</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
 <translation id="2608019759319359258">Če je tema blokirana, se ne uporablja za osebno prilagajanje oglasov</translation>
@@ -2021,6 +2022,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4281998142035485137">{0,plural, =1{Želite odpreti zaupno datoteko?}one{Želite odpreti zaupne datoteke?}two{Želite odpreti zaupne datoteke?}few{Želite odpreti zaupne datoteke?}other{Želite odpreti zaupne datoteke?}}</translation>
 <translation id="4282280603030594840">Nakup vozil</translation>
 <translation id="4282346679996504092">Opozorila za ta izdelek so bila izklopljena in zaznamek je bil odstranjen.</translation>
+<translation id="4284885181066817063">Blokiral: <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Odpni</translation>
 <translation id="4287495839370498922">Izboljšana zasebnost pri oglaševanju v Chromu</translation>
 <translation id="4288101205645068104">Brisanje vozila</translation>
@@ -3661,7 +3663,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7020464868401003526">URL bližnjice presega največjo dovoljeno dolžino znakov: <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
-<translation id="7023765275461720661">Želite povezati račun in plačevati s ponudnikom <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7030164307377592766">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="7031110846419387930">Podatki o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi, datotekah in naslovih IP</translation>

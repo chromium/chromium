@@ -983,6 +983,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2596415276201385844">Để thiết lập kết nối an toàn, bạn cần đặt thời gian đúng cho đồng hồ. Nguyên nhân là do chứng chỉ mà các trang web dùng để tự nhận dạng chỉ có hiệu lực trong khoảng thời gian cụ thể. Vì đồng hồ trên thiết bị của bạn không đúng nên Chrome không thể xác minh các chứng chỉ này.</translation>
 <translation id="2597378329261239068">Tài liệu này được bảo vệ bằng mật khẩu. Vui lòng nhập mật khẩu.</translation>
 <translation id="2600083925285092409">Tự động điền thông tin thẻ này cho các giao dịch mua trong Chromium khi thẻ được lưu để dùng với Google Pay</translation>
+<translation id="2602283642570832995">Hành động này có thể vi phạm các chính sách của <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Tên theo phiên âm</translation>
 <translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2608019759319359258">Khi bạn chặn một chủ đề, chủ đề đó sẽ không được dùng cho mục đích cá nhân hoá quảng cáo</translation>
@@ -2021,6 +2022,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4281998142035485137">{0,plural, =1{Mở tệp bảo mật?}other{Mở các tệp bảo mật?}}</translation>
 <translation id="4282280603030594840">Mua sắm xe cộ</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>
+<translation id="4284885181066817063">Bị <ph name="DOMAIN" /> chặn</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="4287495839370498922">Quyền riêng tư nâng cao trong quảng cáo trên Chrome</translation>
 <translation id="4288101205645068104">Xoá xe</translation>
@@ -3661,7 +3663,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7020464868401003526">URL của lối tắt vượt quá độ dài tối đa được phép là <ph name="MAX_LENGTH" /> ký tự.</translation>
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7023162328967545559">Cảnh báo của quản trị viên</translation>
-<translation id="7023765275461720661">Liên kết tài khoản và thanh toán bằng <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7030164307377592766">sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán</translation>
 <translation id="7031110846419387930">Thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt, tệp và địa chỉ IP</translation>

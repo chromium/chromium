@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">조명 개선</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
 <translation id="255671100581129685">공개 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
+<translation id="2562459326218811217">기기가 연결되었으나 충전되지 않고 있습니다. 더 높은 와트(W)의 충전기를 사용하거나 정품 충전기를 사용해 보세요.</translation>
 <translation id="256712445991462162">고정 돋보기</translation>
 <translation id="2573588302192866788"><ph name="NAME" />에 연결할 수 없음</translation>
 <translation id="2575685495496069081">멀티 로그인이 사용 중지됨</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2814448776515246190">부분 캡처</translation>
+<translation id="2815594810045873507">더 높은 와트(W)의 충전기를 사용하거나 정품 충전기를 사용해 보세요.</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2825619548187458965">앱 표시줄</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">집중에 도움이 되는 맞춤 재생목록을 이용하려면 YouTube Music에 대한 액세스를 허용하세요</translation>
 <translation id="6582034443359256692">배터리 충전 수준을 계산하는 중입니다.</translation>
 <translation id="6585808820553845416">세션이 <ph name="SESSION_TIME_REMAINING" /> 후에 종료됩니다.</translation>
+<translation id="6586685375736417639">기기를 충전할 수 없음</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="6605415194043280389">집중 모드 사용 중</translation>

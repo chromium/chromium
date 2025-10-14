@@ -469,6 +469,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2549711466868162843">Belichting verbeteren</translation>
 <translation id="2549985041256363841">Opname starten</translation>
 <translation id="255671100581129685">De Google Assistent is niet beschikbaar in een openbare sessie.</translation>
+<translation id="2562459326218811217">Apparaat is aangesloten, maar wordt niet opgeladen. Probeer een oplader met een hoger wattage (W) of gebruik je oorspronkelijke oplader.</translation>
 <translation id="256712445991462162">het vastgezette vergrootglas</translation>
 <translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
 <translation id="2575685495496069081">Toegang tot meerdere accounts is uitgezet</translation>
@@ -539,6 +540,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Gedeeltelijke opname</translation>
+<translation id="2815594810045873507">Probeer een oplader met een hoger wattage (W) of gebruik je oorspronkelijke oplader.</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
 <translation id="2822551631199737692">Camera in gebruik</translation>
 <translation id="2825619548187458965">Plank</translation>
@@ -1731,6 +1733,7 @@ Nieuwe installatie</translation>
 <translation id="6582012689384648647">Geef toegang tot YouTube Music voor gepersonaliseerde focusplaylists</translation>
 <translation id="6582034443359256692">Het oplaadniveau van de batterij wordt berekend.</translation>
 <translation id="6585808820553845416">Sessie loopt af over <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Kan apparaat niet opladen</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera uitgelijnd op de linkerbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="6605415194043280389">Focus staat aan</translation>

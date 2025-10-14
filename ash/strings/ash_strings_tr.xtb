@@ -469,6 +469,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2549711466868162843">Gelişmiş Işık</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="255671100581129685">Google Asistan, herkese açık oturumda kullanılamaz.</translation>
+<translation id="2562459326218811217">Cihaz fişe takılı ancak şarj olmuyor. Daha yüksek vat (W) değerine sahip bir şarj cihazı veya orijinal şarj cihazınızı kullanmayı deneyin.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> bağlanamadı</translation>
 <translation id="2575685495496069081">Çoklu oturum açma devre dışı bırakıldı</translation>
@@ -539,6 +540,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2814448776515246190">Kısmi ekran görüntüsü alma</translation>
+<translation id="2815594810045873507">Daha yüksek vat (W) değerine sahip bir şarj cihazı veya orijinal şarj cihazınızı kullanmayı deneyin.</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="2822551631199737692">Kamera kullanılıyor</translation>
 <translation id="2825619548187458965">Raf</translation>
@@ -1731,6 +1733,7 @@ Yeni yüklenmiş</translation>
 <translation id="6582012689384648647">Kişiselleştirilmiş odaklanma listeleri için YouTube Music'e erişim izni verin</translation>
 <translation id="6582034443359256692">Pil şarj seviyesi hesaplanıyor.</translation>
 <translation id="6585808820553845416">Oturumun süresi <ph name="SESSION_TIME_REMAINING" /> içinde bitiyor.</translation>
+<translation id="6586685375736417639">Cihaz şarj edilemiyor</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera sol alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="6605415194043280389">Odaklanma açık</translation>

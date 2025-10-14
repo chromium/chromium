@@ -270,6 +270,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2249635629516220541">Anpassa informationen som används av webbplatser för att visa annonser</translation>
 <translation id="2251809247798634662">Nytt inkognitofönster</translation>
 <translation id="2253927598983295051">Välj vad du vill dela med <ph name="APP_NAME" /></translation>
+<translation id="2261570557291037252">Mer appinformation</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, vald inkognitoflik</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
@@ -1012,7 +1013,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="569536719314091526">Översätt den här sidan till vilket språk som helst via knappen Fler alternativ</translation>
 <translation id="5696597120588531049">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera</translation>
 <translation id="5698878456427040674">Kontrollera att det valda kontot stöds.</translation>
-<translation id="570347048394355941">Byt till flik</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> vill ansluta till en serieport</translation>
 <translation id="5715150588940290235">Vill du radera sparade säkerhetskoder?</translation>
 <translation id="571930967925877633">Bokmärken, historik och annan data i Chrome synkroniseras inte längre med ditt Google-konto</translation>

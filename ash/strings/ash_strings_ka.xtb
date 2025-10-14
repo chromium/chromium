@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">განათების გაუმჯობესება</translation>
 <translation id="2549985041256363841">ჩაწერის დაწყება</translation>
 <translation id="255671100581129685">Google ასისტენტი მიუწვდომელია საჯარო სესიაში.</translation>
+<translation id="2562459326218811217">მოწყობილობა შეერთებულია, მაგრამ არ იტენება. ცადეთ უფრო მაღალვატიანი (W) დამტენით დატენა ან გამოიყენეთ ორიგინალი დამტენი.</translation>
 <translation id="256712445991462162">ჩამაგრებული ლუპა</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ვერ დაკავშირდა</translation>
 <translation id="2575685495496069081">სისტემაში მრავალჯერადი შესვლა გათიშულია</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2814448776515246190">ნაწილობრივი აღბეჭდვა</translation>
+<translation id="2815594810045873507">ცადეთ უფრო მაღალვატიანი (W) დამტენით დატენა ან გამოიყენეთ ორიგინალი დამტენი.</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="2822551631199737692">კამერა გამოიყენება</translation>
 <translation id="2825619548187458965">თარო</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">კონცენტრაციისთვის პერსონალიზებული დასაკრავი სიების მისაღებად დაუშვით წვდომა YouTube Music-ზე</translation>
 <translation id="6582034443359256692">ითვლება ბატარეის მუხტის დონე.</translation>
 <translation id="6585808820553845416">სესიის დასრულებამდე დარჩა <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">მოწყობილობა არ იტენება</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">კამერა მიზიდულია ქვედა მარცხენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="6605415194043280389">ფოკუსირების რეჟიმი ჩართულია</translation>

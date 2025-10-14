@@ -469,6 +469,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2549711466868162843">Ayusin ang lighting</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="255671100581129685">Hindi available ang Google Assistant sa isang pampublikong session.</translation>
+<translation id="2562459326218811217">Nakasaksak ang device, pero hindi nagcha-charge. Subukan ang charger na may mas mataas na watts (W) o gamitin ang iyong orihinal na charger.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
 <translation id="2573588302192866788">Hindi maikonekta ang <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Na-disable ang maraming pag-sign in</translation>
@@ -539,6 +540,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2814448776515246190">Pag-capture ng isang bahagi ng screen</translation>
+<translation id="2815594810045873507">Subukan ang charger na may mas mataas na watts (W) o gamitin ang iyong orihinal na charger.</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
 <translation id="2822551631199737692">Ginagamit ang camera</translation>
 <translation id="2825619548187458965">Shelf</translation>
@@ -1731,6 +1733,7 @@ Kaka-install lang</translation>
 <translation id="6582012689384648647">Para sa mga naka-personalize na playlist para sa pag-focus, payagan ang pag-access sa YouTube Music</translation>
 <translation id="6582034443359256692">Kinakalkula ang level ng charge ng baterya.</translation>
 <translation id="6585808820553845416">Matatapos ang session pagkalipas ng <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Hindi ma-charge ang device</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Nag-snap ang camera sa kaliwang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
 <translation id="6605415194043280389">Naka-on ang Pag-focus</translation>

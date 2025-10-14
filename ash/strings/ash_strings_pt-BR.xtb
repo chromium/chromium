@@ -469,6 +469,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2549711466868162843">Ajustar iluminação</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="255671100581129685">O Google Assistente não está disponível para uma sessão pública.</translation>
+<translation id="2562459326218811217">O dispositivo está conectado, mas não está carregando. Tente usar um carregador com mais watts (W) ou o original.</translation>
 <translation id="256712445991462162">a lupa em área fixa</translation>
 <translation id="2573588302192866788">Falha ao conectar <ph name="NAME" /></translation>
 <translation id="2575685495496069081">A opção de login múltiplo foi desativada</translation>
@@ -539,6 +540,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
+<translation id="2815594810045873507">Tente usar um carregador com mais watts (W) ou o original.</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
 <translation id="2822551631199737692">Câmera em uso</translation>
 <translation id="2825619548187458965">Estante</translation>
@@ -1731,6 +1733,7 @@ Nova instalação</translation>
 <translation id="6582012689384648647">Para criar playlists de foco personalizadas, permita o acesso ao YouTube Music</translation>
 <translation id="6582034443359256692">Calculando o nível da bateria.</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Não é possível carregar o dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />: <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Câmera alinhada ao canto esquerdo de baixo. Conflito com a superfície do sistema.</translation>
 <translation id="6605415194043280389">O Foco está ativado</translation>

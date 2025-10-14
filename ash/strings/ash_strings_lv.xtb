@@ -469,6 +469,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2549711466868162843">Apgaismojuma uzlabošana</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="255671100581129685">Google asistents nav pieejams publiskā sesijā.</translation>
+<translation id="2562459326218811217">Ierīce ir pievienota, taču netiek uzlādēta. Izmēģiniet lādētāju ar lielāku vatu (W) vērtību vai izmantojiet oriģinālo lādētāju.</translation>
 <translation id="256712445991462162">dokota lupa</translation>
 <translation id="2573588302192866788">Nevarēja izveidot savienojumu ar ierīci <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Vairākkārtēja pierakstīšanās ir atspējota</translation>
@@ -539,6 +540,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="2804617685448902294"><ph name="TITLE" /> — <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2814448776515246190">Daļēja ekrāna uzņemšana</translation>
+<translation id="2815594810045873507">Izmēģiniet lādētāju ar lielāku vatu (W) vērtību vai izmantojiet oriģinālo lādētāju.</translation>
 <translation id="2819276065543622893">Jūs tagad tiksiet izrakstīts.</translation>
 <translation id="2822551631199737692">Tiek izmantota kamera</translation>
 <translation id="2825619548187458965">Plaukts</translation>
@@ -1731,6 +1733,7 @@ Jauna instalācija</translation>
 <translation id="6582012689384648647">Lai iegūtu personalizētus atskaņošanas sarakstus uzmanības koncentrēšanai, atļaujiet piekļuvi pakalpojumam YouTube Music.</translation>
 <translation id="6582034443359256692">Notiek akumulatora uzlādes līmeņa aprēķināšana.</translation>
 <translation id="6585808820553845416">Atlikušais laiks līdz šīs sesijas beigām: <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Nevar uzlādēt ierīci</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera pārnesta uz kreiso apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="6605415194043280389">Fokusa režīms ir ieslēgts</translation>

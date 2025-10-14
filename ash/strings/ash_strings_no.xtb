@@ -469,6 +469,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2549711466868162843">Bedre lys</translation>
 <translation id="2549985041256363841">Start opptak</translation>
 <translation id="255671100581129685">Google-assistenten er ikke tilgjengelig i offentlige økter.</translation>
+<translation id="2562459326218811217">Enheten er koblet til, men lades ikke. Prøv en lader med flere watt (W), eller bruk den originale laderen.</translation>
 <translation id="256712445991462162">den dokkede lupen</translation>
 <translation id="2573588302192866788">Kunne ikke koble til <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
@@ -539,6 +540,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
+<translation id="2815594810045873507">Prøv en lader med flere watt (W), eller bruk den originale laderen.</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
 <translation id="2822551631199737692">Kameraet er i bruk</translation>
 <translation id="2825619548187458965">Hylle</translation>
@@ -1731,6 +1733,7 @@ Nylig installert</translation>
 <translation id="6582012689384648647">Gi tilgang til YouTube Music for å få personlig tilpassede fokus-spillelister</translation>
 <translation id="6582034443359256692">Beregner batterinivået.</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Kan ikke lade enheten</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er festet til nedre venstre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="6605415194043280389">Fokus er på</translation>

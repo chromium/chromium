@@ -622,6 +622,7 @@
 <translation id="345348365500626747">ঠিকানা পাওয়া গেছে</translation>
 <translation id="3464194322481586217">দাম ট্র্যাক করা যায়নি।</translation>
 <translation id="3469117812148449995">পাসওয়ার্ড সেভ করার বিকল্প</translation>
+<translation id="3472469028191701821">নতুন ট্যাবে খোলে</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT}টি সাইট বা অ্যাপের জন্য}one{{COUNT}টি সাইট বা অ্যাপের জন্য}other{{COUNT}টি সাইট বা অ্যাপের জন্য}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3476450923187944815">অন্যান্য অ্যাপ জুড়ে আপনার পাসওয়ার্ড অ্যাক্সেস করুন।</translation>
@@ -1371,6 +1372,7 @@
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">আপনার অ্যাড্রেস বারের পজিশন বাছুন</translation>
 <translation id="6307241780749477694">এই ডিভাইসে যাতে আপনার সব পাসওয়ার্ড পেতে পারেন সেই জন্য নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6316141353357700666">আপনাকে প্রদর্শিত পাসওয়ার্ডের তালিকা থেকে আপনি যেটি ব্যবহার করতে চান সেটি বেছে নিন।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
@@ -1638,6 +1640,7 @@
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনলোড হয়েছে</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7363349185727752629">আপনার গোপনীয়তা পছন্দ গাইড</translation>
+<translation id="7364796246159120393">ফাইল বেছে নিন</translation>
 <translation id="736564850024123010">কাস্টমাইজ করা অভিজ্ঞতার জন্য আপনার অ্যাড্রেস বারের অবস্থান পরিবর্তন করুন।</translation>
 <translation id="7366909168761621528">ব্রাউজিং ডেটা</translation>
 <translation id="7367530036083223701">হোম স্ক্রিনে পাসওয়ার্ড ম্যানেজার উইজেট থেকে নিরাপদে আপনার পাসওয়ার্ড অ্যাক্সেস করুন।</translation>

@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Cím megtalálva</translation>
 <translation id="3464194322481586217">Nem sikerült az ár nyomon követésének beállítása.</translation>
 <translation id="3469117812148449995">A jelszó mentésére szolgáló lehetőségek</translation>
+<translation id="3472469028191701821">Új lapon nyílik meg</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} webhelynél vagy alkalmazásnál}other{{COUNT} webhelynél vagy alkalmazásnál}}</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Más alkalmazásokban is hozzáférhet a jelszavaihoz.</translation>
@@ -1370,6 +1371,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="629730747756840877">Fiók</translation>
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">A címsáv helyének kiválasztása</translation>
 <translation id="6307241780749477694">Igazolja személyazonosságát, hogy hozzáférhessen az összes jelszavához ezen az eszközön</translation>
 <translation id="6316141353357700666">A megjelenő listából válassza ki a használni kívánt jelszót.</translation>
 <translation id="6321526113093607004">Hozzáadás a könyvjelzőkhöz</translation>
@@ -1637,6 +1639,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7336264872878993241"><ph name="PERCENT" /> százalék letöltve</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7363349185727752629">Az adatvédelmi lehetőségek bemutatója</translation>
+<translation id="7364796246159120393">Fájl kiválasztása</translation>
 <translation id="736564850024123010">A személyre szabott élmény érdekében módosíthatja a címsáv pozícióját.</translation>
 <translation id="7366909168761621528">Böngészési adatok</translation>
 <translation id="7367530036083223701">A Jelszókezelő modullal biztonságosan hozzáférhet jelszavaihoz a kezdőképernyőn.</translation>

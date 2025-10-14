@@ -983,6 +983,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2596415276201385844">Para estabelecer uma ligação segura, o relógio tem de ser definido corretamente. Isto deve-se ao facto de os certificados que os Sites utilizam para se identificarem serem apenas válidos para períodos de tempo específicos. Uma vez que o relógio do seu dispositivo está incorreto, o Chrome não consegue validar estes certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por palavra-passe.  Introduza uma palavra-passe.</translation>
 <translation id="2600083925285092409">Preencha automaticamente este cartão para compras feitas no Chromium quando este estiver guardado para utilização com o Google Pay</translation>
+<translation id="2602283642570832995">Esta ação pode violar as políticas de <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Nome fonético</translation>
 <translation id="2606760465469169465">Validação automática</translation>
 <translation id="2608019759319359258">Quando um tópico é bloqueado, não é usado para personalizar anúncios</translation>
@@ -2021,6 +2022,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4281998142035485137">{0,plural, =1{Abrir ficheiro confidencial?}other{Abrir ficheiros confidenciais?}}</translation>
 <translation id="4282280603030594840">Compra de veículos</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>
+<translation id="4284885181066817063">Ação bloqueada por <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Desafixar</translation>
 <translation id="4287495839370498922">Privacidade de anúncios melhorada no Chrome</translation>
 <translation id="4288101205645068104">Elimine o veículo</translation>
@@ -3661,7 +3663,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7020464868401003526">O URL do atalho excede o comprimento máximo permitido de <ph name="MAX_LENGTH" /> carateres.</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="7023162328967545559">Aviso para administradores</translation>
-<translation id="7023765275461720661">Associar a conta e fazer pagamentos com a <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7030164307377592766">modificar as definições de preenchimento dos métodos de pagamento</translation>
 <translation id="7031110846419387930">Informações sobre o navegador, o SO, o dispositivo, o software instalado, os ficheiros e os endereços IP</translation>

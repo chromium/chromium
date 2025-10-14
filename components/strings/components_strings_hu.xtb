@@ -983,6 +983,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2596415276201385844">Biztonságos kapcsolat létrehozásához az órát pontosan be kell állítani.Ez azért szükséges, mert a webhelyek által az azonosításukra használt tanúsítványok csak adott ideig érvényesek. Mivel az eszköz órája nem pontos, a Chrome nem tudja ellenőrizni ezeket a tanúsítványokat.</translation>
 <translation id="2597378329261239068">Ez a dokumentum jelszóval védett. Kérjük, adja meg a jelszót.</translation>
 <translation id="2600083925285092409">Automatikusan kitöltheti ezt a kártyát a Chromiumban végzett vásárlások során, ha elmenti a Google Pay szolgáltatással való használatra</translation>
+<translation id="2602283642570832995">Ez a művelet sértheti a(z) <ph name="DOMAIN" /> irányelveit</translation>
 <translation id="2605979593348332811">Név fonetikusan</translation>
 <translation id="2606760465469169465">Automatikus igazolás</translation>
 <translation id="2608019759319359258">Amikor egy adott téma le van tiltva, akkor a rendszer nem használja fel a hirdetések személyre szabására</translation>
@@ -2018,6 +2019,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4281998142035485137">{0,plural, =1{Megnyitja a bizalmas fájlt?}other{Megnyitja a bizalmas fájlokat?}}</translation>
 <translation id="4282280603030594840">Járművásárlás</translation>
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
+<translation id="4284885181066817063">A(z) <ph name="DOMAIN" /> által letiltva</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="4287495839370498922">Hirdetésekhez kapcsolódó fokozott adatvédelem a Chrome-ban</translation>
 <translation id="4288101205645068104">Jármű törlése</translation>
@@ -3658,7 +3660,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7020464868401003526">A gyorsparancs URL-je meghaladja a maximálisan engedélyezett <ph name="MAX_LENGTH" /> karaktert.</translation>
 <translation id="702275896380648118">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek. Emellett lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="7023162328967545559">Adminisztrátori figyelmeztetés</translation>
-<translation id="7023765275461720661">Összekapcsolja a fiókot, hogy fizethessen a következővel: <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7030164307377592766">módosítani próbálja a fizetési módok kitöltési beállításait</translation>
 <translation id="7031110846419387930">A böngészővel, az operációs rendszerrel, az eszközzel, a telepített szoftverekkel, a fájlokkal és az IP-címekkel kapcsolatos információk</translation>

@@ -983,6 +983,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2596415276201385844">Untuk mewujudkan sambungan yang selamat, jam anda perlu ditetapkan dengan betul. Perkara ini perlu kerana sijil yang digunakan laman web untuk mengenal pastinya hanya sah untuk tempoh masa yang tertentu. Memandangkan jam peranti anda tidak betul, Chrome tidak boleh mengesahkan sijil-sijil ini.</translation>
 <translation id="2597378329261239068">Dokumen ini dilindungi kata laluan.  Sila masukkan kata laluan.</translation>
 <translation id="2600083925285092409">Autolengkap kad ini untuk pembelian yang dibuat dalam Chromium apabila kad tersebut disimpan untuk digunakan dengan Google Pay</translation>
+<translation id="2602283642570832995">Tindakan ini mungkin melanggar dasar <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Nama fonetik</translation>
 <translation id="2606760465469169465">Sahkan secara automatik</translation>
 <translation id="2608019759319359258">Apabila topik disekat, topik tersebut tidak akan digunakan untuk memeribadikan iklan</translation>
@@ -2022,6 +2023,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4281998142035485137">{0,plural, =1{Buka fail sulit?}other{Buka fail sulit?}}</translation>
 <translation id="4282280603030594840">Beli-belah Kenderaan</translation>
 <translation id="4282346679996504092">Makluman untuk produk ini telah dimatikan dan penanda halaman dialih keluar</translation>
+<translation id="4284885181066817063">Disekat oleh <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="4287495839370498922">Privasi iklan dipertingkatkan dalam Chrome</translation>
 <translation id="4288101205645068104">Padamkan kenderaan</translation>
@@ -3662,7 +3664,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7020464868401003526">URL pintasan melebihi panjang maksimum <ph name="MAX_LENGTH" /> aksara yang dibenarkan.</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7023162328967545559">Amaran pentadbir</translation>
-<translation id="7023765275461720661">Pautkan akaun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7030164307377592766">mengubah suai tetapan untuk pengisian kaedah pembayaran</translation>
 <translation id="7031110846419387930">Maklumat tentang penyemak imbas, OS, peranti, perisian yang dipasang, fail dan alamat IP anda</translation>

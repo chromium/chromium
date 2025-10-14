@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Покращення освітлення</translation>
 <translation id="2549985041256363841">Почати запис</translation>
 <translation id="255671100581129685">Google Асистент недоступний у сеансі для всіх.</translation>
+<translation id="2562459326218811217">Пристрій підключено до електромережі, проте він не заряджається. Спробуйте зарядний пристрій із більшою потужністю (у ватах) або скористайтесь оригінальним.</translation>
 <translation id="256712445991462162">закріплену лупу</translation>
 <translation id="2573588302192866788">Не вдалося підключити пристрій <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Паралельний вхід вимкнено</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2814448776515246190">Зйомка частини екрана</translation>
+<translation id="2815594810045873507">Спробуйте зарядний пристрій із більшою потужністю (у ватах) або скористайтесь оригінальним.</translation>
 <translation id="2819276065543622893">Зараз ви вийдете.</translation>
 <translation id="2822551631199737692">Використовується камера</translation>
 <translation id="2825619548187458965">Полиця</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Щоб отримувати персоналізовані списки відтворення для зосередження, надайте доступ до YouTube Music</translation>
 <translation id="6582034443359256692">Визначаємо рівень заряду акумулятора.</translation>
 <translation id="6585808820553845416">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Не вдалося зарядити пристрій</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Зображення з камери закріплено в нижньому лівому куті, що конфліктує із системною платформою.</translation>
 <translation id="6605415194043280389">Режим концентрації уваги ввімкнено</translation>

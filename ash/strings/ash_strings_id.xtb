@@ -469,6 +469,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2549711466868162843">Koreksi pencahayaan</translation>
 <translation id="2549985041256363841">Mulai merekam</translation>
 <translation id="255671100581129685">Asisten Google tidak tersedia dalam sesi publik.</translation>
+<translation id="2562459326218811217">Perangkat dicolokkan, tetapi tidak mengisi daya. Coba pengisi daya dengan lebih banyak watt (W) atau gunakan pengisi daya asli Anda.</translation>
 <translation id="256712445991462162">kaca pembesar tersemat</translation>
 <translation id="2573588302192866788">Tidak dapat menghubungkan <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Fitur multi-login telah dinonaktifkan</translation>
@@ -539,6 +540,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="2814448776515246190">Tangkapan layar sebagian</translation>
+<translation id="2815594810045873507">Coba pengisi daya dengan lebih banyak watt (W) atau gunakan pengisi daya asli Anda.</translation>
 <translation id="2819276065543622893">Anda akan dikeluarkan sekarang.</translation>
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
 <translation id="2825619548187458965">Rak</translation>
@@ -1731,6 +1733,7 @@ Baru diinstal</translation>
 <translation id="6582012689384648647">Untuk mendapatkan playlist untuk berfokus yang dipersonalisasi, izinkan akses ke YouTube Music</translation>
 <translation id="6582034443359256692">Menghitung tingkat pengisian daya baterai.</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Tidak dapat mengisi daya perangkat</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera dipaskan ke pojok kiri bawah. Bertentangan dengan platform sistem.</translation>
 <translation id="6605415194043280389">Fokus aktif</translation>

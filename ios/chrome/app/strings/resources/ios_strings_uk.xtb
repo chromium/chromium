@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Адресу знайдено</translation>
 <translation id="3464194322481586217">Не вдалося підписатися на відстеження ціни.</translation>
 <translation id="3469117812148449995">Опції для зберігання паролів</translation>
+<translation id="3472469028191701821">Відкриється на новій вкладці</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{для {COUNT} сайту або додатка}one{для {COUNT} сайту й додатка}few{для {COUNT} сайтів і додатків}many{для {COUNT} сайтів і додатків}other{для {COUNT} сайту й додатка}}</translation>
 <translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Отримуйте доступ до своїх паролів в інших додатках.</translation>
@@ -1370,6 +1371,7 @@
 <translation id="629730747756840877">Обліковий запис</translation>
 <translation id="6301104306974789820">Отримувати сповіщення про змінення ціни</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">Виберіть, де буде адресний рядок</translation>
 <translation id="6307241780749477694">Підтвердьте свою особу, щоб отримати доступ до всіх паролів на цьому пристрої</translation>
 <translation id="6316141353357700666">Виберіть потрібний пароль зі списку.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
@@ -1637,6 +1639,7 @@
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
 <translation id="7363349185727752629">Посібник щодо конфіденційності</translation>
+<translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="736564850024123010">Щоб персоналізувати головний екран, змініть положення адресного рядка.</translation>
 <translation id="7366909168761621528">Дані вебперегляду</translation>
 <translation id="7367530036083223701">Установіть віджет Менеджера паролів, щоб безпечно отримувати доступ до своїх паролів із головного екрана.</translation>

@@ -442,6 +442,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5876056640971328065">Întrerupe videoclipul</translation>
 <translation id="5877248419911025165">Restrânge toate solicitările</translation>
 <translation id="5878945009165002849">Blochează solicitările de conectare de la serviciile de identitate</translation>
+<translation id="588258955323874662">Ecran complet</translation>
 <translation id="5884085660368669834">Preferință pentru site</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
 <translation id="5908617755156109052">Nu permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
@@ -569,6 +570,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7406113532070524618">Această setare funcționează fără a te identifica și fără a permite site-urilor să-ți vadă istoricul de navigare, deși acestea pot trimite un volum mic de informații în cadrul verificării</translation>
 <translation id="7409735910987429903">Site-urile pot să afișeze ferestre pop-up cu anunțuri sau să folosească redirecționări pentru a te trimite la site-uri pe care nu vrei să le accesezi</translation>
 <translation id="7412160840120117304">Culoarea principală în sistemul hexazecimal</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}few{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}other{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">Mai întâi întreabă</translation>
 <translation id="7423538860840206698">Citirea clipboardului este blocată</translation>
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>

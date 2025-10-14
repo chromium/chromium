@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Улучшение освещенности</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
+<translation id="2562459326218811217">Устройство подключено, но не заряжается. Попробуйте использовать более мощное или оригинальное зарядное устройство.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
 <translation id="2573588302192866788">Не удалось подключить устройство "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2814448776515246190">Запись части экрана</translation>
+<translation id="2815594810045873507">Попробуйте использовать более мощное или оригинальное зарядное устройство.</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="2822551631199737692">Используется камера</translation>
 <translation id="2825619548187458965">Полка</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Чтобы использовать персональные плейлисты с музыкой для концентрации внимания, разрешите доступ к YouTube Music.</translation>
 <translation id="6582034443359256692">Рассчитывается уровень заряда батареи.</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Невозможно зарядить устройство</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Окно предварительного просмотра камеры привязано к левому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="6605415194043280389">Режим концентрации внимания включен</translation>

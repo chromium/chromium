@@ -442,6 +442,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5876056640971328065">Seibio'r fideo</translation>
 <translation id="5877248419911025165">Crebachu'r holl geisiadau</translation>
 <translation id="5878945009165002849">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth</translation>
+<translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5884085660368669834">Dewis penodol ar gyfer gwefan</translation>
 <translation id="5887687176710214216">Ymwelwyd ddiwethaf ddoe</translation>
 <translation id="5908617755156109052">Peidiwch â chaniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain lleoliad camera</translation>
@@ -569,6 +570,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7406113532070524618">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori, er y gall gwefannau rannu ychydig i wybodaeth fel rhan o'r dilysiad</translation>
 <translation id="7409735910987429903">Mae'n bosib y bydd gwefannau yn anfon ffenestri naid i ddangos hysbysebion, neu'n defnyddio ailgyfeiriadau i'ch arwain at wefannau y mae'n bosib nad ydych am ymweld â nhw</translation>
 <translation id="7412160840120117304">Hecs Lliw Cynradd</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Chwyddo}zero{Chwyddo: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}two{Chwyddo: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}few{Chwyddo: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}many{Chwyddo: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Chwyddo: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Gofyn yn gyntaf</translation>
 <translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>
 <translation id="7425915948813553151">Thema dywyll ar gyfer gwefannau</translation>

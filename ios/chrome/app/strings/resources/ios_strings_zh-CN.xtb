@@ -622,6 +622,7 @@
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469117812148449995">密码保存选项</translation>
+<translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
 <translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
@@ -1370,6 +1371,7 @@
 <translation id="629730747756840877">账号</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">选择地址栏的位置</translation>
 <translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
 <translation id="6316141353357700666">从显示的列表中选择要使用的密码。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
@@ -1637,6 +1639,7 @@
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
+<translation id="7364796246159120393">选择文件</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>

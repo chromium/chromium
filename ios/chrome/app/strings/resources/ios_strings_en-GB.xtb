@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Address found</translation>
 <translation id="3464194322481586217">Couldn't track the price.</translation>
 <translation id="3469117812148449995">Options to save password</translation>
+<translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Access your passwords across other apps.</translation>
@@ -1370,6 +1371,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">Choose your address bar position</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
 <translation id="6321526113093607004">Add to bookmarks</translation>
@@ -1637,6 +1639,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
+<translation id="7364796246159120393">Choose file</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
 <translation id="7366909168761621528">Browsing data</translation>
 <translation id="7367530036083223701">Securely access your passwords from the home screen with the Password Manager widget.</translation>

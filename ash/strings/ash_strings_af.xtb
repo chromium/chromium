@@ -469,6 +469,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2549711466868162843">Verbeter Beligting</translation>
 <translation id="2549985041256363841">Begin opname</translation>
 <translation id="255671100581129685">Die Google Assistent is nie in 'n publieke sessie beskikbaar nie.</translation>
+<translation id="2562459326218811217">Toestel is ingeprop, maar dit laai nie. Probeer ’n batterylaaier met meer watts (W) of gebruik jou oorspronklike batterylaaier.</translation>
 <translation id="256712445991462162">die gedokte vergrootglas</translation>
 <translation id="2573588302192866788">Kon nie <ph name="NAME" /> koppel nie</translation>
 <translation id="2575685495496069081">Veelvuldige aanmelding is gedeaktiveer</translation>
@@ -539,6 +540,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2814448776515246190">Gedeeltelike opname</translation>
+<translation id="2815594810045873507">Probeer ’n batterylaaier met meer watts (W) of gebruik jou oorspronklike batterylaaier.</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
 <translation id="2822551631199737692">Kamera in gebruik</translation>
 <translation id="2825619548187458965">Rak</translation>
@@ -1732,6 +1734,7 @@ Nuwe installasie</translation>
 <translation id="6582012689384648647">Laat toegang tot YouTube Music toe vir gepersonaliseerde fokusspeellyste</translation>
 <translation id="6582034443359256692">Bereken tans battery se laaivlak.</translation>
 <translation id="6585808820553845416">Sessie eindig oor <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Kan nie toestel laai nie</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera is geglip na hoek onder links. Konflik met stelseloppervlak.</translation>
 <translation id="6605415194043280389">Fokus is aan</translation>

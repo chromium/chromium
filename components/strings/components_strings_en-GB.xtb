@@ -3661,7 +3661,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7020464868401003526">The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH" /> characters.</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7023162328967545559">Admin warning</translation>
-<translation id="7023765275461720661">Link account and pay with <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030164307377592766">modify settings for filling payment methods</translation>
 <translation id="7031110846419387930">Information about your browser, OS, device, installed software, files and IP addresses</translation>

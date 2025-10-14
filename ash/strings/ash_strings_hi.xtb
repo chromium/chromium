@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">रोशनी बढ़ाना</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="255671100581129685">सार्वजनिक सत्र में Google Assistant उपलब्ध नहीं है.</translation>
+<translation id="2562459326218811217">डिवाइस को प्लग इन किया गया है, लेकिन चार्ज नहीं हो रहा है. ज़्यादा वॉट (W) वाले चार्जर का इस्तेमाल करें या अपने ओरिजनल चार्जर का इस्तेमाल करें.</translation>
 <translation id="256712445991462162">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट नहीं किया जा सका</translation>
 <translation id="2575685495496069081">एक से ज़्यादा 'साइन इन' को बंद कर दिया गया है</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ऐप्लिकेशन</translation>
 <translation id="2814448776515246190">पार्शियल कैप्चर</translation>
+<translation id="2815594810045873507">ज़्यादा वॉट (W) वाले चार्जर का इस्तेमाल करें या अपने ओरिजनल चार्जर का इस्तेमाल करें.</translation>
 <translation id="2819276065543622893">अब आप प्रस्थान कर जाएंगे.</translation>
 <translation id="2822551631199737692">कैमरा इस्तेमाल हो रहा है</translation>
 <translation id="2825619548187458965">शेल्फ़</translation>
@@ -1732,6 +1734,7 @@
 <translation id="6582012689384648647">आपकी दिलचस्पी के हिसाब से बनाई गई, फ़ोकस करने में मदद करने वाली प्लेलिस्ट पाने के लिए, YouTube Music को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="6582034443359256692">बैटरी के चार्जिंग लेवल का हिसाब लगाया जा रहा है.</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है.</translation>
+<translation id="6586685375736417639">डिवाइस चार्ज नहीं किया जा सकता</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="6605415194043280389">फ़ोकस मोड चालू है</translation>

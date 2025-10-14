@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Гэрэлтүүлэг сайжруулах</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
 <translation id="255671100581129685">Олон нийтийн харилцан үйлдэлд Google Туслах боломжгүй байна.</translation>
+<translation id="2562459326218811217">Төхөөрөмжийг залгасан ч цэнэглэхгүй байна. Илүү их ваттай (W) цэнэглэгч туршиж үзэх эсвэл эх цэнэглэгчээ ашиглана уу.</translation>
 <translation id="256712445991462162">суурилуулсан томруулагч</translation>
 <translation id="2573588302192866788"><ph name="NAME" />-тай холбогдож чадсангүй</translation>
 <translation id="2575685495496069081">Олон зэрэг нэвтрэлтийг идэвхгүй болголоо</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
+<translation id="2815594810045873507">Илүү их ваттай (W) цэнэглэгч туршиж үзэх эсвэл эх цэнэглэгчээ ашиглана уу.</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
 <translation id="2822551631199737692">Камерыг ашиглаж байна</translation>
 <translation id="2825619548187458965">Шельф</translation>
@@ -1732,6 +1734,7 @@
 <translation id="6582012689384648647">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалт авах бол YouTube Music-д хандах эрх олгоно уу</translation>
 <translation id="6582034443359256692">Батарейн цэнэгийн түвшнийг тооцоолж байна.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> хугацааны дараа таны цаг дуусна.</translation>
+<translation id="6586685375736417639">Төхөөрөмжийг цэнэглэх боломжгүй</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерыг зүүн доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="6605415194043280389">Төвлөрөх горим асаалттай байна</translation>

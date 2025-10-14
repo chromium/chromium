@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Жарыгыраак кылуу</translation>
 <translation id="2549985041256363841">Жаздырып баштоо</translation>
 <translation id="255671100581129685">Google Жардамчысы жалпыга ачык сеанста жеткиликсиз.</translation>
+<translation id="2562459326218811217">Түзмөк сайылып турат, бирок кубатталган жок. Кубаттуулугу (Вт) жогору болгон кубаттагычты колдонуп көрүңүз же түпнуска кубаттагычты пайдаланыңыз.</translation>
 <translation id="256712445991462162">жалгаштырылган лупа</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> менен туташпай койду</translation>
 <translation id="2575685495496069081">Бир нече аккаунт менен кирүү өчүрүлгөн</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
 <translation id="2814448776515246190">Сүрөткө жарым-жартылай тартып алуу</translation>
+<translation id="2815594810045873507">Кубаттуулугу (Вт) жогору болгон кубаттагычты колдонуп көрүңүз же түпнуска кубаттагычты пайдаланыңыз.</translation>
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
 <translation id="2822551631199737692">Камера колдонулууда</translation>
 <translation id="2825619548187458965">Текче</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Жекелештирилген ойнотмо тизмелерди угуу үчүн YouTube Music кызматын пайдаланууга уруксат бериңиз</translation>
 <translation id="6582034443359256692">Батареянын кубатынын деңгээли эсептелүүдө.</translation>
 <translation id="6585808820553845416">Сессия <ph name="SESSION_TIME_REMAINING" /> кийиничинде бүтөт.</translation>
+<translation id="6586685375736417639">Түзмөк кубатталбай жатат</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камера төмөнкү сол бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="6605415194043280389">Ынтаа коюу режими күйүк</translation>

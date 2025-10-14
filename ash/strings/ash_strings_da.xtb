@@ -469,6 +469,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2549711466868162843">Gør belysningen bedre</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="255671100581129685">Google Assistent er ikke tilgængelig i en offentlig session.</translation>
+<translation id="2562459326218811217">Enheden er tilsluttet, men den oplader ikke. Prøv en oplader med flere watt (W), eller brug den originale oplader.</translation>
 <translation id="256712445991462162">den fastgjorte lup</translation>
 <translation id="2573588302192866788">Forbindelsen til <ph name="NAME" /> kunne ikke oprettes</translation>
 <translation id="2575685495496069081">Samlet login fra flere konti er deaktiveret</translation>
@@ -539,6 +540,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Afgrænset screenshot</translation>
+<translation id="2815594810045873507">Prøv en oplader med flere watt (W), eller brug den originale oplader.</translation>
 <translation id="2819276065543622893">Du bliver logget ud nu.</translation>
 <translation id="2822551631199737692">Kameraet er i brug</translation>
 <translation id="2825619548187458965">Hylde</translation>
@@ -1731,6 +1733,7 @@ Installeret for nylig</translation>
 <translation id="6582012689384648647">Giv YouTube Music adgang for at få personligt tilpassede fokusplaylister</translation>
 <translation id="6582034443359256692">Beregner batteriniveau.</translation>
 <translation id="6585808820553845416">Sessionen slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Enheden kan ikke oplades</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er fastgjort til hjørnet nederst til venstre. Dette er i strid med systemfladen.</translation>
 <translation id="6605415194043280389">Fokus er aktiveret</translation>

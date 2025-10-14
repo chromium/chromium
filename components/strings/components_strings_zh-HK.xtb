@@ -983,6 +983,7 @@
 <translation id="2596415276201385844">如要建立安全連線，您時鐘的設定必須正確無誤；因為網站用於自我識別的憑證僅在特定時間內有效。由於您裝置的時鐘設定有誤，Chrome 無法驗證這些憑證。</translation>
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
 <translation id="2600083925285092409">只要將此卡儲存至 Google Pay，就能在 Chromium 中購物時自動填入卡資料</translation>
+<translation id="2602283642570832995">此操作可能違反 <ph name="DOMAIN" /> 的政策</translation>
 <translation id="2605979593348332811">姓名拼音</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2608019759319359258">已封鎖的主題不會用於個人化廣告</translation>
@@ -2020,6 +2021,7 @@
 <translation id="4281998142035485137">{0,plural, =1{要開啟機密檔案嗎？}other{要開啟機密檔案嗎？}}</translation>
 <translation id="4282280603030594840">購買汽車</translation>
 <translation id="4282346679996504092">此產品的通知已關閉，網頁亦已從書籤中移除</translation>
+<translation id="4284885181066817063">受 <ph name="DOMAIN" /> 封鎖</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4287495839370498922">強化 Chrome 上的廣告私隱權</translation>
 <translation id="4288101205645068104">刪除車輛</translation>
@@ -3660,7 +3662,6 @@
 <translation id="7020464868401003526">捷徑網址長度超出 <ph name="MAX_LENGTH" /> 個字元的上限。</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
-<translation id="7023765275461720661">要連結帳戶並透過 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030164307377592766">修改填入付款方法的設定</translation>
 <translation id="7031110846419387930">瀏覽器、作業系統、裝置、已安裝的軟件、檔案和 IP 位址的相關資料</translation>

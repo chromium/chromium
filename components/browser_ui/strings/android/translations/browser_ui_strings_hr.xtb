@@ -442,6 +442,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5876056640971328065">Pauziraj videozapis</translation>
 <translation id="5877248419911025165">Sažmi sve zahtjeve</translation>
 <translation id="5878945009165002849">Blokiraj upite za prijavu s usluga za provjeru identiteta</translation>
+<translation id="588258955323874662">Puni zaslon</translation>
 <translation id="5884085660368669834">Postavke web-lokacije</translation>
 <translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
 <translation id="5908617755156109052">Onemogućite web-lokacijama izradu 3D karte vašeg okruženja ili praćenje položaja kamere</translation>
@@ -569,6 +570,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="7406113532070524618">Ova postavka funkcionira bez identificiranja ili dopuštanja web-lokacijama da vide vašu povijest pregledavanja, no web-lokacije mogu dijeliti malu količinu informacija kao dio potvrde</translation>
 <translation id="7409735910987429903">Web-lokacije mogu slati skočne prozore radi prikaza oglasa ili upotrebljavati preusmjeravanja kako bi vas odvele na web-lokacije koje možda ne želite posjetiti</translation>
 <translation id="7412160840120117304">Heksadecimalni kôd primarne boje</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zumiranje}one{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}few{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Zumiranje: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Blokirano je čitanje međuspremnika</translation>
 <translation id="7425915948813553151">Tamna tema za web-lokacije</translation>

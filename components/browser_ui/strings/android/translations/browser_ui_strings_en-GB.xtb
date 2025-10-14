@@ -442,6 +442,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5876056640971328065">Pause video</translation>
 <translation id="5877248419911025165">Collapse all requests</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
+<translation id="588258955323874662">Full screen</translation>
 <translation id="5884085660368669834">Site preference</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
 <translation id="5908617755156109052">Don't allow sites to create a 3D map of your surroundings or track camera position</translation>
@@ -569,6 +570,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
 <translation id="7409735910987429903">Sites might send pop-ups to show ads, or use redirects to lead you to websites that you may not want to visit</translation>
 <translation id="7412160840120117304">Primary colour Hex</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}other{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>

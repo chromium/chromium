@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">改善光线</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
+<translation id="2562459326218811217">设备已接通电源，但未充电。请尝试使用功率更高的充电器，或使用原装充电器。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
 <translation id="2573588302192866788">无法连接“<ph name="NAME" />”</translation>
 <translation id="2575685495496069081">多账号登录已被停用</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /><ph name="BODY" /></translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
+<translation id="2815594810045873507">请尝试使用功率更高的充电器，或使用原装充电器。</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="2822551631199737692">摄像头正在使用中</translation>
 <translation id="2825619548187458965">任务栏</translation>
@@ -1729,6 +1731,7 @@
 <translation id="6582012689384648647">如需使用个性化专注模式播放列表，请允许访问 YouTube Music</translation>
 <translation id="6582034443359256692">正在计算电池充电电量。</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
+<translation id="6586685375736417639">无法为设备充电</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="6605415194043280389">专注模式已开启</translation>

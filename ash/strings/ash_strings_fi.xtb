@@ -469,6 +469,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2549711466868162843">Valaistuksen parantaminen</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
 <translation id="255671100581129685">Google Assistantia ei voi käyttää julkisella käyttökerralla.</translation>
+<translation id="2562459326218811217">Laite on kytketty pistokkeeseen, mutta se ei lataudu. Kokeile laturia, jossa on enemmän watteja (W), tai käytä alkuperäistä laturia.</translation>
 <translation id="256712445991462162">kiinnitetty näytön suurentaja</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ei ole yhdistettävissä</translation>
 <translation id="2575685495496069081">Useille tileille kirjautuminen on poistettu käytöstä</translation>
@@ -539,6 +540,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
+<translation id="2815594810045873507">Kokeile laturia, jossa on enemmän watteja (W), tai käytä alkuperäistä laturia.</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="2822551631199737692">Kamera käytössä</translation>
 <translation id="2825619548187458965">Hylly</translation>
@@ -1731,6 +1733,7 @@ Uusi asennus</translation>
 <translation id="6582012689384648647">Salli pääsy YouTube Musiciin, niin saat personoituja keskittymiseen tarkoitettuja soittolistoja</translation>
 <translation id="6582034443359256692">Lasketaan akun varaustasoa.</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Laitetta ei voi ladata</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera kohdistettu vasempaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="6605415194043280389">Keskittymistila on päällä</translation>

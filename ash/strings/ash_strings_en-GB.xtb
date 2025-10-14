@@ -469,6 +469,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2549711466868162843">Improve lighting</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
+<translation id="2562459326218811217">Device plugged in, but not charging. Try a charger with more watts (W) or use your original charger.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
@@ -539,6 +540,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
+<translation id="2815594810045873507">Try a charger with more watts (W) or use your original charger.</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
 <translation id="2822551631199737692">Camera in use</translation>
 <translation id="2825619548187458965">Shelf</translation>
@@ -1731,6 +1733,7 @@ New install</translation>
 <translation id="6582012689384648647">For personalised Focus playlists, allow access to YouTube Music</translation>
 <translation id="6582034443359256692">Calculating battery charge level.</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Can't charge device</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
 <translation id="6605415194043280389">Focus is on</translation>

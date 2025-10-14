@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Indirizzo rilevato</translation>
 <translation id="3464194322481586217">Impossibile monitorare il prezzo.</translation>
 <translation id="3469117812148449995">Opzioni per salvare la password</translation>
+<translation id="3472469028191701821">Si apre in una nuova scheda</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{per {COUNT} sito o app}other{per {COUNT} siti e app}}</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accedi alle tue password su altre app.</translation>
@@ -1370,6 +1371,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="629730747756840877">Account</translation>
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">Scegli la posizione della barra degli indirizzi</translation>
 <translation id="6307241780749477694">Verifica la tua identità per accedere a tutte le tue password su questo dispositivo</translation>
 <translation id="6316141353357700666">Scegli la password che vuoi utilizzare dall'elenco visualizzato.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
@@ -1637,6 +1639,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7336264872878993241"><ph name="PERCENT" />% scaricato</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7363349185727752629">Una guida alle scelte relative alla tua privacy</translation>
+<translation id="7364796246159120393">Scegli file</translation>
 <translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7366909168761621528">Dati di navigazione</translation>
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>

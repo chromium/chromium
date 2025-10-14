@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Паляпшэнне асвятлення</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
+<translation id="2562459326218811217">Прылада падключана, але не зараджаецца. Скарыстайце зарадную прыладу большай магутнасці або арыгінальную зарадную прыладу.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
 <translation id="2573588302192866788">Не ўдалося падключыць прыладу "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Уваход у некалькі ўліковых запісаў забаронены</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2814448776515246190">Здыманне часткі экрана</translation>
+<translation id="2815594810045873507">Скарыстайце зарадную прыладу большай магутнасці або арыгінальную зарадную прыладу.</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2822551631199737692">Выкарыстоўваецца камера</translation>
 <translation id="2825619548187458965">Паліца</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">Каб карыстацца персаналізаванымі плэй-лістамі для канцэнтрацыі ўвагі, дазвольце доступ да YouTube Music</translation>
 <translation id="6582034443359256692">Разлічваецца ўзровень зараду акумулятара.</translation>
 <translation id="6585808820553845416">Сеанс скончыцца праз <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6586685375736417639">Прылада не зараджаецца</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Акно перадпрагляду камеры прывязана да левага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="6605415194043280389">Канцэнтрацыя ўвагі ўключана</translation>

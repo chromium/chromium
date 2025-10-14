@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">改善光線</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
+<translation id="2562459326218811217">裝置已接上電源，但未充電。請試試較高功率 (W) 或原廠的充電器。</translation>
 <translation id="256712445991462162">停駐放大鏡</translation>
 <translation id="2573588302192866788">無法連結 <ph name="NAME" /></translation>
 <translation id="2575685495496069081">多重登入功能已停用</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2814448776515246190">局部擷取</translation>
+<translation id="2815594810045873507">請試試較高功率 (W) 或原廠的充電器。</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="2822551631199737692">相機正在使用中</translation>
 <translation id="2825619548187458965">檔案櫃</translation>
@@ -1727,6 +1729,7 @@
 <translation id="6582012689384648647">如要使用個人化專注模式播放清單，請授予 YouTube Music 存取權</translation>
 <translation id="6582034443359256692">正在計算電池充電量。</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
+<translation id="6586685375736417639">無法為裝置充電</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">攝影機已對齊左下角，與系統平台發生衝突。</translation>
 <translation id="6605415194043280389">專注模式已開啟</translation>

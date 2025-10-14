@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">Megvilágítás javítása</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
 <translation id="255671100581129685">A Google Segéd nem áll rendelkezésre nyilvános munkamenetben.</translation>
+<translation id="2562459326218811217">Az eszköz csatlakoztatva van, de nem töltődik. Próbálkozzon nagyobb teljesítményű (W) töltővel, vagy használja az eredeti töltőt.</translation>
 <translation id="256712445991462162">dokkolt nagyító</translation>
 <translation id="2573588302192866788">Nem sikerült csatlakozni a következőhöz: <ph name="NAME" /></translation>
 <translation id="2575685495496069081">A többfiókos bejelentkezés le van tiltva</translation>
@@ -539,6 +540,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2814448776515246190">Részleges rögzítés</translation>
+<translation id="2815594810045873507">Próbálkozzon nagyobb teljesítményű (W) töltővel, vagy használja az eredeti töltőt.</translation>
 <translation id="2819276065543622893">A rendszer most kijelentkezteti Önt.</translation>
 <translation id="2822551631199737692">A kamera használatban van</translation>
 <translation id="2825619548187458965">Polc</translation>
@@ -1732,6 +1734,7 @@ Frissen telepítve</translation>
 <translation id="6582012689384648647">A személyre szabott, összpontosítást elősegítő lejátszási listákért engedélyezze a YouTube Musichoz való hozzáférést</translation>
 <translation id="6582034443359256692">Akkumulátor töltöttségi szintjének kiszámítása.</translation>
 <translation id="6585808820553845416">A munkamenet <ph name="SESSION_TIME_REMAINING" /> múlva véget ér.</translation>
+<translation id="6586685375736417639">Nem tölthető az eszköz</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera a bal alsó sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="6605415194043280389">Összpontosítási üzemmód bekapcsolva</translation>

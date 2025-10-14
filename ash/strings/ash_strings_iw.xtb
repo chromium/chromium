@@ -469,7 +469,7 @@
 <translation id="2549711466868162843">תאורה משופרת</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
 <translation id="255671100581129685">‏Google Assistant אינה זמינה בסשן ציבורי.</translation>
-<translation id="2562459326218811217">‏המכשיר מחובר לחשמל אבל לא נטען. כדאי לנסות להשתמש במטען עם יותר וואט (W) או להשתמש במטען המקורי.</translation>
+<translation id="2562459326218811217">‏המכשיר מחובר לחשמל אבל הסוללה לא נטענת. כדאי לנסות להשתמש במטען עם יותר וואט (W) או להשתמש במטען המקורי.</translation>
 <translation id="256712445991462162">הזכוכית המגדלת שהוצמדה</translation>
 <translation id="2573588302192866788">לא ניתן היה לחבר את <ph name="NAME" /></translation>
 <translation id="2575685495496069081">הכניסה עם מספר חשבונות הושבתה</translation>
@@ -1733,7 +1733,7 @@
 <translation id="6582012689384648647">‏כדי להשתמש בפלייליסטים מותאמים אישית לשמירה על המיקוד, צריך לאפשר גישה ל-YouTube Music</translation>
 <translation id="6582034443359256692">מתבצע חישוב של רמת הטעינה של הסוללה.</translation>
 <translation id="6585808820553845416">הפעילות באתר תסתיים בעוד <ph name="SESSION_TIME_REMAINING" />.</translation>
-<translation id="6586685375736417639">לא ניתן לטעון את המכשיר</translation>
+<translation id="6586685375736417639">הסוללה של המכשיר לא נטענת</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">המצלמה מוצמדת לפינה הימנית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="6605415194043280389">מצב הריכוז מופעל</translation>

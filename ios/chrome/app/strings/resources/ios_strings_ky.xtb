@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Дарек табылды</translation>
 <translation id="3464194322481586217">Баага көз салуу мүмкүн болгон жок.</translation>
 <translation id="3469117812148449995">Сырсөздү сактоо параметрлери</translation>
+<translation id="3472469028191701821">Жаңы өтмөктө ачылат</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} сайттын же колдонмонун}other{{COUNT} сайттын же колдонмонун}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> катары улантуу</translation>
 <translation id="3476450923187944815">Сырсөздөрүңүзгө башка колдонмолор аркылуу кириңиз.</translation>
@@ -1370,6 +1371,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="629730747756840877">Аккаунт</translation>
 <translation id="6301104306974789820">Баасы тууралуу билдирмелерди алуу</translation>
 <translation id="6301767200000930965">Аа</translation>
+<translation id="630308129961693966">Дарек тилкесинин ордун тандаңыз</translation>
 <translation id="6307241780749477694">Бул түзмөктөгү бардык сырсөздөрүңүздү алуу үчүн бул сиз экениңизди ырастаңыз</translation>
 <translation id="6316141353357700666">Тизмеден сырсөз тандаңыз.</translation>
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
@@ -1637,6 +1639,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7336264872878993241"><ph name="PERCENT" /> пайыз жүктөлүп алынды</translation>
 <translation id="7352651011704765696">Бир жерден ката кетти</translation>
 <translation id="7363349185727752629">Купуялык тандоолору боюнча жетектеме</translation>
+<translation id="7364796246159120393">Файл тандоо</translation>
 <translation id="736564850024123010">Кызматты жекелештирүү үчүн дарек тилкесинин абалын өзгөртүңүз.</translation>
 <translation id="7366909168761621528">Серептөө дайындары</translation>
 <translation id="7367530036083223701">Сырсөздөрдү башкаргыч виджети менен сырсөздөрдү башкы экрандан коопсуз колдонуңуз.</translation>

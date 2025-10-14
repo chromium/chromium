@@ -622,6 +622,7 @@
 <translation id="345348365500626747">Se encontró una dirección</translation>
 <translation id="3464194322481586217">No se pudo realizar el seguimiento del precio.</translation>
 <translation id="3469117812148449995">Opciones para guardar contraseñas</translation>
+<translation id="3472469028191701821">Se abrirá en una pestaña nueva</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{en {COUNT} sitio o app}other{en {COUNT} sitios o apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Accede a tus contraseñas en otras apps.</translation>
@@ -1370,6 +1371,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">Posiciona la barra de direcciones</translation>
 <translation id="6307241780749477694">Verifica tu identidad para obtener todas tus contraseñas en este dispositivo</translation>
 <translation id="6316141353357700666">Elige la contraseña que quieras usar de la lista que aparece.</translation>
 <translation id="6321526113093607004">Agregar a Favoritos</translation>
@@ -1637,6 +1639,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7336264872878993241"><ph name="PERCENT" /> % descargado</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7363349185727752629">Una guía de las opciones de privacidad</translation>
+<translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para obtener una experiencia personalizada.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
 <translation id="7367530036083223701">Accede de forma segura a tus contraseñas desde la pantalla principal con el widget de Administrador de contraseñas.</translation>

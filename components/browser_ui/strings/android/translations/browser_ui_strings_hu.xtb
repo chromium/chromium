@@ -442,6 +442,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5876056640971328065">Videó szüneteltetése</translation>
 <translation id="5877248419911025165">Az összes kérelem összecsukása</translation>
 <translation id="5878945009165002849">Az identitásszolgáltatásoktól származó bejelentkezési értesítések letiltása</translation>
+<translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5884085660368669834">Webhelybeállítás</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
 <translation id="5908617755156109052">A webhelyek nem készíthetnek 3D-s térképet az Ön környezetéről, valamint nem követhetik a kamera pozícióját</translation>
@@ -569,6 +570,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7406113532070524618">Ez a beállítás a személyazonosságának azonosítása nélkül, és anélkül is működik, hogy a webhelyek számára engedélyezné a böngészési előzményei megtekintését. A webhelyek ugyanakkor megoszthatnak kis mennyiségű adatot az ellenőrzés részeként.</translation>
 <translation id="7409735910987429903">Előfordulhat, hogy a webhelyek előugró ablakokban jelenítenek meg hirdetéseket, vagy átirányításokkal vezetnek olyan webhelyekre, amelyeket Ön esetlegesen nem szeretne felkeresni</translation>
 <translation id="7412160840120117304">Elsődleges szín hexadecimális kódja</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Nagyítás/kicsinyítés}other{Nagyítás/kicsinyítés: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
 <translation id="7425915948813553151">Sötét téma a webhelyeknél</translation>

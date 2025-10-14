@@ -469,6 +469,7 @@
 <translation id="2549711466868162843">ብርሃን አሻሽል</translation>
 <translation id="2549985041256363841">መቅረጽ ጀምር</translation>
 <translation id="255671100581129685">የGoogle ረዳቱ በይፋዊ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
+<translation id="2562459326218811217">መሣሪያ ተሰክቷል፣ ነገር ግን ኃይል እየሞላ አይደለም። ተጨማሪ ዋቶች (W) ያለው ኃይል መሙያ ይሞክሩ ወይም ኦሪጅናል ኃይል መሙያዎን ይጠቀሙ።</translation>
 <translation id="256712445991462162">የተተከለው ማጉያ</translation>
 <translation id="2573588302192866788">ወደ <ph name="NAME" /> መናኘት አልተቻለም</translation>
 <translation id="2575685495496069081">በበርካታ መለያ መግባት ነቅቷል</translation>
@@ -539,6 +540,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2814448776515246190">ከፊል መያዝ</translation>
+<translation id="2815594810045873507">ተጨማሪ ዋቶች (W) ያለው ኃይል መሙያ ይሞክሩ ወይም ኦሪጅናል ኃይል መሙያዎን ይጠቀሙ።</translation>
 <translation id="2819276065543622893">አሁን ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="2822551631199737692">ካሜራ ሥራ ላይ ነው</translation>
 <translation id="2825619548187458965">መደርደሪያ</translation>
@@ -1731,6 +1733,7 @@
 <translation id="6582012689384648647">ግላዊ የተደረጉ የትኩረት አጫዋች ዝርዝሮችን ለማግኘት ወደ YouTube Music መዳረሻ ይፈቀዱ</translation>
 <translation id="6582034443359256692">የባትሪ ቻርጅ መጠኑን ባማስላት ላይ።</translation>
 <translation id="6585808820553845416">ክፍለ-ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል።</translation>
+<translation id="6586685375736417639">መሣሪያን ኃይል መሙላት አልተቻለም</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />፣ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ካሜራ ታችኛው ግራ ጥግ ላይ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
 <translation id="6605415194043280389">ትኩረት በርቷል</translation>

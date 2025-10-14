@@ -406,7 +406,7 @@
 <translation id="251837347827266434">سيتم تسجيل خروجك من الحساب وإغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
 <translation id="2520787026086861736">‏لإيقاف الميزة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />الملء التلقائي وكلمات المرور<ph name="END_LINK" /> (AutoFill &amp; Passwords)</translation>
 <translation id="2523295204312809179">عند إغلاق مجموعة علامات تبويب، يتم حفظها تلقائيًا هنا</translation>
-<translation id="2524699375503213836">‏نقل بياناتك من Safari</translation>
+<translation id="2524699375503213836">‏انقل بياناتك من Safari</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
@@ -622,6 +622,7 @@
 <translation id="345348365500626747">تمّ العثور على العنوان</translation>
 <translation id="3464194322481586217">تعذَّر تتبُّع السعر.</translation>
 <translation id="3469117812148449995">خيارات حفظ كلمة المرور</translation>
+<translation id="3472469028191701821">يتم فتح الرابط في علامة تبويب جديدة.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{لواحد ({COUNT}) من المواقع الإلكترونية أو التطبيقات }zero{لـ {COUNT} موقع إلكتروني وتطبيق}two{لإثنين ({COUNT}) من المواقع الإلكترونية والتطبيقات}few{لـ {COUNT} مواقع إلكترونية وتطبيقات}many{لـ {COUNT} موقعًا إلكترونيًا وتطبيقًا}other{لـ {COUNT} موقع إلكتروني وتطبيق}}</translation>
 <translation id="3474624961160222204">المتابعة بحساب "<ph name="NAME" />"</translation>
 <translation id="3476450923187944815">يمكنك الوصول في التطبيقات الأخرى إلى كلمات المرور.</translation>
@@ -1368,6 +1369,7 @@
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">اختيار موضع شريط العناوين</translation>
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور على هذا الجهاز</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
@@ -1635,6 +1637,7 @@
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
 <translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7363349185727752629">دليل خيارات الخصوصية</translation>
+<translation id="7364796246159120393">اختيار ملفّ</translation>
 <translation id="736564850024123010">يمكنك تبديل مكان شريط العناوين للحصول على تجربة استخدام مخصصة.</translation>
 <translation id="7366909168761621528">بيانات التصفح</translation>
 <translation id="7367530036083223701">يمكنك الوصول إلى كلمات المرور بأمان من الشاشة الرئيسية باستخدام التطبيق المصغَّر "مدير كلمات المرور".</translation>

@@ -469,6 +469,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2549711466868162843">Hobetu argiztapena</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
 <translation id="255671100581129685">Google-ren Laguntzailea ez dago erabilgarri saio publikoetan.</translation>
+<translation id="2562459326218811217">Gailua entxufatuta dago, baina ez da ari kargatzen. Probatu watt (W) gehiago dauzkan kargagailu batekin edo erabili jatorrizko kargagailua.</translation>
 <translation id="256712445991462162">ainguratutako lupa</translation>
 <translation id="2573588302192866788">Ezin izan da konektatu <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Desgaitu egin da saio bat baino gehiago hasteko eginbidea</translation>
@@ -539,6 +540,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2814448776515246190">Pantaila-kaptura partziala</translation>
+<translation id="2815594810045873507">Probatu watt (W) gehiago dauzkan kargagailu batekin edo erabili jatorrizko kargagailua.</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="2822551631199737692">Kamera abian da</translation>
 <translation id="2825619548187458965">Apala</translation>
@@ -1732,6 +1734,7 @@ Berriki instalatu da</translation>
 <translation id="6582012689384648647">Kontzentratzeko erreprodukzio-zerrenda pertsonalizatuak lortzeko, eman YouTube Music erabiltzeko baimena</translation>
 <translation id="6582034443359256692">Bateriaren karga-maila kalkulatzen.</translation>
 <translation id="6585808820553845416">Saioa <ph name="SESSION_TIME_REMAINING" /> barru amaituko da.</translation>
+<translation id="6586685375736417639">Ezin da kargatu gailua</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Atxiki egin da kamera beheko ezkerraldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="6605415194043280389">Kontzentratzeko modua aktibatuta dago</translation>

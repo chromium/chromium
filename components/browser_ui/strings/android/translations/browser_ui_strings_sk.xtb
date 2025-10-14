@@ -442,6 +442,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5876056640971328065">Pozastaviť video</translation>
 <translation id="5877248419911025165">Zbaliť všetky požiadavky</translation>
 <translation id="5878945009165002849">Blokovať výzvy na prihlásenie zo služieb identity</translation>
+<translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5884085660368669834">Predvoľba webu</translation>
 <translation id="5887687176710214216">Naposledy navštívený včera</translation>
 <translation id="5908617755156109052">Nepovoliť webom vytvoriť 3D mapu okolia ani sledovať polohu kamery</translation>
@@ -569,6 +570,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7406113532070524618">Toto nastavenie funguje bez identifikácie vašej totožnosti a neumožňuje webom zobraziť si vašu históriu prehliadania, ale v rámci overenia môžu weby zdieľať malé množstvo informácií</translation>
 <translation id="7409735910987429903">Weby môžu odoslať vyskakovacie okná na zobrazovanie reklám, prípadne vás presmerovaniami naviesť na weby, ktoré nechcete navštíviť</translation>
 <translation id="7412160840120117304">Hexadecimálny kód primárnej farby</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Lupa}few{Lupa: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}many{Lupa: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}other{Lupa: <ph name="ZOOM_PERCENTAGE_NUMBER" /> %%}}</translation>
 <translation id="7423098979219808738">Najprv sa opýtať</translation>
 <translation id="7423538860840206698">Blokovať čítanie schránky</translation>
 <translation id="7425915948813553151">Tmavý motív pre weby</translation>

@@ -3662,7 +3662,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7020464868401003526">Pikakuvakkeen URL-osoite ylittää <ph name="MAX_LENGTH" /> merkin enimmäispituuden.</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7023162328967545559">Varoitus järjestelmänvalvojalta</translation>
-<translation id="7023765275461720661">Haluatko linkittää tilin ja maksaa palvelussa <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7030164307377592766">muuta maksutapojen täyttämisen asetuksia</translation>
 <translation id="7031110846419387930">Tietoja selaimesta, käyttöjärjestelmästä, laitteesta, asennetuista ohjelmistoista, tiedostoista ja IP-osoitteista</translation>

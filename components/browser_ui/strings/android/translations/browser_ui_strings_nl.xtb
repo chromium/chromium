@@ -442,6 +442,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5876056640971328065">Video pauzeren</translation>
 <translation id="5877248419911025165">Alle verzoeken samenvouwen</translation>
 <translation id="5878945009165002849">Inlogprompts van identiteitsservices blokkeren</translation>
+<translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5884085660368669834">Sitevoorkeur</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
 <translation id="5908617755156109052">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
@@ -569,6 +570,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7406113532070524618">Deze instelling werkt zonder je te identificeren of sites toegang te geven tot je browsegeschiedenis, maar sites kunnen wel een kleine hoeveelheid informatie delen als onderdeel van de verificatie</translation>
 <translation id="7409735910987429903">Sites sturen mogelijk pop-ups om advertenties te bekijken of gebruiken omleidingen die je naar websites leiden die je mogelijk niet wilt bezoeken</translation>
 <translation id="7412160840120117304">Hexadecimale code voor primaire kleur</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoomen}other{Zoomen: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
 <translation id="7425915948813553151">Donker thema voor sites</translation>

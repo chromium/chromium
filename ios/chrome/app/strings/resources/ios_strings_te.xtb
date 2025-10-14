@@ -622,6 +622,7 @@
 <translation id="345348365500626747">అడ్రస్ దొరికింది</translation>
 <translation id="3464194322481586217">ధరను ట్రాక్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3469117812148449995">అనుమతులను సెట్ చేయడానికి ఆప్షన్‌లు</translation>
+<translation id="3472469028191701821">కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} సైట్ లేదా యాప్ కోసం}other{{COUNT} సైట్‌లు, యాప్‌ల కోసం}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> లాగా కొనసాగించండి</translation>
 <translation id="3476450923187944815">ఇతర యాప్‌లలోని మీ పాస్‌వర్డ్‌లను యాక్సెస్ చేయండి.</translation>
@@ -1370,6 +1371,7 @@
 <translation id="629730747756840877">ఖాతా</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="6301767200000930965">Aa</translation>
+<translation id="630308129961693966">మీ అడ్రస్ బార్ పొజిషన్ ఎంచుకోండి</translation>
 <translation id="6307241780749477694">ఈ పరికరంలో మీ పాస్‌వర్డ్‌లన్నింటిని పొందడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6316141353357700666">కనిపించే లిస్ట్ నుండి మీరు ఉపయోగించాలనుకునే పాస్‌వర్డ్‌ను ఎంచుకోండి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
@@ -1637,6 +1639,7 @@
 <translation id="7336264872878993241"><ph name="PERCENT" /> శాతం డౌన్‌లోడ్ అయ్యింది</translation>
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
 <translation id="7363349185727752629">మీ గోప్యతా ఎంపికల గైడ్</translation>
+<translation id="7364796246159120393">ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="736564850024123010">అనుకూలంగా మార్చిన ఎక్స్‌పీరియన్స్ కోసం మీ అడ్రస్ బార్‌కు సంబంధించిన పొజిషన్‌ను స్విచ్ చేయండి.</translation>
 <translation id="7366909168761621528">బ్రౌజింగ్ డేటా</translation>
 <translation id="7367530036083223701">Password Manager విడ్జెట్‌తో మొదటి స్క్రీన్ నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా యాక్సెస్ చేయండి.</translation>
