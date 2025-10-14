@@ -70,6 +70,12 @@ class GlicFloatingUi : public GlicUiEmbedder,
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
   void CreateAndSetupWidget(gfx::Rect initial_bounds);
+  void MaybeSetWidgetCanResize();
+  void SetGlicWindowToFloatingMode(bool floating);
+
+  // Whether the widget should be user resizable, kept here in case it's
+  // specified before the widget is created.
+  bool user_resizable_ = true;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
   std::unique_ptr<GlicWidget> glic_widget_;

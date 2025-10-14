@@ -15,6 +15,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace glic {
 
@@ -69,7 +70,8 @@ GlicView* GlicFloatingUi::GetGlicView() const {
 }
 
 void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
-  glic_widget_ = GlicWidget::Create(profile_, initial_bounds, nullptr, true);
+  glic_widget_ =
+      GlicWidget::Create(profile_, initial_bounds, nullptr, user_resizable_);
   // TODO: Setup Hotkeys and AccessibilityText.
 
   GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
@@ -80,7 +82,9 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
 #endif
 
   glic_window_animator_ = std::make_unique<GlicWindowAnimator>(
-      glic_widget_->GetWeakPtr(), base::DoNothing());
+      glic_widget_->GetWeakPtr(),
+      base::BindRepeating(&GlicFloatingUi::MaybeSetWidgetCanResize,
+                          weak_ptr_factory_.GetWeakPtr()));
   window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
       glic_widget_->GetWeakPtr(), this);
 }
@@ -115,7 +119,43 @@ void GlicFloatingUi::OnDragComplete() {
 }
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
-  NOTIMPLEMENTED();
+  user_resizable_ = enabled;
+
+  MaybeSetWidgetCanResize();
+  GetGlicView()->UpdateBackgroundColor();
+  glic_window_animator_->MaybeAnimateToTargetSize();
+}
+
+void GlicFloatingUi::MaybeSetWidgetCanResize() {
+  if (GetGlicWidget()->widget_delegate()->CanResize() == user_resizable_ ||
+      glic_window_animator_->IsAnimating()) {
+    // If the resize state is already correct or the widget is animating do not
+    // update the resize state.
+    return;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows when resize is enabled there is an invisible border added
+  // around the client area. We need to make the widget larger or smaller to
+  // keep the visible client area the same size.
+  gfx::Rect previous_client_bounds =
+      GetGlicWidget()->GetClientAreaBoundsInScreen();
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Update resize state on widget delegate.
+  GetGlicWidget()->widget_delegate()->SetCanResize(user_resizable_);
+
+#if BUILDFLAG(IS_WIN)
+  if (user_resizable_) {
+    // Resizable so the widget area is larger than the client area.
+    gfx::Rect new_widget_bounds =
+        GetGlicWidget()->VisibleToWidgetBounds(previous_client_bounds);
+    GetGlicWidget()->SetBoundsConstrained(new_widget_bounds);
+  } else {
+    // Not resizable so the client and widget areas are the same.
+    GetGlicWidget()->SetBoundsConstrained(previous_client_bounds);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void GlicFloatingUi::Attach() {
