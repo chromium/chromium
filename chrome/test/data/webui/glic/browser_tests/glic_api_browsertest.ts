@@ -247,23 +247,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!await isBrowserOpen.next());
   }
 
-  async testActiveBrowser() {
-    assertDefined(this.host.activeBrowser);
-    const activeBrowserSeq = observeSequence(this.host.activeBrowser());
-    let activeBrowser = await activeBrowserSeq.next();
-    assertDefined(activeBrowser);
-    const firstWindowId = activeBrowser.windowId;
-    assertNotEquals(firstWindowId, '');
-    assertTrue(activeBrowser.usingThisProfile);
-
-    // Open another browser window on a different profile.
-    await this.advanceToNextStep();
-    activeBrowser = await activeBrowserSeq.next();
-    assertDefined(activeBrowser);
-    assertNotEquals(activeBrowser.windowId, firstWindowId);
-    assertFalse(activeBrowser.usingThisProfile);
-  }
-
   async testEnableDragResize() {
     assertDefined(this.host.enableDragResize);
 

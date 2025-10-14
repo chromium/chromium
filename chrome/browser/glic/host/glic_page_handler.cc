@@ -131,19 +131,6 @@ mojom::GetContextResultPtr LogErrorAndUnwrapResult(
   return std::move(result.value());
 }
 
-glic::mojom::ActiveBrowserInfoPtr CreateActiveBrowserInfo(
-    Profile* profile,
-    BrowserWindowInterface* browser) {
-  if (!browser) {
-    return nullptr;
-  }
-  glic::mojom::ActiveBrowserInfoPtr active_browser_info =
-      glic::mojom::ActiveBrowserInfo::New();
-  active_browser_info->window_id = GetWindowId(*browser);
-  active_browser_info->using_this_profile = browser->GetProfile() == profile;
-  return active_browser_info;
-}
-
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
@@ -671,15 +658,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
                                 base::Unretained(this)));
 
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-      active_browser_changed_subscription_ =
-          sharing_manager()
-              .focused_browser_manager()
-              .AddActiveBrowserChangedCallback(base::BindRepeating(
-                  &GlicWebClientHandler::OnActiveBrowserChanged,
-                  base::Unretained(this)));
-    }
-
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
     system_permission_settings_observation_ =
@@ -737,10 +715,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
     state->browser_is_active = sharing_manager().GetFocusedBrowser();
-
-    state->active_browser_info = CreateActiveBrowserInfo(
-        profile_,
-        sharing_manager().focused_browser_manager().GetActiveBrowser());
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
@@ -1555,11 +1529,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void OnFocusedBrowserChanged(BrowserWindowInterface* browser_interface) {
     const bool is_browser_active = browser_interface != nullptr;
     web_client_->NotifyBrowserIsActiveChanged(is_browser_active);
-  }
-
-  void OnActiveBrowserChanged(BrowserWindowInterface* browser_interface) {
-    web_client_->NotifyActiveBrowserChanged(
-        CreateActiveBrowserInfo(profile_, browser_interface));
   }
 
   bool ShouldDoApiActivationGating() const {

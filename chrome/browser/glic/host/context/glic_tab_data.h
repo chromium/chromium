@@ -167,9 +167,6 @@ class FocusedTabData {
 // Helper function to extract the Tab Id from the current web contents.
 int GetTabId(content::WebContents* web_contents);
 
-// Returns the window ID of the browser window.
-int GetWindowId(BrowserWindowInterface& browser);
-
 // Helper function to extract the Tab url from the current web contents.
 const GURL& GetTabUrl(content::WebContents* web_contents);
 

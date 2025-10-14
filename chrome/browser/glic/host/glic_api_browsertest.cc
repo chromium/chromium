@@ -988,21 +988,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testActiveBrowser) {
-  if (GetParam().multi_instance) {
-    GTEST_SKIP() << "activeBrowser() not supported with multi-instance.";
-  }
-  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-
-  ExecuteJsTest();
-
-  // Open and activate a new incognito browser.
-  browser_activator().SetActive(CreateIncognitoBrowser());
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
   // TODO: resize is not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();

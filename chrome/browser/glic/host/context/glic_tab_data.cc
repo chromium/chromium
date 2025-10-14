@@ -237,10 +237,6 @@ int GetTabId(content::WebContents* web_contents) {
   }
 }
 
-int GetWindowId(BrowserWindowInterface& browser) {
-  return browser.GetSessionID().id();
-}
-
 const GURL& GetTabUrl(content::WebContents* web_contents) {
   return web_contents->GetLastCommittedURL();
 }
