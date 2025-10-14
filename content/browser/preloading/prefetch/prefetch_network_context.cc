@@ -40,7 +40,7 @@ BASE_FEATURE(kZstdForCrossSiteSpeculationRulesPrefetch,
 // Allow the variations header to be treated as CORS exempted for cross-site
 // prefetch (crbug.com/444264052).
 BASE_FEATURE(kVariationsHeaderForCrossSiteSpeculationRulesPrefetch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
