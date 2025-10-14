@@ -48,17 +48,11 @@ export class SettingsYourSavedInfoPageElement extends
   static get properties() {
     return {
       prefs: Object,
-      /**
-       * The data for the Passwords reference card.
-       */
+
       passwordsCardData_: {
         type: Array,
         computed: 'computePasswordsCardData_(passwordsCount, passkeysCount)',
       },
-
-      /**
-       * The data for the Payment methods reference card.
-       */
       paymentsCardData_: {
         type: Array,
         value: () => {
@@ -67,6 +61,10 @@ export class SettingsYourSavedInfoPageElement extends
             icon: 'settings20:credit-card',
           }];
         },
+      },
+      addressesCardData_: {
+        type: Array,
+        computed: 'computeAddressesCardData_(addressesCount)',
       },
 
       passwordsCount: Number,
@@ -79,14 +77,16 @@ export class SettingsYourSavedInfoPageElement extends
   }
 
   declare prefs: {[key: string]: any};
-  declare private passwordsCardData_: ChipData[];
-  declare private paymentsCardData_: ChipData[];
   declare passwordsCount: number|undefined;
   declare passkeysCount: number|undefined;
   declare addressesCount: number|undefined;
   declare creditCardsCount: number|undefined;
   declare ibansCount: number|undefined;
   declare payOverTimeIssuersCount: number|undefined;
+
+  declare private passwordsCardData_: ChipData[];
+  declare private paymentsCardData_: ChipData[];
+  declare private addressesCardData_: ChipData[];
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -221,11 +221,28 @@ export class SettingsYourSavedInfoPageElement extends
     ];
   }
 
+  private computeAddressesCardData_(): ChipData[] {
+    return [
+      {
+        label: this.i18n('addresses'),
+        icon: 'settings:email',
+        counter: this.addressesCount,
+      },
+    ];
+  }
+
   /**
    * Shows the manage payment methods sub page.
    */
   private onPaymentManagerClick_() {
     Router.getInstance().navigateTo(routes.PAYMENTS);
+  }
+
+  /**
+   * Shows the manage addresses sub page.
+   */
+  private onAddressesManagerClick_() {
+    Router.getInstance().navigateTo(routes.ADDRESSES);
   }
 
   /**

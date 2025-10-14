@@ -38,6 +38,8 @@ suite('YourSavedInfoPage', function() {
     await flushTasks();
   });
 
+
+
   test('TitleExists', function() {
     const yourSavedInfoPageTitleElement =
         yourSavedInfoPage.shadowRoot!.querySelector('#yourSavedInfoPageTitle');
@@ -50,6 +52,7 @@ suite('YourSavedInfoPage', function() {
     const expectedCardTitles = [
       loadTimeData.getString('localPasswordManager'),
       loadTimeData.getString('paymentsTitle'),
+      loadTimeData.getString('contactInfoTitle'),
     ];
 
     assertEquals(expectedCardTitles.length, cards.length);
@@ -72,15 +75,19 @@ suite('YourSavedInfoPage', function() {
     assertEquals(PasswordManagerPage.PASSWORDS, page);
   });
 
-  test('paymentsCardNavigatesToPayments', function() {
-    const paymentsCard =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(`
-        category-reference-card[card-title="${
-            loadTimeData.getString('paymentsTitle')}"]`);
-    assertTrue(!!paymentsCard);
+  [
+    {cardTitle: 'paymentsTitle', expectedRoute: routes.PAYMENTS},
+    {cardTitle: 'contactInfoTitle', expectedRoute: routes.ADDRESSES},
+  ].forEach(({cardTitle, expectedRoute}) => {
+    test(`${cardTitle} card navigates to the correct route`, function() {
+      const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+          `category-reference-card[card-title="${
+              loadTimeData.getString(cardTitle)}"]`);
+      assertTrue(!!card);
 
-    paymentsCard.shadowRoot!.querySelector('cr-link-row')!.click();
-    assertEquals(routes.PAYMENTS, Router.getInstance().currentRoute);
+      card.shadowRoot!.querySelector('cr-link-row')!.click();
+      assertEquals(expectedRoute, Router.getInstance().currentRoute);
+    });
   });
 
   test('AddressesAndPaymentsCountersAreUpdated', async function() {
