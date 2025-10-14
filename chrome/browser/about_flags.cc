@@ -6486,7 +6486,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-android-media-insertion",
      flag_descriptions::kAndroidMediaInsertionName,
      flag_descriptions::kAndroidMediaInsertionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidMediaInsertion)},
+     FEATURE_VALUE_TYPE(features::kAndroidMediaInsertion)},
     {"enable-android-spellcheck-native-ui",
      flag_descriptions::kAndroidSpellcheckNativeUiName,
      flag_descriptions::kAndroidSpellcheckNativeUiDescription, kOsAndroid,
