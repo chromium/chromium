@@ -198,10 +198,7 @@ std::optional<proto::PageContext> PageContentStore::GetPageContentFromStatement(
     return std::nullopt;
   }
 
-  std::string encrypted_page_context;
-  if (!statement->ColumnBlobAsString(0, &encrypted_page_context)) {
-    return std::nullopt;
-  }
+  std::string encrypted_page_context = statement->ColumnBlobAsString(0);
   std::string serialized_page_context;
   if (!encryptor_->DecryptString(encrypted_page_context,
                                  &serialized_page_context)) {

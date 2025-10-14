@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -118,14 +119,16 @@ void BindKeyPath(sql::Statement& statement,
       NOTREACHED();
   }
 }
-blink::IndexedDBKeyPath ColumnKeyPath(sql::Statement& statement,
-                                      int column_index) {
+
+StatusOr<blink::IndexedDBKeyPath> ColumnKeyPath(sql::Statement& statement,
+                                                int column_index) {
   if (statement.GetColumnType(column_index) == sql::ColumnType::kNull) {
     // `Null` key path.
     return blink::IndexedDBKeyPath();
   }
-  std::u16string encoded;
-  statement.ColumnBlobAsString16(column_index, &encoded);
+  ASSIGN_OR_RETURN(
+      std::u16string encoded, statement.ColumnBlobAsString16(column_index),
+      []() { return Status::Corruption("Key path unexpected size"); });
   std::vector<std::u16string> parts = base::SplitString(
       encoded, kKeyPathSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.empty()) {
@@ -470,13 +473,13 @@ class ObjectStoreCursorImpl : public BackingStoreCursorImpl {
   StatusOr<std::unique_ptr<Record>> ReadRow(
       sql::Statement& statement) override {
     CHECK(statement.Succeeded());
-    statement.ColumnBlobAsString(0, &position_);
+    position_ = statement.ColumnBlobAsString(0);
     blink::IndexedDBKey key = DecodeSortableIDBKey(position_);
     if (key_only_) {
       return std::make_unique<ObjectStoreKeyOnlyRecord>(std::move(key));
     }
     IndexedDBValue value;
-    statement.ColumnBlobAsVector(1, &value.bits);
+    value.bits = statement.ColumnBlobAsVector(1);
     int64_t record_row_id = statement.ColumnInt64(2);
     return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
@@ -691,10 +694,9 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
   StatusOr<std::unique_ptr<Record>> ReadRow(
       sql::Statement& statement) override {
     CHECK(statement.Succeeded());
-
-    statement.ColumnBlobAsString(0, &position_);
+    position_ = statement.ColumnBlobAsString(0);
     blink::IndexedDBKey key = DecodeSortableIDBKey(position_);
-    statement.ColumnBlobAsString(1, &object_store_position_);
+    object_store_position_ = statement.ColumnBlobAsString(1);
     blink::IndexedDBKey primary_key =
         DecodeSortableIDBKey(object_store_position_);
     if (key_only_) {
@@ -702,7 +704,7 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
                                                   std::move(primary_key));
     }
     IndexedDBValue value;
-    statement.ColumnBlobAsVector(2, &value.bits);
+    value.bits = statement.ColumnBlobAsVector(2);
     int64_t record_row_id = statement.ColumnInt64(3);
     return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
@@ -1466,7 +1468,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
       return IndexedDBValue();
     }
     record_row_id = statement.ColumnInt64(0);
-    statement.ColumnBlobAsVector(1, &value.bits);
+    value.bits = statement.ColumnBlobAsVector(1);
   }
 
   return AddExternalObjectMetadataToValue(std::move(value), record_row_id);
@@ -1751,9 +1753,7 @@ StatusOr<blink::IndexedDBKey> DatabaseConnection::GetFirstPrimaryKeyForIndexKey(
   statement.BindInt64(1, index_id);
   statement.BindBlob(2, EncodeSortableIDBKey(key));
   if (statement.Step()) {
-    std::string primary_key;
-    statement.ColumnBlobAsString(0, &primary_key);
-    return DecodeSortableIDBKey(primary_key);
+    return DecodeSortableIDBKey(statement.ColumnBlobAsString(0));
   }
   RETURN_IF_STATEMENT_ERRORED(statement);
   // Not found.
@@ -2032,7 +2032,10 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
           Fatal(Status::Corruption("Missing table `indexed_db_metadata`"),
                 SpecificEvent::kMissingMetadataTable));
     }
-    statement.ColumnBlobAsString16(0, &metadata.name);
+    ASSIGN_OR_RETURN(metadata.name, statement.ColumnBlobAsString16(0), [&]() {
+      return Fatal(Status::Corruption("Database name is unexpected size"),
+                   SpecificEvent::kUtf16StringUnreadable);
+    });
     metadata.version = statement.ColumnInt64(1);
   }
 
@@ -2044,8 +2047,17 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
     while (statement.Step()) {
       blink::IndexedDBObjectStoreMetadata store_metadata;
       store_metadata.id = statement.ColumnInt64(0);
-      statement.ColumnBlobAsString16(1, &store_metadata.name);
-      store_metadata.key_path = ColumnKeyPath(statement, 2);
+      ASSIGN_OR_RETURN(
+          store_metadata.name, statement.ColumnBlobAsString16(1), [&]() {
+            return Fatal(
+                Status::Corruption("Object store name is unexpected size"),
+                SpecificEvent::kUtf16StringUnreadable);
+          });
+      ASSIGN_OR_RETURN(store_metadata.key_path, ColumnKeyPath(statement, 2),
+                       [&](Status error) {
+                         return Fatal(error,
+                                      SpecificEvent::kUtf16StringUnreadable);
+                       });
       store_metadata.auto_increment = statement.ColumnBool(3);
       max_object_store_id = std::max(max_object_store_id, store_metadata.id);
       metadata.object_stores[store_metadata.id] = std::move(store_metadata);
@@ -2063,8 +2075,16 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
       blink::IndexedDBIndexMetadata index_metadata;
       int64_t object_store_id = statement.ColumnInt64(0);
       index_metadata.id = statement.ColumnInt64(1);
-      statement.ColumnBlobAsString16(2, &index_metadata.name);
-      index_metadata.key_path = ColumnKeyPath(statement, 3);
+      ASSIGN_OR_RETURN(
+          index_metadata.name, statement.ColumnBlobAsString16(2), [&]() {
+            return Fatal(Status::Corruption("Index name is unexpected size"),
+                         SpecificEvent::kUtf16StringUnreadable);
+          });
+      ASSIGN_OR_RETURN(index_metadata.key_path, ColumnKeyPath(statement, 3),
+                       [&](Status error) {
+                         return Fatal(error,
+                                      SpecificEvent::kUtf16StringUnreadable);
+                       });
       index_metadata.unique = statement.ColumnBool(4);
       index_metadata.multi_entry = statement.ColumnBool(5);
       blink::IndexedDBObjectStoreMetadata& store_metadata =

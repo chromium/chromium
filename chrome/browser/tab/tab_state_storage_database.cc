@@ -151,8 +151,8 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
     NodeState entry;
     entry.id = select_statement.ColumnInt(0);
     entry.type = static_cast<TabStorageType>(select_statement.ColumnInt(1));
-    select_statement.ColumnBlobAsString(2, &entry.payload);
-    select_statement.ColumnBlobAsString(3, &entry.children);
+    entry.payload = select_statement.ColumnBlobAsString(2);
+    entry.children = select_statement.ColumnBlobAsString(3);
     entries.emplace_back(std::move(entry));
   }
   return entries;

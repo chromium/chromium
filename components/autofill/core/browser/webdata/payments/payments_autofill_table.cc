@@ -396,8 +396,7 @@ std::string DecryptStringFromColumn(
     int column_index,
     const os_crypt_async::Encryptor& encryptor) {
   std::string value;
-  std::string encrypted_value;
-  s.ColumnBlobAsString(column_index, &encrypted_value);
+  std::string encrypted_value = s.ColumnBlobAsString(column_index);
   if (!encrypted_value.empty()) {
     std::ignore = encryptor.DecryptString(encrypted_value, &value);
   }
@@ -409,8 +408,7 @@ std::u16string DecryptU16StringFromColumn(
     int column_index,
     const os_crypt_async::Encryptor& encryptor) {
   std::u16string value;
-  std::string encrypted_value;
-  s.ColumnBlobAsString(column_index, &encrypted_value);
+  std::string encrypted_value = s.ColumnBlobAsString(column_index);
   if (!encrypted_value.empty()) {
     std::ignore = encryptor.DecryptString16(encrypted_value, &value);
   }

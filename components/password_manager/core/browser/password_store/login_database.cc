@@ -1019,8 +1019,7 @@ EncryptionResult DecryptPasswordFromStatement(
     std::u16string* plaintext_password,
     EncryptDecryptInterface* decryptor) {
   CHECK(plaintext_password);
-  std::string encrypted_password;
-  s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
+  std::string encrypted_password = s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE);
   EncryptionResult encryption_result =
       decryptor->DecryptedString(encrypted_password, plaintext_password);
   if (encryption_result != EncryptionResult::kSuccess) {
@@ -1730,7 +1729,7 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.username_element = s.ColumnString16(COLUMN_USERNAME_ELEMENT);
   form.username_value = s.ColumnString16(COLUMN_USERNAME_VALUE);
   form.password_element = s.ColumnString16(COLUMN_PASSWORD_ELEMENT);
-  s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER, &form.keychain_identifier);
+  form.keychain_identifier = s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER);
   form.submit_element = s.ColumnString16(COLUMN_SUBMIT_ELEMENT);
   form.signon_realm = s.ColumnString(COLUMN_SIGNON_REALM);
   form.date_created = s.ColumnTime(COLUMN_DATE_CREATED);
@@ -1925,8 +1924,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
     sql::Statement s(
         db_.GetUniqueStatement("SELECT keychain_identifier FROM logins"));
     while (s.Step()) {
-      std::string keychain_identifier;
-      s.ColumnBlobAsString(0, &keychain_identifier);
+      std::string keychain_identifier = s.ColumnBlobAsString(0);
       DeleteEncryptedPasswordFromKeychain(keychain_identifier);
     }
   }
@@ -1956,8 +1954,8 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   std::vector<PasswordForm> forms_to_be_deleted;
 
   while (s.Step()) {
-    std::string encrypted_password;
-    s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
+    std::string encrypted_password =
+        s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE);
     std::u16string decrypted_password;
     if (DecryptedString(encrypted_password, &decrypted_password) ==
         EncryptionResult::kSuccess) {
@@ -2309,9 +2307,8 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
 
   if (s.Step()) {
     PrimaryKeyAndPassword result = {s.ColumnInt(0)};
-    std::string encrypted_password;
-    s.ColumnBlobAsString(1, &encrypted_password);
-    s.ColumnBlobAsString(2, &result.keychain_identifier);
+    std::string encrypted_password = s.ColumnBlobAsString(1);
+    result.keychain_identifier = s.ColumnBlobAsString(2);
     if (DecryptedString(encrypted_password, &result.decrypted_password) !=
         EncryptionResult::kSuccess) {
       result.decrypted_password.clear();

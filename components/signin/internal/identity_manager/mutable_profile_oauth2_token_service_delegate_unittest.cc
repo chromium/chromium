@@ -1722,8 +1722,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
             sql::Statement s(db.GetUniqueStatement(
                 "SELECT encrypted_token FROM token_service"));
             ASSERT_TRUE(s.Step());
-            std::string encrypted_data;
-            ASSERT_TRUE(s.ColumnBlobAsString(0, &encrypted_data));
+            std::string encrypted_data = s.ColumnBlobAsString(0);
             EXPECT_TRUE(base::StartsWith(encrypted_data, expected_prefix,
                                          base::CompareCase::SENSITIVE));
             // Should only be one row, the "invalid-token" should be deleted by

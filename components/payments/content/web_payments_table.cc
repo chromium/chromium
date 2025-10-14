@@ -310,7 +310,7 @@ WebPaymentsTable::GetSecurePaymentConfirmationCredentials(
 
     int index = 0;
     credential->relying_party_id = s.ColumnString(index++);
-    s.ColumnBlobAsVector(index++, &(credential->user_id));
+    credential->user_id = s.ColumnBlobAsVector(index++);
 
     if (!credential->IsValid()) {
       continue;
@@ -378,8 +378,8 @@ WebPaymentsTable::GetAllBrowserBoundKeys() {
   while (s.Step()) {
     BrowserBoundKeyMetadata& entry = browser_bound_keys.emplace_back();
     entry.passkey.relying_party_id = s.ColumnString(0);
-    s.ColumnBlobAsVector(1, &entry.passkey.credential_id);
-    s.ColumnBlobAsVector(2, &entry.browser_bound_key_id);
+    entry.passkey.credential_id = s.ColumnBlobAsVector(1);
+    entry.browser_bound_key_id = s.ColumnBlobAsVector(2);
     entry.last_used = s.ColumnTime(3);
   }
   return browser_bound_keys;

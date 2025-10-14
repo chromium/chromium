@@ -217,8 +217,7 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
 
     std::string id = get_keys_statement.ColumnString(0);
 
-    std::vector<uint8_t> key;
-    get_keys_statement.ColumnBlobAsVector(1, &key);
+    std::vector<uint8_t> key = get_keys_statement.ColumnBlobAsVector(1);
 
     if (id.size() > PublicKey::kMaxIdSize ||
         key.size() != PublicKey::kKeyByteLength) {

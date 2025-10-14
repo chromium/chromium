@@ -336,8 +336,9 @@ class CONTENT_EXPORT DatabaseConnection {
     kObjectStoreNotFound = 13,
     kBlobTypeUnknown = 14,
     kV8FormatTooNewOrMissing = 15,
+    kUtf16StringUnreadable = 16,
 
-    kMaxValue = kV8FormatTooNewOrMissing,
+    kMaxValue = kUtf16StringUnreadable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteSpecificEvent)
 

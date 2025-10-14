@@ -612,9 +612,7 @@ void FirefoxImporter::LoadFavicons(
   for (const auto& i : favicon_map) {
     s.BindInt64(0, i.first);
     if (s.Step()) {
-      std::vector<unsigned char> data;
-      if (!s.ColumnBlobAsVector(1, &data))
-        continue;
+      std::vector<unsigned char> data = s.ColumnBlobAsVector(1);
 
       favicon_base::FaviconUsageData usage_data;
       if (!SetFaviconData(s.ColumnStringView(0), data, &usage_data)) {
@@ -667,9 +665,7 @@ void FirefoxImporter::LoadFavicons(
         continue;
       }
 
-      std::vector<unsigned char> data;
-      if (!s.ColumnBlobAsVector(2, &data))
-        continue;
+      std::vector<unsigned char> data = s.ColumnBlobAsVector(2);
 
       favicon_base::FaviconUsageData usage_data;
       if (!SetFaviconData(s.ColumnStringView(1), data, &usage_data)) {

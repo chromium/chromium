@@ -162,10 +162,9 @@ ServerCertificateDatabase::RetrieveAllCertificates() {
   while (statement.Step()) {
     ServerCertificateDatabase::CertInformation cert_info;
     cert_info.sha256hash_hex = statement.ColumnString(0);
-    statement.ColumnBlobAsVector(1, &cert_info.der_cert);
+    cert_info.der_cert = statement.ColumnBlobAsVector(1);
 
-    std::string trust_bytes;
-    statement.ColumnBlobAsString(2, &trust_bytes);
+    std::string trust_bytes = statement.ColumnBlobAsString(2);
 
     if (cert_info.cert_metadata.ParseFromString(trust_bytes)) {
       certs.push_back(std::move(cert_info));

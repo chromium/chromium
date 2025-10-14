@@ -21,16 +21,15 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -108,18 +107,13 @@ bool Statement::CheckValid() const {
 void Statement::CheckCanReadColumn(int column_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(is_valid(), base::NotFatalUntil::M142);
-  CHECK(last_sqlite_result_code_.has_value(), base::NotFatalUntil::M142);
-  if (last_sqlite_result_code_.has_value()) {
-    CHECK_EQ(last_sqlite_result_code_.value(), SqliteResultCode::kRow,
-             base::NotFatalUntil::M142)
-        << " reading from columns must happen after Step() is called and "
-           "returns true";
-  }
+  CHECK(is_valid());
+  // Reading from columns must happen after Step() is called and returns true.
+  CHECK(last_sqlite_result_code_.has_value());
+  CHECK_EQ(*last_sqlite_result_code_, SqliteResultCode::kRow);
 
-  CHECK_GE(column_index, 0, base::NotFatalUntil::M142);
-  CHECK_LT(column_index, sqlite3_data_count(ref_->stmt()),
-           base::NotFatalUntil::M142);
+  CHECK_GE(column_index, 0);
+  CHECK_LT(column_index, sqlite3_data_count(ref_->stmt()));
 }
 
 SqliteResultCode Statement::StepInternal() {
@@ -518,11 +512,6 @@ bool Statement::ColumnBool(int column_index) {
 int Statement::ColumnInt(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return 0;
-  }
 
   return sqlite3_column_int(ref_->stmt(), column_index);
 }
@@ -531,23 +520,12 @@ int64_t Statement::ColumnInt64(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
 
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return 0;
-  }
-
   return sqlite3_column_int64(ref_->stmt(), column_index);
 }
 
 double Statement::ColumnDouble(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return 0;
-  }
 
   return sqlite3_column_double(ref_->stmt(), column_index);
 }
@@ -555,11 +533,6 @@ double Statement::ColumnDouble(int column_index) {
 base::Time Statement::ColumnTime(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return {};
-  }
 
   int64_t int_value = sqlite3_column_int64(ref_->stmt(), column_index);
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(int_value));
@@ -568,11 +541,6 @@ base::Time Statement::ColumnTime(int column_index) {
 base::TimeDelta Statement::ColumnTimeDelta(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return {};
-  }
 
   int64_t int_value = sqlite3_column_int64(ref_->stmt(), column_index);
   return base::Microseconds(int_value);
@@ -581,11 +549,6 @@ base::TimeDelta Statement::ColumnTimeDelta(int column_index) {
 std::string_view Statement::ColumnStringView(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return {};
-  }
 
   const char* string_buffer = reinterpret_cast<const char*>(
       sqlite3_column_text(ref_->stmt(), column_index));
@@ -608,12 +571,8 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CheckCanReadColumn(column_index);
 
-  if (!CheckValid()) {
-    return {};
-  }
-
-  int result_size = sqlite3_column_bytes(ref_->stmt(), column_index);
   const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
+  int result_size = sqlite3_column_bytes(ref_->stmt(), column_index);
   DCHECK(result_size == 0 || result_buffer != nullptr)
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
@@ -621,64 +580,24 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
                     base::checked_cast<size_t>(result_size));
 }
 
-bool Statement::ColumnBlobAsString(int column_index, std::string* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return false;
-  }
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    result->assign(reinterpret_cast<const char*>(result_buffer), size);
-  } else {
-    result->clear();
-  }
-  return true;
+std::string Statement::ColumnBlobAsString(int column_index) {
+  return std::string(base::as_string_view(ColumnBlob(column_index)));
 }
 
-bool Statement::ColumnBlobAsString16(int column_index, std::u16string* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(result);
-  CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return false;
+std::optional<std::u16string> Statement::ColumnBlobAsString16(
+    int column_index) {
+  base::span<const uint8_t> bytes = ColumnBlob(column_index);
+  if (bytes.size() % 2 != 0) {
+    return std::nullopt;
   }
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    result->assign(reinterpret_cast<const char16_t*>(result_buffer), size / 2);
-  } else {
-    result->clear();
-  }
-  return true;
+  std::u16string result(bytes.size() / 2, 0);
+  base::as_writable_byte_span(result).copy_from_nonoverlapping(bytes);
+  return result;
 }
 
-bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<uint8_t>* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CheckCanReadColumn(column_index);
-  // TODO(crbug.com/439769605): remove this in M142 when CheckCanReadColumn's
-  // checks become stricter.
-  if (!CheckValid()) {
-    return false;
-  }
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    *result = base::ToVector(base::span(
-        static_cast<const uint8_t*>(result_buffer), static_cast<size_t>(size)));
-  } else {
-    result->clear();
-  }
-  return true;
+std::vector<uint8_t> Statement::ColumnBlobAsVector(int column_index) {
+  base::span<const uint8_t> byte_span = ColumnBlob(column_index);
+  return std::vector<uint8_t>(byte_span.begin(), byte_span.end());
 }
 
 std::string Statement::GetSQLStatement() {

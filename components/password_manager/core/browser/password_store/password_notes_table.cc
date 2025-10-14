@@ -36,8 +36,7 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
   std::map<FormPrimaryKey, std::vector<PasswordNote>> results;
   while (s->Step()) {
     std::u16string unique_display_name = s->ColumnString16(1);
-    std::string encrypted_value;
-    s->ColumnBlobAsString(2, &encrypted_value);
+    std::string encrypted_value = s->ColumnBlobAsString(2);
     std::u16string decrypted_value;
     if (decryptor->DecryptedString(encrypted_value, &decrypted_value) !=
         EncryptionResult::kSuccess) {
@@ -82,8 +81,8 @@ bool PasswordNotesTable::MigrateTable(int current_version,
     // Update each note value with the new BLOB.
     while (get_notes_statement.Step()) {
       int id = get_notes_statement.ColumnInt(0);
-      std::string keychain_identifier;
-      get_notes_statement.ColumnBlobAsString(1, &keychain_identifier);
+      std::string keychain_identifier =
+          get_notes_statement.ColumnBlobAsString(1);
       if (keychain_identifier.empty()) {
         continue;
       }

@@ -469,7 +469,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
         IntToDownloadDangerType(statement_main.ColumnInt(column++));
     info->interrupt_reason =
         IntToDownloadInterruptReason(statement_main.ColumnInt(column++));
-    statement_main.ColumnBlobAsString(column++, &info->hash);
+    info->hash = statement_main.ColumnBlobAsString(column++);
     info->end_time =
         base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
     info->opened = statement_main.ColumnInt(column++) != 0;

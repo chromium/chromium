@@ -357,9 +357,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
 
     std::vector<std::string> results;
     while (s.Step()) {
-      std::string encrypted_password;
-      s.ColumnBlobAsString(0, &encrypted_password);
-      results.push_back(std::move(encrypted_password));
+      results.push_back(s.ColumnBlobAsString(0));
     }
 
     return results;
@@ -375,9 +373,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
 
     std::vector<std::string> results;
     while (s.Step()) {
-      std::string encrypted_note;
-      s.ColumnBlobAsString(0, &encrypted_note);
-      results.push_back(std::move(encrypted_note));
+      results.push_back(s.ColumnBlobAsString(0));
     }
 
     return results;

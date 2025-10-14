@@ -307,6 +307,9 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Invalid type found for blob"/>
   <int value="15"
       label="V8 data format version too new or missing from metadata"/>
+  <int value="16"
+      label="A value in the DB that represents a UTF16 string was the wrong
+             length"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->

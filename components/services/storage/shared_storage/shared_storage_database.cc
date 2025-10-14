@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
@@ -323,10 +324,8 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
         (last_used_time >= clock_->Now() - staleness_threshold_)
             ? OperationResult::kSuccess
             : OperationResult::kExpired;
-    std::u16string value;
-    if (!statement.ColumnBlobAsString16(0, &value)) {
-      return GetResult();
-    }
+    ASSIGN_OR_RETURN(std::u16string value, statement.ColumnBlobAsString16(0),
+                     []() { return GetResult(); });
     return GetResult(std::move(value), last_used_time, op_result);
   }
 
@@ -686,20 +685,21 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
 
     bool blob_retrieval_error = false;
     while (select_statement.Step()) {
-      std::u16string key;
-      if (!select_statement.ColumnBlobAsString16(0, &key)) {
+      std::optional<std::u16string> key =
+          select_statement.ColumnBlobAsString16(0);
+      if (!key) {
         blob_retrieval_error = true;
         break;
       }
       if (keys.size() < max_iterator_batch_size_) {
-        keys.push_back(
-            blink::mojom::SharedStorageKeyAndOrValue::New(std::move(key), u""));
+        keys.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
+            *std::move(key), u""));
       } else {
         // Cache the current key to use as the start of the next batch, as we're
         // already passing through this step and the next iteration of
         // `statement.Step()`, if there is one, during the next iteration of the
         // outer while loop, will give us the subsequent key.
-        saved_first_key_for_next_batch = std::move(key);
+        saved_first_key_for_next_batch = *std::move(key);
         has_more_entries = true;
         break;
       }
@@ -803,27 +803,29 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
 
     bool blob_retrieval_error = false;
     while (select_statement.Step()) {
-      std::u16string key;
-      if (!select_statement.ColumnBlobAsString16(0, &key)) {
+      std::optional<std::u16string> key =
+          select_statement.ColumnBlobAsString16(0);
+      if (!key) {
         blob_retrieval_error = true;
         break;
       }
-      std::u16string value;
-      if (!select_statement.ColumnBlobAsString16(1, &value)) {
+      std::optional<std::u16string> value =
+          select_statement.ColumnBlobAsString16(1);
+      if (!value) {
         blob_retrieval_error = true;
         break;
       }
       if (entries.size() < max_iterator_batch_size_) {
         entries.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
-            std::move(key), std::move(value)));
+            *std::move(key), *std::move(value)));
       } else {
         // Cache the current key and value to use as the start of the next
         // batch, as we're already passing through this step and the next
         // iteration of `statement.Step()`, if there is one, during the next
         // iteration of the outer while loop, will give us the subsequent
         // key-value pair.
-        saved_first_key_for_next_batch = std::move(key);
-        saved_first_value_for_next_batch = std::move(value);
+        saved_first_key_for_next_batch = *std::move(key);
+        saved_first_value_for_next_batch = *std::move(value);
         has_more_entries = true;
         break;
       }
@@ -1174,16 +1176,18 @@ SharedStorageDatabase::GetEntriesForDevTools(
   select_statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   while (select_statement.Step()) {
-    std::u16string key;
-    if (!select_statement.ColumnBlobAsString16(0, &key)) {
+    std::optional<std::u16string> key =
+        select_statement.ColumnBlobAsString16(0);
+    if (!key) {
       key = u"[[DATABASE_ERROR: unable to retrieve key]]";
     }
-    std::u16string value;
-    if (!select_statement.ColumnBlobAsString16(1, &value)) {
+    std::optional<std::u16string> value =
+        select_statement.ColumnBlobAsString16(1);
+    if (!value) {
       value = u"[[DATABASE_ERROR: unable to retrieve value]]";
     }
-    entries.entries.emplace_back(base::UTF16ToUTF8(key),
-                                 base::UTF16ToUTF8(value));
+    entries.entries.emplace_back(base::UTF16ToUTF8(*key),
+                                 base::UTF16ToUTF8(*value));
   }
 
   if (!select_statement.Succeeded())
@@ -1685,9 +1689,8 @@ std::optional<std::u16string> SharedStorageDatabase::MaybeGetValueFor(
   statement.BindString(0, context_origin);
   statement.BindBlob(1, std::u16string(key));
 
-  std::u16string value;
-  if (statement.Step() && statement.ColumnBlobAsString16(0, &value)) {
-    return value;
+  if (statement.Step()) {
+    return statement.ColumnBlobAsString16(0);
   }
   return std::nullopt;
 }

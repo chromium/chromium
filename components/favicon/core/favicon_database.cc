@@ -374,9 +374,8 @@ bool FaviconDatabase::GetFaviconBitmaps(
     favicon_bitmap.bitmap_id = statement.ColumnInt64(0);
     favicon_bitmap.icon_id = icon_id;
     favicon_bitmap.last_updated = statement.ColumnTime(1);
-    std::vector<uint8_t> bitmap_data_blob;
-    statement.ColumnBlobAsVector(2, &bitmap_data_blob);
-    if (!bitmap_data_blob.empty()) {
+    if (std::vector<uint8_t> bitmap_data_blob = statement.ColumnBlobAsVector(2);
+        !bitmap_data_blob.empty()) {
       favicon_bitmap.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
           std::move(bitmap_data_blob));
     }
@@ -409,8 +408,7 @@ bool FaviconDatabase::GetFaviconBitmap(
   }
 
   if (png_icon_data) {
-    std::vector<uint8_t> png_data_blob;
-    statement.ColumnBlobAsVector(1, &png_data_blob);
+    std::vector<uint8_t> png_data_blob = statement.ColumnBlobAsVector(1);
     if (!png_data_blob.empty())
       *png_icon_data =
           base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data_blob));

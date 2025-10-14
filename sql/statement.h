@@ -251,12 +251,20 @@ class COMPONENT_EXPORT(SQL) Statement {
   // The span will be empty (and may have a null data) if the underlying blob is
   // empty. Code that needs to distinguish between empty blobs and NULL should
   // call GetColumnType() before calling ColumnBlob().
+  //
+  // If you need to store and retrieve potentially invalid UTF-16 strings
+  // losslessly, store them as BLOBs. They may be retrieved with
+  // `ColumnBlobAsString16()`.
   base::span<const uint8_t> ColumnBlob(int column_index);
 
-  // TODO(crbug.com/439769605): pass `result` via return value instead of param.
-  bool ColumnBlobAsString(int column_index, std::string* result);
-  bool ColumnBlobAsString16(int column_index, std::u16string* result);
-  bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);
+  // These convenience methods convert BLOB column data to various C++ types.
+  std::string ColumnBlobAsString(int column_index);
+  std::vector<uint8_t> ColumnBlobAsVector(int column_index);
+
+  // This will return false if the underlying blob does not have an even
+  // number of bytes. Otherwise, it will return true and copy the contents of
+  // the blob to `result`. It does no validation on the contents of the blob.
+  std::optional<std::u16string> ColumnBlobAsString16(int column_index);
 
   // Diagnostics --------------------------------------------------------------
 

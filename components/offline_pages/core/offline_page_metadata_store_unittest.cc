@@ -830,8 +830,8 @@ class OfflinePageMetadataStoreTest : public testing::Test {
         visuals.offline_id = statement.ColumnInt64(0);
         visuals.expiration =
             store_utils::FromDatabaseTime(statement.ColumnInt64(1));
-        statement.ColumnBlobAsString(2, &visuals.thumbnail);
-        statement.ColumnBlobAsString(3, &visuals.favicon);
+        visuals.thumbnail = statement.ColumnBlobAsString(2);
+        visuals.favicon = statement.ColumnBlobAsString(3);
         visuals_vector.push_back(std::move(visuals));
       }
 

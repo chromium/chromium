@@ -199,15 +199,11 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
   while (s.Step()) {
     ReadOneTokenResult read_token_result = READ_ONE_TOKEN_MAX_VALUE;
 
-    std::string encrypted_token;
     std::string decrypted_token;
-    std::string service;
-    std::vector<uint8_t> wrapped_binding_key;
-    service = s.ColumnString(0);
-    bool entry_ok = !service.empty() &&
-                    s.ColumnBlobAsString(1, &encrypted_token) &&
-                    s.ColumnBlobAsVector(2, &wrapped_binding_key);
-    if (entry_ok) {
+    std::string service = s.ColumnString(0);
+    if (!service.empty()) {
+      std::string encrypted_token = s.ColumnBlobAsString(1);
+      std::vector<uint8_t> wrapped_binding_key = s.ColumnBlobAsVector(2);
       os_crypt_async::Encryptor::DecryptFlags flags;
       if (encryptor()->DecryptString(encrypted_token, &decrypted_token,
                                      &flags)) {
