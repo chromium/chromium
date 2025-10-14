@@ -17,21 +17,6 @@ using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
 TimeRemainingCalculator::~TimeRemainingCalculator() = default;
 
-int TimeRemainingCalculator::GetUploadSpeed(
-    const base::ByteCount& uploaded_bytes) const {
-  if (uploaded_bytes.is_zero()) {
-    return 0;
-  }
-  const base::TimeDelta time_delta =
-      base::TimeTicks::Now() - last_upload_speed_update_time_;
-  if (time_delta.is_zero()) {
-    return 0;
-  }
-  const base::ByteCount bytes_delta = uploaded_bytes - last_uploaded_bytes_;
-  // No rounding is done here since the output is just an estimation.
-  return bytes_delta.InBytes() / time_delta.InSecondsF();
-}
-
 std::optional<base::TimeDelta> TimeRemainingCalculator::GetRemainingTime(
     const base::ByteCount& uploaded_bytes,
     const base::ByteCount& file_size_bytes) const {
@@ -39,7 +24,7 @@ std::optional<base::TimeDelta> TimeRemainingCalculator::GetRemainingTime(
   if (remaining_bytes.is_zero() || remaining_bytes.is_negative()) {
     return std::nullopt;
   }
-  const int upload_speed = GetUploadSpeed(uploaded_bytes);
+  const int upload_speed = upload_speed_estimator_.GetCountPerSecond();
   if (upload_speed <= 0) {
     return std::nullopt;
   }
@@ -55,10 +40,11 @@ TimeRemainingCalculator::CalculateTimeRemainingText(
   std::optional<base::TimeDelta> remaining_time;
   base::ByteCount uploaded_bytes(progress.uploaded_bytes.value());
   if (progress.status == SaveToDriveStatus::kUploadInProgress) {
+    const base::ByteCount bytes_delta = uploaded_bytes - last_uploaded_bytes_;
+    upload_speed_estimator_.Increment(bytes_delta.InBytes());
     remaining_time = GetRemainingTime(
         uploaded_bytes, base::ByteCount(progress.file_size_bytes.value()));
   }
-  last_upload_speed_update_time_ = base::TimeTicks::Now();
   last_uploaded_bytes_ = std::move(uploaded_bytes);
   if (!remaining_time.has_value()) {
     return std::nullopt;

@@ -14,8 +14,8 @@ source_set("save_to_drive") {
     "pdf_content_reader.h",
     "resumable_drive_uploader.h",
     "save_to_drive_event_dispatcher.h",
-    "save_to_drive_recorder.h",
     "save_to_drive_flow.h",
+    "save_to_drive_recorder.h",
     "save_to_drive_utils.h",
     "time_remaining_calculator.h",
   ]
@@ -26,8 +26,8 @@ source_set("save_to_drive") {
     "pdf_content_reader.cc",
     "resumable_drive_uploader.cc",
     "save_to_drive_event_dispatcher.cc",
-    "save_to_drive_recorder.cc",
     "save_to_drive_flow.cc",
+    "save_to_drive_recorder.cc",
     "save_to_drive_utils.cc",
     "time_remaining_calculator.cc",
   ]
@@ -47,6 +47,7 @@ source_set("save_to_drive") {
     "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
+    "//components/download/public/common:public",
     "//components/drive",
     "//components/endpoint_fetcher",
     "//components/pdf/browser",
@@ -67,6 +68,7 @@ source_set("browser_tests") {
   deps = [
     ":save_to_drive",
     "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
@@ -75,7 +77,6 @@ source_set("browser_tests") {
     "//extensions/browser:test_support",
     "//pdf:features",
     "//testing/gtest",
-    "//chrome/browser/ui/hats:test_support",
     "//url",
   ]
 }
