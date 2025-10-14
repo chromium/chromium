@@ -787,13 +787,19 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   DCHECK(base::Uuid::ParseCaseInsensitive(profile.guid()).is_valid());
 
   // Get associated name info using guid.
-  AddLegacyAutofillProfileNamesToProfile(db(), &profile);
+  if (!AddLegacyAutofillProfileNamesToProfile(db(), &profile)) {
+    return std::nullopt;
+  }
 
   // Get associated email info using guid.
-  AddLegacyAutofillProfileEmailsToProfile(db(), &profile);
+  if (!AddLegacyAutofillProfileEmailsToProfile(db(), &profile)) {
+    return std::nullopt;
+  }
 
   // Get associated phone info using guid.
-  AddLegacyAutofillProfilePhonesToProfile(db(), &profile);
+  if (!AddLegacyAutofillProfilePhonesToProfile(db(), &profile)) {
+    return std::nullopt;
+  }
 
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
@@ -802,7 +808,9 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
-  AddLegacyAutofillProfileAddressesToProfile(db(), &profile);
+  if (!AddLegacyAutofillProfileAddressesToProfile(db(), &profile)) {
+    return std::nullopt;
+  }
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
