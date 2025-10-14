@@ -48,10 +48,10 @@ StrikeDatabase::~StrikeDatabase() = default;
 
 int StrikeDatabase::AddStrikes(int strikes_increase, const std::string& key) {
   DCHECK_GT(strikes_increase, 0);
-  int num_strikes =
-      strike_map_cache_.contains(key)
-          ? strike_map_cache_[key].num_strikes() + strikes_increase
-          : strikes_increase;
+  auto it = strike_map_cache_.find(key);
+  int num_strikes = it != strike_map_cache_.end()
+                        ? it->second.num_strikes() + strikes_increase
+                        : strikes_increase;
   SetStrikeData(key, num_strikes);
   return num_strikes;
 }
