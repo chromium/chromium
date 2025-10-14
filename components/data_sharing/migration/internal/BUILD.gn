@@ -13,6 +13,7 @@ source_set("internal") {
 
   sources = [
     "base_migratable_sync_service.cc",
+    "migratable_sync_bridge.cc",
     "migratable_sync_service_coordinator_impl.cc",
     "migratable_sync_service_coordinator_impl.h",
     "migration_state_database.h",
@@ -25,6 +26,7 @@ source_set("internal") {
     "//base",
     "//components/data_sharing/migration/public",
     "//components/data_sharing/public",
+    "//components/prefs",
   ]
 }
 
