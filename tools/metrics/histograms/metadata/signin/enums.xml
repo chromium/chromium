@@ -763,6 +763,8 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="Devtools Aida Client"/>
   <int value="69" label="Babel Orca"/>
   <int value="70" label="Boca School Tools Auth"/>
+  <int value="71" label="Shared Data Preview"/>
+  <int value="72" label="Access Code Cast Discovery"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

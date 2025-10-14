@@ -33,7 +33,6 @@ constexpr char kDefaultDiscoveryEndpoint[] =
     "https://castedumessaging-pa.googleapis.com";
 
 constexpr char kDiscoveryServicePath[] = "/v1/receivers";
-constexpr char kDiscoveryOAuthConsumerName[] = "access_code_cast_discovery";
 constexpr char kEmptyPostData[] = "";
 
 constexpr char kJsonDevice[] = "device";

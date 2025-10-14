@@ -43,10 +43,6 @@ constexpr base::TimeDelta kTimeout = base::Milliseconds(5000);
 
 // Content type for network request.
 constexpr char kContentType[] = "application/json; charset=UTF-8";
-// OAuth name.
-constexpr char kOAuthName[] = "shared_data_preview";
-// OAuth scope of the server.
-constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/chromesync";
 
 // Server addresses to get preview data.
 constexpr char kDefaultServiceBaseUrl[] =
@@ -345,12 +341,11 @@ std::unique_ptr<EndpointFetcher> PreviewServerProxy::CreateEndpointFetcher(
           endpoint_fetcher::HttpMethod::kGet,
           kGetSharedDataPreviewTrafficAnnotation)
           .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kSharedDataPreview)
           .SetConsentLevel(signin::ConsentLevel::kSignin)
           .SetContentType(kContentType)
           .SetTimeout(kTimeout)
           .SetUrl(url)
-          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
-          .SetOauthConsumerName(kOAuthName)
           .Build());
 }
 

@@ -155,9 +155,6 @@ class EndpointFetcher {
 
     // Authentication-specific parameters
     std::optional<signin::OAuthConsumerId> oauth_consumer_id;
-    // TODO(crbug.com/425896213): Remove oauth_consumer_name and oauth_scopes.
-    std::optional<std::string> oauth_consumer_name;
-    signin::ScopeSet oauth_scopes;
     std::optional<signin::ConsentLevel> consent_level;
     std::optional<version_info::Channel> channel;
 
@@ -264,23 +261,6 @@ class EndpointFetcher {
       // Authentication-specific builder methods
       Builder& SetOAuthConsumerId(signin::OAuthConsumerId id) {
         request_params_->oauth_consumer_id = id;
-        return *this;
-      }
-
-      Builder& SetOauthConsumerName(const std::string& name) {
-        request_params_->oauth_consumer_name = name;
-        return *this;
-      }
-
-      Builder& SetOauthScopes(const signin::ScopeSet& scopes) {
-        request_params_->oauth_scopes = scopes;
-        return *this;
-      }
-
-      Builder& SetOauthScopes(const std::vector<std::string>& scopes_vector) {
-        for (const auto& scope : scopes_vector) {
-          request_params_->oauth_scopes.insert(scope);
-        }
         return *this;
       }
 

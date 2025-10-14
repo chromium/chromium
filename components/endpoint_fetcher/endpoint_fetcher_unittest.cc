@@ -45,8 +45,6 @@ const char kMalformedResponse[] = "asdf";
 const char kJsonMimeType[] = "application/json";
 const char kMockPostData[] = "mock_post_data";
 constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
-const char kOAuthConsumerName[] = "mock_oauth_consumer_name";
-const char kScope[] = "mock_scope";
 const char kApiKey[] = "api_key";
 }  // namespace
 
@@ -73,10 +71,9 @@ class EndpointFetcherTest : public testing::Test {
         EndpointFetcher::RequestParams::Builder(HttpMethod::kPost,
                                                 TRAFFIC_ANNOTATION_FOR_TESTS)
             .SetAuthType(OAUTH)
-            .SetOauthConsumerName(kOAuthConsumerName)
+            .SetOAuthConsumerId(signin::OAuthConsumerId::kSync)
             .SetUrl(GURL(kEndpoint))
             .SetContentType(kContentType)
-            .SetOauthScopes(std::vector<std::string>{kScope})
             .SetTimeout(kMockTimeout)
             .SetPostData(kMockPostData)
             .SetConsentLevel(signin::ConsentLevel::kSignin)
@@ -521,20 +518,10 @@ TEST_F(EndpointFetcherTest, OAuthDcheckMissingParams) {
   EXPECT_DEATH(EndpointFetcher::RequestParams::Builder(
                    HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
                    .SetAuthType(AuthType::OAUTH)
-                   .SetOauthConsumerName("test_consumer")
-                   // Missing scopes
+                   // Missing consumer id
                    .SetConsentLevel(signin::ConsentLevel::kSync)
                    .Build(),
-               "OAUTH requests require oauth_scopes");
-
-  EXPECT_DEATH(EndpointFetcher::RequestParams::Builder(
-                   HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
-                   .SetAuthType(AuthType::OAUTH)
-                   .SetOauthScopes(std::vector<std::string>{"test_scope"})
-                   // Missing consumer name
-                   .SetConsentLevel(signin::ConsentLevel::kSync)
-                   .Build(),
-               "OAUTH requests require oauth_consumer_name");
+               "OAUTH requests require oauth_consumer_id");
 }
 #endif  // DCHECK_IS_ON() && GTEST_HAS_DEATH_TEST
 

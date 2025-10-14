@@ -247,9 +247,6 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::vector<std::string> discovery_scopes;
-  discovery_scopes.push_back(GaiaConstants::kDiscoveryOAuth2Scope);
-
   // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
   //     removed. See ConsentLevel::kSync documentation for details.
   const signin::ConsentLevel consent_level =
@@ -263,12 +260,11 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
       EndpointFetcher::RequestParams::Builder(
           endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
           .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kAccessCodeCastDiscovery)
           .SetConsentLevel(consent_level)
           .SetContentType(kContentType)
           .SetTimeout(kTimeout)
           .SetUrl(GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})))
-          .SetOauthScopes(discovery_scopes)
-          .SetOauthConsumerName(kDiscoveryOAuthConsumerName)
           .SetPostData(kEmptyPostData)
           .Build());
 }

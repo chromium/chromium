@@ -59,8 +59,6 @@ namespace {
 
 const char kMockPostData[] = "mock_post_data";
 constexpr base::TimeDelta kMockTimeout = base::Milliseconds(1000000);
-const char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
-const char kMockScope[] = "mock_scope";
 const char kMockEndpoint[] = "https://my-endpoint.com";
 constexpr endpoint_fetcher::HttpMethod kHttpMethod =
     endpoint_fetcher::HttpMethod::kPost;
@@ -208,12 +206,12 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
             EndpointFetcher::RequestParams::Builder(
                 kHttpMethod, TRAFFIC_ANNOTATION_FOR_TESTS)
                 .SetAuthType(endpoint_fetcher::OAUTH)
+                .SetOAuthConsumerId(
+                    signin::OAuthConsumerId::kAccessCodeCastDiscovery)
                 .SetConsentLevel(signin::ConsentLevel::kSync)
                 .SetContentType(kMockContentType)
                 .SetTimeout(kMockTimeout)
                 .SetUrl(GURL(kMockEndpoint))
-                .SetOauthScopes(std::vector<std::string>{kMockScope})
-                .SetOauthConsumerName(kMockOAuthConsumerName)
                 .SetPostData(kMockPostData)
                 .Build()));
 

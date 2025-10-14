@@ -15,7 +15,6 @@ extern const char kContentType[];
 extern const char kDefaultDiscoveryEndpoint[];
 
 extern const char kDiscoveryServicePath[];
-extern const char kDiscoveryOAuthConsumerName[];
 extern const char kEmptyPostData[];
 
 extern const char kJsonDevice[];
