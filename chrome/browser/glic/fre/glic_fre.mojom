@@ -48,6 +48,10 @@ interface FrePageHandler {
   // loading and the remote web content is about to start loading in the
   // webview. This is used to record timing metrics.
   LogWebUiLoadComplete();
+
+  // Called when the web client content has loaded in the webview, before any
+  // artificial hold time is applied.
+  LogWebClientLoaded();
 };
 
 // LINT.IfChange(FreWebUiState)

@@ -81,4 +81,8 @@ void GlicFrePageHandler::LogWebUiLoadComplete() {
   GetGlicService()->fre_controller().LogWebUiLoadComplete();
 }
 
+void GlicFrePageHandler::LogWebClientLoaded() {
+  GetGlicService()->fre_controller().LogWebClientLoaded();
+}
+
 }  // namespace glic

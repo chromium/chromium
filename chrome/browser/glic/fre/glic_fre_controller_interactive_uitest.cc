@@ -395,6 +395,61 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
       })));
 }
 
+class GlicFreControllerUiHoldTimeTest : public GlicFreControllerUiTestBase {
+ public:
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlic,
+         {{// Set a non-zero min loading time to force the hold state.
+           "glic-min-loading-time-ms", "5000"},
+          {"glic-max-loading-time-ms", "10000"},
+          // Set a non-zero pre-loading time to prevent a race condition
+          // where
+          // the content loads before the UI enters the "ShowLoading" state.
+          {"glic-pre-loading-time-ms", "100"}}}};
+
+    features_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
+
+    fre_server_.AddDefaultHandlers();
+    fre_server_.ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
+    ASSERT_TRUE(fre_server_.InitializeAndListen());
+
+    fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
+
+    GlicFreControllerUiTestBase::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHoldTimeTest,
+                       RecordsHoldTimeWhenContentLoadsFast) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      InAnyContext(Do([&]() {
+        histogram_tester().ExpectTotalCount("Glic.Fre.WebUiFrameworkLoadTime",
+                                            1);
+        histogram_tester().ExpectTotalCount("Glic.Fre.WebClientLoadTime", 1);
+        histogram_tester().ExpectTotalCount("Glic.Fre.HoldTime", 1);
+
+        // Check that HoldTime was recorded and is accurate.
+        auto samples = histogram_tester().GetAllSamples("Glic.Fre.HoldTime");
+        ASSERT_EQ(1u, samples.size());
+        EXPECT_GT(samples[0].min, 0);
+        // The hold time must be less than the total configured time (100ms
+        // pre_hold + 5000ms min_hold = 5100ms), because it only represents the
+        // *remainder* of that time after the content has already loaded.
+        EXPECT_LT(samples[0].min, 5100);
+      })));
+}
+
 class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
