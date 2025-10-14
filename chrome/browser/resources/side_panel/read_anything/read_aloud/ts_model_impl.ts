@@ -83,7 +83,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   }
 
   init(context: DomReadAloudNode): void {
-    if (!(context instanceof DomReadAloudNode) || this.initialized_) {
+    if (!(context instanceof DomReadAloudNode)) {
       return;
     }
 
