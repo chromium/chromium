@@ -185,8 +185,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
 // static
 std::unique_ptr<gfx::ClientNativePixmap>
 ClientNativePixmapDmaBuf::ImportFromDmabuf(gfx::NativePixmapHandle handle,
-                                           const gfx::Size& size,
-                                           gfx::BufferFormat format) {
+                                           const gfx::Size& size) {
   if (handle.planes.size() > kMaxPlanes)
     return nullptr;
 

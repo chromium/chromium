@@ -137,9 +137,9 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
 
 bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
-                                 gfx::BufferFormat buffer_format,
+                                 viz::SharedImageFormat format,
                                  bool assume_single_memory_object) {
-  viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
+  CHECK(viz::HasEquivalentBufferFormat(format));
   size_t expected_planes = format.NumberOfPlanes();
   if (expected_planes == 0 || handle.planes.size() != expected_planes)
     return false;
