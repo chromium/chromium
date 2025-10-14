@@ -69,6 +69,12 @@ BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Controls whether CanvasResource::WaitSyncToken(const SyncToken&) should
+// defer wait (when enabled) or wait immediately (when disabled).
+BASE_FEATURE(kCanvasResourceDefersWaitSyncToken,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 CanvasResource::CanvasResource()
@@ -464,6 +470,7 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // complete.
   WaitSyncToken(external_write_sync_token);
 
+  WaitSyncToken();
   // Additionally ensure that the next compositor read waits for the external
   // write to complete by ensuring that a new sync token is generated on the
   // internal interface as part of generating the TransferableResource. This new
@@ -507,7 +514,9 @@ void CanvasResourceSharedImage::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
-    WaitSyncToken();
+    if (!base::FeatureList::IsEnabled(kCanvasResourceDefersWaitSyncToken)) {
+      WaitSyncToken();
+    }
   }
 }
 
