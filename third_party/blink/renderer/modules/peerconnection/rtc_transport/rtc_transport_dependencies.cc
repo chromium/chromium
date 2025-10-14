@@ -170,7 +170,17 @@ RtcTransportDependencies::RtcTransportDependencies(ExecutionContext& context,
           context.GetTaskRunner(TaskType::kNetworking)));
 }
 
-RtcTransportDependencies::~RtcTransportDependencies() = default;
+RtcTransportDependencies::~RtcTransportDependencies() {
+  PostCrossThreadTask(
+      *NetworkTaskRunner(), FROM_HERE,
+      CrossThreadBindOnce(
+          [](std::unique_ptr<IpcNetworkManager> network_manager,
+             std::unique_ptr<IpcPacketSocketFactory> socket_factory) {
+            network_manager.reset();
+            socket_factory.reset();
+          },
+          std::move(network_manager_), std::move(socket_factory_)));
+}
 
 void RtcTransportDependencies::RunOnceInitialized(
     base::OnceClosure initialized_callback) {
