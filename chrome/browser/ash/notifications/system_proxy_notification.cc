@@ -8,17 +8,11 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -52,7 +46,7 @@ void SystemProxyNotification::Show() {
       IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_BODY,
       base::ASCIIToUTF16(protection_space_.origin()));
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title, body,
       std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -65,8 +59,9 @@ void SystemProxyNotification::Show() {
       kNotificationWifiIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
-  notification.set_pinned(true);
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  notification->set_pinned(true);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void SystemProxyNotification::SystemProxyNotification::OnClick() {
@@ -75,7 +70,8 @@ void SystemProxyNotification::SystemProxyNotification::OnClick() {
 }
 
 void SystemProxyNotification::Close() {
-  SystemNotificationHelper::GetInstance()->Close(kNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
+                                                           false /* by_user */);
 }
 
 }  // namespace ash

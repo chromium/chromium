@@ -2,35 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
-
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 using testing::_;
 using testing::Mock;
@@ -86,10 +83,6 @@ class UpdateRequiredNotificationTest
     return minimum_version_policy_handler_.get();
   }
 
-  NotificationDisplayServiceTester* display_service() {
-    return notification_service_.get();
-  }
-
   FakeUpdateEngineClient* update_engine() { return fake_update_engine_client_; }
 
   NetworkHandlerTestHelper* network_handler_test_helper() {
@@ -104,7 +97,6 @@ class UpdateRequiredNotificationTest
  private:
   bool user_managed_ = true;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
@@ -120,6 +112,7 @@ UpdateRequiredNotificationTest::UpdateRequiredNotificationTest() {
 }
 
 void UpdateRequiredNotificationTest::SetUp() {
+  message_center::MessageCenter::Initialize();
   fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
@@ -133,10 +126,6 @@ void UpdateRequiredNotificationTest::SetUp() {
 
   scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                          "device_id");
-  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-      std::make_unique<SystemNotificationHelper>());
-  notification_service_ =
-      std::make_unique<NotificationDisplayServiceTester>(nullptr /*profile*/);
 
   CreateMinimumVersionHandler();
   SetCurrentVersionString(kFakeCurrentVersion);
@@ -146,6 +135,7 @@ void UpdateRequiredNotificationTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
   UpdateEngineClient::Shutdown();
+  message_center::MessageCenter::Shutdown();
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
@@ -181,8 +171,9 @@ void UpdateRequiredNotificationTest::SetPolicyPref(base::Value::Dict value) {
 void UpdateRequiredNotificationTest::VerifyUpdateRequiredNotification(
     const std::u16string& expected_title,
     const std::u16string& expected_message) {
-  auto notification =
-      display_service()->GetNotification(kUpdateRequiredNotificationId);
+  const auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId);
   ASSERT_TRUE(notification);
   EXPECT_EQ(notification->title(), expected_title);
   EXPECT_EQ(notification->message(), expected_message);
@@ -202,10 +193,12 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetPolicyPref(policy::CreateMinimumVersionSingleRequirementPolicyValue(
       kNewVersion, kLongWarningInDays, kLongWarningInDays,
       false /* unmanaged_user_restricted */));
   run_loop.Run();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
@@ -219,8 +212,11 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
+  message_center::MessageCenterWaiter waiter_last_day(
+      kUpdateRequiredNotificationId);
   const base::TimeDelta warning = base::Days(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
+  waiter_last_day.WaitUntilUpdated();
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day =
       u"managed.com requires you to download an update today. The "
@@ -246,10 +242,12 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetPolicyPref(policy::CreateMinimumVersionSingleRequirementPolicyValue(
       kNewVersion, kLongWarningInDays, kLongWarningInDays,
       false /* unmanaged_user_restricted */));
   run_loop.Run();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
@@ -262,8 +260,11 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
+  message_center::MessageCenterWaiter waiter_last_day(
+      kUpdateRequiredNotificationId);
   const base::TimeDelta warning = base::Days(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
+  waiter_last_day.WaitUntilUpdated();
   std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day =
       u"managed.com requires you to connect to Wi-Fi today to download an "
@@ -283,10 +284,12 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetPolicyPref(policy::CreateMinimumVersionSingleRequirementPolicyValue(
       kNewVersion, kLongWarningInDays, kLongWarningInDays,
       false /* unmanaged_user_restricted */));
   run_loop.Run();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
@@ -298,15 +301,21 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.
+  message_center::MessageCenterWaiter waiter_one_week(
+      kUpdateRequiredNotificationId);
   const base::TimeDelta warning = base::Days(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
+  waiter_one_week.WaitUntilUpdated();
   std::u16string expected_title_one_week =
       u"Return Chrome device within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
+  message_center::MessageCenterWaiter waiter_last_day(
+      kUpdateRequiredNotificationId);
   const base::TimeDelta warning_last_day = base::Days(6);
   task_environment_.FastForwardBy(warning_last_day);
+  waiter_last_day.WaitUntilUpdated();
   std::u16string expected_title_last_day = u"Immediate return required";
   std::u16string expected_message_last_day =
       u"managed.com requires you to back up your data and return this Chrome "
@@ -336,10 +345,12 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetPolicyPref(policy::CreateMinimumVersionSingleRequirementPolicyValue(
       kNewVersion, kShortWarningInDays, kShortWarningInDays,
       false /* unmanaged_user_restricted */));
   run_loop.Run();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
@@ -364,10 +375,12 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
       run_loop.QuitClosure());
 
   // Create and set pref value to invoke policy handler.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetPolicyPref(policy::CreateMinimumVersionSingleRequirementPolicyValue(
       kNewVersion, kLongWarningInDays, kLongWarningInDays,
       false /* unmanaged_user_restricted */));
   run_loop.Run();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
@@ -380,8 +393,11 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
   VerifyUpdateRequiredNotification(expected_title, expected_message);
 
   // Expire notification timer to show new notification a week before deadline.
+  message_center::MessageCenterWaiter waiter_one_week(
+      kUpdateRequiredNotificationId);
   const base::TimeDelta warning = base::Days(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
+  waiter_one_week.WaitUntilUpdated();
   std::u16string expected_title_one_week = u"Return Chromebox within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 }

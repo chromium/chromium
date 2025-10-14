@@ -43,12 +43,10 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -56,6 +54,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -71,6 +70,8 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 namespace policy {
 
@@ -193,8 +194,6 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
 
   void SetUpOnMainThread() override {
     MinimumVersionPolicyTestBase::SetUpOnMainThread();
-    display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(nullptr /*profile*/);
     network_state_test_helper_ = std::make_unique<ash::NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
@@ -225,7 +224,6 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
                                           managed_user.account_id};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};
   std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
@@ -358,7 +356,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Create and set policy value with long warning time.
   SetDevicePolicyAndWaitForSettingChange(
@@ -371,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
   EXPECT_EQ(prefs->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod),
             kLongWarning);
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Create and set policy value with no warning time.
   SetDevicePolicyAndWaitForSettingChange(
@@ -384,7 +384,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
   EXPECT_EQ(prefs->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod),
             kLongWarning);
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->GetState());
@@ -482,24 +483,31 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
   DisconectAllNetworks();
   LoginManagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   EXPECT_FALSE(tray_test_api_->IsTrayBubbleOpen());
 
   // Set new policy value and check that update required notification is shown.
+  message_center::MessageCenterWaiter waiter_for_adding(
+      kUpdateRequiredNotificationId);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
           false /* unmanaged_user_restricted */));
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+  waiter_for_adding.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
 
   // Clicking on notification button opens the network settings and hides the
   // notification.
-  display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                         kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, std::nullopt);
+  message_center::MessageCenterWaiter waiter_for_removing(
+      kUpdateRequiredNotificationId);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      kUpdateRequiredNotificationId, 0 /* button_index */);
+  waiter_for_removing.WaitUntilRemoved();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
 
@@ -509,25 +517,30 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   DisconectAllNetworks();
   LoginManagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
+  message_center::MessageCenterWaiter waiter_for_adding(
+      kUpdateRequiredNotificationId);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
           false /* unmanaged_user_restricted */));
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+  waiter_for_adding.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
 
   // Connecting to WiFi should hide the update required notification.
-  base::RunLoop run_loop;
-  display_service_tester_->SetNotificationClosedClosure(run_loop.QuitClosure());
+  message_center::MessageCenterWaiter waiter_for_removing(
+      kUpdateRequiredNotificationId);
   network_state_test_helper_->service_test()->AddService(
       kWifiServicePath, kWifiServicePath, kWifiServicePath /* name */,
       shill::kTypeWifi, shill::kStateOnline, true /* visible */);
-  run_loop.Run();
+  waiter_for_removing.WaitUntilRemoved();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
@@ -542,25 +555,32 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
 
   DisconectAllNetworks();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
           false /* unmanaged_user_restricted */));
 
   // Login the user into the session and check that notification is shown.
+  message_center::MessageCenterWaiter waiter_for_adding(
+      kUpdateRequiredNotificationId);
   LoginManagedUser();
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+  waiter_for_adding.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
   EXPECT_FALSE(tray_test_api_->IsTrayBubbleOpen());
 
   // Clicking on the no network update required notification button opens the
   // network settings and hides the notification.
-  display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                         kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, std::nullopt);
+  message_center::MessageCenterWaiter waiter_for_removing(
+      kUpdateRequiredNotificationId);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      kUpdateRequiredNotificationId, 0 /* button_index */);
+  waiter_for_removing.WaitUntilRemoved();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
 
@@ -568,7 +588,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
                        LastDayNotificationOnLoginUnmanagedUser) {
   DisconectAllNetworks();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
@@ -578,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   // for unmanaged user.
   LoginUnmanagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
@@ -597,16 +619,19 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       base::DefaultClock::GetInstance()->Now() - base::Days(1));
   LoginUnmanagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Set policy and check that notification is shown to unmanaged user as it has
   // been set in the policy.
+  message_center::MessageCenterWaiter waiter(kUpdateRequiredNotificationId);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
           true /* unmanaged_user_restricted */));
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+  waiter.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->ShouldShowUpdateRequiredEolBanner());
 }
@@ -614,7 +639,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NotificationsOnLogin) {
   DisconectAllNetworks();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
@@ -624,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NotificationsOnLogin) {
   // it is not the last day to update device.
   LoginManagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
@@ -634,24 +661,31 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   ConnectCellularNetwork();
   LoginManagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
+  message_center::MessageCenterWaiter waiter_for_adding(
+      kUpdateRequiredNotificationId);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
           false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+  waiter_for_adding.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
 
   // Clicking on notification button starts update and hides the notification.
-  display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                         kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, std::nullopt);
+  message_center::MessageCenterWaiter waiter_for_removing(
+      kUpdateRequiredNotificationId);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      kUpdateRequiredNotificationId, 0 /* button_index */);
+  waiter_for_removing.WaitUntilRemoved();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -679,29 +713,46 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
       base::DefaultClock::GetInstance()->Now() - base::Days(1));
   LoginManagedUser();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
+  message_center::MessageCenterWaiter waiter_for_adding(
+      kUpdateRequiredNotificationId);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kShortWarningInDays, kShortWarningInDays,
           false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
-  // Clicking on notification button opens settings page and hides notification.
-  display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                         kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, std::nullopt);
-  EXPECT_FALSE(
-      display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
-  Browser* settings_browser = chrome::FindLastActive();
+  // 1. Wait for the notification to appear.
+  waiter_for_adding.WaitUntilAdded();
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kUpdateRequiredNotificationId));
+
+  // A BrowserCreatedObserver instance must be created before the action that
+  // may create a browser.
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+
+  // 2. Click the notification button. This is an asynchronous operation.
+  message_center::MessageCenterWaiter waiter_for_removing(
+      kUpdateRequiredNotificationId);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      kUpdateRequiredNotificationId, 0 /* button_index */);
+
+  // 3. Wait for the notification to be removed as a result of the click.
+  waiter_for_removing.WaitUntilRemoved();
+  ASSERT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kUpdateRequiredNotificationId));
+
+  // 4. Wait for the new browser window to be created and get a handle to it.
+  Browser* settings_browser = browser_observer.Wait();
   ASSERT_TRUE(settings_browser);
-  EXPECT_EQ(
-      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-      "chrome://management/");
+  content::WebContents* web_contents =
+      settings_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetVisibleURL(), "chrome://management/");
 }
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, RelaunchNotificationOverride) {

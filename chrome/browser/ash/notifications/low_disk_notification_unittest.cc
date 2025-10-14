@@ -6,28 +6,23 @@
 
 #include <stdint.h>
 
-#include <utility>
-
-#include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 namespace {
+
+constexpr const char kLowDiskNotificationId[] = "low_disk";
 
 // Copied from low_disk_notification.cc
 const uint64_t kMediumNotification = (1 << 30) - 1;
@@ -39,7 +34,9 @@ namespace ash {
 
 class LowDiskNotificationTest : public BrowserWithTestWindowTest {
  public:
-  LowDiskNotificationTest() = default;
+  LowDiskNotificationTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~LowDiskNotificationTest() override = default;
 
   void SetUp() override {
@@ -50,14 +47,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
     GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
                                         true);
 
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
-    tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        nullptr /* profile */);
-    tester_->SetNotificationAddedClosure(base::BindRepeating(
-        &LowDiskNotificationTest::OnNotificationAdded, base::Unretained(this)));
     low_disk_notification_ = std::make_unique<LowDiskNotification>();
-    notification_count_ = 0;
 
     medium_message_.set_disk_free_bytes(kMediumNotification);
     high_message_.set_disk_free_bytes(kHighNotification);
@@ -69,8 +59,9 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  std::optional<message_center::Notification> GetNotification() {
-    return tester_->GetNotification("low_disk");
+  const message_center::Notification* GetNotification() {
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+        kLowDiskNotificationId);
   }
 
   void SetNotificationThrottlingInterval(int ms) {
@@ -78,12 +69,8 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
         base::Milliseconds(ms));
   }
 
-  void OnNotificationAdded() { notification_count_++; }
-
  protected:
-  std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
-  int notification_count_;
 
   // A LowDiskSpace protobuf message that contains `kMediumNotification`.
   ::user_data_auth::LowDiskSpace medium_message_;
@@ -94,43 +81,107 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 TEST_F(LowDiskNotificationTest, MediumLevelNotification) {
   std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_LOW_DISK_NOTIFICATION_TITLE);
+  message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
   low_disk_notification_->LowDiskSpace(medium_message_);
-  auto notification = GetNotification();
+  waiter.WaitUntilAdded();
+  const auto* notification = GetNotification();
   ASSERT_TRUE(notification);
   EXPECT_EQ(expected_title, notification->title());
-  EXPECT_EQ(1, notification_count_);
 }
 
 TEST_F(LowDiskNotificationTest, HighLevelReplacesMedium) {
   std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE);
-  low_disk_notification_->LowDiskSpace(medium_message_);
-  low_disk_notification_->LowDiskSpace(high_message_);
-  auto notification = GetNotification();
-  ASSERT_TRUE(notification);
-  EXPECT_EQ(expected_title, notification->title());
-  EXPECT_EQ(2, notification_count_);
+
+  // Show medium notification.
+  {
+    message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
+    low_disk_notification_->LowDiskSpace(medium_message_);
+    waiter.WaitUntilAdded();
+  }
+  const auto* medium_notification = GetNotification();
+  ASSERT_TRUE(medium_notification);
+  const base::Time medium_timestamp = medium_notification->timestamp();
+
+  // Advance time and show high notification.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  {
+    message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
+    low_disk_notification_->LowDiskSpace(high_message_);
+    waiter.WaitUntilUpdated();
+  }
+
+  const auto* high_notification = GetNotification();
+  ASSERT_TRUE(high_notification);
+  EXPECT_EQ(high_notification->title(), expected_title);
+  EXPECT_NE(high_notification->timestamp(), medium_timestamp);
 }
 
 TEST_F(LowDiskNotificationTest, NotificationsAreThrottled) {
   SetNotificationThrottlingInterval(10000000);
+
+  // Show first notification.
+  message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
   low_disk_notification_->LowDiskSpace(high_message_);
+  waiter.WaitUntilAdded();
+  const auto* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  const base::Time original_timestamp = notification->timestamp();
+
+  // Immediately trigger another, which should be throttled.
   low_disk_notification_->LowDiskSpace(high_message_);
-  EXPECT_EQ(1, notification_count_);
+  task_environment()->FastForwardBy(base::TimeDelta());
+
+  // Verify the original notification is still there and unchanged.
+  const auto* final_notification = GetNotification();
+  ASSERT_TRUE(final_notification);
+  EXPECT_EQ(final_notification->timestamp(), original_timestamp);
 }
 
 TEST_F(LowDiskNotificationTest, HighNotificationsAreShownAfterThrottling) {
   SetNotificationThrottlingInterval(-1);
-  low_disk_notification_->LowDiskSpace(high_message_);
-  low_disk_notification_->LowDiskSpace(high_message_);
-  EXPECT_EQ(2, notification_count_);
+
+  // Show first notification.
+  {
+    message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
+    low_disk_notification_->LowDiskSpace(high_message_);
+    waiter.WaitUntilAdded();
+  }
+  const auto* first_notification = GetNotification();
+  ASSERT_TRUE(first_notification);
+  const base::Time first_timestamp = first_notification->timestamp();
+
+  // Advance time and show second notification.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  {
+    message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
+    low_disk_notification_->LowDiskSpace(high_message_);
+    waiter.WaitUntilUpdated();
+  }
+  const auto* second_notification = GetNotification();
+  ASSERT_TRUE(second_notification);
+  EXPECT_NE(second_notification->timestamp(), first_timestamp);
 }
 
 TEST_F(LowDiskNotificationTest, MediumNotificationsAreNotShownAfterThrottling) {
   SetNotificationThrottlingInterval(-1);
+
+  // Show first notification.
+  message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
   low_disk_notification_->LowDiskSpace(medium_message_);
+  waiter.WaitUntilAdded();
+  const auto* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  const base::Time original_timestamp = notification->timestamp();
+
+  // Immediately trigger another, which should be throttled.
   low_disk_notification_->LowDiskSpace(medium_message_);
-  EXPECT_EQ(1, notification_count_);
+  task_environment()->FastForwardBy(base::TimeDelta());
+
+  // Verify the original notification is still there and unchanged.
+  const auto* final_notification = GetNotification();
+  ASSERT_TRUE(final_notification);
+  EXPECT_EQ(final_notification->timestamp(), original_timestamp);
 }
 
 TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
@@ -144,8 +195,10 @@ TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
       user_manager::UserType::kRegular);
 
   SetNotificationThrottlingInterval(-1);
+  message_center::MessageCenterWaiter waiter(kLowDiskNotificationId);
   low_disk_notification_->LowDiskSpace(high_message_);
-  EXPECT_EQ(1, notification_count_);
+  waiter.WaitUntilAdded();
+  ASSERT_TRUE(GetNotification());
 }
 
 TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
@@ -163,14 +216,16 @@ TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
 
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->LowDiskSpace(high_message_);
-  EXPECT_EQ(0, notification_count_);
+  task_environment()->FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(GetNotification());
 }
 
 TEST_F(LowDiskNotificationTest, DemoModeSkipNotification) {
   GetCrosSettingsHelper()->InstallAttributes()->SetDemoMode();
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->LowDiskSpace(high_message_);
-  EXPECT_EQ(0, notification_count_);
+  task_environment()->FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(GetNotification());
 }
 
 }  // namespace ash

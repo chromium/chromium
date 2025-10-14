@@ -75,7 +75,7 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
     EXPECT_TRUE(timer()->IsRunning());
     EXPECT_EQ(timer()->GetCurrentDelay(), kExpectedTimeDelay);
     timer()->FireNow();
-    message_center::MessageCenterWaiter(kNotificationId).Wait();
+    message_center::MessageCenterWaiter(kNotificationId).WaitUntilAdded();
   }
   message_center::MessageCenter* message_center() const {
     return message_center::MessageCenter::Get();

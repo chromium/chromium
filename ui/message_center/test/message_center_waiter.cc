@@ -16,36 +16,51 @@ MessageCenterWaiter::MessageCenterWaiter(const std::string& notification_id)
 
 MessageCenterWaiter::~MessageCenterWaiter() = default;
 
-void MessageCenterWaiter::Wait() {
-  if (notification_added_) {
+void MessageCenterWaiter::WaitUntilAdded() {
+  if (added_) {
     return;
   }
+  CHECK(base::test::RunUntil([&]() { return added_; }));
+}
 
-  // This waiter uses `base::test::RunUntil` instead of a manual
-  // `base::RunLoop`. This is the modern and preferred approach for waiting on
-  // asynchronous conditions in tests.
-  //
-  // `RunUntil` is superior for several reasons. First, it has a built-in
-  // timeout. If the condition (the lambda returning true) is not met within a
-  // reasonable time, it will cause a `CHECK` failure. This prevents the test
-  // from hanging indefinitely and provides a clear failure point.
-  //
-  // Second, it is designed to work predictably with mock time environments
-  // (`TaskEnvironment::TimeSource::MOCK_TIME`). In contrast, a manual
-  // `RunLoop` can sometimes cause unexpected side effects, such as prematurely
-  // flushing delayed tasks, leading to tests that pass for the wrong reasons
-  // (false positives).
-  //
-  // Finally, the waiting condition is expressed cleanly and directly within the
-  // lambda. This avoids the boilerplate of managing a `RunLoop` pointer, a
-  // `QuitClosure`, and the associated `Run()` and `Quit()` calls.
-  CHECK(base::test::RunUntil([&]() { return notification_added_; }));
+void MessageCenterWaiter::WaitUntilUpdated() {
+  if (updated_) {
+    return;
+  }
+  CHECK(base::test::RunUntil([&]() { return updated_; }));
+}
+
+void MessageCenterWaiter::WaitUntilRemoved() {
+  if (removed_) {
+    return;
+  }
+  CHECK(base::test::RunUntil([&]() { return removed_; }));
 }
 
 void MessageCenterWaiter::OnNotificationAdded(
     const std::string& notification_id) {
   if (notification_id == notification_id_) {
-    notification_added_ = true;
+    added_ = true;
+  }
+}
+
+// `MessageCenter::AddNotification` triggers `OnNotificationUpdated` if a
+// notification with the same ID already exists. This handler ensures that the
+// waiter correctly captures this case as the notification being "present". A
+// concrete example is `LowDiskNotificationTest.HighLevelReplacesMedium`, where
+// a second call to show a notification replaces the first one.
+void MessageCenterWaiter::OnNotificationUpdated(
+    const std::string& notification_id) {
+  if (notification_id == notification_id_) {
+    updated_ = true;
+  }
+}
+
+void MessageCenterWaiter::OnNotificationRemoved(
+    const std::string& notification_id,
+    bool by_user) {
+  if (notification_id == notification_id_) {
+    removed_ = true;
   }
 }
 

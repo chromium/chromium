@@ -37,10 +37,7 @@ static_library("notifications") {
     "update_required_notification.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/notifications",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",

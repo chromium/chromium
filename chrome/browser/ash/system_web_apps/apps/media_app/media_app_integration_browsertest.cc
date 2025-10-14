@@ -1555,7 +1555,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
 
   EXPECT_EQ("success",
             ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
-  waiter.Wait();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       "hats_notification"));
 }
@@ -1581,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
   LaunchWithNoFiles();
   chrome::FindBrowserWithActiveWindow()->window()->Close();
 
-  waiter.Wait();
+  waiter.WaitUntilAdded();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       "hats_notification"));
 

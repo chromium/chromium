@@ -1472,7 +1472,7 @@ class AppListSurveyTriggerTest
 
     message_center::MessageCenterWaiter(
         ash::HatsNotificationController::kNotificationId)
-        .Wait();
+        .WaitUntilAdded();
   }
 
   const ash::HatsNotificationController* GetHatsNotificationController() const {

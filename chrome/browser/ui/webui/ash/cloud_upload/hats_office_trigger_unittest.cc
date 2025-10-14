@@ -202,7 +202,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterDelaySuccess) {
   // Therefore, we MUST manually advance the clock with `FastForwardBy` to
   // trigger the timer and allow the test to pass correctly.
   task_environment_.FastForwardBy(kDelayTriggerTimeout);
-  waiter.Wait();
+  waiter.WaitUntilAdded();
 
   ASSERT_FALSE(IsDelayTriggerActive());
   ASSERT_TRUE(GetHatsNotificationController());
@@ -256,7 +256,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
       apps::InstanceState(apps::kStarted | apps::kRunning | apps::kVisible));
 
   task_environment_.FastForwardBy(kDebounceDelay);
-  waiter.Wait();
+  waiter.WaitUntilAdded();
 
   ASSERT_TRUE(GetHatsNotificationController());
   ASSERT_TRUE(IsHatsNotificationActive());
@@ -329,7 +329,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyOnlyOnce) {
   // Therefore, we MUST manually advance the clock with `FastForwardBy` to
   // trigger the timer and allow the test to pass correctly.
   task_environment_.FastForwardBy(kDelayTriggerTimeout);
-  waiter.Wait();
+  waiter.WaitUntilAdded();
 
   ASSERT_FALSE(IsDelayTriggerActive());
   const HatsNotificationController* hats_notification_controller =
