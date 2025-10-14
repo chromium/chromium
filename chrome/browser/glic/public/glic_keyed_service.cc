@@ -888,10 +888,6 @@ bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
 }
 
 HostManager& GlicKeyedService::host_manager() {
-  if (!UseDefaultWindowController()) {
-    // Must be accessed through an instance.
-    NOTIMPLEMENTED();
-  }
   return window_controller().host_manager();
 }
 
