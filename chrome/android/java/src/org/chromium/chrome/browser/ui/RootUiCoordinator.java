@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetManager;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeIphController;
 import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -362,6 +363,8 @@ public class RootUiCoordinator
     private final ExclusiveAccessManager mExclusiveAccessManager;
     private final PageZoomManager mPageZoomManager;
     private @Nullable AppHeaderObserver mAppHeaderObserver;
+    protected final ObservableSupplierImpl<ReaderModeIphController>
+            mReaderModeIphControllerSupplier = new ObservableSupplierImpl<>();
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -1554,7 +1557,6 @@ public class RootUiCoordinator
             mAdaptiveToolbarUiCoordinator =
                     new AdaptiveToolbarUiCoordinator(
                             mActivity, mActivityTabProvider, mModalDialogManagerSupplier);
-
             mAdaptiveToolbarUiCoordinator.initialize(
                     createAdaptiveToolbarBehavior(trackerSupplier),
                     mActivityLifecycleDispatcher,
@@ -1570,7 +1572,8 @@ public class RootUiCoordinator
                             mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS),
                     mWindowAndroid,
                     trackerSupplier,
-                    this::getScrimManager);
+                    this::getScrimManager,
+                    mReaderModeIphControllerSupplier);
 
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(

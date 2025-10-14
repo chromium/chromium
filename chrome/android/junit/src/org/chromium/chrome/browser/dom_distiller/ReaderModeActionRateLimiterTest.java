@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -130,19 +128,6 @@ public class ReaderModeActionRateLimiterTest {
         assertFalse(mPrefs.contains(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP));
         assertFalse(
                 mPrefs.contains(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP));
-    }
-
-    @Test
-    public void testOnActionSuppressed_notifiesObserver() {
-        createTemporarySuppression();
-        mReaderModeActionRateLimiter.onActionSuppressed();
-        verify(mObserver).onActionSuppressed();
-    }
-
-    @Test
-    public void testOnActionSuppressed_doesNotNotifyObserverIfActionNotSuppresse() {
-        mReaderModeActionRateLimiter.onActionSuppressed();
-        verify(mObserver, Mockito.times(0)).onActionSuppressed();
     }
 
     private void createTemporarySuppression() {

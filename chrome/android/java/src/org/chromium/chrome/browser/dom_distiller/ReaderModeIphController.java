@@ -23,7 +23,6 @@ public class ReaderModeIphController implements ReaderModeActionRateLimiter.Obse
     private final UserEducationHelper mUserEducationHelper;
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
-    private final ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     /**
      * @param activity The current activity.
@@ -35,30 +34,20 @@ public class ReaderModeIphController implements ReaderModeActionRateLimiter.Obse
             Activity activity,
             Profile profile,
             View toolbarMenuButton,
-            AppMenuHandler appMenuHandler,
-            ReaderModeActionRateLimiter readerModeActionRateLimiter) {
+            AppMenuHandler appMenuHandler) {
         this(
                 new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())),
                 toolbarMenuButton,
-                appMenuHandler,
-                readerModeActionRateLimiter);
+                appMenuHandler);
     }
 
     ReaderModeIphController(
             UserEducationHelper userEducationHelper,
             View toolbarMenuButton,
-            AppMenuHandler appMenuHandler,
-            ReaderModeActionRateLimiter readerModeActionRateLimiter) {
+            AppMenuHandler appMenuHandler) {
         mUserEducationHelper = userEducationHelper;
         mAppMenuHandler = appMenuHandler;
         mToolbarMenuButton = toolbarMenuButton;
-        mReaderModeActionRateLimiter = readerModeActionRateLimiter;
-        mReaderModeActionRateLimiter.addObserver(this);
-    }
-
-    /** Destroys this object */
-    public void destroy() {
-        mReaderModeActionRateLimiter.removeObserver(this);
     }
 
     /** Shows the reader mode IPH. */
@@ -74,12 +63,5 @@ public class ReaderModeIphController implements ReaderModeActionRateLimiter.Obse
                                 () -> mAppMenuHandler.setMenuHighlight(R.id.reader_mode_menu_id))
                         .setOnDismissCallback(mAppMenuHandler::clearMenuHighlight)
                         .build());
-    }
-
-    // ReaderModeActionRateLimiter.Observer implementation.
-
-    @Override
-    public void onActionSuppressed() {
-        showIph();
     }
 }

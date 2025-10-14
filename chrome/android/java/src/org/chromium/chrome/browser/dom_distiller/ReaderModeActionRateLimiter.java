@@ -40,9 +40,6 @@ public class ReaderModeActionRateLimiter {
     @Nullable private static ReaderModeActionRateLimiter sInstance;
 
     public interface Observer {
-        /** Called when the contextual page action was just suppressed. */
-        default void onActionSuppressed() {}
-
         /** Called when the contextual page action was just shown. */
         default void onActionShown() {}
     }
@@ -146,17 +143,6 @@ public class ReaderModeActionRateLimiter {
     /** Called when the reader mode action is clicked. */
     public void onActionClicked() {
         resetTemporarySuppression(ChromeSharedPreferences.getInstance());
-    }
-
-    /** Called when the reader mode action is suppressed. */
-    public void onActionSuppressed() {
-        if (!isActionSuppressed()) {
-            return;
-        }
-
-        for (Observer obs : mObservers) {
-            obs.onActionSuppressed();
-        }
     }
 
     /**

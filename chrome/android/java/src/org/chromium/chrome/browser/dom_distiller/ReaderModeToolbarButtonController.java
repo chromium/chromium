@@ -34,6 +34,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Responsible for providing UI resources for showing a reader mode button on toolbar. */
 @NullMarked
@@ -41,9 +42,11 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         implements ReaderModeActionRateLimiter.Observer {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
+    private final Supplier<@Nullable ReaderModeIphController> mReaderModeIphControllerSupplier;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
     private final ButtonSpec mExitPointSpec;
+
 
     private CallbackController mCallbackController = new CallbackController();
     // Only populated when the TabSupplierObserver events fire.
@@ -62,12 +65,15 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
      *     visible. Can be null to disable this behavior.
      * @param bottomSheetController The bottom sheet controller, used to show the reader mode bottom
      *     sheet.
+     * @param readerModeIphControllerSupplier Supplies the reader mode IPH controller, null for
+     *     CCTs.
      */
     public ReaderModeToolbarButtonController(
             Context context,
             ObservableSupplier<Profile> profileSupplier,
             ActivityTabProvider activityTabProvider,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            Supplier<@Nullable ReaderModeIphController> readerModeIphControllerSupplier) {
         super(
                 activityTabProvider,
                 modalDialogManager,
@@ -81,6 +87,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
 
         mContext = context;
         mActivityTabProvider = activityTabProvider;
+        mReaderModeIphControllerSupplier = readerModeIphControllerSupplier;
         mActivityTabObserver =
                 new TabSupplierObserver(mActivityTabProvider) {
                     @Override
@@ -180,6 +187,11 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                         () -> {
                             ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
                                     ReaderModeMetrics.ReaderModeContextualPageActionEvent.TIME_OUT);
+                            ReaderModeIphController readerModeIphController =
+                                    mReaderModeIphControllerSupplier.get();
+                            if (readerModeIphController != null) {
+                                readerModeIphController.showIph();
+                            }
                             setCanShowButton(false);
                         });
         PostTask.postDelayedTask(
