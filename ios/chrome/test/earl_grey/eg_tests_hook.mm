@@ -60,6 +60,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 namespace tests_hook {
 
@@ -403,6 +404,11 @@ base::TimeDelta GetSnackbarMessageDuration() {
   // Makes the snackbar duration longer for EGTests to make sure there is time
   // detect it, and avoid flakiness.
   return base::Seconds(30);
+}
+
+UIImage* GetPHPickerViewControllerImage() {
+  return ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+      CGSizeMake(1000, 1000), UIColor.greenColor);
 }
 
 }  // namespace tests_hook

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_APP_TESTS_HOOK_H_
 #define IOS_CHROME_APP_TESTS_HOOK_H_
 
-#include <memory>
+#import <memory>
 #import <optional>
 
 class PrefService;
@@ -16,6 +16,7 @@ class ShareKitService;
 class SystemIdentityManager;
 class TabGroupService;
 class TrustedVaultClientBackend;
+@class UIImage;
 
 namespace base {
 class TimeDelta;
@@ -218,6 +219,10 @@ GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
 
 // Returns the default value for the snackbar message duration.
 base::TimeDelta GetSnackbarMessageDuration();
+
+// Returns a UIImage for users of PHPickerViewController to use to skip
+// presenting that picker view controller in tests.
+UIImage* GetPHPickerViewControllerImage();
 
 }  // namespace tests_hook
 

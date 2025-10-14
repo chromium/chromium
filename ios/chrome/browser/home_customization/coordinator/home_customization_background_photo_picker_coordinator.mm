@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/values.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_framing_mediator.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
@@ -34,6 +35,12 @@
 }
 
 - (void)start {
+  // In tests, it's hard to control the PHPickerViewController, so bypass it.
+  UIImage* imageForTest = tests_hook::GetPHPickerViewControllerImage();
+  if (imageForTest) {
+    [self handleSelectedImage:imageForTest];
+    return;
+  }
   [self presentPhotoPicker];
 }
 

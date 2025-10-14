@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
-#include "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "base/no_destructor.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
+#import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
+#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
 IOSChromeBulkLeakCheckServiceFactory*

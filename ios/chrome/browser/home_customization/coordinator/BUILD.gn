@@ -37,6 +37,7 @@ source_set("coordinator") {
     "//components/safety_check:pref_names",
     "//components/sync/protocol:protocol_gen",
     "//components/themes",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",

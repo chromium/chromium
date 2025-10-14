@@ -148,4 +148,8 @@ base::TimeDelta GetSnackbarMessageDuration() {
   return kSnackbarMessageDuration;
 }
 
+UIImage* GetPHPickerViewControllerImage() {
+  return nil;
+}
+
 }  // namespace tests_hook
