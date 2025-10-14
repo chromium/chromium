@@ -54,7 +54,8 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
   }
 
   if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
         "Cannot use Multicast options if feature "
         "MulticastInDirectSocketsEnabled is not enabled. Go to chrome://flags "
         "to enable it.");
@@ -66,7 +67,8 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
     if (!execution_context->IsFeatureEnabled(
             network::mojom::blink::PermissionsPolicyFeature::
                 kMulticastInDirectSockets)) {
-      exception_state.ThrowTypeError(
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
           "Cannot use Multicast options if permission policy "
           "'direct-sockets-multicast' is absent.");
       return false;

@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_THAT(EvalJs(app_frame, content::JsReplace(script, kPrivateAddress)),
               ErrorIs(testing::HasSubstr(
-                  "TypeError: Cannot use Multicast options if permission "
+                  "Cannot use Multicast options if permission "
                   "policy 'direct-sockets-multicast' is absent")));
 }
 
