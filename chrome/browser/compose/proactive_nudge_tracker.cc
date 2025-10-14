@@ -21,6 +21,7 @@
 #include "components/compose/core/browser/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

@@ -19,10 +19,14 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/result.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace segmentation_platform {
+class SegmentationPlatformService;
 }
 
 namespace compose {

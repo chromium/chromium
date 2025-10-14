@@ -15,7 +15,6 @@
 #include "base/token.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -24,8 +23,6 @@
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -40,6 +37,12 @@ namespace content {
 class Page;
 class WebContents;
 }  // namespace content
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+class OptimizationGuideDecider;
+class OptimizationGuideModelExecutor;
+}  // namespace optimization_guide
 
 class ComposeEnabling;
 
