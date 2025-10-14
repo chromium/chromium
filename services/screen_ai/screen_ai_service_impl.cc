@@ -429,19 +429,17 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   if (image.width() > max_dimension || image.height() > max_dimension) {
     base::UmaHistogramEnumeration(
         "Accessibility.ScreenAI.OCR.Downsampled.ClientType", client_type);
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
+                            elapsed_time);
+  } else {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
+                            elapsed_time);
   }
 
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
-  if (image.width() < max_dimension && image.height() < max_dimension) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
-                            elapsed_time);
-  } else {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
-                            elapsed_time);
-  }
 
   // MediaApp provides OCR for ChromeOS PDF viewer.
   if (client_type == OcrClientTypeForMetrics::kPdfViewer ||
