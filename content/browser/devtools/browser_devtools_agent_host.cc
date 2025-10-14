@@ -28,6 +28,8 @@
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
+#include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
@@ -68,6 +70,7 @@ std::set<BrowserDevToolsAgentHost*>& BrowserDevToolsAgentHostInstances() {
 class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     : public protocol::TargetAutoAttacher,
       public ServiceWorkerDevToolsManager::Observer,
+      public SharedWorkerDevToolsManager::Observer,
       public DevToolsAgentHostObserver {
  public:
   BrowserAutoAttacher() = default;
@@ -85,6 +88,17 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     DispatchAutoDetach(host);
   }
 
+  // SharedWorkerDevToolsManager::Observer implementation.
+  void SharedWorkerCreated(SharedWorkerDevToolsAgentHost* host,
+                           bool* should_pause_on_start) override {
+    *should_pause_on_start = wait_for_debugger_on_start();
+    DispatchAutoAttach(host, *should_pause_on_start);
+  }
+
+  void SharedWorkerDestroyed(SharedWorkerDevToolsAgentHost* host) override {
+    DispatchAutoDetach(host);
+  }
+
   void ReattachServiceWorkers() {
     DCHECK(auto_attach());
     ServiceWorkerDevToolsAgentHost::List agent_hosts;
@@ -94,11 +108,27 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
                                      DevToolsAgentHost::kTypeServiceWorker);
   }
 
+  void ReattachSharedWorkers() {
+    if (!shared_worker_devtools_manager_observation_.IsObserving()) {
+      return;
+    }
+    DCHECK(auto_attach());
+    SharedWorkerDevToolsAgentHost::List agent_hosts;
+    SharedWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
+    Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
+    DispatchSetAttachedTargetsOfType(new_hosts,
+                                     DevToolsAgentHost::kTypeSharedWorker);
+  }
+
   void UpdateAutoAttach(base::OnceClosure callback) override {
     if (auto_attach()) {
       base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
       if (!have_observers_) {
         ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        if (!shared_worker_devtools_manager_observation_.IsObserving()) {
+          shared_worker_devtools_manager_observation_.Observe(
+              SharedWorkerDevToolsManager::GetInstance());
+        }
         // DevToolsAgentHost's observer immediately notifies about all existing
         // ones.
         DevToolsAgentHost::AddObserver(this);
@@ -110,9 +140,11 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
           DevToolsAgentHostCreated(host.get());
       }
       ReattachServiceWorkers();
+      ReattachSharedWorkers();
     } else {
       if (have_observers_) {
         DevToolsAgentHost::RemoveObserver(this);
+        shared_worker_devtools_manager_observation_.Reset();
         ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
       }
     }
@@ -160,6 +192,8 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
 
   bool processing_existent_targets_ = false;
   bool have_observers_ = false;
+  base::ScopedObservation<SharedWorkerDevToolsManager, BrowserAutoAttacher>
+      shared_worker_devtools_manager_observation_{this};
 };
 
 // static
