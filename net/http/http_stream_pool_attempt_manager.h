@@ -381,7 +381,7 @@ class HttpStreamPool::AttemptManager
   bool CanStartFallbackTcpBasedAttempt() const;
 
   // Actual implementation of IsConnectionAttemptReady(), without having side
-  // effects.
+  // effects, other than populating `supports_spdy_`, if needed.
   CanAttemptResult CanAttemptConnection() const;
 
   // Returns true only when there are no jobs that ignore the pool and group
@@ -392,8 +392,10 @@ class HttpStreamPool::AttemptManager
   // HTTP/2. Note that this does nothing with QUIC.
   bool IsIpBasedPoolingEnabledForH2() const;
 
-  // Returns true when the destination is known to support HTTP/2. Note that
-  // this could return false while initializing HttpServerProperties.
+  // Returns true when the destination is known to support HTTP/2. The value is
+  // retrieved from HttpServerProperties and cached on first invocation, as
+  // calculating it can be expensive. If HttpServerProperties are still loading
+  // on startup, could be incorrectly set to false.
   bool SupportsSpdy() const;
 
   // Returns true when connection attempts should be throttled because there is
@@ -622,6 +624,16 @@ class HttpStreamPool::AttemptManager
   std::unique_ptr<QuicAttempt> quic_attempt_;
   // Set when `quic_attempt_` is completed.
   std::optional<int> quic_attempt_result_;
+
+  // Whether the host has previously been observed to support SPDY. Populated as
+  // needed, from HttpServerProperties. Set to false (without updating
+  // HttpServerProperties) if an HTTP/1.x connection is established.
+  //
+  // Mutable because setting it does not actually modify AttemptManager state,
+  // and it's read/population from methods that are otherwise const.
+  //
+  // To check the value, call SupportsSpdy(), which will populate it if needed.
+  mutable std::optional<bool> supports_spdy_;
 
   // The delay for TCP based stream attempts in favor of QUIC.
   base::TimeDelta tcp_based_attempt_delay_;

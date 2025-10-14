@@ -1504,8 +1504,13 @@ bool HttpStreamPool::AttemptManager::IsIpBasedPoolingEnabledForH2() const {
 }
 
 bool HttpStreamPool::AttemptManager::SupportsSpdy() const {
-  return http_network_session()->http_server_properties()->GetSupportsSpdy(
-      stream_key().destination(), stream_key().network_anonymization_key());
+  if (!supports_spdy_.has_value()) {
+    supports_spdy_ =
+        http_network_session()->http_server_properties()->GetSupportsSpdy(
+            stream_key().destination(),
+            stream_key().network_anonymization_key());
+  }
+  return *supports_spdy_;
 }
 
 bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() const {
