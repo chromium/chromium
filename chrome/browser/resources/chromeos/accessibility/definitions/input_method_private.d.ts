@@ -261,9 +261,6 @@ declare global {
 
       export const onFocus: ChromeEvent<(context: InputContext) => void>;
 
-      export const onSettingsChanged: ChromeEvent<
-          (engineID: string, settings: InputMethodSettings) => void>;
-
       export const onScreenProjectionChanged:
           ChromeEvent<(isProjected: boolean) => void>;
 
