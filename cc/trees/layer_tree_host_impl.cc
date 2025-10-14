@@ -3378,6 +3378,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   gpu::SharedImageInterface* sii = nullptr;
   if (auto* context_provider = layer_tree_frame_sink_->context_provider()) {
     sii = context_provider->SharedImageInterface();
+  } else {
+    sii = layer_tree_frame_sink_->shared_image_interface().get();
   }
 
   resource_provider_->PrepareSendToParent(resources,

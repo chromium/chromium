@@ -469,7 +469,8 @@ class ReadbackPixelTest : public VizPixelTest {
     std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
             {resource_id}, resource_provider_.get(),
-            child_resource_provider_.get(), child_context_provider_.get());
+            child_resource_provider_.get(),
+            child_context_provider_->SharedImageInterface());
     ResourceId mapped_resource_id = resource_map[resource_id];
 
     const gfx::Rect output_rect(source_size);

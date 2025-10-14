@@ -317,9 +317,9 @@ void CreateTestTwoColoredTextureDrawQuad(
 
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap({resource}, resource_provider,
-                                             child_resource_provider,
-                                             child_context_provider.get());
+      cc::SendResourceAndGetChildToParentMap(
+          {resource}, resource_provider, child_resource_provider,
+          child_context_provider->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   bool needs_blending = true;
@@ -389,9 +389,9 @@ void CreateTestTextureDrawQuad(
 
   // Return the mapped resource id.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
-      cc::SendResourceAndGetChildToParentMap({resource}, resource_provider,
-                                             child_resource_provider,
-                                             child_context_provider.get());
+      cc::SendResourceAndGetChildToParentMap(
+          {resource}, resource_provider, child_resource_provider,
+          child_context_provider->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   bool needs_blending = true;
@@ -3499,7 +3499,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_mask_resource_id = resource_map[mask_resource_id];
 
   // This AggregatedRenderPassDrawQuad does not include the full |viewport_rect|
@@ -3597,7 +3597,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_mask_resource_id = resource_map[mask_resource_id];
 
   // This AggregatedRenderPassDrawQuad does not include the full |viewport_rect|
@@ -3690,7 +3690,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_mask_resource_id = resource_map[mask_resource_id];
 
   // Set up a mask on the AggregatedRenderPassDrawQuad.
@@ -3796,7 +3796,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
       cc::SendResourceAndGetChildToParentMap(
           {mask_resource_id}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_mask_resource_id = resource_map[mask_resource_id];
 
   // Set up a mask on the AggregatedRenderPassDrawQuad.
@@ -3913,7 +3913,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
           resource_map = cc::SendResourceAndGetChildToParentMap(
               {mask_resource_id}, this->resource_provider_.get(),
               this->child_resource_provider_.get(),
-              this->child_context_provider_.get());
+              this->child_context_provider_->SharedImageInterface());
       mapped_mask_resource_id = resource_map[mask_resource_id];
 
       mask_uv_rect =
@@ -4306,7 +4306,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   AggregatedRenderPassId id{1};
@@ -4841,7 +4841,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   AggregatedRenderPassId id{1};
@@ -4891,7 +4891,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   AggregatedRenderPassId id{1};
@@ -4944,7 +4944,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   AggregatedRenderPassId id{1};
@@ -5306,7 +5306,7 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   // Arbitrary dividing lengths to divide up the resource into 16 quads.
@@ -5391,7 +5391,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
 
   AggregatedRenderPassId id{1};
@@ -5496,7 +5496,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
       cc::SendResourceAndGetChildToParentMap(
           {resource}, this->resource_provider_.get(),
           this->child_resource_provider_.get(),
-          this->child_context_provider_.get());
+          this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
   bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
@@ -6348,7 +6348,7 @@ class ColorTransformPixelTest
           resource_map = cc::SendResourceAndGetChildToParentMap(
               {resource}, this->resource_provider_.get(),
               this->child_resource_provider_.get(),
-              this->child_context_provider_.get());
+              this->child_context_provider_->SharedImageInterface());
       ResourceId mapped_resource = resource_map[resource];
 
       bool needs_blending = true;

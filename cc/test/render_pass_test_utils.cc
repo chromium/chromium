@@ -339,10 +339,11 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   // Transfer resource to the parent.
   std::vector<viz::TransferableResource> list;
+
+  CHECK(child_context_provider);
   child_resource_provider->PrepareSendToParent(
       resource_ids_to_transfer, &list,
-      child_context_provider ? child_context_provider->SharedImageInterface()
-                             : nullptr);
+      child_context_provider->SharedImageInterface());
   resource_provider->ReceiveFromChild(child_id, list);
 
   // Delete them in the child so they won't be leaked, and will be released once
@@ -483,7 +484,7 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
                            viz::ResourceIdHasher>
             resource_map = SendResourceAndGetChildToParentMap(
                 {quad->resource_id}, resource_provider, child_resource_provider,
-                child_context_provider);
+                child_context_provider->SharedImageInterface());
         quad->resource_id = resource_map[quad->resource_id];
       }
     }
