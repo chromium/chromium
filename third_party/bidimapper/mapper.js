@@ -3885,43 +3885,64 @@
             this.#networkStorage.disownData(params);
             return {};
         }
-        async setExtraHeaders(params) {
-            if (params.userContexts !== undefined && params.contexts !== undefined) {
-                throw new InvalidArgumentException('contexts and userContexts are mutually exclusive');
+        async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds) {
+            if (browsingContextIds === undefined && userContextIds === undefined) {
+                return this.#browsingContextStorage.getTopLevelContexts();
             }
+            if (browsingContextIds !== undefined && userContextIds !== undefined) {
+                throw new InvalidArgumentException('User contexts and browsing contexts are mutually exclusive');
+            }
+            const result = [];
+            if (userContextIds !== undefined) {
+                if (userContextIds.length === 0) {
+                    throw new InvalidArgumentException('user context should be provided');
+                }
+                await this.#userContextStorage.verifyUserContextIdList(userContextIds);
+                for (const userContextId of userContextIds) {
+                    const topLevelBrowsingContexts = this.#browsingContextStorage
+                        .getTopLevelContexts()
+                        .filter((browsingContext) => browsingContext.userContext === userContextId);
+                    result.push(...topLevelBrowsingContexts);
+                }
+            }
+            if (browsingContextIds !== undefined) {
+                if (browsingContextIds.length === 0) {
+                    throw new InvalidArgumentException('browsing context should be provided');
+                }
+                for (const browsingContextId of browsingContextIds) {
+                    const browsingContext = this.#browsingContextStorage.getContext(browsingContextId);
+                    if (!browsingContext.isTopLevelContext()) {
+                        throw new InvalidArgumentException('The command is only supported on the top-level context');
+                    }
+                    result.push(browsingContext);
+                }
+            }
+            return [...new Set(result).values()];
+        }
+        async setExtraHeaders(params) {
+            const affectedBrowsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
             const cdpExtraHeaders = parseBiDiHeaders(params.headers);
-            const affectedCdpTargets = new Set();
             if (params.userContexts === undefined && params.contexts === undefined) {
                 this.#contextConfigStorage.updateGlobalConfig({
                     extraHeaders: cdpExtraHeaders,
                 });
-                this.#browsingContextStorage
-                    .getAllContexts()
-                    .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
             }
             if (params.userContexts !== undefined) {
-                await this.#userContextStorage.verifyUserContextIdList(params.userContexts);
                 params.userContexts.forEach((userContext) => {
                     this.#contextConfigStorage.updateUserContextConfig(userContext, {
                         extraHeaders: cdpExtraHeaders,
                     });
-                    this.#browsingContextStorage
-                        .getAllContexts()
-                        .filter((c) => c.userContext === userContext)
-                        .forEach((c) => affectedCdpTargets.add(c.cdpTarget));
                 });
             }
             if (params.contexts !== undefined) {
-                this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
                 params.contexts.forEach((browsingContextId) => {
                     this.#contextConfigStorage.updateBrowsingContextConfig(browsingContextId, { extraHeaders: cdpExtraHeaders });
-                    affectedCdpTargets.add(this.#browsingContextStorage.getContext(browsingContextId).cdpTarget);
-                    this.#browsingContextStorage
-                        .getContext(browsingContextId)
-                        .allChildren.forEach((c) => affectedCdpTargets.add(c.cdpTarget));
                 });
             }
-            await Promise.all(Array.from(affectedCdpTargets).map((cdpTarget) => cdpTarget.setExtraHeaders(cdpExtraHeaders)));
+            await Promise.all(affectedBrowsingContexts.map(async (context) => {
+                const extraHeaders = this.#contextConfigStorage.getActiveConfig(context.id, context.userContext).extraHeaders ?? {};
+                await context.setExtraHeaders(extraHeaders);
+            }));
             return {};
         }
     }
@@ -3944,10 +3965,55 @@
         }
         return result;
     }
+    const FORBIDDEN_HEADER_NAME_SYMBOLS = new Set([
+        ' ',
+        '\t',
+        '\n',
+        '"',
+        '(',
+        ')',
+        ',',
+        '/',
+        ':',
+        ';',
+        '<',
+        '=',
+        '>',
+        '?',
+        '@',
+        '[',
+        '\\',
+        ']',
+        '{',
+        '}',
+    ]);
+    const FORBIDDEN_HEADER_VALUE_SYMBOLS = new Set(['\0', '\n', '\r']);
+    function includesChar(str, chars) {
+        for (const char of str) {
+            if (chars.has(char)) {
+                return true;
+            }
+        }
+        return false;
+    }
     function parseBiDiHeaders(headers) {
         const parsedHeaders = {};
         for (const bidiHeader of headers) {
             if (bidiHeader.value.type === 'string') {
+                const name = bidiHeader.name;
+                const value = bidiHeader.value.value;
+                if (name.length === 0) {
+                    throw new InvalidArgumentException(`Empty header name is not allowed`);
+                }
+                if (includesChar(name, FORBIDDEN_HEADER_NAME_SYMBOLS)) {
+                    throw new InvalidArgumentException(`Header name '${name}' contains forbidden symbols`);
+                }
+                if (includesChar(value, FORBIDDEN_HEADER_VALUE_SYMBOLS)) {
+                    throw new InvalidArgumentException(`Header value '${value}' contains forbidden symbols`);
+                }
+                if (value.trim() !== value) {
+                    throw new InvalidArgumentException(`Header value should not contain trailing or ending whitespaces`);
+                }
                 if (parsedHeaders[bidiHeader.name] === undefined) {
                     parsedHeaders[bidiHeader.name] = bidiHeader.value.value;
                 }
@@ -5544,11 +5610,24 @@
         getGlobalConfig() {
             return this.#global;
         }
+        #getExtraHeaders(topLevelBrowsingContextId, userContext) {
+            const globalHeaders = this.#global.extraHeaders ?? {};
+            const userContextHeaders = this.#userContextConfigs.get(userContext)?.extraHeaders ?? {};
+            const browsingContextHeaders = topLevelBrowsingContextId === undefined
+                ? {}
+                : (this.#browsingContextConfigs.get(topLevelBrowsingContextId)
+                    ?.extraHeaders ?? {});
+            return { ...globalHeaders, ...userContextHeaders, ...browsingContextHeaders };
+        }
         getActiveConfig(topLevelBrowsingContextId, userContext) {
-            const userContextConfig = ContextConfig.merge(this.#global, this.#userContextConfigs.get(userContext));
-            if (topLevelBrowsingContextId === undefined)
-                return userContextConfig;
-            return ContextConfig.merge(userContextConfig, this.#browsingContextConfigs.get(topLevelBrowsingContextId));
+            let result = ContextConfig.merge(this.#global, this.#userContextConfigs.get(userContext));
+            if (topLevelBrowsingContextId !== undefined) {
+                result = ContextConfig.merge(result, this.#browsingContextConfigs.get(topLevelBrowsingContextId));
+            }
+            const extraHeaders = this.#getExtraHeaders(topLevelBrowsingContextId, userContext);
+            result.extraHeaders =
+                Object.keys(extraHeaders).length > 0 ? extraHeaders : undefined;
+            return result;
         }
     }
 
@@ -7774,6 +7853,9 @@
         async setEmulatedNetworkConditions(networkConditions) {
             await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setEmulatedNetworkConditions(networkConditions)));
         }
+        async setExtraHeaders(cdpExtraHeaders) {
+            await Promise.all(this.#getAllRelatedCdpTargets().map(async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders)));
+        }
     }
     _a$5 = BrowsingContextImpl;
     function serializeOrigin(origin) {
@@ -8237,907 +8319,6 @@
     }
     _a$4 = LogManager;
 
-    class CdpTarget {
-        #id;
-        #userContext;
-        #cdpClient;
-        #browserCdpClient;
-        #parentCdpClient;
-        #realmStorage;
-        #eventManager;
-        #preloadScriptStorage;
-        #browsingContextStorage;
-        #networkStorage;
-        contextConfigStorage;
-        #unblocked = new Deferred();
-        #logger;
-        #previousDeviceMetricsOverride = {
-            width: 0,
-            height: 0,
-            deviceScaleFactor: 0,
-            mobile: false,
-            dontSetVisibleSize: true,
-        };
-        #windowId;
-        #deviceAccessEnabled = false;
-        #cacheDisableState = false;
-        #preloadEnabled = false;
-        #fetchDomainStages = {
-            request: false,
-            response: false,
-            auth: false,
-        };
-        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, configStorage, userContext, logger) {
-            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger);
-            LogManager.create(cdpTarget, realmStorage, eventManager, logger);
-            cdpTarget.#setEventListeners();
-            void cdpTarget.#unblock();
-            return cdpTarget;
-        }
-        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger) {
-            this.#userContext = userContext;
-            this.#id = targetId;
-            this.#cdpClient = cdpClient;
-            this.#browserCdpClient = browserCdpClient;
-            this.#parentCdpClient = parentCdpClient;
-            this.#eventManager = eventManager;
-            this.#realmStorage = realmStorage;
-            this.#preloadScriptStorage = preloadScriptStorage;
-            this.#networkStorage = networkStorage;
-            this.#browsingContextStorage = browsingContextStorage;
-            this.contextConfigStorage = configStorage;
-            this.#logger = logger;
-        }
-        get unblocked() {
-            return this.#unblocked;
-        }
-        get id() {
-            return this.#id;
-        }
-        get cdpClient() {
-            return this.#cdpClient;
-        }
-        get parentCdpClient() {
-            return this.#parentCdpClient;
-        }
-        get browserCdpClient() {
-            return this.#browserCdpClient;
-        }
-        get cdpSessionId() {
-            return this.#cdpClient.sessionId;
-        }
-        get windowId() {
-            if (this.#windowId === undefined) {
-                this.#logger?.(LogType.debugError, 'Getting windowId before it was set, returning 0');
-            }
-            return this.#windowId ?? 0;
-        }
-        async #unblock() {
-            const results = await Promise.allSettled([
-                this.#cdpClient.sendCommand('Page.enable', {
-                    enableFileChooserOpenedEvent: true,
-                }),
-                ...(this.#ignoreFileDialog()
-                    ? []
-                    : [
-                        this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
-                            enabled: true,
-                            cancel: true,
-                        }),
-                    ]),
-                this.#cdpClient
-                    .sendCommand('Page.getFrameTree')
-                    .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
-                this.#cdpClient.sendCommand('Runtime.enable'),
-                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-                    enabled: true,
-                }),
-                this.#cdpClient
-                    .sendCommand('Network.enable')
-                    .then(() => this.toggleNetworkIfNeeded()),
-                this.#cdpClient.sendCommand('Target.setAutoAttach', {
-                    autoAttach: true,
-                    waitForDebuggerOnStart: true,
-                    flatten: true,
-                }),
-                this.#updateWindowId(),
-                this.#setUserContextConfig(),
-                this.#initAndEvaluatePreloadScripts(),
-                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-                this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-                this.toggleDeviceAccessIfNeeded(),
-                this.togglePreloadIfNeeded(),
-            ]);
-            for (const result of results) {
-                if (result instanceof Error) {
-                    this.#logger?.(LogType.debugError, 'Error happened when configuring a new target', result);
-                }
-            }
-            this.#unblocked.resolve({
-                kind: 'success',
-                value: undefined,
-            });
-        }
-        #restoreFrameTreeState(frameTree) {
-            const frame = frameTree.frame;
-            const maybeContext = this.#browsingContextStorage.findContext(frame.id);
-            if (maybeContext !== undefined) {
-                if (maybeContext.parentId === null &&
-                    frame.parentId !== null &&
-                    frame.parentId !== undefined) {
-                    maybeContext.parentId = frame.parentId;
-                }
-            }
-            if (maybeContext === undefined && frame.parentId !== undefined) {
-                const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
-                BrowsingContextImpl.create(frame.id, frame.parentId, this.#userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.contextConfigStorage, frame.url, undefined, this.#logger);
-            }
-            frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
-        }
-        async toggleFetchIfNeeded() {
-            const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
-            if (this.#fetchDomainStages.request === stages.request &&
-                this.#fetchDomainStages.response === stages.response &&
-                this.#fetchDomainStages.auth === stages.auth) {
-                return;
-            }
-            const patterns = [];
-            this.#fetchDomainStages = stages;
-            if (stages.request || stages.auth) {
-                patterns.push({
-                    urlPattern: '*',
-                    requestStage: 'Request',
-                });
-            }
-            if (stages.response) {
-                patterns.push({
-                    urlPattern: '*',
-                    requestStage: 'Response',
-                });
-            }
-            if (patterns.length) {
-                await this.#cdpClient.sendCommand('Fetch.enable', {
-                    patterns,
-                    handleAuthRequests: stages.auth,
-                });
-            }
-            else {
-                const blockedRequest = this.#networkStorage
-                    .getRequestsByTarget(this)
-                    .filter((request) => request.interceptPhase);
-                void Promise.allSettled(blockedRequest.map((request) => request.waitNextPhase))
-                    .then(async () => {
-                    const blockedRequest = this.#networkStorage
-                        .getRequestsByTarget(this)
-                        .filter((request) => request.interceptPhase);
-                    if (blockedRequest.length) {
-                        return await this.toggleFetchIfNeeded();
-                    }
-                    return await this.#cdpClient.sendCommand('Fetch.disable');
-                })
-                    .catch((error) => {
-                    this.#logger?.(LogType.bidi, 'Disable failed', error);
-                });
-            }
-        }
-        async toggleNetworkIfNeeded() {
-            try {
-                await Promise.all([
-                    this.toggleSetCacheDisabled(),
-                    this.toggleFetchIfNeeded(),
-                ]);
-            }
-            catch (err) {
-                this.#logger?.(LogType.debugError, err);
-                if (!this.#isExpectedError(err)) {
-                    throw err;
-                }
-            }
-        }
-        async toggleSetCacheDisabled(disable) {
-            const defaultCacheDisabled = this.#networkStorage.defaultCacheBehavior === 'bypass';
-            const cacheDisabled = disable ?? defaultCacheDisabled;
-            if (this.#cacheDisableState === cacheDisabled) {
-                return;
-            }
-            this.#cacheDisableState = cacheDisabled;
-            try {
-                await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
-                    cacheDisabled,
-                });
-            }
-            catch (err) {
-                this.#logger?.(LogType.debugError, err);
-                this.#cacheDisableState = !cacheDisabled;
-                if (!this.#isExpectedError(err)) {
-                    throw err;
-                }
-            }
-        }
-        async toggleDeviceAccessIfNeeded() {
-            const enabled = this.isSubscribedTo(Bluetooth$2.EventNames.RequestDevicePromptUpdated);
-            if (this.#deviceAccessEnabled === enabled) {
-                return;
-            }
-            this.#deviceAccessEnabled = enabled;
-            try {
-                await this.#cdpClient.sendCommand(enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable');
-            }
-            catch (err) {
-                this.#logger?.(LogType.debugError, err);
-                this.#deviceAccessEnabled = !enabled;
-                if (!this.#isExpectedError(err)) {
-                    throw err;
-                }
-            }
-        }
-        async togglePreloadIfNeeded() {
-            const enabled = this.isSubscribedTo(Speculation.EventNames.PrefetchStatusUpdated);
-            if (this.#preloadEnabled === enabled) {
-                return;
-            }
-            this.#preloadEnabled = enabled;
-            try {
-                await this.#cdpClient.sendCommand(enabled ? 'Preload.enable' : 'Preload.disable');
-            }
-            catch (err) {
-                this.#logger?.(LogType.debugError, err);
-                this.#preloadEnabled = !enabled;
-                if (!this.#isExpectedError(err)) {
-                    throw err;
-                }
-            }
-        }
-        #isExpectedError(err) {
-            const error = err;
-            return ((error.code === -32001 &&
-                error.message === 'Session with given id not found.') ||
-                this.#cdpClient.isCloseError(err));
-        }
-        #setEventListeners() {
-            this.#cdpClient.on('*', (event, params) => {
-                if (typeof event !== 'string') {
-                    return;
-                }
-                this.#eventManager.registerEvent({
-                    type: 'event',
-                    method: `goog:cdp.${event}`,
-                    params: {
-                        event,
-                        params,
-                        session: this.cdpSessionId,
-                    },
-                }, this.id);
-            });
-        }
-        async #enableFetch(stages) {
-            const patterns = [];
-            if (stages.request || stages.auth) {
-                patterns.push({
-                    urlPattern: '*',
-                    requestStage: 'Request',
-                });
-            }
-            if (stages.response) {
-                patterns.push({
-                    urlPattern: '*',
-                    requestStage: 'Response',
-                });
-            }
-            if (patterns.length) {
-                const oldStages = this.#fetchDomainStages;
-                this.#fetchDomainStages = stages;
-                try {
-                    await this.#cdpClient.sendCommand('Fetch.enable', {
-                        patterns,
-                        handleAuthRequests: stages.auth,
-                    });
-                }
-                catch {
-                    this.#fetchDomainStages = oldStages;
-                }
-            }
-        }
-        async #disableFetch() {
-            const blockedRequest = this.#networkStorage
-                .getRequestsByTarget(this)
-                .filter((request) => request.interceptPhase);
-            if (blockedRequest.length === 0) {
-                this.#fetchDomainStages = {
-                    request: false,
-                    response: false,
-                    auth: false,
-                };
-                await this.#cdpClient.sendCommand('Fetch.disable');
-            }
-        }
-        async toggleNetwork() {
-            const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
-            const fetchEnable = Object.values(stages).some((value) => value);
-            const fetchChanged = this.#fetchDomainStages.request !== stages.request ||
-                this.#fetchDomainStages.response !== stages.response ||
-                this.#fetchDomainStages.auth !== stages.auth;
-            this.#logger?.(LogType.debugInfo, 'Toggle Network', `Fetch (${fetchEnable}) ${fetchChanged}`);
-            if (fetchEnable && fetchChanged) {
-                await this.#enableFetch(stages);
-            }
-            if (!fetchEnable && fetchChanged) {
-                await this.#disableFetch();
-            }
-        }
-        getChannels() {
-            return this.#preloadScriptStorage
-                .find()
-                .flatMap((script) => script.channels);
-        }
-        async #updateWindowId() {
-            const { windowId } = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId: this.id });
-            this.#windowId = windowId;
-        }
-        async #initAndEvaluatePreloadScripts() {
-            await Promise.all(this.#preloadScriptStorage
-                .find({
-                targetId: this.topLevelId,
-            })
-                .map((script) => {
-                return script.initInTarget(this, true);
-            }));
-        }
-        async setViewport(viewport, devicePixelRatio) {
-            if (viewport === null && devicePixelRatio === null) {
-                await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
-                return;
-            }
-            const newViewport = { ...this.#previousDeviceMetricsOverride };
-            if (viewport === null) {
-                newViewport.width = 0;
-                newViewport.height = 0;
-            }
-            else if (viewport !== undefined) {
-                newViewport.width = viewport.width;
-                newViewport.height = viewport.height;
-            }
-            if (devicePixelRatio === null) {
-                newViewport.deviceScaleFactor = 0;
-            }
-            else if (devicePixelRatio !== undefined) {
-                newViewport.deviceScaleFactor = devicePixelRatio;
-            }
-            try {
-                await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
-                this.#previousDeviceMetricsOverride = newViewport;
-            }
-            catch (err) {
-                if (err.message.startsWith(
-                'Width and height values must be positive')) {
-                    throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
-                }
-                throw err;
-            }
-        }
-        async #setUserContextConfig() {
-            const promises = [];
-            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
-            promises.push(this.#cdpClient
-                .sendCommand('Page.setPrerenderingAllowed', {
-                isAllowed: !config.prerenderingDisabled,
-            })
-                .catch(() => {
-            }));
-            if (config.viewport !== undefined ||
-                config.devicePixelRatio !== undefined) {
-                promises.push(this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
-                }));
-            }
-            if (config.screenOrientation !== undefined &&
-                config.screenOrientation !== null) {
-                promises.push(this.setScreenOrientationOverride(config.screenOrientation).catch(() => {
-                }));
-            }
-            if (config.geolocation !== undefined && config.geolocation !== null) {
-                promises.push(this.setGeolocationOverride(config.geolocation));
-            }
-            if (config.locale !== undefined) {
-                promises.push(this.setLocaleOverride(config.locale));
-            }
-            if (config.timezone !== undefined) {
-                promises.push(this.setTimezoneOverride(config.timezone));
-            }
-            if (config.extraHeaders !== undefined) {
-                promises.push(this.setExtraHeaders(config.extraHeaders));
-            }
-            if (config.userAgent !== undefined) {
-                promises.push(this.setUserAgent(config.userAgent));
-            }
-            if (config.scriptingEnabled !== undefined) {
-                promises.push(this.setScriptingEnabled(config.scriptingEnabled));
-            }
-            if (config.acceptInsecureCerts !== undefined) {
-                promises.push(this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-                    ignore: config.acceptInsecureCerts,
-                }));
-            }
-            if (config.emulatedNetworkConditions !== undefined) {
-                promises.push(this.setEmulatedNetworkConditions(config.emulatedNetworkConditions));
-            }
-            await Promise.all(promises);
-        }
-        get topLevelId() {
-            return (this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id);
-        }
-        isSubscribedTo(moduleOrEvent) {
-            return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
-        }
-        #ignoreFileDialog() {
-            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
-            return ((config.userPromptHandler?.file ??
-                config.userPromptHandler?.default ??
-                "ignore" ) ===
-                "ignore" );
-        }
-        async setGeolocationOverride(geolocation) {
-            if (geolocation === null) {
-                await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
-            }
-            else if ('type' in geolocation) {
-                if (geolocation.type !== 'positionUnavailable') {
-                    throw new UnknownErrorException(`Unknown geolocation error ${geolocation.type}`);
-                }
-                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
-            }
-            else if ('latitude' in geolocation) {
-                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
-                    latitude: geolocation.latitude,
-                    longitude: geolocation.longitude,
-                    accuracy: geolocation.accuracy ?? 1,
-                    altitude: geolocation.altitude ?? undefined,
-                    altitudeAccuracy: geolocation.altitudeAccuracy ?? undefined,
-                    heading: geolocation.heading ?? undefined,
-                    speed: geolocation.speed ?? undefined,
-                });
-            }
-            else {
-                throw new UnknownErrorException('Unexpected geolocation coordinates value');
-            }
-        }
-        async setScreenOrientationOverride(screenOrientation) {
-            const newViewport = { ...this.#previousDeviceMetricsOverride };
-            if (screenOrientation === null) {
-                delete newViewport.screenOrientation;
-            }
-            else {
-                newViewport.screenOrientation =
-                    this.#toCdpScreenOrientationAngle(screenOrientation);
-            }
-            await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
-            this.#previousDeviceMetricsOverride = newViewport;
-        }
-        #toCdpScreenOrientationAngle(orientation) {
-            if (orientation.natural === "portrait" ) {
-                switch (orientation.type) {
-                    case 'portrait-primary':
-                        return {
-                            angle: 0,
-                            type: 'portraitPrimary',
-                        };
-                    case 'landscape-primary':
-                        return {
-                            angle: 90,
-                            type: 'landscapePrimary',
-                        };
-                    case 'portrait-secondary':
-                        return {
-                            angle: 180,
-                            type: 'portraitSecondary',
-                        };
-                    case 'landscape-secondary':
-                        return {
-                            angle: 270,
-                            type: 'landscapeSecondary',
-                        };
-                    default:
-                        throw new UnknownErrorException(`Unexpected screen orientation type ${orientation.type}`);
-                }
-            }
-            if (orientation.natural === "landscape" ) {
-                switch (orientation.type) {
-                    case 'landscape-primary':
-                        return {
-                            angle: 0,
-                            type: 'landscapePrimary',
-                        };
-                    case 'portrait-primary':
-                        return {
-                            angle: 90,
-                            type: 'portraitPrimary',
-                        };
-                    case 'landscape-secondary':
-                        return {
-                            angle: 180,
-                            type: 'landscapeSecondary',
-                        };
-                    case 'portrait-secondary':
-                        return {
-                            angle: 270,
-                            type: 'portraitSecondary',
-                        };
-                    default:
-                        throw new UnknownErrorException(`Unexpected screen orientation type ${orientation.type}`);
-                }
-            }
-            throw new UnknownErrorException(`Unexpected orientation natural ${orientation.natural}`);
-        }
-        async setLocaleOverride(locale) {
-            if (locale === null) {
-                await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {});
-            }
-            else {
-                await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
-                    locale,
-                });
-            }
-        }
-        async setScriptingEnabled(scriptingEnabled) {
-            await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
-                value: scriptingEnabled === false,
-            });
-        }
-        async setTimezoneOverride(timezone) {
-            if (timezone === null) {
-                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
-                    timezoneId: '',
-                });
-            }
-            else {
-                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
-                    timezoneId: timezone,
-                });
-            }
-        }
-        async setExtraHeaders(headers) {
-            await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
-                headers,
-            });
-        }
-        async setUserAgent(userAgent) {
-            await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
-                userAgent: userAgent ?? '',
-            });
-        }
-        async setEmulatedNetworkConditions(networkConditions) {
-            if (networkConditions !== null && networkConditions.type !== 'offline') {
-                throw new UnsupportedOperationException(`Unsupported network conditions ${networkConditions.type}`);
-            }
-            await Promise.all([
-                this.cdpClient.sendCommand('Network.emulateNetworkConditionsByRule', {
-                    offline: networkConditions?.type === 'offline',
-                    matchedNetworkConditions: [
-                        {
-                            urlPattern: '',
-                            latency: 0,
-                            downloadThroughput: -1,
-                            uploadThroughput: -1,
-                        },
-                    ],
-                }),
-                this.cdpClient.sendCommand('Network.overrideNetworkState', {
-                    offline: networkConditions?.type === 'offline',
-                    latency: 0,
-                    downloadThroughput: -1,
-                    uploadThroughput: -1,
-                }),
-            ]);
-        }
-    }
-
-    const cdpToBidiTargetTypes = {
-        service_worker: 'service-worker',
-        shared_worker: 'shared-worker',
-        worker: 'dedicated-worker',
-    };
-    class CdpTargetManager {
-        #browserCdpClient;
-        #cdpConnection;
-        #targetKeysToBeIgnoredByAutoAttach = new Set();
-        #selfTargetId;
-        #eventManager;
-        #browsingContextStorage;
-        #networkStorage;
-        #bluetoothProcessor;
-        #preloadScriptStorage;
-        #realmStorage;
-        #configStorage;
-        #speculationProcessor;
-        #defaultUserContextId;
-        #logger;
-        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, speculationProcessor, preloadScriptStorage, defaultUserContextId, logger) {
-            this.#cdpConnection = cdpConnection;
-            this.#browserCdpClient = browserCdpClient;
-            this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
-            this.#selfTargetId = selfTargetId;
-            this.#eventManager = eventManager;
-            this.#browsingContextStorage = browsingContextStorage;
-            this.#preloadScriptStorage = preloadScriptStorage;
-            this.#networkStorage = networkStorage;
-            this.#configStorage = configStorage;
-            this.#bluetoothProcessor = bluetoothProcessor;
-            this.#speculationProcessor = speculationProcessor;
-            this.#realmStorage = realmStorage;
-            this.#defaultUserContextId = defaultUserContextId;
-            this.#logger = logger;
-            this.#setEventListeners(browserCdpClient);
-        }
-        #setEventListeners(cdpClient) {
-            cdpClient.on('Target.attachedToTarget', (params) => {
-                this.#handleAttachedToTargetEvent(params, cdpClient);
-            });
-            cdpClient.on('Target.detachedFromTarget', this.#handleDetachedFromTargetEvent.bind(this));
-            cdpClient.on('Target.targetInfoChanged', this.#handleTargetInfoChangedEvent.bind(this));
-            cdpClient.on('Inspector.targetCrashed', () => {
-                this.#handleTargetCrashedEvent(cdpClient);
-            });
-            cdpClient.on('Page.frameAttached', this.#handleFrameAttachedEvent.bind(this));
-            cdpClient.on('Page.frameSubtreeWillBeDetached', this.#handleFrameSubtreeWillBeDetached.bind(this));
-        }
-        #handleFrameAttachedEvent(params) {
-            const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
-            if (parentBrowsingContext !== undefined) {
-                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
-                'about:blank', undefined, this.#logger);
-            }
-        }
-        #handleFrameSubtreeWillBeDetached(params) {
-            this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
-        }
-        #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
-            const { sessionId, targetInfo } = params;
-            const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-            const detach = async () => {
-                await targetCdpClient
-                    .sendCommand('Runtime.runIfWaitingForDebugger')
-                    .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
-                    .catch((error) => this.#logger?.(LogType.debugError, error));
-            };
-            if (this.#selfTargetId === targetInfo.targetId) {
-                void detach();
-                return;
-            }
-            const targetKey = targetInfo.type === 'service_worker'
-                ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
-                : targetInfo.targetId;
-            if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-                return;
-            }
-            this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
-            const userContext = targetInfo.browserContextId &&
-                targetInfo.browserContextId !== this.#defaultUserContextId
-                ? targetInfo.browserContextId
-                : 'default';
-            switch (targetInfo.type) {
-                case 'tab': {
-                    this.#setEventListeners(targetCdpClient);
-                    void (async () => {
-                        await targetCdpClient.sendCommand('Target.setAutoAttach', {
-                            autoAttach: true,
-                            waitForDebuggerOnStart: true,
-                            flatten: true,
-                        });
-                    })();
-                    return;
-                }
-                case 'page':
-                case 'iframe': {
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
-                    const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
-                    if (maybeContext && targetInfo.type === 'iframe') {
-                        maybeContext.updateCdpTarget(cdpTarget);
-                    }
-                    else {
-                        const parentId = this.#findFrameParentId(targetInfo, parentSessionCdpClient.sessionId);
-                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
-                        targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#logger);
-                    }
-                    return;
-                }
-                case 'service_worker':
-                case 'worker': {
-                    const realm = this.#realmStorage.findRealm({
-                        cdpSessionId: parentSessionCdpClient.sessionId,
-                        sandbox: null,
-                    });
-                    if (!realm) {
-                        void detach();
-                        return;
-                    }
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
-                    this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
-                    return;
-                }
-                case 'shared_worker': {
-                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
-                    this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
-                    return;
-                }
-            }
-            void detach();
-        }
-        #findFrameParentId(targetInfo, parentSessionId) {
-            if (targetInfo.type !== 'iframe') {
-                return null;
-            }
-            const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
-            if (parentId !== undefined) {
-                return parentId;
-            }
-            if (parentSessionId !== undefined) {
-                return (this.#browsingContextStorage.findContextBySession(parentSessionId)
-                    ?.id ?? null);
-            }
-            return null;
-        }
-        #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo, userContext) {
-            this.#setEventListeners(targetCdpClient);
-            this.#preloadScriptStorage.onCdpTargetCreated(targetInfo.targetId, userContext);
-            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext, this.#logger);
-            this.#networkStorage.onCdpTargetCreated(target);
-            this.#bluetoothProcessor.onCdpTargetCreated(target);
-            this.#speculationProcessor.onCdpTargetCreated(target);
-            return target;
-        }
-        #workers = new Map();
-        #handleWorkerTarget(realmType, cdpTarget, ownerRealm) {
-            cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-                const { uniqueId, id, origin } = params.context;
-                const workerRealm = new WorkerRealm(cdpTarget.cdpClient, this.#eventManager, id, this.#logger, serializeOrigin(origin), ownerRealm ? [ownerRealm] : [], uniqueId, this.#realmStorage, realmType);
-                this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
-            });
-        }
-        #handleDetachedFromTargetEvent({ sessionId, targetId, }) {
-            if (targetId) {
-                this.#preloadScriptStorage.find({ targetId }).map((preloadScript) => {
-                    preloadScript.dispose(targetId);
-                });
-            }
-            const context = this.#browsingContextStorage.findContextBySession(sessionId);
-            if (context) {
-                context.dispose(true);
-                return;
-            }
-            const worker = this.#workers.get(sessionId);
-            if (worker) {
-                this.#realmStorage.deleteRealms({
-                    cdpSessionId: worker.cdpClient.sessionId,
-                });
-            }
-        }
-        #handleTargetInfoChangedEvent(params) {
-            const context = this.#browsingContextStorage.findContext(params.targetInfo.targetId);
-            if (context) {
-                context.onTargetInfoChanged(params);
-            }
-        }
-        #handleTargetCrashedEvent(cdpClient) {
-            const realms = this.#realmStorage.findRealms({
-                cdpSessionId: cdpClient.sessionId,
-            });
-            for (const realm of realms) {
-                realm.dispose();
-            }
-        }
-    }
-
-    /**
-     * Copyright 2022 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    class BrowsingContextStorage {
-        #contexts = new Map();
-        #eventEmitter = new EventEmitter();
-        getTopLevelContexts() {
-            return this.getAllContexts().filter((context) => context.isTopLevelContext());
-        }
-        getAllContexts() {
-            return Array.from(this.#contexts.values());
-        }
-        deleteContextById(id) {
-            this.#contexts.delete(id);
-        }
-        deleteContext(context) {
-            this.#contexts.delete(context.id);
-        }
-        addContext(context) {
-            this.#contexts.set(context.id, context);
-            this.#eventEmitter.emit("added" , {
-                browsingContext: context,
-            });
-        }
-        waitForContext(browsingContextId) {
-            if (this.#contexts.has(browsingContextId)) {
-                return Promise.resolve(this.getContext(browsingContextId));
-            }
-            return new Promise((resolve) => {
-                const listener = (event) => {
-                    if (event.browsingContext.id === browsingContextId) {
-                        this.#eventEmitter.off("added" , listener);
-                        resolve(event.browsingContext);
-                    }
-                };
-                this.#eventEmitter.on("added" , listener);
-            });
-        }
-        hasContext(id) {
-            return this.#contexts.has(id);
-        }
-        findContext(id) {
-            return this.#contexts.get(id);
-        }
-        findTopLevelContextId(id) {
-            if (id === null) {
-                return null;
-            }
-            const maybeContext = this.findContext(id);
-            if (!maybeContext) {
-                return null;
-            }
-            const parentId = maybeContext.parentId ?? null;
-            if (parentId === null) {
-                return id;
-            }
-            return this.findTopLevelContextId(parentId);
-        }
-        findContextBySession(sessionId) {
-            for (const context of this.#contexts.values()) {
-                if (context.cdpTarget.cdpSessionId === sessionId) {
-                    return context;
-                }
-            }
-            return;
-        }
-        getContext(id) {
-            const result = this.findContext(id);
-            if (result === undefined) {
-                throw new NoSuchFrameException(`Context ${id} not found`);
-            }
-            return result;
-        }
-        verifyTopLevelContextsList(contexts) {
-            const foundContexts = new Set();
-            if (!contexts) {
-                return foundContexts;
-            }
-            for (const contextId of contexts) {
-                const context = this.getContext(contextId);
-                if (context.isTopLevelContext()) {
-                    foundContexts.add(context);
-                }
-                else {
-                    throw new InvalidArgumentException(`Non top-level context '${contextId}' given.`);
-                }
-            }
-            return foundContexts;
-        }
-        verifyContextsList(contexts) {
-            if (!contexts.length) {
-                return;
-            }
-            for (const contextId of contexts) {
-                this.getContext(contextId);
-            }
-        }
-    }
-
     /*
      * Copyright 2025 Google LLC.
      * Copyright (c) Microsoft Corporation.
@@ -9154,19 +8335,20 @@
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
     class CollectorsStorage {
         #collectors = new Map();
         #responseCollectors = new Map();
         #requestBodyCollectors = new Map();
+        #maxEncodedDataSize;
         #logger;
-        constructor(logger) {
+        constructor(maxEncodedDataSize, logger) {
+            this.#maxEncodedDataSize = maxEncodedDataSize;
             this.#logger = logger;
         }
         addDataCollector(params) {
             if (params.maxEncodedDataSize < 1 ||
-                params.maxEncodedDataSize > MAX_TOTAL_COLLECTED_SIZE) {
-                throw new InvalidArgumentException(`Max encoded data size should be between 1 and ${MAX_TOTAL_COLLECTED_SIZE}`);
+                params.maxEncodedDataSize > this.#maxEncodedDataSize) {
+                throw new InvalidArgumentException(`Max encoded data size should be between 1 and ${this.#maxEncodedDataSize}`);
             }
             const collectorId = uuidv4();
             this.#collectors.set(collectorId, params);
@@ -10041,6 +9223,7 @@
         return 0;
     }
 
+    const MAX_TOTAL_COLLECTED_SIZE = 200_000_000;
     class NetworkStorage {
         #browsingContextStorage;
         #eventManager;
@@ -10052,7 +9235,7 @@
         constructor(eventManager, browsingContextStorage, browserClient, logger) {
             this.#browsingContextStorage = browsingContextStorage;
             this.#eventManager = eventManager;
-            this.#collectorsStorage = new CollectorsStorage(logger);
+            this.#collectorsStorage = new CollectorsStorage(MAX_TOTAL_COLLECTED_SIZE, logger);
             browserClient.on('Target.detachedFromTarget', ({ sessionId }) => {
                 this.disposeRequestMap(sessionId);
             });
@@ -10193,13 +9376,25 @@
             return result;
         }
         async #getCollectedResponseData(request) {
-            const responseBody = await request.cdpClient.sendCommand('Network.getResponseBody', { requestId: request.id });
-            return {
-                bytes: {
-                    type: responseBody.base64Encoded ? 'base64' : 'string',
-                    value: responseBody.body,
-                },
-            };
+            try {
+                const responseBody = await request.cdpClient.sendCommand('Network.getResponseBody', { requestId: request.id });
+                return {
+                    bytes: {
+                        type: responseBody.base64Encoded ? 'base64' : 'string',
+                        value: responseBody.body,
+                    },
+                };
+            }
+            catch (error) {
+                if (error.code === -32e3  &&
+                    error.message === 'No resource with given identifier found') {
+                    throw new NoSuchNetworkDataException(`Response data was disposed`);
+                }
+                if (error.code === -32001 ) {
+                    throw new NoSuchNetworkDataException(`Response data is disposed after the related page`);
+                }
+                throw error;
+            }
         }
         async #getCollectedRequestData(request) {
             const requestPostData = await request.cdpClient.sendCommand('Network.getRequestPostData', { requestId: request.id });
@@ -10328,6 +9523,910 @@
             }
             this.#collectorsStorage.disownData(params.request, params.dataType, params.collector);
             this.disposeRequest(params.request);
+        }
+    }
+
+    class CdpTarget {
+        #id;
+        #userContext;
+        #cdpClient;
+        #browserCdpClient;
+        #parentCdpClient;
+        #realmStorage;
+        #eventManager;
+        #preloadScriptStorage;
+        #browsingContextStorage;
+        #networkStorage;
+        contextConfigStorage;
+        #unblocked = new Deferred();
+        #logger;
+        #previousDeviceMetricsOverride = {
+            width: 0,
+            height: 0,
+            deviceScaleFactor: 0,
+            mobile: false,
+            dontSetVisibleSize: true,
+        };
+        #windowId;
+        #deviceAccessEnabled = false;
+        #cacheDisableState = false;
+        #preloadEnabled = false;
+        #fetchDomainStages = {
+            request: false,
+            response: false,
+            auth: false,
+        };
+        static create(targetId, cdpClient, browserCdpClient, parentCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, configStorage, userContext, logger) {
+            const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger);
+            LogManager.create(cdpTarget, realmStorage, eventManager, logger);
+            cdpTarget.#setEventListeners();
+            void cdpTarget.#unblock();
+            return cdpTarget;
+        }
+        constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, configStorage, networkStorage, userContext, logger) {
+            this.#userContext = userContext;
+            this.#id = targetId;
+            this.#cdpClient = cdpClient;
+            this.#browserCdpClient = browserCdpClient;
+            this.#parentCdpClient = parentCdpClient;
+            this.#eventManager = eventManager;
+            this.#realmStorage = realmStorage;
+            this.#preloadScriptStorage = preloadScriptStorage;
+            this.#networkStorage = networkStorage;
+            this.#browsingContextStorage = browsingContextStorage;
+            this.contextConfigStorage = configStorage;
+            this.#logger = logger;
+        }
+        get unblocked() {
+            return this.#unblocked;
+        }
+        get id() {
+            return this.#id;
+        }
+        get cdpClient() {
+            return this.#cdpClient;
+        }
+        get parentCdpClient() {
+            return this.#parentCdpClient;
+        }
+        get browserCdpClient() {
+            return this.#browserCdpClient;
+        }
+        get cdpSessionId() {
+            return this.#cdpClient.sessionId;
+        }
+        get windowId() {
+            if (this.#windowId === undefined) {
+                this.#logger?.(LogType.debugError, 'Getting windowId before it was set, returning 0');
+            }
+            return this.#windowId ?? 0;
+        }
+        async #unblock() {
+            const results = await Promise.allSettled([
+                this.#cdpClient.sendCommand('Page.enable', {
+                    enableFileChooserOpenedEvent: true,
+                }),
+                ...(this.#ignoreFileDialog()
+                    ? []
+                    : [
+                        this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
+                            enabled: true,
+                            cancel: true,
+                        }),
+                    ]),
+                this.#cdpClient
+                    .sendCommand('Page.getFrameTree')
+                    .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+                this.#cdpClient.sendCommand('Runtime.enable'),
+                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+                    enabled: true,
+                }),
+                this.#cdpClient
+                    .sendCommand('Network.enable', {
+                    enableDurableMessages: true,
+                    maxTotalBufferSize: MAX_TOTAL_COLLECTED_SIZE,
+                })
+                    .then(() => this.toggleNetworkIfNeeded()),
+                this.#cdpClient.sendCommand('Target.setAutoAttach', {
+                    autoAttach: true,
+                    waitForDebuggerOnStart: true,
+                    flatten: true,
+                }),
+                this.#updateWindowId(),
+                this.#setUserContextConfig(),
+                this.#initAndEvaluatePreloadScripts(),
+                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+                this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+                this.toggleDeviceAccessIfNeeded(),
+                this.togglePreloadIfNeeded(),
+            ]);
+            for (const result of results) {
+                if (result instanceof Error) {
+                    this.#logger?.(LogType.debugError, 'Error happened when configuring a new target', result);
+                }
+            }
+            this.#unblocked.resolve({
+                kind: 'success',
+                value: undefined,
+            });
+        }
+        #restoreFrameTreeState(frameTree) {
+            const frame = frameTree.frame;
+            const maybeContext = this.#browsingContextStorage.findContext(frame.id);
+            if (maybeContext !== undefined) {
+                if (maybeContext.parentId === null &&
+                    frame.parentId !== null &&
+                    frame.parentId !== undefined) {
+                    maybeContext.parentId = frame.parentId;
+                }
+            }
+            if (maybeContext === undefined && frame.parentId !== undefined) {
+                const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
+                BrowsingContextImpl.create(frame.id, frame.parentId, this.#userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.contextConfigStorage, frame.url, undefined, this.#logger);
+            }
+            frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
+        }
+        async toggleFetchIfNeeded() {
+            const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
+            if (this.#fetchDomainStages.request === stages.request &&
+                this.#fetchDomainStages.response === stages.response &&
+                this.#fetchDomainStages.auth === stages.auth) {
+                return;
+            }
+            const patterns = [];
+            this.#fetchDomainStages = stages;
+            if (stages.request || stages.auth) {
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Request',
+                });
+            }
+            if (stages.response) {
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Response',
+                });
+            }
+            if (patterns.length) {
+                await this.#cdpClient.sendCommand('Fetch.enable', {
+                    patterns,
+                    handleAuthRequests: stages.auth,
+                });
+            }
+            else {
+                const blockedRequest = this.#networkStorage
+                    .getRequestsByTarget(this)
+                    .filter((request) => request.interceptPhase);
+                void Promise.allSettled(blockedRequest.map((request) => request.waitNextPhase))
+                    .then(async () => {
+                    const blockedRequest = this.#networkStorage
+                        .getRequestsByTarget(this)
+                        .filter((request) => request.interceptPhase);
+                    if (blockedRequest.length) {
+                        return await this.toggleFetchIfNeeded();
+                    }
+                    return await this.#cdpClient.sendCommand('Fetch.disable');
+                })
+                    .catch((error) => {
+                    this.#logger?.(LogType.bidi, 'Disable failed', error);
+                });
+            }
+        }
+        async toggleNetworkIfNeeded() {
+            try {
+                await Promise.all([
+                    this.toggleSetCacheDisabled(),
+                    this.toggleFetchIfNeeded(),
+                ]);
+            }
+            catch (err) {
+                this.#logger?.(LogType.debugError, err);
+                if (!this.#isExpectedError(err)) {
+                    throw err;
+                }
+            }
+        }
+        async toggleSetCacheDisabled(disable) {
+            const defaultCacheDisabled = this.#networkStorage.defaultCacheBehavior === 'bypass';
+            const cacheDisabled = disable ?? defaultCacheDisabled;
+            if (this.#cacheDisableState === cacheDisabled) {
+                return;
+            }
+            this.#cacheDisableState = cacheDisabled;
+            try {
+                await this.#cdpClient.sendCommand('Network.setCacheDisabled', {
+                    cacheDisabled,
+                });
+            }
+            catch (err) {
+                this.#logger?.(LogType.debugError, err);
+                this.#cacheDisableState = !cacheDisabled;
+                if (!this.#isExpectedError(err)) {
+                    throw err;
+                }
+            }
+        }
+        async toggleDeviceAccessIfNeeded() {
+            const enabled = this.isSubscribedTo(Bluetooth$2.EventNames.RequestDevicePromptUpdated);
+            if (this.#deviceAccessEnabled === enabled) {
+                return;
+            }
+            this.#deviceAccessEnabled = enabled;
+            try {
+                await this.#cdpClient.sendCommand(enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable');
+            }
+            catch (err) {
+                this.#logger?.(LogType.debugError, err);
+                this.#deviceAccessEnabled = !enabled;
+                if (!this.#isExpectedError(err)) {
+                    throw err;
+                }
+            }
+        }
+        async togglePreloadIfNeeded() {
+            const enabled = this.isSubscribedTo(Speculation.EventNames.PrefetchStatusUpdated);
+            if (this.#preloadEnabled === enabled) {
+                return;
+            }
+            this.#preloadEnabled = enabled;
+            try {
+                await this.#cdpClient.sendCommand(enabled ? 'Preload.enable' : 'Preload.disable');
+            }
+            catch (err) {
+                this.#logger?.(LogType.debugError, err);
+                this.#preloadEnabled = !enabled;
+                if (!this.#isExpectedError(err)) {
+                    throw err;
+                }
+            }
+        }
+        #isExpectedError(err) {
+            const error = err;
+            return ((error.code === -32001 &&
+                error.message === 'Session with given id not found.') ||
+                this.#cdpClient.isCloseError(err));
+        }
+        #setEventListeners() {
+            this.#cdpClient.on('*', (event, params) => {
+                if (typeof event !== 'string') {
+                    return;
+                }
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: `goog:cdp.${event}`,
+                    params: {
+                        event,
+                        params,
+                        session: this.cdpSessionId,
+                    },
+                }, this.id);
+            });
+        }
+        async #enableFetch(stages) {
+            const patterns = [];
+            if (stages.request || stages.auth) {
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Request',
+                });
+            }
+            if (stages.response) {
+                patterns.push({
+                    urlPattern: '*',
+                    requestStage: 'Response',
+                });
+            }
+            if (patterns.length) {
+                const oldStages = this.#fetchDomainStages;
+                this.#fetchDomainStages = stages;
+                try {
+                    await this.#cdpClient.sendCommand('Fetch.enable', {
+                        patterns,
+                        handleAuthRequests: stages.auth,
+                    });
+                }
+                catch {
+                    this.#fetchDomainStages = oldStages;
+                }
+            }
+        }
+        async #disableFetch() {
+            const blockedRequest = this.#networkStorage
+                .getRequestsByTarget(this)
+                .filter((request) => request.interceptPhase);
+            if (blockedRequest.length === 0) {
+                this.#fetchDomainStages = {
+                    request: false,
+                    response: false,
+                    auth: false,
+                };
+                await this.#cdpClient.sendCommand('Fetch.disable');
+            }
+        }
+        async toggleNetwork() {
+            const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
+            const fetchEnable = Object.values(stages).some((value) => value);
+            const fetchChanged = this.#fetchDomainStages.request !== stages.request ||
+                this.#fetchDomainStages.response !== stages.response ||
+                this.#fetchDomainStages.auth !== stages.auth;
+            this.#logger?.(LogType.debugInfo, 'Toggle Network', `Fetch (${fetchEnable}) ${fetchChanged}`);
+            if (fetchEnable && fetchChanged) {
+                await this.#enableFetch(stages);
+            }
+            if (!fetchEnable && fetchChanged) {
+                await this.#disableFetch();
+            }
+        }
+        getChannels() {
+            return this.#preloadScriptStorage
+                .find()
+                .flatMap((script) => script.channels);
+        }
+        async #updateWindowId() {
+            const { windowId } = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId: this.id });
+            this.#windowId = windowId;
+        }
+        async #initAndEvaluatePreloadScripts() {
+            await Promise.all(this.#preloadScriptStorage
+                .find({
+                targetId: this.topLevelId,
+            })
+                .map((script) => {
+                return script.initInTarget(this, true);
+            }));
+        }
+        async setViewport(viewport, devicePixelRatio) {
+            if (viewport === null && devicePixelRatio === null) {
+                await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+                return;
+            }
+            const newViewport = { ...this.#previousDeviceMetricsOverride };
+            if (viewport === null) {
+                newViewport.width = 0;
+                newViewport.height = 0;
+            }
+            else if (viewport !== undefined) {
+                newViewport.width = viewport.width;
+                newViewport.height = viewport.height;
+            }
+            if (devicePixelRatio === null) {
+                newViewport.deviceScaleFactor = 0;
+            }
+            else if (devicePixelRatio !== undefined) {
+                newViewport.deviceScaleFactor = devicePixelRatio;
+            }
+            try {
+                await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
+                this.#previousDeviceMetricsOverride = newViewport;
+            }
+            catch (err) {
+                if (err.message.startsWith(
+                'Width and height values must be positive')) {
+                    throw new UnsupportedOperationException('Provided viewport dimensions are not supported');
+                }
+                throw err;
+            }
+        }
+        async #setUserContextConfig() {
+            const promises = [];
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
+            promises.push(this.#cdpClient
+                .sendCommand('Page.setPrerenderingAllowed', {
+                isAllowed: !config.prerenderingDisabled,
+            })
+                .catch(() => {
+            }));
+            if (config.viewport !== undefined ||
+                config.devicePixelRatio !== undefined) {
+                promises.push(this.setViewport(config.viewport, config.devicePixelRatio).catch(() => {
+                }));
+            }
+            if (config.screenOrientation !== undefined &&
+                config.screenOrientation !== null) {
+                promises.push(this.setScreenOrientationOverride(config.screenOrientation).catch(() => {
+                }));
+            }
+            if (config.geolocation !== undefined && config.geolocation !== null) {
+                promises.push(this.setGeolocationOverride(config.geolocation));
+            }
+            if (config.locale !== undefined) {
+                promises.push(this.setLocaleOverride(config.locale));
+            }
+            if (config.timezone !== undefined) {
+                promises.push(this.setTimezoneOverride(config.timezone));
+            }
+            if (config.extraHeaders !== undefined) {
+                promises.push(this.setExtraHeaders(config.extraHeaders));
+            }
+            if (config.userAgent !== undefined) {
+                promises.push(this.setUserAgent(config.userAgent));
+            }
+            if (config.scriptingEnabled !== undefined) {
+                promises.push(this.setScriptingEnabled(config.scriptingEnabled));
+            }
+            if (config.acceptInsecureCerts !== undefined) {
+                promises.push(this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+                    ignore: config.acceptInsecureCerts,
+                }));
+            }
+            if (config.emulatedNetworkConditions !== undefined) {
+                promises.push(this.setEmulatedNetworkConditions(config.emulatedNetworkConditions));
+            }
+            await Promise.all(promises);
+        }
+        get topLevelId() {
+            return (this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id);
+        }
+        isSubscribedTo(moduleOrEvent) {
+            return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
+        }
+        #ignoreFileDialog() {
+            const config = this.contextConfigStorage.getActiveConfig(this.topLevelId, this.#userContext);
+            return ((config.userPromptHandler?.file ??
+                config.userPromptHandler?.default ??
+                "ignore" ) ===
+                "ignore" );
+        }
+        async setGeolocationOverride(geolocation) {
+            if (geolocation === null) {
+                await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
+            }
+            else if ('type' in geolocation) {
+                if (geolocation.type !== 'positionUnavailable') {
+                    throw new UnknownErrorException(`Unknown geolocation error ${geolocation.type}`);
+                }
+                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {});
+            }
+            else if ('latitude' in geolocation) {
+                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
+                    latitude: geolocation.latitude,
+                    longitude: geolocation.longitude,
+                    accuracy: geolocation.accuracy ?? 1,
+                    altitude: geolocation.altitude ?? undefined,
+                    altitudeAccuracy: geolocation.altitudeAccuracy ?? undefined,
+                    heading: geolocation.heading ?? undefined,
+                    speed: geolocation.speed ?? undefined,
+                });
+            }
+            else {
+                throw new UnknownErrorException('Unexpected geolocation coordinates value');
+            }
+        }
+        async setScreenOrientationOverride(screenOrientation) {
+            const newViewport = { ...this.#previousDeviceMetricsOverride };
+            if (screenOrientation === null) {
+                delete newViewport.screenOrientation;
+            }
+            else {
+                newViewport.screenOrientation =
+                    this.#toCdpScreenOrientationAngle(screenOrientation);
+            }
+            await this.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', newViewport);
+            this.#previousDeviceMetricsOverride = newViewport;
+        }
+        #toCdpScreenOrientationAngle(orientation) {
+            if (orientation.natural === "portrait" ) {
+                switch (orientation.type) {
+                    case 'portrait-primary':
+                        return {
+                            angle: 0,
+                            type: 'portraitPrimary',
+                        };
+                    case 'landscape-primary':
+                        return {
+                            angle: 90,
+                            type: 'landscapePrimary',
+                        };
+                    case 'portrait-secondary':
+                        return {
+                            angle: 180,
+                            type: 'portraitSecondary',
+                        };
+                    case 'landscape-secondary':
+                        return {
+                            angle: 270,
+                            type: 'landscapeSecondary',
+                        };
+                    default:
+                        throw new UnknownErrorException(`Unexpected screen orientation type ${orientation.type}`);
+                }
+            }
+            if (orientation.natural === "landscape" ) {
+                switch (orientation.type) {
+                    case 'landscape-primary':
+                        return {
+                            angle: 0,
+                            type: 'landscapePrimary',
+                        };
+                    case 'portrait-primary':
+                        return {
+                            angle: 90,
+                            type: 'portraitPrimary',
+                        };
+                    case 'landscape-secondary':
+                        return {
+                            angle: 180,
+                            type: 'landscapeSecondary',
+                        };
+                    case 'portrait-secondary':
+                        return {
+                            angle: 270,
+                            type: 'portraitSecondary',
+                        };
+                    default:
+                        throw new UnknownErrorException(`Unexpected screen orientation type ${orientation.type}`);
+                }
+            }
+            throw new UnknownErrorException(`Unexpected orientation natural ${orientation.natural}`);
+        }
+        async setLocaleOverride(locale) {
+            if (locale === null) {
+                await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {});
+            }
+            else {
+                await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
+                    locale,
+                });
+            }
+        }
+        async setScriptingEnabled(scriptingEnabled) {
+            await this.cdpClient.sendCommand('Emulation.setScriptExecutionDisabled', {
+                value: scriptingEnabled === false,
+            });
+        }
+        async setTimezoneOverride(timezone) {
+            if (timezone === null) {
+                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+                    timezoneId: '',
+                });
+            }
+            else {
+                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+                    timezoneId: timezone,
+                });
+            }
+        }
+        async setExtraHeaders(headers) {
+            await this.cdpClient.sendCommand('Network.setExtraHTTPHeaders', {
+                headers,
+            });
+        }
+        async setUserAgent(userAgent) {
+            await this.cdpClient.sendCommand('Emulation.setUserAgentOverride', {
+                userAgent: userAgent ?? '',
+            });
+        }
+        async setEmulatedNetworkConditions(networkConditions) {
+            if (networkConditions !== null && networkConditions.type !== 'offline') {
+                throw new UnsupportedOperationException(`Unsupported network conditions ${networkConditions.type}`);
+            }
+            await Promise.all([
+                this.cdpClient.sendCommand('Network.emulateNetworkConditionsByRule', {
+                    offline: networkConditions?.type === 'offline',
+                    matchedNetworkConditions: [
+                        {
+                            urlPattern: '',
+                            latency: 0,
+                            downloadThroughput: -1,
+                            uploadThroughput: -1,
+                        },
+                    ],
+                }),
+                this.cdpClient.sendCommand('Network.overrideNetworkState', {
+                    offline: networkConditions?.type === 'offline',
+                    latency: 0,
+                    downloadThroughput: -1,
+                    uploadThroughput: -1,
+                }),
+            ]);
+        }
+    }
+
+    const cdpToBidiTargetTypes = {
+        service_worker: 'service-worker',
+        shared_worker: 'shared-worker',
+        worker: 'dedicated-worker',
+    };
+    class CdpTargetManager {
+        #browserCdpClient;
+        #cdpConnection;
+        #targetKeysToBeIgnoredByAutoAttach = new Set();
+        #selfTargetId;
+        #eventManager;
+        #browsingContextStorage;
+        #networkStorage;
+        #bluetoothProcessor;
+        #preloadScriptStorage;
+        #realmStorage;
+        #configStorage;
+        #speculationProcessor;
+        #defaultUserContextId;
+        #logger;
+        constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, configStorage, bluetoothProcessor, speculationProcessor, preloadScriptStorage, defaultUserContextId, logger) {
+            this.#cdpConnection = cdpConnection;
+            this.#browserCdpClient = browserCdpClient;
+            this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
+            this.#selfTargetId = selfTargetId;
+            this.#eventManager = eventManager;
+            this.#browsingContextStorage = browsingContextStorage;
+            this.#preloadScriptStorage = preloadScriptStorage;
+            this.#networkStorage = networkStorage;
+            this.#configStorage = configStorage;
+            this.#bluetoothProcessor = bluetoothProcessor;
+            this.#speculationProcessor = speculationProcessor;
+            this.#realmStorage = realmStorage;
+            this.#defaultUserContextId = defaultUserContextId;
+            this.#logger = logger;
+            this.#setEventListeners(browserCdpClient);
+        }
+        #setEventListeners(cdpClient) {
+            cdpClient.on('Target.attachedToTarget', (params) => {
+                this.#handleAttachedToTargetEvent(params, cdpClient);
+            });
+            cdpClient.on('Target.detachedFromTarget', this.#handleDetachedFromTargetEvent.bind(this));
+            cdpClient.on('Target.targetInfoChanged', this.#handleTargetInfoChangedEvent.bind(this));
+            cdpClient.on('Inspector.targetCrashed', () => {
+                this.#handleTargetCrashedEvent(cdpClient);
+            });
+            cdpClient.on('Page.frameAttached', this.#handleFrameAttachedEvent.bind(this));
+            cdpClient.on('Page.frameSubtreeWillBeDetached', this.#handleFrameSubtreeWillBeDetached.bind(this));
+        }
+        #handleFrameAttachedEvent(params) {
+            const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
+            if (parentBrowsingContext !== undefined) {
+                BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
+                'about:blank', undefined, this.#logger);
+            }
+        }
+        #handleFrameSubtreeWillBeDetached(params) {
+            this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
+        }
+        #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
+            const { sessionId, targetInfo } = params;
+            const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+            const detach = async () => {
+                await targetCdpClient
+                    .sendCommand('Runtime.runIfWaitingForDebugger')
+                    .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
+                    .catch((error) => this.#logger?.(LogType.debugError, error));
+            };
+            if (this.#selfTargetId === targetInfo.targetId) {
+                void detach();
+                return;
+            }
+            const targetKey = targetInfo.type === 'service_worker'
+                ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+                : targetInfo.targetId;
+            if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
+                return;
+            }
+            this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
+            const userContext = targetInfo.browserContextId &&
+                targetInfo.browserContextId !== this.#defaultUserContextId
+                ? targetInfo.browserContextId
+                : 'default';
+            switch (targetInfo.type) {
+                case 'tab': {
+                    this.#setEventListeners(targetCdpClient);
+                    void (async () => {
+                        await targetCdpClient.sendCommand('Target.setAutoAttach', {
+                            autoAttach: true,
+                            waitForDebuggerOnStart: true,
+                            flatten: true,
+                        });
+                    })();
+                    return;
+                }
+                case 'page':
+                case 'iframe': {
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
+                    const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
+                    if (maybeContext && targetInfo.type === 'iframe') {
+                        maybeContext.updateCdpTarget(cdpTarget);
+                    }
+                    else {
+                        const parentId = this.#findFrameParentId(targetInfo, parentSessionCdpClient.sessionId);
+                        BrowsingContextImpl.create(targetInfo.targetId, parentId, userContext, cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#configStorage,
+                        targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#logger);
+                    }
+                    return;
+                }
+                case 'service_worker':
+                case 'worker': {
+                    const realm = this.#realmStorage.findRealm({
+                        cdpSessionId: parentSessionCdpClient.sessionId,
+                        sandbox: null,
+                    });
+                    if (!realm) {
+                        void detach();
+                        return;
+                    }
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
+                    this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
+                    return;
+                }
+                case 'shared_worker': {
+                    const cdpTarget = this.#createCdpTarget(targetCdpClient, parentSessionCdpClient, targetInfo, userContext);
+                    this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
+                    return;
+                }
+            }
+            void detach();
+        }
+        #findFrameParentId(targetInfo, parentSessionId) {
+            if (targetInfo.type !== 'iframe') {
+                return null;
+            }
+            const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
+            if (parentId !== undefined) {
+                return parentId;
+            }
+            if (parentSessionId !== undefined) {
+                return (this.#browsingContextStorage.findContextBySession(parentSessionId)
+                    ?.id ?? null);
+            }
+            return null;
+        }
+        #createCdpTarget(targetCdpClient, parentCdpClient, targetInfo, userContext) {
+            this.#setEventListeners(targetCdpClient);
+            this.#preloadScriptStorage.onCdpTargetCreated(targetInfo.targetId, userContext);
+            const target = CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, parentCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#configStorage, userContext, this.#logger);
+            this.#networkStorage.onCdpTargetCreated(target);
+            this.#bluetoothProcessor.onCdpTargetCreated(target);
+            this.#speculationProcessor.onCdpTargetCreated(target);
+            return target;
+        }
+        #workers = new Map();
+        #handleWorkerTarget(realmType, cdpTarget, ownerRealm) {
+            cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+                const { uniqueId, id, origin } = params.context;
+                const workerRealm = new WorkerRealm(cdpTarget.cdpClient, this.#eventManager, id, this.#logger, serializeOrigin(origin), ownerRealm ? [ownerRealm] : [], uniqueId, this.#realmStorage, realmType);
+                this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
+            });
+        }
+        #handleDetachedFromTargetEvent({ sessionId, targetId, }) {
+            if (targetId) {
+                this.#preloadScriptStorage.find({ targetId }).map((preloadScript) => {
+                    preloadScript.dispose(targetId);
+                });
+            }
+            const context = this.#browsingContextStorage.findContextBySession(sessionId);
+            if (context) {
+                context.dispose(true);
+                return;
+            }
+            const worker = this.#workers.get(sessionId);
+            if (worker) {
+                this.#realmStorage.deleteRealms({
+                    cdpSessionId: worker.cdpClient.sessionId,
+                });
+            }
+        }
+        #handleTargetInfoChangedEvent(params) {
+            const context = this.#browsingContextStorage.findContext(params.targetInfo.targetId);
+            if (context) {
+                context.onTargetInfoChanged(params);
+            }
+        }
+        #handleTargetCrashedEvent(cdpClient) {
+            const realms = this.#realmStorage.findRealms({
+                cdpSessionId: cdpClient.sessionId,
+            });
+            for (const realm of realms) {
+                realm.dispose();
+            }
+        }
+    }
+
+    /**
+     * Copyright 2022 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class BrowsingContextStorage {
+        #contexts = new Map();
+        #eventEmitter = new EventEmitter();
+        getTopLevelContexts() {
+            return this.getAllContexts().filter((context) => context.isTopLevelContext());
+        }
+        getAllContexts() {
+            return Array.from(this.#contexts.values());
+        }
+        deleteContextById(id) {
+            this.#contexts.delete(id);
+        }
+        deleteContext(context) {
+            this.#contexts.delete(context.id);
+        }
+        addContext(context) {
+            this.#contexts.set(context.id, context);
+            this.#eventEmitter.emit("added" , {
+                browsingContext: context,
+            });
+        }
+        waitForContext(browsingContextId) {
+            if (this.#contexts.has(browsingContextId)) {
+                return Promise.resolve(this.getContext(browsingContextId));
+            }
+            return new Promise((resolve) => {
+                const listener = (event) => {
+                    if (event.browsingContext.id === browsingContextId) {
+                        this.#eventEmitter.off("added" , listener);
+                        resolve(event.browsingContext);
+                    }
+                };
+                this.#eventEmitter.on("added" , listener);
+            });
+        }
+        hasContext(id) {
+            return this.#contexts.has(id);
+        }
+        findContext(id) {
+            return this.#contexts.get(id);
+        }
+        findTopLevelContextId(id) {
+            if (id === null) {
+                return null;
+            }
+            const maybeContext = this.findContext(id);
+            if (!maybeContext) {
+                return null;
+            }
+            const parentId = maybeContext.parentId ?? null;
+            if (parentId === null) {
+                return id;
+            }
+            return this.findTopLevelContextId(parentId);
+        }
+        findContextBySession(sessionId) {
+            for (const context of this.#contexts.values()) {
+                if (context.cdpTarget.cdpSessionId === sessionId) {
+                    return context;
+                }
+            }
+            return;
+        }
+        getContext(id) {
+            const result = this.findContext(id);
+            if (result === undefined) {
+                throw new NoSuchFrameException(`Context ${id} not found`);
+            }
+            return result;
+        }
+        verifyTopLevelContextsList(contexts) {
+            const foundContexts = new Set();
+            if (!contexts) {
+                return foundContexts;
+            }
+            for (const contextId of contexts) {
+                const context = this.getContext(contextId);
+                if (context.isTopLevelContext()) {
+                    foundContexts.add(context);
+                }
+                else {
+                    throw new InvalidArgumentException(`Non top-level context '${contextId}' given.`);
+                }
+            }
+            return foundContexts;
+        }
+        verifyContextsList(contexts) {
+            if (!contexts.length) {
+                return;
+            }
+            for (const contextId of contexts) {
+                this.getContext(contextId);
+            }
         }
     }
 
