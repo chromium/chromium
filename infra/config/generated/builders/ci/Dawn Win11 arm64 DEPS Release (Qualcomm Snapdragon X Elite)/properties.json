@@ -1,9 +1,6 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
-      "additional_exclusions": [
-        "infra/config/generated/builders/ci/Dawn Win11 arm64 DEPS Builder/gn-args.json"
-      ],
       "builder_db": {
         "entries": [
           {
@@ -64,13 +61,6 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Win11 arm64 DEPS Builder",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
           "builder": "Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)",
           "project": "chromium"
         }
@@ -79,26 +69,10 @@
         {
           "builder": "dawn-try-win11-arm64-snapdragon-x-elite-deps-rel",
           "group": "tryserver.chromium.dawn"
-        },
-        {
-          "builder": "dawn-win11-arm64-deps-rel",
-          "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win11 arm64 DEPS Builder/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)/targets"
     }
-  },
-  "$build/siso": {
-    "configs": [
-      "builder"
-    ],
-    "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
-    "enable_cloud_trace": true,
-    "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

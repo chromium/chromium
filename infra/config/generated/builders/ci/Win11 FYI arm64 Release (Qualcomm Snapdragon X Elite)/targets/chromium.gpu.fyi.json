@@ -1,16 +1,5 @@
 {
-  "Dawn Win11 arm64 DEPS Builder": {
-    "additional_compile_targets": [
-      "dawn_end2end_tests",
-      "dawn_perf_tests",
-      "gl_tests",
-      "gl_unittests",
-      "telemetry_gpu_integration_test",
-      "telemetry_gpu_unittests",
-      "webgpu_blink_web_tests"
-    ]
-  },
-  "Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)": {
+  "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)": {
     "isolated_scripts": [
       {
         "args": [
@@ -31,6 +20,7 @@
         "module_scheme": "flat",
         "name": "noop_sleep_tests",
         "swarming": {
+          "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
             "gpu": "qcom:0c36-31.0.121.1",

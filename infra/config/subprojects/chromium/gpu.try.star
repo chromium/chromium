@@ -665,10 +665,20 @@ gpu_win_builder(
 
 gpu_win_builder(
     name = "gpu-fyi-try-win11-qualcomm-rel-64",
-    description_html = "Triggers GPU tests on Windows arm64 devices",
+    description_html = "Triggers GPU tests on Windows arm64 devices with Adreno 690 GPUs",
     mirrors = [
         "ci/GPU FYI Win arm64 Builder",
         "ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)",
+    ],
+    gn_args = "ci/GPU FYI Win arm64 Builder",
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64",
+    description_html = "Triggers GPU tests on Windows arm64 devices with Snapdragon X Elite SoCs",
+    mirrors = [
+        "ci/GPU FYI Win arm64 Builder",
+        "ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
     ],
     gn_args = "ci/GPU FYI Win arm64 Builder",
 )

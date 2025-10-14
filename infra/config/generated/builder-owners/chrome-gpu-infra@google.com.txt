@@ -66,6 +66,7 @@ ci/Dawn Win10 x86 Release (Intel)
 ci/Dawn Win10 x86 Release (NVIDIA)
 ci/Dawn Win11 arm64 Builder
 ci/Dawn Win11 arm64 DEPS Builder
+ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Linux Builder
@@ -136,6 +137,7 @@ ci/Win10 FYI x86 Release (NVIDIA)
 ci/Win10 x64 Debug (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
+ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
 ci/Win11 FYI x64 Experimental Release (AMD 890M)
 ci/Win11 FYI x64 Experimental Release (Intel Arc 140V)
@@ -180,6 +182,7 @@ try/dawn-try-win-x86-nvidia-exp
 try/dawn-try-win10-x64-intel-asan
 try/dawn-try-win10-x64-nvidia-asan
 try/dawn-try-win10-x86-rel
+try/dawn-try-win11-arm64-snapdragon-x-elite-deps-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
@@ -236,6 +239,7 @@ try/gpu-fyi-try-win11-amd-rel-64
 try/gpu-fyi-try-win11-nvidia-4070-exp-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
+try/gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
 try/gpu-fyi-try-win11-x64-amd-890m-exp
 try/gpu-fyi-try-win11-x64-intel-arc-140v-exp

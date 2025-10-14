@@ -649,6 +649,20 @@ dawn_mac_builder(
     ),
 )
 
+# This will be moved into dawn-win11-arm64-deps-rel once the tests have been
+# confirmed to be stable enough.
+dawn_win_builderless_builder(
+    name = "dawn-try-win11-arm64-snapdragon-x-elite-deps-rel",
+    mirrors = [
+        "ci/Dawn Win11 arm64 DEPS Builder",
+        "ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)",
+    ],
+    gn_args = "ci/Dawn Win11 arm64 DEPS Builder",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
 dawn_win_builderless_builder(
     name = "dawn-try-win-x64-intel-exp",
     mirrors = [

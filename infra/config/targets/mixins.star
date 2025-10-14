@@ -2567,6 +2567,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11_qualcomm_snapdragon_x_elite_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "qcom:0c36-31.0.121.1",
+            "os": "Windows-11-26100",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win10_gce_gpu_pool",
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
