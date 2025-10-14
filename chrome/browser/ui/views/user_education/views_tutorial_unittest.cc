@@ -48,7 +48,8 @@ class TestTutorialService : public user_education::TutorialService {
 
 }  // namespace
 
-class ViewsTutorialTest : public views::test::InteractiveViewsTest {
+class ViewsTutorialTest
+    : public views::test::InteractiveViewsTestMixin<views::ViewsTestBase> {
  public:
   ViewsTutorialTest() {
     help_bubble_registry_.MaybeRegister<user_education::HelpBubbleFactoryViews>(
@@ -58,7 +59,7 @@ class ViewsTutorialTest : public views::test::InteractiveViewsTest {
   ~ViewsTutorialTest() override = default;
 
   void SetUp() override {
-    InteractiveViewsTestT::SetUp();
+    InteractiveViewsTestMixin::SetUp();
     widget_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params =

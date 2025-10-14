@@ -22,6 +22,7 @@
 #include "ui/views/interaction/polling_view_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -48,13 +49,14 @@ constexpr char kViewName[] = "Named View";
 constexpr char kViewName2[] = "Second Named View";
 }  // namespace
 
-class InteractiveViewsTestTest : public InteractiveViewsTest {
+class InteractiveViewsTestTest
+    : public InteractiveViewsTestMixin<ViewsTestBase> {
  public:
   InteractiveViewsTestTest() = default;
   ~InteractiveViewsTestTest() override = default;
 
   void SetUp() override {
-    InteractiveViewsTest::SetUp();
+    InteractiveViewsTestMixin::SetUp();
 
     // Set up the Views hierarchy to use for the tests.
     auto contents =
@@ -122,7 +124,7 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
     button2_ = nullptr;
     scroll_ = nullptr;
     widget_.reset();
-    InteractiveViewsTest::TearDown();
+    InteractiveViewsTestMixin::TearDown();
   }
 
   static void DoPost(base::OnceClosure closure) {

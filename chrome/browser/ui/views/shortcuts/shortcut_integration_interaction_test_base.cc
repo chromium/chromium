@@ -19,8 +19,9 @@
 namespace shortcuts {
 
 ShortcutIntegrationInteractionTestApi::ShortcutIntegrationInteractionTestApi()
-    : InteractiveBrowserTestApi(
-          std::make_unique<ShortcutIntegrationInteractionTestPrivate>()) {
+    : test_impl_(private_test_impl()
+                     .MaybeRegisterFrameworkImpl<
+                         ShortcutIntegrationInteractionTestPrivate>()) {
   platform_util::internal::DisableShellOperationsForTesting();
 }
 
@@ -79,7 +80,7 @@ ui::test::InteractiveTestApi::StepBuilder
 ShortcutIntegrationInteractionTestApi::InstrumentNextShortcut(
     ui::ElementIdentifier identifier) {
   return Do([this, identifier] {
-    test_impl().SetNextShortcutIdentifier(identifier);
+    test_impl_->SetNextShortcutIdentifier(identifier);
   });
 }
 
@@ -95,12 +96,6 @@ ShortcutIntegrationInteractionTestApi::LaunchShortcut(
 base::FilePath ShortcutIntegrationInteractionTestApi::GetShortcutPath(
     ui::TrackedElement* element) {
   return ShortcutIntegrationInteractionTestPrivate::GetShortcutPath(element);
-}
-
-ShortcutIntegrationInteractionTestPrivate&
-ShortcutIntegrationInteractionTestApi::test_impl() {
-  return static_cast<ShortcutIntegrationInteractionTestPrivate&>(
-      private_test_impl());
 }
 
 }  // namespace shortcuts

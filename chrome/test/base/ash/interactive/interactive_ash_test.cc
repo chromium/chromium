@@ -38,7 +38,7 @@
 namespace {
 
 using InteractiveMixinBasedBrowserTest =
-    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+    InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>;
 
 // This JavaScript is used to select an option from a dropdown menu. This
 // JavaScript can be formatted with a single string to identify the desired
@@ -529,7 +529,7 @@ void InteractiveAshTest::TearDownOnMainThread() {
     base::RunLoop loop;
     loop.Run();
   }
-  InteractiveBrowserTestT<
+  InteractiveBrowserTestMixin<
       MixinBasedInProcessBrowserTest>::TearDownOnMainThread();
 }
 

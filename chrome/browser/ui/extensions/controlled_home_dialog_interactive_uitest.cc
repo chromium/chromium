@@ -44,7 +44,7 @@ class TestDialogController : public ControlledHomeDialogControllerInterface {
 }  // namespace
 
 class ControlledHomeDialogUITest
-    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest> {
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   ControlledHomeDialogUITest() = default;
   ControlledHomeDialogUITest(const ControlledHomeDialogUITest&) = delete;

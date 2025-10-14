@@ -16,7 +16,7 @@ namespace glic {
 // changes. This fixture artificially sets a single browser as focused, so that
 // Glic will consider a tab in the browser as focused.
 class NonInteractiveGlicTest
-    : public test::InteractiveGlicTestT<InteractiveBrowserTest> {
+    : public test::InteractiveGlicTestMixin<InteractiveBrowserTest> {
  public:
   NonInteractiveGlicTest();
   NonInteractiveGlicTest(const base::FieldTrialParams& glic_params,

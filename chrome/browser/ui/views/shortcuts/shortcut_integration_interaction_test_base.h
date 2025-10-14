@@ -62,7 +62,7 @@ class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
   static base::FilePath GetShortcutPath(ui::TrackedElement* element);
 
  private:
-  ShortcutIntegrationInteractionTestPrivate& test_impl();
+  const raw_ptr<ShortcutIntegrationInteractionTestPrivate> test_impl_;
 };
 
 // Template for adding ShortcutIntegrationInteractionTestApi to any test fixture

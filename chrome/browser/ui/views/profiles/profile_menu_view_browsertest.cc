@@ -363,18 +363,18 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
   CloseBrowserSynchronously(browser());
 }
 
-class ProfileMenuViewExtensionsTest
-    : public ProfileMenuViewTestBase,
-      public InteractiveFeaturePromoTestT<extensions::ExtensionBrowserTest> {
+class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
+                                      public InteractiveFeaturePromoTestMixin<
+                                          extensions::ExtensionBrowserTest> {
  public:
   ProfileMenuViewExtensionsTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHProfileSwitchFeature,
              feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {}
 
-  // InteractiveFeaturePromoTestT:
+  // InteractiveFeaturePromoTestMixin:
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTestT::SetUpOnMainThread();
+    InteractiveFeaturePromoTestMixin::SetUpOnMainThread();
     SetTargetBrowser(browser());
   }
 };

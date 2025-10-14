@@ -1555,14 +1555,14 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPromoShownEvent);
 }  // namespace
 
 class BrowserFeaturePromoController2xViewsTestBase
-    : public views::test::InteractiveViewsTestT<
+    : public views::test::InteractiveViewsTestMixin<
           BrowserFeaturePromoController2xTestBase> {
  public:
   BrowserFeaturePromoController2xViewsTestBase() = default;
   ~BrowserFeaturePromoController2xViewsTestBase() override = default;
 
   void SetUp() override {
-    InteractiveViewsTestT<BrowserFeaturePromoController2xTestBase>::SetUp();
+    InteractiveViewsTestMixin<BrowserFeaturePromoController2xTestBase>::SetUp();
     SetContextWidget(browser_view()->GetWidget());
   }
 

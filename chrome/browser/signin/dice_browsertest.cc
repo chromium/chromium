@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
 }
 
 class DiceBrowserSiginInInterceptionInteractiveTest
-    : public InteractiveBrowserTestT<DiceBrowserTest> {
+    : public InteractiveBrowserTestMixin<DiceBrowserTest> {
  public:
   void WaitForHistogramSample(std::string_view histogram_name,
                               base::HistogramBase::Sample32 sample,
@@ -1987,10 +1987,11 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithAutoAcceptFlag, AutoSignin) {
 }
 
 class DiceBrowserTestWithChromeSigninIPH
-    : public InteractiveFeaturePromoTestT<DiceBrowserTestWithExplicitSignin> {
+    : public InteractiveFeaturePromoTestMixin<
+          DiceBrowserTestWithExplicitSignin> {
  public:
   DiceBrowserTestWithChromeSigninIPH()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::
                  kIPHExplicitBrowserSigninPreferenceRememberedFeature})) {}
 

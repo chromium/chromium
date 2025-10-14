@@ -47,7 +47,7 @@ const DeepQuery kMessage{"#message-container"};
 
 }  // namespace
 
-using Fixture = InteractiveBrowserTestT<EnclaveAuthenticatorTestBase>;
+using Fixture = InteractiveBrowserTestMixin<EnclaveAuthenticatorTestBase>;
 class WebAuthnImmediateMediationTest : public Fixture {
  public:
   WebAuthnImmediateMediationTest() {

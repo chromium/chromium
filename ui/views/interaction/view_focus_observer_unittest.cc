@@ -27,13 +27,13 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButton1Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTextFieldId);
 }  // namespace
 
-class ViewFocusObserverTest : public InteractiveViewsTest {
+class ViewFocusObserverTest : public InteractiveViewsTestMixin<ViewsTestBase> {
  public:
   ViewFocusObserverTest() = default;
   ~ViewFocusObserverTest() override = default;
 
   void SetUp() override {
-    InteractiveViewsTest::SetUp();
+    InteractiveViewsTestMixin::SetUp();
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
         CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -68,7 +68,7 @@ class ViewFocusObserverTest : public InteractiveViewsTest {
     button2_ = nullptr;
     text_ = nullptr;
     widget_.reset();
-    InteractiveViewsTest::TearDown();
+    InteractiveViewsTestMixin::TearDown();
   }
 
   auto Focus(View* view) {

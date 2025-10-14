@@ -24,16 +24,19 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/test/user_education_session_test_util.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 
 namespace internal {
 
 class InteractiveFeaturePromoTestPrivate
-    : public InteractiveBrowserTestPrivate,
+    : public ui::test::internal::InteractiveTestPrivateFrameworkBase,
       public InteractiveFeaturePromoTestCommon,
       public ProfileObserver {
  public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
   InteractiveFeaturePromoTestPrivate(
-      std::unique_ptr<InteractionTestUtilBrowser> test_util,
+      ui::test::internal::InteractiveTestPrivate& test_impl,
       TrackerMode tracker_mode,
       ClockMode clock_mode,
       InitialSessionState initial_session_state);

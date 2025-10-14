@@ -52,12 +52,11 @@ namespace ui::test {
 // `InteractiveTest`, which *is* a test fixture.
 //
 // Also, since this class does not implement input automation for any particular
-// framework, you are more likely to want e.g. InteractiveViewsTest[Api] or
-// InteractiveBrowserTest[Api], which inherit from this class.
+// framework, you are more likely to want e.g. InteractiveViewsTest[Api|Mixin]
+// or InteractiveBrowserTest[Api], which inherit from this class.
 class InteractiveTestApi {
  public:
-  explicit InteractiveTestApi(
-      std::unique_ptr<internal::InteractiveTestPrivate> private_test_impl);
+  InteractiveTestApi();
   virtual ~InteractiveTestApi();
   InteractiveTestApi(const InteractiveTestApi&) = delete;
   void operator=(const InteractiveTestApi&) = delete;
@@ -327,14 +326,14 @@ class InteractiveTestApi {
   // Names an element specified by `spec` as `name`. If `spec` requires a
   // context, the context of the current step will be used.
   //
-  // For Views, prefer `InteractiveViewsTest::NameView()`.
+  // For Views, prefer `InteractiveViewsTestApi::NameView()`.
   [[nodiscard]] StepBuilder NameElement(std::string_view name,
                                         AbsoluteElementSpecifier spec);
 
   // Calls `find_callback` to locate an element relative to element
   // `relative_to` and assign it `name`.
   //
-  // For Views, prefer `InteractiveViewsTest::NameViewRelative()`.
+  // For Views, prefer `InteractiveViewsTestApi::NameViewRelative()`.
   template <typename C>
     requires internal::HasSignature<C, TrackedElement*(TrackedElement*)>
   [[nodiscard]] StepBuilder NameElementRelative(ElementSpecifier relative_to,
@@ -720,9 +719,7 @@ class InteractiveTestMixin : public T, public InteractiveTestApi {
  public:
   template <typename... Args>
   explicit InteractiveTestMixin(Args&&... args)
-      : T(std::forward<Args>(args)...),
-        InteractiveTestApi(std::make_unique<internal::InteractiveTestPrivate>(
-            std::make_unique<InteractionTestUtil>())) {}
+      : T(std::forward<Args>(args)...), InteractiveTestApi() {}
 
   ~InteractiveTestMixin() override = default;
 

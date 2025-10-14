@@ -145,10 +145,10 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 };
 
 class DownloadBubbleInteractiveUiTest
-    : public InteractiveFeaturePromoTestT<DownloadTestBase> {
+    : public InteractiveFeaturePromoTestMixin<DownloadTestBase> {
  public:
   DownloadBubbleInteractiveUiTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHDownloadEsbPromoFeature})) {
 #if BUILDFLAG(IS_MAC)
     // TODO(chlily): Add test coverage for immersive fullscreen disabled on Mac.
@@ -157,7 +157,7 @@ class DownloadBubbleInteractiveUiTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InteractiveFeaturePromoTestT::SetUpInProcessBrowserTestFixture();
+    InteractiveFeaturePromoTestMixin::SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -166,7 +166,7 @@ class DownloadBubbleInteractiveUiTest
   }
 
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTestT::SetUpOnMainThread();
+    InteractiveFeaturePromoTestMixin::SetUpOnMainThread();
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
   }

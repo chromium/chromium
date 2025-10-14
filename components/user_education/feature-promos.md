@@ -308,7 +308,7 @@ when you want it to.
 To test your IPH, use `InteractiveFeaturePromoTest` as your test's base class.
 If you already have a test class for your feature you want to inherit from that
 derives from `InProcessBrowserTest`, use
-`InteractiveFeaturePromoTestT<YourTestClass>` instead.
+`InteractiveFeaturePromoTestMixin<YourTestClass>` instead.
 
 Then, write a [Kombucha](https://goto.google.com/kombucha-playbook) test which
 performs the steps that would trigger your IPH, with a `WaitForPromo` to verify

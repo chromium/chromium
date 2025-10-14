@@ -357,16 +357,12 @@ class InteractionTestUtilSimulatorBrowser
 
 }  // namespace
 
-InteractionTestUtilBrowser::InteractionTestUtilBrowser() {
-  AddSimulator(std::make_unique<InteractionTestUtilSimulatorBrowser>());
-  AddSimulator(
-      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
-#if BUILDFLAG(IS_MAC)
-  AddSimulator(std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
-#endif
+// static
+void InteractionTestUtilBrowser::PopulateSimulators(
+    ui::test::InteractionTestUtil& test_util) {
+  test_util.AddSimulator(
+      std::make_unique<InteractionTestUtilSimulatorBrowser>());
 }
-
-InteractionTestUtilBrowser::~InteractionTestUtilBrowser() = default;
 
 // static
 Browser* InteractionTestUtilBrowser::GetBrowserFromContext(

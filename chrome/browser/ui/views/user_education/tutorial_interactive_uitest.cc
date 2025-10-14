@@ -121,7 +121,9 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
       GetElement(kTabStripElementId), kCustomEventType1);
   ClearEventQueue();
 
-  InteractionTestUtilBrowser test_util;
+  ui::test::InteractionTestUtil test_util;
+  test_util.AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
   ClearEventQueue();

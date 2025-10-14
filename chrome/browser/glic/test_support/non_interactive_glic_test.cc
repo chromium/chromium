@@ -15,8 +15,8 @@ NonInteractiveGlicTest::NonInteractiveGlicTest() {
 NonInteractiveGlicTest::NonInteractiveGlicTest(
     const base::FieldTrialParams& glic_params,
     const GlicTestEnvironmentConfig& glic_config)
-    : test::InteractiveGlicTestT<InteractiveBrowserTest>(glic_params,
-                                                         glic_config) {
+    : test::InteractiveGlicTestMixin<InteractiveBrowserTest>(glic_params,
+                                                             glic_config) {
   GlicFocusedBrowserManager::SetTestingModeForTesting(true);
 }
 

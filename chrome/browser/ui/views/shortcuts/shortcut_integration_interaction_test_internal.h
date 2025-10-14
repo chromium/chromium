@@ -7,6 +7,7 @@
 
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 
 namespace shortcuts {
 
@@ -14,9 +15,12 @@ namespace shortcuts {
 // ShortcutIntegrationInteractionTestApi but which should not be directly
 // visible to tests inheriting from the API class.
 class ShortcutIntegrationInteractionTestPrivate
-    : public internal::InteractiveBrowserTestPrivate {
+    : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  ShortcutIntegrationInteractionTestPrivate();
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  explicit ShortcutIntegrationInteractionTestPrivate(
+      ui::test::internal::InteractiveTestPrivate& test_impl);
   ~ShortcutIntegrationInteractionTestPrivate() override;
 
   // internal::InteractiveBrowserTestPrivate:

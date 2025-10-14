@@ -22,7 +22,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
 class KombuchaInProcessFuzzer
-    : virtual public InteractiveBrowserTestT<InProcessFuzzer> {
+    : virtual public InteractiveBrowserTestMixin<InProcessFuzzer> {
  public:
   KombuchaInProcessFuzzer();
   ~KombuchaInProcessFuzzer() override;

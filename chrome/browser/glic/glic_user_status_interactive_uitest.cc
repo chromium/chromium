@@ -42,7 +42,7 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
   }
 
   void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
+    InteractiveGlicTestMixin::SetUpOnMainThread();
     glic_service()->enabling().SetUserStatusFetchOverrideForTest(
         base::BindRepeating(&GlicUserStatusInteractiveUiTest::UserStatusFetch,
                             base::Unretained(this)));

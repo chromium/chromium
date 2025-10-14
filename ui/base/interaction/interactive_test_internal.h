@@ -9,6 +9,7 @@
 #include <concepts>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -20,6 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -34,6 +36,7 @@
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/framework_specific_registration_list.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
@@ -65,7 +68,80 @@ inline constexpr char kInteractiveTestFailedMessagePrefix[] =
 inline constexpr char kNoCheckDescriptionSpecified[] =
     "[no description specified]";
 
+class InteractiveTestPrivate;
 class StateObserverElement;
+
+// Represents a private test implementation for a particular framework or
+// platform.
+class InteractiveTestPrivateFrameworkBase
+    : public FrameworkSpecificImplementation {
+ public:
+  explicit InteractiveTestPrivateFrameworkBase(
+      InteractiveTestPrivate& test_impl);
+  ~InteractiveTestPrivateFrameworkBase() override;
+
+  // Represents a node in a debug tree of UI elements that can be pretty-
+  // printed.
+  struct DebugTreeNode {
+    DebugTreeNode();
+    explicit DebugTreeNode(std::string initial_text);
+    DebugTreeNode(DebugTreeNode&& other) noexcept;
+    DebugTreeNode& operator=(DebugTreeNode&& other) noexcept;
+    ~DebugTreeNode();
+
+    std::string text;
+    std::vector<DebugTreeNode> children;
+
+    void PrintTo(std::ostream& stream) const;
+  };
+
+  // Gets a verbose string representation of a set of `bounds` for debug
+  // purposes.
+  static std::string DebugDumpBounds(const gfx::Rect& bounds);
+
+  // Called to populate any simulators required for this platform.
+  virtual void PopulateSimulators(InteractionTestUtil& test_util) {}
+
+  // Call this method during test SetUp(), or SetUpOnMainThread() for browser
+  // tests.
+  virtual void DoTestSetUp() {}
+
+  // Call this method during test TearDown(), or TearDownOnMainThread() for
+  // browser tests.
+  virtual void DoTestTearDown() {}
+
+  // Called when the sequence ends, but before we break out of the run loop
+  // in RunTestSequenceImpl().
+  virtual void OnSequenceComplete() {}
+  virtual void OnSequenceAborted(const InteractionSequence::AbortedData& data) {
+  }
+
+  // Retrieves the native window from `el`. If this particular implementation
+  // does not know how to do this, or there is no window, returns a null/falsy
+  // value.
+  virtual gfx::NativeWindow GetNativeWindowFromElement(
+      const TrackedElement* el) const;
+
+  // Retrieves the native window from `context`. If this particular
+  // implementation does not know how to do this, or there is no window, returns
+  // a null/falsy value.
+  virtual gfx::NativeWindow GetNativeWindowFromContext(
+      ElementContext context) const;
+
+  // Convert some or all of `elements` to debug tree nodes; removing elements
+  // that are processed from the set.
+  virtual std::vector<DebugTreeNode> DebugDumpElements(
+      std::set<const ui::TrackedElement*>& elements) const;
+
+  // Provides the top-level description for a context, or null if none.
+  virtual std::string DebugDescribeContext(ui::ElementContext context) const;
+
+ protected:
+  InteractiveTestPrivate& test_impl() { return test_impl_.get(); }
+
+ private:
+  const raw_ref<InteractiveTestPrivate> test_impl_;
+};
 
 // Class that implements functionality for InteractiveTest* that should be
 // hidden from tests that inherit the API.
@@ -157,13 +233,12 @@ class InteractiveTestPrivate {
     intptr_t handle_ = 0;
   };
 
-  explicit InteractiveTestPrivate(
-      std::unique_ptr<InteractionTestUtil> test_util);
+  InteractiveTestPrivate();
   virtual ~InteractiveTestPrivate();
   InteractiveTestPrivate(const InteractiveTestPrivate&) = delete;
   void operator=(const InteractiveTestPrivate&) = delete;
 
-  InteractionTestUtil& test_util() { return *test_util_; }
+  InteractionTestUtil& test_util() { return test_util_; }
 
   OnIncompatibleAction on_incompatible_action() const {
     return on_incompatible_action_;
@@ -177,6 +252,9 @@ class InteractiveTestPrivate {
     default_context_ = default_context;
   }
   ElementContext default_context() const { return default_context_; }
+
+  // Fetch the native window for the given element.
+  gfx::NativeWindow GetNativeWindowFor(const ui::TrackedElement* el) const;
 
   // Possibly fails or skips a sequence based on the result of an action
   // simulation.
@@ -240,42 +318,29 @@ class InteractiveTestPrivate {
     allow_interactive_test_verbs_ = true;
   }
 
-  // Represents a node in a debug tree of UI elements that can be pretty-
-  // printed.
-  struct DebugTreeNode {
-    DebugTreeNode();
-    explicit DebugTreeNode(std::string initial_text);
-    DebugTreeNode(DebugTreeNode&& other) noexcept;
-    DebugTreeNode& operator=(DebugTreeNode&& other) noexcept;
-    ~DebugTreeNode();
+  using DebugTreeNode = InteractiveTestPrivateFrameworkBase::DebugTreeNode;
 
-    std::string text;
-    std::vector<DebugTreeNode> children;
-
-    void PrintTo(std::ostream& stream) const;
-  };
+  template <typename T, typename... Args>
+    requires std::derived_from<T, InteractiveTestPrivateFrameworkBase>
+  T* MaybeRegisterFrameworkImpl(Args&&... args) {
+    T* const result = framework_implementations_.MaybeRegister<T>(
+        *this, std::forward<Args>(args)...);
+    if (result) {
+      result->PopulateSimulators(test_util_);
+    }
+    return result;
+  }
 
  protected:
   // Dumps the entire tree of named elements. Default implementation organizes
   // all elements by context. This is the entry point when printing test failure
   // information. The `current_context` is the current context in the test, if
   // known.
-  virtual DebugTreeNode DebugDumpElements(
-      ui::ElementContext current_context) const;
+  DebugTreeNode DebugDumpElements(ui::ElementContext current_context) const;
 
   // Dumps the contents of a particular context.
   virtual DebugTreeNode DebugDumpContext(
       const ui::ElementContext context) const;
-
-  // Dumps the context of a particular element.
-  virtual DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const;
-
-  // Provides the top-level description for a context.
-  virtual std::string DebugDescribeContext(ui::ElementContext context) const;
-
-  // Gets a verbose string representation of a set of `bounds` for debug
-  // purposes.
-  virtual std::string DebugDumpBounds(const gfx::Rect& bounds) const;
 
  private:
   friend class ui::test::InteractiveTestTest;
@@ -306,7 +371,7 @@ class InteractiveTestPrivate {
   bool sequence_skipped_ = false;
 
   // Used to simulate input to UI elements.
-  std::unique_ptr<InteractionTestUtil> test_util_;
+  InteractionTestUtil test_util_;
 
   // The default context for running test sequences.
   ElementContext default_context_;
@@ -325,6 +390,9 @@ class InteractiveTestPrivate {
 
   intptr_t next_additional_context_handle_ = 1U;
   std::map<intptr_t, std::string> additional_context_data_;
+
+  FrameworkSpecificRegistrationList<InteractiveTestPrivateFrameworkBase>
+      framework_implementations_;
 
   base::WeakPtrFactory<InteractiveTestPrivate> weak_ptr_factory_{this};
 

@@ -21,17 +21,21 @@ the API calls for you.
 
 ## Getting Started
 
-There are two ways to write a Kombucha-based interaction test:
-1. Alias or inherit from one of our pre-configured test fixtures (preferred):
-    - [InteractiveTest](/ui/base/interaction/interactive_test.h)
-    - [InteractiveViewsTest](/ui/views/interaction/interactive_views_test.h)
+There are three ways to write a Kombucha-based interaction test, in descending
+order of preference:
+1. Alias or inherit from our pre-configured test fixture (preferred):
     - [InteractiveBrowserTest](/chrome/test/interaction/interactive_browser_test.h)
-2. Have your test fixture inherit the appropriate Kombucha API class:
+2. Add a test mixin to an existing test class:
+    - [InteractiveTestMixin](/ui/base/interaction/interactive_test.h)
+    - [InteractiveViewsTestMixin](/ui/views/interaction/interactive_views_test.h)
+    - [InteractiveBrowserTestMixin](/chrome/test/interaction/interactive_browser_test.h)
+3. Have your test fixture inherit the appropriate Kombucha API class and set it
+   up manually:
     - [InteractiveTestApi](/ui/base/interaction/interactive_test.h)
     - [InteractiveViewsTestApi](/ui/views/interaction/interactive_views_test.h)
     - [InteractiveBrowserTestApi](/chrome/test/interaction/interactive_browser_test.h)
 
-If you go the latter route, please see
+If you go one of the latter routes, please see
 [Custom Test Fixtures](#custom-test-fixtures) below.
 
 ## Using the Kombucha API
@@ -889,18 +893,18 @@ Most Kombucha tests will derive directly from either `InteractiveViewsTest` or
 `InteractiveBrowserTest`.
 
 If your test needs to derive from a different/custom test fixture class but you
-would still like access to the Kombucha API, use `InteractiveViewsTestT<T>` or
-`InteractiveBrowserTestT<T>` instead.
+would still like access to the Kombucha API, use `InteractiveViewsTestMixin<T>` or
+`InteractiveBrowserTestMixin<T>` instead.
 
 Example:
 ```cpp
 // Want Kombucha functionality, but already have an existing test
 // `MyCustomBrowserTest` with logic we need.
-using MyTestFixture = InteractiveBrowserTestT<MyCustomBrowserTest>;
+using MyTestFixture = InteractiveBrowserTestMixin<MyCustomBrowserTest>;
 
 // Here's another way to do the same thing, if we want to further extend the
 // test class.
-class MyTestFixture2 : public InteractiveBrowserTestT<MyCustomBrowserTest> {
+class MyTestFixture2 : public InteractiveBrowserTestMixin<MyCustomBrowserTest> {
  public:
   MyTestFixture2();
   ~MyTestFixture2() override;

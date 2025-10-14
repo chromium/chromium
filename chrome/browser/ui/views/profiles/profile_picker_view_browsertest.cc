@@ -511,10 +511,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
 }
 
 class ProfilePickerCreationFlowBrowserTest
-    : public InteractiveFeaturePromoTestT<ProfilePickerTestBase> {
+    : public InteractiveFeaturePromoTestMixin<ProfilePickerTestBase> {
  public:
   ProfilePickerCreationFlowBrowserTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHProfileSwitchFeature,
              feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {
 #if BUILDFLAG(IS_MAC)
@@ -527,7 +527,7 @@ class ProfilePickerCreationFlowBrowserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InteractiveFeaturePromoTestT::SetUpInProcessBrowserTestFixture();
+    InteractiveFeaturePromoTestMixin::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -537,7 +537,7 @@ class ProfilePickerCreationFlowBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTestT::SetUpOnMainThread();
+    InteractiveFeaturePromoTestMixin::SetUpOnMainThread();
 
     // Avoid showing the What's New page. These tests assume this isn't the
     // first update and the NTP opens after sign in.

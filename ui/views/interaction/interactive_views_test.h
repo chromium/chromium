@@ -48,19 +48,18 @@ namespace views::test {
 // //chrome/test/interaction/README.md for more information).
 //
 // This class is not a test fixture; it is a mixin that can be added to existing
-// test classes using `InteractiveViewsTestT<T>` - or just use
-// `InteractiveViewsTest`, which *is* a test fixture (preferred; see below).
+// test classes using `InteractiveViewsTestMixin<T>`.
 //
 // To use Kombucha for in-process browser tests, instead see:
 // //chrome/test/interaction/interactive_browser_test.h
-class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
+class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
  public:
   InteractiveViewsTestApi();
   ~InteractiveViewsTestApi() override;
 
   // Returns an object that can be used to inject mouse inputs. Generally,
   // prefer to use methods like MoveMouseTo, MouseClick, and DragMouseTo.
-  InteractionTestUtilMouse& mouse_util() { return test_impl().mouse_util(); }
+  InteractionTestUtilMouse& mouse_util() { return test_impl_->mouse_util(); }
 
   // Shorthand to convert a tracked element into a View. The element should be
   // a views::TrackedElementViews and of type `T`.
@@ -434,10 +433,6 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   void SetContextWidget(Widget* context_widget);
   Widget* context_widget() { return context_widget_.get(); }
 
- protected:
-  explicit InteractiveViewsTestApi(
-      std::unique_ptr<internal::InteractiveViewsTestPrivate> private_test_impl);
-
  private:
   using FindViewCallback = base::OnceCallback<View*(View*)>;
   static FindViewCallback GetFindViewCallback(AbsoluteViewSpecifier spec);
@@ -456,33 +451,28 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   static RelativePositionCallback GetPositionCallback(
       RelativePositionSpecifier spec);
 
-  internal::InteractiveViewsTestPrivate& test_impl() {
-    return static_cast<internal::InteractiveViewsTestPrivate&>(
-        InteractiveTestApi::private_test_impl());
-  }
-
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep(std::string_view description);
+
+  const raw_ptr<internal::InteractiveViewsTestPrivate> test_impl_;
 
   base::WeakPtr<Widget> context_widget_;
 };
 
-// Template that adds InteractiveViewsTestApi to any test fixture. Prefer to use
-// InteractiveViewsTest unless you specifically need to inherit from another
-// test class.
+// Template that adds InteractiveViewsTestApi to any test fixture.
 //
 // You must call SetContextWidget() before using RunTestSequence() or any of the
 // mouse actions.
 //
 // See //chrome/test/interaction/README.md for usage.
 template <typename T>
-class InteractiveViewsTestT : public T, public InteractiveViewsTestApi {
+class InteractiveViewsTestMixin : public T, public InteractiveViewsTestApi {
  public:
   template <typename... Args>
-  explicit InteractiveViewsTestT(Args&&... args)
+  explicit InteractiveViewsTestMixin(Args&&... args)
       : T(std::forward<Args>(args)...) {}
 
-  ~InteractiveViewsTestT() override = default;
+  ~InteractiveViewsTestMixin() override = default;
 
  protected:
   void SetUp() override {
@@ -495,15 +485,6 @@ class InteractiveViewsTestT : public T, public InteractiveViewsTestApi {
     T::TearDown();
   }
 };
-
-// Convenience test fixture for Views tests that supports
-// InteractiveViewsTestApi.
-//
-// You must call SetContextWidget() before using RunTestSequence() or any of the
-// mouse actions.
-//
-// See //chrome/test/interaction/README.md for usage.
-using InteractiveViewsTest = InteractiveViewsTestT<ViewsTestBase>;
 
 // Template definitions:
 
@@ -874,7 +855,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollView(
                          ui::ElementIdentifier view_id, Cb callback,
                          base::TimeDelta polling_interval,
                          ui::InteractionSequence* seq, ui::TrackedElement* el) {
-                        api->test_impl().AddStateObserver(
+                        api->private_test_impl().AddStateObserver(
                             id, el->context(),
                             std::make_unique<PollingViewObserver<T, V>>(
                                 view_id,
@@ -904,7 +885,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
              ui::ElementIdentifier view_id, R (V::*property)() const,
              base::TimeDelta polling_interval, ui::InteractionSequence* seq,
              ui::TrackedElement* el) {
-            api->test_impl().AddStateObserver(
+            api->private_test_impl().AddStateObserver(
                 id, el->context(),
                 std::make_unique<PollingViewPropertyObserver<T, V>>(
                     view_id,

@@ -15,10 +15,13 @@ class TrackedElement;
 
 class Browser;
 
-class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
+class InteractionTestUtilBrowser {
  public:
-  InteractionTestUtilBrowser();
-  ~InteractionTestUtilBrowser() override;
+  // Static class only.
+  InteractionTestUtilBrowser() = delete;
+
+  // Populates the appropriate simulators for a browser.
+  static void PopulateSimulators(ui::test::InteractionTestUtil& test_util);
 
   // Returns the browser that matches the given context, or nullptr if none
   // can be found.

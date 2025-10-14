@@ -208,15 +208,14 @@ const TestParam kTestParams[] = {
 // Test suite with default params, and with Search Engine Choice and Default
 // Browser screens disabled.
 class FirstRunInteractiveUiTest
-    : public InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>,
+    : public InteractiveFeaturePromoTestMixin<FirstRunServiceBrowserTestBase>,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
   explicit FirstRunInteractiveUiTest(const TestParam& params = TestParam())
-      : InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>(
+      : InteractiveFeaturePromoTestMixin<FirstRunServiceBrowserTestBase>(
             UseDefaultTrackerAllowingPromos(
                 {feature_engagement::kIPHSupervisedUserProfileSigninFeature})),
-        params_(params) {
-  }
+        params_(params) {}
   ~FirstRunInteractiveUiTest() override = default;
 
  protected:

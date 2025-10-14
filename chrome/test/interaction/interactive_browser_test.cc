@@ -116,13 +116,9 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
                                        kDefaultWaitForJsResultAtEvent);
 
 InteractiveBrowserTestApi::InteractiveBrowserTestApi()
-    : InteractiveBrowserTestApi(
-          std::make_unique<internal::InteractiveBrowserTestPrivate>(
-              std::make_unique<InteractionTestUtilBrowser>())) {}
-
-InteractiveBrowserTestApi::InteractiveBrowserTestApi(
-    std::unique_ptr<internal::InteractiveBrowserTestPrivate> private_test_impl)
-    : InteractiveViewsTestApi(std::move(private_test_impl)) {}
+    : test_impl_(private_test_impl()
+                     .MaybeRegisterFrameworkImpl<
+                         internal::InteractiveBrowserTestPrivate>()) {}
 
 InteractiveBrowserTestApi::~InteractiveBrowserTestApi() = default;
 
@@ -135,7 +131,7 @@ InteractiveBrowserTestApi::AsInstrumentedWebContents(ui::TrackedElement* el) {
 }
 
 void InteractiveBrowserTestApi::EnableWebUICodeCoverage() {
-  test_impl().MaybeStartWebUICodeCoverage();
+  test_impl_->MaybeStartWebUICodeCoverage();
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScreenshotWebUi(
@@ -154,7 +150,8 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScreenshotWebUi(
         const auto window_rect = GetRegionInWebContents(el, where);
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
             el, screenshot_name, baseline_cl, window_rect);
-        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
+        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
+                                                     result);
       },
       base::Unretained(this), screenshot_name, baseline_cl, where));
 
@@ -181,7 +178,8 @@ InteractiveBrowserTestApi::ScreenshotSurface(
         const auto result =
             InteractionTestUtilBrowser::CompareSurfaceScreenshot(
                 el, screenshot_name, baseline_cl);
-        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
+        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
+                                                     result);
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 
@@ -204,7 +202,7 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::InstrumentTab(
                                   in_browser](ui::TrackedElement* el) {
         Browser* const browser = GetBrowserFor(el->context(), in_browser);
         CHECK(browser) << "InstrumentTab(): a specific browser is required.";
-        test_impl().AddInstrumentedWebContents(
+        test_impl_->AddInstrumentedWebContents(
             WebContentsInteractionTestUtil::ForExistingTabInBrowser(browser, id,
                                                                     tab_index));
       })));
@@ -226,7 +224,7 @@ InteractiveBrowserTestApi::InstrumentNextTab(ui::ElementIdentifier id,
              [this, id, in_browser](ui::TrackedElement* el) {
                Browser* const browser =
                    GetBrowserFor(el->context(), in_browser);
-               test_impl().AddInstrumentedWebContents(
+               test_impl_->AddInstrumentedWebContents(
                    browser
                        ? WebContentsInteractionTestUtil::ForNextTabInBrowser(
                              browser, id)
@@ -271,7 +269,7 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(ui::ElementIdentifier id,
                                                    bool wait_for_ready) {
   auto steps = Steps(AfterShow(
       web_view, base::BindLambdaForTesting([this, id](ui::TrackedElement* el) {
-        test_impl().AddInstrumentedWebContents(
+        test_impl_->AddInstrumentedWebContents(
             WebContentsInteractionTestUtil::ForNonTabWebView(
                 AsView<views::WebView>(el), id));
       })));
@@ -306,7 +304,7 @@ InteractiveBrowserTestApi::InstrumentInnerWebContents(
     bool wait_for_ready) {
   MultiStep steps;
   steps.emplace_back(Do([this, inner_id, outer_id, inner_contents_index]() {
-    test_impl().AddInstrumentedWebContents(
+    test_impl_->AddInstrumentedWebContents(
         WebContentsInteractionTestUtil::ForInnerWebContents(
             outer_id, inner_contents_index, inner_id));
   }));
@@ -327,9 +325,9 @@ InteractiveBrowserTestApi::UninstrumentWebContents(
   return std::move(
       (fail_if_not_instrumented
            ? Check([this, id]() {
-               return test_impl().UninstrumentWebContents(id);
+               return test_impl_->UninstrumentWebContents(id);
              })
-           : Do([this, id]() { test_impl().UninstrumentWebContents(id); }))
+           : Do([this, id]() { test_impl_->UninstrumentWebContents(id); }))
           .SetDescription(
               base::StringPrintf("UninstrumentWebContents(%s)", id.GetName())));
 }
@@ -953,7 +951,7 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element) {
   // TODO(dfried): Maybe handle `WebView` elements as well.
   return Steps(If(
       [this, element_id]() {
-        return test_impl().IsInstrumentedWebContents(element_id);
+        return test_impl_->IsInstrumentedWebContents(element_id);
       },
       Then(WaitForWebContentsPainted(element_id))));
 }

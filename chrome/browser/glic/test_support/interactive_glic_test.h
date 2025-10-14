@@ -70,7 +70,7 @@ extern const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel;
 template <typename T>
   requires(std::derived_from<T, InProcessBrowserTest> &&
            std::derived_from<T, InteractiveBrowserTestApi>)
-class InteractiveGlicTestT : public T {
+class InteractiveGlicTestMixin : public T {
  public:
   // Determines whether this is an attached or detached Glic window.
   enum GlicWindowMode {
@@ -92,9 +92,10 @@ class InteractiveGlicTestT : public T {
   // Constructor that takes `FieldTrialParams` and a
   // `GlicTestEnvironmentConfig`, then forwards the rest of the args.
   template <typename... Args>
-  explicit InteractiveGlicTestT(const base::FieldTrialParams& glic_params,
-                                const GlicTestEnvironmentConfig& glic_config,
-                                Args&&... args)
+  explicit InteractiveGlicTestMixin(
+      const base::FieldTrialParams& glic_params,
+      const GlicTestEnvironmentConfig& glic_config,
+      Args&&... args)
       : T(std::forward<Args>(args)...), glic_test_environment_(glic_config) {
     features_.InitWithFeaturesAndParameters(
         {{features::kGlic, glic_params},
@@ -105,23 +106,23 @@ class InteractiveGlicTestT : public T {
   }
 
   // Default constructor (no forwarded args or field trial parameters).
-  InteractiveGlicTestT()
-      : InteractiveGlicTestT(base::FieldTrialParams(),
-                             GlicTestEnvironmentConfig()) {}
+  InteractiveGlicTestMixin()
+      : InteractiveGlicTestMixin(base::FieldTrialParams(),
+                                 GlicTestEnvironmentConfig()) {}
 
-  explicit InteractiveGlicTestT(const base::FieldTrialParams& glic_params)
-      : InteractiveGlicTestT(glic_params, GlicTestEnvironmentConfig()) {}
+  explicit InteractiveGlicTestMixin(const base::FieldTrialParams& glic_params)
+      : InteractiveGlicTestMixin(glic_params, GlicTestEnvironmentConfig()) {}
 
   // Constructor with no field trial params; all arguments are forwarded to the
   // base class.
   template <typename Arg, typename... Args>
     requires(!std::same_as<base::FieldTrialParams, std::remove_cvref_t<Arg>>)
-  explicit InteractiveGlicTestT(Arg&& arg, Args&&... args)
-      : InteractiveGlicTestT(base::FieldTrialParams(),
-                             std::forward<Arg>(arg),
-                             std::forward<Args>(args)...) {}
+  explicit InteractiveGlicTestMixin(Arg&& arg, Args&&... args)
+      : InteractiveGlicTestMixin(base::FieldTrialParams(),
+                                 std::forward<Arg>(arg),
+                                 std::forward<Args>(args)...) {}
 
-  ~InteractiveGlicTestT() override = default;
+  ~InteractiveGlicTestMixin() override = default;
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -705,9 +706,9 @@ class InteractiveGlicTestT : public T {
     return guest_url_;
   }
 
-  // `InteractiveGlicTestT` is configured to operate a single browser, but it
-  // can change which browser it operates. This changes the browser to be used
-  // in functions of `InteractiveGlicTestT`.
+  // `InteractiveGlicTestMixin` is configured to operate a single browser, but
+  // it can change which browser it operates. This changes the browser to be
+  // used in functions of `InteractiveGlicTestMixin`.
   void SetActiveBrowser(Browser* browser) {
     active_browser_ = browser->AsWeakPtr();
   }
@@ -757,14 +758,14 @@ class InteractiveGlicTestT : public T {
 };
 
 // For most tests, you can alias or inherit from this instead of deriving your
-// own `InteractiveGlicTestT<...>`.
-using InteractiveGlicTest = InteractiveGlicTestT<InteractiveBrowserTest>;
+// own `InteractiveGlicTestMixin<...>`.
+using InteractiveGlicTest = InteractiveGlicTestMixin<InteractiveBrowserTest>;
 
 // For testing IPH associated with glic - i.e. help bubbles that anchor in the
 // chrome browser rather than showing up in the glic content itself - inherit
 // from this.
 using InteractiveGlicFeaturePromoTest =
-    InteractiveGlicTestT<InteractiveFeaturePromoTest>;
+    InteractiveGlicTestMixin<InteractiveFeaturePromoTest>;
 
 }  // namespace glic::test
 

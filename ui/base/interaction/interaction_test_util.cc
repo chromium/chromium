@@ -7,6 +7,7 @@
 #include <array>
 #include <functional>
 
+#include "base/containers/adapters.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui::test {
@@ -19,7 +20,7 @@ ActionResult Simulate(
         simulators,
     ActionResult (InteractionTestUtil::Simulator::*method)(Args...),
     Args... args) {
-  for (const auto& simulator : simulators) {
+  for (const auto& simulator : base::Reversed(simulators)) {
     const auto result = std::invoke(method, simulator.get(), args...);
     if (result != ActionResult::kNotAttempted) {
       return result;

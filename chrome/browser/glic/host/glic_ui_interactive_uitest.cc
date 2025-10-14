@@ -144,7 +144,7 @@ const ui::Accelerator escape_key(ui::VKEY_ESCAPE, ui::EF_NONE);
 class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
  public:
   explicit GlicUiInteractiveUiTestBase(const TestParams& params)
-      : InteractiveGlicTestT(params.GetFieldTrialParams()) {
+      : InteractiveGlicTestMixin(params.GetFieldTrialParams()) {
     if (!params.start_connected) {
       GlicUI::simulate_no_connection_for_testing();
     }
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(GlicWithMultipleProfilesTest, OpenGlicInEachProfile) {
   RunTestSequence(
       // Warning!: `kAttached` really just clicks the glic button, the window
       // will open in detached mode because `features::kGlicDetached` is
-      // enabled. We do this because InteractiveGlicTestT::ToggleGlicWindow
+      // enabled. We do this because InteractiveGlicTestMixin::ToggleGlicWindow
       // doesn't work right in detached mode with multiple profiles.
       // TODO(b/418284946): Fix ToggleGlicWindow.
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly));

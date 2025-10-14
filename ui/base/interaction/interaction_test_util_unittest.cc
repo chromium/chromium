@@ -174,20 +174,20 @@ TEST(InteractionTestUtilTest, Confirm) {
   EXPECT_EQ(ActionResult::kSucceeded, util.Confirm(&element));
 }
 
-TEST(InteractionTestUtilTest, TwoSimulators_FirstSucceeds) {
+TEST(InteractionTestUtilTest, TwoSimulators_LastSucceeds) {
   TestElement element(kTestElementIdentifier, kTestElementContext);
   InteractionTestUtil util;
-  auto* const sim1 = util.AddSimulator(
-      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+  auto* const sim2 = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
 
-  EXPECT_CALL(*sim1, Confirm(&element))
+  EXPECT_CALL(*sim2, Confirm(&element))
       .WillOnce(testing::Return(ActionResult::kSucceeded));
   EXPECT_EQ(ActionResult::kSucceeded, util.Confirm(&element));
 }
 
-TEST(InteractionTestUtilTest, TwoSimulators_SecondSucceeds) {
+TEST(InteractionTestUtilTest, FirstSucceeds) {
   TestElement element(kTestElementIdentifier, kTestElementContext);
   InteractionTestUtil util;
   auto* const sim1 = util.AddSimulator(
@@ -196,11 +196,24 @@ TEST(InteractionTestUtilTest, TwoSimulators_SecondSucceeds) {
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
 
   EXPECT_CALL(*sim1, Confirm(&element))
-      .WillOnce(testing::Return(ActionResult::kNotAttempted));
-  EXPECT_CALL(*sim2, Confirm(&element))
       .WillOnce(testing::Return(ActionResult::kSucceeded));
+  EXPECT_CALL(*sim2, Confirm(&element))
+      .WillOnce(testing::Return(ActionResult::kNotAttempted));
 
   EXPECT_EQ(ActionResult::kSucceeded, util.Confirm(&element));
+}
+
+TEST(InteractionTestUtilTest, TwoSimulators_SecondFails) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+  auto* const sim2 = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  EXPECT_CALL(*sim2, Confirm(&element))
+      .WillOnce(testing::Return(ActionResult::kFailed));
+  EXPECT_EQ(ActionResult::kFailed, util.Confirm(&element));
 }
 
 TEST(InteractionTestUtilTest, TwoSimulators_FirstFails) {
@@ -208,28 +221,28 @@ TEST(InteractionTestUtilTest, TwoSimulators_FirstFails) {
   InteractionTestUtil util;
   auto* const sim1 = util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
-  util.AddSimulator(
-      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
-
-  EXPECT_CALL(*sim1, Confirm(&element))
-      .WillOnce(testing::Return(ActionResult::kFailed));
-  EXPECT_EQ(ActionResult::kFailed, util.Confirm(&element));
-}
-
-TEST(InteractionTestUtilTest, TwoSimulators_SecondFails) {
-  TestElement element(kTestElementIdentifier, kTestElementContext);
-  InteractionTestUtil util;
-  auto* const sim1 = util.AddSimulator(
-      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   auto* const sim2 = util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
 
   EXPECT_CALL(*sim1, Confirm(&element))
-      .WillOnce(testing::Return(ActionResult::kNotAttempted));
-  EXPECT_CALL(*sim2, Confirm(&element))
       .WillOnce(testing::Return(ActionResult::kFailed));
+  EXPECT_CALL(*sim2, Confirm(&element))
+      .WillOnce(testing::Return(ActionResult::kNotAttempted));
 
   EXPECT_EQ(ActionResult::kFailed, util.Confirm(&element));
+}
+
+TEST(InteractionTestUtilTest, TwoSimulators_SecondUnsupported) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+  auto* const sim2 = util.AddSimulator(
+      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
+
+  EXPECT_CALL(*sim2, Confirm(&element))
+      .WillOnce(testing::Return(ActionResult::kKnownIncompatible));
+  EXPECT_EQ(ActionResult::kKnownIncompatible, util.Confirm(&element));
 }
 
 TEST(InteractionTestUtilTest, TwoSimulators_FirstUnsupported) {
@@ -237,26 +250,13 @@ TEST(InteractionTestUtilTest, TwoSimulators_FirstUnsupported) {
   InteractionTestUtil util;
   auto* const sim1 = util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
-  util.AddSimulator(
-      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
-
-  EXPECT_CALL(*sim1, Confirm(&element))
-      .WillOnce(testing::Return(ActionResult::kKnownIncompatible));
-  EXPECT_EQ(ActionResult::kKnownIncompatible, util.Confirm(&element));
-}
-
-TEST(InteractionTestUtilTest, TwoSimulators_SecondUnsupported) {
-  TestElement element(kTestElementIdentifier, kTestElementContext);
-  InteractionTestUtil util;
-  auto* const sim1 = util.AddSimulator(
-      std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
   auto* const sim2 = util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
 
   EXPECT_CALL(*sim1, Confirm(&element))
-      .WillOnce(testing::Return(ActionResult::kNotAttempted));
-  EXPECT_CALL(*sim2, Confirm(&element))
       .WillOnce(testing::Return(ActionResult::kKnownIncompatible));
+  EXPECT_CALL(*sim2, Confirm(&element))
+      .WillOnce(testing::Return(ActionResult::kNotAttempted));
 
   EXPECT_EQ(ActionResult::kKnownIncompatible, util.Confirm(&element));
 }

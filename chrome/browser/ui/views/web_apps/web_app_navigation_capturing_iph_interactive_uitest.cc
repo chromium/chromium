@@ -74,7 +74,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
             LinkCapturingFeatureVersion::kV2DefaultOn) {}
 
   explicit WebAppNavigationCapturingIphUiTest(LinkCapturingFeatureVersion flag)
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch,
              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab})) {
     scoped_feature_list_.InitWithFeaturesAndParameters(

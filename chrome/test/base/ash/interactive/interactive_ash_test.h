@@ -36,7 +36,7 @@ class NavigationHandle;
 // For tests that run on a DUT or in a VM, use the subclass AshIntegrationTest,
 // which supports running on hardware.
 class InteractiveAshTest
-    : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
+    : public InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest> {
  public:
   // Helper struct for filling out the Wi-Fi configuration dialog.
   struct WifiDialogConfig {

@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustKeyRotationBrowserTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class DeviceTrustBrowserTestWithConsent
-    : public InteractiveBrowserTestT<DeviceTrustBrowserTest>,
+    : public InteractiveBrowserTestMixin<DeviceTrustBrowserTest>,
       public testing::WithParamInterface<
           /* Six boolean variables that define the general consent:
           - if the managed profile and device are affiliated
@@ -475,7 +475,7 @@ class DeviceTrustBrowserTestWithConsent
           testing::tuple<bool, bool, bool, bool, bool, bool>> {
  protected:
   DeviceTrustBrowserTestWithConsent()
-      : InteractiveBrowserTestT(DeviceTrustConnectorState({
+      : InteractiveBrowserTestMixin(DeviceTrustConnectorState({
             .affiliated = testing::get<0>(GetParam()),
             .cloud_user_management_level = DeviceTrustManagementLevel({
                 .is_managed = testing::get<1>(GetParam()),
@@ -499,7 +499,7 @@ class DeviceTrustBrowserTestWithConsent
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT::SetUpOnMainThread();
+    InteractiveBrowserTestMixin::SetUpOnMainThread();
 
     browser()->profile()->GetPrefs()->SetBoolean(
         device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,

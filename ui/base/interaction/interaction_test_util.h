@@ -53,9 +53,9 @@ enum class [[nodiscard]] ActionResult {
 // actions to framework-specific handlers. Use so you can write your
 // interaction tests without having to worry about framework specifics.
 //
-// Simulators are checked in the order they are added, so if more than one
-// simulator can handle a particular action, add the one that has the more
-// specific/desired behavior first.
+// Simulators are checked in the reverse order they are added, so if simulators
+// are added in the order from more general to more specific, the more specific
+// simulators are always checked first.
 //
 // Example usage:
 //
@@ -269,7 +269,7 @@ class InteractionTestUtil {
   // Focuses `element` within its surface. Does not necessarily activate the
   // surface. Note that on some platforms, `element` may not actually report as
   // focused until its surface is subsequently activated.
-  virtual ActionResult FocusElement(TrackedElement* element);
+  ActionResult FocusElement(TrackedElement* element);
 
 #if !BUILDFLAG(IS_IOS)
 

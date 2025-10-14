@@ -1461,7 +1461,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
 // feature is being rolled out.
 // TODO(crbug.com/40857680): Remove once feature is fully enabled.
 class ExtensionsToolbarContainerFeatureRolloutInteractiveTest
-    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest>,
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest>,
       public testing::WithParamInterface<bool> {
  public:
   ExtensionsToolbarContainerFeatureRolloutInteractiveTest() {

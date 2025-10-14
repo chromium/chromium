@@ -672,7 +672,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
-using LiveSignInGaiaIntegrationTest = InteractiveBrowserTestT<LiveSignInTest>;
+using LiveSignInGaiaIntegrationTest =
+    InteractiveBrowserTestMixin<LiveSignInTest>;
 
 // Regression test for crbug.com/420635510.
 // Tests that a doing a web signin from a tab that was previously opened for

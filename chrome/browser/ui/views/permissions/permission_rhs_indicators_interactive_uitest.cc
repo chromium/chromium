@@ -70,7 +70,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
     // Disables the disregarding of potentially unintended input events.
     command_line->AppendSwitch(
         views::switches::kDisableInputEventActivationProtectionForTesting);

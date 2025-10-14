@@ -47,15 +47,16 @@ class TrackedElement;
 
 class Browser;
 
-// Provides interactive test functionality for Views.
+// Provides interactive test functionality for desktop browsers.
 //
 // Interactive tests use InteractionSequence, ElementTracker, and
 // InteractionTestUtil to provide a common library of concise test methods. This
 // convenience API is nicknamed "Kombucha" (see README.md for more information).
 //
 // This class is not a test fixture; it is a mixin that can be added to an
-// existing browser test class using `InteractiveBrowserTestT<T>` - or just use
-// `InteractiveBrowserTest`, which *is* a test fixture (preferred; see below).
+// existing browser test class using `InteractiveBrowserTestMixin<T>` - or just
+// use `InteractiveBrowserTest`, which *is* a test fixture (preferred; see
+// below).
 class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
  public:
   InteractiveBrowserTestApi();
@@ -517,11 +518,6 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
                         ui_controls::kNoAccelerator, execute_mode);
   }
 
- protected:
-  explicit InteractiveBrowserTestApi(
-      std::unique_ptr<internal::InteractiveBrowserTestPrivate>
-          private_test_impl);
-
  private:
   // Common logic for WaitForJsResult[At].
   template <typename M>
@@ -548,10 +544,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   Browser* GetBrowserFor(ui::ElementContext current_context,
                          BrowserSpecifier spec);
 
-  internal::InteractiveBrowserTestPrivate& test_impl() {
-    return static_cast<internal::InteractiveBrowserTestPrivate&>(
-        private_test_impl());
-  }
+  const raw_ptr<internal::InteractiveBrowserTestPrivate> test_impl_;
 };
 
 // Template for adding InteractiveBrowserTestApi to any test fixture which is
@@ -569,13 +562,13 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 // See README.md for usage.
 template <typename T>
   requires std::derived_from<T, InProcessBrowserTest>
-class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
+class InteractiveBrowserTestMixin : public T, public InteractiveBrowserTestApi {
  public:
   template <typename... Args>
-  explicit InteractiveBrowserTestT(Args&&... args)
+  explicit InteractiveBrowserTestMixin(Args&&... args)
       : T(std::forward<Args>(args)...) {}
 
-  ~InteractiveBrowserTestT() override = default;
+  ~InteractiveBrowserTestMixin() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -603,7 +596,8 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
 // `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
-using InteractiveBrowserTest = InteractiveBrowserTestT<InProcessBrowserTest>;
+using InteractiveBrowserTest =
+    InteractiveBrowserTestMixin<InProcessBrowserTest>;
 
 // Template definitions:
 
@@ -623,7 +617,8 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
             el, screenshot_name, baseline_cl,
             ui::test::internal::UnwrapArgument<T>(clip_rect));
-        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
+        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
+                                                     result);
       },
       base::Unretained(this), screenshot_name, baseline_cl,
       std::forward<T>(clip_rect)));

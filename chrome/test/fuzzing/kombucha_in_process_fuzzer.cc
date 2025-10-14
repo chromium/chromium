@@ -70,7 +70,7 @@ void WaitForClosingBrowsersToClose() {
 }  // namespace
 
 KombuchaInProcessFuzzer::KombuchaInProcessFuzzer()
-    : InteractiveBrowserTestT(InProcessFuzzerOptions{
+    : InteractiveBrowserTestMixin(InProcessFuzzerOptions{
           .run_loop_timeout_behavior = RunLoopTimeoutBehavior::kContinue,
           .run_loop_timeout = base::Seconds(10),
       }) {}
@@ -79,7 +79,7 @@ KombuchaInProcessFuzzer::~KombuchaInProcessFuzzer() = default;
 
 #if BUILDFLAG(IS_WIN)
 void KombuchaInProcessFuzzer::TearDown() {
-  InteractiveBrowserTestT::TearDown();
+  InteractiveBrowserTestMixin::TearDown();
   com_initializer_.reset();
 }
 #endif
@@ -106,11 +106,11 @@ void KombuchaInProcessFuzzer::SetUp() {
   ui_controls::EnableUIControls();
 #endif
 
-  InteractiveBrowserTestT::SetUp();
+  InteractiveBrowserTestMixin::SetUp();
 }
 
 void KombuchaInProcessFuzzer::SetUpOnMainThread() {
-  InteractiveBrowserTestT::SetUpOnMainThread();
+  InteractiveBrowserTestMixin::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   embedded_test_server()->RegisterRequestHandler(

@@ -20,11 +20,13 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -32,6 +34,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/test/aura_test_helper.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/interaction/interaction_test_util_mac.h"
 #endif
 
 namespace views::test::internal {
@@ -163,6 +169,8 @@ InteractiveViewsTestPrivate::DebugTreeNodeViews::List DebugDumpViewHierarchy(
 
 }  // namespace
 
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveViewsTestPrivate)
+
 InteractiveViewsTestPrivate::DebugTreeNodeViews::DebugTreeNodeViews() = default;
 InteractiveViewsTestPrivate::DebugTreeNodeViews::DebugTreeNodeViews(
     const View* view,
@@ -184,7 +192,7 @@ InteractiveViewsTestPrivate::DebugTreeNodeViews::ToNode(
     const InteractiveViewsTestPrivate& owner) const {
   InteractiveViewsTestPrivate::DebugTreeNode result;
   if (std::holds_alternative<const View*>(impl)) {
-    result = owner.DebugDumpElement(element);
+    result = *owner.DebugDumpElement(element);
   } else {
     result =
         DebugTreeNode(owner.DebugDumpWidget(*std::get<const Widget*>(impl)));
@@ -242,8 +250,15 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
 };
 
 InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
-    std::unique_ptr<ui::test::InteractionTestUtil> test_util)
-    : InteractiveTestPrivate(std::move(test_util)) {}
+    ui::test::internal::InteractiveTestPrivate& test_impl)
+    : ui::test::internal::InteractiveTestPrivateFrameworkBase(test_impl) {
+  test_impl.test_util().AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+#if BUILDFLAG(IS_MAC)
+  test_impl.test_util().AddSimulator(
+      std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
+#endif
+}
 
 InteractiveViewsTestPrivate::~InteractiveViewsTestPrivate() = default;
 
@@ -251,7 +266,6 @@ void InteractiveViewsTestPrivate::OnSequenceComplete() {
   if (mouse_util_) {
     mouse_util_->CancelAllGestures();
   }
-  InteractiveTestPrivate::OnSequenceComplete();
 }
 
 void InteractiveViewsTestPrivate::OnSequenceAborted(
@@ -259,11 +273,9 @@ void InteractiveViewsTestPrivate::OnSequenceAborted(
   if (mouse_util_) {
     mouse_util_->CancelAllGestures();
   }
-  InteractiveTestPrivate::OnSequenceAborted(data);
 }
 
 void InteractiveViewsTestPrivate::DoTestSetUp() {
-  InteractiveTestPrivate::DoTestSetUp();
   // Frame should exist from set up to tear down, to prevent framework/system
   // listeners from receiving events outside of the test.
   widget_focus_supplier_frame_ = std::make_unique<WidgetFocusSupplierFrame>();
@@ -273,21 +285,14 @@ void InteractiveViewsTestPrivate::DoTestSetUp() {
 void InteractiveViewsTestPrivate::DoTestTearDown() {
   // Avoid doing any widget focus tracking after the test completes.
   widget_focus_supplier_frame_.reset();
-  InteractiveTestPrivate::DoTestTearDown();
 }
 
 InteractionTestUtilMouse::GestureParams
 InteractiveViewsTestPrivate::GetGestureParamsForStep(
     ui::TrackedElement* el,
     const ui::InteractionSequence* seq) {
-  // See if the native window can be extracted directly from the element.
-  gfx::NativeWindow window = GetNativeWindowFromElement(el);
-
-  // If not, see if the window can be extracted from the context (perhaps via
-  // the cache).
-  if (!window) {
-    window = GetNativeWindowFromContext(el->context());
-  }
+  // Get the native window.
+  gfx::NativeWindow window = test_impl().GetNativeWindowFor(el);
 
   // If a window was found, then a cache entry may need to be inserted/updated.
   if (window) {
@@ -303,11 +308,12 @@ InteractiveViewsTestPrivate::GetGestureParamsForStep(
 }
 
 gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromElement(
-    ui::TrackedElement* el) const {
+    const ui::TrackedElement* el) const {
   gfx::NativeWindow window = gfx::NativeWindow();
   if (el->IsA<TrackedElementViews>()) {
     // Most widgets have an associated native window.
-    Widget* const widget = el->AsA<TrackedElementViews>()->view()->GetWidget();
+    const Widget* const widget =
+        el->AsA<TrackedElementViews>()->view()->GetWidget();
     window = widget->GetNativeWindow();
     // Most of those that don't are sub-widgets that are hard-parented to
     // another widget.
@@ -340,7 +346,26 @@ std::string InteractiveViewsTestPrivate::DebugDumpWidget(
                        DebugDumpBounds(widget.GetWindowBoundsInScreen())});
 }
 
-InteractiveViewsTestPrivate::DebugTreeNode
+std::vector<InteractiveViewsTestPrivate::DebugTreeNode>
+InteractiveViewsTestPrivate::DebugDumpElements(
+    std::set<const ui::TrackedElement*>& elements) const {
+  std::vector<const TrackedElementViews*> views;
+  for (auto it = elements.begin(); it != elements.end();) {
+    if (const auto* const view_el = (*it)->AsA<TrackedElementViews>()) {
+      views.push_back(view_el);
+      it = elements.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  std::vector<InteractiveViewsTestPrivate::DebugTreeNode> result;
+  for (auto& view_node : DebugDumpViewHierarchy(views)) {
+    result.emplace_back(view_node.ToNode(*this));
+  }
+  return result;
+}
+
+std::optional<InteractiveViewsTestPrivate::DebugTreeNode>
 InteractiveViewsTestPrivate::DebugDumpElement(
     const ui::TrackedElement* el) const {
   if (const auto* view = el->AsA<TrackedElementViews>()) {
@@ -349,26 +374,7 @@ InteractiveViewsTestPrivate::DebugDumpElement(
          view->view()->GetClassName(), " - ", el->identifier().GetName(),
          " at ", DebugDumpBounds(el->GetScreenBounds())}));
   }
-  return InteractiveTestPrivate::DebugDumpElement(el);
-}
-
-InteractiveViewsTestPrivate::DebugTreeNode
-InteractiveViewsTestPrivate::DebugDumpContext(
-    ui::ElementContext context) const {
-  DebugTreeNode node(DebugDescribeContext(context));
-  auto* const tracker = ui::ElementTracker::GetElementTracker();
-  std::vector<const TrackedElementViews*> views;
-  for (const auto* const element : tracker->GetAllElementsForTesting(context)) {
-    if (const auto* const view_el = element->AsA<TrackedElementViews>()) {
-      views.push_back(view_el);
-    } else {
-      node.children.emplace_back(DebugDumpElement(element));
-    }
-  }
-  for (auto& view_node : DebugDumpViewHierarchy(views)) {
-    node.children.emplace_back(view_node.ToNode(*this));
-  }
-  return node;
+  return std::nullopt;
 }
 
 }  // namespace views::test::internal

@@ -32,19 +32,19 @@ bool IsScreenReaderEnabled() {
 
 // Parameter: Searchify (ScreenAI OCR) availability.
 class PDFSearchifyTest
-    : public InteractiveFeaturePromoTestT<PDFExtensionTestBase>,
+    : public InteractiveFeaturePromoTestMixin<PDFExtensionTestBase>,
       public screen_ai::ScreenAIInstallState::Observer,
       public ::testing::WithParamInterface<bool> {
  public:
   PDFSearchifyTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHPdfSearchifyFeature})) {}
 
   bool IsSearchifyActive() const { return GetParam(); }
 
-  // InteractiveFeaturePromoTestT:
+  // InteractiveFeaturePromoTestMixin:
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTestT::SetUpOnMainThread();
+    InteractiveFeaturePromoTestMixin::SetUpOnMainThread();
 
     if (IsSearchifyActive()) {
       screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
@@ -56,24 +56,24 @@ class PDFSearchifyTest
     }
   }
 
-  // InteractiveFeaturePromoTestT:
+  // InteractiveFeaturePromoTestMixin:
   void TearDown() override {
     // `PDFExtensionTestBase`'s feature list is nested in
-    // `InteractiveFeaturePromoTestT`'s feature list and is initialized after
-    // that. `InteractiveFeaturePromoTestT` resets the feature list in
+    // `InteractiveFeaturePromoTestMixin`'s feature list and is initialized
+    // after that. `InteractiveFeaturePromoTestMixin` resets the feature list in
     // `TearDown` but `PDFExtensionTestBase` does not do so and keeps it until
     // destruction.
     // As nested feature lists are expected to be reset in the reverse order of
     // their initialization, the feature list of `PDFExtensionTestBase` is reset
     // here.
     ResetFeatureList();
-    InteractiveFeaturePromoTestT::TearDown();
+    InteractiveFeaturePromoTestMixin::TearDown();
   }
 
-  // InteractiveFeaturePromoTestT:
+  // InteractiveFeaturePromoTestMixin:
   void TearDownOnMainThread() override {
     component_download_observer_.Reset();
-    InteractiveFeaturePromoTestT::TearDownOnMainThread();
+    InteractiveFeaturePromoTestMixin::TearDownOnMainThread();
   }
 
   // ScreenAIInstallState::Observer:

@@ -30,7 +30,7 @@ namespace {
 
 // Param: DesktopPWAsElidedExtensionsMenu feature.
 class WebAppFrameToolbarInteractiveUITest
-    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest>,
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest>,
       public testing::WithParamInterface<bool> {
  public:
   WebAppFrameToolbarInteractiveUITest() {

@@ -528,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
 }
 
 class SupervisedUserParentAccessViewErrorScreenUiTest
-    : public InteractiveBrowserTestT<SupervisedUserWebContentHandlerImplTest> {
+    : public InteractiveBrowserTestMixin<
+          SupervisedUserWebContentHandlerImplTest> {
  public:
   SupervisedUserParentAccessViewErrorScreenUiTest() {
     // Override PACP timeout to 0 ms.

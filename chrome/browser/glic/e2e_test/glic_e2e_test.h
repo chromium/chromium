@@ -25,7 +25,7 @@ using captured_sites_test_utils::WebPageReplayServerWrapper;
 namespace glic::test {
 
 // Note: Requires --run-live-tests to run any of the tests.
-class GlicE2ETest : public InteractiveBrowserTestT<signin::test::LiveTest> {
+class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
  public:
   GlicE2ETest();
   ~GlicE2ETest() override;

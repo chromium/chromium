@@ -75,7 +75,8 @@ BASE_FEATURE(kFeaturePromoLifecycleTestAlert2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-using TestBase = InteractiveFeaturePromoTestT<web_app::WebAppBrowserTestBase>;
+using TestBase =
+    InteractiveFeaturePromoTestMixin<web_app::WebAppBrowserTestBase>;
 using user_education::FeaturePromoClosedReason;
 using user_education::FeaturePromoResult;
 using PromoType = user_education::FeaturePromoSpecification::PromoType;
@@ -88,9 +89,8 @@ class FeaturePromoLifecycleUiTest : public TestBase {
 
   void SetUp() override {
     SetControllerMode(ControllerMode::kUserEd25);
-    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl())
-        .set_use_shortened_timeouts_for_internal_testing(true);
+    feature_promo_test_impl().set_use_shortened_timeouts_for_internal_testing(
+        true);
     TestBase::SetUp();
   }
 

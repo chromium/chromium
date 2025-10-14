@@ -129,8 +129,9 @@ class CurrentViewListener : public Host::Observer {
 };
 
 template <typename T>
-  requires std::is_base_of<test::InteractiveGlicTestT<InteractiveBrowserTest>,
-                           T>::value
+  requires std::is_base_of<
+      test::InteractiveGlicTestMixin<InteractiveBrowserTest>,
+      T>::value
 class GlicApiTestBase : public T {
  public:
   explicit GlicApiTestBase(std::string_view js_source_path) {

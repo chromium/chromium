@@ -76,7 +76,7 @@ GetReplacementsForFeature(const base::Feature& feature) {
 
 }  // namespace
 
-using TestBase = InteractiveFeaturePromoTestT<DialogBrowserTest>;
+using TestBase = InteractiveFeaturePromoTestMixin<DialogBrowserTest>;
 
 class FeaturePromoDialogTest : public TestBase {
  public:

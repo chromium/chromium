@@ -3181,10 +3181,10 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class AvatarToolbarButtonSignInBenefitsIphBrowserTest
-    : public InteractiveFeaturePromoTestT<AvatarToolbarButtonBrowserTest> {
+    : public InteractiveFeaturePromoTestMixin<AvatarToolbarButtonBrowserTest> {
  public:
   AvatarToolbarButtonSignInBenefitsIphBrowserTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHSignInBenefitsFeature})) {
     // Disable the migration feature flag for PRE tests. This allows simulating
     // users signing in before the sync-to-signin migration.

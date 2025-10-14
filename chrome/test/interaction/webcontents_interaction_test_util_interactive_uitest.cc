@@ -25,6 +25,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -46,7 +48,11 @@ constexpr char kDocumentWithIframe[] = "/iframe_elements.html";
 class WebContentsInteractionTestUtilInteractiveUiTest
     : public InProcessBrowserTest {
  public:
-  WebContentsInteractionTestUtilInteractiveUiTest() = default;
+  WebContentsInteractionTestUtilInteractiveUiTest() {
+    InteractionTestUtilBrowser::PopulateSimulators(test_util_);
+    test_util_.AddSimulator(
+        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  }
   ~WebContentsInteractionTestUtilInteractiveUiTest() override = default;
 
   void SetUp() override {
@@ -66,7 +72,7 @@ class WebContentsInteractionTestUtilInteractiveUiTest
   }
 
  protected:
-  InteractionTestUtilBrowser test_util_;
+  ui::test::InteractionTestUtil test_util_;
 };
 
 

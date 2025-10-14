@@ -826,9 +826,8 @@ class BrowserFeaturePromoController25UiTest
     : public BrowserFeaturePromoController2xUiTestBase {
  public:
   BrowserFeaturePromoController25UiTest() {
-    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl())
-        .set_use_shortened_timeouts_for_internal_testing(true);
+    feature_promo_test_impl().set_use_shortened_timeouts_for_internal_testing(
+        true);
     SetControllerMode(ControllerMode::kUserEd25);
   }
   ~BrowserFeaturePromoController25UiTest() override = default;

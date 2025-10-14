@@ -50,12 +50,12 @@ class MockExecutionEngine : public ExecutionEngine {
 };
 
 using AttemptLoginToolInteractiveUiTestBase =
-    InteractiveBrowserTestT<ActorToolsTest>;
+    InteractiveBrowserTestMixin<ActorToolsTest>;
 
 // TODO(crbug.com/441533831): We should migrate the Javascript tests to
 // typescript.
 class AttemptLoginToolInteractiveUiTest
-    : public glic::test::InteractiveGlicTestT<
+    : public glic::test::InteractiveGlicTestMixin<
           AttemptLoginToolInteractiveUiTestBase> {
  public:
   AttemptLoginToolInteractiveUiTest() {
@@ -67,7 +67,7 @@ class AttemptLoginToolInteractiveUiTest
   ~AttemptLoginToolInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTestT<
+    glic::test::InteractiveGlicTestMixin<
         AttemptLoginToolInteractiveUiTestBase>::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
 
@@ -92,7 +92,7 @@ class AttemptLoginToolInteractiveUiTest
     // Must enable the pixel output. Otherwise the PNG icons will not be
     // rendered.
     command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
-    glic::test::InteractiveGlicTestT<
+    glic::test::InteractiveGlicTestMixin<
         AttemptLoginToolInteractiveUiTestBase>::SetUpCommandLine(command_line);
   }
 

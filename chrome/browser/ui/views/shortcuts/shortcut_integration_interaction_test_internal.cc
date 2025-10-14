@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 
 namespace shortcuts {
 
@@ -109,6 +110,8 @@ class TrackedShortcut : public ui::TrackedElement {
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedShortcut)
 
 }  // namespace
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(ShortcutIntegrationInteractionTestPrivate)
 
 // This class monitors a specified directory, creating (and destroying)
 // `TrackedShortcut` instances for any files created and removed from the
@@ -223,15 +226,14 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
 };
 
 ShortcutIntegrationInteractionTestPrivate ::
-    ShortcutIntegrationInteractionTestPrivate()
-    : internal::InteractiveBrowserTestPrivate(
-          std::make_unique<InteractionTestUtilBrowser>()) {}
+    ShortcutIntegrationInteractionTestPrivate(
+        ui::test::internal::InteractiveTestPrivate& test_impl)
+    : InteractiveTestPrivateFrameworkBase(test_impl) {}
 
 ShortcutIntegrationInteractionTestPrivate::
     ~ShortcutIntegrationInteractionTestPrivate() = default;
 
 void ShortcutIntegrationInteractionTestPrivate::DoTestSetUp() {
-  internal::InteractiveBrowserTestPrivate::DoTestSetUp();
   test_support_ = std::make_unique<ShortcutCreationTestSupport>();
   shortcut_tracker_ = std::make_unique<ShortcutTracker>(
       base::PathService::CheckedGet(base::DIR_USER_DESKTOP));
@@ -240,7 +242,6 @@ void ShortcutIntegrationInteractionTestPrivate::DoTestSetUp() {
 void ShortcutIntegrationInteractionTestPrivate::DoTestTearDown() {
   shortcut_tracker_.reset();
   test_support_.reset();
-  internal::InteractiveBrowserTestPrivate::DoTestTearDown();
 }
 
 void ShortcutIntegrationInteractionTestPrivate::SetNextShortcutIdentifier(

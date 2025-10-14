@@ -50,17 +50,19 @@ std::optional<base::Time> CalculateNewTime(
 
 }  // namespace
 
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveFeaturePromoTestPrivate)
+
 InteractiveFeaturePromoTestPrivate::ProfileData::ProfileData() = default;
 InteractiveFeaturePromoTestPrivate::ProfileData::ProfileData(
     ProfileData&&) noexcept = default;
 InteractiveFeaturePromoTestPrivate::ProfileData::~ProfileData() = default;
 
 InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
-    std::unique_ptr<InteractionTestUtilBrowser> test_util,
+    ui::test::internal::InteractiveTestPrivate& test_impl,
     TrackerMode tracker_mode,
     ClockMode clock_mode,
     InitialSessionState initial_session_state)
-    : InteractiveBrowserTestPrivate(std::move(test_util)),
+    : InteractiveTestPrivateFrameworkBase(test_impl),
       tracker_mode_(std::move(tracker_mode)),
       clock_mode_(clock_mode),
       initial_session_state_(initial_session_state) {
@@ -139,7 +141,6 @@ void InteractiveFeaturePromoTestPrivate::ResetControllerMode() {
 }
 
 void InteractiveFeaturePromoTestPrivate::DoTestSetUp() {
-  InteractiveBrowserTestPrivate::DoTestSetUp();
   CHECK(controller_mode_.has_value());
   CHECK_NE(controller_mode_ == ControllerMode::kUserEd20,
            user_education::features::IsUserEducationV25());
@@ -149,7 +150,6 @@ void InteractiveFeaturePromoTestPrivate::DoTestTearDown() {
   profile_observations_.RemoveAllObservations();
   profile_data_.clear();
   activation_lock_.reset();
-  InteractiveBrowserTestPrivate::DoTestTearDown();
 }
 
 InteractiveFeaturePromoTestPrivate::MockTracker*

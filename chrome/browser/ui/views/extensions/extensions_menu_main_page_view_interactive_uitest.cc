@@ -579,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 }
 
 class ExtensionsMenuMainPageViewInteractiveTest
-    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest> {
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   ExtensionsMenuMainPageViewInteractiveTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -762,7 +762,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
 
  protected:
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         extensions::ExtensionBrowserTest>::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }

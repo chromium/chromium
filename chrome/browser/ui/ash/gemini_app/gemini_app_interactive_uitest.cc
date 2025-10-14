@@ -211,7 +211,7 @@ class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
 
 // Base class for interactive UI tests of the Gemini app.
 class GeminiAppInteractiveUiTestBase
-    : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
+    : public InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest> {
  public:
   GeminiAppInteractiveUiTestBase(
       std::optional<ash::LoggedInUserMixin::LogInType> login_type)
@@ -288,9 +288,9 @@ class GeminiAppInteractiveUiTestBase
   }
 
  protected:
-  // InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>:
+  // InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         MixinBasedInProcessBrowserTest>::SetUpDefaultCommandLine(command_line);
 
     // Disable sync as it would otherwise block updating of shelf pins.
@@ -300,20 +300,21 @@ class GeminiAppInteractiveUiTestBase
   void SetUpOnMainThread() override {
     // There's nothing to do if not logging in the user.
     if (!ShouldLogInUser()) {
-      InteractiveBrowserTestT<
+      InteractiveBrowserTestMixin<
           MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
       return;
     }
 
     // For logged-in user sessions, perform login prior to
-    // `InteractiveBrowserTestT<>::SetUpOnMainThread()` so that the interactive
-    // browser test base class will successfully set the context widget for the
-    // test sequence. The context widget will be associated with the browser.
+    // `InteractiveBrowserTestMixin<>::SetUpOnMainThread()` so that the
+    // interactive browser test base class will successfully set the context
+    // widget for the test sequence. The context widget will be associated with
+    // the browser.
     if (std::holds_alternative<ash::LoggedInUserMixin>(user_session_mixin_)) {
       std::get<ash::LoggedInUserMixin>(user_session_mixin_).LogInUser();
     }
 
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
 
     // Wait for installation of both system and external web apps. The Gemini

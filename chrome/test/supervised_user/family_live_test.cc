@@ -317,11 +317,12 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
 
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     FamilyLiveTest::RpcMode rpc_mode)
-    : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode) {}
+    : InteractiveBrowserTestMixin<FamilyLiveTest>(rpc_mode) {}
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
     FamilyLiveTest::RpcMode rpc_mode,
     const std::vector<std::string_view>& extra_enabled_hosts)
-    : InteractiveBrowserTestT<FamilyLiveTest>(rpc_mode, extra_enabled_hosts) {}
+    : InteractiveBrowserTestMixin<FamilyLiveTest>(rpc_mode,
+                                                  extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(

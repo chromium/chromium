@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
@@ -219,7 +220,10 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest, SelectTab) {
   CHECK(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
 
   // Select a few different tabs using both the browser and tabstrip as targets.
-  InteractionTestUtilBrowser test_util;
+  ui::test::InteractionTestUtil test_util;
+  test_util.AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  InteractionTestUtilBrowser::PopulateSimulators(test_util);
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.SelectTab(browser_el, 2));
   EXPECT_EQ(2, tab_strip->GetActiveIndex());

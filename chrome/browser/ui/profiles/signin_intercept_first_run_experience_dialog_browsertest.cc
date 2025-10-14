@@ -106,7 +106,7 @@ std::unique_ptr<KeyedService> CreateTestUserPolicySigninService(
 }  // namespace
 
 // Browser tests for SigninInterceptFirstRunExperienceDialog.
-using TestBase = InteractiveFeaturePromoTestT<SigninBrowserTestBase>;
+using TestBase = InteractiveFeaturePromoTestMixin<SigninBrowserTestBase>;
 class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
  public:
   using DialogEvent = SigninInterceptFirstRunExperienceDialog::DialogEvent;

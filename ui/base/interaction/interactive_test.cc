@@ -30,9 +30,9 @@ namespace ui::test {
 
 using internal::kInteractiveTestPivotElementId;
 
-InteractiveTestApi::InteractiveTestApi(
-    std::unique_ptr<internal::InteractiveTestPrivate> private_test_impl)
-    : private_test_impl_(std::move(private_test_impl)) {}
+InteractiveTestApi::InteractiveTestApi()
+    : private_test_impl_(std::make_unique<internal::InteractiveTestPrivate>()) {
+}
 InteractiveTestApi::~InteractiveTestApi() = default;
 
 InteractionSequence::StepBuilder InteractiveTestApi::PressButton(

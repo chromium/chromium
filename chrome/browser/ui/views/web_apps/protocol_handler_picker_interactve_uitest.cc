@@ -34,7 +34,7 @@ std::string Tag(uint32_t i) {
 }  // namespace
 
 class ProtocolHandlerPickerUITest
-    : public InteractiveBrowserTestT<IsolatedWebAppBrowserTestHarness> {
+    : public InteractiveBrowserTestMixin<IsolatedWebAppBrowserTestHarness> {
  public:
   webapps::AppId InstallIwaAndAllowProtocolLinkHandling() {
     auto app_id = web_app::IsolatedWebAppBuilder(
