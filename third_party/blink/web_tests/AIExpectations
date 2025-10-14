@@ -20,3 +20,6 @@ crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.htm
 crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
+
+# Temporarily disable this test that are failing with ChromeML GPU Validation error.
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Failure Pass ]
