@@ -17,6 +17,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         <composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             class="upload-icon no-overlap"
+            .tabSuggestions_=${this.tabSuggestions_}
             @open-image-upload="${this.openImageUpload_}"
             @open-file-upload="${this.openFileUpload_}"
             @add-tab-context="${this.addTabContext_}"

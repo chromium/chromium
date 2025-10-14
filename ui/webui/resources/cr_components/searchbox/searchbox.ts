@@ -380,6 +380,7 @@ export class SearchboxElement extends SearchboxElementBase {
         type: Boolean,
         reflect: true,
       },
+      tabSuggestions_: {type: Array},
     };
   }
 
@@ -428,12 +429,14 @@ export class SearchboxElement extends SearchboxElementBase {
   protected accessor thumbnailUrl_: string = '';
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
+  protected accessor tabSuggestions_: TabInfo[] = [];
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
+  private onTabStripChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
 
   constructor() {
@@ -455,6 +458,9 @@ export class SearchboxElement extends SearchboxElementBase {
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
+    this.onTabStripChangedListenerId_ =
+        this.callbackRouter_.onTabStripChanged.addListener(
+            this.refreshTabSuggestions_.bind(this));
 
     if (this.cyclingPlaceholders) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();
@@ -466,6 +472,10 @@ export class SearchboxElement extends SearchboxElementBase {
           Number(config.changeTextAnimationInterval.microseconds / 1000n),
           Number(config.fadeTextAnimationDuration.microseconds / 1000n));
       this.placeholderCycler_.start();
+    }
+
+    if (this.ntpRealboxNextEnabled) {
+      this.refreshTabSuggestions_();
     }
   }
 
@@ -479,6 +489,8 @@ export class SearchboxElement extends SearchboxElementBase {
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
+    assert(this.onTabStripChangedListenerId_);
+    this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
 
     this.placeholderCycler_?.stop();
   }
@@ -1045,10 +1057,9 @@ export class SearchboxElement extends SearchboxElementBase {
     this.openComposebox_([attachment]);
   }
 
-  protected async refreshTabSuggestions_(
-      e: CustomEvent<{onRefreshComplete: (tabs: TabInfo[]) => void}>) {
+  protected async refreshTabSuggestions_() {
     const {tabs} = await this.pageHandler_.getRecentTabs();
-    e.detail.onRefreshComplete(tabs);
+    this.tabSuggestions_ = [...tabs];
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {

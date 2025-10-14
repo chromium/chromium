@@ -181,6 +181,20 @@ void ContextualSearchboxHandler::OnPreviewReceived(
           : std::make_optional(webui::GetBitmapDataUrl(preview_bitmap)));
 }
 
+void ContextualSearchboxHandler::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on the
+  // typescript side, but it's not visible to `cr_components`, so we're using
+  // `TabStripModelObserver` for now until `tab_strip_api` gets moved out of
+  // //chrome. The current implementation is likely brittle, as it's not a
+  // supported API for external users.
+  if (IsRemoteBound()) {
+    page_->OnTabStripChanged();
+  }
+}
+
 std::optional<lens::ImageEncodingOptions>
 ContextualSearchboxHandler::CreateTabPreviewEncodingOptions(
     content::WebContents* web_contents) {
@@ -212,9 +226,29 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   if (auto* query_controller = GetQueryController()) {
     file_upload_status_observer_.Observe(query_controller);
   }
+
+  auto* helper =
+      ContextualSessionWebContentsHelper::FromWebContents(web_contents_);
+  if (helper && helper->session_handle()) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_);
+    if (browser_window_interface) {
+      browser_window_interface->GetTabStripModel()->AddObserver(this);
+    }
+  }
 }
 
-ContextualSearchboxHandler::~ContextualSearchboxHandler() = default;
+ContextualSearchboxHandler::~ContextualSearchboxHandler() {
+  auto* helper =
+      ContextualSessionWebContentsHelper::FromWebContents(web_contents_);
+  if (helper && helper->session_handle()) {
+    auto* browser_window_interface =
+        webui::GetBrowserWindowInterface(web_contents_);
+    if (browser_window_interface) {
+      browser_window_interface->GetTabStripModel()->RemoveObserver(this);
+    }
+  }
+}
 
 ComposeboxQueryController* ContextualSearchboxHandler::GetQueryController() {
   auto* contextual_session_web_contents_helper =

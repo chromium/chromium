@@ -11,13 +11,14 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
+import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
-import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ContextualEntrypointAndCarouselElement {
@@ -96,6 +97,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      tabSuggestions_: {type: Array},
     };
   }
 
@@ -117,6 +119,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
+  protected accessor tabSuggestions_: TabInfo[] = [];
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =

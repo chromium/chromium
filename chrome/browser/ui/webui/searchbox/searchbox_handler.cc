@@ -966,6 +966,9 @@ void SearchboxHandler::GetPlaceholderConfig(
   std::move(callback).Run(std::move(config));
 }
 
+void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
+  std::move(callback).Run({});
+}
 
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {

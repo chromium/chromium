@@ -91,7 +91,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                      bool meta_key,
                      bool shift_key) override;
   void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
-  void GetRecentTabs(GetRecentTabsCallback callback) override {}
+  void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override {}
   void NotifySessionStarted() override {}
   void NotifySessionAbandoned() override {}

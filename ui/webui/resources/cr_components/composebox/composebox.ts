@@ -126,11 +126,11 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-
       ntpRealboxNextEnabled: {
         type: Boolean,
         reflect: true,
       },
+      tabSuggestions_: {type: Array},
     };
   }
 
@@ -163,6 +163,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showContextMenuDescription_: boolean = true;
   protected accessor inputsDisabled_: boolean = false;
   protected accessor lensButtonDisabled_: boolean = false;
+  protected accessor tabSuggestions_: TabInfo[] = [];
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
@@ -202,7 +203,7 @@ export class ComposeboxElement extends I18nMixinLit
             const {file, errorMessage} =
                 this.$.context.updateFileStatus(token, status, errorType);
             if (errorMessage) {
-                this.$.errorScrim.setErrorMessage(errorMessage);
+              this.$.errorScrim.setErrorMessage(errorMessage);
             } else if (file) {
               if (status === FileUploadStatus.kProcessing && this.showZps &&
                   (this.enableImageContextualSuggestions_ ||
@@ -221,6 +222,8 @@ export class ComposeboxElement extends I18nMixinLit
               }
             }
           }),
+      this.searchboxCallbackRouter_.onTabStripChanged.addListener(
+          this.refreshTabSuggestions_.bind(this)),
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
@@ -237,6 +240,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     this.searchboxHandler_.notifySessionStarted();
+    this.refreshTabSuggestions_();
   }
 
   override disconnectedCallback() {
@@ -438,10 +442,9 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.focus();
   }
 
-  protected async refreshTabSuggestions_(
-      e: CustomEvent<{onRefreshComplete: (tabs: TabInfo[]) => void}>) {
+  protected async refreshTabSuggestions_() {
     const {tabs} = await this.searchboxHandler_.getRecentTabs();
-    e.detail.onRefreshComplete(tabs);
+    this.tabSuggestions_ = [...tabs];
   }
 
   protected async getTabPreview_(e: CustomEvent<{

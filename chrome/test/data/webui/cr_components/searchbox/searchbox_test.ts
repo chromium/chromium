@@ -12,7 +12,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -3088,5 +3088,49 @@ suite('PlaceholderTextCyclerTest', () => {
     assertEquals(sampleTransitionPlaceholder, text);
 
     placeholderTextCycler.stop();
+  });
+});
+
+suite('NewTabPageRealboxTabsTest', () => {
+  let realbox: SearchboxElement;
+  let testProxy: TestSearchboxBrowserProxy;
+
+  setup(() => {
+    loadTimeData.overrideValues({
+      ntpRealboxNextEnabled: true,
+    });
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+  });
+
+  test('on tab strip changed', async () => {
+    const sampleTabs = [
+      {
+        tabId: 1,
+        title: 'Sample Tab 1',
+        url: {url: 'https://example.com/1'},
+        lastActive: {internalValue: BigInt(1)},
+      },
+      {
+        tabId: 2,
+        title: 'Sample Tab 2',
+        url: {url: 'https://example.com/2'},
+        lastActive: {internalValue: BigInt(2)},
+      },
+    ];
+    testProxy.handler.setResultFor(
+        'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
+
+    testProxy.callbackRouterRemote.onTabStripChanged();
+    await microtasksFinished();
+
+    assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 1);
+    assertDeepEquals((realbox as any).tabSuggestions_, sampleTabs);
   });
 });

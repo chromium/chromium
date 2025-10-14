@@ -70,9 +70,9 @@ ${this.ntpRealboxNextEnabled ? html`
       <contextual-entrypoint-and-carousel id="context"
           part="contextual-entrypoint-and-carousel"
           exportparts="composebox-entrypoint"
+          .tabSuggestions_=${this.tabSuggestions_}
           @add-tab-context="${this.addTabContext_}"
           @add-file-context="${this.addFileContext_}"
-          @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-file-validation-error="${this.onFileValidationError_}"
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"

@@ -27,7 +27,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     `}
 
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
-    ${this.tabSuggestions_.length > 0 ? html`
+    ${this.tabSuggestions_?.length > 0 ? html`
       <h4 id="tabHeader">${this.i18n('addTab')}</h4>
       ${this.tabSuggestions_.map((tab, index) => html`
         <div class="suggestion-container">

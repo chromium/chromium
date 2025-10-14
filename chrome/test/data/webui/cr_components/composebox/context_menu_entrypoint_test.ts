@@ -21,10 +21,8 @@ suite('ContextMenuEntrypoint', () => {
   let searchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
 
   async function openContextMenuWithSuggestions(suggestions: TabInfo[]) {
-    const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
+    (entrypoint as any).tabSuggestions_ = suggestions;
     $$(entrypoint, '#entrypoint')!.click();
-    const e = await refreshTabs;
-    e.detail.onRefreshComplete(suggestions);
     await microtasksFinished();
   }
 
@@ -66,10 +64,7 @@ suite('ContextMenuEntrypoint', () => {
 
   test('clicking entrypoint shows context menu', async () => {
     // Act.
-    const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
     $$(entrypoint, '#entrypoint')!.click();
-    const e = await refreshTabs;
-    e.detail.onRefreshComplete();
     await microtasksFinished();
 
     // Assert.
@@ -80,11 +75,8 @@ suite('ContextMenuEntrypoint', () => {
       'tab header is not displayed when there are no tab suggestions',
       async () => {
         // Arrange & Act.
-        const refreshTabs =
-            eventToPromise('refresh-tab-suggestions', entrypoint);
+        (entrypoint as any).tabSuggestions_ = [];
         $$(entrypoint, '#entrypoint')!.click();
-        const e = await refreshTabs;
-        e.detail.onRefreshComplete();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
 
@@ -100,24 +92,21 @@ suite('ContextMenuEntrypoint', () => {
   test(
       'clicking entrypoint shows context menu with correct items', async () => {
         // Arrange.
-        const refreshTabs =
-            eventToPromise('refresh-tab-suggestions', entrypoint);
-        $$(entrypoint, '#entrypoint')!.click();
-        const e = await refreshTabs;
-        e.detail.onRefreshComplete([
+        (entrypoint as any).tabSuggestions_ = [
           {
             title: 'Tab 1',
             url: {url: 'https://www.google.com'},
             tabId: 1,
-            lastActive: { internalValue: BigInt(1) },
+            lastActive: {internalValue: BigInt(1)},
           },
           {
             title: 'Tab 2',
             url: {url: 'https://www.google.com'},
             tabId: 2,
-            lastActive: { internalValue: BigInt(2) },
+            lastActive: {internalValue: BigInt(2)},
           },
-        ]);
+        ];
+        $$(entrypoint, '#entrypoint')!.click();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
 
@@ -134,23 +123,21 @@ suite('ContextMenuEntrypoint', () => {
 
   test('disabled tabs cannot be added as context', async () => {
     // Arrange.
-    const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
     $$(entrypoint, '#entrypoint')!.click();
-    const e = await refreshTabs;
-    e.detail.onRefreshComplete([
+    (entrypoint as any).tabSuggestions_ = [
       {
         title: 'Tab 1',
         url: {url: 'https://www.google.com'},
         tabId: 1,
-        lastActive: { internalValue: BigInt(1) },
+        lastActive: {internalValue: BigInt(1)},
       },
       {
         title: 'Tab 2',
         url: {url: 'https://www.google.com'},
         tabId: 2,
-        lastActive: { internalValue: BigInt(2) },
+        lastActive: {internalValue: BigInt(2)},
       },
-    ]);
+    ];
     entrypoint.disabledTabIds = new Set([2]);
     await microtasksFinished();
     assertTrue(entrypoint.$.menu.open);
@@ -174,11 +161,7 @@ suite('ContextMenuEntrypoint', () => {
             `clicking ${selector} propagates ${eventName} before closing menu`,
             async () => {
               // Arrange.
-              const refreshTabs =
-                  eventToPromise('refresh-tab-suggestions', entrypoint);
               $$(entrypoint, '#entrypoint')!.click();
-              const e = await refreshTabs;
-              e.detail.onRefreshComplete();
               await microtasksFinished();
               assertTrue(entrypoint.$.menu.open);
 
