@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -103,7 +102,6 @@ public class TabSwitcherListEditorPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky, see crbug.com/449172309")
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();
