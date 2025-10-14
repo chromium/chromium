@@ -64,9 +64,9 @@ CrashUploadListAndroid::LoadUploadList() {
   LoadUnsuccessfulUploadList(&uploads);
 
   auto complete_uploads = TextLogUploadList::LoadUploadList();
-  for (auto& info : complete_uploads) {
-    uploads.push_back(std::move(info));
-  }
+  uploads.insert(uploads.end(),
+                 std::make_move_iterator(complete_uploads.begin()),
+                 std::make_move_iterator(complete_uploads.end()));
   return uploads;
 }
 
