@@ -441,6 +441,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
+#include "device/fido/features.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
@@ -1140,6 +1142,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   PageColorsControllerFactory::GetInstance();
 #endif
   passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi)) {
+    webauthn::PasskeyUnlockManagerFactory::GetInstance();
+  }
+#endif
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
