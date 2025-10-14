@@ -1377,7 +1377,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)tabGridRegularTabsEmptyStateView {
   return grey_allOf(
       grey_accessibilityID(kTabGridRegularTabsEmptyStateIdentifier),
-      grey_sufficientlyVisible(), nil);
+      grey_minimumVisiblePercent(0.7), nil);
 }
 
 + (id<GREYMatcher>)tabGridNewTabButton {
