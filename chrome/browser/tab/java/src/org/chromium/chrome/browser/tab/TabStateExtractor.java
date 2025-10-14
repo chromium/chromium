@@ -85,7 +85,10 @@ public class TabStateExtractor {
         // the pending load to the state and use it.
         if (webContentsState != null) {
             webContentsState.appendPendingNavigation(
-                    tab.getProfile(), tab.getTitle(), pendingLoadParams);
+                    tab.getProfile(),
+                    tab.getTitle(),
+                    pendingLoadParams,
+                    /* trackLastEntryWasPending= */ false);
             return webContentsState;
         }
 

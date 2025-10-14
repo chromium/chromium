@@ -819,6 +819,8 @@ class TabImpl implements Tab {
         if (mWebContents == null) return;
 
         mWebContents.discard(CallbackUtils.emptyRunnable());
+        // TODO(crbug.com/449784092): Check if the tab gets stuck in a loading state when using
+        // discard.
     }
 
     private void freezeInternal() {
@@ -848,26 +850,77 @@ class TabImpl implements Tab {
             mPendingLoadParams = null;
         }
 
-        RewindableIterator<TabObserver> observers = getTabObservers();
         if (oldWebContents != null) {
-            while (observers.hasNext()) {
-                observers.next().onContentChanged(this);
+            for (TabObserver observer : mObservers) {
+                observer.onContentChanged(this);
             }
-            observers.rewind();
             oldWebContents.destroy();
         }
     }
 
     @Override
     public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
-        assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
+        if (useDiscardForFreeze()) {
+            discardAndAppendPendingNavigation(params, title);
+        } else {
+            freezeAndAppendPendingNavigationInternal(params, title);
+        }
+    }
+
+    private void discardAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
+        assert isHidden() : "Should only discard and append a navigation to a tab that is hidden.";
+
+        if (mWebContents == null && mWebContentsState == null && mPendingLoadParams != null) {
+            // Case 1: We have a pending load params but no WebContents or WebContentsState. Just
+            // clobber the existing pending load params.
+            mPendingLoadParams = params;
+            mUrl = new GURL(params.getUrl());
+        } else if (mWebContentsState != null) {
+            assert mPendingLoadParams == null
+                    : "Should not have both a WebContentsState and a pending load params.";
+
+            // Case 2: We have a WebContentsState. Append the pending navigation to it.
+            boolean success =
+                    mWebContentsState.appendPendingNavigation(
+                            mProfile, title, params, /* trackLastEntryWasPending= */ true);
+            RecordHistogram.recordBooleanHistogram(
+                    "Tabs.FreezeAndAppendPendingNavigationResult", success);
+            if (success) {
+                // The pending load params were consumed to make the WebContentsState. Invalidate
+                // them.
+                mPendingLoadParams = null;
+                mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+            } else {
+                // If we failed to append the pending navigation, clear the WebContentsState and
+                // clobber with the new pending load params.
+                mWebContentsState.destroy();
+                mWebContentsState = null;
+                mPendingLoadParams = params;
+                mUrl = new GURL(params.getUrl());
+            }
+        } else {
+            // Case 3: The tab has a live WebContents and maybe a pending load params. Clobber
+            // the previous pending load params (if one existed) and discard the WebContents.
+            assert mWebContents != null;
+            discard();
+            mPendingLoadParams = params;
+            mUrl = new GURL(params.getUrl());
+        }
+        triggerUpdatesOnAppendingNavigation(title);
+    }
+
+    private void freezeAndAppendPendingNavigationInternal(
+            LoadUrlParams params, @Nullable String title) {
+        assert isHidden() : "Should only freeze and append a navigation to a tab that is hidden.";
         // TODO(crbug.com/449784092): This should use `discard()` instead of `freezeInternal()`
         // once pending navigations with a WebContents are supported.
         freezeInternal();
         assumeNonNull(mWebContentsState);
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
-        boolean success = mWebContentsState.appendPendingNavigation(mProfile, title, params);
+        boolean success =
+                mWebContentsState.appendPendingNavigation(
+                        mProfile, title, params, /* trackLastEntryWasPending= */ false);
 
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.FreezeAndAppendPendingNavigationResult", success);
@@ -887,12 +940,17 @@ class TabImpl implements Tab {
             mPendingLoadParams = params;
             mUrl = new GURL(params.getUrl());
         }
+        triggerUpdatesOnAppendingNavigation(title);
+    }
+
+    private void triggerUpdatesOnAppendingNavigation(@Nullable String title) {
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
         }
         observers.rewind();
         notifyFaviconChanged();
+        assumeNonNull(mUrl);
         updateTitle(title == null ? mUrl.getSpec() : title);
 
         while (observers.hasNext()) {
@@ -908,10 +966,15 @@ class TabImpl implements Tab {
         }
 
         if (mPendingLoadParams != null) {
-            assert isFrozen();
-            WebContents webContents =
-                    WebContentsFactory.createWebContents(mProfile, isHidden(), false);
-            initWebContents(webContents);
+            if (mWebContents == null) {
+                WebContents webContents =
+                        WebContentsFactory.createWebContents(mProfile, isHidden(), false);
+                initWebContents(webContents);
+            } else {
+                assert useDiscardForFreeze()
+                        : "mWebContents should be null with mPendingLoadParams unless"
+                                + " TAB_FREEZING_USES_DISCARD is enabled.";
+            }
             loadUrl(mPendingLoadParams);
             mPendingLoadParams = null;
         } else {
@@ -1282,11 +1345,7 @@ class TabImpl implements Tab {
             mPendingLoadParams = loadUrlParams;
             if (loadUrlParams != null) {
                 mUrl = new GURL(loadUrlParams.getUrl());
-                if (pendingTitle != null) {
-                    setTitle(pendingTitle);
-                } else {
-                    setTitle(mUrl.getSpec());
-                }
+                setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
             }
 
             // The {@link mDelegateFactory} needs to be set before calling

@@ -219,4 +219,81 @@ public class TabImplTest {
         assertTrue("Tab should be frozen", tab.isFrozen());
         assertNull("WebContents should be null after freezeInternal", tab.getWebContents());
     }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @EnableFeatures({
+        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
+        ContentFeatures.WEB_CONTENTS_DISCARD
+    })
+    public void testFreezeAndAppendPendingNavigation_withDiscard() {
+        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        // Open a new tab to hide the initial tab. The new tab becomes active.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .openNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    tab,
+                                    tab.isIncognito());
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
+
+        String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url), "title"));
+
+        assertFalse("Tab should not be frozen", tab.isFrozen());
+        assertNotNull("WebContents should not be null", tab.getWebContents());
+        assertNotNull("Pending load params should not be null", tab.getPendingLoadParams());
+        assertEquals(
+                "Pending load params should have the new URL",
+                url,
+                tab.getPendingLoadParams().getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @DisableFeatures({
+        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
+        ContentFeatures.WEB_CONTENTS_DISCARD
+    })
+    public void testFreezeAndAppendPendingNavigation_withoutDiscard() {
+        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        // Open a new tab to hide the initial tab. The new tab becomes active.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .openNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    tab,
+                                    tab.isIncognito());
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
+
+        String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url), "title"));
+
+        assertTrue("Tab should be frozen", tab.isFrozen());
+        assertNull("WebContents should be null", tab.getWebContents());
+        assertNotNull("WebContentsState should not be null", tab.getWebContentsState());
+        assertNull("Pending load params should be null", tab.getPendingLoadParams());
+        assertEquals(
+                "WebContentsState should have the new URL",
+                url,
+                tab.getWebContentsState().getVirtualUrlFromState());
+    }
 }

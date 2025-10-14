@@ -99,8 +99,12 @@ public class TabFavicon extends TabWebContentsUserData {
      *     requires the default favicon.
      */
     private @Nullable Bitmap getFavicon() {
-        // If we have no content or a native page, return null.
-        if (mTab.isNativePage() || mTab.getWebContents() == null) return null;
+        // If we have no content, are a native page, or have a pending navigation, return null.
+        if (mTab.isNativePage()
+                || mTab.getWebContents() == null
+                || mTab.getPendingLoadParams() != null) {
+            return null;
+        }
 
         // Use the cached favicon only if the page wasn't changed.
         if (mFavicon != null && mFaviconTabUrl != null && mFaviconTabUrl.equals(mTab.getUrl())) {

@@ -316,6 +316,11 @@ public interface Tab extends TabLifecycle {
      * frozen this method still appends the navigation entry, but skips the process of freezing the
      * tab.
      *
+     * <p>An experiment is in progress to change the implementation of this method to invoke {@link
+     * WebContents#discard()} and use a pending {@link LoadUrlParams} instead of freezing the tab.
+     * See https://crbug.com/448420873. If the experiment is launched this method will be renamed to
+     * {@code discardAndAppendPendingNavigation()}.
+     *
      * @param params Parameters describing the url load. Note that it is important to set correct
      *     page transition as it is used for ranking URLs in the history so the omnibox can report
      *     suggestions correctly.

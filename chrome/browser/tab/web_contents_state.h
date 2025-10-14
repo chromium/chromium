@@ -148,6 +148,7 @@ class WebContentsState {
       content::BrowserContext* browser_context,
       base::span<const uint8_t> buffer,
       int saved_state_version,
+      bool clobber_current_entry,
       const std::optional<std::u16string>& title,
       const std::string& url,
       const std::optional<std::string>& referrer_url,

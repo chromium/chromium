@@ -148,6 +148,7 @@ public class TabStateExtractorTest {
                         eq(mProfile),
                         eq(mByteBuffer),
                         eq(WebContentsState.CONTENTS_STATE_CURRENT_VERSION),
+                        eq(false),
                         eq(TITLE),
                         eq(URL),
                         eq(REFERRER_URL),
