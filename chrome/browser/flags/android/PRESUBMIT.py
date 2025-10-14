@@ -4,15 +4,11 @@
 
 """Presubmit script for Chrome Android feature flag code."""
 
-
-def CheckChromeFeatureListIsSorted(input_api, output_api):
+def CheckChromeFeatureIsSorted(input_api, output_api, file_path, name, start_pattern, end_pattern):
   """
-  Checks that the `kFeaturesExposedToJava` array in
-  chrome/browser/flags/android/chrome_feature_list.cc is sorted alphabetically.
+  Checks that the section of code within `start_pattern` and `end_pattern`
+  inside the `file_path` file is sorted alphabetically.
   """
-  # The specific file to check.
-  file_path = 'chrome/browser/flags/android/chrome_feature_list.cc'
-
   # Find the file in the list of changed files.
   affected_file = None
   for f in input_api.AffectedFiles():
@@ -28,16 +24,11 @@ def CheckChromeFeatureListIsSorted(input_api, output_api):
   in_array = False
   feature_lines = []
 
-  # Define patterns to find the start and end of the array.
-  start_pattern = 'const base::Feature* const kFeaturesExposedToJava[] = {'
-  end_pattern = '};'
-
   # Extract the lines that are inside the array definition.
   for line in contents:
     stripped_line = line.strip()
-    if start_pattern in line:
+    if not in_array and start_pattern in line:
       in_array = True
-      continue
 
     if in_array:
       if stripped_line == end_pattern:
@@ -50,29 +41,18 @@ def CheckChromeFeatureListIsSorted(input_api, output_api):
   if not feature_lines:
     return []
 
-  # From each line, extract the feature name, including namespace.
-  # For example, '&features::kMyFeature,' becomes 'features::kMyFeature'.
-  feature_names = []
-  for line in feature_lines:
-    name = line.strip()
-    if name.startswith('&'):
-      name = name[1:]
-    if name.endswith(','):
-      name = name[:-1]
-    feature_names.append(name.strip())
-
   # Create a sorted version of the list for comparison.
   # The sort is not case-sensitive to be user-friendly.
-  sorted_feature_names = sorted(feature_names, key=str.lower)
+  sorted_feature_names = sorted(feature_lines)
 
   # If the list is already sorted, the check passes.
-  if feature_names == sorted_feature_names:
+  if feature_lines == sorted_feature_names:
     return []
 
   # If the list is not sorted, find the first discrepancy to create a
   # helpful and actionable error message for the developer.
   error_detail = ''
-  for i, original in enumerate(feature_names):
+  for i, original in enumerate(feature_lines):
     if original != sorted_feature_names[i]:
       error_detail = (
           "The list is not sorted alphabetically.\n"
@@ -82,7 +62,7 @@ def CheckChromeFeatureListIsSorted(input_api, output_api):
       break
 
   error_message = (
-      f"The `kFeaturesExposedToJava` array in {file_path} must be sorted "
+      f"The `{name}` values in {file_path} must be sorted "
       f"alphabetically.\n\n{error_detail}\n\nPlease sort the list to "
       "fix this error."
   )
@@ -93,4 +73,30 @@ def CheckChromeFeatureListIsSorted(input_api, output_api):
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  return CheckChromeFeatureListIsSorted(input_api, output_api)
+  results = []
+
+  # Check that the array of exported features is in order.
+  results.extend(CheckChromeFeatureIsSorted(
+    input_api,
+    output_api,
+    'chrome/browser/flags/android/chrome_feature_list.cc',
+    'kFeaturesExposedToJava',
+    '// FEATURE_EXPORT_LIST_START',
+    '// FEATURE_EXPORT_LIST_END')
+  )
+
+  # Check that all feature definitions are in order.
+  results.extend(CheckChromeFeatureIsSorted(input_api, output_api,
+    'chrome/browser/flags/android/chrome_feature_list.cc',
+    'BASE_FEATURE',
+    '// BASE_FEATURE_START',
+    '// BASE_FEATURE_END'))
+
+  # Check that all feature declarations are in order.
+  results.extend(CheckChromeFeatureIsSorted(input_api, output_api,
+    'chrome/browser/flags/android/chrome_feature_list.h',
+    'BASE_DECLARE_FEATURE',
+    '// BASE_DECLARE_FEATURE_START',
+    '// BASE_DECLARE_FEATURE_END'))
+
+  return results
