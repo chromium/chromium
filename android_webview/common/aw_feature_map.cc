@@ -36,6 +36,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewBackForwardCache,
+    &features::kWebViewBypassProvisionalCookieManager,
     &features::kWebViewCacheBoundaryInterfaceMethods,
     &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     &features::kWebViewConnectToComponentProviderInBackground,

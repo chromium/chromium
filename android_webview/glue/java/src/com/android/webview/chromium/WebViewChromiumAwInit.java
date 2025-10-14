@@ -359,6 +359,7 @@ public class WebViewChromiumAwInit {
         CallSite.STATIC_SET_DEFAULT_TRAFFIC_STATS_UID,
         CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE,
+        CallSite.GET_DEFAULT_COOKIE_MANAGER,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -470,8 +471,9 @@ public class WebViewChromiumAwInit {
         int STATIC_SET_DEFAULT_TRAFFIC_STATS_UID = 104;
         int STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
         int STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
+        int GET_DEFAULT_COOKIE_MANAGER = 107;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 107;
+        int COUNT = 108;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
@@ -1025,12 +1027,17 @@ public class WebViewChromiumAwInit {
     }
 
     public CookieManager getDefaultCookieManager() {
-        synchronized (mLazyInitLock) {
-            if (mDefaultCookieManager == null) {
-                mDefaultCookieManager =
-                        new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
+        if (WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
+            return getDefaultProfile(CallSite.GET_DEFAULT_COOKIE_MANAGER).getCookieManager();
+        } else {
+            synchronized (mLazyInitLock) {
+                if (mDefaultCookieManager == null) {
+                    mDefaultCookieManager =
+                            new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
+                }
+                return mDefaultCookieManager;
             }
-            return mDefaultCookieManager;
         }
     }
 

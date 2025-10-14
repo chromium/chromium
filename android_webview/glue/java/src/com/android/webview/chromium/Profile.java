@@ -16,7 +16,9 @@ import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwOriginMatchedHeader;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.url.GURL;
@@ -52,7 +54,10 @@ public class Profile {
             mBrowserContext = browserContext;
             mName = browserContext.getName();
             WebViewChromiumFactoryProvider factory = WebViewChromiumFactoryProvider.getSingleton();
-            if (browserContext.isDefaultAwBrowserContext()) {
+            if (browserContext.isDefaultAwBrowserContext()
+                    && !WebViewCachedFlags.get()
+                            .isCachedFeatureEnabled(
+                                    AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
                 mCookieManager = CookieManager.getInstance();
             } else {
                 mCookieManager = new CookieManagerAdapter(browserContext.getCookieManager());

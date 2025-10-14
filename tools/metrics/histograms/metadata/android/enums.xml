@@ -2695,6 +2695,7 @@ chromium-metrics-reviews@google.com.
   <int value="104" label="staticSetDefaultTrafficStatsUid"/>
   <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
   <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
+  <int value="107" label="getDefaultCookieManager"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->

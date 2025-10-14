@@ -295,4 +295,12 @@ BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
 // initialization. This is expected to improve startup performance especially
 // when async startup takes place.
 BASE_FEATURE(kWebViewMoveWorkToProviderInit, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the temporary cookie manager used before WebView startup is
+// bypassed. If WebView isn't already started up, calling
+// `CookieManager.getInstance()` will trigger WebView startup on the main looper
+// and wait for startup to complete.
+BASE_FEATURE(kWebViewBypassProvisionalCookieManager,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features
