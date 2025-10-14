@@ -3850,11 +3850,12 @@ StoragePartitionImpl::GetRenderFrameHostIdFromNetworkContext() {
 
 void StoragePartitionImpl::IncrementActiveDocumentCount(
     const net::NetworkIsolationKey& nik) {
-  if (active_document_per_nik_count_.contains(nik)) {
-    active_document_per_nik_count_[nik]++;
-    CHECK_GT(active_document_per_nik_count_[nik], 1);
+  if (auto it = active_document_per_nik_count_.find(nik);
+      it != active_document_per_nik_count_.end()) {
+    it->second++;
+    CHECK_GT(it->second, 1);
   } else {
-    active_document_per_nik_count_[nik] = 1;
+    active_document_per_nik_count_.emplace(nik, 1);
     if (keep_alive_url_loader_service_) {
       keep_alive_url_loader_service_->DidObserveNewlyActiveDocumentWithNIK(nik);
     }
@@ -3863,19 +3864,21 @@ void StoragePartitionImpl::IncrementActiveDocumentCount(
 
 void StoragePartitionImpl::DecrementActiveDocumentCount(
     const net::NetworkIsolationKey& nik) {
-  CHECK(active_document_per_nik_count_.contains(nik));
-  active_document_per_nik_count_[nik]--;
-  if (active_document_per_nik_count_[nik] == 0) {
+  auto it = active_document_per_nik_count_.find(nik);
+  CHECK(it != active_document_per_nik_count_.end());
+  it->second--;
+  if (it->second == 0) {
     active_document_per_nik_count_.erase(nik);
   }
 }
 
 int StoragePartitionImpl::GetActiveDocumentCount(
     const net::NetworkIsolationKey& nik) {
-  if (!active_document_per_nik_count_.contains(nik)) {
+  auto it = active_document_per_nik_count_.find(nik);
+  if (it == active_document_per_nik_count_.end()) {
     return 0;
   }
-  return active_document_per_nik_count_[nik];
+  return it->second;
 }
 
 void StoragePartitionImpl::OnScenarioMatchChanged(
