@@ -39,8 +39,14 @@ class WebuiOmniboxHandler : public SearchboxHandler,
 
   ~WebuiOmniboxHandler() override;
 
+  // searchbox::mojom::PageHandler:
+  void ActivateKeyword(uint8_t line,
+                       const GURL& url,
+                       base::TimeTicks match_selection_timestamp,
+                       bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
 
+  // SearchboxHandler:
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
       const AutocompleteMatch& match,
       size_t line,

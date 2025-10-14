@@ -138,6 +138,34 @@ void WebuiOmniboxHandler::OnSelectionChanged(
           selection.action_index));
 }
 
+void WebuiOmniboxHandler::ActivateKeyword(
+    uint8_t line,
+    const GURL& url,
+    base::TimeTicks match_selection_timestamp,
+    bool is_mouse_event) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return;
+  }
+  // The rest of this function mirrors
+  // `OmniboxSuggestionButtonRowView::ButtonPressed()`.
+  OmniboxPopupSelection selection(
+      line, OmniboxPopupSelection::LineState::KEYWORD_MODE);
+  // Note: Since keyword mode logic depends on state of the edit model, the
+  // selection must first be set to prepare for keyword mode before accepting.
+  edit_model()->SetPopupSelection(selection);
+  // Don't re-enter keyword mode if already in it. This occurs when the user
+  // was in keyword mode and re-clicked the same or a different keyword chip.
+  if (edit_model()->is_keyword_hint()) {
+    const auto entry_method = is_mouse_event
+                                  ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
+                                  : metrics::OmniboxEventProto::TAP_HINT_VIEW;
+    edit_model()->AcceptKeyword(entry_method);
+  }
+}
+
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
 WebuiOmniboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,

@@ -25,6 +25,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   constructor() {
     super([
       'deleteAutocompleteMatch',
+      'activateKeyword',
       'executeAction',
       'onNavigationLikely',
       'onThumbnailRemoved',
@@ -60,6 +61,17 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   deleteAutocompleteMatch(line: number, url: Url) {
     this.methodCalled('deleteAutocompleteMatch', {line, url});
+  }
+
+  activateKeyword(
+      line: number, url: Url, matchSelectionTimestamp: TimeTicks,
+      isMouseEvent: boolean) {
+    this.methodCalled('activateKeyword', {
+      line,
+      url,
+      matchSelectionTimestamp,
+      isMouseEvent,
+    });
   }
 
   executeAction(

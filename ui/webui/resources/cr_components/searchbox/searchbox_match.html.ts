@@ -34,6 +34,7 @@ export function getHtml(this: SearchboxMatchElement) {
             hint="${this.match.keywordChipHint}"
             icon-path="//resources/images/icon_search.svg"
             aria-label="${this.match.keywordChipA11y}"
+            @execute-action="${this.onActivateKeyword_}"
             tabindex="1">
         </cr-searchbox-action>
       </div>

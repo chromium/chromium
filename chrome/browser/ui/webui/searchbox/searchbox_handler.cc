@@ -891,6 +891,14 @@ void SearchboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   autocomplete_controller()->DeleteMatch(*match);
 }
 
+void SearchboxHandler::ActivateKeyword(
+    uint8_t line,
+    const GURL& url,
+    base::TimeTicks match_selection_timestamp,
+    bool is_mouse_event) {
+  // Generic searchbox should not show keywords.
+  NOTREACHED();
+}
 void SearchboxHandler::ExecuteAction(uint8_t line,
                                      uint8_t action_index,
                                      const GURL& url,

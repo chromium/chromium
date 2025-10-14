@@ -210,9 +210,18 @@ interface PageHandler {
   // it is deletable. |url| is used to confirm the match |line| selection.
   DeleteAutocompleteMatch(uint8 line, url.mojom.Url url);
 
-  // Executes the Pedal Action. match_selection_timestamp is the number of
-  // microseconds since Jan. 1, 1970 (ECMAScript epoch).
-  // |url| is only used to confirm the match |line| selection.
+  // Activate a keyword. `match_selection_timestamp` is the number of
+  // microseconds since Jan. 1, 1970 (ECMAScript epoch). `url` is only used to
+  // confirm the match `line` selection. `is_mouse_event` is used for logging.
+  ActivateKeyword(uint8 line,
+                url.mojom.Url url,
+                mojo_base.mojom.TimeTicks match_selection_timestamp,
+                bool is_mouse_event);
+
+  // Executes the Pedal Action. `match_selection_timestamp` is the number of
+  // microseconds since Jan. 1, 1970 (ECMAScript epoch). `url` is only used to
+  // confirm the match `line` selection. `mouse_button`, and modifier keys are
+  // used to determine the disposition.
   ExecuteAction(uint8 line,
                 uint8 action_index,
                 url.mojom.Url url,
