@@ -12,8 +12,10 @@
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -46,6 +48,8 @@ class ImageModel;
 // TODO(crbug.com/437774758): Enable this class on Desktop Android.
 class ExtensionActionViewController
     : public ToolbarActionViewController,
+      public TabStripModelObserver,
+      public ToolbarActionsModel::Observer,
       public extensions::ExtensionActionIconFactory::Observer,
       public extensions::CommandService::Observer,
       public extensions::ExtensionContextMenuModel::PopupDelegate,
@@ -95,11 +99,29 @@ class ExtensionActionViewController
       extensions::ExtensionContextMenuModel::ContextMenuSource source) override;
   void ExecuteUserAction(InvocationSource source) override;
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
-  void UpdateState() override;
   void UpdateHoverCard(ToolbarActionView* action_view,
                        ToolbarActionHoverCardUpdateType update_type) override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
+
+  // TabStripModelObserver:
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // ToolbarActionsModel::Observer:
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarModelInitialized() override;
+  void OnToolbarPinnedActionsChanged() override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,
@@ -142,6 +164,10 @@ class ExtensionActionViewController
       extensions::ExtensionAction* extension_action,
       extensions::ExtensionRegistry* extension_registry,
       ExtensionsContainer* extensions_container);
+
+  // Notifies the view delegate that the underlying data has been updated and it
+  // may need to refresh.
+  void NotifyUpdateToDelegate();
 
   // extensions::ExtensionActionIconFactory::Observer:
   void OnIconUpdated() override;
@@ -226,6 +252,9 @@ class ExtensionActionViewController
 
   // The associated ExtensionRegistry; cached for quick checking.
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_model_observation_{this};
 
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>

@@ -165,9 +165,6 @@ class ToolbarActionViewController {
   // the action is enabled, has a popup, etc).
   virtual void TriggerPopupForAPI(ShowPopupCallback callback) = 0;
 
-  // Updates the current state of the action.
-  virtual void UpdateState() = 0;
-
   // Updates the hover card for `action_view` based on `update_type`.
   virtual void UpdateHoverCard(ToolbarActionView* action_view,
                                ToolbarActionHoverCardUpdateType update_type) {}

@@ -34,11 +34,6 @@ class ExtensionsMenuButton : public HoverButton,
   // HoverButton:
   void AddedToWidget() override;
 
-  std::u16string_view label_text_for_testing() const {
-    return label()->GetText();
-  }
-
- private:
   // ToolbarActionViewDelegateViews:
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::BubbleAnchor GetReferenceButtonForPopup() override;
@@ -46,6 +41,11 @@ class ExtensionsMenuButton : public HoverButton,
   void UpdateState() override;
   void ShowContextMenuAsFallback() override;
 
+  std::u16string_view label_text_for_testing() const {
+    return label()->GetText();
+  }
+
+ private:
   void ButtonPressed();
 
   const raw_ptr<Browser, DanglingUntriaged> browser_;

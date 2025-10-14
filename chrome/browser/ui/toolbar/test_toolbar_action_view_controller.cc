@@ -97,10 +97,6 @@ void TestToolbarActionViewController::ExecuteUserAction(
 void TestToolbarActionViewController::TriggerPopupForAPI(
     ShowPopupCallback callback) {}
 
-void TestToolbarActionViewController::UpdateState() {
-  UpdateDelegate();
-}
-
 extensions::SitePermissionsHelper::SiteInteraction
 TestToolbarActionViewController::GetSiteInteraction(
     content::WebContents* web_contents) const {

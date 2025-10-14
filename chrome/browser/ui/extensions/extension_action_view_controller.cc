@@ -186,6 +186,10 @@ ExtensionActionViewController::ExtensionActionViewController(
       platform_delegate_(ExtensionActionPlatformDelegate::Create(this)),
       icon_factory_(extension_.get(), extension_action, this),
       extension_registry_(extension_registry) {
+  // TODO(crbug.com/448199168): Get rid of the dependency to TabStripModel that
+  // is not available on Android.
+  browser_->GetTabStripModel()->AddObserver(this);
+  toolbar_model_observation_.Observe(ToolbarActionsModel::Get(profile_));
   command_service_observation_.Observe(
       extensions::CommandService::Get(profile_));
 }
@@ -460,14 +464,6 @@ void ExtensionActionViewController::TriggerPopupForAPI(
   TriggerPopup(PopupShowAction::kShow, kByUser, std::move(callback));
 }
 
-void ExtensionActionViewController::UpdateState() {
-  if (!ExtensionIsValid()) {
-    return;
-  }
-
-  view_delegate_->UpdateState();
-}
-
 void ExtensionActionViewController::UpdateHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
@@ -489,6 +485,43 @@ void ExtensionActionViewController::RegisterCommand() {
 void ExtensionActionViewController::UnregisterCommand() {
   platform_delegate_->UnregisterCommand();
 }
+
+void ExtensionActionViewController::TabChangedAt(content::WebContents* contents,
+                                                 int index,
+                                                 TabChangeType change_type) {
+  if (change_type == TabChangeType::kLoadingOnly) {
+    return;
+  }
+  NotifyUpdateToDelegate();
+}
+
+void ExtensionActionViewController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed()) {
+    return;
+  }
+  NotifyUpdateToDelegate();
+}
+
+void ExtensionActionViewController::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {}
+
+void ExtensionActionViewController::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {}
+
+void ExtensionActionViewController::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  if (action_id != extension()->id()) {
+    return;
+  }
+  NotifyUpdateToDelegate();
+}
+
+void ExtensionActionViewController::OnToolbarModelInitialized() {}
+
+void ExtensionActionViewController::OnToolbarPinnedActionsChanged() {}
 
 void ExtensionActionViewController::OnExtensionCommandAdded(
     const std::string& extension_id,
@@ -535,12 +568,15 @@ void ExtensionActionViewController::InspectPopup() {
       PopupShowAction::kShowAndInspect, /*by_user*/ true, ShowPopupCallback());
 }
 
-void ExtensionActionViewController::OnIconUpdated() {
-  // We update the view first, so that if the observer relies on its UI it can
-  // be ready.
-  if (view_delegate_) {
-    view_delegate_->UpdateState();
+void ExtensionActionViewController::NotifyUpdateToDelegate() {
+  if (!view_delegate_ || !browser_->GetActiveTabInterface()) {
+    return;
   }
+  view_delegate_->UpdateState();
+}
+
+void ExtensionActionViewController::OnIconUpdated() {
+  NotifyUpdateToDelegate();
 }
 
 void ExtensionActionViewController::OnExtensionHostDestroyed(

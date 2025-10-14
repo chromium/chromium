@@ -347,10 +347,6 @@ void ExtensionsMenuView::UpdateSectionVisibility() {
 }
 
 void ExtensionsMenuView::Update() {
-  for (ExtensionMenuItemView* view : extensions_menu_items_) {
-    view->view_controller()->UpdateState();
-  }
-
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   auto move_children_between_sections_if_necessary =

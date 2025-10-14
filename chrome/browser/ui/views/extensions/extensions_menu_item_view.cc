@@ -455,7 +455,7 @@ void ExtensionMenuItemView::Update(
     site_permissions_button_->PreferredSizeChanged();
   }
 
-  view_controller()->UpdateState();
+  primary_action_button_->UpdateState();
 }
 
 void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,

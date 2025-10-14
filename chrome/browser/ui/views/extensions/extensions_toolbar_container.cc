@@ -285,8 +285,8 @@ void ExtensionsToolbarContainer::UpdateAction(
     const ToolbarActionsModel::ActionId& action_id) {
   ToolbarActionViewController* action = GetActionForId(action_id);
   if (action) {
-    action->UpdateState();
     ToolbarActionView* action_view = GetViewForId(action_id);
+    action_view->UpdateState();
     // Only update hover card if it's currently showing for action, otherwise it
     // would mistakenly show the hover card.
     if (action_hover_card_controller_->IsHoverCardShowingForAction(
@@ -394,8 +394,8 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
 void ExtensionsToolbarContainer::UpdateAllIcons() {
   UpdateControlsVisibility();
 
-  for (const auto& action : actions_) {
-    action->UpdateState();
+  for (const auto& icon : icons_) {
+    icon.second->UpdateState();
   }
 
   if (close_side_panel_button_) {
