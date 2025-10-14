@@ -208,7 +208,15 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
   EXPECT_TRUE(IsActorOverlayWebContentsAttached(browser()));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
+// TODO(crbug.com/452105133): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_RepeatedlyMoveTabBetweenWindows \
+  DISABLED_RepeatedlyMoveTabBetweenWindows
+#else
+#define MAYBE_RepeatedlyMoveTabBetweenWindows RepeatedlyMoveTabBetweenWindows
+#endif
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
+                       MAYBE_RepeatedlyMoveTabBetweenWindows) {
   Profile* const profile = browser()->profile();
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
