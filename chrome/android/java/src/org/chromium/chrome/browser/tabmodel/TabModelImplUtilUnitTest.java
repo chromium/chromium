@@ -352,7 +352,7 @@ public class TabModelImplUtilUnitTest {
         TabModelImplUtil.setTabsMultiSelected(tabsToAdd, true, mSelectedTabs, mObservers);
 
         assertTrue(mSelectedTabs.containsAll(tabsToAdd));
-        verify(mTabModelObserver, times(1)).onTabSelectionChanged();
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
     }
 
     @Test
@@ -366,7 +366,7 @@ public class TabModelImplUtilUnitTest {
         assertFalse(mSelectedTabs.contains(4));
         assertTrue(mSelectedTabs.contains(1));
         assertTrue(mSelectedTabs.contains(3));
-        verify(mTabModelObserver, times(1)).onTabSelectionChanged();
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
     }
 
     @Test
@@ -376,7 +376,7 @@ public class TabModelImplUtilUnitTest {
         TabModelImplUtil.clearMultiSelection(true, mSelectedTabs, mObservers);
 
         assertTrue(mSelectedTabs.isEmpty());
-        verify(mTabModelObserver, times(1)).onTabSelectionChanged();
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
     }
 
     @Test
@@ -386,7 +386,7 @@ public class TabModelImplUtilUnitTest {
         TabModelImplUtil.clearMultiSelection(false, mSelectedTabs, mObservers);
 
         assertTrue(mSelectedTabs.isEmpty());
-        verify(mTabModelObserver, never()).onTabSelectionChanged();
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
     }
 
     @Test

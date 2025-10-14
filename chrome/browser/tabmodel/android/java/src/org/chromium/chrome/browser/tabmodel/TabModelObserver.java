@@ -217,5 +217,5 @@ public interface TabModelObserver {
     default void onTabCloseUndone(List<Tab> tabs, boolean isAllTabs) {}
 
     /** Called when the set of multi-selected tabs has changed. */
-    default void onTabSelectionChanged() {}
+    default void onTabsSelectionChanged() {}
 }

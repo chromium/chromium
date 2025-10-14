@@ -159,7 +159,7 @@ class TabModelImplUtil {
             multiSelectedTabs.removeAll(tabIds);
         }
         for (TabModelObserver obs : observers) {
-            obs.onTabSelectionChanged();
+            obs.onTabsSelectionChanged();
         }
     }
 
@@ -179,7 +179,7 @@ class TabModelImplUtil {
         multiSelectedTabs.clear();
         if (notifyObservers) {
             for (TabModelObserver obs : observers) {
-                obs.onTabSelectionChanged();
+                obs.onTabsSelectionChanged();
             }
         }
     }

@@ -819,7 +819,7 @@ public class TabModelImpl extends TabModelJniBridge {
                     obs.didSelectTab(tab, type, lastId);
                     // Required, otherwise the previously active tab will have MULTISELECTED as its
                     // VisualState.
-                    obs.onTabSelectionChanged();
+                    obs.onTabsSelectionChanged();
                 }
                 boolean wasAlreadySelected = tab.getId() == lastId;
                 if (!wasAlreadySelected && type == TabSelectionType.FROM_USER) {

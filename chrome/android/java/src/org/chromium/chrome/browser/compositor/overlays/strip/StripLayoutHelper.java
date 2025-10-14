@@ -382,7 +382,7 @@ public class StripLayoutHelper
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void onTabSelectionChanged() {
+                public void onTabsSelectionChanged() {
                     if (mModel == null || mStripTabs.length == 0) return;
                     for (StripLayoutTab stripTab : mStripTabs) {
                         mTabDelegate.setIsTabMultiSelected(
