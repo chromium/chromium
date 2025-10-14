@@ -1050,6 +1050,18 @@
           =1 {Move tab to new window}
           other {Move tab to another window}}
       </message>
+      <message name="IDS_MOVE_TAB_LEFT" desc="Menu item for moving a tab to the left in the tab strip order.">
+        Move tab left
+      </message>
+      <message name="IDS_MOVE_TAB_RIGHT" desc="Menu item for moving a tab to the right in the tab strip order.">
+        Move tab right
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_LEFT" desc="Menu item for moving a tab group to the left in the tab strip order.">
+        Move tab group left
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_RIGHT" desc="Menu item for moving a tab group to the right in the tab strip order.">
+        Move tab group right
+      </message>
       <message name="IDS_PIN_TABS_MENU_ITEM" desc="Content description for an action which pins a selection of tabs.">
         {TAB_COUNT, plural,
           =1 {Pin tab}

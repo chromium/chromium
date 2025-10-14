@@ -2312,7 +2312,19 @@ public class StripLayoutHelper
                             mTabGroupModelFilter,
                             mMultiInstanceManager,
                             mWindowAndroid,
-                            mDataSharingTabManager);
+                            mDataSharingTabManager,
+                            (groupId, toLeft) -> {
+                                // Don't use anchorTab here, since that will be the anchor of the
+                                // first-opened tab context menu (it won't change when a new context
+                                // menu is opened).
+                                mReorderDelegate.reorderViewInDirection(
+                                        mTabDelegate,
+                                        mStripViews,
+                                        mStripGroupTitles,
+                                        mStripTabs,
+                                        findGroupTitle(groupId),
+                                        toLeft);
+                            });
         }
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
 
@@ -2377,7 +2389,21 @@ public class StripLayoutHelper
                             mMultiInstanceManager,
                             mShareDelegateSupplier,
                             mWindowAndroid,
-                            mContext);
+                            mContext,
+                            (ids, toLeft) -> {
+                                assert ids.size() == 1
+                                        : "Expected to only be able to reorder individual tabs";
+                                // Don't use anchorTab here, since that will be the anchor of the
+                                // first-opened tab context menu (it won't change when a new context
+                                // menu is opened).
+                                mReorderDelegate.reorderViewInDirection(
+                                        mTabDelegate,
+                                        mStripViews,
+                                        mStripGroupTitles,
+                                        mStripTabs,
+                                        assumeNonNull(findTabById(ids.get(0))),
+                                        toLeft);
+                            });
         }
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(anchorTab, anchorRectProvider);

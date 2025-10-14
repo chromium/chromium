@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,6 +78,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
@@ -90,6 +92,7 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -165,6 +168,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private BiConsumer<Token, Boolean> mReorderFunction;
     private Activity mActivity;
 
     @Before
@@ -208,7 +212,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mTabGroupModelFilter,
                         mMultiInstanceManager,
                         mWindowAndroid,
-                        mDataSharingTabManager);
+                        mDataSharingTabManager,
+                        mReorderFunction);
 
         // Set group ids manually to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupDataForTesting(TAB_GROUP_ID);
@@ -695,5 +700,266 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 "Expected divider item to not have customization",
                 0,
                 item.model.get(ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveGroupItems_accessibilityOn() {
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // 8 original items + 2 new items = 10
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+
+        ListItem moveLeftItem = modelList.get(6);
+        assertEquals(
+                "Move toward start item has wrong title, was "
+                        + mActivity.getString(
+                                moveLeftItem.model.get(ListMenuItemProperties.TITLE_ID)),
+                R.string.move_tab_group_left,
+                moveLeftItem.model.get(ListMenuItemProperties.TITLE_ID));
+
+        ListItem moveRightItem = modelList.get(7);
+        assertEquals(
+                "Move toward end item has wrong title, was "
+                        + mActivity.getString(
+                                moveRightItem.model.get(ListMenuItemProperties.TITLE_ID)),
+                R.string.move_tab_group_right,
+                moveRightItem.model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft() {
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        ListItem moveLeftItem = modelList.get(6);
+        moveLeftItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(mMenuView);
+
+        verify(mReorderFunction).accept(TAB_GROUP_ID, true);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupRight() {
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        ListItem moveRightItem = modelList.get(7);
+        moveRightItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(mMenuView);
+
+        verify(mReorderFunction).accept(TAB_GROUP_ID, false);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveGroupItems_accessibilityOn_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+
+        ListItem moveLeftItem = modelList.get(6);
+        assertEquals(
+                "Move toward start item has wrong title, was "
+                        + mActivity.getString(
+                                moveLeftItem.model.get(ListMenuItemProperties.TITLE_ID)),
+                R.string.move_tab_group_right,
+                moveLeftItem.model.get(ListMenuItemProperties.TITLE_ID));
+
+        ListItem moveRightItem = modelList.get(7);
+        assertEquals(
+                "Move toward end item has wrong title, was "
+                        + mActivity.getString(
+                                moveRightItem.model.get(ListMenuItemProperties.TITLE_ID)),
+                R.string.move_tab_group_left,
+                moveRightItem.model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        ListItem moveLeftItem = modelList.get(6);
+        moveLeftItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(mMenuView);
+
+        verify(mReorderFunction).accept(TAB_GROUP_ID, false);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupRight_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        ListItem moveRightItem = modelList.get(7);
+        moveRightItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(mMenuView);
+
+        verify(mReorderFunction).accept(TAB_GROUP_ID, true);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft_firstGroup() {
+        mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        List<Tab> tabsInGroup = setUpReorderingMocks();
+        when(mTabModel.indexOf(tabsInGroup.get(0))).thenReturn(0);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(ListMenuItemProperties.TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move group left' title",
+                    R.string.move_tab_group_left,
+                    listItem.model.get(ListMenuItemProperties.TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft_firstGroup_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        List<Tab> tabsInGroup = setUpReorderingMocks();
+        when(mTabModel.indexOf(tabsInGroup.get(0))).thenReturn(0);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // In RTL, moving toward the start is "Move right". This option should not be available for
+        // the first group.
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(ListMenuItemProperties.TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move group right' title",
+                    R.string.move_tab_group_right,
+                    listItem.model.get(ListMenuItemProperties.TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupRight_lastGroup() {
+        mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        List<Tab> tabsInGroup = setUpReorderingMocks();
+        when(mTabModel.indexOf(tabsInGroup.get(tabsInGroup.size() - 1))).thenReturn(4);
+        when(mTabModel.getCount()).thenReturn(5);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(ListMenuItemProperties.TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move group right' title",
+                    R.string.move_tab_group_right,
+                    listItem.model.get(ListMenuItemProperties.TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupRight_lastGroup_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        List<Tab> tabsInGroup = setUpReorderingMocks();
+        when(mTabModel.indexOf(tabsInGroup.get(tabsInGroup.size() - 1))).thenReturn(4);
+        when(mTabModel.getCount()).thenReturn(5);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // In RTL, moving toward the end is "Move left". This option should not be available for
+        // the last group.
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(ListMenuItemProperties.TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move group left' title",
+                    R.string.move_tab_group_left,
+                    listItem.model.get(ListMenuItemProperties.TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft_itemToLeftIsPinned() {
+        mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        setUpReorderingMocks();
+
+        Tab tab = mock(Tab.class);
+        List<Tab> tabsInGroup = Arrays.asList(tab);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(TAB_GROUP_ID))).thenReturn(tabsInGroup);
+
+        when(mTabModel.indexOf(tab)).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(ListMenuItemProperties.TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move group left' title",
+                    R.string.move_tab_group_left,
+                    listItem.model.get(ListMenuItemProperties.TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveGroupLeft_pinnedTabExistsFurtherLeft() {
+        mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        List<Tab> tabsInGroup = setUpReorderingMocks();
+        when(mTabGroupModelFilter.getTabsInGroup(eq(TAB_GROUP_ID))).thenReturn(tabsInGroup);
+
+        when(mTabModel.indexOf(tabsInGroup.get(0))).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+        ListItem moveLeftItem = modelList.get(6);
+        moveLeftItem.model.get(ListMenuItemProperties.CLICK_LISTENER).onClick(mMenuView);
+
+        verify(mReorderFunction).accept(TAB_GROUP_ID, true);
+    }
+
+    private List<Tab> setUpReorderingMocks() {
+        mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(null);
+        List<Tab> tabsInGroup = setUpTabGroupModelFilter();
+        when(mTabModel.getCount()).thenReturn(5);
+        when(mTabModel.indexOf(tabsInGroup.get(0))).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+        return tabsInGroup;
     }
 }

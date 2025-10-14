@@ -193,6 +193,7 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabOverflowMenuCoordinator.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabProperties.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabShareUtils.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabStripReorderingHelper.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabStripSnapshotter.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabStripViewBinder.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherConstants.java",

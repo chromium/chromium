@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,6 +91,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -104,6 +106,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -191,6 +194,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private View mView;
+    @Mock private BiConsumer<List<Integer>, Boolean> mReorderFunction;
     private Activity mActivity;
 
     @Before
@@ -216,6 +220,10 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabById(TAB_ID_2)).thenReturn(mTab2);
         when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
         when(mTabModel.getTabById(NON_URL_TAB_ID)).thenReturn(mNonUrlTab);
+        when(mTab1.getId()).thenReturn(TAB_ID);
+        when(mTab2.getId()).thenReturn(TAB_ID_2);
+        when(mTabOutsideOfGroup.getId()).thenReturn(TAB_OUTSIDE_OF_GROUP_ID);
+        when(mNonUrlTab.getId()).thenReturn(NON_URL_TAB_ID);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
@@ -284,7 +292,8 @@ public class TabContextMenuCoordinatorUnitTest {
                         mMultiInstanceManager,
                         () -> mShareDelegate,
                         mWindowAndroid,
-                        mActivity);
+                        mActivity,
+                        mReorderFunction);
     }
 
     @Test
@@ -1433,5 +1442,297 @@ public class TabContextMenuCoordinatorUnitTest {
                 listView.getSelectedItemPosition());
 
         mTabContextMenuCoordinator.destroyMenuForTesting();
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveTabItems_accessibilityOn() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+
+        // Items are: add to group, move to window, move left, move right, divider, share, close.
+        ListItem moveStartItem = modelList.get(2);
+        int moveStartTitleId = moveStartItem.model.get(ListMenuItemProperties.TITLE_ID);
+        assertEquals(
+                "Move toward start item has wrong title, was "
+                        + mActivity.getString(moveStartTitleId),
+                R.string.move_tab_left,
+                moveStartTitleId);
+
+        ListItem moveEndItem = modelList.get(3);
+        int moveEndTitleId = moveEndItem.model.get(ListMenuItemProperties.TITLE_ID);
+        assertEquals(
+                "Move toward end item has wrong title, was " + mActivity.getString(moveEndTitleId),
+                R.string.move_tab_right,
+                moveEndTitleId);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveTabItems_accessibilityOn_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+
+        // Items are: add to group, move to window, move start, move end, divider, share, close.
+        ListItem moveStartItem = modelList.get(2);
+        int moveStartTitleId = moveStartItem.model.get(ListMenuItemProperties.TITLE_ID);
+        assertEquals(
+                "Move toward start item has wrong title, was "
+                        + mActivity.getString(moveStartTitleId),
+                R.string.move_tab_right,
+                moveStartTitleId);
+
+        ListItem moveEndItem = modelList.get(3);
+        int moveEndTitleId = moveEndItem.model.get(ListMenuItemProperties.TITLE_ID);
+        assertEquals(
+                "Move toward end item has wrong title, was " + mActivity.getString(moveEndTitleId),
+                R.string.move_tab_left,
+                moveEndTitleId);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabLeft() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabLeft_firstTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move left' title",
+                    R.string.move_tab_left,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabRight() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabRight_lastTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move left' title",
+                    R.string.move_tab_right,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabStart_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        // In RTL, the item to move toward the start is visually "Move right". It's at the same
+        // position as "Move left" in LTR.
+        modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
+        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), false);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabStart_firstTab_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        // In RTL, moving toward the start is "Move right". This option should not be available for
+        // the first tab.
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move right' title",
+                    R.string.move_tab_right,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabEnd_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        // In RTL, the item to move toward the end is visually "Move left". It's at the same
+        // position as "Move right" in LTR.
+        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabEnd_lastTab_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        // In RTL, moving toward the end is "Move left". This option should not be available for
+        // the last tab.
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect any item to have 'Move left' title",
+                    R.string.move_tab_left,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabLeft_firstUnpinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Expected no 'Move left' title if tab to the left is pinned",
+                    R.string.move_tab_left,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabRight_pinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        for (ListItem listItem : modelList) {
+            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            assertNotEquals(
+                    "Did not expect pinned tab menu to have 'Move left' title",
+                    R.string.move_tab_left,
+                    listItem.model.get(TITLE_ID));
+            assertNotEquals(
+                    "Did not expect pinned tab menu to have 'Move right' title",
+                    R.string.move_tab_right,
+                    listItem.model.get(TITLE_ID));
+        }
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveTabLeft_unpinnedTab() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
     }
 }
