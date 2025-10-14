@@ -62,9 +62,12 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
           setting.precise = geo_options->selected_precise
                                 ? PermissionOption::kAllowed
                                 : PermissionOption::kDenied;
-        } else {
-          setting.precise = PermissionOption::kAllowed;
         }
+        // If the prompt_options are not set it means that this did not go
+        // through a prompt, so let's just keep the value in previous setting.
+        //
+        // TODO(https://crbug.com/450752868): This implicit logic is fragile.
+        // Find out how to improve this.
       }
       break;
     case PermissionDecision::kNone:
