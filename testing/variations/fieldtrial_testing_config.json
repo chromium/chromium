@@ -23644,6 +23644,8 @@
                 {
                     "name": "Enabled_WithMenu",
                     "params": {
+                        "drop_target_show_delay": "1200ms",
+                        "drop_target_width_percentage": "20",
                         "mini_toolbar_active_config": "showmenu"
                     },
                     "enable_features": [
