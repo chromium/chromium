@@ -1,6 +1,7 @@
 # TODO(crbug.com/335001216): These tests are failing due to the duplicate
 # resource assertion.
 -DistilledPageJsTest.AddClassesToYTIFramesTest
+-DistilledPageJsTest.IdentifyEmptySVGsTest
 -DistilledPageJsTest.ImageClassifierTest
 -DistilledPageJsTest.SettingsDialogTest
 -DistillerPageWebContentsTest.BasicDistillationWorks
