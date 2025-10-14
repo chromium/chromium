@@ -8562,24 +8562,6 @@
             ]
         }
     ],
-    "DesktopNtpFooter": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NtpFooter",
-                    "enable_features": [
-                        "NtpFooter"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpImageErrorDetection": [
         {
             "platforms": [
