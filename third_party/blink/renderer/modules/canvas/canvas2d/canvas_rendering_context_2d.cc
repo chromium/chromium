@@ -316,7 +316,7 @@ void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source,
     // Recreate the CRP in GPU raster mode and signal that it needs a
     // compositing update.
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    DropAndRecreateExistingCanvas2DResourceProvider();
+    DropAndRecreateExistingResourceProvider();
     canvas()->SetNeedsCompositingUpdate();
   }
 }
@@ -811,7 +811,7 @@ void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
   if (canvas()->GetRasterModeForCanvas2D() == RasterMode::kCPU &&
       SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    DropAndRecreateExistingCanvas2DResourceProvider();
+    DropAndRecreateExistingResourceProvider();
   }
 }
 
@@ -1192,7 +1192,7 @@ void CanvasRenderingContext2D::DisableAcceleration() {
   // Create and configure an unaccelerated CanvasResourceProvider.
   canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  DropAndRecreateExistingCanvas2DResourceProvider();
+  DropAndRecreateExistingResourceProvider();
 
   // We must force a paint invalidation on the canvas even if its
   // content did not change, because its layer was destroyed.
@@ -1416,8 +1416,7 @@ CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
   return old_resource_provider;
 }
 
-void CanvasRenderingContext2D::
-    DropAndRecreateExistingCanvas2DResourceProvider() {
+void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   CanvasResourceProvider* old_provider = GetResourceProvider();
   if (old_provider == nullptr) {
     return;
