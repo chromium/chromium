@@ -4552,7 +4552,6 @@ crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay
 crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.https.html [ Skip Timeout ]
 crbug.com/331556923 external/wpt/geolocation-API/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]

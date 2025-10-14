@@ -146,7 +146,6 @@ crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentativ
 crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
 crbug.com/626703 external/wpt/speculation-rules/prerender/restrictions.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/infrastructure/channels/test_call.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]

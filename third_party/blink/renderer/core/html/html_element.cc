@@ -637,6 +637,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kSecuritypolicyviolation, nullptr},
       {html_names::kOnselectAttr, kNoWebFeature, event_type_names::kSelect,
        nullptr},
+      {html_names::kOnselectionchangeAttr, kNoWebFeature,
+       event_type_names::kSelectionchange, nullptr},
       {html_names::kOnselectstartAttr, kNoWebFeature,
        event_type_names::kSelectstart, nullptr},
       {html_names::kOnslotchangeAttr, kNoWebFeature,
@@ -685,8 +687,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kWebkitTransitionEnd, nullptr},
       {html_names::kOnwheelAttr, kNoWebFeature, event_type_names::kWheel,
        nullptr},
-      {html_names::kOnlocationAttr, kNoWebFeature,
-       event_type_names::kLocation, nullptr},
+      {html_names::kOnlocationAttr, kNoWebFeature, event_type_names::kLocation,
+       nullptr},
 
       // Begin ARIA attributes.
       {html_names::kAriaActionsAttr, WebFeature::kARIAActionsAttribute,
