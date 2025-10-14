@@ -1677,13 +1677,13 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     @Override
-    public void cleanupStateFile(int instanceId) {
+    public void cleanupStateFile(int windowId) {
         mPersistencePolicy.cleanupInstanceState(
-                instanceId,
+                windowId,
                 (TabPersistenceFileInfo result) -> {
                     // Delete the instance state file (tab_stateX) as well.
                     deleteFileAsync(
-                            TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(instanceId));
+                            TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(windowId));
 
                     // |result| can be null if the task gets cancelled.
                     if (result == null) return;

@@ -191,7 +191,7 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     @Override
-    public void cleanupStateFile(int instanceId) {
+    public void cleanupStateFile(int windowId) {
         // TODO(https://crbug.com/451624258): Implement.
     }
 

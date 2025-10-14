@@ -203,9 +203,9 @@ public interface TabPersistentStore {
     /**
      * Deletes the state file for the given instance.
      *
-     * @param instanceId The instance ID of the instance to delete the state file for.
+     * @param windowId The window ID of the corresponding window to delete the state file for.
      */
-    void cleanupStateFile(int instanceId);
+    void cleanupStateFile(int windowId);
 
     /**
      * Adds a {@link TabPersistentStoreObserver}.
